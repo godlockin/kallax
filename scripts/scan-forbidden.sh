@@ -109,6 +109,17 @@ fi
 
 echo ""
 
+# ── LLM Marker patterns ────────────────────────────────────────────────────
+
+echo "--- LLM Markers ---"
+
+scan_ts "Let's\|Now let's\|Here we\|Simply put\|Basically\|It's worth noting" 'LLM filler phrase — remove hedging/filler language' 'warning'
+scan_ts "^---$" 'Em-dash separator (---) in code — use // comments instead' 'warning'
+scan_ts "TODO:\|FIXME:" 'Bare TODO/FIXME without ticket reference — use TODO(TASK-NNN)' 'warning'
+scan_ts "Please ensure\|Kindly\|Thank you for" 'Overly polite comment — use direct language' 'warning'
+
+echo ""
+
 # ── Secret patterns ────────────────────────────────────────────────────────
 
 echo "--- Secrets ---"
