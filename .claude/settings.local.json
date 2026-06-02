@@ -3,7 +3,8 @@
     "allow": [
       "Bash(rtk du *)",
       "Bash(git init *)",
-      "Bash(rtk tree *)"
+      "Bash(rtk tree *)",
+      "Bash(awk '{sum += $4} END {print sum}')"
     ]
   }
 }
