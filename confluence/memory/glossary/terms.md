@@ -153,6 +153,48 @@ task:complete 使用 Saga 5步：
 - Tech
 - Training
 
+## 验证与质量术语
+
+### 4-Level Fact-Forcing
+KALLAX 的产出验证协议，包含 4 个验证级别:
+
+| Level | 名称 | 验证内容 |
+|-------|------|---------|
+| L1 | 存在性 | 文件存在于 git diff |
+| L2 | 实质性 | 代码为真实逻辑，非 stub |
+| L3 | 接线 | import/export 正确，编译通过 |
+| L4 | 数据流 | 测试通过，端到端验证 |
+
+### Gate Review
+执行前关卡审查，确保任务满足质量标准后才能进入下一阶段。
+
+包含 4 个关卡:
+- Gate 0: 需求质量
+- Gate 1: 任务就绪
+- Gate 2: 开发完成
+- Gate 3: PR 合并
+
+### TDD (Test-Driven Development)
+测试驱动开发，KALLAX Performer 的标准开发流程:
+1. 红 (Red): 写失败的测试
+2. 绿 (Green): 写最小代码让测试通过
+3. 重构 (Refactor): 优化代码，保持测试通过
+
+## 消息与通信术语
+
+### Message Queue
+消息队列，用于 Conductor 和 Performer 之间的异步通信。
+
+支持两种模式:
+- **List Queue**: 单消费者模式 (任务领取、PR Review)
+- **PubSub**: 广播模式 (状态更新、进度通知)
+
+### Heartbeat
+心跳检查，Conductor 定期执行的状态同步机制。
+
+### DLQ (Dead Letter Queue)
+死信队列，存储处理失败的消息，用于后续手动处理或重试。
+
 ## 改进术语 (KALLAX vs KALLAX)
 
 | KALLAX 术语 | KALLAX 术语 | 改进说明 |
@@ -164,3 +206,30 @@ task:complete 使用 Saga 5步：
 | any 类型 | unknown + 类型守卫 | 类型安全改进 |
 | 无 TTL 缓存 | LRU + TTL | 资源管理改进 |
 | 静默降级 | 显式降级 + 日志 | 可观测性改进 |
+| 信任 Agent 报告 | 4-Level Fact-Forcing | 验证机制改进 |
+| 共享工作区 | Worktree 强制隔离 | 并行隔离改进 |
+
+---
+
+## 缩写表
+
+| 缩写 | 全称 | 说明 |
+|-----|------|------|
+| AC | Acceptance Criteria | 验收标准 |
+| ADR | Architecture Decision Record | 架构决策记录 |
+| DAG | Directed Acyclic Graph | 有向无环图 |
+| DI | Dependency Injection | 依赖注入 |
+| DLQ | Dead Letter Queue | 死信队列 |
+| DRY | Don't Repeat Yourself | 不要重复自己 |
+| FTS | Full-Text Search | 全文搜索 |
+| LGTM | Looks Good To Me | 代码审查通过 |
+| LRU | Least Recently Used | 最近最少使用 |
+| PR | Pull Request | 拉取请求 |
+| RBAC | Role-Based Access Control | 基于角色的访问控制 |
+| TDD | Test-Driven Development | 测试驱动开发 |
+| TF-IDF | Term Frequency-Inverse Document Frequency | 词频-逆文档频率 |
+| TTL | Time To Live | 生存时间 |
+
+---
+
+最后更新: 2024-01-15

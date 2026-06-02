@@ -2,9 +2,15 @@
   "permissions": {
     "allow": [
       "Bash(rtk du *)",
+      "Bash(rtk *)",
       "Bash(git init *)",
+      "Bash(git *)",
       "Bash(rtk tree *)",
-      "Bash(awk '{sum += $4} END {print sum}')"
+      "Bash(awk '{sum += $4} END {print sum}')",
+      "Bash(awk '{print $NF, $5}')",
+      "Bash(awk '{print $NF, $5}')",
+      "Bash(awk '{print $NF, $5}')",
+      "Bash(awk '{print $NF}')"
     ]
   }
 }
