@@ -18,3 +18,4 @@ export * from './sse-bus.js';
 export * from './role-selector.js';
 export * from './git-service.js';
 export * from './span-tracer.js';
+export * from './gate-reviewer.js';
