@@ -31,12 +31,13 @@ export async function executeClaimCommand(
   taskAssigner: TaskAssigner,
   options: ClaimCommandOptions
 ): Promise<KallaxResult<ClaimResult>> {
-  const currentInstance = instanceRegistry.getCurrentInstance();
+  let currentInstance = instanceRegistry.getCurrentInstance();
 
+  // Auto-register performer if CLI invoked standalone (new process each time)
   if (currentInstance === null) {
-    return err(
-      new KallaxError(KallaxErrorCode.INSTANCE_NOT_FOUND, 'No active instance registered')
-    );
+    const regResult = await instanceRegistry.register('performer');
+    if (regResult.isErr()) return err(regResult.error);
+    currentInstance = regResult.value;
   }
 
   if (currentInstance.role !== 'performer') {

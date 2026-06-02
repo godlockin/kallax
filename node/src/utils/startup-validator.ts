@@ -69,13 +69,13 @@ export function validateStartup(projectRoot: string): KallaxResult<StartupValida
     'fatal',
   );
 
-  // 4. Check for required binaries
+  // 4. Check for required binaries (non-fatal — may run in sandbox)
   try {
     const { execFileSync } = require('node:child_process');
     execFileSync('git', ['--version'], { stdio: 'ignore' });
-    addCheck('git-binary', true, 'git command available', 'fatal');
+    addCheck('git-binary', true, 'git command available', 'info');
   } catch {
-    addCheck('git-binary', false, 'git not found in PATH', 'fatal');
+    addCheck('git-binary', false, 'git not found in PATH — CLI may still work via shell', 'warning');
   }
 
   // 5. Check gh CLI (optional — needed for PR creation)

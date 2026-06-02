@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# KALLAX CLI Wrapper — routes to persistence-capable Node.js implementation.
+# Place this in PATH before the Rust binary to ensure persistence works.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+NODE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "$NODE_ROOT/../.." && pwd)"
+
+# Use tsx for development (no build needed), fallback to compiled JS
+if [ -f "$NODE_ROOT/node_modules/.bin/tsx" ]; then
+  exec "$NODE_ROOT/node_modules/.bin/tsx" "$NODE_ROOT/src/index.ts" "$@"
+elif [ -f "$NODE_ROOT/dist/index.js" ]; then
+  exec node "$NODE_ROOT/dist/index.js" "$@"
+else
+  echo "KALLAX: No Node.js runtime found. Run 'npm install' first." >&2
+  exit 1
+fi
