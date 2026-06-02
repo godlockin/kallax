@@ -1,0 +1,223 @@
+# KALLAX Testing Configuration
+# 测试配置
+
+# ============================================================
+# 测试框架
+# ============================================================
+framework:
+  # Node.js 测试
+  node:
+    runner: "vitest"             # jest | vitest | mocha
+    config: "vitest.config.ts"
+
+  # Rust 测试
+  rust:
+    runner: "cargo test"
+
+# ============================================================
+# 测试类型
+# ============================================================
+types:
+  # 单元测试
+  unit:
+    enabled: true
+    pattern: "**/*.test.ts"
+    coverage_threshold: 80
+    timeout: 10000               # 10秒
+
+  # 集成测试
+  integration:
+    enabled: true
+    pattern: "**/*.integration.test.ts"
+    timeout: 60000               # 60秒
+    require_services:
+      - redis
+      - sqlite
+
+  # E2E 测试
+  e2e:
+    enabled: false
+    pattern: "**/*.e2e.test.ts"
+    timeout: 120000              # 2分钟
+
+  # 性能测试
+  performance:
+    enabled: false
+    pattern: "**/*.perf.test.ts"
+    baseline_file: "benchmarks/baseline.json"
+
+# ============================================================
+# 覆盖率配置
+# ============================================================
+coverage:
+  enabled: true
+
+  # 覆盖率阈值
+  thresholds:
+    global:
+      lines: 80
+      branches: 75
+      functions: 80
+      statements: 80
+
+    # 关键路径更高要求
+    critical:
+      pattern: "src/core/**"
+      lines: 90
+      branches: 85
+
+  # 忽略
+  exclude:
+    - "**/*.d.ts"
+    - "**/node_modules/**"
+    - "**/dist/**"
+    - "**/__mocks__/**"
+    - "**/test/**"
+
+  # 报告
+  reporters:
+    - text
+    - lcov
+    - html
+
+  output_dir: "coverage"
+
+# ============================================================
+# Mock 和依赖注入
+# ============================================================
+mocking:
+  # 推荐使用依赖注入而非 jest.mock
+  prefer_di: true
+
+  # ESM 兼容
+  esm_compatible: true
+
+  # Mock 模式
+  patterns:
+    # 外部服务使用 Fake
+    external_services: "fake"    # fake | mock | stub
+
+    # 数据库使用内存版本
+    database: "in_memory"
+
+    # 文件系统使用 memfs
+    filesystem: "memfs"
+
+# ============================================================
+# 测试数据
+# ============================================================
+test_data:
+  # Fixtures 目录
+  fixtures_dir: "tests/fixtures"
+
+  # 工厂函数目录
+  factories_dir: "tests/factories"
+
+  # 隔离策略
+  isolation:
+    # 每个测试独立数据
+    per_test: true
+
+    # 使用唯一 ID
+    unique_ids: true
+
+    # 清理策略
+    cleanup: "after_each"        # after_each | after_all | manual
+
+# ============================================================
+# CI 集成
+# ============================================================
+ci:
+  # 并行执行
+  parallel: true
+  shards: 4
+
+  # 失败重试
+  retry:
+    enabled: true
+    max_attempts: 2
+
+  # 快速失败
+  fail_fast: false
+
+  # 测试报告
+  reporters:
+    - junit
+    - github-actions
+
+# ============================================================
+# 测试质量规则 (KALLAX 特有)
+# ============================================================
+quality_rules:
+  # 禁止内联复制测试
+  no_inline_copy_tests: true
+
+  # 禁止重复断言
+  no_duplicate_assertions: true
+
+  # 要求有意义的测试名称
+  meaningful_test_names: true
+
+  # 测试必须有断言
+  require_assertions: true
+
+  # 每个测试文件最大测试数
+  max_tests_per_file: 50
+
+  # 测试复杂度限制
+  max_test_complexity: 5
+
+# ============================================================
+# Watch 模式
+# ============================================================
+watch:
+  enabled: true
+
+  # 监视的文件模式
+  patterns:
+    - "src/**/*.ts"
+    - "tests/**/*.test.ts"
+
+  # 忽略
+  ignore:
+    - "node_modules"
+    - "dist"
+    - "coverage"
+
+  # 防抖延迟 (ms)
+  debounce: 200
+
+# ============================================================
+# 快照测试
+# ============================================================
+snapshots:
+  enabled: true
+
+  # 快照目录
+  dir: "__snapshots__"
+
+  # 更新策略
+  update_on_change: false        # 需要显式 -u 更新
+
+  # 序列化选项
+  serializers:
+    - "jest-serializer-html"
+
+# ============================================================
+# 本地测试命令
+# ============================================================
+commands:
+  # 运行所有测试
+  all: "npm test"
+
+  # 运行单元测试
+  unit: "npm run test:unit"
+
+  # 运行受影响的测试
+  affected: "npm run test:affected"
+
+  # 运行带覆盖率
+  coverage: "npm run test:coverage"
+
+  # Watch 模式
+  watch: "npm run test:watch"

@@ -1,0 +1,114 @@
+# Git 配置
+
+# 分支策略
+branches:
+  # 功能分支（Performer 工作分支）
+  feature:
+    pattern: "feature/{ticket-id}-{short-name}"
+    permissions:
+      performer: [push, create]
+      conductor: [read]
+
+  # 集成测试分支
+  testing:
+    name: "testing"
+    permissions:
+      performer: [read]
+      conductor: [push, merge]
+
+  # 主分支（稳定版本）
+  main:
+    name: "main"
+    permissions:
+      performer: [read]
+      conductor: [merge]
+
+  # 生产分支
+  production:
+    name: "miao"
+    permissions:
+      performer: [read]
+      conductor: [merge]
+
+# 分支同步流程
+sync_flow:
+  - from: feature/*
+    to: testing
+    method: merge
+
+  - from: testing
+    to: main
+    method: merge
+
+  - from: main
+    to: miao
+    method: merge
+
+# Commit 规范
+commit:
+  # Conventional Commits 格式
+  format: "type(scope): subject"
+
+  # 允许的类型
+  types:
+    - feat      # 新功能
+    - fix       # 修复
+    - docs      # 文档
+    - style     # 格式
+    - refactor  # 重构
+    - perf      # 性能
+    - test      # 测试
+    - chore     # 杂项
+
+  # 必须包含 Ticket ID
+  require_ticket: true
+  ticket_pattern: "TASK-\\d+"
+
+  # 示例
+  examples:
+    - "feat(auth): implement login form [TASK-001]"
+    - "fix(api): handle network timeout [TASK-042]"
+
+# Worktree 配置
+worktree:
+  # 基础目录
+  base_dir: ".claude/worktrees"
+
+  # 自动清理
+  auto_cleanup: true
+
+  # 清理条件：PR 合并后
+  cleanup_on_merge: true
+
+  # 最大保留数量
+  max_worktrees: 10
+
+# Hook 配置
+hooks:
+  pre_commit:
+    - lint
+    - type_check
+    - test_affected
+
+  pre_push:
+    - test_all
+    - build
+
+  commit_msg:
+    - validate_format
+    - check_ticket_id
+
+# 禁止操作
+forbidden:
+  # Performer 禁止
+  performer:
+    - push_to_main
+    - push_to_testing
+    - force_push
+    - delete_branch_main
+    - merge_without_review
+
+  # Conductor 禁止
+  conductor:
+    - push_to_feature
+    - direct_commit_to_main

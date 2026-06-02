@@ -1,0 +1,270 @@
+# KALLAX Process Configuration
+# 流程和工作流配置
+
+# ============================================================
+# Conductor-Performer 协作模式
+# ============================================================
+collaboration:
+  # 模式
+  mode: "conductor_performer"    # conductor_performer | single_agent
+
+  # Conductor 配置
+  conductor:
+    # 职责
+    responsibilities:
+      - requirement_analysis     # 需求分析
+      - task_decomposition       # 任务拆分
+      - task_assignment          # 任务分配
+      - progress_monitoring      # 进度监控
+      - code_review              # 代码审查
+      - conflict_resolution      # 冲突解决
+      - quality_assurance        # 质量保证
+
+    # 禁止行为
+    forbidden:
+      - write_production_code
+      - direct_commit
+      - skip_verification
+
+  # Performer 配置
+  performer:
+    # 职责
+    responsibilities:
+      - task_execution           # 任务执行
+      - code_implementation      # 代码实现
+      - unit_testing             # 单元测试
+      - self_review              # 自检
+      - documentation            # 文档更新
+
+    # 禁止行为
+    forbidden:
+      - merge_to_main
+      - self_approve_pr
+      - skip_tests
+      - cross_scope_changes
+
+# ============================================================
+# 门卡系统 (Gate Review)
+# ============================================================
+gate_review:
+  enabled: true
+
+  # Ticket 质量门卡 (执行前)
+  ticket_quality:
+    required_fields:
+      - title
+      - description
+      - acceptance_criteria
+      - estimated_effort
+
+    # 验收标准要求
+    acceptance_criteria:
+      min_count: 2
+      require_testable: true
+
+    # 失败处理
+    on_failure:
+      action: "reject"
+      require_revision: true
+
+  # PR 质量门卡 (合并前)
+  pr_quality:
+    required:
+      - ci_pass
+      - reviewer_approval
+      - no_conflicts
+      - resolved_comments
+
+    # 代码质量检查
+    code_quality:
+      no_any: true               # 禁止 any
+      no_ts_ignore: true         # 禁止 @ts-ignore
+      no_console_log: true       # 禁止 console.log
+      no_commented_code: true    # 禁止注释代码
+
+# ============================================================
+# 4-Level Fact-Forcing (验证幻觉)
+# ============================================================
+fact_forcing:
+  enabled: true
+
+  levels:
+    # Level 1: 存在性检查
+    existence:
+      enabled: true
+      checks:
+        - "文件是否存在"
+        - "函数是否定义"
+        - "依赖是否安装"
+
+    # Level 2: 实质性检查
+    substance:
+      enabled: true
+      checks:
+        - "代码是否有实质改动"
+        - "测试是否覆盖新代码"
+        - "文档是否更新"
+
+    # Level 3: 接线检查
+    wiring:
+      enabled: true
+      checks:
+        - "导入是否正确"
+        - "调用是否正确"
+        - "配置是否正确"
+
+    # Level 4: 数据流检查
+    dataflow:
+      enabled: true
+      checks:
+        - "参数传递正确"
+        - "返回值处理正确"
+        - "错误传播正确"
+
+# ============================================================
+# 降级策略
+# ============================================================
+degradation:
+  enabled: true
+
+  # 降级顺序
+  order:
+    - rust                       # 首选 Rust
+    - node                       # Node.js 降级
+    - shell                      # Shell 降级
+
+  # 触发条件
+  triggers:
+    rust_to_node:
+      - "rust binary not found"
+      - "cargo build failed"
+      - "rust panic"
+
+    node_to_shell:
+      - "node process crashed"
+      - "memory limit exceeded"
+      - "timeout"
+
+  # 降级时行为
+  on_degradation:
+    log: true                    # 记录日志
+    emit_metric: true            # 发送指标
+    notify: false                # 通知 (可选)
+
+# ============================================================
+# 工作流定义
+# ============================================================
+workflows:
+  # 功能开发流程
+  feature_development:
+    steps:
+      - name: "需求分析"
+        actor: "conductor"
+        actions:
+          - analyze_requirement
+          - create_ticket
+
+      - name: "门卡审查"
+        actor: "conductor"
+        actions:
+          - gate_review
+          - validate_ac
+
+      - name: "任务执行"
+        actor: "performer"
+        actions:
+          - claim_task
+          - implement
+          - test
+          - create_pr
+
+      - name: "代码审查"
+        actor: "conductor"
+        actions:
+          - review_code
+          - fact_force
+          - approve_or_reject
+
+      - name: "合并部署"
+        actor: "conductor"
+        actions:
+          - merge_pr
+          - update_ticket
+
+  # Bug 修复流程
+  bug_fix:
+    steps:
+      - name: "问题确认"
+        actor: "conductor"
+        actions:
+          - reproduce_bug
+          - create_ticket
+
+      - name: "快速修复"
+        actor: "performer"
+        timeout: "2h"
+        actions:
+          - claim_task
+          - fix_bug
+          - add_test
+          - create_pr
+
+      - name: "验证合并"
+        actor: "conductor"
+        actions:
+          - verify_fix
+          - merge_pr
+
+# ============================================================
+# 任务模板
+# ============================================================
+task_templates:
+  # 新功能
+  feature:
+    prefix: "feat"
+    default_priority: "medium"
+    required_fields:
+      - title
+      - description
+      - acceptance_criteria
+
+  # Bug 修复
+  bug:
+    prefix: "fix"
+    default_priority: "high"
+    required_fields:
+      - title
+      - description
+      - steps_to_reproduce
+
+  # 重构
+  refactor:
+    prefix: "refactor"
+    default_priority: "low"
+    required_fields:
+      - title
+      - description
+      - motivation
+
+# ============================================================
+# SLA 配置
+# ============================================================
+sla:
+  # 响应时间
+  response_time:
+    critical: "1h"
+    high: "4h"
+    medium: "24h"
+    low: "72h"
+
+  # 解决时间
+  resolution_time:
+    critical: "4h"
+    high: "24h"
+    medium: "72h"
+    low: "168h"                  # 1 week
+
+  # 告警
+  alerts:
+    warn_at: 0.75                # 75% 时间时告警
+    escalate_at: 1.0             # 100% 时间时升级

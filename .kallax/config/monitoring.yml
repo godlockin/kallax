@@ -1,0 +1,140 @@
+# 监控配置
+
+# 内存监控
+memory:
+  # 警告阈值 (75%)
+  warning_threshold: 0.75
+
+  # 危险阈值 (90%)
+  critical_threshold: 0.90
+
+  # 检查间隔 (秒)
+  check_interval: 30
+
+  # 超过阈值时的动作
+  on_warning: log
+  on_critical: compress_context
+
+# 上下文监控
+context:
+  # 最大 Token 数
+  max_tokens: 100000
+
+  # 压缩触发阈值
+  compress_threshold: 0.75
+
+  # 保留最近 N 条消息
+  preserve_recent: 50
+
+  # 压缩旧消息
+  summarize_old: true
+
+  # 压缩 artifacts
+  compress_artifacts: true
+
+# Performer 心跳监控
+heartbeat:
+  # 检查间隔 (秒)
+  check_interval: 60
+
+  # 超时阈值 (分钟)
+  timeout_minutes: 30
+
+  # 超时后动作
+  on_timeout: notify_conductor
+
+# 系统健康检查
+health:
+  # 检查间隔 (分钟)
+  check_interval: 5
+
+  # 检查项目
+  checks:
+    - name: redis
+      enabled: true
+      timeout: 5000
+
+    - name: sqlite
+      enabled: true
+      timeout: 2000
+
+    - name: disk_space
+      enabled: true
+      min_free_gb: 5
+
+    - name: node_version
+      enabled: true
+      min_version: "20.0.0"
+
+# 指标收集
+metrics:
+  enabled: true
+
+  # 收集间隔 (秒)
+  collect_interval: 60
+
+  # 指标存储
+  storage: sqlite
+
+  # 保留天数
+  retention_days: 30
+
+  # 收集的指标
+  collect:
+    - task_claimed_count
+    - task_completed_count
+    - task_blocked_count
+    - performer_active_count
+    - pr_review_time
+    - degradation_count
+
+# 日志配置
+logging:
+  # 日志级别
+  level: info
+
+  # 日志格式
+  format: json
+
+  # 日志输出目录
+  output: "./logs"
+
+  # 日志轮转
+  rotation:
+    max_size: "10MB"
+    max_files: 10
+    compress: true
+
+  # 结构化字段
+  default_fields:
+    - timestamp
+    - level
+    - module
+    - message
+
+# 告警配置
+alerting:
+  enabled: false
+
+  # 告警渠道
+  channels:
+    - type: file
+      path: "./logs/alerts.log"
+
+    # - type: webhook
+    #   url: https://hooks.example.com/alert
+    #   method: POST
+
+  # 告警规则
+  rules:
+    - name: performer_timeout
+      condition: "performer.idle_time > 30m"
+      severity: warning
+
+    - name: high_memory
+      condition: "memory.usage > 0.9"
+      severity: critical
+
+    - name: degradation
+      condition: "degradation.occurred"
+      severity: warning

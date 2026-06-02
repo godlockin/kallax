@@ -1,0 +1,160 @@
+# 权限配置
+
+# 角色定义
+roles:
+  conductor:
+    description: "指挥者 - 协调全局"
+    alias: ["master", "coordinator"]
+
+  performer:
+    description: "执行者 - 完成任务"
+    alias: ["slaver", "executor"]
+    specializations:
+      - frontend
+      - backend
+      - infra
+      - test
+      - docs
+
+# Conductor 权限
+conductor:
+  # 允许的操作
+  allowed:
+    - analyze_requirements
+    - create_ticket
+    - create_epic
+    - assign_task
+    - review_pr
+    - approve_pr
+    - reject_pr
+    - merge_pr
+    - update_confluence
+    - delegate_to_assistant
+    - gate_review
+    - verify_output
+
+  # 禁止的操作
+  forbidden:
+    - write_production_code
+    - claim_task
+    - self_review_pr
+    - merge_without_ci
+    - push_to_feature
+    - skip_verification
+
+  # 分支权限
+  branches:
+    main: [read, merge]
+    testing: [read, merge]
+    feature/*: [read]
+
+  # 白名单（可执行 override）
+  override_whitelist: []
+
+# Performer 权限
+performer:
+  # 允许的操作
+  allowed:
+    - claim_task
+    - develop_code
+    - run_tests
+    - create_pr
+    - push_to_feature
+    - respond_to_review
+    - request_review
+    - update_ticket_progress
+
+  # 禁止的操作 (9 条硬规则)
+  forbidden:
+    # 1. 禁止合并到 main
+    - merge_to_main
+
+    # 2. 禁止自我审查
+    - self_review_pr
+
+    # 3. 禁止跳过测试
+    - skip_tests
+
+    # 4. 禁止 magic number
+    - magic_numbers
+
+    # 5. 禁止 console.log
+    - console_log
+
+    # 6. 禁止忽略 lint 错误
+    - ignore_lint
+
+    # 7. 禁止注释掉代码
+    - commented_code
+
+    # 8. 禁止复制粘贴
+    - copy_paste_code
+
+    # 9. 禁止交叉变更
+    - cross_cutting_changes
+
+  # 分支权限
+  branches:
+    main: [read]
+    testing: [read]
+    feature/*: [read, write, create, delete]
+
+# 文件范围权限
+file_scope:
+  # 强制声明
+  enforce: true
+
+  # 范围外修改处理
+  out_of_scope_action: reject  # reject | warn | allow
+
+  # 共享文件需要协调
+  shared_files_require_coordination: true
+
+# API 权限
+api:
+  # 公开端点（无需认证）
+  public:
+    - GET /health
+    - GET /version
+
+  # 需要认证的端点
+  authenticated:
+    - GET /tasks
+    - POST /tasks
+    - PUT /tasks/*
+    - GET /performers
+    - POST /performers/register
+
+  # 仅 Conductor
+  conductor_only:
+    - POST /tasks/*/assign
+    - PUT /tasks/*/approve
+    - PUT /tasks/*/reject
+    - POST /merge/*
+
+# 环境变量权限
+env:
+  # 可读取
+  readable:
+    - KALLAX_*
+    - NODE_ENV
+    - HOME
+    - PATH
+
+  # 禁止读取（敏感）
+  forbidden:
+    - "*_SECRET"
+    - "*_PASSWORD"
+    - "*_TOKEN"
+    - "*_KEY"
+
+# 审计
+audit:
+  # 记录所有权限检查
+  log_permission_checks: true
+
+  # 记录所有禁止操作尝试
+  log_forbidden_attempts: true
+
+  # 审计日志保留天数
+  retention_days: 90

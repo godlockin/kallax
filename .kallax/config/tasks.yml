@@ -1,0 +1,124 @@
+# 任务配置
+
+# 任务类型定义
+task_types:
+  - name: feature
+    description: 新功能开发
+    default_priority: P1
+
+  - name: bug
+    description: 缺陷修复
+    default_priority: P1
+
+  - name: chore
+    description: 杂项任务
+    default_priority: P2
+
+  - name: docs
+    description: 文档更新
+    default_priority: P2
+
+  - name: test
+    description: 测试任务
+    default_priority: P2
+
+  - name: refactor
+    description: 代码重构
+    default_priority: P2
+
+  - name: perf
+    description: 性能优化
+    default_priority: P2
+
+  - name: security
+    description: 安全修复
+    default_priority: P0
+
+# 优先级定义
+priorities:
+  P0:
+    name: 紧急
+    description: 阻塞生产环境
+    max_response_time: 1h
+
+  P1:
+    name: 高
+    description: 本迭代必须完成
+    max_response_time: 4h
+
+  P2:
+    name: 中
+    description: 本迭代尽量完成
+    max_response_time: 24h
+
+  P3:
+    name: 低
+    description: 有空再做
+    max_response_time: 72h
+
+# 状态流转
+status_flow:
+  backlog:
+    next: [analysis]
+    description: 待办池
+
+  analysis:
+    next: [ready, backlog]
+    description: 需求分析中
+
+  ready:
+    next: [gate_review, backlog]
+    description: 待领取
+
+  gate_review:
+    next: [in_progress, ready]
+    description: 门卡审查
+
+  in_progress:
+    next: [test, blocked]
+    description: 开发中
+
+  test:
+    next: [pr_review, in_progress]
+    description: 测试中
+
+  pr_review:
+    next: [done, in_progress]
+    description: PR 审核
+
+  done:
+    next: []
+    description: 完成
+
+  blocked:
+    next: [in_progress]
+    description: 阻塞
+
+# 超时配置
+timeouts:
+  # Performer 心跳超时
+  performer_heartbeat: 30m
+
+  # 任务最大执行时间 = min(预估时间/10, 30分钟)
+  task_max_idle: 30m
+
+  # PR Review 超时
+  pr_review: 4h
+
+  # Gate Review 超时
+  gate_review: 1h
+
+# 自动分配配置
+auto_assignment:
+  enabled: false
+  strategy: round_robin  # round_robin | skill_match | load_balance
+  max_tasks_per_performer: 2
+
+# 通知配置
+notifications:
+  on_task_created: true
+  on_task_claimed: true
+  on_task_completed: true
+  on_task_blocked: true
+  on_pr_ready: true
+  on_review_feedback: true

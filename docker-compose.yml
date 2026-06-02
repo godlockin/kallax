@@ -1,0 +1,144 @@
+# KALLAX Docker Compose
+# Development environment setup
+
+services:
+  # ============================================================
+  # KALLAX Application
+  # ============================================================
+  kallax:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: kallax-app
+    ports:
+      - "9877:9877"              # API
+      - "3000:3000"              # Dashboard
+    volumes:
+      # Source code (hot reload)
+      - ./node:/app/node:delegated
+      - ./rust:/app/rust:delegated
+      - ./shared:/app/shared:delegated
+
+      # Configuration
+      - ./.kallax/config.yml:/app/.kallax/config.yml:ro
+      - ./.kallax/config:/app/.kallax/config:ro
+      - ./.kallax/templates:/app/.kallax/templates:ro
+
+      # Persistent data
+      - kallax-data:/app/.kallax/data
+      - kallax-logs:/app/.kallax/logs
+
+      # Exclude node_modules (use container's)
+      - /app/node_modules
+      - /app/node/node_modules
+    environment:
+      - NODE_ENV=development
+      - KALLAX_MODE=docker
+      - KALLAX_REDIS_HOST=redis
+      - KALLAX_REDIS_PORT=6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - kallax-network
+    restart: unless-stopped
+
+  # ============================================================
+  # Redis
+  # ============================================================
+  redis:
+    image: redis:7-alpine
+    container_name: kallax-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - kallax-network
+    restart: unless-stopped
+
+  # ============================================================
+  # Redis Commander (optional, for debugging)
+  # ============================================================
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: kallax-redis-ui
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    depends_on:
+      - redis
+    networks:
+      - kallax-network
+    profiles:
+      - debug
+
+  # ============================================================
+  # Prometheus (optional, for metrics)
+  # ============================================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: kallax-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - kallax-network
+    profiles:
+      - monitoring
+    restart: unless-stopped
+
+  # ============================================================
+  # Grafana (optional, for dashboards)
+  # ============================================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: kallax-grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    networks:
+      - kallax-network
+    profiles:
+      - monitoring
+    restart: unless-stopped
+
+# ============================================================
+# Volumes
+# ============================================================
+volumes:
+  kallax-data:
+    driver: local
+  kallax-logs:
+    driver: local
+  redis-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+# ============================================================
+# Networks
+# ============================================================
+networks:
+  kallax-network:
+    driver: bridge

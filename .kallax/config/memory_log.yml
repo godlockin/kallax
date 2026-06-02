@@ -1,0 +1,254 @@
+# KALLAX Memory & Log Configuration
+# 内存和日志配置
+
+# ============================================================
+# 内存系统 (Confluence 集成)
+# ============================================================
+memory:
+  # 存储位置
+  storage:
+    type: "confluence"           # confluence | sqlite | file
+    path: "./confluence"
+
+  # 内存类型
+  types:
+    # 项目知识
+    project:
+      path: "docs/"
+      retention: "permanent"
+
+    # 决策记录
+    decisions:
+      path: "adr/"
+      retention: "permanent"
+
+    # 经验教训
+    lessons:
+      path: "lessons/"
+      retention: "permanent"
+
+    # 临时笔记
+    scratch:
+      path: "scratch/"
+      retention: "7d"
+
+  # 索引
+  indexing:
+    enabled: true
+    full_text: true
+    embeddings: false            # 未来可启用向量搜索
+
+# ============================================================
+# 日志系统
+# ============================================================
+logging:
+  # 主日志
+  main:
+    level: "info"                # debug | info | warn | error
+    format: "json"               # json | pretty
+    output: ".kallax/logs"
+    rotation:
+      max_size: "10MB"
+      max_files: 10
+      compress: true
+
+  # 审计日志
+  audit:
+    enabled: true
+    output: ".kallax/logs/audit"
+    events:
+      - task_created
+      - task_claimed
+      - task_completed
+      - pr_created
+      - pr_merged
+      - permission_denied
+      - degradation_occurred
+
+  # 结构化日志字段
+  default_fields:
+    service: "kallax"
+    version: "1.0.0"
+
+# ============================================================
+# Tracing (追踪)
+# ============================================================
+tracing:
+  enabled: true
+
+  # Span 存储
+  storage:
+    type: "sqlite"               # sqlite | memory | file
+    path: ".kallax/data/traces.db"
+    retention_days: 7
+
+  # 追踪的操作
+  operations:
+    # 工具调用
+    tool_invocations:
+      enabled: true
+      sample_rate: 1.0
+
+    # 任务执行
+    task_execution:
+      enabled: true
+      sample_rate: 1.0
+
+    # API 请求
+    api_requests:
+      enabled: true
+      sample_rate: 0.1           # 采样 10%
+
+    # Git 操作
+    git_operations:
+      enabled: true
+      sample_rate: 1.0
+
+  # Span 属性
+  attributes:
+    - ticket_id
+    - performer_id
+    - tool_name
+    - duration_ms
+    - status
+    - error_message
+
+# ============================================================
+# 上下文管理 (Context)
+# ============================================================
+context:
+  # Token 限制
+  limits:
+    max_tokens: 100000           # 最大 token 数
+    compress_threshold: 0.75     # 75% 时压缩
+
+  # 压缩策略
+  compression:
+    enabled: true
+    strategies:
+      - summarize_old_messages
+      - compress_artifacts
+      - remove_duplicates
+
+    # 保留最近 N 条
+    preserve_recent: 50
+
+    # 保留关键信息
+    preserve:
+      - system_prompt
+      - current_task
+      - recent_errors
+
+  # 上下文快照
+  snapshots:
+    enabled: true
+    auto_save: true
+    interval: 300                # 5分钟
+
+# ============================================================
+# Session 管理
+# ============================================================
+session:
+  # Session 存储
+  storage:
+    type: "file"                 # file | sqlite | redis
+    path: ".kallax/state/sessions"
+
+  # Session 超时
+  timeout:
+    idle: 3600                   # 1小时无活动超时
+    max: 86400                   # 最大 24 小时
+
+  # Session 恢复
+  recovery:
+    enabled: true
+    auto_resume: true
+
+# ============================================================
+# 事件流 (Event Bus)
+# ============================================================
+events:
+  # 事件存储
+  storage:
+    type: "sqlite"               # sqlite | redis | memory
+    path: ".kallax/data/events.db"
+    retention_days: 30
+
+  # 事件类型
+  types:
+    # 任务事件
+    task:
+      - task.created
+      - task.claimed
+      - task.updated
+      - task.completed
+      - task.blocked
+
+    # 执行事件
+    execution:
+      - span.started
+      - span.completed
+      - span.failed
+
+    # 系统事件
+    system:
+      - degradation.occurred
+      - memory.threshold_exceeded
+      - health.check_failed
+
+  # 订阅者
+  subscribers:
+    # 日志订阅者
+    logger:
+      events: ["*"]
+      handler: "log_event"
+
+    # 指标订阅者
+    metrics:
+      events: ["task.*", "span.*"]
+      handler: "emit_metric"
+
+# ============================================================
+# 数据保留策略
+# ============================================================
+retention:
+  # 日志保留
+  logs:
+    main: "30d"
+    audit: "90d"
+    debug: "7d"
+
+  # 追踪保留
+  traces: "7d"
+
+  # 事件保留
+  events: "30d"
+
+  # Session 保留
+  sessions: "7d"
+
+  # 清理计划
+  cleanup:
+    enabled: true
+    schedule: "0 3 * * *"        # 每天凌晨 3 点
+    dry_run: false
+
+# ============================================================
+# 导出配置
+# ============================================================
+export:
+  # 导出格式
+  formats:
+    - json
+    - csv
+
+  # 导出位置
+  output_dir: ".kallax/exports"
+
+  # 定期导出
+  scheduled:
+    enabled: false
+    schedule: "0 0 * * 0"        # 每周日凌晨
+    include:
+      - metrics
+      - audit_logs

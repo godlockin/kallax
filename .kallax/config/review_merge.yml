@@ -1,0 +1,157 @@
+# Review 和 Merge 配置
+
+# PR Review 配置
+review:
+  # 必须的 Review 数量
+  required_approvals: 1
+
+  # 自动分配 Reviewer
+  auto_assign: false
+
+  # Review 超时（小时）
+  timeout_hours: 4
+
+  # 禁止自我 Review
+  no_self_review: true
+
+  # 必须检查清单
+  checklist:
+    - "代码符合项目规范"
+    - "测试覆盖新增功能"
+    - "无安全漏洞"
+    - "文档已更新"
+    - "CI 全部通过"
+
+# 4-Level Fact-Forcing 验证
+fact_forcing:
+  enabled: true
+
+  levels:
+    # Level 1: 存在性验证
+    - name: existence
+      description: "文件存在于 diff"
+      checks:
+        - "git diff --name-only 包含声明的文件"
+        - "无幽灵引用"
+
+    # Level 2: 实质性验证
+    - name: substance
+      description: "真实逻辑，非 stub"
+      checks:
+        - "无 TODO 占位符在关键路径"
+        - "无空实现"
+
+    # Level 3: 接线验证
+    - name: wiring
+      description: "import/export 正确"
+      checks:
+        - "类型兼容"
+        - "依赖正确导入"
+
+    # Level 4: 数据流验证
+    - name: dataflow
+      description: "集成测试通过"
+      checks:
+        - "测试运行成功"
+        - "E2E 覆盖关键路径"
+
+# 产出验证
+output_verification:
+  enabled: true
+
+  # 验证步骤
+  steps:
+    - command: "ls"
+      args: ["-la"]
+      description: "检查文件存在"
+
+    - command: "git"
+      args: ["show", "--stat"]
+      description: "检查实际修改"
+
+    - command: "npm"
+      args: ["test"]
+      description: "运行真实测试"
+
+    - command: "npm"
+      args: ["run", "build"]
+      description: "构建验证"
+
+# 证据要求
+evidence:
+  # 接受的证据
+  accepted:
+    - "具体行号引用"
+    - "命令 stdout/stderr 输出"
+    - "真实测试执行结果"
+    - "git diff 实际修改"
+
+  # 拒绝的证据
+  rejected:
+    - "应该没问题"
+    - "看起来正确"
+    - "未验证的声明"
+    - "基于 mock 的断言"
+
+# Merge 配置
+merge:
+  # 合并策略
+  strategy: squash  # merge | squash | rebase
+
+  # 删除源分支
+  delete_source_branch: true
+
+  # 必须 CI 通过
+  require_ci_pass: true
+
+  # 必须解决所有讨论
+  require_all_discussions_resolved: true
+
+  # Commit 消息模板
+  commit_template: |
+    {pr_title} (#{pr_number})
+
+    {pr_body}
+
+    Closes {ticket_id}
+    Reviewed-by: {reviewer}
+
+# Gate Review 配置
+gate_review:
+  enabled: true
+
+  # 必须检查项
+  required_checks:
+    - ticket_completeness
+    - acceptance_criteria
+    - dependencies_ready
+    - file_scope_declared
+    - no_scope_overlap
+
+  # 超时（分钟）
+  timeout_minutes: 60
+
+# 反模式检测
+anti_patterns:
+  enabled: true
+
+  patterns:
+    - name: silent_catch
+      regex: "catch\\s*\\([^)]*\\)\\s*\\{\\s*\\}"
+      severity: error
+
+    - name: any_type
+      regex: ":\\s*any"
+      severity: error
+
+    - name: ts_ignore
+      regex: "@ts-ignore"
+      severity: error
+
+    - name: console_log
+      regex: "console\\.(log|info|warn|error)"
+      severity: warning
+
+    - name: expect_unwrap
+      regex: "\\.(expect|unwrap)\\("
+      severity: error

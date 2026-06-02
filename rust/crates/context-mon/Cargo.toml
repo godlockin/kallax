@@ -1,0 +1,25 @@
+[package]
+name = "context-mon"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Context window monitoring for KALLAX agents"
+
+[[bin]]
+name = "context-mon"
+path = "src/main.rs"
+
+[dependencies]
+kallax-core.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+chrono.workspace = true
+clap.workspace = true
+parking_lot.workspace = true
+
+[dev-dependencies]
+tempfile = "3.10"

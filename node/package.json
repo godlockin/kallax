@@ -1,0 +1,52 @@
+{
+  "name": "@kallax/node",
+  "version": "1.0.0",
+  "description": "KALLAX Node.js Enhancement Layer - Knowledge-Augmented Leveraged Learning Agent eXecutor",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "kallax": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.0.0",
+    "commander": "^12.0.0",
+    "ioredis": "^5.4.0",
+    "lru-cache": "^10.2.0",
+    "neverthrow": "^7.0.0",
+    "pino": "^9.0.0",
+    "pino-pretty": "^11.0.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.10",
+    "@types/node": "^20.12.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "tsx": "^4.9.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.5.0"
+  },
+  "keywords": [
+    "kallax",
+    "agent",
+    "orchestration",
+    "claude-code"
+  ],
+  "license": "MIT"
+}

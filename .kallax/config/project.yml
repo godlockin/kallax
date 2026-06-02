@@ -1,0 +1,100 @@
+# KALLAX Project Configuration
+# 项目级别配置
+
+# ============================================================
+# 项目元信息
+# ============================================================
+project:
+  name: ""                       # 项目名称 (自动从 package.json 读取)
+  version: ""                    # 版本号
+  description: ""                # 描述
+
+  # 目录结构
+  paths:
+    source: "./src"              # 源代码目录
+    tests: "./tests"             # 测试目录
+    docs: "./docs"               # 文档目录
+    output: "./output"           # 输出目录
+
+# ============================================================
+# 代码风格
+# ============================================================
+code_style:
+  language: "typescript"         # 主语言: typescript | rust | python | java
+
+  typescript:
+    strict: true                 # 严格模式
+    no_any: true                 # 禁止 any
+    no_ts_ignore: true           # 禁止 @ts-ignore
+    target: "ES2022"             # 编译目标
+    module: "ESNext"             # 模块系统
+
+  rust:
+    edition: "2021"              # Rust 版本
+    no_unwrap: true              # 禁止 unwrap()
+    no_expect: true              # 禁止 expect()
+    no_panic: true               # 禁止 panic!
+
+  # 格式化
+  formatting:
+    indent: 2                    # 缩进空格数
+    max_line_length: 100         # 最大行长
+    trailing_comma: true         # 尾随逗号
+    single_quotes: true          # 单引号
+
+# ============================================================
+# 依赖管理
+# ============================================================
+dependencies:
+  package_manager: "npm"         # npm | yarn | pnpm | cargo
+
+  # 锁文件策略
+  lockfile:
+    required: true               # 必须有 lockfile
+    check_in_ci: true            # CI 检查 lockfile 一致性
+
+  # 版本策略
+  versioning:
+    strategy: "semver"           # semver | fixed | latest
+    auto_update: false           # 自动更新依赖
+
+# ============================================================
+# 构建配置
+# ============================================================
+build:
+  # Node.js 构建
+  node:
+    command: "npm run build"
+    output_dir: "dist"
+
+  # Rust 构建
+  rust:
+    command: "cargo build --release"
+    output_dir: "target/release"
+
+  # 全量构建
+  all:
+    command: "npm run build:all"
+
+  # 缓存
+  cache:
+    enabled: true
+    directories:
+      - "node_modules/.cache"
+      - "rust/target"
+
+# ============================================================
+# 文档配置
+# ============================================================
+documentation:
+  # 自动生成
+  auto_generate:
+    enabled: false
+    on_commit: false
+    on_release: true
+
+  # 文档检查
+  validation:
+    check_links: true            # 检查链接有效性
+    check_spelling: false        # 拼写检查
+    require_jsdoc: false         # 要求 JSDoc

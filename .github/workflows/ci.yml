@@ -1,0 +1,272 @@
+name: KALLAX CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '20'
+  RUST_VERSION: 'stable'
+
+jobs:
+  # ============================================================
+  # Node.js Checks
+  # ============================================================
+  node-lint:
+    name: Node.js Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+  node-typecheck:
+    name: TypeScript Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run type-check
+
+  node-test:
+    name: Node.js Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test -- --coverage
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
+
+  node-build:
+    name: Node.js Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+  # ============================================================
+  # Rust Checks
+  # ============================================================
+  rust-lint:
+    name: Rust Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./rust
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Format check
+        run: cargo fmt --check
+
+      - name: Clippy
+        run: cargo clippy -- -D warnings
+
+  rust-test:
+    name: Rust Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./rust
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Run tests
+        run: cargo test --all-features
+
+  rust-build:
+    name: Rust Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./rust
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Build release
+        run: cargo build --release
+
+  # ============================================================
+  # Code Quality Gates
+  # ============================================================
+  forbidden-patterns:
+    name: Forbidden Patterns Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for 'any' type in TypeScript
+        run: |
+          echo "Checking for 'any' type..."
+          if grep -rn ": any" --include="*.ts" --include="*.tsx" node/ 2>/dev/null | grep -v "node_modules" | grep -v ".d.ts"; then
+            echo "::error::Found 'any' type usage. Please use proper types."
+            exit 1
+          fi
+          echo "No 'any' types found."
+
+      - name: Check for @ts-ignore
+        run: |
+          echo "Checking for @ts-ignore..."
+          if grep -rn "@ts-ignore" --include="*.ts" --include="*.tsx" node/ 2>/dev/null | grep -v "node_modules"; then
+            echo "::error::Found @ts-ignore. Please fix the type error."
+            exit 1
+          fi
+          echo "No @ts-ignore found."
+
+      - name: Check for @ts-expect-error
+        run: |
+          echo "Checking for @ts-expect-error..."
+          if grep -rn "@ts-expect-error" --include="*.ts" --include="*.tsx" node/ 2>/dev/null | grep -v "node_modules"; then
+            echo "::error::Found @ts-expect-error. Please fix the type error."
+            exit 1
+          fi
+          echo "No @ts-expect-error found."
+
+      - name: Check for Rust expect()
+        run: |
+          echo "Checking for .expect() in Rust..."
+          if grep -rn "\.expect(" --include="*.rs" rust/ 2>/dev/null | grep -v "test" | grep -v "#\[cfg(test)\]"; then
+            echo "::warning::Found .expect() usage. Consider using ? operator instead."
+          fi
+
+      - name: Check for Rust unwrap()
+        run: |
+          echo "Checking for .unwrap() in Rust..."
+          if grep -rn "\.unwrap()" --include="*.rs" rust/ 2>/dev/null | grep -v "test" | grep -v "#\[cfg(test)\]"; then
+            echo "::warning::Found .unwrap() usage. Consider using ? operator instead."
+          fi
+
+      - name: Check for panic! in Rust
+        run: |
+          echo "Checking for panic! in Rust..."
+          if grep -rn "panic!" --include="*.rs" rust/ 2>/dev/null | grep -v "test" | grep -v "#\[cfg(test)\]"; then
+            echo "::warning::Found panic! usage. Consider proper error handling."
+          fi
+
+      - name: Check for console.log
+        run: |
+          echo "Checking for console.log..."
+          if grep -rn "console\.log" --include="*.ts" --include="*.tsx" node/ 2>/dev/null | grep -v "node_modules" | grep -v "\.test\."; then
+            echo "::warning::Found console.log. Consider using structured logging."
+          fi
+
+  # ============================================================
+  # Security
+  # ============================================================
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: NPM Audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Check for secrets
+        run: |
+          echo "Checking for potential secrets..."
+          # Check for common secret patterns - safe grep without user input
+          if grep -rE "(password|secret|api_key|apikey|token)[\s]*=[\s]*['\"][^'\"]+['\"]" --include="*.ts" --include="*.js" --include="*.json" . 2>/dev/null | grep -v "node_modules" | grep -v ".example"; then
+            echo "::warning::Potential secrets found in code. Please review."
+          fi
+
+  # ============================================================
+  # Integration
+  # ============================================================
+  all-checks:
+    name: All Checks Passed
+    needs:
+      - node-lint
+      - node-typecheck
+      - node-test
+      - node-build
+      - rust-lint
+      - rust-test
+      - rust-build
+      - forbidden-patterns
+      - security-audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: All checks passed
+        run: echo "All CI checks passed successfully!"

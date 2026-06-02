@@ -1,0 +1,236 @@
+# KALLAX Advanced Configuration
+# 高级配置
+
+# ============================================================
+# 资源管理
+# ============================================================
+resources:
+  # 缓存
+  cache:
+    default_ttl: 300000          # 5 分钟
+    max_entries: 1000
+    eviction_policy: "lru"       # lru | lfu | fifo
+
+  # 连接池
+  connection_pool:
+    max: 10
+    min: 2
+    acquire_timeout: 30000
+    idle_timeout: 30000
+    validate_on_borrow: true
+
+  # 断路器
+  circuit_breaker:
+    enabled: true
+    failure_threshold: 3         # 3 次失败后断开
+    success_threshold: 2         # 2 次成功后恢复
+    reset_timeout: 30000         # 30 秒后尝试恢复
+    exponential_backoff: true
+
+# ============================================================
+# 并发控制
+# ============================================================
+concurrency:
+  # 最大并行任务
+  max_parallel_tasks: 5
+
+  # 锁管理
+  locks:
+    type: "memory"               # memory | redis | file
+    timeout: 30000               # 锁超时
+    retry_interval: 100          # 重试间隔
+
+  # 信号量
+  semaphores:
+    git_operations: 3            # Git 操作并发限制
+    api_requests: 10             # API 请求并发限制
+    file_operations: 5           # 文件操作并发限制
+
+  # 队列
+  queues:
+    task_queue:
+      max_size: 100
+      priority_enabled: true
+
+    event_queue:
+      max_size: 1000
+      batch_size: 50
+
+# ============================================================
+# 错误处理
+# ============================================================
+error_handling:
+  # 重试策略
+  retry:
+    enabled: true
+    max_attempts: 3
+    initial_delay: 1000
+    max_delay: 30000
+    exponential_base: 2
+    jitter: true
+
+  # 可重试的错误类型
+  retryable_errors:
+    - "ECONNRESET"
+    - "ETIMEDOUT"
+    - "ECONNREFUSED"
+    - "RATE_LIMIT_EXCEEDED"
+
+  # 不可重试的错误
+  non_retryable_errors:
+    - "PERMISSION_DENIED"
+    - "INVALID_INPUT"
+    - "NOT_FOUND"
+
+  # 错误分类
+  classification:
+    enabled: true
+    categories:
+      - transient                # 瞬时错误 (可重试)
+      - permanent                # 永久错误 (不可重试)
+      - unknown                  # 未知错误
+
+  # 错误脱敏
+  sanitization:
+    enabled: true
+    patterns:
+      - "(?i)(password|secret|token|api_key)=[^&\\s]+"
+      - "Bearer [a-zA-Z0-9._-]+"
+      - "ghp_[a-zA-Z0-9]+"
+      - "sk-[a-zA-Z0-9]+"
+
+# ============================================================
+# 性能优化
+# ============================================================
+performance:
+  # 批处理
+  batching:
+    enabled: true
+    max_batch_size: 50
+    max_wait_ms: 100
+
+  # 预取
+  prefetch:
+    enabled: false
+    patterns:
+      - "related_files"
+      - "dependencies"
+
+  # 懒加载
+  lazy_loading:
+    enabled: true
+    modules:
+      - "heavy_dependencies"
+      - "optional_features"
+
+# ============================================================
+# 插件系统
+# ============================================================
+plugins:
+  enabled: false
+
+  # 插件目录
+  directory: ".kallax/plugins"
+
+  # 已启用的插件
+  enabled_plugins: []
+
+  # 插件 API 版本
+  api_version: "1.0"
+
+  # 插件沙箱
+  sandbox:
+    enabled: true
+    permissions:
+      - read_files
+      - write_logs
+
+# ============================================================
+# 实验性功能
+# ============================================================
+experimental:
+  # 功能开关
+  features:
+    # DAG 工作流
+    dag_workflows: false
+
+    # 向量搜索
+    vector_search: false
+
+    # AI 辅助代码审查
+    ai_code_review: false
+
+    # 自动任务拆分
+    auto_task_decomposition: false
+
+  # A/B 测试
+  ab_testing:
+    enabled: false
+    experiments: []
+
+# ============================================================
+# 调试配置
+# ============================================================
+debug:
+  # 调试模式
+  enabled: false
+
+  # 详细日志
+  verbose_logging: false
+
+  # 性能分析
+  profiling:
+    enabled: false
+    output: ".kallax/profiles"
+
+  # 请求追踪
+  request_tracing:
+    enabled: false
+    include_body: false
+
+  # Mock 模式 (开发用)
+  mock_mode:
+    enabled: false
+    mock_external_services: false
+
+# ============================================================
+# 迁移配置
+# ============================================================
+migrations:
+  # 自动迁移
+  auto_migrate: true
+
+  # 迁移目录
+  directory: ".kallax/migrations"
+
+  # 迁移表
+  table: "_migrations"
+
+  # 迁移超时
+  timeout: 60000
+
+# ============================================================
+# 备份配置
+# ============================================================
+backup:
+  enabled: false
+
+  # 备份目录
+  directory: ".kallax/backups"
+
+  # 备份计划
+  schedule: "0 2 * * *"          # 每天凌晨 2 点
+
+  # 保留数量
+  retention_count: 7
+
+  # 备份内容
+  include:
+    - ".kallax/data"
+    - ".kallax/state"
+    - ".kallax/config"
+
+  # 排除
+  exclude:
+    - ".kallax/logs"
+    - ".kallax/cache"
