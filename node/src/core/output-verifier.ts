@@ -167,33 +167,35 @@ export function createOutputVerifier(config: OutputVerifierConfig): OutputVerifi
       const result = await executeCommand(worktreePath, 'git', ['status', '--porcelain']);
 
       const hasChanges = result.stdout.trim().length > 0;
-      const evidence: VerificationEvidence = {
-        type: 'git',
-        description: hasChanges ? 'Git changes detected' : 'No git changes found',
-        data: {
-          status: result.stdout.trim().split('\n').filter((l) => l.length > 0),
-          hasChanges,
-        },
-        passed: hasChanges,
+      let effectivePassed = hasChanges;
+      let effectiveDesc = hasChanges ? 'Git changes detected' : 'No git changes found';
+      let effectiveData: Record<string, unknown> = {
+        status: result.stdout.trim().split('\n').filter((l) => l.length > 0),
+        hasChanges,
       };
 
       if (!hasChanges) {
-        // Check if there are committed changes not pushed
         const logResult = await executeCommand(worktreePath, 'git', [
           'log',
           '--oneline',
           'origin/main..HEAD',
         ]);
         const hasCommits = logResult.stdout.trim().length > 0;
-
-        evidence.data = {
-          ...evidence.data as Record<string, unknown>,
+        effectiveData = {
+          ...effectiveData,
           unpushedCommits: logResult.stdout.trim().split('\n').filter((l) => l.length > 0),
           hasUnpushedCommits: hasCommits,
         };
-        evidence.passed = hasCommits;
-        evidence.description = hasCommits ? 'Unpushed commits detected' : 'No changes or commits found';
+        effectivePassed = hasCommits;
+        effectiveDesc = hasCommits ? 'Unpushed commits detected' : 'No changes or commits found';
       }
+
+      const evidence: VerificationEvidence = {
+        type: 'git',
+        description: effectiveDesc,
+        data: effectiveData,
+        passed: effectivePassed,
+      };
 
       return ok(evidence);
     },

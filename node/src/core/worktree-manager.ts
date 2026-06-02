@@ -187,22 +187,22 @@ export function createWorktreeManager(config: WorktreeConfig): KallaxResult<Work
 
       const worktrees: Worktree[] = [];
       const lines = result.value.split('\n');
-      let current: Partial<Worktree> = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let current: Record<string, any> = {};
 
       for (const line of lines) {
         if (line.startsWith('worktree ')) {
-          current.path = line.slice(9);
+          current['path'] = line.slice(9);
         } else if (line.startsWith('HEAD ')) {
-          current.commit = line.slice(5);
+          current['commit'] = line.slice(5);
         } else if (line.startsWith('branch ')) {
-          current.branch = line.slice(7).replace('refs/heads/', '');
-          // Extract taskId from branch name if it's a kallax branch
-          if (current.branch?.startsWith('kallax/')) {
-            current.taskId = current.branch.replace('kallax/', '');
+          current['branch'] = line.slice(7).replace('refs/heads/', '');
+          if (current['branch']?.startsWith('kallax/')) {
+            current['taskId'] = current['branch']!.replace('kallax/', '');
           }
         } else if (line === '') {
           // End of entry
-          if (current.path !== undefined && current.branch !== undefined && current.commit !== undefined) {
+          if (current['path'] !== undefined && current['branch'] !== undefined && current['commit'] !== undefined) {
             worktrees.push(current as Worktree);
           }
           current = {};

@@ -4,7 +4,7 @@
  */
 
 import * as os from 'node:os';
-import { ok } from 'neverthrow';
+import { err, ok } from 'neverthrow';
 import type { KallaxResult, Instance, InstanceRole, InstanceStatus } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import { createCache, type Cache } from './cache-layer.js';
@@ -50,9 +50,9 @@ export function createInstanceRegistry(db: SQLiteManager): InstanceRegistry {
         capabilities,
       };
 
-      const result = db.registerInstance(instance);
-      if (result.isErr()) {
-        return result;
+      const regResult = db.registerInstance(instance);
+      if (regResult.isErr()) {
+        return err(regResult.error);
       }
 
       instanceCache.set(instance.id, instance);
