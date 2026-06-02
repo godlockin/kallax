@@ -1,0 +1,29 @@
+name: PR Body Check
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+jobs:
+  check-body:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate PR body
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          issues=""
+          if ! echo "$PR_BODY" | grep -qiE '(test|PASS|pass|✓|coverage)'; then
+            issues="$issues\n- Missing test evidence"
+          fi
+          if ! echo "$PR_BODY" | grep -qiE '(TASK|TICKET|task|ticket)-\d+'; then
+            issues="$issues\n- Missing ticket reference"
+          fi
+          BODY_LENGTH=$(echo "$PR_BODY" | wc -c)
+          if [ "$BODY_LENGTH" -lt 50 ]; then
+            issues="$issues\n- PR body too short (<50 chars)"
+          fi
+          if [ -n "$issues" ]; then
+            echo "::error::PR body validation failed:$issues"
+            exit 1
+          fi
+          echo "PR body validation passed"

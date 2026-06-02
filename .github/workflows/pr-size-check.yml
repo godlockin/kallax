@@ -1,0 +1,22 @@
+name: PR Size Check
+on:
+  pull_request:
+    types: [opened, synchronize]
+jobs:
+  check-size:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check PR size
+        env:
+          ADDITIONS: ${{ github.event.pull_request.additions }}
+          DELETIONS: ${{ github.event.pull_request.deletions }}
+        run: |
+          TOTAL=$((ADDITIONS + DELETIONS))
+          if [ "$TOTAL" -gt 2000 ]; then
+            echo "::error::PR too large (${TOTAL} lines). Max 2000."
+            exit 1
+          elif [ "$TOTAL" -gt 1000 ]; then
+            echo "::warning::Large PR (${TOTAL} lines). Consider splitting."
+          fi
+          echo "PR size check passed (+${ADDITIONS} -${DELETIONS})"

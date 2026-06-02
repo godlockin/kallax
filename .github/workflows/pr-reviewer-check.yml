@@ -1,0 +1,20 @@
+name: PR Reviewer Check
+on:
+  pull_request_review:
+    types: [submitted]
+jobs:
+  check-reviewer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prevent self-review
+        env:
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          REVIEWER: ${{ github.event.review.user.login }}
+          REVIEW_STATE: ${{ github.event.review.state }}
+        run: |
+          if [ "$PR_AUTHOR" = "$REVIEWER" ] && [ "$REVIEW_STATE" = "approved" ]; then
+            echo "::error::Self-approval detected!"
+            echo "Performer cannot self-review."
+            exit 1
+          fi
+          echo "Reviewer check passed"
