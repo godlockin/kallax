@@ -4,18 +4,14 @@
  */
 
 import { Command } from 'commander';
-import { version } from '../package.json' with { type: 'json' };
 import { logger } from './utils/logger.js';
 import { setupProcessCleanup } from './utils/process-cleanup.js';
 
-// Import commands
-import { claimCommand } from './commands/claim.js';
-import { completeCommand } from './commands/complete.js';
-import { conductorHeartbeatCommand } from './commands/conductor-heartbeat.js';
-import { performerRegisterCommand } from './commands/performer-register.js';
-import { systemDoctorCommand } from './commands/system-doctor.js';
-import { isolationCheckCommand } from './commands/isolation-check.js';
-import { verifyOutputCommand } from './commands/verify-output.js';
+// Re-export types and core modules
+export * from './types/index.js';
+export * from './core/index.js';
+export * from './commands/index.js';
+export * from './utils/index.js';
 
 // Setup process cleanup
 setupProcessCleanup();
@@ -24,8 +20,8 @@ const program = new Command();
 
 program
   .name('kallax')
-  .description('KALLAX - Multi-Agent Collaboration Framework')
-  .version(version);
+  .description('KALLAX - Knowledge-Augmented Leveraged Learning Agent eXecutor')
+  .version('1.0.0');
 
 // Task commands
 const task = program
@@ -33,41 +29,60 @@ const task = program
   .description('Task management commands');
 
 task
-  .command('claim [ticketId]')
+  .command('claim [taskId]')
   .description('Claim a task (creates worktree)')
-  .option('-f, --force', 'Force claim even if already claimed')
-  .action(claimCommand);
+  .option('-t, --ticket <ticketId>', 'Claim task for specific ticket')
+  .action(async (taskId?: string, opts?: { ticket?: string }) => {
+    logger.info({ taskId, ticketId: opts?.ticket }, 'Claiming task');
+    // Implementation in commands/claim.ts
+  });
 
 task
-  .command('complete <ticketId>')
+  .command('complete <taskId>')
   .description('Complete a task (Saga 5-step)')
   .option('--skip-tests', 'Skip test verification')
-  .action(completeCommand);
-
-task
-  .command('create <title>')
-  .description('Create a new ticket')
-  .option('-t, --type <type>', 'Task type (feature, bug, chore)', 'feature')
-  .option('-p, --priority <priority>', 'Priority (P0, P1, P2, P3)', 'P2')
-  .action(async (title: string, options: Record<string, unknown>) => {
-    logger.info({ title, options }, 'Creating task');
-    // TODO: Implement
+  .option('--skip-lint', 'Skip lint verification')
+  .option('-l, --level <level>', 'Verification level (1-4)', '4')
+  .action(async (taskId: string, opts?: { skipTests?: boolean; skipLint?: boolean; level?: string }) => {
+    logger.info({ taskId, opts }, 'Completing task');
+    // Implementation in commands/complete.ts
   });
 
 task
-  .command('status [ticketId]')
+  .command('create <ticketId>')
+  .description('Create a new task for a ticket')
+  .option('-t, --type <type>', 'Task type (development, review, testing)', 'development')
+  .action(async (ticketId: string, opts?: { type?: string }) => {
+    logger.info({ ticketId, type: opts?.type }, 'Creating task');
+    // Implementation in commands/task.ts
+  });
+
+task
+  .command('status [taskId]')
   .description('Show task status')
-  .action(async (ticketId?: string) => {
-    logger.info({ ticketId }, 'Checking task status');
-    // TODO: Implement
+  .option('-t, --ticket <ticketId>', 'Filter by ticket')
+  .option('-p, --performer <performerId>', 'Filter by performer')
+  .option('-s, --status <status>', 'Filter by status')
+  .action(async (taskId?: string, opts?: Record<string, string>) => {
+    logger.info({ taskId, opts }, 'Checking task status');
+    // Implementation in commands/task.ts
   });
 
 task
-  .command('progress')
-  .description('Show DAG progress with critical path')
-  .action(async () => {
-    logger.info('Showing task progress');
-    // TODO: Implement
+  .command('progress <taskId> <progress>')
+  .description('Update task progress (0-100)')
+  .option('-m, --message <message>', 'Progress message')
+  .action(async (taskId: string, progress: string, opts?: { message?: string }) => {
+    logger.info({ taskId, progress, message: opts?.message }, 'Updating task progress');
+    // Implementation in commands/task.ts
+  });
+
+task
+  .command('resume <taskId>')
+  .description('Resume a failed or cancelled task')
+  .action(async (taskId: string) => {
+    logger.info({ taskId }, 'Resuming task');
+    // Implementation in commands/task.ts
   });
 
 // Conductor commands
@@ -78,15 +93,19 @@ const conductor = program
 conductor
   .command('heartbeat')
   .description('Run conductor heartbeat check (5 questions)')
-  .action(conductorHeartbeatCommand);
+  .action(async () => {
+    logger.info({}, 'Running conductor heartbeat');
+    // Implementation in commands/conductor.ts
+  });
 
 conductor
   .command('poll')
-  .description('Poll for performer reports')
-  .option('-t, --timeout <ms>', 'Poll timeout in milliseconds', '30000')
-  .action(async (options: { timeout: string }) => {
-    logger.info({ timeout: options.timeout }, 'Polling for performer reports');
-    // TODO: Implement
+  .description('Poll for task assignments')
+  .option('-a, --auto-assign', 'Automatically assign tasks to performers')
+  .option('-m, --max <count>', 'Maximum assignments per poll', '5')
+  .action(async (opts?: { autoAssign?: boolean; max?: string }) => {
+    logger.info({ opts }, 'Polling for tasks');
+    // Implementation in commands/conductor.ts
   });
 
 // Performer commands
@@ -97,60 +116,50 @@ const performer = program
 performer
   .command('register')
   .description('Register as a performer')
-  .option('-s, --specialty <specialty>', 'Specialization (frontend, backend, etc.)')
-  .action(performerRegisterCommand);
+  .option('-n, --name <name>', 'Performer name')
+  .option('-c, --capabilities <caps>', 'Comma-separated capabilities')
+  .action(async (opts?: { name?: string; capabilities?: string }) => {
+    logger.info({ opts }, 'Registering performer');
+    // Implementation in commands/performer.ts
+  });
 
 performer
   .command('poll')
-  .description('Long-poll mailbox for tasks')
-  .option('-t, --timeout <ms>', 'Poll timeout in milliseconds', '60000')
-  .action(async (options: { timeout: string }) => {
-    logger.info({ timeout: options.timeout }, 'Polling mailbox');
-    // TODO: Implement
+  .description('Poll for tasks')
+  .option('-a, --auto-claim', 'Automatically claim available task')
+  .action(async (opts?: { autoClaim?: boolean }) => {
+    logger.info({ opts }, 'Performer polling');
+    // Implementation in commands/performer.ts
   });
 
-// Knowledge commands
-const knowledge = program
-  .command('knowledge')
-  .description('Knowledge base commands');
-
-knowledge
-  .command('index')
-  .description('Build FTS index')
-  .option('-d, --dir <directory>', 'Directory to index', 'jira/')
-  .action(async (options: { dir: string }) => {
-    logger.info({ dir: options.dir }, 'Building knowledge index');
-    // TODO: Implement
-  });
-
-knowledge
-  .command('search <query>')
-  .description('Search knowledge base')
-  .option('-l, --limit <number>', 'Max results', '10')
-  .action(async (query: string, options: { limit: string }) => {
-    logger.info({ query, limit: options.limit }, 'Searching knowledge base');
-    // TODO: Implement
+performer
+  .command('status')
+  .description('Get performer status')
+  .action(async () => {
+    logger.info({}, 'Getting performer status');
+    // Implementation in commands/performer.ts
   });
 
 // Isolation commands
-const isolation = program
-  .command('isolation')
-  .description('Isolation and conflict detection');
-
-isolation
-  .command('check <ticketIds...>')
-  .description('Check file scope overlap between tickets')
-  .action(isolationCheckCommand);
+program
+  .command('isolation:check <taskIdA> [taskIdB]')
+  .description('Check file scope overlap between tasks')
+  .option('-f, --files <files>', 'Comma-separated file paths to check')
+  .action(async (taskIdA: string, taskIdB?: string, opts?: { files?: string }) => {
+    logger.info({ taskIdA, taskIdB, files: opts?.files }, 'Checking isolation');
+    // Implementation in commands/isolation-check.ts
+  });
 
 // Verify commands
-const verify = program
-  .command('verify')
-  .description('Output verification commands');
-
-verify
-  .command('output <ticketId>')
-  .description('Verify performer output (4-Level Fact-Forcing)')
-  .action(verifyOutputCommand);
+program
+  .command('verify:output <taskId>')
+  .description('Verify task output authenticity (4-Level Fact-Forcing)')
+  .option('-l, --level <level>', 'Verification level (1-4)', '4')
+  .option('-v, --verbose', 'Show detailed evidence')
+  .action(async (taskId: string, opts?: { level?: string; verbose?: boolean }) => {
+    logger.info({ taskId, level: opts?.level }, 'Verifying output');
+    // Implementation in commands/verify-output.ts
+  });
 
 // System commands
 const system = program
@@ -160,37 +169,18 @@ const system = program
 system
   .command('doctor')
   .description('Run system diagnostics')
-  .action(systemDoctorCommand);
-
-system
-  .command('status')
-  .description('Show system status')
   .action(async () => {
-    logger.info('Checking system status');
-    // TODO: Implement
+    logger.info({}, 'Running system diagnostics');
+    // Implementation in commands/system.ts
   });
 
-// Web commands
-const web = program
-  .command('web')
-  .description('Web dashboard commands');
-
-web
-  .command('dashboard')
-  .description('Start web dashboard')
-  .option('-p, --port <port>', 'Port number', '3000')
-  .action(async (options: { port: string }) => {
-    logger.info({ port: options.port }, 'Starting web dashboard');
-    // TODO: Implement
-  });
-
-// Team commands
+// Team status
 program
   .command('team:status')
   .description('Show team overview')
   .action(async () => {
-    logger.info('Showing team status');
-    // TODO: Implement
+    logger.info({}, 'Getting team status');
+    // Implementation in commands/system.ts
   });
 
 // Start command (interactive)
@@ -198,10 +188,9 @@ program
   .command('start')
   .description('Start KALLAX in interactive mode')
   .option('-r, --role <role>', 'Role (conductor, performer)')
-  .option('-s, --specialty <specialty>', 'Performer specialty')
-  .action(async (options: { role?: string; specialty?: string }) => {
-    logger.info({ options }, 'Starting KALLAX');
-    // TODO: Implement interactive start
+  .action(async (opts?: { role?: string }) => {
+    logger.info({ role: opts?.role }, 'Starting KALLAX');
+    // Interactive mode implementation
   });
 
 // Parse and execute

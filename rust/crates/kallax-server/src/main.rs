@@ -222,7 +222,7 @@ async fn get_stats(State(state): State<AppState>) -> Json<StatsResponse> {
 
 async fn list_tickets(
     State(state): State<AppState>,
-) -> std::result::Result<Json<Vec<TicketResponse>>, KallaxError> {
+) -> std::result::Result<Json<Vec<TicketResponse>>, AppError> {
     let tickets = state.engine.list_tickets(None);
     let response: Vec<TicketResponse> = tickets.iter().map(TicketResponse::from).collect();
     Ok(Json(response))
@@ -231,7 +231,7 @@ async fn list_tickets(
 async fn create_ticket(
     State(state): State<AppState>,
     Json(payload): Json<CreateTicketRequest>,
-) -> std::result::Result<(StatusCode, Json<TicketResponse>), KallaxError> {
+) -> std::result::Result<(StatusCode, Json<TicketResponse>), AppError> {
     let mut ticket = Ticket::new(payload.title, payload.description);
 
     if let Some(priority_str) = payload.priority {
@@ -261,7 +261,7 @@ async fn create_ticket(
 async fn get_ticket(
     State(state): State<AppState>,
     Path(ticket_id): Path<String>,
-) -> std::result::Result<Json<TicketResponse>, KallaxError> {
+) -> std::result::Result<Json<TicketResponse>, AppError> {
     let ticket = state.engine.get_ticket(&ticket_id)?;
     Ok(Json(TicketResponse::from(&ticket)))
 }
@@ -270,7 +270,7 @@ async fn claim_ticket(
     State(state): State<AppState>,
     Path(ticket_id): Path<String>,
     Json(payload): Json<ClaimTicketRequest>,
-) -> std::result::Result<Json<TicketResponse>, KallaxError> {
+) -> std::result::Result<Json<TicketResponse>, AppError> {
     let performer_id = PerformerId::from_str(payload.performer_id);
     state.engine.claim_ticket(&ticket_id, &performer_id)?;
 
@@ -281,7 +281,7 @@ async fn claim_ticket(
 async fn complete_ticket(
     State(state): State<AppState>,
     Path(ticket_id): Path<String>,
-) -> std::result::Result<Json<TicketResponse>, KallaxError> {
+) -> std::result::Result<Json<TicketResponse>, AppError> {
     state.engine.complete_ticket(&ticket_id)?;
 
     let ticket = state.engine.get_ticket(&ticket_id)?;
@@ -290,7 +290,7 @@ async fn complete_ticket(
 
 async fn list_performers(
     State(state): State<AppState>,
-) -> std::result::Result<Json<Vec<PerformerResponse>>, KallaxError> {
+) -> std::result::Result<Json<Vec<PerformerResponse>>, AppError> {
     let performers = state.pool.list();
     let response: Vec<PerformerResponse> = performers.iter().map(PerformerResponse::from).collect();
     Ok(Json(response))
@@ -299,7 +299,7 @@ async fn list_performers(
 async fn register_performer(
     State(state): State<AppState>,
     Json(payload): Json<RegisterPerformerRequest>,
-) -> std::result::Result<(StatusCode, Json<PerformerResponse>), KallaxError> {
+) -> std::result::Result<(StatusCode, Json<PerformerResponse>), AppError> {
     let mut performer = Performer::new(payload.name);
 
     if let Some(capabilities) = payload.capabilities {
@@ -318,7 +318,7 @@ async fn register_performer(
 async fn performer_heartbeat(
     State(state): State<AppState>,
     Path(performer_id): Path<String>,
-) -> std::result::Result<Json<serde_json::Value>, KallaxError> {
+) -> std::result::Result<Json<serde_json::Value>, AppError> {
     state.pool.heartbeat(&performer_id)?;
     state.engine.heartbeat(&performer_id)?;
 

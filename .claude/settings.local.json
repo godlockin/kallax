@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(rtk du *)",
-      "Bash(git init *)"
+      "Bash(git init *)",
+      "Bash(rtk tree *)"
     ]
   }
 }

@@ -1,0 +1,23 @@
+# Prometheus Configuration for KALLAX
+# Used by docker-compose monitoring profile
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # KALLAX API metrics
+  - job_name: 'kallax'
+    static_configs:
+      - targets: ['kallax:9877']
+    metrics_path: '/metrics'
+
+  # Redis metrics (if using redis-exporter)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
