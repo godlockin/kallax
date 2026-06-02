@@ -17,14 +17,14 @@ use axum::{
     routing::{get, post, put},
     Json, Router,
 };
-use kallax_core::{KallaxError, Performer, PerformerId, Priority, Result, Ticket, TicketStatus};
+use kallax_core::{KallaxError, Performer, PerformerId, Priority, Ticket};
 use kallax_engine::{AgentPool, EventBus, TicketEngine};
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
-use tracing::{error, info};
+use tracing::info;
 use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -35,6 +35,18 @@ use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 struct AppState {
     engine: Arc<TicketEngine>,
     pool: Arc<AgentPool>,
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Error wrapper for orphan rules
+// ─────────────────────────────────────────────────────────────────────────────
+
+struct AppError(KallaxError);
+
+impl From<KallaxError> for AppError {
+    fn from(e: KallaxError) -> Self {
+        AppError(e)
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -157,9 +169,9 @@ struct PerformerStats {
 // Error Handling
 // ─────────────────────────────────────────────────────────────────────────────
 
-impl IntoResponse for KallaxError {
+impl IntoResponse for AppError {
     fn into_response(self) -> axum::response::Response {
-        let (status, error_type) = match &self {
+        let (status, error_type) = match &self.0 {
             KallaxError::NotFound { .. } => (StatusCode::NOT_FOUND, "not_found"),
             KallaxError::AlreadyExists { .. } => (StatusCode::CONFLICT, "already_exists"),
             KallaxError::InvalidState { .. } => (StatusCode::BAD_REQUEST, "invalid_state"),
@@ -170,7 +182,7 @@ impl IntoResponse for KallaxError {
 
         let body = Json(ErrorResponse {
             error: error_type.to_string(),
-            message: self.to_string(),
+            message: self.0.to_string(),
         });
 
         (status, body).into_response()
