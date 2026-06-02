@@ -1,19 +1,19 @@
 /**
  * KALLAX Complete Command
- * Saga-based 5-step task completion
+ * Saga-based 5-step task completion with real git/PR operations
  */
 
 import { err, ok } from 'neverthrow';
 import type { KallaxResult } from '../types/index.js';
-import { KallaxError, KallaxErrorCode } from '../types/index.js';
+import { KallaxError, KallaxErrorCode, VerificationLevel } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import type { SQLiteManager } from '../core/sqlite-manager.js';
 import type { WorktreeManager } from '../core/worktree-manager.js';
 import type { OutputVerifier } from '../core/output-verifier.js';
 import type { InstanceRegistry } from '../core/instance-registry.js';
 import type { TaskAssigner } from '../core/task-assigner.js';
+import type { GitService } from '../core/git-service.js';
 import { createSagaExecutor, type TaskCompletionState } from '../core/saga-executor.js';
-import { VerificationLevel } from '../types/index.js';
 
 export interface CompleteCommandOptions {
   readonly taskId: string;
@@ -36,60 +36,54 @@ export async function executeCompleteCommand(
   outputVerifier: OutputVerifier,
   instanceRegistry: InstanceRegistry,
   taskAssigner: TaskAssigner,
-  options: CompleteCommandOptions
+  gitService: GitService,
+  options: CompleteCommandOptions,
 ): Promise<KallaxResult<CompleteResult>> {
-  const { taskId, skipTests = false, skipLint = false, verificationLevel = VerificationLevel.L4_DATA_FLOW } = options;
+  const {
+    taskId,
+    skipTests = false,
+    skipLint = false,
+    verificationLevel = VerificationLevel.L4_DATA_FLOW,
+  } = options;
 
   logger.info({ taskId, verificationLevel }, 'starting task completion');
 
   // Get task
   const taskResult = db.getTask(taskId);
-  if (taskResult.isErr()) {
-    return err(taskResult.error);
-  }
+  if (taskResult.isErr()) return err(taskResult.error);
   if (taskResult.value === null) {
-    return err(
-      new KallaxError(KallaxErrorCode.TASK_NOT_FOUND, 'Task not found', { metadata: { taskId } })
-    );
+    return err(new KallaxError(KallaxErrorCode.TASK_NOT_FOUND, 'Task not found', { metadata: { taskId } }));
   }
-
   const task = taskResult.value;
 
   // Verify ownership
   const currentInstance = instanceRegistry.getCurrentInstance();
   if (currentInstance === null || task.performerId !== currentInstance.id) {
-    return err(
-      new KallaxError(KallaxErrorCode.PERMISSION_DENIED, 'Not the owner of this task', {
-        metadata: { taskPerformer: task.performerId, currentInstance: currentInstance?.id },
-      })
-    );
+    return err(new KallaxError(KallaxErrorCode.PERMISSION_DENIED, 'Not the owner of this task', {
+      metadata: { taskPerformer: task.performerId, currentInstance: currentInstance?.id },
+    }));
   }
 
   // Get ticket
   const ticketResult = db.getTicket(task.ticketId);
-  if (ticketResult.isErr()) {
-    return err(ticketResult.error);
-  }
+  if (ticketResult.isErr()) return err(ticketResult.error);
   if (ticketResult.value === null) {
-    return err(
-      new KallaxError(KallaxErrorCode.TICKET_NOT_FOUND, 'Ticket not found', { metadata: { ticketId: task.ticketId } })
-    );
+    return err(new KallaxError(KallaxErrorCode.TICKET_NOT_FOUND, 'Ticket not found', {
+      metadata: { ticketId: task.ticketId },
+    }));
   }
+  const ticket = ticketResult.value;
 
   // Get worktree
   const worktreeResult = await worktreeManager.getByTaskId(taskId);
-  if (worktreeResult.isErr()) {
-    return err(worktreeResult.error);
-  }
+  if (worktreeResult.isErr()) return err(worktreeResult.error);
   if (worktreeResult.value === null) {
-    return err(
-      new KallaxError(KallaxErrorCode.WORKTREE_NOT_FOUND, 'Worktree not found for task', { metadata: { taskId } })
-    );
+    return err(new KallaxError(KallaxErrorCode.WORKTREE_NOT_FOUND, 'Worktree not found for task', {
+      metadata: { taskId },
+    }));
   }
-
   const worktree = worktreeResult.value;
 
-  // Initialize saga state
   const initialState: TaskCompletionState = {
     taskId,
     ticketId: task.ticketId,
@@ -99,10 +93,13 @@ export async function executeCompleteCommand(
     lintPassed: false,
   };
 
-  // Create completion saga
-  const saga = createSagaExecutor<TaskCompletionState>({ name: 'task-completion', timeoutMs: 600000 });
+  const saga = createSagaExecutor<TaskCompletionState>({
+    name: 'task-completion',
+    timeoutMs: 600000, // 10 min
+  });
 
-  // Step 1: Run tests (unless skipped)
+  // ── Step 1: Run tests ──────────────────────────────────────────────────
+
   if (!skipTests) {
     saga.addStep({
       name: 'run-tests',
@@ -123,7 +120,8 @@ export async function executeCompleteCommand(
     });
   }
 
-  // Step 2: Run lint (unless skipped)
+  // ── Step 2: Run lint ───────────────────────────────────────────────────
+
   if (!skipLint) {
     saga.addStep({
       name: 'run-lint',
@@ -144,18 +142,24 @@ export async function executeCompleteCommand(
     });
   }
 
-  // Step 3: Verify output authenticity
+  // ── Step 3: Verify output ──────────────────────────────────────────────
+
   saga.addStep({
     name: 'verify-output',
     async execute(state) {
       logger.info({ taskId: state.taskId, level: verificationLevel }, 'verifying output');
-      const verifyResult = await outputVerifier.verify(state.taskId, state.worktreePath, verificationLevel);
+      const verifyResult = await outputVerifier.verify(
+        state.taskId, state.worktreePath, verificationLevel,
+      );
       if (verifyResult.isErr()) {
         throw new Error(`Output verification failed: ${verifyResult.error.message}`);
       }
       if (!verifyResult.value.passed) {
-        const failedEvidence = verifyResult.value.evidence.filter((e) => !e.passed);
-        throw new Error(`Output verification failed: ${failedEvidence.map((e) => e.description).join(', ')}`);
+        const failed = verifyResult.value.evidence
+          .filter((e) => !e.passed)
+          .map((e) => e.description)
+          .join(', ');
+        throw new Error(`Output verification failed: ${failed}`);
       }
       return state;
     },
@@ -164,62 +168,136 @@ export async function executeCompleteCommand(
     },
   });
 
-  // Step 4: Commit changes (placeholder - actual git operations)
+  // ── Step 4: Stage & commit ─────────────────────────────────────────────
+
   saga.addStep({
     name: 'commit-changes',
     async execute(state) {
-      logger.info({ taskId: state.taskId }, 'committing changes');
-      // In real implementation, this would run git commit
-      // For now, return mock commit hash
-      return { ...state, commitHash: `commit_${Date.now().toString(36)}` };
+      logger.info({ taskId: state.taskId, worktree: state.worktreePath }, 'committing changes');
+
+      // Stage all changes
+      const stageResult = await gitService.stageAll(state.worktreePath);
+      if (stageResult.isErr()) throw new Error(stageResult.error.message);
+
+      // Build commit message
+      const commitMsg = [
+        `feat: ${ticket.title}`,
+        '',
+        `Ticket: ${ticket.id}`,
+        `Task: ${state.taskId}`,
+      ].join('\n');
+
+      const commitResult = await gitService.commit(state.worktreePath, commitMsg);
+      if (commitResult.isErr()) throw new Error(commitResult.error.message);
+
+      const { hash } = commitResult.value;
+      logger.info({ taskId: state.taskId, hash }, 'changes committed');
+      return { ...state, commitHash: hash || undefined };
     },
     async compensate(state) {
-      if (state.commitHash !== undefined) {
+      if (state.commitHash !== undefined && state.commitHash !== '') {
         logger.info({ taskId: state.taskId, commitHash: state.commitHash }, 'reverting commit');
-        // In real implementation, this would run git reset
+        const resetResult = await gitService.resetSoft(state.worktreePath, 'HEAD~1');
+        if (resetResult.isErr()) {
+          logger.error(
+            { taskId: state.taskId, error: resetResult.error.message },
+            'compensation: failed to revert commit',
+          );
+        }
       }
     },
   });
 
-  // Step 5: Create/Update PR (placeholder)
+  // ── Step 5: Push & create PR ───────────────────────────────────────────
+
   saga.addStep({
     name: 'create-pr',
     async execute(state) {
-      logger.info({ taskId: state.taskId }, 'creating pull request');
-      // In real implementation, this would use gh CLI or GitHub API
-      // For now, return mock PR number
-      return { ...state, prNumber: Math.floor(Math.random() * 1000) };
+      logger.info({ taskId: state.taskId, branch: state.branchName }, 'pushing and creating PR');
+
+      // Push branch
+      const pushResult = await gitService.push(state.worktreePath, state.branchName);
+      if (pushResult.isErr()) throw new Error(pushResult.error.message);
+
+      // Create PR
+      const prTitle = `feat: ${ticket.title}`;
+      const prBody = [
+        `## Summary`,
+        `- Implements ticket ${ticket.id}`,
+        `- Task: ${state.taskId}`,
+        '',
+        `### Acceptance Criteria`,
+        ...ticket.acceptanceCriteria.map((ac) => `- [x] ${ac}`),
+        '',
+        `🤖 Generated with [KALLAX](https://github.com/kallax)`,
+      ].join('\n');
+
+      const prResult = await gitService.createPr(
+        state.worktreePath,
+        prTitle,
+        prBody,
+        'main',
+        state.branchName,
+      );
+      if (prResult.isErr()) throw new Error(prResult.error.message);
+
+      logger.info(
+        { taskId: state.taskId, prNumber: prResult.value.number, url: prResult.value.url },
+        'PR created',
+      );
+      return { ...state, prNumber: prResult.value.number };
     },
     async compensate(state) {
-      if (state.prNumber !== undefined) {
-        logger.info({ taskId: state.taskId, prNumber: state.prNumber }, 'closing pull request');
-        // In real implementation, this would close the PR
+      if (state.prNumber !== undefined && state.prNumber > 0) {
+        logger.info({ taskId: state.taskId, prNumber: state.prNumber }, 'closing PR');
+        const closeResult = await gitService.closePr(state.prNumber);
+        if (closeResult.isErr()) {
+          logger.error(
+            { taskId: state.taskId, error: closeResult.error.message },
+            'compensation: failed to close PR',
+          );
+        }
+      }
+      // Also delete remote branch
+      const deleteResult = await gitService.deleteRemoteBranch(
+        state.worktreePath,
+        state.branchName,
+      );
+      if (deleteResult.isErr()) {
+        logger.warn(
+          { taskId: state.taskId, error: deleteResult.error.message },
+          'compensation: failed to delete remote branch',
+        );
       }
     },
   });
 
-  // Execute saga
+  // ── Execute ────────────────────────────────────────────────────────────
+
   const sagaResult = await saga.execute(initialState);
 
   if (sagaResult.isErr()) {
-    // Saga failed and compensated
-    logger.error({ taskId, error: sagaResult.error.message }, 'task completion saga failed');
+    logger.error(
+      { taskId, error: sagaResult.error.message },
+      'task completion saga failed — all steps compensated',
+    );
     return err(sagaResult.error);
   }
 
   const finalState = sagaResult.value.finalState;
 
-  // Mark task as completed
-  const completeResult = await taskAssigner.completeTask(taskId, JSON.stringify({
-    commitHash: finalState.commitHash,
-    prNumber: finalState.prNumber,
-  }));
-
+  // Persist completion
+  const completeResult = await taskAssigner.completeTask(
+    taskId,
+    JSON.stringify({
+      commitHash: finalState.commitHash,
+      prNumber: finalState.prNumber,
+    }),
+  );
   if (completeResult.isErr()) {
     logger.warn({ taskId }, 'failed to mark task as completed in database');
   }
 
-  // Update instance status
   await instanceRegistry.updateStatus(currentInstance.id, 'idle');
 
   logger.info(
@@ -229,7 +307,7 @@ export async function executeCompleteCommand(
       prNumber: finalState.prNumber,
       completedSteps: sagaResult.value.completedSteps,
     },
-    'task completion successful'
+    'task completion successful',
   );
 
   return ok({

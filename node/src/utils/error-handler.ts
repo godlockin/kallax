@@ -119,8 +119,10 @@ export async function withRetry<T>(
     }
   }
 
-  const kallaxError = KallaxError.fromUnknown(lastError, errorCode);
-  kallaxError.metadata['attempts'] = maxAttempts;
+  const kallaxError = new KallaxError(errorCode, `Operation failed after ${maxAttempts} attempts`, {
+    cause: lastError,
+    metadata: { attempts: maxAttempts },
+  });
   logger.kallaxError(kallaxError);
   return err(kallaxError);
 }
