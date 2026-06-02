@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KALLAX Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="header">
+    <div class="header-left">
+      <h1 class="logo">⚡ KALLAX</h1>
+      <span class="version">v1.0.0</span>
+    </div>
+    <div class="header-right">
+      <div class="connection-status" id="connection-status">
+        <span class="status-dot"></span>
+        <span class="status-text" data-i18n="connecting">Connecting...</span>
+      </div>
+      <select id="lang-selector" class="lang-selector" aria-label="Language">
+        <option value="zh-CN">中文</option>
+        <option value="en-US">English</option>
+      </select>
+    </div>
+  </header>
+
+  <nav class="nav" aria-label="Main navigation">
+    <button class="nav-btn active" data-tab="overview" data-i18n="nav.overview">Overview</button>
+    <button class="nav-btn" data-tab="tasks" data-i18n="nav.tasks">Tasks</button>
+    <button class="nav-btn" data-tab="agents" data-i18n="nav.agents">Agents</button>
+    <button class="nav-btn" data-tab="system" data-i18n="nav.system">System</button>
+  </nav>
+
+  <main id="main-content">
+    <!-- Overview Tab -->
+    <section id="tab-overview" class="tab-content active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-tasks">0</div>
+          <div class="stat-label" data-i18n="stats.totalTasks">Total Tasks</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-agents">0</div>
+          <div class="stat-label" data-i18n="stats.activeAgents">Active Agents</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-completion">0%</div>
+          <div class="stat-label" data-i18n="stats.completionRate">Completion Rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-health">-</div>
+          <div class="stat-label" data-i18n="stats.systemHealth">System Health</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 data-i18n="overview.recentActivity">Recent Activity</h2>
+        <div id="activity-feed" class="activity-feed">
+          <p class="empty-state" data-i18n="overview.noActivity">No recent activity</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 data-i18n="overview.taskDistribution">Task Distribution</h2>
+        <div id="task-distribution" class="progress-bars">
+          <p class="empty-state" data-i18n="overview.noTaskData">No task data available</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tasks Tab -->
+    <section id="tab-tasks" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2 data-i18n="tasks.title">Task Board</h2>
+          <div class="task-filters">
+            <select id="task-status-filter" aria-label="Filter by status">
+              <option value="">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="claimed">Claimed</option>
+              <option value="running">Running</option>
+              <option value="completed">Completed</option>
+              <option value="failed">Failed</option>
+            </select>
+            <select id="task-type-filter" aria-label="Filter by type">
+              <option value="">All Types</option>
+              <option value="development">Development</option>
+              <option value="review">Review</option>
+              <option value="testing">Testing</option>
+              <option value="bugfix">Bug Fix</option>
+              <option value="refactor">Refactor</option>
+            </select>
+            <input type="text" id="task-search" placeholder="Search tasks..." aria-label="Search tasks">
+          </div>
+        </div>
+        <div id="task-list" class="task-list">
+          <p class="empty-state" data-i18n="tasks.noTasks">No tasks found</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Agents Tab -->
+    <section id="tab-agents" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2 data-i18n="agents.title">Agent Instances</h2>
+        </div>
+        <div id="agent-list" class="agent-list">
+          <p class="empty-state" data-i18n="agents.noAgents">No agents registered</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- System Tab -->
+    <section id="tab-system" class="tab-content">
+      <div class="card">
+        <h2 data-i18n="system.health">System Health</h2>
+        <div id="health-checks" class="health-checks">
+          <p class="empty-state" data-i18n="system.noData">No health data</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 data-i18n="system.circuitBreakers">Circuit Breakers</h2>
+        <div id="circuit-breakers" class="circuit-breakers">
+          <p class="empty-state" data-i18n="system.noCBData">No circuit breaker data</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 data-i18n="system.config">Configuration</h2>
+        <pre id="config-display" class="config-display">Loading...</pre>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>KALLAX v1.0.0 — Knowledge-Augmented Leveraged Learning Agent eXecutor</span>
+    <span id="last-update" class="last-update"></span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
