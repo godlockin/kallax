@@ -74,7 +74,7 @@ backlog → analysis → ready → gate_review → in_progress → test → pr_r
 ## File Scope 规则 (KALLAX 新增)
 
 ### 目的
-解决 KALLAX 的并行冲突问题，确保多个 Performer 不会同时修改同一文件。
+解决 并行冲突问题，确保多个 Performer 不会同时修改同一文件。
 
 ### 格式
 ```yaml

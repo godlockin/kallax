@@ -50,14 +50,6 @@
 - ❌ 在声明范围外修改文件
 - ❌ 后台模式声称完成（必须前台验证）
 
-## KALLAX vs KALLAX 命名对照
-
-| KALLAX | KALLAX | 说明 |
-|------|--------|------|
-| Master | Conductor | 指挥者，协调全局 |
-| Slaver | Performer | 执行者，完成任务 |
-| kallax | kallax | 品牌名 |
-
 ## 快速命令
 
 ```bash

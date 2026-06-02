@@ -1,6 +1,6 @@
 //! KALLAX Core - Types and abstractions for multi-agent orchestration
 //!
-//! # Design Principles (from KALLAX lessons)
+//! # Design Principles
 //! - **No unwrap/expect/panic** - All errors use Result
 //! - **Structured errors** - KallaxError with context
 //! - **Type safety** - No `any` equivalents

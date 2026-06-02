@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # KALLAX Forbidden Pattern Scanner
-# CI gate — catches KALLAX anti-patterns before they reach production.
+# CI gate — catches forbidden patterns before they reach production.
 # Fail-fast: crash at scan time, not at 2 AM.
 
 set -euo pipefail

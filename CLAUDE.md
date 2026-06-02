@@ -23,7 +23,7 @@
 
 ### 1. 并行隔离强制化 (KALLAX P0)
 
-**教训**: KALLAX 中多 Agent 并行修改同一文件导致冲突
+**教训**: 历史项目中多 Agent 并行修改同一文件导致冲突
 
 ```bash
 # ✅ KALLAX 强制要求
@@ -39,7 +39,7 @@ kallax isolation:check TASK-001 TASK-002  # 检测文件重叠
 
 ### 2. 错误处理严格化 (KALLAX P0)
 
-**教训**: KALLAX 中 28 处 `expect()` 在生产代码中导致 panic
+**教训**: 历史项目中 28 处 `expect()` 在生产代码中导致 panic
 
 ```rust
 // ❌ 禁止
@@ -57,7 +57,7 @@ let result = operation()
 
 ### 3. 产出验证机制 (KALLAX P0)
 
-**教训**: KALLAX background agent 报告"完成"但实际零产出
+**教训**: background agent 报告"完成"但实际零产出
 
 ```bash
 # Conductor 验证 Performer 产出真实性
@@ -75,7 +75,7 @@ kallax verify:output TASK-001
 
 ### 4. 资源管理规范化 (KALLAX P1)
 
-**教训**: KALLAX 缓存无 TTL 导致内存泄漏
+**教训**: 缓存无 TTL 导致内存泄漏
 
 ```typescript
 // ❌ 禁止
@@ -90,7 +90,7 @@ const cache = new LRUCache<string, Data>({
 
 ### 5. 类型安全强制化 (KALLAX P1)
 
-**教训**: KALLAX 46 处 `any` 类型，清理后发现 3 个运行时错误
+**教训**: 46 处 `any` 类型，清理后发现 3 个运行时错误
 
 ```typescript
 // ❌ 禁止

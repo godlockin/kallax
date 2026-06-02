@@ -1,12 +1,12 @@
 # Agent 防幻觉机制
 
-> KALLAX 核心模式 | 解决 KALLAX Agent 虚假报告问题
+> KALLAX 核心模式 | 解决 Agent 虚假报告问题
 
 ---
 
 ## 问题背景
 
-KALLAX 中 background agents 经常出现"幻觉"现象：
+历史项目中 background agents 经常出现"幻觉"现象：
 - 报告任务"完成"但实际无任何产出
 - 描述详细的修改内容但文件未变化
 - 声称测试通过但从未运行
@@ -260,5 +260,5 @@ export class OutputVerifier {
 
 ## 参考
 
-- [KALLAX 经验教训](./kallax-lessons-learned.md)
+- [架构经验教训](./architecture-lessons-learned.md)
 - [Gate Review 协议](../../template/docs/GATE-REVIEW-PROTOCOL.md)

@@ -56,12 +56,12 @@ export interface KallaxErrorContext {
   readonly cause?: unknown;
   readonly metadata?: Readonly<Record<string, unknown>>;
   readonly timestamp: number;
-  readonly stackTrace?: string;
+  readonly stackTrace?: string | undefined;
 }
 
 export class KallaxError extends Error {
   public readonly code: KallaxErrorCode;
-  public readonly cause?: unknown;
+  public override readonly cause?: unknown;
   public readonly metadata: Readonly<Record<string, unknown>>;
   public readonly timestamp: number;
 

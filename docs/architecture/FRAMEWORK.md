@@ -96,11 +96,11 @@ KALLAX 基于以下核心信念构建：
 | 操作 main 分支 | ✓ | ✗ |
 | 操作 feature 分支 | ✗ | ✓ |
 
-### 2.3 与 KALLAX 的对比
+### 2.3 架构对比
 
-| 问题 | KALLAX 方案 | KALLAX 教训 | KALLAX 改进 |
+| 问题 | 旧方案 | 设计原则 | KALLAX 改进 |
 |-----|----------|----------|------------|
-| 命名 | Master/Slaver | 敏感词汇 | Conductor/Performer |
+| 命名 | Master/Performer | 敏感词汇 | Conductor/Performer |
 | 并行隔离 | 可选 worktree | 文件冲突频发 | 强制 worktree + 文件范围 |
 | 验证机制 | 信任 Agent 报告 | 幻觉产出 | 4-Level Fact-Forcing |
 | 错误处理 | `expect()`/`panic!()` | 生产崩溃 | 强制 `Result<T, E>` |
@@ -189,10 +189,10 @@ degradation:
 
 ### 3.3 KALLAX 改进: 显式日志与指标
 
-KALLAX 教训: 降级静默发生，运维人员无法感知
+设计原则: 降级静默发生，运维人员无法感知
 
 ```typescript
-// ❌ KALLAX: 静默降级
+// ❌ 旧: 静默降级
 if (!redisAvailable) {
   queue = new FileQueue();  // 无日志
 }
@@ -404,7 +404,7 @@ scheduling:
 
 ### 6.1 问题背景
 
-KALLAX 教训: 多 Agent 并行修改同一文件导致:
+设计原则: 多 Agent 并行修改同一文件导致:
 - Git 合并冲突
 - 代码相互覆盖
 - 测试互相干扰
@@ -483,7 +483,7 @@ async function checkFileOverlap(
 
 ### 7.1 问题背景
 
-KALLAX 教训: Background Agent 报告"任务完成"但:
+设计原则: Background Agent 报告"任务完成"但:
 - 文件未创建
 - 代码为 stub
 - 测试未实际运行

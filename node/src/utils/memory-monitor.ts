@@ -29,7 +29,7 @@ interface MemoryMonitor {
   getStats: () => MemoryStats;
 }
 
-interface MemoryStats {
+export interface MemoryStats {
   readonly current: MemorySnapshot;
   readonly min: number;
   readonly max: number;

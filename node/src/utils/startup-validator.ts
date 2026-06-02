@@ -2,8 +2,7 @@
  * KALLAX Startup Validator
  * Fail-fast: validate all config at startup, not at 2 AM.
  *
- * KALLAX lesson: config errors at startup = minutes.
- * Same error in production = hours + customers + sleep lost.
+ * Config errors at startup = minutes. Same error in production = hours + downtime.
  */
 
 import * as fs from 'node:fs';

@@ -1,12 +1,12 @@
 # 并行隔离策略
 
-> KALLAX 核心模式 | 解决 KALLAX 并行冲突问题
+> KALLAX 核心模式 | 解决 并行冲突问题
 
 ---
 
 ## 问题背景
 
-KALLAX 中多个 Slaver 并行工作时经常发生：
+历史项目中多个 Performer 并行工作时经常发生：
 - 文件冲突（两个 Agent 同时修改同一文件）
 - 隐式依赖（Agent A 的修改影响 Agent B）
 - 合并困难（复杂的 3-way merge）
@@ -247,5 +247,5 @@ export class WorktreeManager {
 
 ## 参考
 
-- [KALLAX 经验教训](../research/kallax-lessons-learned.md)
+- [架构经验教训](../research/architecture-lessons-learned.md)
 - [Ticket Schema - File Scope](../../jira/schemas/ticket-schema.md#file-scope-规则-kallax-新增)

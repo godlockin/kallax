@@ -108,7 +108,7 @@ task
     try {
       const result = await executeClaimCommand(
         ctx.db, ctx.worktreeManager, ctx.instanceRegistry, ctx.taskAssigner,
-        { taskId, ticketId: opts?.ticket },
+        { taskId, ticketId: opts?.['ticket'] },
       );
       if (result.isErr()) {
         logger.kallaxError(result.error);
@@ -134,9 +134,9 @@ task
         ctx.instanceRegistry, ctx.taskAssigner, ctx.gitService,
         {
           taskId,
-          skipTests: opts?.skipTests,
-          skipLint: opts?.skipLint,
-          verificationLevel: (parseInt(opts?.level ?? '4', 10) as 1 | 2 | 3 | 4),
+          skipTests: opts?.['skipTests'],
+          skipLint: opts?.['skipLint'],
+          verificationLevel: (parseInt(opts?.['level'] ?? '4', 10) as 1 | 2 | 3 | 4),
         },
       );
       if (result.isErr()) {
@@ -161,7 +161,7 @@ task
     try {
       const result = executeTaskCreate(ctx.db, ctx.taskAssigner, {
         ticketId,
-        type: opts?.type as TaskType | undefined,
+        type: opts?.['type'] as TaskType | undefined,
       });
       if (result.isErr()) {
         logger.kallaxError(result.error);
@@ -184,9 +184,9 @@ task
     try {
       const result = executeTaskStatus(ctx.db, {
         taskId,
-        ticketId: opts?.ticket,
-        performerId: opts?.performer,
-        statusFilter: opts?.status as TaskStatus | undefined,
+        ticketId: opts?.['ticket'],
+        performerId: opts?.['performer'],
+        statusFilter: opts?.['status'] as TaskStatus | undefined,
       });
       if (result.isErr()) {
         logger.kallaxError(result.error);
@@ -208,7 +208,7 @@ task
       const result = executeTaskProgress(ctx.db, {
         taskId,
         progress: parseInt(progress, 10),
-        message: opts?.message,
+        message: opts?.['message'],
       });
       if (result.isErr()) {
         logger.kallaxError(result.error);
@@ -276,10 +276,10 @@ conductor
   .action(async (opts?: { autoAssign?: boolean; max?: string }) => {
     try {
       const result = await executeConductorPoll(
-        ctx.db, ctx.taskAssigner, ctx.instanceRegistry, ctx.isolationChecker,
+        ctx.db, ctx.instanceRegistry, ctx.taskAssigner, ctx.isolationChecker,
         {
-          autoAssign: opts?.autoAssign,
-          maxAssignments: parseInt(opts?.max ?? '5', 10),
+          autoAssign: opts?.['autoAssign'],
+          maxAssignments: parseInt(opts?.['max'] ?? '5', 10),
         },
       );
       if (result.isErr()) {
@@ -304,9 +304,9 @@ performer
   .option('-c, --capabilities <caps>', 'Comma-separated capabilities')
   .action(async (opts?: { name?: string; capabilities?: string }) => {
     try {
-      const caps = opts?.capabilities?.split(',').map((c) => c.trim()) ?? [];
+      const caps = opts?.['capabilities']?.split(',').map((c) => c.trim()) ?? [];
       const result = await executePerformerRegister(ctx.instanceRegistry, {
-        name: opts?.name,
+        name: opts?.['name'],
         capabilities: caps,
       });
       if (result.isErr()) {
@@ -331,7 +331,7 @@ performer
     try {
       const result = await executePerformerPoll(
         ctx.db, ctx.instanceRegistry, ctx.taskAssigner, ctx.worktreeManager,
-        { autoClaim: opts?.autoClaim },
+        { autoClaim: opts?.['autoClaim'] },
       );
       if (result.isErr()) {
         logger.kallaxError(result.error);
@@ -369,7 +369,7 @@ program
   .option('-f, --files <files>', 'Comma-separated file paths')
   .action(async (taskIdA: string, taskIdB?: string, opts?: { files?: string }) => {
     try {
-      const files = opts?.files?.split(',').map((f) => f.trim()) ?? [];
+      const files = opts?.['files']?.split(',').map((f) => f.trim()) ?? [];
       const result = executeIsolationCheck(ctx.isolationChecker, ctx.db, {
         taskIdA,
         taskIdB,
@@ -401,10 +401,10 @@ program
   .option('-v, --verbose', 'Show detailed evidence')
   .action(async (taskId: string, opts?: { level?: string; verbose?: boolean }) => {
     try {
-      const level = (parseInt(opts?.level ?? '4', 10) as 1 | 2 | 3 | 4);
+      const level = (parseInt(opts?.['level'] ?? '4', 10) as 1 | 2 | 3 | 4);
       const result = await executeVerifyOutput(
         ctx.db, ctx.worktreeManager, ctx.outputVerifier,
-        { taskId, level, verbose: opts?.verbose },
+        { taskId, level, verbose: opts?.['verbose'] },
       );
       if (result.isErr()) {
         logger.kallaxError(result.error);
@@ -479,7 +479,7 @@ program
     try {
       const roleSelector = createRoleSelector();
 
-      if (opts?.role) {
+      if (opts?.['role']) {
         const setResult = await roleSelector.setRole(process.cwd(), opts.role as 'conductor' | 'performer');
         if (setResult.isErr()) {
           logger.kallaxError(setResult.error);

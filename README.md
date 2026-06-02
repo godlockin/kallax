@@ -22,19 +22,19 @@ KALLAX 是一个**生产级多智能体协作框架**，专为 AI 驱动的软�
 
 ---
 
-## 与 KALLAX 的区别
+## 核心设计
 
-KALLAX 基于 KALLAX 的经验教训进行了关键重构：
+KALLAX 基于多 Agent 协作的最佳实践：
 
-| 问题领域 | KALLAX 教训 | KALLAX 改进 |
-|---------|----------|------------|
-| **并行隔离** | worktree 冲突 | 强制 git worktree + 文件范围预划分 |
+| 问题领域 | 旧模式风险 | KALLAX 方案 |
+|---------|-----------|------------|
+| **并行隔离** | 多 Agent 文件冲突 | 强制 git worktree + 文件范围预划分 |
 | **错误处理** | `expect()`/`panic!()` | 生产代码禁用，强制 `Result<T, E>` |
 | **Agent 验证** | background 模式幻觉 | foreground 强制 + Conductor 核查 |
 | **资源管理** | 无 TTL 内存泄漏 | 所有缓存/连接必配 TTL |
-| **类型安全** | 46 处 `any` 类型 | CI 禁用 `any`/`@ts-ignore` |
-| **测试质量** | 内联复制 82 个测试 | mutation testing 验证 |
-| **命名** | Master/Slaver | Conductor/Performer (避免敏感词) |
+| **类型安全** | `any` 类型泛滥 | CI 禁用 `any`/`@ts-ignore` |
+| **测试质量** | 内联复制测试 | mutation testing 验证 |
+| **命名** | 敏感术语 | Conductor/Performer |
 
 ---
 

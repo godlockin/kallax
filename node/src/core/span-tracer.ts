@@ -3,8 +3,7 @@
  * Structured observability — events > console.log.
  * Every critical path records a Span for querying, aggregation, and alerting.
  *
- * KALLAX lesson: console.log is un-queryable in production.
- * KALLAX fix: structured spans persisted to SQLite, broadcast via SSE.
+ * console.log is un-queryable in production — use structured spans instead.
  */
 
 import { logger } from '../utils/logger.js';
@@ -13,7 +12,7 @@ import type { SQLiteManager } from './sqlite-manager.js';
 export interface SpanContext {
   readonly traceId: string;
   readonly spanId: string;
-  readonly parentSpanId?: string;
+  readonly parentSpanId?: string | undefined;
 }
 
 export interface SpanData {

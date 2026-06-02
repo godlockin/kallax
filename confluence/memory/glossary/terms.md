@@ -16,7 +16,7 @@
 - 提交 PR
 - 处理 Review 反馈
 
-**对应 KALLAX**: Slaver
+**旧称**: Performer
 
 ### Ticket (票据)
 工作单元的规范化描述，存储在 `jira/tickets/` 目录。
@@ -39,7 +39,7 @@
 ### Worktree (工作树)
 Git worktree，用于隔离并行 Performer 的工作空间。
 
-KALLAX 强制要求每个 Performer 在独立 worktree 中工作，解决 KALLAX 的并行冲突问题。
+KALLAX 强制要求每个 Performer 在独立 worktree 中工作，解决 并行冲突问题。
 
 ### File Scope (文件范围)
 Ticket 中声明的文件修改范围，用于：
@@ -195,12 +195,12 @@ KALLAX 的产出验证协议，包含 4 个验证级别:
 ### DLQ (Dead Letter Queue)
 死信队列，存储处理失败的消息，用于后续手动处理或重试。
 
-## 改进术语 (KALLAX vs KALLAX)
+## 术语对照
 
-| KALLAX 术语 | KALLAX 术语 | 改进说明 |
+| 旧术语 | KALLAX 术语 | 改进说明 |
 |----------|------------|---------|
 | Master | Conductor | 避免敏感词，更准确表达协调角色 |
-| Slaver | Performer | 避免敏感词，强调执行能力 |
+| Performer | Performer | 避免敏感词，强调执行能力 |
 | kallax | kallax | 新品牌 |
 | expect/unwrap | Result | 错误处理改进 |
 | any 类型 | unknown + 类型守卫 | 类型安全改进 |

@@ -3,7 +3,7 @@
  * Centralized error handling - empty catch blocks PROHIBITED
  */
 
-import { Result, ok, err } from 'neverthrow';
+import { ok, err } from 'neverthrow';
 import { KallaxError, KallaxErrorCode, type KallaxResult } from '../types/index.js';
 import { logger } from './logger.js';
 

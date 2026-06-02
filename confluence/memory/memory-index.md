@@ -17,7 +17,7 @@
 - [降级策略模式](patterns/degradation-strategy.md) - 三级架构降级
 
 ### 🔬 研究 (Research)
-- [KALLAX 经验教训](research/kallax-lessons-learned.md) - 问题分析与改进
+- [架构经验教训](research/architecture-lessons-learned.md) - 问题分析与改进
 - [Agent 防幻觉机制](research/anti-hallucination.md) - Fact-Forcing 验证
 
 ### 📝 决策 (Decisions)
@@ -65,7 +65,7 @@ confluence/
 │   │   ├── resource-management.md
 │   │   └── degradation-strategy.md
 │   └── research/                # 研究笔记
-│       ├── kallax-lessons-learned.md
+│       ├── architecture-lessons-learned.md
 │       └── anti-hallucination.md
 ├── architecture/                # 系统设计
 ├── decisions/                   # ADR 决策记录

@@ -1,14 +1,14 @@
 # KALLAX 验证协议
 
-> 解决 KALLAX Agent 幻觉产出问题
+> 解决 Agent 幻觉产出问题
 
 ---
 
 ## 1. 问题背景
 
-### 1.1 KALLAX 教训
+### 1.1 设计原则
 
-在 KALLAX 项目中，Background Agent 模式导致以下问题:
+在历史项目中，Background Agent 模式导致以下问题:
 
 | 问题 | 表现 | 影响 |
 |-----|------|-----|
@@ -20,7 +20,7 @@
 ### 1.2 根本原因分析
 
 ```
-❌ KALLAX 模式: 信任 Agent 报告
+❌ 旧模式: 信任 Agent 报告
 
 Performer: "任务完成，已创建 Login.tsx 并通过所有测试"
 Conductor: "好的，合并" (未验证)

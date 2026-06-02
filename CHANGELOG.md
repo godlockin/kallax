@@ -24,22 +24,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **DAG Scheduler**: Task dependency management and critical path analysis
 - **Expert Panel**: 5 core experts + 50+ extended roles
 
-#### KALLAX Improvements (vs KALLAX)
+#### KALLAX Core Design
 - **Parallel Isolation**: Mandatory worktree + file scope declaration
-  - Solves KALLAX's parallel conflict issues
   - `kallax isolation:check` command for overlap detection
 - **Error Handling**: Banned `expect()`/`unwrap()`/`panic!()` in production
   - All errors propagated via `Result<T, E>`
   - CI auto-detection of violations
 - **Output Verification**: 4-Level Fact-Forcing protocol
-  - Solves KALLAX's agent hallucination issues
   - `kallax verify:output` command for validation
 - **Resource Management**: Mandatory TTL for all caches
   - LRU cache with configurable expiration
-  - Solves KALLAX's memory leak issues
 - **Type Safety**: Banned `any`/`@ts-ignore`
   - CI enforcement of strict TypeScript
-- **Naming**: Master/Slaver → Conductor/Performer
+- **Naming**: Master/Performer → Conductor/Performer
   - Avoids sensitive terminology
 
 #### CLI Commands
@@ -92,8 +89,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `utils/`: Structured logging, error handling, cleanup
 
 #### Performance
-- Rust CLI startup: ~8ms (vs KALLAX Node.js 1500ms)
-- Memory footprint: ~12MB (vs KALLAX 120MB)
+- Rust CLI startup: ~8ms
+- Memory footprint: ~12MB
 - Command latency: ~21ms average
 
 ---
@@ -101,12 +98,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Design Decisions
 
 ### ADR-001: Conductor-Performer Naming
-- **Decision**: Rename Master/Slaver to Conductor/Performer
+- **Decision**: Rename Master/Performer to Conductor/Performer
 - **Reason**: Avoid sensitive terminology while maintaining clear role semantics
 
 ### ADR-002: Mandatory Worktree Isolation
 - **Decision**: Force all performers to work in isolated git worktrees
-- **Reason**: Prevent parallel conflicts experienced in KALLAX
+- **Reason**: Prevents parallel file conflicts between concurrent tasks
 
 ### ADR-003: Banned Panic Patterns
 - **Decision**: Prohibit `expect()`/`unwrap()`/`panic!()` in production code
@@ -114,15 +111,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## Migration from KALLAX
+## Architecture
 
-| KALLAX | KALLAX | Notes |
-|------|--------|-------|
-| Master | Conductor | Role rename |
-| Slaver | Performer | Role rename |
-| `.kallax/` | `.kallax/` | Data directory |
-| `kallax` CLI | `kallax` CLI | Command prefix |
-| /kallax-* | /kallax-* | Slash commands |
+| Component | KALLAX | Notes |
+|-----------|--------|-------|
+| Orchestrator | Conductor | Task analysis, PR review, merge |
+| Executor | Performer | Claim, develop, test, submit |
+| Data directory | `.kallax/` | State, config, database |
+| CLI prefix | `kallax` | All commands |
+| Slash commands | `/kallax-*` | Claude Code integration |
 
 ---
 

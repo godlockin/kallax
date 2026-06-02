@@ -13,9 +13,9 @@
 3. **自动恢复**: 定期探测上级服务，条件满足自动恢复
 4. **无感知切换**: 对使用者 API 保持一致
 
-### 1.2 与 KALLAX 的改进
+### 1.2 架构改进
 
-| 问题 | KALLAX | KALLAX |
+| 问题 | 旧框架 | KALLAX |
 |-----|------|--------|
 | 降级日志 | 静默降级 | 强制 WARN 日志 |
 | 降级指标 | 无 | 必须发射 metric |
@@ -199,7 +199,7 @@ degradation:
 ### 5.1 降级日志规范
 
 ```typescript
-// ❌ KALLAX: 静默降级
+// ❌ 旧: 静默降级
 function degradeToFileQueue() {
   this.queue = new FileQueue();  // 无日志
 }

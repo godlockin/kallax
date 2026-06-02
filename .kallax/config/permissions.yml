@@ -4,11 +4,11 @@
 roles:
   conductor:
     description: "指挥者 - 协调全局"
-    alias: ["master", "coordinator"]
+    alias: ["coordinator"]
 
   performer:
     description: "执行者 - 完成任务"
-    alias: ["slaver", "executor"]
+    alias: ["executor"]
     specializations:
       - frontend
       - backend

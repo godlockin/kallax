@@ -1,6 +1,6 @@
 # 反模式集合
 
-> KALLAX 禁止的编码和协作模式 | 基于 KALLAX 教训
+> KALLAX 禁止的编码和协作模式 | 基于 设计原则
 
 ---
 
@@ -354,6 +354,6 @@ git commit -m "feat(auth): add useAuth hook"
 
 ## 参考
 
-- [KALLAX 经验教训](../../confluence/memory/research/kallax-lessons-learned.md)
+- [架构经验教训](../../confluence/memory/research/architecture-lessons-learned.md)
 - [Conductor 规则](CONDUCTOR-RULES.md)
 - [Performer 规则](PERFORMER-RULES.md)
