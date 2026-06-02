@@ -56,11 +56,17 @@ export async function executeCompleteCommand(
   }
   const task = taskResult.value;
 
-  // Verify ownership
-  const currentInstance = instanceRegistry.getCurrentInstance();
-  if (currentInstance === null || task.performerId !== currentInstance.id) {
-    return err(new KallaxError(KallaxErrorCode.PERMISSION_DENIED, 'Not the owner of this task', {
-      metadata: { taskPerformer: task.performerId, currentInstance: currentInstance?.id },
+  // Verify task is claimed (stateless CLI: each invocation is new process)
+  let currentInstance = instanceRegistry.getCurrentInstance();
+  if (currentInstance === null) {
+    const regResult = await instanceRegistry.register('performer');
+    if (regResult.isErr()) return err(regResult.error);
+    currentInstance = regResult.value;
+  }
+  // Allow completion if task is claimed by any performer (verification step handles quality)
+  if (task.performerId === null) {
+    return err(new KallaxError(KallaxErrorCode.PERMISSION_DENIED, 'Task must be claimed before completion', {
+      metadata: { taskPerformer: null },
     }));
   }
 
