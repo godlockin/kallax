@@ -134,27 +134,23 @@ export function createWorktreeManager(config: WorktreeConfig): KallaxResult<Work
       ]);
 
       if (createResult.isErr()) {
-        // Clean up stale branch if it exists
-        const cleanupResult = await gitCommand(projectRoot, ['branch', '-D', branchName]);
-        if (cleanupResult.isOk()) {
-          // Retry after cleanup
-          const retryResult = await gitCommand(projectRoot, ['worktree', 'add', '-b', branchName, worktreePath, baseBranch]);
-          if (retryResult.isOk()) {
-            const worktree: WorktreeInfo = { path: worktreePath, branch: branchName, taskId, createdAt: new Date() };
-            worktrees.set(taskId, worktree);
-            logger.info({ taskId, worktreePath, branchName }, 'worktree created after cleanup');
-            return ok(worktree);
-          }
+        // Clean up stale branch AND directory from previous failed attempts
+        await gitCommand(projectRoot, ['branch', '-D', branchName]);
+        await fs.rm(worktreePath, { recursive: true, force: true }).catch(() => {});
+        await gitCommand(projectRoot, ['worktree', 'prune']);
+        // Retry after full cleanup
+        const retryResult = await gitCommand(projectRoot, ['worktree', 'add', '-b', branchName, worktreePath, baseBranch]);
+        if (retryResult.isErr()) {
+          return err(
+            new KallaxError(KallaxErrorCode.WORKTREE_CREATE_FAILED, 'Failed to create git worktree after cleanup', {
+              cause: retryResult.error,
+              metadata: { taskId, worktreePath, branchName },
+            })
+          );
         }
-        return err(
-          new KallaxError(KallaxErrorCode.WORKTREE_CREATE_FAILED, 'Failed to create git worktree', {
-            cause: createResult.error,
-            metadata: { taskId, worktreePath },
-          })
-        );
       }
 
-      // Get the commit hash
+      const commitResult = await gitCommand(worktreePath, ['rev-parse', 'HEAD']);
       const commitResult = await gitCommand(worktreePath, ['rev-parse', 'HEAD']);
       if (commitResult.isErr()) {
         return err(
