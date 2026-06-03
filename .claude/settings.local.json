@@ -64,7 +64,8 @@
       "Bash(sed -i '' 's/const tickets = ctx.db.listTickets\\({}\\).value ?? \\\\[\\\\];/const ticketsResult = ctx.db.listTickets\\({}\\); const tickets = ticketsResult.isOk\\(\\) ? ticketsResult.value : [];/' node/src/index.ts)",
       "Bash(sed -i '' 's/const tickets = \\(ctx.db.listTickets\\({}\\).value ?? \\\\[\\\\]\\)/const ticketsResult = ctx.db.listTickets\\({}\\); const tickets = ticketsResult.isOk\\(\\) ? ticketsResult.value : []/' node/src/index.ts)",
       "Bash(cp /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/worktrees/agent-a28282852a3788864/rust/crates/kallax-engine/src/dag/scheduler.rs rust/crates/kallax-engine/src/dag/scheduler.rs)",
-      "Bash(cp /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/worktrees/agent-a28282852a3788864/rust/crates/kallax-engine/src/ticket_engine.rs rust/crates/kallax-engine/src/ticket_engine.rs)"
+      "Bash(cp /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/worktrees/agent-a28282852a3788864/rust/crates/kallax-engine/src/ticket_engine.rs rust/crates/kallax-engine/src/ticket_engine.rs)",
+      "Bash(awk '{print $5, $9}')"
     ]
   }
 }
