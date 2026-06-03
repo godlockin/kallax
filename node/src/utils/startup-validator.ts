@@ -50,12 +50,20 @@ export function validateStartup(projectRoot: string): KallaxResult<StartupValida
     addCheck('data-directory', false, 'Cannot create .kallax/data', 'fatal');
   }
 
-  // 2. Check git repository
-  const gitDir = path.join(projectRoot, '.git');
+  // 2. Check git repository (search upward for worktree compatibility)
+  let gitFound = false;
+  let searchDir = projectRoot;
+  while (searchDir !== path.parse(searchDir).root) {
+    if (fs.existsSync(path.join(searchDir, '.git'))) {
+      gitFound = true;
+      break;
+    }
+    searchDir = path.dirname(searchDir);
+  }
   addCheck(
     'git-repository',
-    fs.existsSync(gitDir),
-    fs.existsSync(gitDir) ? 'Git repository detected' : 'Not a git repository',
+    gitFound,
+    gitFound ? 'Git repository detected' : 'Not a git repository',
     'fatal',
   );
 

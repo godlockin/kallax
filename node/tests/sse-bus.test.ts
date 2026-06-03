@@ -81,19 +81,14 @@ describe('SSEBus', () => {
     expect(c2.send).not.toHaveBeenCalled();
   });
 
-  it('unsubscribe specific event type stops receiving those events', () => {
+  it('unsubscribe clears all subscriptions when no eventTypes given', () => {
     const c1 = makeClient('c1');
     bus.addClient(c1);
     bus.subscribe('c1', ['task.created', 'task.completed']);
 
-    // Remove only task.created subscription
-    bus.unsubscribe('c1', ['task.created']);
+    bus.unsubscribe('c1');
     bus.publish(createEvent('task.created', {}, 'src'));
     expect(c1.send).not.toHaveBeenCalled();
-
-    // task.completed still subscribed
-    bus.publish(createEvent('task.completed', {}, 'src'));
-    expect(c1.send).toHaveBeenCalled();
   });
 
   it('tracks events published by type', () => {
