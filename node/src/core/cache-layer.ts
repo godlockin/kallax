@@ -20,7 +20,7 @@ export interface CacheStats {
   readonly hitRate: number;
 }
 
-export interface Cache<K, V> {
+export interface Cache<K, V extends object> {
   get: (key: K) => V | undefined;
   set: (key: K, value: V, ttlMs?: number) => void;
   has: (key: K) => boolean;
@@ -36,7 +36,7 @@ export interface Cache<K, V> {
 /**
  * Create a type-safe LRU cache with mandatory TTL
  */
-export function createCache<K extends object | string | number, V>(
+export function createCache<K extends object | string | number, V extends object>(
   name: string,
   config: CacheConfig
 ): Cache<K, V> {
