@@ -5,8 +5,6 @@
 
 import { err, ok } from 'neverthrow';
 import Redis from 'ioredis';
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type RedisClient = any;
 import { KallaxError, KallaxErrorCode, type KallaxResult, type Message, MessagePriority } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import { registerCleanupHandler } from '../utils/process-cleanup.js';
@@ -262,7 +260,7 @@ function createSQLiteQueue(dbManager: SQLiteManager): MessageQueue {
  * Create Redis-backed message queue
  */
 function createRedisQueue(config: NonNullable<MessageQueueConfig['redis']>): MessageQueue {
-  const redis: RedisClient = new (Redis as any)({
+  const redis: Redis = new Redis({
     host: config.host,
     port: config.port,
     password: config.password,
@@ -270,7 +268,7 @@ function createRedisQueue(config: NonNullable<MessageQueueConfig['redis']>): Mes
     retryStrategy: (times: number) => Math.min(times * 100, 3000),
   });
 
-  const subscriber: RedisClient = new (Redis as any)({
+  const subscriber: Redis = new Redis({
     host: config.host,
     port: config.port,
     password: config.password,

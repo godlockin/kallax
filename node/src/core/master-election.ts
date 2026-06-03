@@ -6,6 +6,7 @@ import { ok, err } from 'neverthrow';
 import type { KallaxResult } from '../types/index.js';
 import { KallaxError, KallaxErrorCode } from '../types/index.js';
 import { logger } from '../utils/logger.js';
+import type { Redis } from 'ioredis';
 
 export type ElectionLevel = 1 | 2 | 3;
 
@@ -15,6 +16,31 @@ export interface ElectionConfig {
   readonly renewIntervalMs: number;
   readonly redisUrl?: string;
   readonly lockDir?: string;
+}
+
+// ── Redis connection pool (singleton per URL to fix connection leak) ──────
+
+const redisPool = new Map<string, Redis>();
+
+async function getRedis(redisUrl: string): Promise<Redis | null> {
+  try {
+    let redis = redisPool.get(redisUrl);
+    if (redis && redis.status === 'ready') return redis;
+    // Create or recreate
+    const { Redis: IORedis } = await import('ioredis');
+    redis = new IORedis(redisUrl, {
+      lazyConnect: true,
+      maxRetriesPerRequest: 2,
+      retryDelayOnFailover: 100,
+      enableOfflineQueue: false,
+    });
+    await redis.connect();
+    redisPool.set(redisUrl, redis);
+    return redis;
+  } catch (error: unknown) {
+    logger.warn({ error: error instanceof Error ? error.message : String(error), redisUrl }, 'redis connect failed');
+    return null;
+  }
 }
 
 export interface ElectionState {
@@ -67,7 +93,9 @@ async function fsCampaign(lockDir: string, instanceId: string): Promise<boolean>
           logger.warn({ age, instanceId }, 'took over stale filesystem lock');
           return true;
         }
-      } catch { /* lock disappeared */ }
+      } catch (error: unknown) {
+    logger.debug({ error: error instanceof Error ? error.message : String(error) }, 'non-critical election op failed');
+    /* lock disappeared */ }
     }
     return false;
   }
@@ -157,62 +185,61 @@ async function sqliteResign(_sqlitePath: string, instanceId: string): Promise<vo
       'DELETE FROM master_election WHERE id = 1 AND instance_id = ?',
       [instanceId],
     );
-  } catch { /* ignore */ }
+  } catch (error: unknown) {
+    logger.debug({ error: error instanceof Error ? error.message : String(error) }, 'non-critical election op failed');
+    /* ignore */ }
 }
 
 // ── Level 1: Redis SETNX ──────────────────────────────────────────────────
 
 async function redisCampaign(redisUrl: string, instanceId: string, ttlMs: number): Promise<boolean> {
+  const redis = await getRedis(redisUrl);
+  if (!redis) return false;
   try {
-    const { Redis } = await import('ioredis');
-    const redis = new Redis(redisUrl, { lazyConnect: true, maxRetriesPerRequest: 1 });
-    try {
-      await redis.connect();
-      // SET key value NX PX ttl → returns OK if set, null if already exists
-      const result = await redis.set('kallax:master:lock', instanceId, 'PX', ttlMs, 'NX');
-      await redis.quit();
-      return result === 'OK';
-    } catch {
-      await redis.quit().catch(() => {});
-      return false;
-    }
-  } catch { return false; }
+    const result = await redis.set('kallax:master:lock', instanceId, 'PX', ttlMs, 'NX');
+    return result === 'OK';
+  } catch (error: unknown) {
+    logger.warn({ error: error instanceof Error ? error.message : String(error) }, 'redis campaign failed');
+    return false;
+  }
 }
 
 async function redisRenew(redisUrl: string, instanceId: string, ttlMs: number): Promise<boolean> {
+  const redis = await getRedis(redisUrl);
+  if (!redis) return false;
   try {
-    const { Redis } = await import('ioredis');
-    const redis = new Redis(redisUrl, { lazyConnect: true, maxRetriesPerRequest: 1 });
-    try {
-      await redis.connect();
-      const current = await redis.get('kallax:master:lock');
-      if (current === instanceId) {
-        await redis.pexpire('kallax:master:lock', ttlMs);
-        await redis.quit();
-        return true;
-      }
-      await redis.quit();
-      return false;
-    } catch {
-      await redis.quit().catch(() => {});
-      return false;
-    }
-  } catch { return false; }
+    // Atomic Lua: renew only if we still own the lock (fixes TOCTOU race)
+    const lua = `
+      if redis.call('GET', KEYS[1]) == ARGV[1] then
+        return redis.call('PEXPIRE', KEYS[1], ARGV[2])
+      else
+        return 0
+      end
+    `;
+    const result = await redis.eval(lua, 1, 'kallax:master:lock', instanceId, String(ttlMs));
+    return (result as number) === 1;
+  } catch (error: unknown) {
+    logger.warn({ error: error instanceof Error ? error.message : String(error) }, 'redis renew failed');
+    return false;
+  }
 }
 
 async function redisResign(redisUrl: string, instanceId: string): Promise<void> {
+  const redis = await getRedis(redisUrl);
+  if (!redis) return;
   try {
-    const { Redis } = await import('ioredis');
-    const redis = new Redis(redisUrl, { lazyConnect: true, maxRetriesPerRequest: 1 });
-    try {
-      await redis.connect();
-      const current = await redis.get('kallax:master:lock');
-      if (current === instanceId) {
-        await redis.del('kallax:master:lock');
-      }
-      await redis.quit();
-    } catch { await redis.quit().catch(() => {}); }
-  } catch { /* ignore */ }
+    // Atomic Lua: delete only if we own the lock (fixes TOCTOU race)
+    const lua = `
+      if redis.call('GET', KEYS[1]) == ARGV[1] then
+        return redis.call('DEL', KEYS[1])
+      else
+        return 0
+      end
+    `;
+    await redis.eval(lua, 1, 'kallax:master:lock', instanceId);
+  } catch (error: unknown) {
+    logger.warn({ error: error instanceof Error ? error.message : String(error) }, 'redis resign failed');
+  }
 }
 
 // ── Main Export ────────────────────────────────────────────────────────────

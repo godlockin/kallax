@@ -142,7 +142,9 @@ export function createEventBus(): EventBus {
       );
       // Re-queue with backoff
       setTimeout(() => {
-        deliverWithRetry(envelope, sub).catch(() => {});
+        deliverWithRetry(envelope, sub).catch((err: unknown) => {
+        logger.error({ eventId: event.id, subscriberId: sub.id, error: err instanceof Error ? err.message : String(err) }, 'unhandled delivery error');
+      });
       }, Math.pow(2, envelope.retryCount) * 100);
     } else {
       eventsFailed++;
