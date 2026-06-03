@@ -30,10 +30,12 @@ export function registerTaskCommands(program: Command, ctx: AppContext): void {
           { taskId, ticketId: opts?.['ticket'] },
         );
         if (result.isErr()) {
-          logger.kallaxError(result.error);
+          process.stderr.write(`Claim failed: ${result.error.message}\n`);
           process.exit(1);
         }
-        logger.info({ taskId: result.value.task.id, worktree: result.value.worktreePath }, 'task claimed');
+        process.stdout.write(`[OK] Task ${result.value.task.id} claimed\n`);
+        process.stdout.write(`     Worktree: ${result.value.worktreePath}\n`);
+        process.stdout.write(`     Ticket: ${result.value.ticket.title}\n`);
       } catch (error: unknown) {
         logger.kallaxError(KallaxError.fromUnknown(error));
         process.exit(1);

@@ -9,6 +9,7 @@ import type { KallaxResult, Task, Ticket, Instance, Message } from '../types/ind
 import { KallaxError, KallaxErrorCode } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import { registerCleanupHandler } from '../utils/process-cleanup.js';
+import { existsSync, mkdirSync } from 'node:fs';
 
 export interface SQLiteConfig {
   readonly path: string;
@@ -105,6 +106,9 @@ export function createSQLiteManager(config: SQLiteConfig): KallaxResult<SQLiteMa
   let db: Database.Database;
 
   try {
+    // Auto-create directory if needed
+    const dbDir = config.path.substring(0, config.path.lastIndexOf('/'));
+    if (dbDir && !existsSync(dbDir)) mkdirSync(dbDir, { recursive: true });
     db = new Database(config.path, {
       readonly: config.readonly ?? false,
       verbose: config.verbose === true ? (sql) => logger.debug({ sql }, 'sqlite query') : undefined,
