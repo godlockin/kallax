@@ -65,7 +65,10 @@
       "Bash(sed -i '' 's/const tickets = \\(ctx.db.listTickets\\({}\\).value ?? \\\\[\\\\]\\)/const ticketsResult = ctx.db.listTickets\\({}\\); const tickets = ticketsResult.isOk\\(\\) ? ticketsResult.value : []/' node/src/index.ts)",
       "Bash(cp /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/worktrees/agent-a28282852a3788864/rust/crates/kallax-engine/src/dag/scheduler.rs rust/crates/kallax-engine/src/dag/scheduler.rs)",
       "Bash(cp /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/worktrees/agent-a28282852a3788864/rust/crates/kallax-engine/src/ticket_engine.rs rust/crates/kallax-engine/src/ticket_engine.rs)",
-      "Bash(awk '{print $5, $9}')"
+      "Bash(awk '{print $5, $9}')",
+      "Bash(sqlite3 .kallax/data/kallax.db \"SELECT id, status, type FROM tasks;\")",
+      "Bash(sqlite3 .kallax/data/kallax.db \"SELECT id, status, performer_id FROM tasks WHERE id='task_1780504522354_v81e27';\")",
+      "Bash(sqlite3 /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/node/.kallax/data/kallax.db \"SELECT id, title, status FROM tickets ORDER BY created_at DESC LIMIT 3;\")"
     ]
   }
 }

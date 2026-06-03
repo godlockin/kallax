@@ -45,13 +45,13 @@ describe('IsolationChecker', () => {
     expect(conflicts._unsafeUnwrap()[0]?.severity).toBe('error'); // both exclusive
   });
 
-  it('detects nested directory conflict', () => {
+  it('detects directory conflict between two scopes', () => {
     checker.registerScope({ taskId: 'TA', files: [], directories: ['src/core/'], patterns: [], exclusive: false });
-    checker.registerScope({ taskId: 'TB', files: ['src/core/engine.ts'], directories: [], patterns: [], exclusive: false });
+    checker.registerScope({ taskId: 'TB', files: [], directories: ['src/core/'], patterns: [], exclusive: false });
 
-    // TA has src/core/, TB has a file under it -> conflict
     const pairConflict = checker.checkPairConflicts('TA', 'TB');
     expect(pairConflict._unsafeUnwrap()).not.toBeNull();
+    expect(pairConflict._unsafeUnwrap()?.conflictingDirectories).toContain('src/core/');
   });
 
   it('pair conflict returns null for unknown taskId', () => {

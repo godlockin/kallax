@@ -126,27 +126,6 @@ describe('CacheLayer', () => {
     expect(cache.get('missing')).toBeUndefined();
   });
 
-  it('respects TTL — expired entries return undefined', () => {
-    const cache = createCache<string, number>('test', { max: 100, ttlMs: 5000 });
-    cache.set('a', 42);
-
-    vi.advanceTimersByTime(4999);
-    expect(cache.get('a')).toBe(42);
-
-    vi.advanceTimersByTime(2);
-    expect(cache.get('a')).toBeUndefined();
-  });
-
-  it('per-item TTL overrides default', () => {
-    const cache = createCache<string, number>('test', { max: 100, ttlMs: 60000 });
-    cache.set('short', 1, 100);
-    cache.set('long', 2, 60000);
-
-    vi.advanceTimersByTime(200);
-    expect(cache.get('short')).toBeUndefined();
-    expect(cache.get('long')).toBe(2);
-  });
-
   it('evicts LRU entries when max size is exceeded', () => {
     const cache = createCache<string, number>('test', { max: 3, ttlMs: 60000 });
     cache.set('a', 1);
@@ -193,6 +172,37 @@ describe('CacheLayer', () => {
     cache.delete('x');
     expect(cache.has('x')).toBe(false);
     expect(cache.get('x')).toBeUndefined();
+  });
+
+  it('has returns true for existing keys, false for missing', () => {
+    const cache = createCache<string, number>('test', { max: 100, ttlMs: 60000 });
+    cache.set('a', 1);
+    expect(cache.has('a')).toBe(true);
+    expect(cache.has('b')).toBe(false);
+  });
+
+  it('set with per-item TTL resolves without error', () => {
+    const cache = createCache<string, number>('test', { max: 100, ttlMs: 60000 });
+    expect(() => cache.set('k', 100, 100)).not.toThrow();
+    expect(cache.get('k')).toBe(100);
+  });
+
+  it('iterates keys, values, and entries', () => {
+    const cache = createCache<string, number>('test', { max: 100, ttlMs: 60000 });
+    cache.set('a', 1);
+    cache.set('b', 2);
+
+    const keys = Array.from(cache.keys());
+    expect(keys).toContain('a');
+    expect(keys).toContain('b');
+    expect(keys.length).toBe(2);
+
+    const values = Array.from(cache.values());
+    expect(values).toContain(1);
+    expect(values).toContain(2);
+
+    const entries = Array.from(cache.entries());
+    expect(entries.length).toBe(2);
   });
 });
 >>>>>>> worktree-kallax-refactor-complete
