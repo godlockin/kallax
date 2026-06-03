@@ -18,7 +18,8 @@ use axum::{
     Json, Router,
 };
 use kallax_core::{KallaxError, Performer, PerformerId, Priority, Ticket};
-use kallax_engine::{AgentPool, EventBus, TicketEngine};
+use kallax_engine::{AgentPool, ConflictResolver, DagScheduler, EventBus, KnowledgeBase, TicketEngine};
+use kallax_core::TaskId;
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -35,6 +36,9 @@ use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 struct AppState {
     engine: Arc<TicketEngine>,
     pool: Arc<AgentPool>,
+    knowledge: Arc<KnowledgeBase>,
+    scheduler: Arc<std::sync::Mutex<DagScheduler>>,
+    conflicts: Arc<ConflictResolver>,
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -356,11 +360,46 @@ fn create_router(state: AppState) -> Router {
         .route("/performers", get(list_performers))
         .route("/performers/register", post(register_performer))
         .route("/performers/:id/heartbeat", put(performer_heartbeat))
+        // Bridge status — proves Rust engine is alive and responsive
+        .route("/bridge/status", get(bridge_status))
+        .route("/bridge/scheduler", get(scheduler_status))
+        .route("/stats", get(get_stats))
         // Middleware
         .layer(TraceLayer::new_for_http())
         .layer(CorsLayer::new().allow_origin(Any).allow_methods(Any).allow_headers(Any))
         .with_state(state)
 }
+
+// ── Bridge Handlers ────────────────────────────────────────────────────────
+
+async fn bridge_status(State(state): State<AppState>) -> impl IntoResponse {
+    let engine_stats = state.engine.stats();
+    let pool_stats = state.pool.stats();
+    let kb_count = state.knowledge.len();
+    let conflict_count = state.conflicts.get_active_conflicts().len();
+    Json(serde_json::json!({
+        "status": "ok",
+        "modules": {
+            "ticket_engine": { "tickets": engine_stats.total_tickets, "tasks": engine_stats.total_tasks },
+            "agent_pool": { "performers": pool_stats.total, "idle": pool_stats.idle },
+            "knowledge_base": { "entries": kb_count },
+            "scheduler": { "status": "active" },
+            "conflict_resolver": { "active_conflicts": conflict_count }
+        }
+    }))
+}
+
+async fn scheduler_status(State(state): State<AppState>) -> impl IntoResponse {
+    let mut s = state.scheduler.lock().unwrap();
+    let ready = s.get_ready_tasks();
+    let critical = s.critical_path();
+    Json(serde_json::json!({
+        "ready_tasks": ready.len(),
+        "critical_path_length": critical.len(),
+    }))
+}
+
+// ── Main ───────────────────────────────────────────────────────────────────
 
 #[tokio::main]
 async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
@@ -368,10 +407,13 @@ async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
 
     // Initialize components
     let event_bus = Arc::new(EventBus::new(1024));
-    let engine = Arc::new(TicketEngine::new(event_bus));
+    let engine = Arc::new(TicketEngine::new(event_bus.clone()));
     let pool = Arc::new(AgentPool::default());
+    let knowledge = Arc::new(KnowledgeBase::new());
+    let scheduler = Arc::new(std::sync::Mutex::new(DagScheduler::new()));
+    let conflicts = Arc::new(ConflictResolver::default());
 
-    let state = AppState { engine, pool };
+    let state = AppState { engine, pool, knowledge, scheduler, conflicts };
     let app = create_router(state);
 
     // Get port from env or default
@@ -401,7 +443,10 @@ mod tests {
         let engine = Arc::new(TicketEngine::new(event_bus));
         let pool = Arc::new(AgentPool::default());
 
-        create_router(AppState { engine, pool })
+        let knowledge = Arc::new(KnowledgeBase::new());
+        let scheduler = Arc::new(std::sync::Mutex::new(DagScheduler::new()));
+        let conflicts = Arc::new(ConflictResolver::default());
+        create_router(AppState { engine, pool, knowledge, scheduler, conflicts })
     }
 
     #[tokio::test]

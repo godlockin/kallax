@@ -151,7 +151,6 @@ export function createWorktreeManager(config: WorktreeConfig): KallaxResult<Work
       }
 
       const commitResult = await gitCommand(worktreePath, ['rev-parse', 'HEAD']);
-      const commitResult = await gitCommand(worktreePath, ['rev-parse', 'HEAD']);
       if (commitResult.isErr()) {
         return err(
           new KallaxError(KallaxErrorCode.WORKTREE_CREATE_FAILED, 'Failed to get commit hash', {
