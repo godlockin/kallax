@@ -129,17 +129,17 @@ export function createCache<K extends object | string | number, V extends object
 const DEFAULT_TTL_MS = 5 * 60 * 1000; // 5 minutes
 const DEFAULT_MAX = 1000;
 
-export const ticketCache = createCache<string, unknown>('tickets', {
+export const ticketCache = createCache<string, object>('tickets', {
   max: DEFAULT_MAX,
   ttlMs: DEFAULT_TTL_MS,
 });
 
-export const taskCache = createCache<string, unknown>('tasks', {
+export const taskCache = createCache<string, object>('tasks', {
   max: DEFAULT_MAX,
   ttlMs: DEFAULT_TTL_MS,
 });
 
-export const instanceCache = createCache<string, unknown>('instances', {
+export const instanceCache = createCache<string, object>('instances', {
   max: 100,
   ttlMs: 60 * 1000, // 1 minute for instances
 });
