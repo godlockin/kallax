@@ -19,3 +19,7 @@ export * from './role-selector.js';
 export * from './git-service.js';
 export * from './span-tracer.js';
 export * from './gate-reviewer.js';
+export * from './complexity-analyzer.js';
+export * from './dag-generator.js';
+export * from './dag-executor.js';
+export * from './dag-visualizer.js';
