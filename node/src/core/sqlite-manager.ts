@@ -9,6 +9,7 @@ import type { KallaxResult, Task, Ticket, Instance, Message } from '../types/ind
 import { KallaxError, KallaxErrorCode } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import { registerCleanupHandler } from '../utils/process-cleanup.js';
+import { existsSync, mkdirSync } from 'node:fs';
 
 export interface SQLiteConfig {
   readonly path: string;
@@ -43,9 +44,35 @@ export interface SQLiteManager {
   dequeueMessage: (targetId?: string) => KallaxResult<Message | null>;
   peekMessages: (limit: number) => KallaxResult<Message[]>;
 
+  // Async wrappers for API server (non-blocking via worker_threads)
+  async: SQLiteManagerAsync;
+
   // Lifecycle
   close: () => void;
   getStats: () => DatabaseStats;
+}
+
+/** Async SQLite operations — offloads to worker thread to avoid event loop blocking. */
+export interface SQLiteManagerAsync {
+  createTicket: (ticket: Ticket) => Promise<KallaxResult<void>>;
+  getTicket: (id: string) => Promise<KallaxResult<Ticket | null>>;
+  updateTicket: (id: string, updates: Partial<Ticket>) => Promise<KallaxResult<void>>;
+  listTickets: (filter?: TicketFilter) => Promise<KallaxResult<Ticket[]>>;
+  createTask: (task: Task) => Promise<KallaxResult<void>>;
+  getTask: (id: string) => Promise<KallaxResult<Task | null>>;
+  updateTask: (id: string, updates: Partial<Task>) => Promise<KallaxResult<void>>;
+  listTasks: (filter?: TaskFilter) => Promise<KallaxResult<Task[]>>;
+  claimTask: (taskId: string, performerId: string) => Promise<KallaxResult<boolean>>;
+  registerInstance: (instance: Instance) => Promise<KallaxResult<void>>;
+  getInstance: (id: string) => Promise<KallaxResult<Instance | null>>;
+  updateInstance: (id: string, updates: Partial<Instance>) => Promise<KallaxResult<void>>;
+  listInstances: (filter?: InstanceFilter) => Promise<KallaxResult<Instance[]>>;
+  updateHeartbeat: (id: string) => Promise<KallaxResult<void>>;
+  getStaleInstances: (thresholdMs: number) => Promise<KallaxResult<Instance[]>>;
+  enqueueMessage: (message: Message) => Promise<KallaxResult<void>>;
+  dequeueMessage: (targetId?: string) => Promise<KallaxResult<Message | null>>;
+  peekMessages: (limit: number) => Promise<KallaxResult<Message[]>>;
+  getStats: () => Promise<DatabaseStats>;
 }
 
 export interface TicketFilter {
@@ -79,6 +106,9 @@ export function createSQLiteManager(config: SQLiteConfig): KallaxResult<SQLiteMa
   let db: Database.Database;
 
   try {
+    // Auto-create directory if needed
+    const dbDir = config.path.substring(0, config.path.lastIndexOf('/'));
+    if (dbDir && !existsSync(dbDir)) mkdirSync(dbDir, { recursive: true });
     db = new Database(config.path, {
       readonly: config.readonly ?? false,
       verbose: config.verbose === true ? (sql) => logger.debug({ sql }, 'sqlite query') : undefined,
@@ -632,9 +662,76 @@ export function createSQLiteManager(config: SQLiteConfig): KallaxResult<SQLiteMa
 
       return { ticketCount, taskCount, instanceCount, messageCount };
     },
+
+    // Async wrapper: offloads to worker thread to prevent event loop blocking
+    async: createAsyncWrapper(db, config.path),
   };
 
   return ok(manager);
+}
+
+// ── Async Worker Wrapper ───────────────────────────────────────────────────
+
+import { Worker } from 'node:worker_threads';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
+
+function createAsyncWrapper(_db: Database.Database, dbPath: string): SQLiteManager['async'] {
+  let worker: Worker | null = null;
+  let nextId = 0;
+  const pending = new Map<number, { resolve: (v: unknown) => void; reject: (e: Error) => void }>();
+
+  function getWorker(): Worker {
+    if (worker) return worker;
+    const workerPath = fileURLToPath(new URL('./sqlite-worker.js', import.meta.url));
+    worker = new Worker(workerPath);
+    worker.on('message', (resp: { id: number; result?: unknown; error?: string }) => {
+      const p = pending.get(resp.id);
+      if (!p) return;
+      pending.delete(resp.id);
+      if (resp.error) {
+        p.reject(new Error(resp.error));
+      } else {
+        p.resolve(resp.result);
+      }
+    });
+    worker.on('error', (err: Error) => {
+      for (const [, p] of pending) { p.reject(err); }
+      pending.clear();
+    });
+    return worker;
+  }
+
+  function call<T>(method: string, ...args: unknown[]): Promise<T> {
+    const w = getWorker();
+    const id = ++nextId;
+    return new Promise<T>((resolve, reject) => {
+      pending.set(id, { resolve: resolve as (v: unknown) => void, reject });
+      w.postMessage({ id, method, args: [dbPath, ...args] });
+    });
+  }
+
+  return {
+    createTicket: (t) => call<void>('createTicket', t),
+    getTicket: (id) => call('getTicket', id),
+    updateTicket: (id, u) => call<void>('updateTicket', id, u),
+    listTickets: (f) => call('listTickets', f),
+    createTask: (t) => call<void>('createTask', t),
+    getTask: (id) => call('getTask', id),
+    updateTask: (id, u) => call<void>('updateTask', id, u),
+    listTasks: (f) => call('listTasks', f),
+    claimTask: (tid, pid) => call<boolean>('claimTask', tid, pid),
+    registerInstance: (i) => call<void>('registerInstance', i),
+    getInstance: (id) => call('getInstance', id),
+    updateInstance: (id, u) => call<void>('updateInstance', id, u),
+    listInstances: (f) => call('listInstances', f),
+    updateHeartbeat: (id) => call<void>('updateHeartbeat', id),
+    getStaleInstances: (t) => call('getStaleInstances', t),
+    enqueueMessage: (m) => call<void>('enqueueMessage', m),
+    dequeueMessage: (t) => call('dequeueMessage', t),
+    peekMessages: (l) => call('peekMessages', l),
+    getStats: () => call('getStats'),
+  };
 }
 
 // Database row types
