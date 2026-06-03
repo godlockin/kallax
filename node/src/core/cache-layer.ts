@@ -43,9 +43,8 @@ export function createCache<K extends object | string | number, V>(
   let hits = 0;
   let misses = 0;
 
-  // LRUCache type constraint requires V extends {}; we validate at the Cache interface level
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const cache = new LRUCache<K, any>({
+  // LRUCache constraint requires V extends {}; generic V passed through Cache<K,V> interface
+  const cache = new LRUCache<K, V>({
     max: config.max,
     ttl: config.ttlMs,
     updateAgeOnGet: config.updateAgeOnGet ?? true,

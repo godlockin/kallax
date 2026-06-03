@@ -1,0 +1,53 @@
+name: Cleanup Merged Branches
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  cleanup:
+    name: Delete merged branch
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Delete remote branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          echo "PR #${{ github.event.pull_request.number }} merged into ${BASE_REF}"
+          echo "Cleaning up branch: ${BRANCH}"
+
+          case "${BRANCH}" in
+            main|master|develop|release/*)
+              echo "::warning::Skipping deletion of protected branch: ${BRANCH}"
+              ;;
+            *)
+              git push origin --delete "${BRANCH}" 2>/dev/null && \
+                echo "Deleted remote branch: ${BRANCH}" || \
+                echo "::warning::Could not delete remote branch ${BRANCH}"
+              ;;
+          esac
+
+  notify:
+    name: Notify cleanup
+    needs: cleanup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report cleanup result
+        env:
+          PR_NUM: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          echo "## Branch Cleanup Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- PR: #${PR_NUM} (${PR_TITLE})" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch: \`${BRANCH}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Merged into: \`${BASE_REF}\`" >> $GITHUB_STEP_SUMMARY

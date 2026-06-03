@@ -1,0 +1,7 @@
+{
+  "epicId": "EPIC-008",
+  "title": "SQLite persistence for Rust core",
+  "createdAt": "2026-06-03T07:08:17.734Z",
+  "status": "planning",
+  "tickets": []
+}

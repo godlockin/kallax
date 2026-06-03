@@ -697,6 +697,775 @@ epic
   });
 
 
+// ── Knowledge commands ──────────────────────────────────────────────────────
+
+const knowledge = program.command('knowledge').description('Knowledge base management');
+
+knowledge
+  .command('index <title>')
+  .description('Index a knowledge entry')
+  .option('-c, --content <content>', 'Content (reads stdin if omitted)')
+  .option('-t, --tags <tags>', 'Comma-separated tags')
+  .option('-s, --source <source>', 'Source identifier', 'manual')
+  .action(async (title: string, opts: Record<string, string>) => {
+    try {
+      const { getKnowledgeBase } = await import('./core/knowledge-base.js');
+      const kb = getKnowledgeBase();
+
+      let content = opts['content'] ?? '';
+      if (!content && !process.stdin.isTTY) {
+        content = (await readStdin()).trim();
+      }
+
+      const tags = opts['tags'] ? opts['tags'].split(',').map((t: string) => t.trim()) : [];
+
+      const result = kb.add({ title, content, tags, source: opts['source'] ?? 'manual' });
+      if (result.isErr()) throw result.error;
+
+      process.stdout.write(`Indexed: ${result.value.id}\n`);
+      process.stdout.write(`  Title: ${title}\n`);
+      process.stdout.write(`  Tags: ${tags.join(', ') || '(none)'}\n`);
+      process.stdout.write(`  Words: ${content.length} chars\n`);
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+knowledge
+  .command('search <query>')
+  .description('Search knowledge base')
+  .option('-t, --tags <tags>', 'Filter by comma-separated tags')
+  .option('-l, --limit <limit>', 'Max results', '10')
+  .option('-s, --sort <sort>', 'Sort: relevance|date', 'relevance')
+  .action(async (query: string, opts: Record<string, string>) => {
+    try {
+      const { getKnowledgeBase } = await import('./core/knowledge-base.js');
+      const kb = getKnowledgeBase();
+
+      const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+      const tags = opts['tags'] ? opts['tags'].split(',').map((t: string) => t.trim()) : undefined;
+
+      const result = kb.search({
+        terms,
+        tags,
+        limit: parseInt(opts['limit'] ?? '10', 10),
+        sortBy: (opts['sort'] as 'relevance' | 'date') ?? 'relevance',
+      });
+
+      if (result.isErr()) throw result.error;
+
+      if (result.value.length === 0) {
+        process.stdout.write('No results found.\n');
+      } else {
+        for (const r of result.value) {
+          process.stdout.write(`[${r.score.toFixed(1)}] ${r.entry.title} (${r.entry.id})\n`);
+          process.stdout.write(`  Tags: ${r.entry.tags.join(', ') || '(none)'}\n`);
+          process.stdout.write(`  Preview: ${r.entry.content.slice(0, 120)}...\n\n`);
+        }
+      }
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+knowledge
+  .command('list')
+  .description('List all knowledge entries')
+  .option('-l, --limit <limit>', 'Max entries', '50')
+  .action(async (opts: Record<string, string>) => {
+    try {
+      const { getKnowledgeBase } = await import('./core/knowledge-base.js');
+      const kb = getKnowledgeBase();
+
+      const result = kb.list({ limit: parseInt(opts['limit'] ?? '50', 10) });
+      if (result.isErr()) throw result.error;
+
+      const stats = kb.getStats();
+      process.stdout.write(`Total: ${stats.totalEntries} entries, ${stats.totalWords} words indexed\n\n`);
+
+      for (const entry of result.value) {
+        const date = new Date(entry.updatedAt).toISOString().slice(0, 10);
+        process.stdout.write(`  ${date}  ${entry.id}  ${entry.title}\n`);
+        process.stdout.write(`         tags: ${entry.tags.join(', ') || '(none)'}\n`);
+      }
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+knowledge
+  .command('gc')
+  .description('Garbage collect old entries')
+  .option('-d, --days <days>', 'Remove entries older than N days', '90')
+  .action(async (opts: Record<string, string>) => {
+    try {
+      const { getKnowledgeBase } = await import('./core/knowledge-base.js');
+      const kb = getKnowledgeBase();
+
+      const days = parseInt(opts['days'] ?? '90', 10);
+      const result = kb.gc(days * 86400_000);
+
+      if (result.isErr()) throw result.error;
+      process.stdout.write(`GC complete: removed ${result.value} entries older than ${days} days\n`);
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+// ── Degradation commands ────────────────────────────────────────────────────
+
+program
+  .command('system:degradation')
+  .description('Show degradation state and tier status')
+  .action(async () => {
+    try {
+      const { getRecoveryManager } = await import('./core/recovery-manager.js');
+      const rm = getRecoveryManager();
+      const state = rm.getState();
+
+      process.stdout.write('=== KALLAX Degradation Status ===\n\n');
+      process.stdout.write(`Current Tier : ${state.currentTier} (${['Degraded','Shell','Node.js','Rust'][state.currentTier]})\n`);
+      process.stdout.write(`Target Tier  : ${state.targetTier}\n`);
+      process.stdout.write(`Crash Count  : ${state.crashCount}\n\n`);
+
+      process.stdout.write('Tier Status:\n');
+      for (const level of [3, 2, 1, 0] as const) {
+        const tier = state.tiers[level];
+        const icon = tier.healthy ? '✓' : '✗';
+        const uptime = tier.degradedAt
+          ? `degraded at ${new Date(tier.degradedAt).toISOString()}`
+          : 'healthy';
+        process.stdout.write(`  ${icon} L${level} ${tier.name.padEnd(10)} ${uptime} (probe: ${new Date(tier.lastProbeAt).toISOString()})\n`);
+      }
+
+      process.stdout.write('\nUse "kallax system:degradation probe" to force a probe cycle.\n');
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+program
+  .command('system:degradation-probe')
+  .description('Force degradation probe cycle')
+  .action(async () => {
+    try {
+      const { getRecoveryManager } = await import('./core/recovery-manager.js');
+      const rm = getRecoveryManager();
+      await rm.probeAll();
+      const state = rm.getState();
+      process.stdout.write(`Probe complete. Current tier: ${state.currentTier}\n`);
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+// ── Task handoff command ────────────────────────────────────────────────────
+
+task
+  .command('handoff <taskId> <toPerformerId>')
+  .description('Handoff a task to another performer')
+  .option('-m, --message <message>', 'Handoff message')
+  .action(async (taskId: string, toPerformerId: string, opts?: { message?: string }) => {
+    try {
+      const taskResult = ctx.db.getTask(taskId);
+      if (taskResult.isErr()) {
+        logger.kallaxError(taskResult.error);
+        process.exit(1);
+      }
+      const task = taskResult.value;
+      if (!task) {
+        logger.error({ taskId }, 'task not found');
+        process.exit(1);
+      }
+
+      const oldPerformerId = task.performerId;
+      const now = Date.now();
+
+      // Update task performer
+      const updateResult = ctx.db.updateTask(taskId, {
+        performerId: toPerformerId,
+        status: 'pending',   // reset so new performer must claim
+        progress: task.progress,
+        updatedAt: now,
+      });
+      if (updateResult.isErr()) {
+        logger.kallaxError(updateResult.error);
+        process.exit(1);
+      }
+
+      // Unset old performer's current task if they held this one
+      if (oldPerformerId) {
+        const oldInstResult = ctx.db.listInstances({ role: 'performer' });
+        if (oldInstResult.isOk()) {
+          for (const inst of oldInstResult.value) {
+            if (inst.currentTaskId === taskId) {
+              await ctx.instanceRegistry.updateStatus(inst.id, 'idle');
+            }
+          }
+        }
+      }
+
+      process.stdout.write(JSON.stringify({
+        taskId, fromPerformer: oldPerformerId, toPerformer: toPerformerId,
+        progress: task.progress, message: opts?.['message'] ?? '',
+        status: 'handoff_ok',
+      }) + '\n');
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+// ── Submit PR command ───────────────────────────────────────────────────────
+
+program
+  .command('submit:pr')
+  .description('Submit a pull request — stage, commit, push, and create PR')
+  .option('-t, --title <title>', 'PR title (defaults to branch name)')
+  .option('-b, --body <body>', 'PR description body')
+  .option('--base <branch>', 'Base branch', 'main')
+  .option('--no-gate', 'Skip gate review before submission')
+  .action(async (opts?: { title?: string; body?: string; base?: string; gate?: boolean }) => {
+    try {
+      const cwd = process.cwd();
+      const branchResult = await ctx.gitService.getCurrentBranch(cwd);
+      if (branchResult.isErr()) {
+        logger.kallaxError(branchResult.error);
+        process.exit(1);
+      }
+      const branch = branchResult.value;
+      const prTitle = opts?.['title'] ?? branch;
+      const prBody = opts?.['body'] ?? '';
+
+      // Optional gate check
+      const runGate = opts?.['gate'] !== false;
+      if (runGate) {
+        const { getGateReviewer } = await import('./core/gate-reviewer.js');
+        const reviewer = getGateReviewer();
+        const gateResult = await reviewer.review({ cwd, maxLevel: 2 });
+        if (gateResult.isErr()) {
+          logger.kallaxError(gateResult.error);
+          process.exit(1);
+        }
+        if (!gateResult.value.passed) {
+          logger.error({ checks: gateResult.value.checks }, 'gate review failed — aborting PR submission');
+          process.exit(1);
+        }
+        logger.info({}, 'gate review passed');
+      }
+
+      // Stage, commit, push
+      const stageResult = await ctx.gitService.stageAll(cwd);
+      if (stageResult.isErr()) { logger.kallaxError(stageResult.error); process.exit(1); }
+
+      const commitResult = await ctx.gitService.commit(cwd, `PR: ${prTitle}`);
+      if (commitResult.isErr()) { logger.kallaxError(commitResult.error); process.exit(1); }
+
+      const pushResult = await ctx.gitService.push(cwd, branch);
+      if (pushResult.isErr()) { logger.kallaxError(pushResult.error); process.exit(1); }
+
+      const prResult = await ctx.gitService.createPr(cwd, prTitle, prBody, opts?.['base']);
+      if (prResult.isErr()) { logger.kallaxError(prResult.error); process.exit(1); }
+
+      process.stdout.write(JSON.stringify({
+        branch, commitHash: commitResult.value.hash, prNumber: prResult.value.number,
+        prUrl: prResult.value.url, base: opts?.['base'] ?? 'main',
+      }) + '\n');
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+// ── Gate review command ─────────────────────────────────────────────────────
+
+program
+  .command('gate:review')
+  .description('Run gate review checks (4 levels)')
+  .option('-l, --level <level>', 'Max gate level (1-4)', '4')
+  .option('--ci', 'CI mode — exit with code 1 on failure')
+  .action(async (opts?: { level?: string; ci?: boolean }) => {
+    try {
+      const { getGateReviewer } = await import('./core/gate-reviewer.js');
+      const reviewer = getGateReviewer();
+      const maxLevel = parseInt(opts?.['level'] ?? '4', 10) as 1 | 2 | 3 | 4;
+
+      const result = await reviewer.review({ maxLevel, cwd: process.cwd() });
+      if (result.isErr()) {
+        logger.kallaxError(result.error);
+        process.exit(1);
+      }
+
+      const r = result.value;
+      process.stdout.write(JSON.stringify({
+        passed: r.passed, maxLevel: r.maxLevel,
+        checks: r.checks, summary: r.summary,
+      }, null, 2) + '\n');
+
+      if (opts?.['ci'] && !r.passed) process.exit(1);
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+// ── Dependency analyze command ──────────────────────────────────────────────
+
+program
+  .command('dependency:analyze <ticketId>')
+  .description('Analyze task dependency relationships')
+  .option('-d, --depth <depth>', 'Max dependency depth', '10')
+  .action((ticketId: string, opts?: { depth?: string }) => {
+    try {
+      const ticketsResult = ctx.db.listTickets({});
+      const tickets = ticketsResult.isOk() ? ticketsResult.value : [];
+
+      // Build dependency map from ticket labels / parent references
+      const depsMap = new Map<string, string[]>();
+      const targetTicket = tickets.find((t: { id: string }) => t.id === ticketId);
+      if (!targetTicket) {
+        logger.error({ ticketId }, 'ticket not found');
+        process.exit(1);
+      }
+
+      for (const t of tickets) {
+        const deps: string[] = [];
+        // Look for parent relationships or label-based deps
+        if (t.parentTicketId) deps.push(t.parentTicketId);
+        depsMap.set(t.id, deps);
+      }
+
+      const maxDepth = parseInt(opts?.['depth'] ?? '10', 10);
+      const depDepth = calculateDependencyDepth(depsMap);
+      const crossModule = countCrossModules(tickets.map((t: { fileScope?: string[] }) => t.fileScope ?? []));
+
+      const result = analyzeComplexity({
+        subtaskCount: tickets.length,
+        dependencyDepth: Math.min(depDepth, maxDepth),
+        maxBlockedBy: 0,
+        crossModuleCount: crossModule,
+      });
+
+      process.stdout.write(JSON.stringify({
+        ticketId, totalTickets: tickets.length, dependencyDepth: depDepth,
+        crossModule, complexity: result,
+      }, null, 2) + '\n');
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+// ── DB commands ──────────────────────────────────────────────────────────────
+
+const dbCmd = program.command('db').description('Database migration management');
+
+dbCmd
+  .command('migrate')
+  .description('Run pending database migrations')
+  .option('--dry-run', 'Show migrations without applying')
+  .action(async (opts?: { dryRun?: boolean }) => {
+    try {
+      const { createSQLiteManager } = await import('./core/sqlite-manager.js');
+      // Reinitialize DB to ensure schema is up to date
+      const dbResult = createSQLiteManager({ path: '.kallax/data/kallax.db' });
+      if (dbResult.isErr()) {
+        logger.kallaxError(dbResult.error);
+        process.exit(1);
+      }
+
+      const stats = dbResult.value.getStats();
+      process.stdout.write(JSON.stringify({
+        action: opts?.['dryRun'] ? 'dry-run' : 'migrate',
+        ticketCount: stats.ticketCount,
+        taskCount: stats.taskCount,
+        instanceCount: stats.instanceCount,
+        messageCount: stats.messageCount,
+        status: 'ok',
+      }) + '\n');
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+dbCmd
+  .command('status')
+  .description('Show database status and statistics')
+  .action(async () => {
+    try {
+      const stats = ctx.db.getStats();
+      process.stdout.write(JSON.stringify({
+        tickets: stats.ticketCount,
+        tasks: stats.taskCount,
+        instances: stats.instanceCount,
+        messages: stats.messageCount,
+      }, null, 2) + '\n');
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+// ── Alerts command ───────────────────────────────────────────────────────────
+
+program
+  .command('alerts:list')
+  .description('List active system alerts')
+  .option('--since <hours>', 'Only alerts from last N hours', '24')
+  .action(async (opts?: { since?: string }) => {
+    try {
+      const sinceHours = parseInt(opts?.['since'] ?? '24', 10);
+      const thresholdMs = sinceHours * 3600_000;
+      const now = Date.now();
+      const alerts: Array<{ type: string; severity: string; message: string; timestamp: number }> = [];
+
+      // 1. Stale instances
+      const staleResult = await ctx.instanceRegistry.markStaleInstances(thresholdMs);
+      if (staleResult.isOk()) {
+        for (const inst of staleResult.value) {
+          alerts.push({
+            type: 'stale_instance', severity: 'warning',
+            message: `Instance ${inst.id} (${inst.role}) stale since ${new Date(inst.lastHeartbeat).toISOString()}`,
+            timestamp: now,
+          });
+        }
+      }
+
+      // 2. Failed tasks
+      const failedTasks = ctx.db.listTasks({ status: 'failed', limit: 50 });
+      if (failedTasks.isOk()) {
+        for (const t of failedTasks.value) {
+          const age = (now - t.updatedAt) / 3600_000;
+          if (age <= sinceHours) {
+            alerts.push({
+              type: 'failed_task', severity: 'error',
+              message: `Task ${t.id} (${t.type}) failed: ${t.error ?? 'unknown'}`,
+              timestamp: t.updatedAt,
+            });
+          }
+        }
+      }
+
+      // 3. Stale tickets (blocked > threshold)
+      const blockedTickets = ctx.db.listTickets({ status: 'blocked', limit: 50 });
+      if (blockedTickets.isOk()) {
+        for (const t of blockedTickets.value) {
+          const age = (now - t.updatedAt) / 3600_000;
+          if (age <= sinceHours) {
+            alerts.push({
+              type: 'blocked_ticket', severity: 'info',
+              message: `Ticket ${t.id} blocked since ${new Date(t.updatedAt).toISOString()}`,
+              timestamp: t.updatedAt,
+            });
+          }
+        }
+      }
+
+      process.stdout.write(JSON.stringify({ alerts, count: alerts.length, sinceHours }, null, 2) + '\n');
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+// ── Recommend command ────────────────────────────────────────────────────────
+
+program
+  .command('recommend')
+  .description('Recommend related tasks from knowledge base')
+  .option('-q, --query <query>', 'Search query', '')
+  .option('-t, --tags <tags>', 'Filter by comma-separated tags')
+  .option('-l, --limit <limit>', 'Max recommendations', '5')
+  .action(async (opts?: { query?: string; tags?: string; limit?: string }) => {
+    try {
+      const { getKnowledgeBase } = await import('./core/knowledge-base.js');
+      const kb = getKnowledgeBase();
+
+      const tags = opts?.['tags'] ? opts['tags'].split(',').map((t: string) => t.trim()) : undefined;
+      const query = opts?.['query'] ?? '';
+      const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+
+      const result = kb.search({
+        terms,
+        tags,
+        limit: parseInt(opts?.['limit'] ?? '5', 10),
+        sortBy: 'relevance',
+      });
+
+      if (result.isErr()) { logger.kallaxError(result.error); process.exit(1); }
+
+      if (result.value.length === 0) {
+        process.stdout.write(JSON.stringify({ recommendations: [], count: 0 }) + '\n');
+      } else {
+        process.stdout.write(JSON.stringify({
+          recommendations: result.value.map((r) => ({
+            id: r.entry.id, title: r.entry.title, score: r.score,
+            tags: r.entry.tags, preview: r.entry.content.slice(0, 100),
+          })),
+          count: result.value.length,
+        }, null, 2) + '\n');
+      }
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+// ── Expert compose command ──────────────────────────────────────────────────
+
+program
+  .command('expert:compose <task>')
+  .description('Recommend expert team composition for a task')
+  .action(async (task: string) => {
+    try {
+      const { getKnowledgeBase } = await import('./core/knowledge-base.js');
+      const kb = getKnowledgeBase();
+
+      // Search knowledge base for relevant expertise
+      const terms = task.toLowerCase().split(/\s+/).filter(Boolean);
+      const searchResult = kb.search({ terms, limit: 10, sortBy: 'relevance' });
+
+      if (searchResult.isErr()) { logger.kallaxError(searchResult.error); process.exit(1); }
+
+      // Extract unique skills from matched entries
+      const skills = new Set<string>();
+      for (const r of searchResult.value) {
+        for (const tag of r.entry.tags) skills.add(tag);
+      }
+
+      // Query available performers
+      const performersResult = ctx.db.listInstances({ role: 'performer' });
+      const performers = performersResult.isOk() ? performersResult.value : [];
+
+      process.stdout.write(JSON.stringify({
+        task,
+        matchedKnowledge: searchResult.value.length,
+        skillsRequired: Array.from(skills),
+        availablePerformers: performers.map((p) => ({
+          id: p.id, status: p.status,
+          capabilities: p.capabilities,
+          currentTask: p.currentTaskId,
+        })),
+        recommendation: searchResult.value.length > 0
+          ? `Found ${skills.size} relevant skill areas; ${performers.length} performers available`
+          : 'No matching expertise found in knowledge base',
+      }, null, 2) + '\n');
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+// ── Doc commands ─────────────────────────────────────────────────────────────
+
+const docCmd = program.command('doc').description('Documentation management');
+
+docCmd
+  .command('create <type> <title>')
+  .description('Create a documentation entry')
+  .option('-c, --content <content>', 'Document content or file path')
+  .option('-t, --tags <tags>', 'Comma-separated tags', 'documentation')
+  .action(async (type: string, title: string, opts?: { content?: string; tags?: string }) => {
+    try {
+      const { getKnowledgeBase } = await import('./core/knowledge-base.js');
+      const kb = getKnowledgeBase();
+
+      const tags = opts?.['tags'] ? opts['tags'].split(',').map((t: string) => t.trim()) : ['documentation'];
+      const content = opts?.['content'] ?? `# ${title}\n\nType: ${type}\nCreated: ${new Date().toISOString()}`;
+
+      const result = kb.add({
+        title: `[${type.toUpperCase()}] ${title}`,
+        content,
+        tags: [...tags, type, 'documentation'],
+        source: 'doc-cli',
+      });
+
+      if (result.isErr()) { logger.kallaxError(result.error); process.exit(1); }
+
+      process.stdout.write(JSON.stringify({
+        id: result.value.id, title: result.value.title, type,
+        tags: result.value.tags, words: result.value.content.length,
+      }) + '\n');
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+docCmd
+  .command('status')
+  .description('Show documentation summary')
+  .action(async () => {
+    try {
+      const { getKnowledgeBase } = await import('./core/knowledge-base.js');
+      const kb = getKnowledgeBase();
+      const stats = kb.getStats();
+      const docsResult = kb.search({ terms: ['documentation'], limit: 100, sortBy: 'date' });
+
+      const docs = docsResult.isOk() ? docsResult.value : [];
+      const byType = new Map<string, number>();
+      for (const d of docs) {
+        const typeTag = d.entry.tags.find((t: string) => ['design', 'api', 'guide', 'spec'].includes(t));
+        const type = typeTag ?? 'other';
+        byType.set(type, (byType.get(type) ?? 0) + 1);
+      }
+
+      process.stdout.write(JSON.stringify({
+        totalEntries: stats.totalEntries,
+        documentCount: docs.length,
+        byType: Object.fromEntries(byType),
+        lastUpdated: docs.length > 0 ? docs[0]!.entry.updatedAt : null,
+      }, null, 2) + '\n');
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+// ── Spike commands ───────────────────────────────────────────────────────────
+
+const spikeCmd = program.command('spike').description('Technical spike management');
+
+spikeCmd
+  .command('create <name>')
+  .description('Create a technical spike')
+  .option('-g, --goal <goal>', 'Spike goal', '')
+  .option('-t, --timebox <minutes>', 'Timebox in minutes', '120')
+  .action(async (name: string, opts?: { goal?: string; timebox?: string }) => {
+    try {
+      const now = Date.now();
+      const id = `SPIKE-${now.toString(36).toUpperCase()}`;
+      const { getKnowledgeBase } = await import('./core/knowledge-base.js');
+      const kb = getKnowledgeBase();
+
+      const result = kb.add({
+        title: `[SPIKE] ${name}`,
+        content: JSON.stringify({
+          id, name, goal: opts?.['goal'] ?? '',
+          timebox: parseInt(opts?.['timebox'] ?? '120', 10),
+          status: 'active', createdAt: now,
+        }),
+        tags: ['spike', 'research'],
+        source: 'spike-cli',
+      });
+
+      if (result.isErr()) { logger.kallaxError(result.error); process.exit(1); }
+
+      process.stdout.write(JSON.stringify({
+        id, name, goal: opts?.['goal'] ?? '',
+        timebox: parseInt(opts?.['timebox'] ?? '120', 10),
+        status: 'active', knowledgeId: result.value.id,
+      }) + '\n');
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+spikeCmd
+  .command('complete <name>')
+  .description('Mark a technical spike as complete')
+  .option('-f, --findings <findings>', 'Key findings')
+  .action(async (name: string, opts?: { findings?: string }) => {
+    try {
+      const { getKnowledgeBase } = await import('./core/knowledge-base.js');
+      const kb = getKnowledgeBase();
+
+      const searchResult = kb.search({
+        terms: name.toLowerCase().split(/\s+/).filter(Boolean),
+        tags: ['spike'],
+        limit: 5,
+        sortBy: 'date',
+      });
+
+      if (searchResult.isErr()) { logger.kallaxError(searchResult.error); process.exit(1); }
+
+      const active = searchResult.value.filter(
+        (r) => r.entry.tags.includes('spike') && r.entry.content.includes('"active"'),
+      );
+
+      if (active.length === 0) {
+        logger.error({ name }, 'no active spike found');
+        process.exit(1);
+      }
+
+      const entry = active[0]!.entry;
+      const existing = JSON.parse(entry.content);
+      existing.status = 'completed';
+      existing.completedAt = Date.now();
+      existing.findings = opts?.['findings'] ?? '';
+
+      const updateResult = kb.update(entry.id, {
+        content: JSON.stringify(existing),
+        tags: [...entry.tags, 'completed'],
+      });
+
+      if (updateResult.isErr()) { logger.kallaxError(updateResult.error); process.exit(1); }
+
+      process.stdout.write(JSON.stringify({
+        name, id: existing.id, status: 'completed',
+        findings: opts?.['findings'] ?? '',
+        elapsed: existing.completedAt - existing.createdAt,
+      }) + '\n');
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
+// ── Memory review command ────────────────────────────────────────────────────
+
+program
+  .command('memory:review')
+  .description('Review knowledge entries — list all for audit')
+  .option('-s, --stale <days>', 'Entries older than N days', '30')
+  .option('-n, --limit <limit>', 'Max entries', '50')
+  .action(async (opts?: { stale?: string; limit?: string }) => {
+    try {
+      const { getKnowledgeBase } = await import('./core/knowledge-base.js');
+      const kb = getKnowledgeBase();
+
+      const staleDays = parseInt(opts?.['stale'] ?? '30', 10);
+      const limit = parseInt(opts?.['limit'] ?? '50', 10);
+      const cutoff = Date.now() - staleDays * 86400_000;
+
+      const allResult = kb.list({ limit: 1000 });
+      if (allResult.isErr()) { logger.kallaxError(allResult.error); process.exit(1); }
+
+      const stats = kb.getStats();
+      const stale: Array<{ id: string; title: string; ageDays: number; tags: string[] }> = [];
+      const fresh: Array<{ id: string; title: string; tags: string[] }> = [];
+
+      for (const entry of allResult.value) {
+        const ageDays = (Date.now() - entry.updatedAt) / 86400_000;
+        if (ageDays > staleDays) {
+          stale.push({ id: entry.id, title: entry.title, ageDays: Math.round(ageDays), tags: [...entry.tags] });
+        } else {
+          fresh.push({ id: entry.id, title: entry.title, tags: [...entry.tags] });
+        }
+      }
+
+      stale.sort((a, b) => b.ageDays - a.ageDays);
+
+      process.stdout.write(JSON.stringify({
+        stats: { total: stats.totalEntries, words: stats.totalWords },
+        stale: stale.slice(0, limit),
+        fresh: fresh.slice(0, limit),
+        summary: `${stale.length} stale entries (>${staleDays}d), ${fresh.length} fresh entries`,
+      }, null, 2) + '\n');
+    } catch (error: unknown) {
+      logger.kallaxError(KallaxError.fromUnknown(error));
+      process.exit(1);
+    }
+  });
+
 // ── Parse ──────────────────────────────────────────────────────────────────
 
 program.parseAsync(process.argv).catch((error: unknown) => {

@@ -69,8 +69,8 @@ export function createContextCompressor(): ContextCompressor {
         return { beforeTokens: totalTokens, afterTokens: totalTokens, removedItems: 0, strategy: cfg.strategy, items };
       }
 
-      const keep = items.slice(-cfg.keepRecent);
-      const middle = items.slice(0, -cfg.keepRecent);
+      const keep = cfg.keepRecent > 0 ? items.slice(-cfg.keepRecent) : [];
+      const middle = cfg.keepRecent > 0 ? items.slice(0, -cfg.keepRecent) : items;
 
       let keptItems: T[];
 

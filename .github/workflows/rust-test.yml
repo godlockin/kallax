@@ -1,0 +1,108 @@
+name: Rust Tests
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'rust/**'
+      - 'Cargo.lock'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'rust/**'
+      - 'Cargo.lock'
+
+env:
+  CARGO_TERM_COLORS: always
+
+jobs:
+  test:
+    name: cargo test --all-features
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./rust
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Run tests
+        run: cargo test --all-features
+
+  test-no-default:
+    name: cargo test --no-default-features
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./rust
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Run tests (no default features)
+        run: cargo test --no-default-features
+        continue-on-error: true
+
+  doc-test:
+    name: cargo test --doc
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./rust
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Run doc tests
+        run: cargo test --doc
+
+  coverage:
+    name: cargo tarpaulin
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./rust
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Install cargo-tarpaulin
+        run: cargo install cargo-tarpaulin 2>/dev/null || echo "::warning::tarpaulin install failed"
+
+      - name: Generate coverage
+        run: cargo tarpaulin --all-features --out xml --output-dir ./coverage 2>/dev/null || echo "::warning::tarpaulin run failed"
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          directory: ./rust/coverage
+          fail_ci_if_error: false

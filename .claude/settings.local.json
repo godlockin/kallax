@@ -59,7 +59,12 @@
       "Bash(node/bin/kallax task *)",
       "Bash(node/bin/kallax task *)",
       "Bash(node/bin/kallax performer *)",
-      "Bash(npx vitest *)"
+      "Bash(npx vitest *)",
+      "mcp__plugin_serena_serena__find_file",
+      "Bash(sed -i '' 's/const tickets = ctx.db.listTickets\\({}\\).value ?? \\\\[\\\\];/const ticketsResult = ctx.db.listTickets\\({}\\); const tickets = ticketsResult.isOk\\(\\) ? ticketsResult.value : [];/' node/src/index.ts)",
+      "Bash(sed -i '' 's/const tickets = \\(ctx.db.listTickets\\({}\\).value ?? \\\\[\\\\]\\)/const ticketsResult = ctx.db.listTickets\\({}\\); const tickets = ticketsResult.isOk\\(\\) ? ticketsResult.value : []/' node/src/index.ts)",
+      "Bash(cp /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/worktrees/agent-a28282852a3788864/rust/crates/kallax-engine/src/dag/scheduler.rs rust/crates/kallax-engine/src/dag/scheduler.rs)",
+      "Bash(cp /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/worktrees/agent-a28282852a3788864/rust/crates/kallax-engine/src/ticket_engine.rs rust/crates/kallax-engine/src/ticket_engine.rs)"
     ]
   }
 }

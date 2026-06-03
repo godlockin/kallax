@@ -3,7 +3,7 @@
  */
 
 import { logger } from '../../utils/logger.js';
-import type { ContextUsage } from './tracker.js';
+import type { ContextUsage, ContextTracker } from './tracker.js';
 import { getContextTracker } from './tracker.js';
 
 export type AlertLevel = 'info' | 'warning' | 'critical';
@@ -54,7 +54,8 @@ function generateAlertId(): string {
   return `alert_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
 }
 
-export function createContextAlertManager(): ContextAlertManager {
+export function createContextAlertManager(trackerOverride?: ContextTracker): ContextAlertManager {
+  const tracker = trackerOverride ?? getContextTracker();
   const alerts: ContextAlert[] = [];
   const lastAlertTime = new Map<string, number>();
   const MAX_ALERTS = 500;
@@ -69,7 +70,6 @@ export function createContextAlertManager(): ContextAlertManager {
 
   return {
     check(performerId: string): ContextAlert | null {
-      const tracker = getContextTracker();
       const usage = tracker.getUsage(performerId);
       if (!usage) return null;
 

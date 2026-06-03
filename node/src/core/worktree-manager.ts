@@ -216,8 +216,7 @@ export function createWorktreeManager(config: WorktreeConfig): KallaxResult<Work
 
       const worktrees: Worktree[] = [];
       const lines = result.value.split('\n');
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let current: Record<string, any> = {};
+      let current: Record<string, string> = {};
 
       for (const line of lines) {
         if (line.startsWith('worktree ')) {
