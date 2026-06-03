@@ -52,14 +52,9 @@ const CRASH_WINDOW_MS = 300_000; // 5 min crash window
 
 async function probeRust(): Promise<boolean> {
   try {
-    const { execFile } = await import('node:child_process');
-    const { promisify } = await import('node:util');
-    const execFileAsync = promisify(execFile);
-    const { stdout } = await execFileAsync('cargo', ['--version'], { timeout: 5000 });
-    // Check if Rust binary exists and responds
-    const { stat } = await import('node:fs/promises');
-    await stat('rust/target/release/kallax');
-    return true;
+    const { getRustBridge } = await import('./rust-bridge.js');
+    const bridge = getRustBridge();
+    return await bridge.isAlive();
   } catch {
     return false;
   }
