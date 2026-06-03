@@ -4,14 +4,13 @@
  */
 
 import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import { err, ok } from 'neverthrow';
 import { KallaxError, KallaxErrorCode, type KallaxResult } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 
-const execFileAsync = promisify(execFile);
+// execFile already returns Promise in Node 24+
 
 export interface WorktreeConfig {
   readonly projectRoot: string;
@@ -43,7 +42,7 @@ async function gitCommand(
   args: string[]
 ): Promise<KallaxResult<string>> {
   try {
-    const { stdout } = await execFileAsync('git', args, { cwd });
+    const { stdout } = await execFile('git', args, { cwd });
     return ok(stdout.trim());
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
