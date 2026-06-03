@@ -16,6 +16,7 @@ const execFileAsync = promisify(execFile);
 export interface WorktreeConfig {
   readonly projectRoot: string;
   readonly worktreeBasePath: string;
+  readonly maxWorktrees?: number;
 }
 
 export interface Worktree {
@@ -57,11 +58,28 @@ async function gitCommand(
 
 export function createWorktreeManager(config: WorktreeConfig): KallaxResult<WorktreeManager> {
   const { projectRoot, worktreeBasePath } = config;
+  const maxWorktrees = config.maxWorktrees ?? 200;
 
   // Generate worktree path for a task
   function getWorktreePath(taskId: string): string {
     const sanitizedId = taskId.replace(/[^a-zA-Z0-9-_]/g, '_');
     return path.join(worktreeBasePath, sanitizedId);
+  }
+
+  /**
+   * Validate that a resolved worktree path stays within the allowed base directory.
+   * Prevents path traversal attacks.
+   */
+  function validateWorktreePath(worktreePath: string): KallaxResult<string> {
+    const relative = path.relative(worktreeBasePath, worktreePath);
+    if (relative.startsWith('..') || path.isAbsolute(relative)) {
+      return err(
+        new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Path traversal detected', {
+          metadata: { worktreePath, worktreeBasePath },
+        })
+      );
+    }
+    return ok(worktreePath);
   }
 
   // Generate branch name for a task
@@ -84,6 +102,16 @@ export function createWorktreeManager(config: WorktreeConfig): KallaxResult<Work
           new KallaxError(KallaxErrorCode.WORKTREE_CREATE_FAILED, 'Failed to create worktree base directory', {
             cause: error,
             metadata: { worktreeBasePath },
+          })
+        );
+      }
+
+      // Check max worktrees limit
+      const listResult = await manager.list();
+      if (listResult.isOk() && listResult.value.length >= maxWorktrees) {
+        return err(
+          new KallaxError(KallaxErrorCode.WORKTREE_CREATE_FAILED, 'Max worktrees limit reached', {
+            metadata: { maxWorktrees, current: listResult.value.length },
           })
         );
       }
@@ -136,13 +164,14 @@ export function createWorktreeManager(config: WorktreeConfig): KallaxResult<Work
     },
 
     async remove(taskIdOrPath: string): Promise<KallaxResult<void>> {
-      let worktreePath: string;
+      // Always sanitize through getWorktreePath — never accept raw paths.
+      // The input is treated as a taskId; any path separators or dots are
+      // stripped by the sanitizer, preventing path traversal.
+      const worktreePath = getWorktreePath(taskIdOrPath);
 
-      // Determine if input is taskId or path
-      if (taskIdOrPath.startsWith('/') || taskIdOrPath.startsWith('.')) {
-        worktreePath = taskIdOrPath;
-      } else {
-        worktreePath = getWorktreePath(taskIdOrPath);
+      const pathValidation = validateWorktreePath(worktreePath);
+      if (pathValidation.isErr()) {
+        return err(pathValidation.error);
       }
 
       logger.info({ worktreePath }, 'removing worktree');

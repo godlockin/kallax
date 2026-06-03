@@ -5,8 +5,29 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-NODE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-PROJECT_ROOT="$(cd "$NODE_ROOT/../.." && pwd)"
+
+# Search upward from the script location to find the Node.js package root
+find_node_root() {
+  local dir="$SCRIPT_DIR"
+  while [ "$dir" != "/" ]; do
+    if [ -f "$dir/package.json" ]; then
+      # Verify it's the kallax package by checking for "kallax" in the name
+      if grep -q '"name":.*kallax' "$dir/package.json" 2>/dev/null; then
+        echo "$dir"
+        return 0
+      fi
+    fi
+    dir="$(dirname "$dir")"
+  done
+  echo ""
+}
+
+NODE_ROOT="$(find_node_root)"
+
+if [ -z "$NODE_ROOT" ]; then
+  echo "KALLAX: Cannot find project root (no package.json with '@kallax/node' or 'kallax' name found)." >&2
+  exit 1
+fi
 
 # Use tsx for development (no build needed), fallback to compiled JS
 if [ -f "$NODE_ROOT/node_modules/.bin/tsx" ]; then

@@ -203,7 +203,7 @@ export async function executeCompleteCommand(
     async compensate(state) {
       if (state.commitHash !== undefined && state.commitHash !== '') {
         logger.info({ taskId: state.taskId, commitHash: state.commitHash }, 'reverting commit');
-        const resetResult = await gitService.resetSoft(state.worktreePath, 'HEAD~1');
+        const resetResult = await gitService.resetSoft(state.worktreePath, state.commitHash + '^');
         if (resetResult.isErr()) {
           logger.error(
             { taskId: state.taskId, error: resetResult.error.message },
@@ -214,18 +214,35 @@ export async function executeCompleteCommand(
     },
   });
 
-  // ── Step 5: Push & create PR ───────────────────────────────────────────
+  // ── Step 5: Push branch ──────────────────────────────────────────────
+
+  saga.addStep({
+    name: 'push-branch',
+    async execute(state) {
+      logger.info({ taskId: state.taskId, branch: state.branchName }, 'pushing branch');
+      const pushResult = await gitService.push(state.worktreePath, state.branchName);
+      if (pushResult.isErr()) throw new Error(pushResult.error.message);
+      return state;
+    },
+    async compensate(state) {
+      logger.info({ taskId: state.taskId, branchName: state.branchName }, 'compensating: deleting remote branch');
+      const deleteResult = await gitService.deleteRemoteBranch(state.worktreePath, state.branchName);
+      if (deleteResult.isErr()) {
+        logger.error(
+          { taskId: state.taskId, error: deleteResult.error.message },
+          'compensation: failed to delete remote branch',
+        );
+      }
+    },
+  });
+
+  // ── Step 6: Create PR ───────────────────────────────────────────────
 
   saga.addStep({
     name: 'create-pr',
     async execute(state) {
-      logger.info({ taskId: state.taskId, branch: state.branchName }, 'pushing and creating PR');
+      logger.info({ taskId: state.taskId }, 'creating pull request');
 
-      // Push branch
-      const pushResult = await gitService.push(state.worktreePath, state.branchName);
-      if (pushResult.isErr()) throw new Error(pushResult.error.message);
-
-      // Create PR
       const prTitle = `feat: ${ticket.title}`;
       const prBody = [
         `## Summary`,
@@ -264,15 +281,13 @@ export async function executeCompleteCommand(
           );
         }
       }
-      // Also delete remote branch
-      const deleteResult = await gitService.deleteRemoteBranch(
-        state.worktreePath,
-        state.branchName,
-      );
-      if (deleteResult.isErr()) {
+      // Clean up worktree
+      logger.info({ taskId: state.taskId }, 'removing worktree');
+      const removeResult = await worktreeManager.remove(state.taskId);
+      if (removeResult.isErr()) {
         logger.warn(
-          { taskId: state.taskId, error: deleteResult.error.message },
-          'compensation: failed to delete remote branch',
+          { taskId: state.taskId, error: removeResult.error.message },
+          'compensation: failed to remove worktree',
         );
       }
     },

@@ -78,6 +78,12 @@ export function createApiServer(
   }
 
   const config: ServerConfig = configResult.data;
+
+  // HIGH-1: Warn if using default API key
+  if (config.apiKey === 'kallax-dev-key') {
+    logger.warn({}, 'Using default API key "kallax-dev-key". Set KALLAX_API_KEY env var for production.');
+  }
+
   let httpServer: http.Server | null = null;
   let sseClientCounter = 0;
   const startTime = Date.now();
@@ -96,11 +102,13 @@ export function createApiServer(
   }));
 
   // CORS
+  const isWildcardOrigin = config.corsOrigins.includes('*');
   app.use(cors({
-    origin: config.corsOrigins.includes('*') ? '*' : config.corsOrigins,
+    origin: isWildcardOrigin ? '*' : config.corsOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'X-KALLAX-API-Key', 'X-KALLAX-Role'],
-    credentials: true,
+    // credentials: true is illegal when origin is wildcard per CORS spec
+    credentials: !isWildcardOrigin,
   }));
 
   // Body parsing

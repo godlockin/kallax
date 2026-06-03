@@ -27,9 +27,29 @@ if command -v sqlite3 &>/dev/null; then
   sqlite3 "$DB_PATH" ".backup '$BACKUP_FILE'"
   echo "Backup created: $BACKUP_FILE"
 else
-  # Fallback: copy with WAL checkpoint
+  # Fallback: checkpoint WAL first, then copy
+  if command -v node &>/dev/null && [ -f "$PROJECT_ROOT/node_modules/better-sqlite3/build/Release/better_sqlite3.node" ]; then
+    npx tsx -e "
+      import Database from 'better-sqlite3';
+      const db = new Database('$DB_PATH');
+      db.pragma('wal_checkpoint(TRUNCATE)');
+      db.close();
+    " 2>/dev/null || true
+  fi
+
+  # Also try sqlite3 CLI for checkpoint (if available but .backup isn't)
+  if command -v sqlite3 &>/dev/null; then
+    sqlite3 "$DB_PATH" "PRAGMA wal_checkpoint(TRUNCATE);" 2>/dev/null || true
+  fi
+
   cp "$DB_PATH" "$BACKUP_FILE"
   echo "Backup created (copy): $BACKUP_FILE"
+
+  # Warn if WAL files exist (indicating uncheckpointed data)
+  if [ -f "${DB_PATH}-wal" ]; then
+    echo "WARNING: WAL file ${DB_PATH}-wal still exists after checkpoint." >&2
+    echo "Backup may be stale. Install sqlite3 CLI for reliable backups." >&2
+  fi
 fi
 
 # Compress

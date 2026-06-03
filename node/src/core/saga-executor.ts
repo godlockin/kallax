@@ -6,6 +6,7 @@
 import { err, ok } from 'neverthrow';
 import { KallaxError, KallaxErrorCode, type KallaxResult, type SagaStep } from '../types/index.js';
 import { logger } from '../utils/logger.js';
+import type { GitService } from './git-service.js';
 
 export interface SagaConfig {
   readonly name: string;
@@ -157,7 +158,7 @@ export interface TaskCompletionState {
   lintPassed: boolean;
 }
 
-export function createTaskCompletionSaga(): SagaExecutor<TaskCompletionState> {
+export function createTaskCompletionSaga(gitService: GitService): SagaExecutor<TaskCompletionState> {
   return createSagaExecutor<TaskCompletionState>({ name: 'task-completion', timeoutMs: 300000 })
     .addStep({
       name: 'run-tests',
@@ -190,9 +191,12 @@ export function createTaskCompletionSaga(): SagaExecutor<TaskCompletionState> {
         return { ...state, commitHash: 'abc123' };
       },
       async compensate(state) {
-        if (state.commitHash !== undefined) {
+        if (state.commitHash !== undefined && state.commitHash !== '') {
           logger.info({ taskId: state.taskId, commitHash: state.commitHash }, 'reverting commit');
-          // Git reset would happen here
+          const resetResult = await gitService.resetSoft(state.worktreePath, state.commitHash + '^');
+          if (resetResult.isErr()) {
+            logger.error({ taskId: state.taskId, error: resetResult.error.message }, 'compensation failed: could not revert commit');
+          }
         }
       },
     })
@@ -204,8 +208,11 @@ export function createTaskCompletionSaga(): SagaExecutor<TaskCompletionState> {
         return state;
       },
       async compensate(state) {
-        logger.info({ taskId: state.taskId, branchName: state.branchName }, 'deleting remote branch');
-        // Git push --delete would happen here
+        logger.info({ taskId: state.taskId, branchName: state.branchName }, 'compensating: deleting remote branch');
+        const deleteResult = await gitService.deleteRemoteBranch(state.worktreePath, state.branchName);
+        if (deleteResult.isErr()) {
+          logger.error({ taskId: state.taskId, error: deleteResult.error.message }, 'compensation failed: could not delete remote branch');
+        }
       },
     })
     .addStep({
@@ -218,7 +225,15 @@ export function createTaskCompletionSaga(): SagaExecutor<TaskCompletionState> {
       async compensate(state) {
         if (state.prNumber !== undefined) {
           logger.info({ taskId: state.taskId, prNumber: state.prNumber }, 'closing pull request');
-          // PR close would happen here
+          const closeResult = await gitService.closePr(state.prNumber);
+          if (closeResult.isErr()) {
+            logger.error({ taskId: state.taskId, error: closeResult.error.message }, 'compensation: failed to close PR');
+          }
+        }
+        // Also delete remote branch as safety cleanup
+        const deleteResult = await gitService.deleteRemoteBranch(state.worktreePath, state.branchName);
+        if (deleteResult.isErr()) {
+          logger.warn({ taskId: state.taskId, error: deleteResult.error.message }, 'compensation: failed to delete remote branch');
         }
       },
     });

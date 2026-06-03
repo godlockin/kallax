@@ -40,6 +40,7 @@ export interface DagExecutorOptions {
   readonly maxParallel?: number;
   readonly stateDir?: string;
   readonly dryRun?: boolean;
+  readonly maxWorktrees?: number;
 }
 
 export interface DagExecutor {
@@ -48,20 +49,38 @@ export interface DagExecutor {
   getRunState: (runId: string) => Promise<DagRunState | null>;
 }
 
+// ── Limits ────────────────────────────────────────────────────────────────────
+
+const MAX_NODES = 1000;
+
 // ── Script safety ──────────────────────────────────────────────────────────
 
-const FORBIDDEN_PATTERNS = [
-  /\$\{.*rm\s+-rf/i,
-  /\$\{.*sudo/i,
-  />\s*\/dev\/null.*&&/,
-  /\|\s*sh$/,
-];
+const ALLOWED_COMMANDS = new Set([
+  'kallax', 'git', 'npm', 'npx', 'node', 'tsx',
+  'cargo', 'rustc', 'make', 'echo', 'ls', 'cat',
+  'grep', 'find', 'mkdir', 'cp', 'mv', 'rm',
+  'python3', 'bash', 'sh',
+]);
 
 function validateScript(script: string): void {
-  for (const pattern of FORBIDDEN_PATTERNS) {
-    if (pattern.test(script)) {
-      throw new Error(`Dangerous script pattern detected: ${pattern.source}`);
+  const cmd = script.trim().split(/\s+/)[0];
+  if (!cmd || !ALLOWED_COMMANDS.has(cmd)) {
+    throw new Error(`Command not in allowlist: ${cmd}`);
+  }
+}
+
+async function checkWorktreeLimit(limit: number): Promise<void> {
+  try {
+    const { stdout } = await execFileAsync('git', ['worktree', 'list'], { timeout: 5000 });
+    const count = stdout.trim().split('\n').filter(Boolean).length;
+    if (count >= limit) {
+      throw new Error(`Worktree count ${count} exceeds limit of ${limit}`);
     }
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message.startsWith('Worktree count')) {
+      throw error;
+    }
+    // Not a git repo or git unavailable — skip check
   }
 }
 
@@ -93,12 +112,15 @@ function getStatePath(stateDir: string, runId: string): string {
   return path.join(stateDir, `${runId}.json`);
 }
 
-async function saveCheckpoint(state: DagRunState, stateDir: string): Promise<void> {
+async function saveCheckpoint(state: DagRunState, stateDir: string, schema?: DagSchema): Promise<void> {
   await fs.mkdir(stateDir, { recursive: true });
-  const serialized = {
+  const serialized: Record<string, unknown> = {
     ...state,
     nodes: Object.fromEntries(state.nodes),
   };
+  if (schema) {
+    serialized['schema'] = schema;
+  }
   await fs.writeFile(getStatePath(stateDir, state.runId), JSON.stringify(serialized, null, 2));
   state.updatedAt = Date.now();
 }
@@ -126,6 +148,12 @@ export function createDagExecutor(options: DagExecutorOptions = {}): DagExecutor
     nodeState: NodeState,
   ): Promise<{ success: boolean; error?: string }> {
     validateScript(node.script);
+
+    const worktreeLimit = options.maxWorktrees;
+    if (worktreeLimit !== undefined && worktreeLimit > 0) {
+      await checkWorktreeLimit(worktreeLimit);
+    }
+
     nodeState.status = 'running';
     nodeState.startedAt = Date.now();
     nodeState.attempt++;
@@ -171,7 +199,7 @@ export function createDagExecutor(options: DagExecutorOptions = {}): DagExecutor
       status: 'running',
     };
 
-    await saveCheckpoint(state, stateDir);
+    await saveCheckpoint(state, stateDir, schema);
     logger.info({ runId: state.runId, nodeCount: sorted.length }, 'DAG execution started');
 
     // Build dependency graph
@@ -267,12 +295,22 @@ export function createDagExecutor(options: DagExecutorOptions = {}): DagExecutor
 
   return {
     async execute(schema: DagSchema): Promise<DagRunState> {
+      if (schema.nodes.length > MAX_NODES) {
+        throw new Error(`DAG exceeds maximum of ${MAX_NODES} nodes (got ${schema.nodes.length})`);
+      }
       return runDag(schema);
     },
 
     async resume(runId: string): Promise<DagRunState> {
-      const state = await loadCheckpoint(stateDir, runId);
-      if (!state) throw new Error(`No checkpoint found for run: ${runId}`);
+      const raw = JSON.parse(await fs.readFile(getStatePath(stateDir, runId), 'utf-8'));
+      const state: DagRunState = {
+        ...raw,
+        nodes: new Map(Object.entries(raw.nodes)),
+      };
+      const storedSchema = raw.schema as DagSchema | undefined;
+      if (!storedSchema) {
+        throw new Error(`Cannot resume ${runId}: checkpoint has no schema, start a fresh run`);
+      }
 
       // Reset running nodes to pending
       for (const [, nodeState] of state.nodes) {
@@ -281,19 +319,7 @@ export function createDagExecutor(options: DagExecutorOptions = {}): DagExecutor
         }
       }
 
-      // Resume execution — rebuild schema from checkpoint
-      const schema: DagSchema = {
-        epic: state.epic,
-        nodes: Array.from(state.nodes.entries()).map(([id, ns]) => ({
-          id,
-          script: '', // Script info not stored in checkpoint — limitation
-          deps: [],   // Deps not stored in checkpoint
-          priority: 50,
-        })),
-        settings: state.settings,
-      };
-
-      return runDag(schema, state);
+      return runDag(storedSchema, state);
     },
 
     async getRunState(runId: string): Promise<DagRunState | null> {
