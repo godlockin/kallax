@@ -3,6 +3,8 @@
  * Re-exports all SQLite database functionality
  */
 
+export type { TraceLogRow, TraceOperations } from './trace-ops.js';
+export { createTraceOps } from './trace-ops.js';
 export type {
   SQLiteConfig,
   SQLiteManager,

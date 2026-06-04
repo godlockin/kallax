@@ -78,5 +78,32 @@ export function initializeSchema(db: Database.Database): void {
     CREATE INDEX IF NOT EXISTS idx_instances_heartbeat ON instances(last_heartbeat);
     CREATE INDEX IF NOT EXISTS idx_messages_priority ON messages(priority, created_at);
     CREATE INDEX IF NOT EXISTS idx_messages_target ON messages(target_id);
+
+    CREATE TABLE IF NOT EXISTS trace_logs (
+      trace_id TEXT PRIMARY KEY,
+      timestamp INTEGER NOT NULL,
+      actor TEXT NOT NULL,
+      action TEXT NOT NULL,
+      target TEXT NOT NULL,
+      detail TEXT NOT NULL,
+      result TEXT NOT NULL,
+      parent_trace_id TEXT
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_trace_logs_actor ON trace_logs(actor);
+    CREATE INDEX IF NOT EXISTS idx_trace_logs_target ON trace_logs(target);
+    CREATE INDEX IF NOT EXISTS idx_trace_logs_parent ON trace_logs(parent_trace_id);
+    CREATE INDEX IF NOT EXISTS idx_trace_logs_timestamp ON trace_logs(timestamp);
+
+    CREATE TABLE IF NOT EXISTS performer_sessions (
+      performer_id TEXT PRIMARY KEY,
+      current_task_id TEXT,
+      worktree_path TEXT,
+      last_commit_hash TEXT,
+      checkpoint_data TEXT NOT NULL,
+      updated_at INTEGER NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_performer_sessions_updated ON performer_sessions(updated_at);
   `);
 }

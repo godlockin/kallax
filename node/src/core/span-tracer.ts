@@ -6,8 +6,11 @@
  * console.log is un-queryable in production — use structured spans instead.
  */
 
+import type Database from 'better-sqlite3';
 import { logger } from '../utils/logger.js';
 import type { SQLiteManager } from './sqlite/index.js';
+import { createTraceOps } from './sqlite/trace-ops.js';
+import type { TraceLogRow } from './sqlite/trace-ops.js';
 
 export interface SpanContext {
   readonly traceId: string;
@@ -48,6 +51,26 @@ export interface SpanTracer {
   startSpan: (name: string, attributes?: Record<string, unknown>) => Span;
   getActiveSpan: () => Span | null;
   withSpan: <T>(name: string, fn: (span: Span) => Promise<T>) => Promise<T>;
+}
+
+// ── Trace Log ─────────────────────────────────────────────────────────────────
+
+export interface TraceEntry {
+  readonly traceId: string;
+  readonly timestamp: number;
+  readonly actor: string;
+  readonly action: string;
+  readonly target: string;
+  readonly detail: Readonly<Record<string, unknown>>;
+  readonly result: 'success' | 'failure' | 'pending';
+  readonly parentTraceId?: string;
+}
+
+export interface TraceLog {
+  record: (entry: Omit<TraceEntry, 'traceId' | 'timestamp'>) => string;
+  getChain: (traceId: string) => TraceEntry[];
+  getTaskTrace: (taskId: string) => TraceEntry[];
+  getPerformerTrace: (performerId: string) => TraceEntry[];
 }
 
 let idCounter = 0;
@@ -196,4 +219,57 @@ export function getSpanTracer(db?: SQLiteManager): SpanTracer {
     defaultTracer = createSpanTracer(db);
   }
   return defaultTracer;
+}
+
+// ── Trace Log Implementation ──────────────────────────────────────────────────
+
+function generateTraceId(): string {
+  return `tr_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function rowToTraceEntry(row: TraceLogRow): TraceEntry {
+  return {
+    traceId: row.trace_id,
+    timestamp: row.timestamp,
+    actor: row.actor,
+    action: row.action,
+    target: row.target,
+    detail: JSON.parse(row.detail) as Record<string, unknown>,
+    result: row.result as TraceEntry['result'],
+    parentTraceId: row.parent_trace_id !== null ? row.parent_trace_id : undefined,
+  };
+}
+
+export function createTraceLog(db: Database.Database): TraceLog {
+  const ops = createTraceOps(db);
+
+  return {
+    record(entry: Omit<TraceEntry, 'traceId' | 'timestamp'>): string {
+      const traceId = generateTraceId();
+      const timestamp = Date.now();
+      ops.insertTrace({
+        trace_id: traceId,
+        timestamp,
+        actor: entry.actor,
+        action: entry.action,
+        target: entry.target,
+        detail: JSON.stringify(entry.detail),
+        result: entry.result,
+        parent_trace_id: entry.parentTraceId !== undefined ? entry.parentTraceId : null,
+      });
+      return traceId;
+    },
+
+    getChain(traceId: string): TraceEntry[] {
+      return ops.getTraceChain(traceId).map(rowToTraceEntry);
+    },
+
+    getTaskTrace(taskId: string): TraceEntry[] {
+      return ops.getTracesByTarget(taskId).map(rowToTraceEntry);
+    },
+
+    getPerformerTrace(performerId: string): TraceEntry[] {
+      return ops.getTracesByActor(performerId).map(rowToTraceEntry);
+    },
+  };
 }

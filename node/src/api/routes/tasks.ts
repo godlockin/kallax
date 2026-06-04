@@ -6,7 +6,7 @@
 
 import { Router } from 'express';
 import type { Request, Response } from 'express';
-import { TaskStatus, TaskType, KallaxError } from '../../types/index.js';
+import { TaskStatus, TaskType, KallaxError, KallaxErrorCode, EventType } from '../../types/index.js';
 import { logger } from '../../utils/logger.js';
 import type { SQLiteManager } from '../../core/sqlite/index.js';
 import type { TaskAssigner } from '../../core/task-assigner.js';
@@ -14,8 +14,8 @@ import type { WorktreeManager } from '../../core/worktree-manager.js';
 import type { OutputVerifier } from '../../core/output-verifier.js';
 import type { IsolationChecker } from '../../core/isolation-checker.js';
 import type { SSEBus } from '../../core/sse-bus.js';
+import type { ClaimQueue } from '../../core/claim-queue.js';
 import { createEvent } from '../../core/sse-bus.js';
-import { EventType } from '../../types/index.js';
 import {
   createSuccessResponse,
   createErrorResponse,
@@ -32,6 +32,7 @@ export interface TaskRouteDependencies {
   readonly outputVerifier: OutputVerifier;
   readonly isolationChecker: IsolationChecker;
   readonly sseBus: SSEBus;
+  readonly claimQueue?: ClaimQueue;
 }
 
 /**
@@ -39,6 +40,88 @@ export interface TaskRouteDependencies {
  */
 export function createTaskRoutes(deps: TaskRouteDependencies): Router {
   const router = Router();
+
+  // GET /api/tasks/next — claim the next available task by priority + capability
+  // Must be placed BEFORE /:id to avoid route capture
+  router.get('/next', (req: Request, res: Response): void => {
+    void (async () => {
+      try {
+        if (deps.claimQueue === undefined) {
+          res.status(501).json({
+            success: false,
+            error: { code: 'NOT_IMPLEMENTED', message: 'Claim queue not configured' },
+            timestamp: Date.now(),
+          });
+          return;
+        }
+
+        const performerId = req.query['performerId'] as string | undefined;
+        const capabilitiesStr = req.query['capabilities'] as string | undefined;
+
+        if (performerId === undefined || typeof performerId !== 'string') {
+          res.status(400).json({
+            success: false,
+            error: { code: 'VALIDATION_ERROR', message: 'performerId is required' },
+            timestamp: Date.now(),
+          });
+          return;
+        }
+
+        const capabilities: string[] =
+          capabilitiesStr !== undefined && capabilitiesStr.length > 0
+            ? capabilitiesStr.split(',').map((c) => c.trim()).filter((c) => c.length > 0)
+            : [];
+
+        // Find next matching task from claim queue
+        const item = deps.claimQueue.dequeue(performerId, capabilities);
+
+        if (item === null) {
+          // Also try DB-based fallback for tasks not in in-memory queue
+          const dbResult = await deps.taskAssigner.claimNextTask(performerId, capabilities);
+          if (dbResult.isErr()) {
+            res.status(500).json(createErrorResponse(dbResult.error));
+            return;
+          }
+          res.json(createSuccessResponse(dbResult.value));
+          return;
+        }
+
+        // Claim in DB
+        const assignResult = await deps.taskAssigner.assignTask(item.taskId, performerId);
+        if (assignResult.isErr()) {
+          // DB claim failed — re-enqueue and return error
+          deps.claimQueue.enqueue(item.taskId, item.ticketId, item.priority, item.requiredCapabilities);
+          const err = assignResult.error;
+          if (
+            err.code === KallaxErrorCode.TASK_ALREADY_CLAIMED ||
+            err.code === KallaxErrorCode.TASK_NOT_FOUND
+          ) {
+            res.status(409).json(createErrorResponse(err));
+            return;
+          }
+          res.status(500).json(createErrorResponse(err));
+          return;
+        }
+
+        const event = createEvent(
+          EventType.TASK_CLAIMED,
+          { taskId: item.taskId, performerId },
+          'api-server'
+        );
+        deps.sseBus.publish(event);
+
+        logger.info(
+          { taskId: item.taskId, performerId, priority: item.priority },
+          'task claimed via /tasks/next'
+        );
+        res.json(createSuccessResponse(assignResult.value));
+      } catch (error: unknown) {
+        const kallaxError = KallaxError.fromUnknown(error);
+        logger.error({ error: kallaxError.message }, 'failed to claim next task');
+        res.status(500).json(createErrorResponse(kallaxError));
+      }
+    })();
+  });
 
   // Mount claim/complete sub-routes under /:id
   router.use('/:id', createClaimRoutes(deps));
@@ -149,6 +232,12 @@ export function createTaskRoutes(deps: TaskRouteDependencies): Router {
           'api-server'
         );
         deps.sseBus.publish(event);
+
+        // Auto-enqueue in claim queue if configured
+        if (deps.claimQueue !== undefined) {
+          const priority = priorityFromTicket(ticket.priority);
+          deps.claimQueue.enqueue(task.id, ticket.id, priority, ticket.labels);
+        }
 
         logger.info({ taskId: task.id, ticketId: body.ticketId }, 'task created via API');
 
@@ -352,4 +441,17 @@ export function createTaskRoutes(deps: TaskRouteDependencies): Router {
 function isValidTaskType(value: string): value is TaskType {
   const validTypes = Object.values(TaskType) as string[];
   return validTypes.includes(value);
+}
+
+/**
+ * Map ticket priority label to numeric priority for claim queue
+ */
+function priorityFromTicket(priority: string): number {
+  switch (priority) {
+    case 'P0': return 1000;
+    case 'P1': return 500;
+    case 'P2': return 100;
+    case 'P3': return 10;
+    default: return 0;
+  }
 }
