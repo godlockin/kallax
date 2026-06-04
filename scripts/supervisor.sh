@@ -72,6 +72,21 @@ while [ $RESTART_COUNT -le $MAX_RESTARTS ]; do
   SERVER_PID=$!
   info "Server PID: ${SERVER_PID}"
 
+  # Health check loop — wait up to 10s for /live endpoint
+  HEALTHY=false
+  for i in $(seq 1 20); do
+    if curl -sf "http://127.0.0.1:9877/live" >/dev/null 2>&1; then
+      HEALTHY=true
+      break
+    fi
+    sleep 0.5
+  done
+  if [ "$HEALTHY" = true ]; then
+    info "Server health check passed (${i}x0.5s)"
+  else
+    warn "Server health check did not pass within 10s — will still monitor process"
+  fi
+
   # Wait for process (blocking)
   wait $SERVER_PID 2>/dev/null || true
   EXIT_CODE=$?

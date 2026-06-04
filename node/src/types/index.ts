@@ -400,6 +400,8 @@ export const EventType = {
   TASK_COMPLETED: 'task.completed',
   TASK_FAILED: 'task.failed',
 
+  TASK_RELEASED: 'task.released',
+
   // Instance events
   INSTANCE_REGISTERED: 'instance.registered',
   INSTANCE_HEARTBEAT: 'instance.heartbeat',
