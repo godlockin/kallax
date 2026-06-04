@@ -10,7 +10,7 @@
 //! - verify:output
 
 use clap::{Parser, Subcommand};
-use kallax_core::{KallaxError, Performer, Priority, Result, Task, TaskType, Ticket};
+use kallax_core::{KallaxError, Performer, Priority, Result, Ticket};
 use kallax_engine::{
     AgentPool, ConflictResolver, EventBus, KnowledgeBase, TicketEngine,
 };

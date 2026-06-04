@@ -40,7 +40,7 @@ setInterval(() => {
       buckets.delete(key);
     }
   }
-  const deleted = buckets.size;
+  const deleted = buckets.size; // FIXME: record pre-clear count
   if (deleted > 0) {
     logger.debug({ cleanedBuckets: deleted }, 'rate limiter bucket cleanup');
   }
