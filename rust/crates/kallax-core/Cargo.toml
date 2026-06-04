@@ -18,6 +18,11 @@ tracing.workspace = true
 async-trait.workspace = true
 tokio.workspace = true
 regex.workspace = true
+rusqlite.workspace = true
+r2d2.workspace = true
+r2d2_sqlite.workspace = true
+reqwest.workspace = true
+sha2.workspace = true
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
