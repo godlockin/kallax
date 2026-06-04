@@ -123,7 +123,7 @@ async function fsResign(lockDir: string): Promise<void> {
 
 async function sqliteCampaign(_sqlitePath: string, instanceId: string): Promise<boolean> {
   try {
-    const { getSqliteManager } = await import('./sqlite-manager.js');
+    const { getSqliteManager } = await import('./sqlite/index.js');
     const db = getSqliteManager();
 
     db.run(`
@@ -168,7 +168,7 @@ async function sqliteCampaign(_sqlitePath: string, instanceId: string): Promise<
 
 async function sqliteRenew(_sqlitePath: string, instanceId: string): Promise<boolean> {
   try {
-    const { getSqliteManager } = await import('./sqlite-manager.js');
+    const { getSqliteManager } = await import('./sqlite/index.js');
     const db = getSqliteManager();
     const result = db.run(
       'UPDATE master_election SET renewed_at = ? WHERE id = 1 AND instance_id = ?',
@@ -180,7 +180,7 @@ async function sqliteRenew(_sqlitePath: string, instanceId: string): Promise<boo
 
 async function sqliteResign(_sqlitePath: string, instanceId: string): Promise<void> {
   try {
-    const { getSqliteManager } = await import('./sqlite-manager.js');
+    const { getSqliteManager } = await import('./sqlite/index.js');
     getSqliteManager().run(
       'DELETE FROM master_election WHERE id = 1 AND instance_id = ?',
       [instanceId],
