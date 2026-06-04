@@ -2,7 +2,6 @@
 title: Multi-Agent Collaboration Failure Modes
 category: lesson
 severity: critical
-source: KALLAX multi-agent-collab-lessons
 date: 2026-06-03
 status: active
 ---

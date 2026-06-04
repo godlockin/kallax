@@ -2,7 +2,6 @@
 title: Context Overflow Defense
 category: solution
 severity: critical
-source: KALLAX context-overflow-defense
 date: 2026-06-03
 status: active
 ---
