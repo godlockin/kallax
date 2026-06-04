@@ -1,15 +1,16 @@
 /**
  * KALLAX Multi-Session Simulation Test
- * Spawns a real API server process, then simulates Conductor and Performer
- * collaborating through the API. Validates concurrent claim protection,
- * state consistency, and server crash recovery.
+ * Spawns a real API server process (separate process via tsx), then simulates
+ * Conductor and Performer collaborating through the API. Validates concurrent
+ * claim protection, state consistency, and server crash recovery.
  *
  * Architecture:
- * 1. Seeds a temp SQLite DB with a ticket
- * 2. Spawns API server (separate process, temp bootstrap via tsx)
- * 3. Simulates Conductor and Performer sessions via HTTP
- * 4. Validates state across sessions
- * 5. Tests crash recovery by killing and restarting the server
+ * 1. Seeds a temp SQLite DB with a ticket (from test process)
+ * 2. Writes a bootstrap .mts file inside project dir (for ESM resolution)
+ * 3. Spawns API server via tsx (separate OS process)
+ * 4. Simulates Conductor and Performer sessions via HTTP fetch
+ * 5. Validates state across both "windows"
+ * 6. Tests crash recovery by killing and restarting the server
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
@@ -23,33 +24,36 @@ import { createSQLiteManager } from '../../src/core/sqlite/index.js';
 import type { Ticket } from '../../src/types/index.js';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const MONOREPO_ROOT = path.resolve(__dirname, '../../..');
 const PROJECT_ROOT = path.resolve(__dirname, '../..');
 const API_KEY = 'kallax-dev-key';
-const TSX_BIN = path.join(PROJECT_ROOT, 'node_modules', '.bin', 'tsx');
-
+const TSX_BIN = path.join(MONOREPO_ROOT, 'node_modules', '.bin', 'tsx');
+const BOOT_DIR = path.join(PROJECT_ROOT, 'tests', '.boot');
 const TICKET_ID = 'MULTI-SESSION-TKT-001';
 
 let dbPath: string;
 let port: number;
 let baseUrl: string;
 let serverProc: ChildProcess | null;
+let bootstrapPath: string;
 
 // ── Bootstrap Generator ────────────────────────────────────────────────────
 
 /**
- * Generates a standalone server bootstrap script.
- * All imports use absolute paths so it works from any temp location.
+ * Generate a standalone server bootstrap script.
+ * Bootstrap is written inside the project dir so ESM package resolution works.
  */
 function makeBootstrap(db: string, p: number): string {
   return `
-import { createSQLiteManager } from '${PROJECT_ROOT}/src/core/sqlite/index.js';
-import { createApiServer } from '${PROJECT_ROOT}/src/api/server.js';
-import { createTaskAssigner } from '${PROJECT_ROOT}/src/core/task-assigner.js';
-import { createInstanceRegistry } from '${PROJECT_ROOT}/src/core/instance-registry.js';
-import { createIsolationChecker } from '${PROJECT_ROOT}/src/core/isolation-checker.js';
-import { createSSEBus } from '${PROJECT_ROOT}/src/core/sse-bus.js';
-import { createOutputVerifier } from '${PROJECT_ROOT}/src/core/output-verifier.js';
+import { createSQLiteManager } from '../../src/core/sqlite/index.js';
+import { createApiServer } from '../../src/api/server.js';
+import { createTaskAssigner } from '../../src/core/task-assigner.js';
+import { createInstanceRegistry } from '../../src/core/instance-registry.js';
+import { createIsolationChecker } from '../../src/core/isolation-checker.js';
+import { createSSEBus } from '../../src/core/sse-bus.js';
+import { createOutputVerifier } from '../../src/core/output-verifier.js';
 import { ok } from 'neverthrow';
+
 (async () => {
 const _dbR = createSQLiteManager({ path: '${db}' });
 if (_dbR.isErr()) { console.error('DB init error:', _dbR.error.message); process.exit(1); }
@@ -58,7 +62,7 @@ const _isolation = createIsolationChecker();
 const _registry = createInstanceRegistry(_db);
 const _sseBus = createSSEBus();
 const _assigner = createTaskAssigner(_db, _isolation, _registry);
-const _ov = createOutputVerifier({ projectRoot: '${PROJECT_ROOT}', testCommand: 'echo ok' });
+const _ov = createOutputVerifier({ projectRoot: process.cwd(), testCommand: 'echo ok' });
 const _wt = {
   create: async () => ok({ path: '/tmp/wt', branch: 'br', commit: 'c', taskId: 't' }),
   remove: async () => ok(undefined),
@@ -81,8 +85,8 @@ process.on('SIGINT', async () => { await _server.stop(); _db.close(); process.ex
 
 // ── HTTP Helper ─────────────────────────────────────────────────────────────
 
-async function api(method: string, pathname: string, body?: unknown): Promise<{ status: number; data: Record<string, unknown> }> {
-  const url = new URL(pathname, baseUrl).toString();
+async function api(method: string, urlPath: string, body?: unknown): Promise<{ status: number; data: Record<string, unknown> }> {
+  const url = new URL(urlPath, baseUrl).toString();
   const res = await fetch(url, {
     method,
     headers: {
@@ -96,7 +100,7 @@ async function api(method: string, pathname: string, body?: unknown): Promise<{ 
 
 // ── Health Check ────────────────────────────────────────────────────────────
 
-async function waitForHealth(url: string, retries = 40, interval = 500): Promise<void> {
+async function waitForHealth(url: string, retries = 30, interval = 1000): Promise<void> {
   for (let i = 0; i < retries; i++) {
     try {
       const res = await fetch(url);
@@ -106,7 +110,7 @@ async function waitForHealth(url: string, retries = 40, interval = 500): Promise
         if (health?.['status'] === 'healthy') return;
       }
     } catch {
-      // server not ready
+      // server not ready yet
     }
     await new Promise((r) => setTimeout(r, interval));
   }
@@ -116,7 +120,11 @@ async function waitForHealth(url: string, retries = 40, interval = 500): Promise
 // ── Server Lifecycle ────────────────────────────────────────────────────────
 
 async function spawnServer(db: string, p: number): Promise<ChildProcess> {
-  const bootstrapPath = path.join(os.tmpdir(), `kallax-bs-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.mjs`);
+  fs.mkdirSync(BOOT_DIR, { recursive: true });
+  if (bootstrapPath !== undefined) {
+    try { fs.unlinkSync(bootstrapPath); } catch { /* ignore */ }
+  }
+  bootstrapPath = path.join(BOOT_DIR, `ms-${Date.now()}.mts`);
   fs.writeFileSync(bootstrapPath, makeBootstrap(db, p), 'utf-8');
 
   const proc = spawn(TSX_BIN, [bootstrapPath], {
@@ -125,11 +133,20 @@ async function spawnServer(db: string, p: number): Promise<ChildProcess> {
     env: { ...process.env as Record<string, string> },
   });
 
-  // Drain stdout/stderr to avoid backpressure
+  // Drain stdout
   proc.stdout!.on('data', () => {});
-  proc.stderr!.on('data', () => {});
+  // Log stderr for debugging
+  const stderrBuf: string[] = [];
+  proc.stderr!.on('data', (chunk: Buffer) => { stderrBuf.push(chunk.toString()); });
 
-  await waitForHealth(`http://127.0.0.1:${p}/health`);
+  try {
+    await waitForHealth(`http://127.0.0.1:${p}/health`);
+  } catch (err) {
+    const stderrText = stderrBuf.join('');
+    const extra = stderrText.length > 0 ? `\nChild stderr:\n${stderrText}` : '';
+    throw new Error(`${(err as Error).message}${extra}`);
+  }
+
   return proc;
 }
 
@@ -140,7 +157,7 @@ async function killServer(proc: ChildProcess): Promise<void> {
     const timer = setTimeout(() => {
       if (!proc.killed) proc.kill('SIGKILL');
       resolve();
-    }, 3000);
+    }, 4000);
     proc.on('exit', () => {
       clearTimeout(timer);
       resolve();
@@ -181,12 +198,14 @@ beforeAll(async () => {
 
   seedTicket(dbPath, TICKET_ID);
   serverProc = await spawnServer(dbPath, port);
-});
+}, 30000); // 30s hook timeout for process spawn
 
 afterAll(async () => {
   if (serverProc) await killServer(serverProc);
   try { fs.unlinkSync(dbPath); } catch { /* ignore */ }
-});
+  if (bootstrapPath !== undefined) { try { fs.unlinkSync(bootstrapPath); } catch { /* ignore */ } }
+  try { fs.rmSync(BOOT_DIR, { recursive: true, force: true }); } catch { /* ignore */ }
+}, 15000);
 
 // ── Tests ───────────────────────────────────────────────────────────────────
 
@@ -194,7 +213,7 @@ describe('Multi-Session Simulated Flow', () => {
 
   it('Scenario 1: Conductor creates pipeline, Performer executes (happy path)', async () => {
     // ── Conductor session ───────────────────────────────────────────────────
-    // Conductor registers
+    // Conductor registers (POST /api/agents/register)
     const condReg = await api('POST', '/api/agents/register', {
       name: 'conductor-ms',
       capabilities: ['orchestration'],
@@ -236,7 +255,7 @@ describe('Multi-Session Simulated Flow', () => {
     expect(claimedTask['status']).toBe('claimed');
     expect(claimedTask['performerId']).toBe(performerId);
 
-    // Verify state via GET
+    // Verify state via GET (Conductor polls and sees Performer's update)
     const getClaimed = await api('GET', `/api/tasks/${taskId}`);
     expect(getClaimed.status).toBe(200);
     const enriched = getClaimed.data['data'] as Record<string, unknown>;
@@ -250,7 +269,7 @@ describe('Multi-Session Simulated Flow', () => {
     });
     expect(complete.status).toBe(200);
 
-    // Verify completed state
+    // Verify completed state (Conductor polls and sees completion)
     const getDone = await api('GET', `/api/tasks/${taskId}`);
     expect(getDone.status).toBe(200);
     const doneEnriched = getDone.data['data'] as Record<string, unknown>;
@@ -278,14 +297,13 @@ describe('Multi-Session Simulated Flow', () => {
     expect(p2Reg.status).toBe(201);
     const p2Id = (p2Reg.data['data'] as Record<string, unknown>)['id'] as string;
 
-    // Fire two claims concurrently — only one should succeed
+    // Fire two claims concurrently -- only one should succeed
     const [r1, r2] = await Promise.all([
       api('POST', `/api/tasks/${taskId}/claim`, { performerId: p1Id }),
       api('POST', `/api/tasks/${taskId}/claim`, { performerId: p2Id }),
     ]);
-    const claims = [r1, r2];
-    const okCount = claims.filter((c) => c.status === 200).length;
-    const conflictCount = claims.filter((c) => c.status === 409).length;
+    const okCount = [r1, r2].filter((c) => c.status === 200).length;
+    const conflictCount = [r1, r2].filter((c) => c.status === 409).length;
 
     // Exactly one succeeds, the other gets 409 conflict
     expect(okCount).toBe(1);
@@ -297,7 +315,7 @@ describe('Multi-Session Simulated Flow', () => {
     const enriched = getFinal.data['data'] as Record<string, unknown>;
     const finalTask = enriched['task'] as Record<string, unknown>;
     expect(finalTask['status']).toBe('claimed');
-    expect(finalTask['performerId']).toBeOneOf([p1Id, p2Id]);
+    expect([p1Id, p2Id]).toContain(finalTask['performerId']);
   });
 
   it('Scenario 3: Server crash recovery (data persists after restart)', async () => {
@@ -314,7 +332,7 @@ describe('Multi-Session Simulated Flow', () => {
     const claim = await api('POST', `/api/tasks/${taskId}/claim`, { performerId: perfId });
     expect(claim.status).toBe(200);
 
-    // ── Kill server ────────────────────────────────────────────────────────
+    // ── Kill server (simulate crash) ────────────────────────────────────────
     expect(serverProc).not.toBeNull();
     await killServer(serverProc!);
     serverProc = null;
@@ -323,7 +341,7 @@ describe('Multi-Session Simulated Flow', () => {
     const newProc = await spawnServer(dbPath, port);
     serverProc = newProc;
 
-    // Verify data persisted — task still exists in claimed state
+    // Verify data persisted -- task still exists in claimed state
     const get = await api('GET', `/api/tasks/${taskId}`);
     expect(get.status).toBe(200);
     const enriched = get.data['data'] as Record<string, unknown>;
@@ -331,6 +349,6 @@ describe('Multi-Session Simulated Flow', () => {
     expect(task['status']).toBe('claimed');
     expect(task['performerId']).toBe(perfId);
     expect(task['ticketId']).toBe(TICKET_ID);
-  });
+  }, 20000); // 20s timeout for crash recovery test (restart overhead)
 
 });
