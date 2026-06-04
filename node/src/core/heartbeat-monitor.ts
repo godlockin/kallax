@@ -298,11 +298,11 @@ export function createHeartbeatClient(
       }
 
       const body = (await response.json()) as Record<string, unknown>;
-      if (body.success !== true) {
+      if (body['success'] !== true) {
         return;
       }
 
-      const statusList = body.data as Array<Record<string, unknown>> | undefined;
+      const statusList = body['data'] as Array<Record<string, unknown>> | undefined;
       if (!Array.isArray(statusList)) {
         return;
       }
@@ -310,8 +310,8 @@ export function createHeartbeatClient(
       const deadPerformers: DeadPerformerInfo[] = [];
 
       for (const entry of statusList) {
-        const status = entry.status as string | undefined;
-        const lastHb = entry.lastHeartbeat as number | undefined;
+        const status = entry['status'] as string | undefined;
+        const lastHb = entry['lastHeartbeat'] as number | undefined;
         const isStale =
           status === 'error' ||
           (status !== 'shutdown' &&
@@ -320,11 +320,11 @@ export function createHeartbeatClient(
 
         if (isStale) {
           deadPerformers.push({
-            instanceId: entry.instanceId as string,
-            role: entry.role as string,
+            instanceId: entry['instanceId'] as string,
+            role: entry['role'] as string,
             status: status ?? 'unknown',
             lastHeartbeat: lastHb ?? 0,
-            currentTaskId: (entry.currentTaskId as string | null) ?? null,
+            currentTaskId: (entry['currentTaskId'] as string | null) ?? null,
           });
         }
       }
