@@ -15,7 +15,6 @@ use kallax_engine::{
     AgentPool, ConflictResolver, EventBus, KnowledgeBase, TicketEngine,
 };
 use std::path::PathBuf;
-use std::sync::Arc;
 use tracing::{error, info};
 use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 
