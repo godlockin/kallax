@@ -201,7 +201,6 @@ KALLAX 的产出验证协议，包含 4 个验证级别:
 |----------|------------|---------|
 | Master | Conductor | 避免敏感词，更准确表达协调角色 |
 | Performer | Performer | 避免敏感词，强调执行能力 |
-| kallax | kallax | 新品牌 |
 | expect/unwrap | Result | 错误处理改进 |
 | any 类型 | unknown + 类型守卫 | 类型安全改进 |
 | 无 TTL 缓存 | LRU + TTL | 资源管理改进 |

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # KALLAX Install/Upgrade — make /kallax-* available in ANY Claude Code window.
-# Mirrors KALLAX's approach: skills → ~/.claude/skills/, commands → ~/.claude/commands/
+# Mirroring approach: skills → ~/.claude/skills/, commands → ~/.claude/commands/
 #
 # Fresh install:  ./scripts/install.sh
 # Upgrade:         ./scripts/install.sh --upgrade

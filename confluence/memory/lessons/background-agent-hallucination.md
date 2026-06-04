@@ -2,7 +2,6 @@
 title: Background Agent Hallucination — Foreground for Writes
 category: lesson
 severity: critical
-source: KALLAX epic-006-slaver-lessons
 date: 2026-06-03
 status: active
 ---

@@ -2,7 +2,6 @@
 title: Project-Level Data Isolation
 category: lesson
 severity: critical
-source: KALLAX project-level-data-isolation
 date: 2026-06-03
 status: active
 ---

@@ -1,7 +1,7 @@
 /**
  * KALLAX Complexity Analyzer
  * Determines if an EPIC needs DAG-mode execution or simple sequential mode.
- * Based on KALLAX epic-utils.ts — simplified to pure algorithm (no file I/O).
+
  */
 
 export interface ComplexityInput {

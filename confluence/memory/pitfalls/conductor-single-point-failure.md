@@ -2,7 +2,6 @@
 title: Conductor Single Point of Failure
 category: pitfall
 severity: critical
-source: KALLAX master-single-point-failure
 date: 2026-06-03
 status: active
 ---

@@ -149,7 +149,6 @@ kallax verify:output TASK-XXX
 | Architecture | `docs/architecture/FRAMEWORK.md`, `DEGRADATION-STRATEGY.md` |
 | ADRs | `docs/adr/ADR-001-degradation-strategy.md` |
 | Operations | `docs/ops/backup-restore.md`, `docs/ops/runbook.md`, `docs/ops/monitoring.md` |
-| KALLAX migration | `docs/guides/migration-kallax-to-kallax.md` |
 
 ---
 
