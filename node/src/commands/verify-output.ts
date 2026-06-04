@@ -8,7 +8,7 @@ import type { KallaxResult, VerificationResult, VerificationLevel } from '../typ
 import { KallaxError, KallaxErrorCode, VerificationLevel as VL } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import type { OutputVerifier } from '../core/output-verifier.js';
-import type { SQLiteManager } from '../core/sqlite-manager.js';
+import type { SQLiteManager } from '../core/sqlite/index.js';
 import type { WorktreeManager } from '../core/worktree-manager.js';
 
 export interface VerifyOutputOptions {

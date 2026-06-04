@@ -16,7 +16,7 @@ export function registerDbCommands(program: Command, ctx: AppContext): void {
     .option('--dry-run', 'Show migrations without applying')
     .action(async (opts?: { dryRun?: boolean }) => {
       try {
-        const { createSQLiteManager } = await import('../core/sqlite-manager.js');
+        const { createSQLiteManager } = await import('../core/sqlite/index.js');
         // Reinitialize DB to ensure schema is up to date
         const dbResult = createSQLiteManager({ path: '.kallax/data/kallax.db' });
         if (dbResult.isErr()) {

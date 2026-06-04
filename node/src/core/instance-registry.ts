@@ -8,7 +8,7 @@ import { err, ok } from 'neverthrow';
 import type { KallaxResult, Instance, InstanceRole, InstanceStatus } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import { createCache, type Cache } from './cache-layer.js';
-import type { SQLiteManager } from './sqlite-manager.js';
+import type { SQLiteManager } from './sqlite/index.js';
 
 export interface InstanceRegistry {
   register: (role: InstanceRole, capabilities?: string[]) => Promise<KallaxResult<Instance>>;

@@ -7,7 +7,7 @@ import { ok } from 'neverthrow';
 import type { KallaxResult } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import { getDefaultMemoryMonitor, type MemoryStats } from '../utils/memory-monitor.js';
-import type { SQLiteManager, DatabaseStats } from '../core/sqlite-manager.js';
+import type { SQLiteManager, DatabaseStats } from '../core/sqlite/index.js';
 import type { InstanceRegistry } from '../core/instance-registry.js';
 import type { MessageQueue, MessageQueueStats } from '../core/message-queue.js';
 import { getAllCircuitBreakerStats, type CircuitBreakerStats } from '../core/circuit-breaker.js';

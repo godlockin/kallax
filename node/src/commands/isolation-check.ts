@@ -7,7 +7,7 @@ import { ok } from 'neverthrow';
 import type { KallaxResult, IsolationConflict, IsolationScope } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import type { IsolationChecker } from '../core/isolation-checker.js';
-import type { SQLiteManager } from '../core/sqlite-manager.js';
+import type { SQLiteManager } from '../core/sqlite/index.js';
 
 export interface IsolationCheckOptions {
   readonly taskIdA: string;

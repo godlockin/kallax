@@ -6,7 +6,7 @@
 export * from './cache-layer.js';
 export * from './circuit-breaker.js';
 export * from './saga-executor.js';
-export * from './sqlite-manager.js';
+export * from './sqlite/index.js';
 export * from './message-queue.js';
 export * from './worktree-manager.js';
 export * from './isolation-checker.js';
@@ -23,3 +23,5 @@ export * from './complexity-analyzer.js';
 export * from './dag-generator.js';
 export * from './dag-executor.js';
 export * from './dag-visualizer.js';
+export * from './recommender/index.js';
+export * from './workflow/index.js';

@@ -1,7 +1,7 @@
 /**
  * KALLAX CLI Context — shared bootstrap state for all command registrations.
  */
-import type { SQLiteManager } from './core/sqlite-manager.js';
+import type { SQLiteManager } from './core/sqlite/index.js';
 import type { WorktreeManager } from './core/worktree-manager.js';
 import type { OutputVerifier } from './core/output-verifier.js';
 import type { IsolationChecker } from './core/isolation-checker.js';
