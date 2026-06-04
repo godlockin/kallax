@@ -7,7 +7,7 @@ import { err, ok } from 'neverthrow';
 import type { KallaxResult, Task, Ticket, Instance, IsolationScope } from '../types/index.js';
 import { KallaxError, KallaxErrorCode, TaskStatus, TaskType } from '../types/index.js';
 import { logger } from '../utils/logger.js';
-import type { SQLiteManager } from './sqlite-manager.js';
+import type { SQLiteManager } from './sqlite/index.js';
 import type { IsolationChecker } from './isolation-checker.js';
 import type { InstanceRegistry } from './instance-registry.js';
 

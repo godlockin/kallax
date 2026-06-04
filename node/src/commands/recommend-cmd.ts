@@ -13,23 +13,14 @@ import { matchPerformer } from '../core/recommender/matcher.js';
 import type { PerformerProfile } from '../core/recommender/matcher.js';
 
 export function registerRecommendCommands(program: Command, ctx: AppContext): void {
-  program
-    .command('recommend')
-    .description('Recommendation engine — match tasks to performers')
-    .argument('<subcommand>', 'match')
-    .argument('[taskId]', 'Task ID to match performers for')
-    .option('-n, --top <n>', 'Number of top recommendations', '10')
-    .action(async (subcommand: string, taskId: string | undefined, opts?: { top?: string }) => {
-      try {
-        if (subcommand !== 'match') {
-          logger.error({ subcommand }, 'unknown recommend subcommand — use "match"');
-          process.exit(1);
-        }
-        if (!taskId) {
-          logger.error({}, 'taskId is required for "recommend match"');
-          process.exit(1);
-        }
+  const cmd = program.command('recommend').description('Recommendation engine — match tasks to performers');
 
+  cmd
+    .command('match <taskId>')
+    .description('Recommend the best performer for a task based on capability similarity')
+    .option('-n, --top <n>', 'Number of top recommendations', '10')
+    .action(async (taskId: string, opts?: { top?: string }) => {
+      try {
         // Fetch task
         const taskResult = ctx.db.getTask(taskId);
         if (taskResult.isErr()) {
@@ -43,7 +34,8 @@ export function registerRecommendCommands(program: Command, ctx: AppContext): vo
         }
 
         // Extract required capabilities from task metadata
-        const rawCaps = task.metadata?.capabilities;
+        const meta = task['metadata'];
+        const rawCaps = meta !== undefined ? (meta as Record<string, unknown>)['capabilities'] : undefined;
         const taskCaps: string[] = Array.isArray(rawCaps)
           ? rawCaps.filter((c): c is string => typeof c === 'string')
           : [];

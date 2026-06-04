@@ -8,7 +8,7 @@ import Redis from 'ioredis';
 import { KallaxError, KallaxErrorCode, type KallaxResult, type Message, MessagePriority } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import { registerCleanupHandler } from '../utils/process-cleanup.js';
-import { createSQLiteManager, type SQLiteManager } from './sqlite-manager.js';
+import { createSQLiteManager, type SQLiteManager } from './sqlite/index.js';
 
 export interface MessageQueueConfig {
   readonly mode: 'redis' | 'sqlite' | 'memory';

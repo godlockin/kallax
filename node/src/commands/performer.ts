@@ -7,7 +7,7 @@ import { err, ok } from 'neverthrow';
 import type { KallaxResult, Task, Instance } from '../types/index.js';
 import { KallaxError, KallaxErrorCode, InstanceRole } from '../types/index.js';
 import { logger } from '../utils/logger.js';
-import type { SQLiteManager } from '../core/sqlite-manager.js';
+import type { SQLiteManager } from '../core/sqlite/index.js';
 import type { InstanceRegistry } from '../core/instance-registry.js';
 import type { TaskAssigner } from '../core/task-assigner.js';
 import type { WorktreeManager } from '../core/worktree-manager.js';

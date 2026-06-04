@@ -7,7 +7,7 @@ import { err, ok } from 'neverthrow';
 import type { KallaxResult } from '../types/index.js';
 import { KallaxError, KallaxErrorCode, VerificationLevel } from '../types/index.js';
 import { logger } from '../utils/logger.js';
-import type { SQLiteManager } from '../core/sqlite-manager.js';
+import type { SQLiteManager } from '../core/sqlite/index.js';
 import type { WorktreeManager } from '../core/worktree-manager.js';
 import type { OutputVerifier } from '../core/output-verifier.js';
 import type { InstanceRegistry } from '../core/instance-registry.js';

@@ -76,6 +76,9 @@ export {
   executeSystemDoctor,
   executeTeamStatus,
 } from './system.js';
+
+// Recommender
+export { registerRecommendCommands } from './recommend-cmd.js';
 export type {
   SystemDoctorResult,
   HealthCheck,

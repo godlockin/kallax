@@ -4,7 +4,7 @@
  */
 
 import type { KallaxResult } from '../types/index.js';
-import type { SQLiteManager, TaskFilter } from './sqlite-manager.js';
+import type { SQLiteManager, TaskFilter } from './sqlite/index.js';
 
 export interface DagNodeDef {
   readonly id: string;

@@ -7,7 +7,7 @@ import { Router } from 'express';
 import type { Request, Response } from 'express';
 import { InstanceRole, InstanceStatus, KallaxError } from '../../types/index.js';
 import { logger } from '../../utils/logger.js';
-import type { SQLiteManager } from '../../core/sqlite-manager.js';
+import type { SQLiteManager } from '../../core/sqlite/index.js';
 import type { InstanceRegistry } from '../../core/instance-registry.js';
 import type { SSEBus } from '../../core/sse-bus.js';
 import { createEvent } from '../../core/sse-bus.js';

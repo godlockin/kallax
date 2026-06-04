@@ -48,7 +48,7 @@ export function matchPerformer(
   taskCapabilities: readonly string[],
   performers: readonly PerformerProfile[],
   options: MatchOptions = { topN: 10 },
-): Result<readonly MatchResult[], Error> {
+): Result<MatchResult[], Error> {
   if (taskCapabilities.length === 0) {
     return err(new Error('task capabilities list is empty — nothing to match'));
   }
@@ -67,12 +67,7 @@ export function matchPerformer(
   const taskVec = applyIDF(taskTF, idf);
 
   // Score each performer
-  const scored: Array<{
-    performerId: string;
-    score: number;
-    matched: string[];
-    missing: string[];
-  }> = [];
+  const scored: MatchResult[] = [];
 
   for (const performer of performers) {
     const perfTF = computeTF(performer.capabilities.join(' '));
@@ -91,7 +86,13 @@ export function matchPerformer(
       }
     }
 
-    scored.push({ performerId: performer.id, score: sim, matched, missing });
+    const result: MatchResult = {
+      performerId: performer.id,
+      score: sim,
+      matchedCapabilities: matched,
+      missingCapabilities: missing,
+    };
+    scored.push(result);
   }
 
   // Sort descending by similarity score

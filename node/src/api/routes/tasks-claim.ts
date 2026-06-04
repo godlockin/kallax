@@ -7,7 +7,7 @@ import { Router } from 'express';
 import type { Request, Response } from 'express';
 import { TaskStatus, KallaxError } from '../../types/index.js';
 import { logger } from '../../utils/logger.js';
-import type { SQLiteManager } from '../../core/sqlite-manager.js';
+import type { SQLiteManager } from '../../core/sqlite/index.js';
 import type { TaskAssigner } from '../../core/task-assigner.js';
 import type { WorktreeManager } from '../../core/worktree-manager.js';
 import type { OutputVerifier } from '../../core/output-verifier.js';

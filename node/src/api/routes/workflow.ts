@@ -8,7 +8,7 @@ import type { Request, Response } from 'express';
 import { TaskStatus, KallaxError } from '../../types/index.js';
 import type { Task } from '../../types/index.js';
 import { logger } from '../../utils/logger.js';
-import type { SQLiteManager } from '../../core/sqlite-manager.js';
+import type { SQLiteManager } from '../../core/sqlite/index.js';
 import type { TaskAssigner } from '../../core/task-assigner.js';
 import type { IsolationChecker } from '../../core/isolation-checker.js';
 import type { WorktreeManager } from '../../core/worktree-manager.js';

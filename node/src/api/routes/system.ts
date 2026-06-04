@@ -9,7 +9,7 @@ import * as os from 'node:os';
 import { KallaxError } from '../../types/index.js';
 import { logger } from '../../utils/logger.js';
 import { forceGC } from '../../utils/memory-monitor.js';
-import type { SQLiteManager } from '../../core/sqlite-manager.js';
+import type { SQLiteManager } from '../../core/sqlite/index.js';
 import type { InstanceRegistry } from '../../core/instance-registry.js';
 import type { SSEBus } from '../../core/sse-bus.js';
 import type { HeartbeatMonitor } from '../../core/heartbeat-monitor.js';

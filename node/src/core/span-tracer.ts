@@ -7,7 +7,7 @@
  */
 
 import { logger } from '../utils/logger.js';
-import type { SQLiteManager } from './sqlite-manager.js';
+import type { SQLiteManager } from './sqlite/index.js';
 
 export interface SpanContext {
   readonly traceId: string;
