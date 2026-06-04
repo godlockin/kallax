@@ -74,7 +74,7 @@ async function probeNode(): Promise<boolean> {
 
 async function probeSQLite(): Promise<boolean> {
   try {
-    const { getSqliteManager } = await import('./sqlite-manager.js');
+    const { getSqliteManager } = await import('./sqlite/index.js');
     const db = getSqliteManager();
     db.run('SELECT 1');
     return true;
