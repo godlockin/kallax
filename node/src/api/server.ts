@@ -29,6 +29,8 @@ import { getIsolationChecker } from '../core/isolation-checker.js';
 import type { HeartbeatMonitor } from '../core/heartbeat-monitor.js';
 import type { SSEBus, SSEClient } from '../core/sse-bus.js';
 import { createSSEBus } from '../core/sse-bus.js';
+import type { ClaimQueue } from '../core/claim-queue.js';
+import { createClaimQueue } from '../core/claim-queue.js';
 import { createAuthMiddleware } from './middleware/auth.js';
 import { createRateLimiter } from './middleware/rate-limiter.js';
 import { createTaskRoutes } from './routes/tasks.js';
@@ -36,6 +38,7 @@ import { createAgentRoutes } from './routes/agents.js';
 import { createSystemRoutes } from './routes/system.js';
 import { createWorkflowRoutes } from './routes/workflow.js';
 import { createKnowledgeRoutes } from './routes/knowledge.js';
+import { createHeartbeatRoutes } from './routes/heartbeat.js';
 import {
   ServerConfigSchema,
   type ServerConfig,
@@ -57,6 +60,7 @@ export interface ApiServerDependencies {
   readonly isolationChecker: IsolationChecker;
   readonly sseBus: SSEBus;
   readonly heartbeatMonitor?: HeartbeatMonitor;
+  readonly claimQueue?: ClaimQueue;
 }
 
 export interface ApiServer {
@@ -373,6 +377,7 @@ export function createApiServer(
     outputVerifier: deps.outputVerifier,
     isolationChecker: deps.isolationChecker,
     sseBus: deps.sseBus,
+    claimQueue: deps.claimQueue,
   }));
 
   app.use('/api/agents', createAgentRoutes({
@@ -398,6 +403,13 @@ export function createApiServer(
   }));
 
   app.use('/api/knowledge', createKnowledgeRoutes({}));
+
+  app.use('/api/heartbeat', createHeartbeatRoutes({
+    db: deps.db,
+    instanceRegistry: deps.instanceRegistry,
+    taskAssigner: deps.taskAssigner,
+    sseBus: deps.sseBus,
+  }));
 
   // ============================================================================
   // 404 Handler

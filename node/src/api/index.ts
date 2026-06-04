@@ -17,6 +17,8 @@ export { createWorkflowRoutes } from './routes/workflow.js';
 export type { WorkflowRouteDependencies } from './routes/workflow.js';
 export { createKnowledgeRoutes } from './routes/knowledge.js';
 export type { KnowledgeRouteDependencies } from './routes/knowledge.js';
+export { createHeartbeatRoutes } from './routes/heartbeat.js';
+export type { HeartbeatRouteDependencies, HeartbeatRequestBody, HeartbeatStatusEntry } from './routes/heartbeat.js';
 export {
   ServerConfigSchema,
   type ServerConfig,
