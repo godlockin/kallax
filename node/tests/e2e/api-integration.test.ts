@@ -9,6 +9,7 @@ import * as http from 'node:http';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
+import { ok } from 'neverthrow';
 import { createSQLiteManager, type SQLiteManager } from '../../src/core/sqlite/index.js';
 import { createApiServer, type ApiServer } from '../../src/api/server.js';
 import { createTaskAssigner } from '../../src/core/task-assigner.js';
@@ -16,6 +17,7 @@ import { createInstanceRegistry } from '../../src/core/instance-registry.js';
 import { createIsolationChecker } from '../../src/core/isolation-checker.js';
 import { createSSEBus } from '../../src/core/sse-bus.js';
 import { createOutputVerifier } from '../../src/core/output-verifier.js';
+import type { WorktreeManager } from '../../src/core/worktree-manager.js';
 import type { Ticket } from '../../src/types/index.js';
 
 let db: SQLiteManager;
@@ -79,13 +81,22 @@ async function startServer(dbManager: SQLiteManager): Promise<ApiServer> {
     lintCommand: 'echo ok',
   });
 
+  const mockWorktreeManager: WorktreeManager = {
+    create: async () => ok({ path: '/tmp/wt', branch: 'kallax/t', commit: 'abc', taskId: 't' }),
+    remove: async () => ok(undefined),
+    list: async () => ok([]),
+    getByTaskId: async () => ok(null),
+    validateIsolation: async () => ok(true),
+    getPath: () => '/tmp/wt',
+  } as unknown as WorktreeManager;
+
   const srv = createApiServer(
     { port: PORT, host: '127.0.0.1', apiKey: API_KEY },
     {
       db: dbManager,
       taskAssigner: assigner,
       instanceRegistry: registry,
-      worktreeManager: {} as never,
+      worktreeManager: mockWorktreeManager,
       outputVerifier,
       isolationChecker: isolation,
       sseBus,

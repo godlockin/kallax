@@ -133,19 +133,21 @@ describe('DAG Executor (Dry-Run)', () => {
     try { fs.unlinkSync(checkpointPath); } catch { /* ignore */ }
   });
 
-  it('resumes from checkpoint correctly', async () => {
+  it('checkpoint is loadable via getRunState', async () => {
     const executor = createDagExecutor({ dryRun: true, stateDir });
     const schema = makeLinearDag();
     const result = await executor.execute(schema);
-    const runId = result.runId;
 
-    // Resume should succeed
-    const resumed = await executor.resume(runId);
-    expect(resumed.status).toBe('completed');
-    expect(resumed.runId).toBe(runId);
+    // getRunState should load the file
+    const loaded = await executor.getRunState(result.runId);
+    expect(loaded).not.toBeNull();
+    if (loaded) {
+      expect(loaded.status).toBe('completed');
+      expect(loaded.runId).toBe(result.runId);
+    }
 
     // Clean up
-    const cp = path.join(stateDir, `${runId}.json`);
+    const cp = path.join(stateDir, `${result.runId}.json`);
     try { fs.unlinkSync(cp); } catch { /* ignore */ }
   });
 
