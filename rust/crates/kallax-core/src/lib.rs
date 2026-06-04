@@ -6,6 +6,7 @@
 //! - **Type safety** - No `any` equivalents
 //! - **Immutability** - Prefer owned data over mutable references
 
+pub mod analyzer;
 pub mod error;
 pub mod types;
 pub mod cache;
