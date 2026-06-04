@@ -2,7 +2,7 @@
 //!
 //! Manages performer lifecycle and allocation.
 
-use kallax_core::{KallaxError, Performer, PerformerId, PerformerStatus, Result};
+use kallax_core::{KallaxError, Performer, PerformerId, PerformerStatus, Result, TaskId};
 use chrono::{DateTime, Duration, Utc};
 use dashmap::DashMap;
 use std::sync::Arc;
@@ -103,14 +103,16 @@ impl AgentPool {
 
     /// Get an idle performer with required capabilities
     pub fn acquire_performer(&self, required_capabilities: &[String]) -> Option<Performer> {
-        for entry in self.performers.iter() {
+        for mut entry in self.performers.iter_mut() {
             if entry.status() == PerformerStatus::Idle {
                 let has_all_caps = required_capabilities.iter().all(|cap| {
                     entry.capabilities().contains(cap)
                 });
-
                 if has_all_caps || required_capabilities.is_empty() {
-                    return Some(entry.clone());
+                    entry.assign_task(TaskId::from_str("reserved"));
+                    let mut p = entry.clone();
+                    p.release_task();
+                    return Some(p);
                 }
             }
         }
