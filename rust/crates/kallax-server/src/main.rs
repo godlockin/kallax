@@ -363,7 +363,7 @@ fn create_router(state: AppState) -> Router {
         // Bridge status — proves Rust engine is alive and responsive
         .route("/bridge/status", get(bridge_status))
         .route("/bridge/scheduler", get(scheduler_status))
-        .route("/stats", get(get_stats))
+        // (duplicate stats removed)
         // Middleware
         .layer(TraceLayer::new_for_http())
         .layer(CorsLayer::new().allow_origin(Any).allow_methods(Any).allow_headers(Any))
