@@ -50,6 +50,7 @@ async-trait = "0.1"
 
 # Tree-sitter (with timeout control)
 tree-sitter = "0.20"
+regex = "1.10"
 
 # Internal crates
 kallax-core = { path = "crates/kallax-core" }

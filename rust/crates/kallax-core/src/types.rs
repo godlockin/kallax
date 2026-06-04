@@ -412,6 +412,35 @@ impl Performer {
         self
     }
 
+    /// Construct a ticket from raw storage values (used by persistence layer).
+    /// Does NOT validate state transitions — assumes caller stored valid state.
+    #[doc(hidden)]
+    pub fn from_storage(
+        id: TicketId,
+        title: String,
+        description: String,
+        status: TicketStatus,
+        priority: Priority,
+        scope: Vec<PathBuf>,
+        acceptance_criteria: Vec<String>,
+        tags: Vec<String>,
+        metadata: HashMap<String, serde_json::Value>,
+        created_at: DateTime<Utc>,
+        updated_at: DateTime<Utc>,
+        assigned_to: Option<PerformerId>,
+    ) -> Self {
+        Self {
+            id, title, description, status, priority,
+            scope, acceptance_criteria, tags, metadata,
+            created_at, updated_at, assigned_to,
+        }
+    }
+
+    /// Return a reference to the metadata map.
+    pub fn metadata(&self) -> &HashMap<String, serde_json::Value> {
+        &self.metadata
+    }
+
     /// Set performer scope (file/directory isolation)
     pub fn with_scope(mut self, scope: Vec<PathBuf>) -> Self {
         self.scope = scope;
