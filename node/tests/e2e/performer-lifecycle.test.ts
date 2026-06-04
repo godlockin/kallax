@@ -70,7 +70,7 @@ function makeInstance(overrides?: Partial<Instance>): Instance {
 
 describe('Performer Lifecycle (E2E)', () => {
 
-  it('performer registers, claims, and completes task synchronously', () => {
+  it('performer registers, claims, and completes task synchronously', async () => {
     const isolation = createIsolationChecker();
     const assigner = createTaskAssigner(db, isolation, createInstanceRegistry(db));
 
@@ -97,7 +97,7 @@ describe('Performer Lifecycle (E2E)', () => {
     }
 
     // Complete via assigner
-    const completeR = assigner.completeTask(taskId, 'work done!');
+    const completeR = await assigner.completeTask(taskId, 'work done!');
     expect(completeR.isOk()).toBe(true);
 
     // Verify completed state
@@ -202,7 +202,7 @@ describe('Performer Lifecycle (E2E)', () => {
     expect(order).toEqual(['setup', 'stage']);
   });
 
-  it('task failure updates DB and preserves error message', () => {
+  it('task failure updates DB and preserves error message', async () => {
     const isolation = createIsolationChecker();
     const assigner = createTaskAssigner(db, isolation, createInstanceRegistry(db));
 
@@ -212,7 +212,7 @@ describe('Performer Lifecycle (E2E)', () => {
     const taskId = taskR.value.id;
 
     // Fail the task via assigner
-    const failR = assigner.failTask(taskId, 'Something went wrong in e2e');
+    const failR = await assigner.failTask(taskId, 'Something went wrong in e2e');
     expect(failR.isOk()).toBe(true);
 
     const failedTask = db.getTask(taskId);

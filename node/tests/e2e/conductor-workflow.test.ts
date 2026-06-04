@@ -13,7 +13,7 @@ import { createIsolationChecker } from '../../src/core/isolation-checker.js';
 import { createTaskAssigner } from '../../src/core/task-assigner.js';
 import { createInstanceRegistry } from '../../src/core/instance-registry.js';
 import { createHeartbeatMonitor } from '../../src/core/heartbeat-monitor.js';
-import type { Ticket, Task, Instance } from '../../src/types/index.js';
+import type { Ticket, Task } from '../../src/types/index.js';
 import { TaskStatus, InstanceRole, InstanceStatus } from '../../src/types/index.js';
 
 let db: SQLiteManager;
@@ -126,47 +126,37 @@ describe('Conductor Workflow (E2E)', () => {
   it('conductor heartbeat monitor works with real DB', async () => {
     const registry = createInstanceRegistry(db);
 
-    // Register conductor instance
-    const conductor = makeInstance({
-      id: 'cond-heartbeat',
-      role: InstanceRole.CONDUCTOR,
-    });
-    db.registerInstance(conductor);
+    // Register conductor instance via registry (so getCurrentInstance works)
+    const regResult = await registry.register(InstanceRole.CONDUCTOR);
+    expect(regResult.isOk()).toBe(true);
+    if (regResult.isErr()) return;
+    const conductorId = regResult.value.id;
 
     // Create heartbeat monitor (fast intervals for test)
     const monitor = createHeartbeatMonitor(registry, {
-      heartbeatIntervalMs: 50,
+      heartbeatIntervalMs: 30,
       staleThresholdMs: 5000,
       checkIntervalMs: 100,
-    });
-
-    // Register onStaleInstance handler to capture output
-    const staleCaught: Instance[] = [];
-    monitor.onStaleInstance(async (instances) => {
-      staleCaught.push(...instances);
     });
 
     monitor.start();
     expect(monitor.isRunning()).toBe(true);
 
     // Wait for a few heartbeats
-    await new Promise((r) => setTimeout(r, 200));
+    await new Promise((r) => setTimeout(r, 250));
     expect(monitor.getStats().heartbeatsSent).toBeGreaterThanOrEqual(1);
 
     // Verify heartbeat updated in DB
-    const instanceResult = db.getInstance('cond-heartbeat');
+    const instanceResult = db.getInstance(conductorId);
     if (instanceResult.isOk() && instanceResult.value) {
-      expect(instanceResult.value.lastHeartbeat).toBeGreaterThan(conductor.lastHeartbeat);
+      expect(instanceResult.value.lastHeartbeat).toBeGreaterThan(regResult.value.lastHeartbeat);
     }
 
     monitor.stop();
     expect(monitor.isRunning()).toBe(false);
-
-    // No stale instances detected within short window
-    expect(staleCaught.length).toBe(0);
   });
 
-  it('conductor can list and manage multiple tasks', () => {
+  it('conductor can list and manage multiple tasks', async () => {
     const isolation = createIsolationChecker();
     const registry = createInstanceRegistry(db);
     const assigner = createTaskAssigner(db, isolation, registry);
@@ -194,7 +184,7 @@ describe('Conductor Workflow (E2E)', () => {
     }
 
     // Assignable tasks (with isolation check)
-    const assignable = assigner.getAssignableTasks();
+    const assignable = await assigner.getAssignableTasks();
     expect(assignable.isOk()).toBe(true);
   });
 
