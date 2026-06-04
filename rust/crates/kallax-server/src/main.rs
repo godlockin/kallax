@@ -366,7 +366,7 @@ fn create_router(state: AppState) -> Router {
         // (duplicate stats removed)
         // Middleware
         .layer(TraceLayer::new_for_http())
-        .layer(CorsLayer::new().allow_origin(Any).allow_methods(Any).allow_headers(Any))
+        .layer(CorsLayer::new().allow_origin("http://localhost:9877".parse::<axum::http::HeaderValue>().unwrap()))
         .with_state(state)
 }
 
@@ -390,7 +390,7 @@ async fn bridge_status(State(state): State<AppState>) -> impl IntoResponse {
 }
 
 async fn scheduler_status(State(state): State<AppState>) -> impl IntoResponse {
-    let mut s = state.scheduler.lock().unwrap();
+    let mut s = state.scheduler.lock().expect("scheduler lock");
     let ready = s.get_ready_tasks();
     let critical = s.critical_path();
     Json(serde_json::json!({
@@ -422,7 +422,7 @@ async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         .and_then(|p| p.parse().ok())
         .unwrap_or(3000);
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], port));
+    let addr = SocketAddr::from(([127, 0, 0, 1], port));
     info!("KALLAX server starting on {}", addr);
 
     let listener = tokio::net::TcpListener::bind(addr).await?;
