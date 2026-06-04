@@ -52,7 +52,7 @@ export function createSSEBus(): SSEBus {
   }
 
   return {
-    addClient(client: SSEClient): void {
+    addClient(client: SSEClient): void { if (clients.size >= 1000) { client.close(); return; }
       clients.set(client.id, client);
       subscriptions.set(client.id, new Set());
       logger.info({ clientId: client.id }, 'SSE client connected');
