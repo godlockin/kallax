@@ -63,7 +63,7 @@ impl AgentPool {
             });
         }
 
-        self.performers.insert(id_str.clone(), performer);
+        let _ = self.performers.insert(id_str.clone(), performer);
         info!(performer_id = %id_str, "Performer registered in pool");
 
         Ok(id)
@@ -123,7 +123,7 @@ impl AgentPool {
     pub fn sweep_stale_performers(&self) -> Vec<PerformerId> {
         let now = Utc::now();
         let timeout = self.config.heartbeat_timeout;
-        let mut marked_offline = Vec::new();
+        let marked_offline = Vec::new();
 
         for mut entry in self.performers.iter_mut() {
             let last_heartbeat = entry.heartbeat_at();
