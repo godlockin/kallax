@@ -37,6 +37,9 @@ tower-http = { version = "0.5", features = ["cors", "trace"] }
 
 # Database
 sqlx = { version = "0.7", features = ["sqlite", "runtime-tokio"] }
+rusqlite = { version = "0.39", features = ["bundled"] }
+r2d2 = "0.8"
+r2d2_sqlite = "0.34"
 
 # CLI
 clap = { version = "4.4", features = ["derive"] }
@@ -51,6 +54,9 @@ async-trait = "0.1"
 # Tree-sitter (with timeout control)
 tree-sitter = "0.20"
 regex = "1.10"
+
+reqwest = { version = "0.11", default-features = false, features = ["json", "rustls-tls"] }
+sha2 = "0.10"
 
 # Internal crates
 kallax-core = { path = "crates/kallax-core" }

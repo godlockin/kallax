@@ -7,12 +7,15 @@
 //! - **Immutability** - Prefer owned data over mutable references
 
 pub mod analyzer;
+pub mod db;
 pub mod error;
 pub mod types;
 pub mod cache;
 pub mod middleware;
 pub mod registry;
 pub mod isolation;
+pub mod webhook;
+pub mod fingerprint;
 
 pub use error::{KallaxError, Result};
 pub use types::*;
