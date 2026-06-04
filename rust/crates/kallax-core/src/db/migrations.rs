@@ -57,11 +57,11 @@ impl MigrationRunner {
 
     /// Ensure the schema_version table exists, then execute every migration
     /// whose version has not yet been recorded.
-    pub fn run(&self, conn: &Connection) -> Result<u64> {
+    pub fn run(&self, conn: &Connection) -> Result<i64> {
         conn.execute_batch(SCHEMA_VERSION_DDL)
             .map_err(|e| KallaxError::database("create_schema_version_table", e))?;
 
-        let current: u64 = conn
+        let current: i64 = conn
             .query_row(
                 "SELECT COALESCE(MAX(version), 0) FROM schema_version",
                 [],
@@ -69,12 +69,12 @@ impl MigrationRunner {
             )
             .map_err(|e| KallaxError::database("read_current_version", e))?;
 
-        let mut applied = 0u64;
+        let mut applied = 0i64;
         let mut sorted: Vec<_> = self.migrations.iter().collect();
         sorted.sort_by_key(|m| m.version());
 
         for m in &sorted {
-            if m.version() > current {
+            if (m.version() as i64) > current {
                 tracing::info!("applying migration v{}: {}", m.version(), m.description());
                 m.up(conn)?;
                 conn.execute(

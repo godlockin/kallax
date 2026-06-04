@@ -12,7 +12,7 @@ mod migrations;
 
 use crate::error::{KallaxError, Result};
 use crate::types::*;
-use chrono::{DateTime, TimeZone, Utc};
+use chrono::{DateTime, Utc};
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
 use rusqlite::params;
@@ -65,7 +65,7 @@ impl SqliteClient {
     }
 
     /// Run all pending schema migrations. Returns the number applied.
-    pub fn run_migrations(&self) -> Result<u64> {
+    pub fn run_migrations(&self) -> Result<i64> {
         let conn = self
             .pool
             .get()
@@ -116,7 +116,10 @@ impl SqliteClient {
             .get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
         let mut stmt = conn
-            .prepare(SELECT_TICKET)
+            .prepare("SELECT id, title, description, status, priority,
+                             scope, acceptance_criteria, tags, metadata,
+                             created_at, updated_at, assigned_to
+                      FROM tickets WHERE id = ?1")
             .map_err(|e| KallaxError::database("prepare_get_ticket", e))?;
 
         let mut rows = stmt
