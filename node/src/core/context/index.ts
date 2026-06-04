@@ -21,3 +21,5 @@ export type {
   ContextAlertManager, ContextAlert, AlertConfig, AlertLevel, AlertStats,
 } from './alert.js';
 export { createContextAlertManager, getContextAlertManager } from './alert.js';
+export type { ContextBudget, BudgetConfig, BudgetState } from './budget-manager.js';
+export { createContextBudget, getContextBudget } from './budget-manager.js';
