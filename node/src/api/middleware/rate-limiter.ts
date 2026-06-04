@@ -27,6 +27,7 @@ const ROUTE_SPECIFIC_LIMITS: ReadonlyMap<string, RouteLimitConfig> = new Map([
   ['/api/tasks', { maxTokens: 50, refillRate: 50 / 60, windowMs: 60000 }],
   ['/api/agents', { maxTokens: 30, refillRate: 30 / 60, windowMs: 60000 }],
   ['/api/workflow', { maxTokens: 20, refillRate: 20 / 60, windowMs: 60000 }],
+  ['/api/heartbeat', { maxTokens: 500, refillRate: 500 / 60, windowMs: 60000 }],
 ]);
 
 const buckets = new Map<string, TokenBucket>();
@@ -67,6 +68,13 @@ function refillBucket(bucket: TokenBucket, config: RouteLimitConfig, now: number
   const tokensToAdd = elapsed * (config.refillRate / 1000);
   const newTokens = Math.min(bucket.tokens + tokensToAdd, config.maxTokens);
   return { tokens: newTokens, lastRefill: now };
+}
+
+/**
+ * Clear all rate limit buckets. Use in test setup to avoid cross-test pollution.
+ */
+export function resetRateLimiter(): void {
+  buckets.clear();
 }
 
 /**
