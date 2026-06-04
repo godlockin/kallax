@@ -14,7 +14,8 @@ import { Worker } from 'node:worker_threads';
 import { fileURLToPath } from 'node:url';
 import type { SQLiteConfig, SQLiteManager, SQLiteManagerAsync, DatabaseStats } from './types.js';
 import { initializeSchema } from './schema.js';
-import { createTicketOperations, createTaskOperations } from './ticket-task-ops.js';
+import { createTicketOperations } from './ticket-ops.js';
+import { createTaskOperations } from './task-ops.js';
 import { createInstanceOperations, createMessageOperations, createCommonOperations } from './instance-message-ops.js';
 
 // Module-level raw database reference for getSqliteManager() compatibility
@@ -123,22 +124,22 @@ function createAsyncWrapper(_db: Database.Database, dbPath: string): SQLiteManag
   }
 
   return {
-    createTicket: (t) => call<void>('createTicket', t),
+    createTicket: (t) => call('createTicket', t),
     getTicket: (id) => call('getTicket', id),
-    updateTicket: (id, u) => call<void>('updateTicket', id, u),
+    updateTicket: (id, u) => call('updateTicket', id, u),
     listTickets: (f) => call('listTickets', f),
-    createTask: (t) => call<void>('createTask', t),
+    createTask: (t) => call('createTask', t),
     getTask: (id) => call('getTask', id),
-    updateTask: (id, u) => call<void>('updateTask', id, u),
+    updateTask: (id, u) => call('updateTask', id, u),
     listTasks: (f) => call('listTasks', f),
-    claimTask: (tid, pid) => call<boolean>('claimTask', tid, pid),
-    registerInstance: (i) => call<void>('registerInstance', i),
+    claimTask: (tid, pid) => call('claimTask', tid, pid),
+    registerInstance: (i) => call('registerInstance', i),
     getInstance: (id) => call('getInstance', id),
-    updateInstance: (id, u) => call<void>('updateInstance', id, u),
+    updateInstance: (id, u) => call('updateInstance', id, u),
     listInstances: (f) => call('listInstances', f),
-    updateHeartbeat: (id) => call<void>('updateHeartbeat', id),
+    updateHeartbeat: (id) => call('updateHeartbeat', id),
     getStaleInstances: (t) => call('getStaleInstances', t),
-    enqueueMessage: (m) => call<void>('enqueueMessage', m),
+    enqueueMessage: (m) => call('enqueueMessage', m),
     dequeueMessage: (t) => call('dequeueMessage', t),
     peekMessages: (l) => call('peekMessages', l),
     getStats: () => call('getStats'),
