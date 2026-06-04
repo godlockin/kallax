@@ -9,6 +9,8 @@ import type { EndpointRole } from '../server.js';
 
 const PUBLIC_PATHS = new Set<string>([
   '/health',
+  '/live',
+  '/ready',
   '/version',
 ]);
 

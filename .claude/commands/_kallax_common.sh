@@ -98,27 +98,38 @@ KALLAX_API="${KALLAX_API:-http://127.0.0.1:9877}"
 KALLAX_SERVER_PID_FILE="${KALLAX_STATE}/server.pid"
 
 ensure_server_running() {
-  # Check if server already running
-  if curl -s "${KALLAX_API}/health" 2>/dev/null | grep -q "ok"; then
-    return 0
+  # Set API key from config or default
+  local api_key
+  api_key="${KALLAX_API_KEY:-$(get_config 'apiKey' 'kallax-dev-key')}"
+  export KALLAX_API_KEY="$api_key"
+
+  # Check if server already running via /live (no auth, simple liveness)
+  if command -v curl &>/dev/null; then
+    if curl -sf "${KALLAX_API}/live" >/dev/null 2>&1; then
+      log_info "Server already running on ${KALLAX_API}"
+      return 0
+    fi
   fi
 
-  # Start server in background if not running
+  # Start server in background using tsx
   log_info "Starting API server on ${KALLAX_API}..."
-  if [ -x "$KALLAX_CLI" ]; then
-    nohup "$KALLAX_CLI" start --role conductor > "${KALLAX_DIR}/logs/server.log" 2>&1 &
-    echo $! > "$KALLAX_SERVER_PID_FILE"
-  fi
+  mkdir -p "${KALLAX_DIR}/logs"
+  nohup npx tsx "${KALLAX_ROOT}/node/src/api/server.ts" >> "${KALLAX_DIR}/logs/server.log" 2>&1 &
+  local server_pid=$!
+  echo "$server_pid" > "$KALLAX_SERVER_PID_FILE"
+  log_info "Server PID: ${server_pid}"
 
-  # Wait for server to be ready
-  for i in $(seq 1 10); do
-    if curl -s "${KALLAX_API}/health" 2>/dev/null | grep -q "ok"; then
-      log_info "Server ready"
+  # Wait for server to be ready (up to 10s, polling /live every 0.5s)
+  for i in $(seq 1 20); do
+    if curl -sf "${KALLAX_API}/live" >/dev/null 2>&1; then
+      log_info "Server ready after $((i * 500))ms (PID: ${server_pid})"
       return 0
     fi
     sleep 0.5
   done
-  log_warn "Server may not be ready — continuing anyway"
+
+  log_warn "Server may not be ready after 10s — continuing anyway (PID: ${server_pid})"
+  return 1
 }
 
 # Initialize database if needed
