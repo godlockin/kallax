@@ -6,7 +6,7 @@
  * Each project registers with a max performer quota + priority.
  * Performers are allocated to projects, tracked per-project.
  * Rebalancing redistributes performers from lower-priority to higher-priority projects
- * based on queue depth and priority thresholds.
+ * based on priority and available capacity.
  */
 
 import { err, ok } from 'neverthrow';
@@ -259,19 +259,19 @@ export function createProjectPool(): ProjectPool {
       const highPriority = sorted[0]!;
       const lowPriority = sorted[sorted.length - 1]!;
 
-      // Only rebalance if high-priority project needs performers
+      // Only rebalance if high-priority project has available capacity
       const highAvailableSlots = highPriority.state.config.maxPerformers - highPriority.state.allocatedPerformers.size;
-      if (highAvailableSlots > 0) {
+      if (highAvailableSlots <= 0) {
         logger.debug(
           { highPriorityProject: highPriority.id, availableSlots: highAvailableSlots },
-          'rebalance skipped: high-priority project has available slots'
+          'rebalance skipped: high-priority project has no available slots'
         );
         return;
       }
 
       // Number of performers to steal from low-priority project
       const stealCount = Math.min(
-        highAvailableSlots * -1, // how many we are over capacity
+        highAvailableSlots,
         lowPriority.state.allocatedPerformers.size
       );
 
