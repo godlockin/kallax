@@ -91,7 +91,7 @@ registerVerifyCommands(program, ctx);
 registerSystemCommands(program, ctx);
 registerStartCommands(program, ctx);
 registerEpicCommands(program, ctx);
-registerBranchCommands(program, ctx);
+registerBranchCommands(program);
 registerRouteCommands(program);
 
 program.parseAsync(process.argv).catch((error: unknown) => {

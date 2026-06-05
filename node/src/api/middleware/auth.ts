@@ -5,7 +5,7 @@
 
 import type { Request, Response, NextFunction } from 'express';
 import { logger } from '../../utils/logger.js';
-import type { EndpointRole } from '../server.js';
+import type { EndpointRole } from '../types.js';
 
 const PUBLIC_PATHS = new Set<string>([
   '/health',

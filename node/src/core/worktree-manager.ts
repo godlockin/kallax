@@ -42,8 +42,8 @@ async function gitCommand(
   args: string[]
 ): Promise<KallaxResult<string>> {
   try {
-    const { stdout } = await execFile('git', args, { cwd });
-    return ok(stdout.trim());
+    const result = await execFile('git', args, { cwd });
+    return ok(String(result.stdout ?? '').trim());
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     return err(
@@ -237,7 +237,7 @@ export function createWorktreeManager(config: WorktreeConfig): KallaxResult<Work
         } else if (line === '') {
           // End of entry
           if (current['path'] !== undefined && current['branch'] !== undefined && current['commit'] !== undefined) {
-            worktrees.push(current as Worktree);
+            worktrees.push(current as unknown as Worktree);
           }
           current = {};
         }
