@@ -46,10 +46,9 @@ import {
   type SystemStats,
   createSuccessResponse,
   createErrorResponse,
+  EndpointRole,
 } from './types.js';
 
-// Re-export EndpointRole for use by middleware
-export type EndpointRole = 'conductor' | 'performer' | 'admin';
 
 export interface ApiServerDependencies {
   readonly db: SQLiteManager;

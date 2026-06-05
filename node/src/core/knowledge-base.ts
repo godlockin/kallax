@@ -227,7 +227,7 @@ export function createKnowledgeBase(): KnowledgeBase {
           if (candidates === null) {
             candidates = new Set(ids);
           } else {
-            candidates = new Set([...candidates].filter((id) => ids.has(id)));
+            candidates = new Set([...candidates].filter((id: string) => ids.has(id)));
           }
           if (candidates.size === 0) return ok([]);
         }
@@ -243,7 +243,7 @@ export function createKnowledgeBase(): KnowledgeBase {
         if (candidates === null) {
           candidates = sourceIds;
         } else {
-          candidates = new Set([...candidates].filter((id) => sourceIds.has(id)));
+          candidates = new Set([...candidates].filter((id: string) => sourceIds.has(id)));
         }
         if (candidates.size === 0) return ok([]);
       }
@@ -259,7 +259,7 @@ export function createKnowledgeBase(): KnowledgeBase {
             termCandidates = new Set(ids);
           } else {
             // Intersection for multi-term AND search
-            termCandidates = new Set([...termCandidates].filter((id) => ids.has(id)));
+            termCandidates = new Set([...termCandidates].filter((id: string) => ids.has(id)));
           }
           if (termCandidates.size === 0) return ok([]);
         }
@@ -267,7 +267,7 @@ export function createKnowledgeBase(): KnowledgeBase {
         if (candidates === null) {
           candidates = termCandidates;
         } else {
-          candidates = new Set([...candidates].filter((id) => termCandidates!.has(id)));
+          candidates = new Set([...candidates].filter((id: string) => termCandidates!.has(id)));
         }
       }
 
@@ -338,7 +338,7 @@ export function createKnowledgeBase(): KnowledgeBase {
       entries.clear();
       wordIndex.clear();
       tagIndex.clear();
-      logger.info('knowledge base cleared');
+      logger.info({}, 'knowledge base cleared');
     },
   };
 }

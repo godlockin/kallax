@@ -4,7 +4,8 @@
  */
 
 export { createApiServer, registerApiServerCleanup } from './server.js';
-export type { ApiServer, ApiServerDependencies, EndpointRole } from './server.js';
+export type { ApiServer, ApiServerDependencies } from './server.js';
+export type { EndpointRole } from './types.js';
 export { createAuthMiddleware } from './middleware/auth.js';
 export { createRateLimiter } from './middleware/rate-limiter.js';
 export { createTaskRoutes } from './routes/tasks.js';

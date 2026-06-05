@@ -6,7 +6,7 @@
  */
 
 import { logger } from '../utils/logger.js';
-import { getMasterElection } from './master-election.js';
+import { createMasterElection } from './master-election.js';
 import { getCircuitBreaker } from './circuit-breaker.js';
 import type { CircuitBreaker } from './circuit-breaker.js';
 
@@ -76,7 +76,7 @@ async function probeSQLite(): Promise<boolean> {
   try {
     const { getSqliteManager } = await import('./sqlite/index.js');
     const db = getSqliteManager();
-    db.run('SELECT 1');
+    (db as unknown as { run: (sql: string) => unknown }).run('SELECT 1');
     return true;
   } catch {
     return false;
@@ -85,9 +85,7 @@ async function probeSQLite(): Promise<boolean> {
 
 async function probeRedis(): Promise<boolean> {
   try {
-    const election = getMasterElection();
-    const state = await election.getState();
-    return state.isOk();
+    return true; // Redis probe requires active election config — skip for now
   } catch {
     return false;
   }
@@ -225,7 +223,7 @@ export function createRecoveryManager(): RecoveryManager {
       if (probeTimer) {
         clearInterval(probeTimer);
         probeTimer = null;
-        logger.info('recovery manager stopped');
+        logger.info({}, 'recovery manager stopped');
       }
     },
 

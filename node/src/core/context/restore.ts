@@ -33,10 +33,10 @@ export function createContextRestore(): ContextRestore {
       let last: number | null = null;
       for (const item of items) {
         const d = item as Record<string, unknown>;
-        if (typeof d.savedAt === 'string') { const ts = new Date(d.savedAt).getTime(); if (last === null || ts > last) last = ts; }
-        if (typeof d.summary === 'string') {
-          if (d.summary.includes('TODO') || d.summary.includes('待做')) acts.push(d.summary);
-          else if (d.summary.includes('决定') || d.summary.includes('decision')) decs.push(d.summary);
+        if (typeof d['savedAt'] === 'string') { const ts = new Date(d['savedAt'] as string).getTime(); if (last === null || ts > last) last = ts; }
+        if (typeof d['summary'] === 'string') {
+          if ((d['summary'] as string).includes('TODO') || (d['summary'] as string).includes('待做')) acts.push(d['summary'] as string);
+          else if ((d['summary'] as string).includes('决定') || (d['summary'] as string).includes('decision')) decs.push(d['summary'] as string);
         }
       }
       logger.info({ pid, files: items.length }, 'context restored');

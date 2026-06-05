@@ -31,7 +31,6 @@ async function getRedis(redisUrl: string): Promise<Redis | null> {
     redis = new IORedis(redisUrl, {
       lazyConnect: true,
       maxRetriesPerRequest: 2,
-      retryDelayOnFailover: 100,
       enableOfflineQueue: false,
     });
     await redis.connect();
@@ -126,7 +125,7 @@ async function sqliteCampaign(_sqlitePath: string, instanceId: string): Promise<
     const { getSqliteManager } = await import('./sqlite/index.js');
     const db = getSqliteManager();
 
-    db.run(`
+    db.exec(`
       CREATE TABLE IF NOT EXISTS master_election (
         id INTEGER PRIMARY KEY CHECK (id = 1),
         instance_id TEXT NOT NULL,
@@ -138,24 +137,22 @@ async function sqliteCampaign(_sqlitePath: string, instanceId: string): Promise<
     `);
 
     const now = Date.now();
-    const insertResult = db.run(
+    const insertResult = db.prepare(
       'INSERT OR IGNORE INTO master_election (id, instance_id, acquired_at, renewed_at, term) VALUES (1, ?, ?, ?, 0)',
-      [instanceId, now, now],
-    );
+    ).run(instanceId, now, now);
 
     if (insertResult.changes > 0) return true;
 
-    const row = db.get(
+    const row = db.prepare(
       'SELECT instance_id, renewed_at FROM master_election WHERE id = 1',
-    ) as { instance_id: string; renewed_at: number } | undefined;
+    ).get() as { instance_id: string; renewed_at: number } | undefined;
 
     if (!row) return false;
 
     if (now - row.renewed_at > DEFAULT_TTL_MS * 2) {
-      db.run(
+      db.prepare(
         'UPDATE master_election SET instance_id = ?, acquired_at = ?, renewed_at = ?, term = term + 1 WHERE id = 1',
-        [instanceId, now, now],
-      );
+      ).run(instanceId, now, now);
       logger.warn({ previousMaster: row.instance_id, age: now - row.renewed_at }, 'took over stale SQLite lock');
       return true;
     }
@@ -170,10 +167,9 @@ async function sqliteRenew(_sqlitePath: string, instanceId: string): Promise<boo
   try {
     const { getSqliteManager } = await import('./sqlite/index.js');
     const db = getSqliteManager();
-    const result = db.run(
+    const result = db.prepare(
       'UPDATE master_election SET renewed_at = ? WHERE id = 1 AND instance_id = ?',
-      [Date.now(), instanceId],
-    );
+    ).run(Date.now(), instanceId);
     return result.changes > 0;
   } catch { return false; }
 }
@@ -181,10 +177,9 @@ async function sqliteRenew(_sqlitePath: string, instanceId: string): Promise<boo
 async function sqliteResign(_sqlitePath: string, instanceId: string): Promise<void> {
   try {
     const { getSqliteManager } = await import('./sqlite/index.js');
-    getSqliteManager().run(
+    getSqliteManager().prepare(
       'DELETE FROM master_election WHERE id = 1 AND instance_id = ?',
-      [instanceId],
-    );
+    ).run(instanceId);
   } catch (error: unknown) {
     logger.debug({ error: error instanceof Error ? error.message : String(error) }, 'non-critical election op failed');
     /* ignore */ }

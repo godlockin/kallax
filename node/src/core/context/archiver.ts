@@ -9,8 +9,8 @@ export interface ContextArchiver {
 }
 const CTX = '.kallax/context'; const ARC = '.kallax/archive'; const IDX = '.kallax/archive/index.json';
 function ed(dir: string): void { if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true }); }
-function loadIdx(): Record<string, unknown>[] { try { if (fs.existsSync(IDX)) return JSON.parse(fs.readFileSync(IDX, 'utf-8')); } catch { /* */ } return []; }
-function saveIdx(e: Record<string, unknown>[]): void { ed(ARC); fs.writeFileSync(IDX, JSON.stringify(e, null, 2)); }
+function loadIdx(): ArchiveEntry[] { try { if (fs.existsSync(IDX)) return JSON.parse(fs.readFileSync(IDX, 'utf-8')) as ArchiveEntry[]; } catch { /* */ } return []; }
+function saveIdx(e: ArchiveEntry[]): void { ed(ARC); fs.writeFileSync(IDX, JSON.stringify(e, null, 2)); }
 
 export function createContextArchiver(): ContextArchiver {
   let iv: ReturnType<typeof setInterval> | null = null;
@@ -35,7 +35,7 @@ export function createContextArchiver(): ContextArchiver {
     },
     clean(retentionDays = 90): number {
       ed(ARC); const cutoff = Date.now() - (retentionDays * 86_400_000); const idx = loadIdx();
-      let rm = 0; const kp: Record<string, unknown>[] = [];
+      let rm = 0; const kp: ArchiveEntry[] = [];
       for (const e of idx) {
         if ((e.archivedAt as number) < cutoff) { try { fs.unlinkSync(path.join(ARC, e.archiveFile as string)); rm++; } catch { /* */ } }
         else kp.push(e);

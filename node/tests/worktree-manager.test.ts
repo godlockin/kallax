@@ -1,9 +1,6 @@
 /**
  * Worktree Manager tests: create/remove/list + path validation.
- * Uses vi.hoisted for mock to work with vitest's ESM hoisting.
- * Note: runGit() calls stdout.trim() which strips trailing newlines.
- * Porcelain mock data must append a dummy line after the last blank-line
- * separator to survive trim().
+ * Uses Promise-based mock for Node 24+ execFile (returns Promise, not callback).
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -20,11 +17,6 @@ vi.mock('node:fs/promises', () => ({
   rm: vi.fn().mockResolvedValue(undefined),
 }));
 
-function callCb(args: unknown[], err: null | Error, result?: { stdout: string; stderr: string }): void {
-  const cb = args[args.length - 1] as (err: null | Error, res?: { stdout: string; stderr: string }) => void;
-  cb(err, result);
-}
-
 describe('WorktreeManager', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -32,12 +24,12 @@ describe('WorktreeManager', () => {
 
   it('create returns Worktree object on success', async () => {
     // create() calls list() + getByTaskId() internally (2 porcelain calls),
-    // then git worktree add, then git rev-parse HEAD = 4 total
+    // then git worktree add, then git rev-parse HEAD = 4 total execFile calls
     mockExecFile
-      .mockImplementationOnce((...args: unknown[]) => callCb(args, null, { stdout: '', stderr: '' }))
-      .mockImplementationOnce((...args: unknown[]) => callCb(args, null, { stdout: '', stderr: '' }))
-      .mockImplementationOnce((...args: unknown[]) => callCb(args, null, { stdout: '', stderr: '' }))
-      .mockImplementationOnce((...args: unknown[]) => callCb(args, null, { stdout: 'abc123', stderr: '' }));
+      .mockResolvedValueOnce({ stdout: '', stderr: '' })
+      .mockResolvedValueOnce({ stdout: '', stderr: '' })
+      .mockResolvedValueOnce({ stdout: '', stderr: '' })
+      .mockResolvedValueOnce({ stdout: 'abc123', stderr: '' });
 
     const initResult = await createWorktreeManager({
       projectRoot: '/repo',
@@ -56,8 +48,8 @@ describe('WorktreeManager', () => {
 
   it('remove calls git worktree remove --force', async () => {
     mockExecFile
-      .mockImplementationOnce((...args: unknown[]) => callCb(args, null, { stdout: '', stderr: '' }))
-      .mockImplementationOnce((...args: unknown[]) => callCb(args, null, { stdout: '', stderr: '' }));
+      .mockResolvedValueOnce({ stdout: '', stderr: '' })
+      .mockResolvedValueOnce({ stdout: '', stderr: '' });
 
     const initResult = await createWorktreeManager({
       projectRoot: '/repo',
@@ -84,7 +76,7 @@ describe('WorktreeManager', () => {
       'x',
     ].join('\n');
 
-    mockExecFile.mockImplementation((...args: unknown[]) => callCb(args, null, { stdout: porcelain, stderr: '' }));
+    mockExecFile.mockResolvedValue({ stdout: porcelain, stderr: '' });
 
     const initResult = await createWorktreeManager({
       projectRoot: '/repo',
@@ -110,7 +102,7 @@ describe('WorktreeManager', () => {
       'x',
     ].join('\n');
 
-    mockExecFile.mockImplementation((...args: unknown[]) => callCb(args, null, { stdout: porcelain, stderr: '' }));
+    mockExecFile.mockResolvedValue({ stdout: porcelain, stderr: '' });
 
     const initResult = await createWorktreeManager({
       projectRoot: '/repo',
