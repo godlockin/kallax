@@ -13,9 +13,21 @@
 
 | | Conductor | Performer |
 |---|---|---|
-| **职责** | 分析/拆解/审核/合并 | 领取/开发/测试/提交 |
-| **分支权限** | main ✅ feature ❌ | feature ✅ main ❌ |
-| **规则文档** | CONDUCTOR-RULES.md | PERFORMER-RULES.md |
+| **职责** | 分析/拆解/审核/合并/发布 | 领取/开发/测试/提交PR |
+| **分支权限** | miao ✅ (只读分析), testing ✅ (merge), feature ❌ | feature ✅ (开发), miao ❌, testing ❌ |
+| **写代码** | ❌ 禁止 (只读分析+协调) | ✅ 在 feature worktree 中 |
+| **规则文档** | [ROLE-RULES.md](docs/ROLE-RULES.md) | [ROLE-RULES.md](docs/ROLE-RULES.md) |
+
+### 分支管线
+
+```
+feature/<name> ──merge──→ testing ──promote──→ miao
+ (Performer 开发)      (集成测试)      (Conductor 发布)
+```
+
+- **miao**: 生产就绪，git hook 保护。Conductor 只能分析/review/merge，不能写代码。
+- **testing**: 集成验证。Conductor 合并 feature 到此并运行全量测试。
+- **feature/***: 隔离开发。Performer 在 worktree 中开发+测试。
 
 ---
 
@@ -169,15 +181,18 @@ Q5: 消息队列？（处理 shared/message_queue）
 
 ## 禁止操作
 
-### Conductor 禁止
-- ❌ 直接写功能代码
-- ❌ 领取任务自己开发
-- ❌ 无 CI 绿灯合并
-- ❌ 自我审查 PR
-- ❌ Mock 替代真实验证
+### Conductor 禁止 (硬规则，git hook + CLI 双重 enforce)
+1. ❌ **在 miao 上写任何功能代码**（pre-commit hook 拦截）
+2. ❌ 直接 push 代码到 miao（只能通过 testing merge）
+3. ❌ 领取任务自己开发（task:claim 仅限 Performer）
+4. ❌ 无 CI 绿灯合并
+5. ❌ 自我审查 PR
+6. ❌ Mock 替代真实验证
+7. ❌ 创建 feature 分支做开发（那是 Performer 的工作）
+8. ❌ 在 miao 上修改 node/src/、rust/、tests/ 目录
 
 ### Performer 禁止 (9 条硬规则)
-1. ❌ 合并到 main（仅 Conductor 可合并）
+1. ❌ 合并到 miao/testing（仅 Conductor 可合并）
 2. ❌ 审核自己 PR
 3. ❌ 跳过测试
 4. ❌ magic number（所有常数必须命名）

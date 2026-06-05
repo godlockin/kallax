@@ -4,7 +4,7 @@
 import { Command } from 'commander';
 import { logger } from './utils/logger.js';
 import { setupProcessCleanup } from './utils/process-cleanup.js';
-import { createSQLiteManager } from './core/sqlite/index.js';
+import { createSQLiteManager } from './core/sqlite-manager.js';
 import { createWorktreeManager } from './core/worktree-manager.js';
 import { createOutputVerifier } from './core/output-verifier.js';
 import { getIsolationChecker } from './core/isolation-checker.js';
@@ -38,9 +38,9 @@ import { registerVerifyCommands } from './commands/verify-cmd.js';
 import { registerSystemCommands } from './commands/system-cmd.js';
 import { registerStartCommands } from './commands/start-cmd.js';
 import { registerEpicCommands } from './commands/epic-cmd.js';
-import { registerRecommendCommands } from './commands/recommend-cmd.js';
-import { registerWorkflowCommands } from './commands/workflow-cmd.js';
+import { registerBranchCommands } from './commands/branch-cmd.js';
 
+import { registerRouteCommands } from './commands/route-cmd.js';
 function findProjectRoot(): string {
   let dir = process.cwd();
   while (dir !== '/') {
@@ -91,8 +91,8 @@ registerVerifyCommands(program, ctx);
 registerSystemCommands(program, ctx);
 registerStartCommands(program, ctx);
 registerEpicCommands(program, ctx);
-registerRecommendCommands(program, ctx);
-registerWorkflowCommands(program, ctx);
+registerBranchCommands(program, ctx);
+registerRouteCommands(program);
 
 program.parseAsync(process.argv).catch((error: unknown) => {
   logger.kallaxError(KallaxError.fromUnknown(error, KallaxErrorCode.INTERNAL_ERROR));
