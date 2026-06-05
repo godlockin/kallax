@@ -98,12 +98,15 @@ export function createAgentFarm(
   let tasksCompleted = 0;
   let tasksFailed = 0;
   const completionTimes: number[] = [];
-  let currentStatus: FarmState['status'] = 'stopped';
+  let isRunning = false;
 
   /**
 	 * Recalculate farm status based on performer counts, health, and queue.
+	 * Only called when the farm is running — 'stopped' is set by stop().
 	 */
   function recalcStatus(): FarmState['status'] {
+    if (!isRunning) return 'stopped';
+
     const now = Date.now();
     let staleCount = 0;
     let idleCount = 0;
@@ -112,8 +115,6 @@ export function createAgentFarm(
       if (p.currentTaskId === null) idleCount++;
       if (now - p.lastHeartbeatMs > finalConfig.heartbeatTimeoutMs) staleCount++;
     }
-
-    if (performers.size === 0) return 'stopped';
 
     const atCapacity = performers.size >= finalConfig.maxPerformers;
     if (atCapacity && staleCount === 0 && idleCount >= finalConfig.minIdle) {
@@ -146,8 +147,6 @@ export function createAgentFarm(
       performer.currentTaskId = null;
       performer.taskStartedAt = null;
     }
-
-    currentStatus = recalcStatus();
   }
 
   return {
@@ -162,7 +161,7 @@ export function createAgentFarm(
       }
 
       startTime = Date.now();
-      currentStatus = 'running';
+      isRunning = true;
 
       heartbeatInterval = setInterval(() => {
         void checkStalePerformers();
@@ -180,7 +179,7 @@ export function createAgentFarm(
     },
 
     async stop(): Promise<void> {
-      currentStatus = 'stopped';
+      isRunning = false;
 
       if (heartbeatInterval !== null) {
         clearInterval(heartbeatInterval);
@@ -225,7 +224,7 @@ export function createAgentFarm(
       };
       expertMatcher.addAgentProfile(profile);
 
-      currentStatus = recalcStatus();
+      // status recomputed in getState()
 
       logger.info(
         { performerId, capabilityCount: capabilities.length, totalPerformers: performers.size },
@@ -248,7 +247,7 @@ export function createAgentFarm(
       }
 
       performers.delete(performerId);
-      currentStatus = recalcStatus();
+      // status recomputed in getState()
 
       logger.info(
         { performerId, remainingPerformers: performers.size },
@@ -286,7 +285,7 @@ export function createAgentFarm(
 
       performer.currentTaskId = item.taskId;
       performer.taskStartedAt = Date.now();
-      currentStatus = recalcStatus();
+      // status recomputed in getState()
 
       logger.info(
         { performerId, taskId: item.taskId, ticketId: item.ticketId },
@@ -338,7 +337,7 @@ export function createAgentFarm(
       performer.currentTaskId = null;
       performer.taskStartedAt = null;
       performer.lastHeartbeatMs = Date.now();
-      currentStatus = recalcStatus();
+      // status recomputed in getState()
 
       logger.info(
         { performerId, taskId, success, tasksCompleted, tasksFailed },
@@ -347,7 +346,7 @@ export function createAgentFarm(
     },
 
     getState(): FarmState {
-      currentStatus = recalcStatus();
+      const status = recalcStatus();
 
       let idleCount = 0;
       for (const p of performers.values()) {
@@ -359,7 +358,7 @@ export function createAgentFarm(
         idlePerformers: idleCount,
         busyPerformers: performers.size - idleCount,
         taskQueueDepth: claimQueue.stats().total,
-        status: currentStatus,
+        status,
       };
     },
 
