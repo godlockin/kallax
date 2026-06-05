@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# KALLAX Git Hook — Protect miao from direct code changes.
+# Conductor: can merge feature→testing, create PR testing→miao
+# Master:    approves PR testing→miao, tags release
+# Performer: can only work on feature/*
+# Install: bash scripts/hooks/install.sh
+set -euo pipefail
+
+BRANCH="$(git branch --show-current)"
+ROLE_FILE=".kallax/state/instance_config.yml"
+
+# Only enforce on miao branch
+if [ "$BRANCH" != "miao" ]; then
+  exit 0
+fi
+
+# ── Check 1: Role validation ──────────────────────────────────────────
+ROLE="unknown"
+if [ -f "$ROLE_FILE" ]; then
+  ROLE=$(grep -E '^\s*role:' "$ROLE_FILE" 2>/dev/null | awk '{print $2}' || echo "unknown")
+fi
+
+# Only conductor or master can operate on miao
+if [ "$ROLE" != "conductor" ] && [ "$ROLE" != "master" ]; then
+  echo "╔══════════════════════════════════════════════════════════════╗"
+  echo "║  BLOCKED: You do not have permission on miao.              ║"
+  echo "║                                                            ║"
+  echo "║  Role detected: ${ROLE}                                   ║"
+  echo "║                                                            ║"
+  echo "║  Only Conductor or Master can operate on miao.             ║"
+  echo "║  Performer must work in feature/* worktrees.               ║"
+  echo "║                                                            ║"
+  echo "║  Run /kallax-start to set your role correctly.             ║"
+  echo "╚══════════════════════════════════════════════════════════════╝"
+  exit 1
+fi
+
+# ── Check 2: No direct code changes on miao ──────────────────────────
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+if [ -z "$STAGED_FILES" ]; then
+  exit 0
+fi
+
+# Allowed: docs, config, CI, analysis artifacts
+ALLOWED_PATTERNS=(
+  '^docs/'
+  '^\.claude/'
+  '^\.github/'
+  '^\.kallax/'
+  '^scripts/hooks/'
+  '^CHANGELOG\.md$'
+  '^README\.md$'
+  '^RELEASE\.md$'
+  '^CONTRIBUTING\.md$'
+  '^AGENTS\.md$'
+  '^CLAUDE\.md$'
+  '^LICENSE$'
+  '^\.gitignore$'
+  '^docker-compose\.yml$'
+  '^Dockerfile$'
+  '^package-lock\.json$'
+)
+
+BLOCKED_FILES=""
+while IFS= read -r file; do
+  allowed=false
+  for pattern in "${ALLOWED_PATTERNS[@]}"; do
+    if echo "$file" | grep -qE "$pattern"; then
+      allowed=true
+      break
+    fi
+  done
+  if [ "$allowed" = false ]; then
+    BLOCKED_FILES="${BLOCKED_FILES}  ${file}\\n"
+  fi
+done <<< "$STAGED_FILES"
+
+if [ -n "$BLOCKED_FILES" ]; then
+  echo "╔══════════════════════════════════════════════════════════════╗"
+  echo "║  BLOCKED: Direct code changes on miao are PROHIBITED.       ║"
+  echo "║                                                            ║"
+  echo "║  Code must flow through:                                   ║"
+  echo "║    feature/<name> → testing → miao                          ║"
+  echo "║                                                            ║"
+  echo "║  Blocked files:                                            ║"
+  printf "%b" "$BLOCKED_FILES"
+  echo "║                                                            ║"
+  echo "║  Conductor: create feature worktree, merge to testing.     ║"
+  echo "║  Performer: develop in feature/ worktree.                  ║"
+  echo "║  Master: approve release PR (testing → miao).              ║"
+  echo "╚══════════════════════════════════════════════════════════════╝"
+  exit 1
+fi
+
+exit 0

@@ -110,8 +110,14 @@ export function decompose(requirement: string): KallaxResult<DecompositionResult
     }
 
     const hasDeps = subtasks.some(s => s.dependencies.length > 0);
-    const recommendedMode = subtasks.length < 3 && !hasDeps ? 'parallel'
-      : hasDeps ? 'dag' : 'sequential';
+    let recommendedMode: 'sequential' | 'parallel' | 'dag';
+    if (hasDeps) {
+      recommendedMode = 'dag';
+    } else if (subtasks.length <= 1) {
+      recommendedMode = 'sequential';
+    } else {
+      recommendedMode = 'parallel';
+    }
 
     const complexity = subtasks.length >= 3 ? 5 : subtasks.length;
     const confidence = Math.min(0.9, 0.5 + (techStack.length * 0.1) + (files.length * 0.05));
