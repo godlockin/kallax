@@ -49,6 +49,11 @@ export const KallaxErrorCode = {
   // Verification errors
   VERIFICATION_FAILED: 'VERIFICATION_FAILED',
   OUTPUT_NOT_FOUND: 'OUTPUT_NOT_FOUND',
+
+  // Plugin errors
+  PLUGIN_NOT_FOUND: 'PLUGIN_NOT_FOUND',
+  PLUGIN_ALREADY_LOADED: 'PLUGIN_ALREADY_LOADED',
+  PLUGIN_LOAD_FAILED: 'PLUGIN_LOAD_FAILED',
 } as const;
 
 export type KallaxErrorCode = (typeof KallaxErrorCode)[keyof typeof KallaxErrorCode];
