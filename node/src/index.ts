@@ -4,7 +4,7 @@
 import { Command } from 'commander';
 import { logger } from './utils/logger.js';
 import { setupProcessCleanup } from './utils/process-cleanup.js';
-import { createSQLiteManager } from './core/sqlite-manager.js';
+import { createSQLiteManager } from './core/sqlite/index.js';
 import { createWorktreeManager } from './core/worktree-manager.js';
 import { createOutputVerifier } from './core/output-verifier.js';
 import { getIsolationChecker } from './core/isolation-checker.js';
