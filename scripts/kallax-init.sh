@@ -80,6 +80,19 @@ ensure_dir "jira/epics"
 ensure_dir "jira/tickets"
 ensure_dir "jira/schemas"
 
+# ── .claude/skills/ — copy from system template ──
+SKILLS_SRC="${KALLAX_SKILLS_SRC:-$HOME/.claude/skills/kallax}"
+if [ -d "$SKILLS_SRC" ]; then
+  ensure_dir ".claude/skills"
+  if [ ! -d ".claude/skills/kallax" ] || [ "$FORCE" = true ]; then
+    cp -r "$SKILLS_SRC" ".claude/skills/kallax" 2>/dev/null &&       CREATED_DIRS+=(".claude/skills/kallax (skills from $SKILLS_SRC)") ||       echo "  ⚠ Could not copy skills from $SKILLS_SRC"
+  else
+    EXISTING_DIRS+=(".claude/skills/kallax")
+  fi
+else
+  echo "  ⚠ Skills source not found: $SKILLS_SRC — skipping"
+fi
+
 # ── phase_index.json empty template ──
 ensure_file "jira/phases/phase_index.json" '{
   "phases": []
