@@ -71,6 +71,36 @@ if git rev-parse --git-dir 2>/dev/null | grep -q 'worktrees'; then
 fi
 
 # ============================================================
+# ── Master Resume: detect previous master handoff ──────────────────────────
+if [ "${ROLE}" = "master" ]; then
+  PREV_HANDOFF="${INSTANCES_DIR}/master_main/handoff.json"
+  if [ -f "${PREV_HANDOFF}" ]; then
+    PREV_STATUS=$(jq -r '.handoff_time // "unknown"' "${PREV_HANDOFF}" 2>/dev/null || echo "unknown")
+    PREV_PHASE=$(jq -r '.phase // "unknown"' "${PREV_HANDOFF}" 2>/dev/null || echo "unknown")
+    PREV_EPIC=$(jq -r '.epic // "unknown"' "${PREV_HANDOFF}" 2>/dev/null || echo "unknown")
+    PREV_OPEN=$(jq -r '.open_tickets // "none"' "${PREV_HANDOFF}" 2>/dev/null || echo "none")
+    PREV_REVIEWS=$(jq -r '.pending_reviews // "0"' "${PREV_HANDOFF}" 2>/dev/null || echo "0")
+    cat << RESUME
+
+╔════════════════════════════════════════════════════╗
+║  MASTER RESUME — Previous session handoff found    ║
+╠════════════════════════════════════════════════════╣
+║  Handoff at   ▸ ${PREV_STATUS}                     ║
+║  Phase        ▸ ${PREV_PHASE}                      ║
+║  Epic         ▸ ${PREV_EPIC}                       ║
+║  Open Tickets ▸ ${PREV_OPEN}                       ║
+║  Reviews      ▸ ${PREV_REVIEWS} pending            ║
+╠════════════════════════════════════════════════════╣
+║  NEXT: check inbox → review performers → continue  ║
+╚════════════════════════════════════════════════════╝
+RESUME
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) | RESUME | prev=master_main | phase=${PREV_PHASE}" >> "${LOG_DIR}/${INSTANCE_ID}.log"
+    RESUME_MODE="true"
+  else
+    RESUME_MODE="false"
+  fi
+fi
+
 # Create directories
 # ============================================================
 mkdir -p "${INSTANCES_DIR}/${INSTANCE_ID}"
