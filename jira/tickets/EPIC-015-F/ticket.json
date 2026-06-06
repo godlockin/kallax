@@ -1,0 +1,22 @@
+{
+  "id": "EPIC-015-F",
+  "epicId": "EPIC-015",
+  "phaseId": "PHASE-001",
+  "title": "kallax.db — 团队协作 SQLite 数据库初始化",
+  "type": "feature",
+  "priority": "P0",
+  "status": "backlog",
+  "created_by": "master_main",
+  "created_at": "2026-06-09T00:00:00Z",
+  "file_scope": {
+    "includes": ["node/src/core/sqlite/schema.ts", ".kallax/kallax.db"],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "SQLite schema: instances, phases, epics, tickets, heartbeat_log 表",
+    "DB 优先读写，文件 fallback 的 DataAdapter 接口",
+    "`kallax db:init` 创建数据库和表",
+    "`kallax db:migrate` 支持 schema 版本升级",
+    "state.json ↔ kallax.db 双向同步脚本"
+  ]
+}

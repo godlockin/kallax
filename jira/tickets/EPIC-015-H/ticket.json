@@ -1,0 +1,20 @@
+{
+  "id": "EPIC-015-H",
+  "epicId": "EPIC-015",
+  "phaseId": "PHASE-001",
+  "title": "performer-init.sh — Performer 领卡前置协议",
+  "type": "feature",
+  "priority": "P0",
+  "status": "backlog",
+  "created_by": "master_main",
+  "created_at": "2026-06-06T10:00:00Z",
+  "file_scope": { "includes": ["scripts/performer-init.sh"], "excludes": [] },
+  "acceptance_criteria": [
+    "`performer-init.sh <ticket-id>` 领卡前自动执行",
+    "读取 ticket.json → 提取需求关键词和能力要求",
+    "搜索 experts/ 目录 → 匹配最合适的专家设定",
+    "加载专家 profile → 初始化 Performer 角色+专长",
+    "输出初始化报告: ticket + 匹配的专家 + 推荐 skill",
+    "初始化完成后再执行 performer-complete.sh 交付流程"
+  ]
+}
