@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { createSQLiteManager, type SQLiteManager } from '../src/core/sqlite-manager.js';
+import { createSQLiteManager, type SQLiteManager } from '../src/core/sqlite/index.js';
 import { createTicket, createTask, createInstance, createMessage } from './helpers/factories.js';
 import { KallaxErrorCode } from '../src/types/index.js';
 import * as fs from 'node:fs';
