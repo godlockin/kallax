@@ -1,0 +1,23 @@
+{
+  "id": "EPIC-015-E",
+  "epicId": "EPIC-015",
+  "phaseId": "PHASE-001",
+  "title": "kallax init — 项目目录初始化脚本",
+  "type": "feature",
+  "priority": "P0",
+  "status": "backlog",
+  "created_by": "master_main",
+  "created_at": "2026-06-06T09:00:00Z",
+  "file_scope": {
+    "includes": ["scripts/kallax-init.sh", "node/src/commands/init.ts"],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "`kallax init` 一键创建规范目录结构",
+    "自动生成 phase_index.json / epic_index.json 空模板",
+    "自动创建 .kallax/instances/ 目录",
+    "自动创建 confluence/ 子目录",
+    "检测已有项目 → 增量初始化，不覆盖",
+    "输出初始化报告 (创建了哪些目录/文件)"
+  ]
+}

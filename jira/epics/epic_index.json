@@ -1,0 +1,11 @@
+{
+  "epics": [
+    {
+      "id": "EPIC-015",
+      "phase": "PHASE-001",
+      "status": "active",
+      "start_time": "2026-06-06",
+      "delivery_time": "2026-06-08"
+    }
+  ]
+}
