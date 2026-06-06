@@ -71,6 +71,33 @@ if git rev-parse --git-dir 2>/dev/null | grep -q 'worktrees'; then
 fi
 
 # ============================================================
+# ── Master Health Check ──────────────────────────────────────────────────
+MASTER_STATE="${INSTANCES_DIR}/master_main/state.json"
+MASTER_NEEDS_TAKEOVER="false"
+if [ -f "${MASTER_STATE}" ]; then
+  MASTER_STATUS=$(jq -r '.status // "unknown"' "${MASTER_STATE}" 2>/dev/null || echo "unknown")
+  if [ "${MASTER_STATUS}" = "STALE" ] || [ "${MASTER_STATUS}" = "CLOSING" ]; then
+    MASTER_NEEDS_TAKEOVER="true"
+  fi
+else
+  # No master state at all — first boot
+  MASTER_NEEDS_TAKEOVER="true"
+fi
+
+# Auto-promote: if no explicit role and master needs takeover, suggest becoming master
+if [ "${MASTER_NEEDS_TAKEOVER}" = "true" ] && [ -z "${ROLE}" ]; then
+  cat << MASTER_PROMPT
+
+╔════════════════════════════════════════════════════╗
+║  ⚠ NO ACTIVE MASTER DETECTED                       ║
+╠════════════════════════════════════════════════════╣
+║  Previous master is STALE or absent.               ║
+║  Run: KALLAX_ROLE=master bash session_start.sh     ║
+║  Or:   session_start.sh --role master              ║
+╚════════════════════════════════════════════════════╝
+MASTER_PROMPT
+fi
+
 # ── Master Resume: detect previous master handoff ──────────────────────────
 if [ "${ROLE}" = "master" ]; then
   PREV_HANDOFF="${INSTANCES_DIR}/master_main/handoff.json"
