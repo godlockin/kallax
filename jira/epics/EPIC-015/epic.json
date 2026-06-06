@@ -1,0 +1,20 @@
+{
+  "id": "EPIC-015",
+  "phase": "PHASE-001",
+  "title": "Session Onboarding Protocol + 目录结构固化",
+  "scope": "1. SessionStart hook\n2. Worktree 隔离引导\n3. Heartbeat 自动 tick\n4. Performer 交付协议\n5. Performer 领卡前置协议\n6. 并行 Performer 调度\n7. JSON Schema 验证\n8. kallax init\n9. kallax.db",
+  "start_time": "2026-06-06",
+  "delivery_time": "2026-06-09",
+  "status": "active",
+  "tickets": [
+    {"id": "EPIC-015-A", "assignee": "performer-a", "status": "done"},
+    {"id": "EPIC-015-B", "assignee": "performer-b", "status": "done"},
+    {"id": "EPIC-015-C", "assignee": "performer-c", "status": "done"},
+    {"id": "EPIC-015-G", "assignee": "master_main", "status": "done"},
+    {"id": "EPIC-015-H", "assignee": "master_main", "status": "done"},
+    {"id": "EPIC-015-I", "assignee": "master_main", "status": "done"},
+    {"id": "EPIC-015-D", "assignee": null, "status": "backlog"},
+    {"id": "EPIC-015-E", "assignee": null, "status": "backlog"},
+    {"id": "EPIC-015-F", "assignee": null, "status": "backlog"}
+  ]
+}
