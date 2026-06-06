@@ -5,51 +5,19 @@
 
 import { err, ok } from 'neverthrow';
 import { KallaxError, KallaxErrorCode, type KallaxResult, type Message } from '../types/index.js';
-export type { Message };
 import { logger } from '../utils/logger.js';
 import { createSQLiteManager } from './sqlite/index.js';
 import { createRedisQueue } from './message-queue/redis.js';
 import { createMemoryQueue } from './message-queue/memory.js';
 import { createSQLiteQueue } from './message-queue/sqlite.js';
-
-export interface MessageQueueConfig {
-  readonly mode: 'redis' | 'sqlite' | 'memory';
-  readonly redis?: {
-    readonly host: string;
-    readonly port: number;
-    readonly password?: string;
-    readonly db?: number;
-  };
-  readonly sqlite?: {
-    readonly path: string;
-  };
-}
-
-export interface PublishOptions {
-  readonly priority?: number;
-  readonly targetId?: string;
-  readonly ttlMs?: number;
-}
-
-export type MessageHandler = (message: Message) => Promise<void>;
-
-export interface MessageQueue {
-  publish: (type: string, payload: unknown, options?: PublishOptions) => Promise<KallaxResult<string>>;
-  subscribe: (type: string, handler: MessageHandler) => KallaxResult<void>;
-  unsubscribe: (type: string) => KallaxResult<void>;
-  peek: (limit?: number) => Promise<KallaxResult<Message[]>>;
-  ack: (messageId: string) => Promise<KallaxResult<void>>;
-  close: () => Promise<void>;
-  getStats: () => MessageQueueStats;
-}
-
-export interface MessageQueueStats {
-  readonly mode: string;
-  readonly pendingCount: number;
-  readonly subscriberCount: number;
-  readonly messagesPublished: number;
-  readonly messagesProcessed: number;
-}
+import type { MessageQueueConfig, PublishOptions, MessageHandler, MessageQueue, MessageQueueStats } from './message-queue/types.js';
+export type {
+  MessageQueueConfig,
+  PublishOptions,
+  MessageHandler,
+  MessageQueue,
+  MessageQueueStats,
+} from './message-queue/types.js';
 
 /**
  * Create message queue based on configuration

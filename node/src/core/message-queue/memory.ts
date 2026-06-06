@@ -3,7 +3,7 @@
  */
 import { ok } from 'neverthrow';
 import { MessagePriority, type KallaxResult, type Message } from '../../types/index.js';
-import type { MessageHandler, MessageQueue, MessageQueueStats } from '../message-queue.js';
+import type { MessageHandler, MessageQueue, MessageQueueStats } from './types.js';
 import { logger } from '../../utils/logger.js';
 
 function generateMessageId(): string {
