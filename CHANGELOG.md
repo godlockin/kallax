@@ -124,3 +124,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 [1.0.0]: https://github.com/your-org/kallax/releases/tag/v1.0.0
+
+## [1.0.0-rc1] - 2026-06-05
+
+### Fixed
+- **43 TypeScript errors**: better-sqlite3 v11 `db.run/get` → `db.prepare().run/get()`, ioredis `import { Redis }`, execFile Promise types, strict index signatures
+- **3 test failures**: worktree-manager callback mocks → Promise-based mocks (Node 24 compat)
+- **Circular dependency**: `api/server.ts` ↔ `api/middleware/auth.ts` broken by extracting `EndpointRole` to `api/types.ts`
+- **SQLite async wrapper**: all async methods now properly wrap results in `ok()`
+
+### Removed
+- **sqlite-manager.ts** (938 lines): monolithic legacy file — all logic migrated to `sqlite/` modules
+
+### Changed
+- Maximum file size: 938 → 603 lines
+- Total source lines: 21,663 → 20,725 (-938)
+- TSC: 43 errors → 0 errors
+- Tests: 3 failures → 0 failures
