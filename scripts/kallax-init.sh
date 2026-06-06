@@ -32,6 +32,51 @@ case "$PROJECT_ROOT" in
 esac
 
 cd "$PROJECT_ROOT"
+# ── Environment check: KALLAX skills must exist somewhere ─────────────────
+SKILLS_GLOBAL="$HOME/.claude/skills/kallax/SKILL.md"
+SKILLS_BUNDLED="$(dirname "$0")/../.claude/skills/kallax/SKILL.md"
+
+if [ -f "$SKILLS_GLOBAL" ]; then
+  KALLAX_SKILLS_SRC="$(dirname "$SKILLS_GLOBAL")"
+  echo "✓ KALLAX skills found: $KALLAX_SKILLS_SRC"
+elif [ -f "$SKILLS_BUNDLED" ]; then
+  KALLAX_SKILLS_SRC="$(dirname "$SKILLS_BUNDLED")"
+  echo "✓ KALLAX skills found (bundled): $KALLAX_SKILLS_SRC"
+else
+  cat << PROMPT
+
+╔════════════════════════════════════════════════════╗
+║  KALLAX skills not found                           ║
+╠════════════════════════════════════════════════════╣
+║  Skills are required for expert panel, slash       ║
+║  commands, and performer initialization.           ║
+║                                                    ║
+║  Where to deploy?                                  ║
+║  [1] ~/.claude/skills/kallax/  (global, all projects) ║
+║  [2] .claude/skills/kallax/    (this project only) ║
+║  [3] Skip (no skills)                              ║
+╚════════════════════════════════════════════════════╝
+PROMPT
+
+  read -p "Choose [1/2/3]: " CHOICE
+  case "${CHOICE}" in
+    1)
+      mkdir -p "$HOME/.claude/skills"
+      cp -r "$(dirname "$0")/../.claude/skills/kallax" "$HOME/.claude/skills/kallax" 2>/dev/null &&         echo "✓ Skills deployed to $HOME/.claude/skills/kallax/" ||         echo "⚠ Deploy failed — copy manually from KALLAX source"
+      KALLAX_SKILLS_SRC="$HOME/.claude/skills/kallax"
+      ;;
+    2)
+      KALLAX_SKILLS_SRC=""
+      echo "→ Skills will be copied to .claude/skills/kallax/ by init"
+      ;;
+    *)
+      echo "→ Skipping skills deployment (use --force to retry)"
+      KALLAX_SKILLS_SRC=""
+      ;;
+  esac
+fi
+
+
 
 CREATED_DIRS=()
 CREATED_FILES=()
