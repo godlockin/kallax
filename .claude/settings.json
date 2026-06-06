@@ -44,5 +44,17 @@
       "Bash(git reset --hard *)",
       "Bash(git clean -f *)"
     ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".kallax/hooks/session_start.sh"
+          }
+        ]
+      }
+    ]
   }
 }
