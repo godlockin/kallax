@@ -1,0 +1,43 @@
+{
+  "id": "EPIC-016-S",
+  "epicId": "EPIC-016",
+  "phaseId": "PHASE-001",
+  "title": "Init optimization regression fix + Layer A MCP lazy loading (70% target not met)",
+  "type": "optimization",
+  "priority": "P1",
+  "status": "backlog",
+  "created_by": "performer-EPIC-016-H",
+  "created_at": "2026-06-07T00:00:00Z",
+  "dependencies": ["EPIC-016-H", "EPIC-016-R", "EPIC-016-G"],
+  "file_scope": {
+    "includes": [
+      ".kallax/hooks/session_start.sh",
+      ".claude/skills/kallax/SKILL.md",
+      "scripts/benchmark-init.sh"
+    ],
+    "excludes": [
+      "node/src/**",
+      "rust/**"
+    ]
+  },
+  "acceptance_criteria": [
+    "AC1: Investigate session_start.sh cold wall_time regression (355ms current vs 242ms v3-strict) — uncommitted local modifications identified",
+    "AC2: Fix or revert session_start.sh changes to restore cold wall_time ≤ 242ms",
+    "AC3: MCP server lazy loading — github / playwright / prompts.chat load on-demand only",
+    "AC4: Skill metadata on-demand — do not inject all 90 skills metadata on every session start",
+    "AC5: After fixes: 5-run benchmark median shows wall_time cold reduction ≥ 70% vs baseline (target ≤ 139 ms)",
+    "AC6: After fixes: tokens_est reduction ≥ 70% vs baseline (target ≤ 106 tokens)",
+    "AC7: Update .kallax/benchmarks/REPORT.md with new measurements and close this ticket"
+  ],
+  "estimated_hours": 3,
+  "context": {
+    "parent_ticket": "EPIC-016-H",
+    "reason": "EPIC-016-H benchmark showed 70% target NOT MET: wall_time cold -23.3%, warm -59.6%, tokens -65.9%",
+    "regression_identified": "session_start.sh has uncommitted local modifications causing cold wall_time regression from 242ms (v3) to 355ms (current)",
+    "layer_a_blockers": [
+      "MCP server lazy loading not implemented",
+      "Skill metadata full injection on every session start",
+      "session_start.sh regression from uncommitted changes"
+    ]
+  }
+}
