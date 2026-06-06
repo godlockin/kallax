@@ -103,6 +103,10 @@ export interface DatabaseStats {
   readonly messageCount: number;
 }
 
+// ── Team Collaboration Types ─────────────────────────────────────────────────
+
+import type { Epic, Phase, ProjectTicket, TeamInstance, HeartbeatLog } from '../data-adapter.js';
+
 // ── Row Types ───────────────────────────────────────────────────────────────
 
 export interface TicketRow {
@@ -230,5 +234,173 @@ export function rowToMessage(row: MessageRow): Message {
     processedAt: row.processed_at ?? undefined,
     senderId: row.sender_id ?? undefined,
     targetId: row.target_id ?? undefined,
+  };
+}
+
+// ── Team Collaboration Row Types ────────────────────────────────────────────
+
+export interface PhaseRow {
+  id: string;
+  title: string;
+  scope: string;
+  status: string;
+  start_time: string | null;
+  delivery_time: string | null;
+}
+
+export interface EpicRow {
+  id: string;
+  phase_id: string;
+  title: string;
+  scope: string;
+  status: string;
+  start_time: string | null;
+  delivery_time: string | null;
+}
+
+export interface ProjectTicketRow {
+  id: string;
+  epic_id: string;
+  title: string;
+  type: string;
+  priority: string;
+  status: string;
+  assignee: string | null;
+  file_scope: string | null;
+  acceptance_criteria: string;
+}
+
+export interface TeamInstanceRow {
+  instance_id: string;
+  role: string;
+  status: string;
+  branch: string | null;
+  pid: number;
+  heartbeat_at: number | null;
+  missed_count: number;
+}
+
+export interface HeartbeatLogRow {
+  id: number;
+  instance_id: string;
+  tick_at: number;
+  status: string;
+}
+
+// ── Team Collaboration Row Mapping Functions ────────────────────────────────
+
+export function rowToPhase(row: PhaseRow): Phase {
+  return {
+    id: row.id,
+    title: row.title,
+    scope: row.scope,
+    status: row.status,
+    startTime: row.start_time ?? undefined,
+    deliveryTime: row.delivery_time ?? undefined,
+  };
+}
+
+export function phaseToRow(phase: Phase): PhaseRow {
+  return {
+    id: phase.id,
+    title: phase.title,
+    scope: phase.scope,
+    status: phase.status,
+    start_time: phase.startTime ?? null,
+    delivery_time: phase.deliveryTime ?? null,
+  };
+}
+
+export function rowToEpic(row: EpicRow): Epic {
+  return {
+    id: row.id,
+    phaseId: row.phase_id,
+    title: row.title,
+    scope: row.scope,
+    status: row.status,
+    startTime: row.start_time ?? undefined,
+    deliveryTime: row.delivery_time ?? undefined,
+  };
+}
+
+export function epicToRow(epic: Epic): EpicRow {
+  return {
+    id: epic.id,
+    phase_id: epic.phaseId,
+    title: epic.title,
+    scope: epic.scope,
+    status: epic.status,
+    start_time: epic.startTime ?? null,
+    delivery_time: epic.deliveryTime ?? null,
+  };
+}
+
+export function rowToProjectTicket(row: ProjectTicketRow): ProjectTicket {
+  return {
+    id: row.id,
+    epicId: row.epic_id,
+    title: row.title,
+    type: row.type,
+    priority: row.priority,
+    status: row.status,
+    assignee: row.assignee,
+    fileScope: row.file_scope !== null ? (JSON.parse(row.file_scope) as { includes: string[]; excludes: string[] }) : undefined,
+    acceptanceCriteria: JSON.parse(row.acceptance_criteria) as string[],
+  };
+}
+
+export function projectTicketToRow(ticket: ProjectTicket): ProjectTicketRow {
+  return {
+    id: ticket.id,
+    epic_id: ticket.epicId,
+    title: ticket.title,
+    type: ticket.type,
+    priority: ticket.priority,
+    status: ticket.status,
+    assignee: ticket.assignee ?? null,
+    file_scope: ticket.fileScope !== undefined ? JSON.stringify(ticket.fileScope) : null,
+    acceptance_criteria: JSON.stringify(ticket.acceptanceCriteria),
+  };
+}
+
+export function rowToTeamInstance(row: TeamInstanceRow): TeamInstance {
+  return {
+    instanceId: row.instance_id,
+    role: row.role,
+    status: row.status,
+    branch: row.branch ?? undefined,
+    pid: row.pid,
+    heartbeatAt: row.heartbeat_at ?? undefined,
+    missedCount: row.missed_count,
+  };
+}
+
+export function teamInstanceToRow(instance: TeamInstance): TeamInstanceRow {
+  return {
+    instance_id: instance.instanceId,
+    role: instance.role,
+    status: instance.status,
+    branch: instance.branch ?? null,
+    pid: instance.pid,
+    heartbeat_at: instance.heartbeatAt ?? null,
+    missed_count: instance.missedCount,
+  };
+}
+
+export function rowToHeartbeatLog(row: HeartbeatLogRow): HeartbeatLog {
+  return {
+    id: row.id,
+    instanceId: row.instance_id,
+    tickAt: row.tick_at,
+    status: row.status,
+  };
+}
+
+export function heartbeatLogToRow(log: HeartbeatLog): HeartbeatLogRow {
+  return {
+    id: log.id,
+    instance_id: log.instanceId,
+    tick_at: log.tickAt,
+    status: log.status,
   };
 }
