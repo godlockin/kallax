@@ -1,0 +1,42 @@
+{
+  "id": "EPIC-016-N",
+  "epicId": "EPIC-016",
+  "phaseId": "PHASE-001",
+  "title": "INBOX card 标注「per-instance」 — 文档化避免误用",
+  "type": "docs",
+  "priority": "P3",
+  "status": "done",
+  "performer": "performer-EPIC-016-N",
+  "pr_url": "https://github.com/godlockin/kallax/pull/6",
+  "created_by": "master_main",
+  "created_at": "2026-06-06T05:55:00Z",
+  "file_scope": {
+    "includes": [
+      "~/.claude/skills/kallax/skills/kallax-init.md",
+      ".kallax/hooks/session_start.sh"
+    ],
+    "excludes": []
+  },
+  "dependencies": [],
+  "acceptance_criteria": [
+    "session_start.sh 的 ASCII card 把 'INBOX' 改为 'INBOX (you)' 或加 footnote",
+    "kallax-init.md lean skill 文档化 inbox 路径:inbox/<instance_id>/ 是个人队列,inbox/<role>/ 是全局未认领",
+    "README/quickstart 加一行示例说明两个 inbox 区别"
+  ],
+  "estimated_hours": 0.3,
+  "completed_at": "2026-06-07T16:20:00Z",
+  "review": {
+    "reviewer": "master_main",
+    "reviewed_at": "2026-06-07T16:20:00Z",
+    "decision": "APPROVE",
+    "merge_commits": [
+      "6603961 (N work)",
+      "576a062 (P0 fix)",
+      "f4ea2a4 (doc sync)"
+    ],
+    "issues": {
+      "performer_misroute": "d884188 committed to miao with 109 line changes, reverted via a526cc9 + cherry-picked 1f6f52f",
+      "A_B_review": "P0 ASCII card alignment (INBOX(you) broke column) - fixed with INBOX* marker"
+    }
+  }
+}
