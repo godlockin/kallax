@@ -421,7 +421,7 @@ fi
 printf '┌─ KALLAX ────────────────────────────────\n'
 printf '│ ROLE     ▸ %s\n' "${ROLE}"
 printf '│ INSTANCE ▸ %s@%s\n' "${ROLE}" "${BRANCH}"
-printf '│ INBOX(you) ▸ [%s] %s\n' "${INBOX_COUNT}" "$([ "${INBOX_COUNT}" -eq 0 ] && printf '.' || printf '!')"
+printf '│ INBOX*   ▸ [%s] %s\n' "${INBOX_COUNT}" "$([ "${INBOX_COUNT}" -eq 0 ] && printf '.' || printf '!')"
 printf '│ NEXT     ▸ %s\n' "${NEXT}"
 printf '└────────────────────────────────────────\n'
 
