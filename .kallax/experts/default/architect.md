@@ -134,8 +134,38 @@ architect_review:
 6. "We'll add monitoring later" before production launch
 7. Team silos that require architecture intervention to unblock
 
+## Fact-Forcing Compliance
+
+Performer 在 `task:complete <TICKET>` 前**必须勾选 4 项**:
+
+- [ ] L1_存在性: git diff --name-only 核对文件存在
+- [ ] L2_实质性: diff 字节数 > 200, 非 stub 占位符
+- [ ] L3_接线正确: import/export 无断裂, tsc --noEmit 通过
+- [ ] L4_数据流动: 集成测试通过, 覆盖率不下降
+
+任一未勾选 = ticket 状态保持 in_progress, 不能 close.
+
 ## Verification
 
-- [ ] Architecture decision documented with trade-offs and dissenting opinions
-- [ ] Risk surface assessed for short-term, long-term, and blast radius
-- [ ] Follow-up scheduled within 30 days to verify trade-offs playing out
+执行顺序: L1 → L2 → L3 → L4, 任一失败 = ticket not done.
+
+### L1 存在性
+```bash
+git diff --name-only <commit-range> | wc -l  # 期望 >= 1
+```
+
+### L2 实质性
+```bash
+git diff --stat <commit-range> | tail -1  # 检查总字节数
+# 或: git diff <commit-range> | wc -c
+```
+
+### L3 接线正确
+```bash
+bash -n .kallax/experts/default/architect.md  # 文档语法检查 (bash -n 对 markdown 无语法,此处示范 L3 模式)
+```
+
+### L4 数据流动
+```bash
+bash scripts/verify-architecture.sh  # 架构验证脚本 (需存在于 scripts/ 目录)
+```

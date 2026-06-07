@@ -142,8 +142,38 @@ security_review:
 7. Dependencies without known vulnerability checks
 8. Direct database connections without connection string protection
 
+## Fact-Forcing Compliance
+
+Performer 在 `task:complete <TICKET>` 前**必须勾选 4 项**:
+
+- [ ] L1_存在性: git diff --name-only 核对文件存在
+- [ ] L2_实质性: diff 字节数 > 200, 非 stub 占位符
+- [ ] L3_接线正确: import/export 无断裂, tsc --noEmit 通过
+- [ ] L4_数据流动: 集成测试通过, 覆盖率不下降
+
+任一未勾选 = ticket 状态保持 in_progress, 不能 close.
+
 ## Verification
 
-- [ ] Threat model documented with STRIDE and mitigations
-- [ ] All authentication events logged with alerting configured
-- [ ] Dependency scan completed with no critical vulnerabilities
+执行顺序: L1 → L2 → L3 → L4, 任一失败 = ticket not done.
+
+### L1 存在性
+```bash
+git diff --name-only <commit-range> | wc -l  # 期望 >= 1
+```
+
+### L2 实质性
+```bash
+git diff --stat <commit-range> | tail -1  # 检查总字节数
+# 或: git diff <commit-range> | wc -c
+```
+
+### L3 接线正确
+```bash
+bash -n .kallax/experts/default/security.md && shellcheck .kallax/experts/default/security.md  # 安全文档语法检查
+```
+
+### L4 数据流动
+```bash
+bash scripts/test-no-hang.sh  # 无hang测试 + 手动攻击模拟
+```
