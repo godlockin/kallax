@@ -16,17 +16,26 @@ description: Initialize KALLAX session. STRICT MODE — 1 Bash call only. Auto-i
 
 ## EXACT SEQUENCE (3 steps — follow in order)
 
-### Step 1: Confirm script is globally available
+### Step 1: Confirm OR Install script (1-call self-bootstrap)
 The script lives at `~/.claude/skills/kallax/hooks/session_start.sh`.
-It is shipped globally by `scripts/install.sh`, so it works in any project
-without per-project setup. If `~/.claude/skills/kallax/hooks/session_start.sh`
-is missing, the user must run `bash scripts/install.sh` first — but that
-is the USER's job, not yours. Do not run install scripts in init.
+**Auto-install fallback** (no extra tool call): if the script is missing, the
+Step 2 command below will self-install in the same call. Do NOT run install
+scripts as a separate step — that wastes a tool call.
 
 ### Step 2: Run exactly this bash command (copy verbatim, do not paraphrase)
 ```bash
-KALLAX_ROLE=<role> bash "${HOME}/.claude/skills/kallax/hooks/session_start.sh" --role <role>
+KALLAX_INSTALL_DIR="${HOME}/.claude/skills/kallax/hooks"
+mkdir -p "${KALLAX_INSTALL_DIR}"
+[ ! -f "${KALLAX_INSTALL_DIR}/session_start.sh" ] && cp .kallax/hooks/session_start.sh "${KALLAX_INSTALL_DIR}/session_start.sh" 2>/dev/null
+KALLAX_ROLE=<role> bash "${KALLAX_INSTALL_DIR}/session_start.sh" --role <role>
 ```
+
+The 3-line mini-script above is **one bash invocation** that:
+1. Creates `~/.claude/skills/kallax/hooks/` if missing
+2. Copies `.kallax/hooks/session_start.sh` from project to global path if missing
+3. Runs session_start.sh with the requested role
+
+`<role>` = `master` | `conductor` | `performer` (default `master`).
 
 `<role>` = `master` | `conductor` | `performer` (default `master`).
 
