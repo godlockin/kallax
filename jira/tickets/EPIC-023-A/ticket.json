@@ -1,0 +1,29 @@
+{
+  "id": "EPIC-023-A",
+  "title": "TS Zod schema for 7 expert persona (src/schema/persona.ts)",
+  "type": "feature",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      "src/schema/persona.ts",
+      "scripts/check-skill-anatomy.ts",
+      "package.json",
+      "tsconfig.json"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "src/schema/persona.ts 存在, 导出 PersonaSchema (z.object)",
+    "PersonaSchema 含 9 字段: id, tier, worktree_role, review_group, phase, rationalizations_count, version, last_reviewed, tickets_served",
+    "id 格式: /^kallax\\.\\w+\\.\\d{3}$/",
+    "tier: enum ['default'] (KALLAX 不用 optional/extended)",
+    "worktree_role: enum ['master', 'conductor', 'performer']",
+    "review_group: enum ['A', 'B', 'AB']",
+    "version: semver regex /^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?(\\+[a-zA-Z0-9.]+)?$/",
+    "PersonaSchema 解析 .kallax/experts/default/*.md 7 文件全 pass",
+    "scripts/check-skill-anatomy.ts (TypeScript 版) 替代 .sh 版, 跑通 7 文件全 PASS",
+    "package.json 加 zod 依赖, tsconfig.json 含 ESM target"
+  ],
+  "estimated_hours": 6,
+  "notes": "借 EKET Zod 思路 (Layer 2), KALLAX 增 5 运行时字段. 对应 EKET 6 反 LLM 绕过机制 (TS 强类型)"
+}
