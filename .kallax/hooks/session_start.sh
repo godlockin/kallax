@@ -65,22 +65,25 @@ mkdir -p "${INSTANCES_DIR}"
 EXISTING_INSTANCES_COUNT=$(find "${INSTANCES_DIR}" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
 
 # ============================================================
-# Worktree detection
+# Worktree detection (optimized: avoid git worktree list overhead)
 # ============================================================
 IN_WORKTREE="false"
 WORKTREE_PATH="null"
+# Fast check: are we inside a worktree?
 if git rev-parse --git-dir 2>/dev/null | grep -q 'worktrees'; then
   IN_WORKTREE="true"
-  WT=$(git worktree list 2>/dev/null | head -1 | awk '{print $1}')
+  # Use parent directory of .git as worktree root (avoids git worktree list)
+  WT=$(cd "$(git rev-parse --git-dir 2>/dev/null)/.." && pwd)
   WORKTREE_PATH="\"${WT}\""
 fi
 
 # ============================================================
-# ── Master Health Check ──────────────────────────────────────────────────
+# ── Master Health Check (optimized: grep instead of jq) ─────────────────
 MASTER_STATE="${INSTANCES_DIR}/master_main/state.json"
 MASTER_NEEDS_TAKEOVER="false"
 if [ -f "${MASTER_STATE}" ]; then
-  MASTER_STATUS=$(jq -r '.status // "unknown"' "${MASTER_STATE}" 2>/dev/null || echo "unknown")
+  # Fast grep instead of jq for simple status check
+  MASTER_STATUS=$(grep '"status"' "${MASTER_STATE}" 2>/dev/null | head -1 | sed 's/.*: *"\([^"]*\)".*/\1/' | tr -d ' ,')
   if [ "${MASTER_STATUS}" = "STALE" ] || [ "${MASTER_STATUS}" = "CLOSING" ]; then
     MASTER_NEEDS_TAKEOVER="true"
   fi
@@ -103,15 +106,16 @@ if [ "${MASTER_NEEDS_TAKEOVER}" = "true" ] && [ -z "${ROLE}" ]; then
 MASTER_PROMPT
 fi
 
-# ── Master Resume: detect previous master handoff ──────────────────────────
+# ── Master Resume: detect previous master handoff (grep instead of jq) ───
 if [ "${ROLE}" = "master" ]; then
   PREV_HANDOFF="${INSTANCES_DIR}/master_main/handoff.json"
   if [ -f "${PREV_HANDOFF}" ]; then
-    PREV_STATUS=$(jq -r '.handoff_time // "unknown"' "${PREV_HANDOFF}" 2>/dev/null || echo "unknown")
-    PREV_PHASE=$(jq -r '.phase // "unknown"' "${PREV_HANDOFF}" 2>/dev/null || echo "unknown")
-    PREV_EPIC=$(jq -r '.epic // "unknown"' "${PREV_HANDOFF}" 2>/dev/null || echo "unknown")
-    PREV_OPEN=$(jq -r '.open_tickets // "none"' "${PREV_HANDOFF}" 2>/dev/null || echo "none")
-    PREV_REVIEWS=$(jq -r '.pending_reviews // "0"' "${PREV_HANDOFF}" 2>/dev/null || echo "0")
+    # Use grep+sed instead of jq for simple field extraction
+    PREV_STATUS=$(grep '"handoff_time"' "${PREV_HANDOFF}" 2>/dev/null | sed 's/.*: *"\([^"]*\)".*/\1/' | tr -d ' ,')
+    PREV_PHASE=$(grep '"phase"' "${PREV_HANDOFF}" 2>/dev/null | head -1 | sed 's/.*: *"\([^"]*\)".*/\1/' | tr -d ' ,')
+    PREV_EPIC=$(grep '"epic"' "${PREV_HANDOFF}" 2>/dev/null | head -1 | sed 's/.*: *"\([^"]*\)".*/\1/' | tr -d ' ,')
+    PREV_OPEN=$(grep '"open_tickets"' "${PREV_HANDOFF}" 2>/dev/null | sed 's/.*: *"\([^"]*\)".*/\1/' | tr -d ' ,')
+    PREV_REVIEWS=$(grep '"pending_reviews"' "${PREV_HANDOFF}" 2>/dev/null | sed 's/.*: *\([0-9]*\).*/\1/' | tr -d ' ,')
     cat << RESUME
 
 ╔════════════════════════════════════════════════════╗
@@ -198,8 +202,8 @@ if [ "${EXISTING_INSTANCES_COUNT}" -gt 0 ]; then
         || echo "first-boot: heartbeat skipped" >> "${LOG_DIR}/${INSTANCE_ID}.log" 2>/dev/null || true
     elif [ -f "${MASTER_STATE}" ]; then
       # On-demand: only start if master exists and is STALE
-      MASTER_STATUS=$(jq -r '.status // "unknown"' "${MASTER_STATE}" 2>/dev/null || echo "unknown")
-      if [ "${MASTER_STATUS}" = "STALE" ] || [ "${MASTER_STATUS}" = "CLOSING" ]; then
+      # Reuse MASTER_STATUS from earlier check (avoid re-reading)
+      if [ "${MASTER_NEEDS_TAKEOVER}" = "true" ]; then
         run_daemon "heartbeat" "$HEARTBEAT_SCRIPT" "${INSTANCE_ID}" "${INSTANCES_DIR}" \
           || echo "heartbeat: start failed" >> "${LOG_DIR}/${INSTANCE_ID}.log" 2>/dev/null || true
       fi
@@ -211,27 +215,19 @@ fi
 
 # ============================================================
 # EXIT trap: daemon cleanup + structured diagnostic log (AC4, AC6)
+# Optimized: avoid jq in hot path
 # ============================================================
 on_session_exit() {
-  local daemon_pid=""
   local exit_code=$?
-  daemon_pid=$(jq -r '.heartbeat.heartbeat_daemon_pid // empty' \
-    "${INSTANCES_DIR}/${INSTANCE_ID}/state.json" 2>/dev/null || true)
-  [ -n "$daemon_pid" ] && kill "$daemon_pid" 2>/dev/null || true
-  # Mark state as CLOSING
-  jq '.status = "CLOSING"' "${INSTANCES_DIR}/${INSTANCE_ID}/state.json" \
-    > "${INSTANCES_DIR}/${INSTANCE_ID}/state.json.tmp" 2>/dev/null && \
-    mv "${INSTANCES_DIR}/${INSTANCE_ID}/state.json.tmp" \
-       "${INSTANCES_DIR}/${INSTANCE_ID}/state.json" 2>/dev/null || true
-  # Structured diagnostic log (AC6)
-  jq -n \
-    --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-    --arg instance "${INSTANCE_ID}" \
-    --argjson pid "$$" \
-    --argjson daemon_pid "${daemon_pid:-null}" \
-    --argjson exit_code "${exit_code}" \
-    '{ts:$ts, event:"session_start_exit", instance:$instance, pid:$pid, daemon_pid:$daemon_pid, exit_code:$exit_code}' \
-    >> "${LOG_DIR}/session_start.diag.jsonl" 2>/dev/null || true
+  # Mark state as CLOSING (simple sed instead of jq)
+  [ -f "${INSTANCES_DIR}/${INSTANCE_ID}/state.json" ] && \
+    sed -i 's/"status": "ACTIVE"/"status": "CLOSING"/' \
+      "${INSTANCES_DIR}/${INSTANCE_ID}/state.json" 2>/dev/null || true
+  # Structured diagnostic log (AC6) - printf instead of jq -n
+  {
+    printf '{"ts":"%s","event":"session_start_exit","instance":"%s","pid":%s,"exit_code":%s}\n' \
+      "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "${INSTANCE_ID}" "$$" "${exit_code}"
+  } >> "${LOG_DIR}/session_start.diag.jsonl" 2>/dev/null || true
 }
 trap 'on_session_exit' EXIT INT TERM
 
