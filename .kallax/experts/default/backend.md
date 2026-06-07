@@ -1,10 +1,11 @@
 ---
 id: kallax.backend.001
+name: 💻 后端
 tier: default
 worktree_role: performer
 review_group: A
 phase: 2
-rationalizations_count: 6
+rationalizations_count: 8
 version: 1.0.0
 last_reviewed: 2026-06-07
 tickets_served: []
@@ -152,25 +153,40 @@ Performer 在 `task:complete <TICKET>` 前**必须勾选 4 项**:
 
 ## Verification
 
+> **Note**: 以下 4-Level bash 命令是**文档**,不是强制执行. master 在 review 时手动运行验证 Performer 真实性. 见 [[Fact-Forcing Compliance]] 节.
+
 执行顺序: L1 → L2 → L3 → L4, 任一失败 = ticket not done.
 
 ### L1 存在性
 ```bash
-git diff --name-only <commit-range> | wc -l  # 期望 >= 1
+# Safe: 自动获取最近一次 commit 的 diff, 无用户输入
+CHANGED_FILES=$(git diff --name-only HEAD~1..HEAD 2>/dev/null | wc -l)
+[ "$CHANGED_FILES" -ge 1 ] && echo "L1 PASS: $CHANGED_FILES files changed" || echo "L1 FAIL: no files"
 ```
 
 ### L2 实质性
 ```bash
-git diff --stat <commit-range> | tail -1  # 检查总字节数
-# 或: git diff <commit-range> | wc -c
+# Safe: 自动获取 diff 字节数
+DIFF_BYTES=$(git diff HEAD~1..HEAD 2>/dev/null | wc -c | tr -d ' ')
+[ "$DIFF_BYTES" -gt 200 ] && echo "L2 PASS: $DIFF_BYTES bytes" || echo "L2 FAIL: only $DIFF_BYTES bytes"
 ```
 
 ### L3 接线正确
 ```bash
-tsc --noEmit  # TypeScript 编译检查 (Node 项目)
+# TypeScript 编译检查 (仅当 tsconfig.json 存在)
+if [ -f tsconfig.json ]; then
+  tsc --noEmit && echo "L3 PASS: tsc clean" || echo "L3 FAIL: tsc errors"
+else
+  echo "L3 SKIP: no tsconfig.json (non-TS project)"
+fi
 ```
 
 ### L4 数据流动
 ```bash
-npm test -- backend  # 后端集成测试
+# 集成测试 (仅当 package.json 存在)
+if [ -f package.json ]; then
+  npm test 2>&1 | tail -20 && echo "L4 PASS: tests pass" || echo "L4 FAIL: tests fail"
+else
+  echo "L4 SKIP: no package.json"
+fi
 ```

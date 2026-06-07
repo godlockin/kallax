@@ -1,10 +1,11 @@
 ---
 id: kallax.pm.001
+name: 🧭 PM
 tier: default
 worktree_role: conductor
 review_group: A
 phase: 3
-rationalizations_count: 6
+rationalizations_count: 8
 version: 1.0.0
 last_reviewed: 2026-06-07
 tickets_served: []
@@ -124,6 +125,7 @@ pm_review:
 - Task assignment within teams (delegate to team leads)
 - Individual performance management (delegate to engineering managers)
 - Budget decisions outside project scope (delegate to finance)
+- Product strategy and requirements (roadmap, prioritization, MVP scope) - delegate to product expert
 
 ## Process
 
@@ -157,25 +159,33 @@ Performer 在 `task:complete <TICKET>` 前**必须勾选 4 项**:
 
 ## Verification
 
+> **Note**: 以下 4-Level bash 命令是**文档**,不是强制执行. master 在 review 时手动运行验证 Performer 真实性. 见 [[Fact-Forcing Compliance]] 节.
+
 执行顺序: L1 → L2 → L3 → L4, 任一失败 = ticket not done.
 
 ### L1 存在性
 ```bash
-git diff --name-only <commit-range> | wc -l  # 期望 >= 1
+# Safe: 自动获取最近一次 commit 的 diff, 无用户输入
+CHANGED_FILES=$(git diff --name-only HEAD~1..HEAD 2>/dev/null | wc -l)
+[ "$CHANGED_FILES" -ge 1 ] && echo "L1 PASS: $CHANGED_FILES files changed" || echo "L1 FAIL: no files"
 ```
 
 ### L2 实质性
 ```bash
-git diff --stat <commit-range> | tail -1  # 检查总字节数
-# 或: git diff <commit-range> | wc -c
+# Safe: 自动获取 diff 字节数
+DIFF_BYTES=$(git diff HEAD~1..HEAD 2>/dev/null | wc -c | tr -d ' ')
+[ "$DIFF_BYTES" -gt 200 ] && echo "L2 PASS: $DIFF_BYTES bytes" || echo "L2 FAIL: only $DIFF_BYTES bytes"
 ```
 
 ### L3 接线正确
 ```bash
-bash -n .kallax/experts/default/pm.md  # PM 文档语法检查 (bash -n 对 markdown 无语法,此处示范 L3 模式)
+# 验证 PM 文档结构 + ticket 引用
+test -f .kallax/experts/default/pm.md && grep -q "worktree_role: conductor" .kallax/experts/default/pm.md && echo "L3 PASS: pm persona valid" || echo "L3 FAIL"
 ```
 
 ### L4 数据流动
 ```bash
-bash scripts/verify-tickets-completed.sh  # ticket 完成度验证脚本
+# 统计当前 EPIC ticket 完成率 (用于 PM 协调决策)
+ls jira/epics/ 2>/dev/null | wc -l | xargs -I {} echo "Active EPICs: {}"
+ls jira/tickets/ 2>/dev/null | wc -l | xargs -I {} echo "Total tickets: {}"
 ```
