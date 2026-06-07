@@ -9,7 +9,11 @@
   "baseline": {
     "source": "EKET-EXPERT-SYSTEM-DEEP-DIVE-2026-06-07.md",
     "eket_expert_count": 7,
-    "eket_3_tier": ["default", "optional", "extended"],
+    "eket_3_tier": [
+      "default",
+      "optional",
+      "extended"
+    ],
     "kallax_expert_count_v0": 0,
     "kallax_expert_count_target": 7
   },
@@ -18,7 +22,11 @@
     "anatomy_checks_min": 6,
     "output_format_unified_sections": 4,
     "fact_forcing_levels": 4,
-    "queue_degradation_chain": ["redis_stream", "sqlite", "file"]
+    "queue_degradation_chain": [
+      "redis_stream",
+      "sqlite",
+      "file"
+    ]
   },
   "decisions": {
     "expert_count": 7,
@@ -33,43 +41,67 @@
       "id": "EPIC-021-A",
       "title": "7 expert persona 文件 + KALLAX 专属字段",
       "assignee": "performer-EPIC-021-A",
-      "status": "ready",
-      "blocked_by": null
+      "status": "done",
+      "blocked_by": null,
+      "completed_at": "2026-06-07T19:50:00Z",
+      "merge_commit": "84a96c9",
+      "note": "A content merged via D branch (D inherits A fixes)"
     },
     {
       "id": "EPIC-021-B",
       "title": "experts/INDEX.md 症状决策树 + 10 emoji",
       "assignee": "performer-EPIC-021-B",
-      "status": "ready",
-      "blocked_by": ["EPIC-021-A"]
+      "status": "done",
+      "blocked_by": [
+        "EPIC-021-A"
+      ],
+      "completed_at": "2026-06-07T19:50:00Z",
+      "merge_commit": "e458c77"
     },
     {
       "id": "EPIC-021-C",
       "title": "output_format 4 节统一 (7 文件)",
       "assignee": "performer-EPIC-021-C",
-      "status": "ready",
-      "blocked_by": ["EPIC-021-A"]
+      "status": "done",
+      "blocked_by": [
+        "EPIC-021-A"
+      ],
+      "completed_at": "2026-06-07T19:50:00Z",
+      "merge_commit": "84a96c9",
+      "note": "C content merged via D branch (D branches from C)"
     },
     {
       "id": "EPIC-021-D",
       "title": "Fact-Forcing 4-Level 嵌入 (7 文件)",
       "assignee": "performer-EPIC-021-D",
-      "status": "ready",
-      "blocked_by": ["EPIC-021-A", "EPIC-021-C"]
+      "status": "done",
+      "blocked_by": [
+        "EPIC-021-A",
+        "EPIC-021-C"
+      ],
+      "completed_at": "2026-06-07T19:50:00Z",
+      "merge_commit": "84a96c9",
+      "pr_url": "https://github.com/godlockin/kallax/pull/2"
     },
     {
       "id": "EPIC-021-E",
       "title": "check-skill-anatomy.sh KALLAX 专属 6+ 项校验",
       "assignee": "performer-EPIC-021-E",
-      "status": "ready",
-      "blocked_by": ["EPIC-021-A"]
+      "status": "done",
+      "blocked_by": [
+        "EPIC-021-A"
+      ],
+      "completed_at": "2026-06-07T19:50:00Z",
+      "merge_commit": "046a104"
     },
     {
       "id": "EPIC-021-F",
       "title": "expert_invocations 降级链 (Redis→SQLite→file)",
       "assignee": "performer-EPIC-021-F",
-      "status": "ready",
-      "blocked_by": null
+      "status": "done",
+      "blocked_by": null,
+      "completed_at": "2026-06-07T19:50:00Z",
+      "merge_commit": "cb29d17"
     }
   ]
 }
