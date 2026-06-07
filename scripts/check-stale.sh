@@ -76,6 +76,18 @@ for state_file in "${INSTANCES_DIR}"/*/state.json; do
         echo "  STALE  ${INSTANCE_ID} (${ROLE}) -- last beat: ${LAST_BEAT}, missed: ${NEW_MISSED}"
       fi
     fi
+
+    # AC5: ZOMBIE detection -- daemon dead but state still ACTIVE
+    DAEMON_PID=$(jq -r '.heartbeat.heartbeat_daemon_pid // empty' "${state_file}" 2>/dev/null || true)
+    if [ -n "$DAEMON_PID" ] && ! kill -0 "$DAEMON_PID" 2>/dev/null; then
+      jq '.status = "ZOMBIE"' "${state_file}" > "${state_file}.tmp" 2>/dev/null && \
+        mv "${state_file}.tmp" "${state_file}" 2>/dev/null || true
+      if [ "${CRON_MODE}" = true ]; then
+        echo "ZOMBIE|${INSTANCE_ID}|${ROLE}|${NEW_MISSED}|${LAST_BEAT}"
+      else
+        echo "  ZOMBIE ${INSTANCE_ID} (daemon pid ${DAEMON_PID} dead, state was ACTIVE)"
+      fi
+    fi
   elif [ "${STATUS}" = "STALE" ]; then
     STALE_COUNT=$((STALE_COUNT + 1))
     if [ "${CRON_MODE}" = true ]; then
