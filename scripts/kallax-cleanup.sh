@@ -82,7 +82,11 @@ for sf in "${INSTANCES_DIR}"/*/state.json; do
   [ -f "$sf" ] || continue
   LAST_BEAT=$(jq -r '.heartbeat.last_beat // empty' "$sf" 2>/dev/null || true)
   if [ -z "$LAST_BEAT" ]; then continue; fi
-  _AGE_SEC=$(($(date +%s) - $(date -u -d "$LAST_BEAT" +%s 2>/dev/null || echo 0)))
+  # Portable timestamp parser (Linux + macOS)
+_last_beat_ts=$(date -u -d "$LAST_BEAT" +%s 2>/dev/null) || \
+_last_beat_ts=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$LAST_BEAT" +%s 2>/dev/null) || \
+_last_beat_ts=0
+_AGE_SEC=$(($(date +%s) - _last_beat_ts))
   if [ "$_AGE_SEC" -gt 300 ]; then
     INSTANCE_ID=$(jq -r '.instance_id // "unknown"' "$sf" 2>/dev/null || echo "unknown")
     echo "  STALE  ${INSTANCE_ID} (last_beat ${_AGE_SEC}s ago)"

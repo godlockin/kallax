@@ -51,7 +51,11 @@ for sf in "${INSTANCES_DIR}"/*/state.json; do
   # Calculate age from last_beat
   age_sec=0
   if [ -n "$LAST_BEAT" ]; then
-    last_beat_sec=$(date -u -d "$LAST_BEAT" +%s 2>/dev/null || echo 0)
+    # Portable timestamp parser (Linux + macOS)
+# Try GNU date first (Linux), then BSD date (macOS)
+last_beat_sec=$(date -u -d "$LAST_BEAT" +%s 2>/dev/null) || \
+last_beat_sec=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$LAST_BEAT" +%s 2>/dev/null) || \
+last_beat_sec=0
     age_sec=$((now_sec - last_beat_sec))
   fi
 
