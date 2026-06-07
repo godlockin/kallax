@@ -225,6 +225,78 @@ cat > "${INSTANCES_DIR}/${INSTANCE_ID}/state.json" << STATE
 STATE
 
 # ============================================================
+# EPIC-016-O: Stale heartbeat daemon cleanup — prevent accumulation
+# Run BEFORE daemon start (P1 fix from A review).
+# Fixes applied (master review A+B):
+#   - macOS etime parse (B HIGH)
+#   - instance guard via cmdline (A P0 + B CRITICAL cross-instance)
+#   - global orphan_kills.jsonl audit log (B observability)
+# ============================================================
+# etime_to_seconds "01:23:45" -> 5025 (or 1-02:03:04 -> 93784)
+etime_to_seconds() {
+  local e="$1" days=0 rest="" h=0 m=0 s=0
+  case "$e" in
+    *-*) days="${e%%-*}"; rest="${e#*-}" ;;
+    *)   days=0; rest="$e" ;;
+  esac
+  local IFS=':'
+  local parts=($rest)
+  case "${#parts[@]}" in
+    3) h="${parts[0]}"; m="${parts[1]}"; s="${parts[2]}" ;;
+    2) m="${parts[0]}"; s="${parts[1]}" ;;
+    *) echo 0; return ;;
+  esac
+  # Strip leading zeros to avoid octal interpretation
+    local dh=${days#0}; dh=${dh:-0}; local hh=${h#0}; hh=${hh:-0}; local mm=${m#0}; mm=${mm:-0}; local ss=${s#0}; ss=${ss:-0}; echo $(( dh * 86400 + hh * 3600 + mm * 60 + ss ))
+}
+# pid_belongs_to_kallax <pid>: returns 0 if pid's instance_dir still exists
+pid_belongs_to_kallax() {
+  local _pid="$1"
+  local _cmdline=""
+  if [ -r "/proc/${_pid}/cmdline" ]; then
+    _cmdline=$(tr '\0' ' ' < "/proc/${_pid}/cmdline" 2>/dev/null) || return 1
+  else
+    _cmdline=$(ps -o command= -p "$_pid" 2>/dev/null) || return 1
+  fi
+  echo "$_cmdline" | grep -q "heartbeat-daemon" || return 1
+  # Extract 1st positional arg after heartbeat-daemon.sh (the INSTANCE_ID)
+  local _instance_id
+  _instance_id=$(echo "$_cmdline" | awk '{
+    for (i=1; i<=NF; i++) {
+      if ($i ~ /heartbeat-daemon\.sh$/) { print $(i+1); exit }
+    }
+  }' 2>/dev/null) || return 1
+  [ -z "$_instance_id" ] && return 1
+  [ -d "${INSTANCES_DIR}/${_instance_id}" ] || return 1
+  return 0
+}
+
+_ORPHAN_COUNT=0
+for _pid in $(pgrep -f "heartbeat-daemon" 2>/dev/null || ps -eo pid,comm | awk '/heartbeat-daemon/ {print $1}' || true); do
+  [ -z "$_pid" ] && continue
+  kill -0 "$_pid" 2>/dev/null || continue
+  # Skip self
+  [ "$_pid" -eq "${$:-0}" ] 2>/dev/null && continue
+  # Instance guard (P0 fix)
+  pid_belongs_to_kallax "$_pid" && continue
+  # Get etime and convert to seconds (cross-platform fix)
+  _etime=$(ps -o etime= -p "$_pid" 2>/dev/null | tr -d ' ' || true)
+  [ -z "$_etime" ] && continue
+  _etime_sec=$(etime_to_seconds "$_etime" 2>/dev/null || echo 0)
+  if [ "$_etime_sec" -gt 3600 ]; then
+    if kill "$_pid" 2>/dev/null; then
+      _ORPHAN_COUNT=$((_ORPHAN_COUNT + 1))
+      # Global audit log (B observability fix)
+      printf '{"ts":"%s","event":"orphan_kill","pid":%s,"etime":"%s","etime_sec":%s,"killer_instance":"%s"}\n' \
+        "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$_pid" "$_etime" "$_etime_sec" "${INSTANCE_ID}" \
+        >> "${LOG_DIR}/orphan_kills.jsonl" 2>/dev/null || true
+      echo "[kallax] killed orphan heartbeat pid=${_pid} etime=${_etime}" >> "${LOG_DIR}/${INSTANCE_ID}.log" 2>/dev/null || true
+    fi
+  fi
+done
+unset _pid _etime _etime_sec _cmdline _instance_id
+
+# ============================================================
 # Start heartbeat daemon (on-demand, AC7) — SKIP on first boot
 # AC7: Only start if STALE master exists (on-demand); first boot skips.
 # Uses run_daemon() from scripts/lib/daemon.sh (AC3).
