@@ -91,9 +91,9 @@ export interface PersonaValidationResult {
  */
 export function parseFrontmatter(content: string): Record<string, unknown> | null {
   const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-  if (!fmMatch) return null;
+  if (!fmMatch || !fmMatch[1]) return null;
 
-  const fmText = fmMatch[1];
+  const fmText = fmMatch[1] ?? "";
   const result: Record<string, unknown> = {};
 
   for (const line of fmText.split('\n')) {
@@ -133,7 +133,7 @@ export function checkBodySections(content: string): PersonaBodySection {
 
   const regex = new RegExp(sectionPattern.source, 'gm');
   while ((match = regex.exec(content)) !== null) {
-    sections.add(match[1]);
+    if (match[1]) sections.add(match[1]!);
   }
 
   return {
@@ -218,14 +218,14 @@ export function validatePersona(content: string): PersonaValidationResult {
 
   // Check output_format in frontmatter
   const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-  const fmText = fmMatch ? fmMatch[1] : '';
-  const outputFormat = checkOutputFormat(fmText);
+  const fmText = fmMatch?.[1] ?? '';
+  const outputFormat = checkOutputFormat(fmText ?? '');
   if (!outputFormat.has_highlights || !outputFormat.has_risks || !outputFormat.has_recommendations || !outputFormat.has_blocker) {
     errors.push('output_format missing required sections (亮点/风险/建议/P0 阻塞条件)');
   }
 
   // Check rationalizations_count sync
-  const declaredCount = fm.rationalizations_count as number | undefined;
+  const declaredCount = fm['rationalizations_count'] as number | undefined;
   if (typeof declaredCount === 'number' && declaredCount > 0) {
     const rationalizationsSection = content.match(/^## Common Rationalizations$/m);
     if (rationalizationsSection) {
