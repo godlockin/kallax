@@ -96,7 +96,7 @@ jq -e '.' "${STATE_FILE}" >/dev/null 2>&1 && \
 
 # --- Test 2: Start heartbeat daemon ---
 echo "--- Test 2: Start heartbeat daemon ---"
-"${SCRIPT_DIR}/heartbeat-daemon.sh" "${INSTANCE_ID}" "${TEST_DIR}/instances" "${INTERVAL}" &
+"${SCRIPT_DIR}/heartbeat-daemon.sh" "${INSTANCE_ID}" "${TEST_DIR}/instances" "${INTERVAL}" >/dev/null 2>&1 &
 DAEMON_PID=$!
 sleep 1
 
@@ -175,7 +175,7 @@ fi
 
 # --- Test 9: Revival from STALE to ACTIVE ---
 echo "--- Test 9: Stale revival ---"
-"${SCRIPT_DIR}/heartbeat-daemon.sh" "${INSTANCE_ID}" "${TEST_DIR}/instances" "${INTERVAL}" &
+"${SCRIPT_DIR}/heartbeat-daemon.sh" "${INSTANCE_ID}" "${TEST_DIR}/instances" "${INTERVAL}" >/dev/null 2>&1 &
 DAEMON_PID=$!
 sleep $((INTERVAL + 1))
 
