@@ -27,19 +27,42 @@ if [ "$BRANCH" != "miao" ]; then
 fi
 
 # ── Check 0: Authorization check via authz/check.sh (EPIC-022-B) ────────
-# P0 fixes: fail-closed, set -euo pipefail, role name validation
-if [ -x "$AUTHZ_CHECK" ]; then
-  if ! bash "$AUTHZ_CHECK" --action miao.write --actor "${GIT_AUTHOR_NAME:-unknown}"; then
-    echo"╔══════════════════════════════════════════════════════════════╗"
-    echo "║  BLOCKED: Authorization denied by authz check. ║"
-    echo "║ ║"
-    echo "║  Action: miao.write                                        ║"
-    echo "║  Actor: ${GIT_AUTHOR_NAME:-unknown}                               ║"
-    echo "║                                                            ║"
-    echo "║  Run 'kallax role:check miao.write' for details.           ║"
-    echo "╚══════════════════════════════════════════════════════════════╝"
-    exit 1
+# P0 fixes: fail-closed, set -euo pipefail, role name validation, fail-open fix
+
+# Sanitize GIT_AUTHOR_NAME: strip control chars, prefix if empty/unset
+_AUTHED_NAME="${GIT_AUTHOR_NAME:-}"
+if [[ -z "$_AUTHED_NAME" ]]; then
+  ACTOR_DISPLAY="unverified-unknown"
+else
+  # Remove carriage return, newline, null; keep printable + tab only
+  ACTOR_DISPLAY="$(printf %s "$_AUTHED_NAME" | tr -d '\r\n\0' | LC_ALL=C tr -cd '[:print:]\t' || echo "unverified-sanitized")"
+  if [[ -z "$ACTOR_DISPLAY" ]]; then
+    ACTOR_DISPLAY="unverified-sanitized"
   fi
+fi
+
+# Missing or non-executable AUTHZ_CHECK = fail-closed (exit 1)
+if [[ ! -x "$AUTHZ_CHECK" ]]; then
+  echo "╔══════════════════════════════════════════════════════════════╗"
+  echo "║  BLOCKED: AUTHZ_CHECK not found or not executable. ║"
+  echo "║ ║"
+  echo "║  Script: $AUTHZ_CHECK                           ║"
+  echo "║ ║"
+  echo "║  Run 'kallax install' to deploy authz hook.              ║"
+  echo "╚══════════════════════════════════════════════════════════════╝"
+  exit 1
+fi
+
+if ! bash "$AUTHZ_CHECK" --action miao.write --actor "$ACTOR_DISPLAY"; then
+  echo "╔══════════════════════════════════════════════════════════════╗"
+  echo "║  BLOCKED: Authorization denied by authz check. ║"
+  echo "║ ║"
+  echo "║  Action: miao.write                                        ║"
+  echo "║  Actor: $ACTOR_DISPLAY                               ║"
+  echo "║ ║"
+  echo "║  Run 'kallax role:check miao.write' for details. ║"
+  echo "╚══════════════════════════════════════════════════════════════╝"
+  exit 1
 fi
 
 # ── Check 1: Role validation ──────────────────────────────────────────
