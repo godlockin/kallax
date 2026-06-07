@@ -1,0 +1,34 @@
+{
+  "id": "EPIC-022-E",
+  "epic": "EPIC-022",
+  "title": "Integration Tests + 5-Expert A+B Review",
+  "status": "blocked",
+  "estimate_days": 5,
+  "blocked_by": ["EPIC-022-A", "EPIC-022-B", "EPIC-022-C", "EPIC-022-D"],
+  "file_scope": [
+    "tests/integration/permission-v1-e2e.sh",
+    "tests/integration/role-matrix.json",
+    "EPIC-022-LESSONS-LEARNED.md"
+  ],
+  "acceptance_criteria": [
+    "AC-1: permission-v1-e2e.sh 端到端 test (task:claim → worktree → commit → merge 全流程)",
+    "AC-2: role-matrix.json 测试 6 role × 10 action 矩阵 (master/conductor/performer/auditor/readonly/super-admin)",
+    "AC-3: conductor 越权写 miao: 100% 拦截 + 审计日志",
+    "AC-4: performer 尝试 merge: 100% 拦截 + 审计日志",
+    "AC-5: delegation TTL auto-expire: 100% 在 expires_at 后拒绝",
+    "AC-6: workspace switch audit: 所有切换有日志",
+    "AC-7: break-glass 审计: 所有 break-glass 有日志 + TTL ≤ 1h",
+    "AC-8: L1 存在性: ls tests/integration/permission-v1-e2e.sh + role-matrix.json",
+    "AC-9: L2 实质性: wc -c e2e.sh > 1000 bytes, role-matrix.json > 500 bytes",
+    "AC-10: L3 接线正确: bash -n e2e.sh 无语法错误",
+    "AC-11: L4 数据流动: bash tests/integration/permission-v1-e2e.sh 全 PASS",
+    "AC-12: EPIC-022-LESSONS-LEARNED.md 已填写 (jira/epics/EPIC-022/)",
+    "AC-13: 5-expert A+B review 准备完成 (A-Forward + B-Attack 报告)"
+  ],
+  "p0_fixes": [
+    "E2E 测试覆盖率 ≥ 80%",
+    "role matrix 覆盖所有 6 roles",
+    "fail-closed 验证"
+  ],
+  "source": "confluence/decisions/PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §6 + §7"
+}
