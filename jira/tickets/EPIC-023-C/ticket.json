@@ -1,0 +1,28 @@
+{
+  "id": "EPIC-023-C",
+  "title": "北极星指标 implementation (scripts/metrics/sprint-metrics.sh)",
+  "type": "feature",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      "scripts/metrics/sprint-metrics.sh",
+      "scripts/metrics/lib/metrics.sh",
+      ".claude/skills/kallax/SKILL.md"
+    ],
+    "excludes": []
+  },
+  "dependencies": [],
+  "acceptance_criteria": [
+    "scripts/metrics/sprint-metrics.sh 存在 +x",
+    "支持 `kallax metrics:sprint --epic EPIC-XXX` 命令, 输出 4 北极星指标:",
+    "  - expert_activation_rate: 5 expert 在 EPIC 内的激活频次 (从 expert_invocations 队列读)",
+    "  - cross_epic_reuse_rate: 跨 EPIC 复用率 (>= 60% 目标)",
+    "  - ab_hit_rate: 2-Group review 推荐 vs 实际命中率 (< 15% 错配目标)",
+    "  - mis_dispatch_rate: Performer 错派率 (< 10% 目标)",
+    "复用 EPIC-021-F 的 expert_invocations queue (Redis→SQLite→file)",
+    "输出 JSON + Markdown 表格 (master + conductor 都可读)",
+    "SKILL.md 加 `/kallax metrics:sprint` 命令说明"
+  ],
+  "estimated_hours": 5,
+  "notes": "Product 共识 P0 (北极星指标缺失), 复用 F ticket 基础设施, 4 指标覆盖 3 维度"
+}

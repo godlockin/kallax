@@ -1,0 +1,26 @@
+{
+  "id": "EPIC-023-B",
+  "title": "3 阶段 Preamble + trigger 行融合 (SKILL.md 更新)",
+  "type": "feature",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      ".claude/skills/kallax/SKILL.md",
+      ".claude/skills/kallax/skills/kallax-panel.md",
+      ".claude/skills/kallax/skills/kallax-expert.md"
+    ],
+    "excludes": []
+  },
+  "dependencies": [
+    "EPIC-023-A"
+  ],
+  "acceptance_criteria": [
+    "SKILL.md 加 triggerKeywords frontmatter (e.g. architect, backend, frontend, ux, product)",
+    "Preamble 3 阶段: 关键词检测 → 任务复杂度 → 评审强度 (新增评审强度维度)",
+    "KALLAX 用户已是团队成员, Preamble 去掉 EKET 的'团队配置'问 (减摩擦)",
+    "Preamble 中文版 + 决策树直通 (症状 → expert, 不绕弯)",
+    "kallax-panel.md 加 3 阶段引导"
+  ],
+  "estimated_hours": 4,
+  "notes": "借 EKET Preamble 二阶段询问 (3 决策点 8 组合), KALLAX 改 3 阶段 + 评审强度维度"
+}

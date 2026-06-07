@@ -1,0 +1,22 @@
+{
+  "id": "EPIC-025-A",
+  "title": "UP-1 Rule 8 — L4 脚本存在性强制 (CLAUDE.md 修订)",
+  "type": "doc",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      "CLAUDE.md"
+    ],
+    "excludes": []
+  },
+  "dependencies": [],
+  "acceptance_criteria": [
+    "CLAUDE.md 新增 Rule 8 'L4 脚本必须存在, 否则 ticket 不 close'",
+    "红线条目: ❌ L4 bash 命令引用不存在脚本 (5 角色 L4 引用 verify-*.sh / test-*.sh)",
+    "落地: scripts/lib/expert-invocation-queue.sh 加 L4_script_exists check (warn, 不 block ticket)",
+    "5 persona 文件 L4 段加 'TODO(EPIC-022): 替换为实际脚本' 标记 (skill check 脚本占位)",
+    "5 角色 L4 占位脚本: scripts/verify-{architecture,priority,ux-flow}.sh + scripts/verify-tickets-completed.sh (empty stub + 'echo not implemented')"
+  ],
+  "estimated_hours": 0.5,
+  "notes": "EPIC-021 LESSONS §8.3 UP-1, D review P1 触发, 估时极短 (5 个空脚本 + CLAUDE.md 修订)"
+}
