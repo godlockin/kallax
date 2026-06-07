@@ -136,6 +136,13 @@
       "status": "done",
       "title": "session_start.sh 卡死全面防御 (stdio/zombie/daemon标准 + Performer onboarding state-check)",
       "merge_commit": "b7db764"
+    },
+    {
+      "id": "EPIC-016-S",
+      "assignee": "performer-EPIC-016-S",
+      "status": "done",
+      "merge_commit": "b59cb02",
+      "title": "Layer A 实施 + session_start 回归修复"
     }
   ]
 }
