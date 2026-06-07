@@ -118,11 +118,11 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 }
 ```
 
-### 6. 经验沉淀强制化 (KALLAX P0) — EPIC 交付三件套
+### 6. 经验沉淀强制化 (KALLAX P0) — EPIC 交付四件套
 
 **教训**: EPIC 完成后只 merge 不沉淀 = 知识黑洞, 下一个 EPIC 重复踩坑. EPIC-016 后期靠 postmortem 才补上 lessons, 太晚.
 
-**红线**: 每个 EPIC 交付**必须**走完 3 步才能 close:
+**红线**: 每个 EPIC 交付**必须**走完 4 步才能 close:
 
 1. **A+B 2-Group 对抗 review**
    - A 组 (Forward): AC 合规 + 代码质量 + 集成 (已落地, 见 EPIC-016-O 案例)
@@ -132,15 +132,19 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
    - `jira/tickets/EPIC-XXX/README.md` 更新实施记录
    - `jira/epics/EPIC-XXX/epic.json` 更新 ticket 状态
    - 必要时 `confluence/decisions/` 加新决策文档
-3. **经验教训总结**
-   - 写 `jira/epics/EPIC-XXX/LESSONS-LEARNED.md` (模板见 `confluence/templates/EPIC-LESSONS-LEARNED-TEMPLATE.md`)
+3. **经验教训草稿**
+   - EPIC 实施**最后一次 commit** 必须包含 `jira/epics/EPIC-XXX/LESSONS-LEARNED.md` 草稿
+   - 模板见 `confluence/templates/EPIC-LESSONS-LEARNED-TEMPLATE.md`
    - 包含: 量化指标, 关键事件时间线, 教训 (按类别), 评估, 下一步
-   - 跟 EPIC 实施 commit 同一 PR 提交
+4. **LESSONS-LEARNED 终审**
+   - master 审批时检查草稿是否存在且合规
+   - master merge 前确认 lessons 已更新 (master 才有权限 merge)
 
 **禁止**:
 - ❌ A+B review 跳过, 直接 APPROVE
 - ❌ 文档只在 commit message 写, 不更新 README/jira
 - ❌ 经验教训放在 commit message (会被淹没), 必须独立 md 文件
+- ❌ EPIC 最后 commit 不带 LESSONS-LEARNED 草稿
 
 ### 7. PHASE 闭环 review (KALLAX P0) — 经验升级
 
