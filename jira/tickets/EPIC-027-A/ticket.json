@@ -1,0 +1,32 @@
+{
+  "id": "EPIC-027-A",
+  "title": "EPIC-022 ticket 结构 + tracking (Phase 0.1)",
+  "type": "doc",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      "jira/epics/EPIC-022/epic.json",
+      "jira/tickets/EPIC-022-A/ticket.json",
+      "jira/tickets/EPIC-022-A/README.md",
+      "jira/tickets/EPIC-022-B/ticket.json",
+      "jira/tickets/EPIC-022-B/README.md",
+      "jira/tickets/EPIC-022-C/ticket.json",
+      "jira/tickets/EPIC-022-C/README.md"
+    ],
+    "excludes": []
+  },
+  "dependencies": [],
+  "acceptance_criteria": [
+    "EPIC-022 epic.json 存在: v1 全范围 18d 实施 scope",
+    "Phase 0.1 ticket 拆分:",
+    "  - A: 3 role definition (auditor + readonly + role binding) 3d",
+    "  - B: pre-commit hook + conductor scope check 3d",
+    "  - C: workspace switch + read-only path 4d",
+    "  - D: role transition (master/conductor/performer) 3d",
+    "  - E: 集成测试 + 5-expert A+B review 5d",
+    "每 ticket 有 AC + file_scope + 估时",
+    "EPIC-022 LESSONS-LEARNED.md 占位文件 (实施完成后填)"
+  ],
+  "estimated_hours": 1,
+  "notes": "Phase 0.1 tracking, 立刻派. EPIC-022 v1 实施在 EPIC-026 P0 fix 完成后启动"
+}

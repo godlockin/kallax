@@ -1,0 +1,30 @@
+{
+  "id": "EPIC-026-C",
+  "title": "rollback SOP 文档 + 12 P0 fix 集成测试",
+  "type": "doc",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      "confluence/runbooks/permission-p0-rollback.md",
+      "scripts/test-p0-integration.sh"
+    ],
+    "excludes": []
+  },
+  "dependencies": [
+    "EPIC-026-B"
+  ],
+  "acceptance_criteria": [
+    "confluence/runbooks/permission-p0-rollback.md 存在, 含:",
+    "  1. 12 P0 fixes 清单 (按 commit SHA)",
+    "  2. 每个 fix 的回滚命令 (git revert <sha>)",
+    "  3. 验证回滚成功的检查清单 (5 步)",
+    "  4. 紧急全量回滚脚本 (回到 12 fixes 之前)",
+    "scripts/test-p0-integration.sh: 12 fixes 集成测试",
+    "  - 启动 5 个 session, 验证无 hang",
+    "  - 跑 100 次 emit/drain, 验证无 race",
+    "  - 模拟 fd 错误, 验证 fail-closed",
+    "测试 PASS, 文档 review 通过"
+  ],
+  "estimated_hours": 4,
+  "notes": "rollback SOP 是 v1 全范围 18d 实施的安全网, 必做"
+}
