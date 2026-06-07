@@ -1,0 +1,31 @@
+{
+  "id": "EPIC-027-B",
+  "title": "21 CLOSING instance pre-clean + rollback SOP (Phase 0.3+0.4)",
+  "type": "ops",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      "scripts/kallax-cleanup.sh",
+      "scripts/audit-closing-instances.sh",
+      "confluence/runbooks/instance-pre-clean.md"
+    ],
+    "excludes": []
+  },
+  "dependencies": [
+    "EPIC-027-A"
+  ],
+  "acceptance_criteria": [
+    "scripts/audit-closing-instances.sh: 扫描 .kallax/instances/ 找 CLOSING + ZOMBIE",
+    "输出 21 个 CLOSING instance 列表 + 距 last_beat 时间",
+    "scripts/kallax-cleanup.sh 跑 --dry-run, 验证 dry-run 正确",
+    "跑 --force (default 24h 前 CLOSING 才清, 避免误杀活跃)",
+    "confluence/runbooks/instance-pre-clean.md 文档化:",
+    "  - 何时清 (CLOSING 状态 > 24h, 7d 无心跳)",
+    "  - 怎么清 (audit → dry-run → force, 3 步)",
+    "  - rollback 路径 (state.json 备份 → 恢复)",
+    "  - cron 建议 (每日 3am, 减少业务影响)",
+    "  - 监控告警 (CLOSEING 数量 > 30 报警)"
+  ],
+  "estimated_hours": 3,
+  "notes": "Phase 0.3 + 0.4 合并实施, EPIC-022 前实例环境干净"
+}
