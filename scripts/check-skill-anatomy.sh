@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 # scripts/check-skill-anatomy.sh
-# KALLAX 专属 persona anatomy 校验
+# KALLAX 专属 persona anatomy 校验 (v2 — 修复 A+B review 找出的 P1 bugs)
 # 借 EKET check-skill-anatomy.sh 思路, KALLAX 多 7 项语义校验
+#
+# 修复历史:
+# - v1 → v2: A-Forward 报 P1 (Check 3, Check 8) + B-Attack 报 HIGH (Check 7)
+# - v2: 修复 output_format 在 frontmatter 内的 awk 切片问题
 
 set -euo pipefail
 
@@ -20,8 +24,12 @@ for file in "$@"; do
   TOTAL=$((TOTAL + 1))
   errors=()
 
-  # 校验 1: 7 节存在性
-  for section in "mantras" "personality" "background" "thinking_framework" "analysis_focus" "output_format" "Common Rationalizations"; do
+  # 提取 body 段 (frontmatter 之后, 避免 output_format 内的 ## 标题干扰)
+  body_after_fm=$(awk 'BEGIN{fm=0} /^---$/{fm++; next} fm>=2{print}' "$file")
+  fm_block=$(awk 'BEGIN{fm=0} /^---$/{fm++; if(fm==2) exit; next} fm==1{print}' "$file")
+
+  # 校验 1: 6 节 body 存在性 (output_format 在 frontmatter, 由 Check 8 单独校验)
+  for section in "mantras" "personality" "background" "thinking_framework" "analysis_focus" "Common Rationalizations"; do
     grep -q "^## $section\$" "$file" || errors+=("Missing section: ## $section")
   done
 
@@ -30,9 +38,21 @@ for file in "$@"; do
     grep -q "^## $section\$" "$file" || errors+=("Missing section: ## $section")
   done
 
-  # 校验 3: rationalizations_count 同步
+  # 校验 3: rationalizations_count 同步 (支持 bullet 和 table 两种格式)
   declared=$(awk '/^rationalizations_count:/{print $2}' "$file" | tr -d '"' | head -1)
-  actual=$(awk '/^## Common Rationalizations$/,/^## /' "$file" | grep -c '^|.*\`.*\`' || echo 0)
+  # FIX: 用 state-based awk 避免 range pattern 跟字符类冲突
+  section=$(echo "$body_after_fm" | awk '
+    /^## Common Rationalizations$/ { in_sec=1; next }
+    in_sec && /^## [A-Z]/ { in_sec=0; next }
+    in_sec { print }
+  ')
+  actual_bullets=$(echo "$section" | grep -cE '^- "' || true)
+  actual_table=$(echo "$section" | grep -cE '^\|.*`.*`' || true)
+  if [ "$actual_bullets" -gt 0 ]; then
+    actual="$actual_bullets"
+  else
+    actual="$actual_table"
+  fi
   if [ -n "$declared" ] && [ "$declared" != "$actual" ]; then
     errors+=("rationalizations_count mismatch: declared=$declared actual=$actual")
   fi
@@ -56,20 +76,33 @@ for file in "$@"; do
     errors+=("tickets_served must be a JSON array (empty [] or non-empty [items])")
   fi
 
-  # 校验 7: version semver
+  # 校验 7: version semver (支持 -pre-release 和 +build metadata per semver.org)
   version=$(awk '/^version:/{print $2}' "$file" | head -1)
-  if ! echo "$version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-    errors+=("version not semver: $version (expected X.Y.Z)")
+  if ! echo "$version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?(\+[a-zA-Z0-9.]+)?$'; then
+    errors+=("version not semver: $version (expected X.Y.Z or X.Y.Z-pre or X.Y.Z+build)")
   fi
 
-  # 校验 8: output_format 4 节
-  if ! awk '/^output_format: \|/,/^[a-z]+:[^ ]/' "$file" | grep -qE '## (亮点|风险|建议|P0 阻塞条件)'; then
+  # 校验 8: output_format 4 节 (frontmatter 内的 YAML 多行字符串)
+  if ! echo "$fm_block" | grep -qE '## (亮点|风险|建议|P0 阻塞条件)'; then
     errors+=("output_format missing 4 sections (亮点/风险/建议/P0 阻塞条件)")
   fi
 
-  # 校验 9: Fact-Forcing Compliance 节
-  if ! grep -q "^## Fact-Forcing Compliance" "$file"; then
-    errors+=("Missing section: ## Fact-Forcing Compliance")
+  # 校验 9: Fact-Forcing Compliance 节 + 4 checkbox (L1-L4) — 必须含 4 个不同级别
+  fact_block=$(echo "$body_after_fm" | awk '
+    /^## Fact-Forcing Compliance/ { in_sec=1; next }
+    in_sec && /^## [A-Z]/ { in_sec=0; next }
+    in_sec { print }
+  ')
+  if [ -z "$fact_block" ]; then
+    errors+=("Fact-Forcing Compliance section missing")
+  else
+    l1=$(echo "$fact_block" | grep -c 'L1_' || true)
+    l2=$(echo "$fact_block" | grep -c 'L2_' || true)
+    l3=$(echo "$fact_block" | grep -c 'L3_' || true)
+    l4=$(echo "$fact_block" | grep -c 'L4_' || true)
+    if [ "$l1" -eq 0 ] || [ "$l2" -eq 0 ] || [ "$l3" -eq 0 ] || [ "$l4" -eq 0 ]; then
+      errors+=("Fact-Forcing Compliance missing 4 distinct levels (L1_/L2_/L3_/L4_)")
+    fi
   fi
 
   # 校验 10: id 命名规范
@@ -82,13 +115,13 @@ for file in "$@"; do
   if [ ${#errors[@]} -gt 0 ]; then
     FAIL_COUNT=$((FAIL_COUNT + 1))
     [ "$QUIET" = false ] && {
-      echo "FAIL $file"
+      echo "❌ $file"
       for err in "${errors[@]}"; do
         echo "   - $err"
       done
     }
   else
-    [ "$QUIET" = false ] && echo "PASS $file"
+    [ "$QUIET" = false ] && echo "✅ $file"
   fi
 done
 
