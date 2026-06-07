@@ -1,8 +1,8 @@
 ---
 name: kallax
 description: KALLAX multi-agent orchestration — Conductor/Performer/Master roles, worktree isolation, heartbeat daemon, ticket-driven workflow.
-triggerKeywords: [kallax, panel, expert, 初始化, skill, /kallax, 专家评审, 召唤, conductor, performer, master, worktree, ticket]
-filePath: /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.kallax/worktrees/performer-EPIC-016-S/.claude/skills/kallax/SKILL.md
+triggerKeywords: [kallax, panel, expert, 初始化, skill, /kallax, 专家评审, 召唤, conductor, performer, master, worktree, ticket, architect, backend, frontend, ux, product]
+filePath: /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/skills/kallax/SKILL.md
 ---
 
 # KALLAX — Knowledge-Augmented Leveraged Learning Agent eXecutor
@@ -44,6 +44,46 @@ filePath: /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.kallax/work
 ## ZOMBIE Defense
 
 If daemon process is dead but state.json still shows ACTIVE, check-stale.sh marks it ZOMBIE.
+
+## 3-Stage Preamble (EPIC-023-B)
+
+KALLAX uses a 3-stage Preamble to reduce friction and route tasks efficiently.
+
+### Stage 1: Keyword Detection (Automatic)
+
+Keywords in user message → direct expert routing:
+
+| Keyword | Expert | Review Group |
+|---------|--------|-------------|
+| architect,架构, 系统设计 | architect | A |
+| backend, 后端, api, database | backend | B |
+| frontend, 前端, ui, 界面 | frontend | B |
+| ux, 用户体验, design | ux | A |
+| product, 产品, pm | product | AB |
+| security, 安全, auth | security | A |
+
+**Decision tree:** keyword hit → show expert panel → user confirms → invoke expert
+
+### Stage 2: Task Complexity Assessment
+
+If no keyword hit, assess task complexity:
+
+- **Simple** (1 file, < 2h): Performer directly claims ticket
+- **Medium** (multi-file, 2-8h): Conductor reviews AC before dispatch
+- **Complex** (cross-EPIC, > 8h): Master escalation + EPIC creation
+
+### Stage 3: Review Intensity
+
+Based on task type, determine review intensity:
+
+| Task Type | Review Group | Intensity |
+|-----------|--------------|-----------|
+| Hotfix / urgent | A only | Fast track |
+| Feature | A+B (2-Group) | Standard |
+| Refactor | B only | Lower |
+| Architecture | A only | Deep |
+
+**Note:** KALLAX users are already team members, so EKET's "team config" question is skipped.
 
 ---
 
