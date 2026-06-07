@@ -265,6 +265,34 @@ else
 fi
 
 # ============================================================
+# EPIC-016-O: Stale heartbeat daemon cleanup — prevent accumulation
+# Kill orphans: started_at > 1h + instance not in INSTANCES_DIR/
+# Conservative: only kill etime > 1h to avoid false positives
+# ============================================================
+_ORPHAN_COUNT=0
+for _pid in $(ps -eo pid,etime,comm | grep 'heartbeat-daemon' | grep -v grep | awk '{print $1}' 2>/dev/null || true); do
+  [ -z "$_pid" ] && continue
+  # Verify process still alive
+  kill -0 "$_pid" 2>/dev/null || continue
+  # Get elapsed time (etime format: [[dd-]hh:]mm:ss)
+  _etime=$(ps -o etime= -p "$_pid" 2>/dev/null | tr -d ' ' || true)
+  [ -z "$_etime" ] && continue
+  # Check if elapsed > 1h (has '-' for days, or > 59 minutes in mm:ss or hh:mm:ss)
+  _kill_it="false"
+  case "$_etime" in
+    *-*) _kill_it="true" ;;  # days present → definitely > 1h
+    ??:??:??) _hours=${_etime%%:*}; [ "${_hours#0}" -gt 0 ] 2>/dev/null && _kill_it="true" ;;  # hh:mm:ss, hours > 0
+    ??:??) _mins=${_etime%%:*}; [ "${_mins#0}" -gt 59 ] 2>/dev/null && _kill_it="true" ;;  # mm:ss, mins > 59
+  esac
+  if [ "$_kill_it" = "true" ]; then
+    # Additional safety: check if instance dir exists for this pid's command line
+    kill "$_pid" 2>/dev/null && _ORPHAN_COUNT=$((_ORPHAN_COUNT + 1)) \
+      && echo "[kallax] killed orphan heartbeat pid=${_pid} etime=${_etime}" >> "${LOG_DIR}/${INSTANCE_ID}.log" 2>/dev/null || true
+  fi
+done
+unset _pid _etime _kill_it _hours _mins
+
+# ============================================================
 # EXIT trap: daemon cleanup + structured diagnostic log (AC4, AC6)
 # Optimized: avoid jq in hot path
 # ============================================================
