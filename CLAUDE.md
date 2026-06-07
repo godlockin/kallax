@@ -118,6 +118,62 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 }
 ```
 
+### 6. 经验沉淀强制化 (KALLAX P0) — EPIC 交付三件套
+
+**教训**: EPIC 完成后只 merge 不沉淀 = 知识黑洞, 下一个 EPIC 重复踩坑. EPIC-016 后期靠 postmortem 才补上 lessons, 太晚.
+
+**红线**: 每个 EPIC 交付**必须**走完 3 步才能 close:
+
+1. **A+B 2-Group 对抗 review**
+   - A 组 (Forward): AC 合规 + 代码质量 + 集成 (已落地, 见 EPIC-016-O 案例)
+   - B 组 (Attack): 安全 + 边界 + 攻击面 (已落地, 见 EPIC-021-F 案例: 找 2 CRITICAL 注入 + race)
+   - 修复后 master 仲裁 APPROVE/REJECT, 留 `review:` 字段在 ticket.json
+2. **文档更新**
+   - `jira/tickets/EPIC-XXX/README.md` 更新实施记录
+   - `jira/epics/EPIC-XXX/epic.json` 更新 ticket 状态
+   - 必要时 `confluence/decisions/` 加新决策文档
+3. **经验教训总结**
+   - 写 `jira/epics/EPIC-XXX/LESSONS-LEARNED.md` (模板见 `confluence/templates/EPIC-LESSONS-LEARNED-TEMPLATE.md`)
+   - 包含: 量化指标, 关键事件时间线, 教训 (按类别), 评估, 下一步
+   - 跟 EPIC 实施 commit 同一 PR 提交
+
+**禁止**:
+- ❌ A+B review 跳过, 直接 APPROVE
+- ❌ 文档只在 commit message 写, 不更新 README/jira
+- ❌ 经验教训放在 commit message (会被淹没), 必须独立 md 文件
+
+### 7. PHASE 闭环 review (KALLAX P0) — 经验升级
+
+**教训**: 经验教训只沉淀不升级 = 单点案例, 不形成组织能力. EKET 调研显示, 没有 phase-level review 的知识库, 5 年后翻出来 80% 已经过期.
+
+**触发**: 每完成 3-5 个 EPIC, 或阶段目标达成 (master 决定), 触发 PHASE 闭环 review.
+
+**流程** (跟 EKET Phase 1+2+3 借鉴, KALLAX 加 4-Group 升级):
+
+1. **Phase 1 (Architect)**: 全局扫描
+   - 扫本 phase 所有 EPIC 的 LESSONS-LEARNED.md
+   - 分类: 量化/流程/技术/治理
+2. **Phase 2 (5 专家并行)**:
+   - Backend/Frontend/UX/Product: 各自从领域视角找漏洞/纠错/合并
+   - Security: 跨 EPIC 安全 attack surface 累积分析
+3. **Phase 3 (Master 仲裁 + 升级)**:
+   - **查漏补缺**: 哪些 EPIC 经验教训没覆盖, 补 EPIC
+   - **纠错**: 哪些经验教训跟事实不符, 改
+   - **归纳合并**: 跨 EPIC 相似教训合并 (e.g. "并行冲突" 出现 3 次 → 升级为 KALLAX 规则)
+   - **升级**: 沉淀到 `CLAUDE.md` 的"核心原则" (新增/修订), 或 `confluence/architecture/`
+4. **Phase 4 (主公审批)**:
+   - 升级项需主公决策, master 不能自己升级红线规则
+
+**产出物**:
+- `confluence/decisions/PHASE-XXX-REVIEW-XXX.md` (模板见 `PHASE-REVIEW-TEMPLATE.md`)
+- `CLAUDE.md` 修订 (如适用)
+- `confluence/architecture/` 新文档 (如适用)
+
+**禁止**:
+- ❌ 经验教训只 review 不升级
+- ❌ 升级到 CLAUDE.md 没经过主公审批
+- ❌ 跨 phase 不对比, phase 边界模糊
+
 ---
 
 ## 命令速查
