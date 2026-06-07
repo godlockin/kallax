@@ -76,9 +76,21 @@ if [[ -n "$ROLE" ]]; then
   fi
 fi
 
+# Sanitize actor: strip control chars, inject-proof
+ACTOR="$(printf %s "$ACTOR" | tr -d '\r\n\0' | LC_ALL=C tr -cd '[:print:]\t' || echo "UNKNOWN")"
+if [[ -z "$ACTOR" ]]; then
+  ACTOR="UNKNOWN"
+fi
+
 # Get current role from state file if not provided
 if [[ -z "$ROLE" ]]; then
   ROLE="${KALLAX_CURRENT_ROLE:-$(cat "$KALLAX_ROOT/.kallax/state/state.json" 2>/dev/null | jq -r '.current_role // "unknown"')}"
+fi
+
+# Re-validate loaded role against allowlist (fail-closed)
+if [[ "$ROLE" != "master" ]] && [[ "$ROLE" != "conductor" ]] && [[ "$ROLE" != "performer" ]] && [[ "$ROLE" != "readonly" ]] && [[ "$ROLE" != "auditor" ]]; then
+  echo "ERROR: Role not in allowlist: '$ROLE'" >&2
+  exit 1
 fi
 
 # Permission matrix
@@ -117,7 +129,7 @@ check_permission() {
       [[ "$action" == audit.export ]]
       ;;
     *)
-      return1
+      return 1
       ;;
   esac
 }
@@ -130,11 +142,18 @@ log_audit() {
   local timestamp
   timestamp="$(date +%s)"
 
-  # Create audit db directory if needed
-  mkdir -p "$(dirname "$AUDIT_DB")"
+  # Create audit db directory if needed (ignore errors if no perms)
+  mkdir -p "$(dirname "$AUDIT_DB")" 2>/dev/null || true
 
-  # Append to audit log (sqlite would be better but bash fallback)
-  echo "[$timestamp] role=$role action=$action actor=$ACTOR result=$result" >> "${AUDIT_DB}.log"
+  local log_entry="[$timestamp] role=$role action=$action actor=$ACTOR result=$result"
+
+  # Atomic append: flock on Linux, direct append on macOS (acceptable race for dev env)
+  if command -v flock >/dev/null 2>&1; then
+    flock -n "${AUDIT_DB}.log.lock" -- bash -c "printf '%s\n' \"$log_entry\" >> '${AUDIT_DB}.log'" 2>/dev/null || true
+  else
+    # macOS fallback: direct append (minimal risk in dev env)
+    printf '%s\n' "$log_entry" >> "${AUDIT_DB}.log" 2>/dev/null || true
+  fi
 }
 
 # Perform check

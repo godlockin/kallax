@@ -47,14 +47,18 @@ export interface ScopeCheckResult {
  * Check if a role is allowed to perform conductor-scope actions
  */
 export function isConductorScopeAction(action: string): boolean {
-  return CONDUCTOR_SCOPE_ACTIONS.some((a) => action.startsWith(a.replace('*', '')));
+  return CONDUCTOR_SCOPE_ACTIONS.some(
+    (a) => action === a || action.startsWith(a + '.')
+  );
 }
 
 /**
  * Check if conductor is blocked from action
  */
 export function isConductorBlockedAction(action: string): boolean {
-  return CONDUCTOR_BLOCKED_ACTIONS.some((a) => action.startsWith(a.replace('*', '')));
+  return CONDUCTOR_BLOCKED_ACTIONS.some(
+    (a) => action === a || action.startsWith(a + '.')
+  );
 }
 
 /**
@@ -113,7 +117,7 @@ export function verifyScope(
 
     // Readonly and auditor have limited scope
     if (role === 'readonly' || role === 'auditor') {
-      if (action.endsWith('.read') || action === 'audit.export') {
+      if (/^[a-z][a-z0-9_]*\.read$/.test(action) || action === 'audit.export') {
         return ok({ allowed: true, role, action });
       }
       return ok({ allowed: false, role, action, reason: 'readonly/auditor cannot perform write actions' });

@@ -79,7 +79,36 @@ export function checkAuthzBash(options: AuthzCheckOptions): KallaxResult<AuthzCh
       args.push('--role', role);
     }
 
-    execFileSync('bash', [scriptPath, ...args], { stdio: 'pipe' });
+    // Capture both stdout and stderr to parse bash verdict
+    let stdout = '';
+    let stderr = '';
+    try {
+      stdout = execFileSync('bash', [scriptPath, ...args], { stdio: 'pipe' }).toString();
+    } catch (e: unknown) {
+      // Non-zero exit — check if bash wrote DENIED: verdict to stderr
+      if (e && typeof e === 'object' && 'stderr' in e) {
+        const errOutput = (e as { stderr: Buffer }).stderr.toString();
+        if (errOutput.includes('DENIED:')) {
+          return err(new KallaxError(
+            KallaxErrorCode.PERMISSION_DENIED,
+            errOutput.trim(),
+            { cause: e }
+          ));
+        }
+      }
+      // Other errors (ENOENT, etc.) = fail-closed
+      return err(new KallaxError(KallaxErrorCode.PERMISSION_DENIED, 'Authorization denied', { cause: e }));
+    }
+
+    // Parse explicit ALLOWED marker from stdout (bash writes nothing on success)
+    // Any stdout content on success is unexpected; treat as denied
+    if (stdout.trim() !== '') {
+      return err(new KallaxError(
+        KallaxErrorCode.PERMISSION_DENIED,
+        `Unexpected output from authz check: ${stdout.trim()}`,
+        {}
+      ));
+    }
 
     return ok({
       allowed: true,
