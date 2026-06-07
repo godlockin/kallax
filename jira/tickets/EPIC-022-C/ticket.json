@@ -1,0 +1,36 @@
+{
+  "id": "EPIC-022-C",
+  "epic": "EPIC-022",
+  "title": "Workspace Switch + Read-Only Path",
+  "status": "blocked",
+  "estimate_days": 4,
+  "blocked_by": ["EPIC-022-A"],
+  "file_scope": [
+    "src/permissions/workspace-switcher.ts",
+    "src/permissions/readonly-path.ts",
+    ".kallax/state/state.json",
+    "scripts/workspace/*.sh",
+    "tests/integration/workspace-*.sh"
+  ],
+  "acceptance_criteria": [
+    "AC-1: workspace-switcher.ts 支持 master/conductor/performer 之间切换",
+    "AC-2: readonly-path.ts 标识 readonly 路径 (miao/*, .git/hooks/*, .kallax/config/*)",
+    "AC-3: state.json 包含 current_workspace + readonly_paths[] 字段",
+    "AC-4: kallax workspace:switch <name> 切换 workspace (验证权限)",
+    "AC-5: kallax workspace:readonly <path> 标记路径为 readonly",
+    "AC-6: 切换到 readonly workspace 后写入被拒绝 (exit 1 + 审计)",
+    "AC-7: realpath 执行顺序在前 (防 symlink 绕过)",
+    "AC-8: session_start.sh 启动时验证 cwd ∈ worktree/",
+    "AC-9: L1 存在性: ls src/permissions/workspace-switcher.ts + readonly-path.ts",
+    "AC-10: L2 实质性: wc -c 每个 .ts > 300 bytes",
+    "AC-11: L3 接线正确: npx tsc --noEmit 无错误",
+    "AC-12: L4 数据流动: 切到 readonly workspace, 验证写入被拒 (exit 1)",
+    "AC-13: 跨 workspace 切换审计日志 (from_role, to_role, timestamp)"
+  ],
+  "p0_fixes": [
+    "realpath 执行顺序在前 (防 symlink 绕过)",
+    "fail-closed: 切换失败 exit 1",
+    "workspace 切换需要 auditor+ role"
+  ],
+  "source": "confluence/decisions/PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §3 + §4"
+}
