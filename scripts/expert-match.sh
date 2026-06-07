@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+# scripts/expert-match.sh — L1 Expert Matching for KALLAX
+#来源: EXPERT-EXTENSION-SCHEME §2.3
+# Sprint 1 (L1 only) — L2/L3 留 Sprint 2/3
+
+set -euo pipefail
+
+REQ="${1:-}"
+if [ -z "$REQ" ]; then
+  echo "Usage: bash scripts/expert-match.sh \"<requirement>\""
+  echo "Example: bash scripts/expert-match.sh \"接口慢怎么优化\""
+  exit 1
+fi
+
+KALLAX_ROOT="${KALLAX_ROOT:-.kallax}"
+EXPERT_DIR="${KALLAX_ROOT}/experts/default"
+AUDIT_LOG="${HOME}/.kallax/logs/expert_resolution_audit.jsonl"
+mkdir -p "$(dirname "$AUDIT_LOG")"
+
+START_MS=$(($(date +%s%N) / 1000000))
+
+# score_expert <expert_md> <requirement>: returns score0-100
+score_expert() {
+  local expert_md="$1"
+  local req="$2"
+  local score=0
+
+  # Extract trigger: field (comma-separated keywords after "trigger:")
+  local trigger
+  trigger=$(awk '/^trigger:/{found=1; next} found && /^[^:]+:/ {exit} found {print}' "$expert_md" | tr ',' '\n' | sed 's/^ *//;s/ *$//')
+  if [ -z "$trigger" ]; then
+    # fallback: single-line extraction
+    trigger=$(sed -n 's/^trigger: *//p' "$expert_md" | tr ',' '\n' | sed 's/^ *//;s/ *$//')
+  fi
+
+  # w1 = 0.30: keyword match (30 pts per match, up to 3 matches = 90 max, normalized)
+  local kw_score=0
+  local match_count=0
+  for tok in $(echo "$req" | tr ' ,;。、' '\n' | sed 's/^ *//;s/ *$//' | grep -v '^$'); do
+    [ -z "$tok" ] && continue
+    if echo "$trigger" | grep -q "$tok"; then
+      kw_score=$((kw_score + 30))
+      match_count=$((match_count + 1))
+    fi
+  done
+  # Normalize: cap at 90 pts (3 keyword matches = full w1)
+  [ "$kw_score" -gt 90 ] && kw_score=90
+
+  # w2 = 0.25: symptom decision tree hit (25 pts if TRIGGERS.md segment matches)
+  local tree_score=0
+  local tree_file="${KALLAX_ROOT}/../experts/TRIGGERS.md"
+  # Also check relative to repo root
+  if [ ! -f "$tree_file" ]; then
+    tree_file="$(cd "$(dirname "$KALLAX_ROOT")" && pwd)/experts/TRIGGERS.md"
+  fi
+  if [ -f "$tree_file" ]; then
+    # Check if any token hits a segment keyword in TRIGGERS.md
+    for tok in $(echo "$req" | tr ' ,;。、' '\n' | sed 's/^ *//;s/ *$//' | grep -v '^$'); do
+      [ -z "$tok" ] && continue
+      if grep -qF "$tok" "$tree_file"; then
+        tree_score=25
+        break
+      fi
+    done
+  fi
+
+  # w4 = 0.15: domain relevance baseline (15 pts)
+  local domain_score=15
+
+  score=$((kw_score + tree_score + domain_score))
+  echo "$score"
+}
+
+# Find best expert
+best_id=""
+best_score=0
+for f in "${EXPERT_DIR}"/*.md; do
+  [ -f "$f" ] || continue
+  s=$(score_expert "$f" "$REQ")
+  if (( s > best_score )); then
+    best_score=$s
+    best_id=$(basename "$f" .md)
+  fi
+done
+
+END_MS=$(($(date +%s%N) / 1000000))
+DURATION=$((END_MS - START_MS))
+
+# Threshold0.7: >= 70 pts → L1 HIT
+if (( best_score >= 70 )); then
+  via="L1"
+  echo "MATCHED via=$via id=$best_id score=$best_score duration=${DURATION}ms"
+  printf '{"ts":"%s","req":"%s","via":"%s","id":"%s","score":%s,"duration_ms":%s}\n' \
+    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$REQ" "$via" "$best_id" "$best_score" "$DURATION" \
+    >> "$AUDIT_LOG"
+  exit 0
+else
+  via="L1 miss"
+  echo "L1 MISS id=$best_id score=$best_score duration=${DURATION}ms (L2/L3 待 Sprint 2/3)"
+  printf '{"ts":"%s","req":"%s","via":"%s","id":"%s","score":%s,"duration_ms":%s}\n' \
+    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$REQ" "$via" "$best_id" "$best_score" "$DURATION" \
+    >> "$AUDIT_LOG"
+  exit 1
+fi
