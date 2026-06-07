@@ -25,9 +25,12 @@ score_expert() {
   local req="$2"
   local score=0
 
-  # Extract trigger: field (comma-separated keywords after "trigger:")
+  # Extract trigger: field (P0 fix: AWK single-line miss, sed is primary)
   local trigger
-  trigger=$(awk '/^trigger:/{found=1; next} found && /^[^:]+:/ {exit} found {print}' "$expert_md" | tr ',' '\n' | sed 's/^ *//;s/ *$//')
+  trigger=$(sed -n 's/^trigger: *//p' "$expert_md" | tr ',' '\n' | sed 's/^ *//;s/ *$//')
+  if [ -z "$trigger" ]; then
+    trigger=$(awk '/^trigger:/{found=1; next} found && /^[^:]+:/ {exit} found {print}' "$expert_md" | tr ',' '\n' | sed 's/^ *//;s/ *$//')
+  fi
   if [ -z "$trigger" ]; then
     # fallback: single-line extraction
     trigger=$(sed -n 's/^trigger: *//p' "$expert_md" | tr ',' '\n' | sed 's/^ *//;s/ *$//')
