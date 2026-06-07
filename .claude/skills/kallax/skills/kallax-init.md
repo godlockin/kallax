@@ -19,8 +19,9 @@ description: Initialize KALLAX session. STRICT MODE — 1 Bash call only. Auto-i
 - `inbox/<role>/` = **全局未认领** (per-role, 任何该 role instance 可读)
 - `outbox/<instance_id>/` = **本 instance 发出的消息**
 
-**ASCII card 上的 `INBOX(you)`** 指个人队列, 不是项目全局。
-项目全局 INBOX 需查看 `.kallax/queue/inbox/` 目录结构。
+**ASCII card 上的 `INBOX*`** (asterisk marker) 指**个人队列** (per-instance),
+不是项目全局。`INBOX*` 故意用 `*` 标记引起注意, 区别于全局 inbox。
+项目全局 INBOX 需查看 `.kallax/queue/inbox/<role>/` 目录结构。
 
 ## EXACT SEQUENCE (3 steps — follow in order)
 
