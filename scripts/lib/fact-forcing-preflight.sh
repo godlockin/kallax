@@ -97,15 +97,30 @@ extract_levels() {
 # only scripts under scripts/verify/ are trusted to execute.
 is_allowed_command() {
   local cmd="$1"
-  # Match commands that execute a script in scripts/verify/
-  if [[ "$cmd" =~ (^|[[:space:]])bash[[:space:]]+(scripts/verify/[a-zA-Z0-9._-]+)[[:space:]]* ]]; then
-    local script_path="${BASH_REMATCH[2]}"
+
+  # SECURITY: reject any shell metacharacters that could enable injection
+  # Use a string for character class to avoid bash regex escaping issues
+  local dangerous_chars=";|&$<>\`(){}!#"
+  if [[ "$cmd" =~ [$dangerous_chars] ]]; then
+    return 1
+  fi
+
+  # Allow bash scripts/verify/<name> invocation, ANCHORED to end of string
+  # Path must be exactly scripts/verify/<safe-chars>, nothing after
+  if [[ "$cmd" =~ ^[[:space:]]*bash[[:space:]]+(scripts/verify/[a-zA-Z0-9._/-]+)[[:space:]]*$ ]]; then
+    local script_path="${BASH_REMATCH[1]}"
+    # Disallow path traversal (..) and absolute paths (/)
+    if [[ "$script_path" == *../* ]] || [[ "$script_path" == */../* ]] || [[ "$script_path" == /* ]]; then
+      return 1
+    fi
     if [[ -f "$script_path" ]]; then
       return 0
     fi
   fi
-  # Allow safe built-in test commands for L1/L2 self-check
-  if [[ "$cmd" =~ ^[[:space:]]*(echo|true|false|\[|test|ls|wc|jq|cat|head|tail|grep)[[:space:]] ]]; then
+
+  # Allow only truly side-effect-free builtins for L1/L2 self-check
+  # echo, true, false, [, test, [ -f ... ], [ -d ... ]
+  if [[ "$cmd" =~ ^[[:space:]]*(echo[[:space:]]|true[[:space:]]*$|false[[:space:]]*$|\[|test[[:space:]]) ]]; then
     return 0
   fi
   return 1
@@ -144,6 +159,11 @@ execute_command() {
       echo "[$level] PASS"
       log_debug "  → PASS"
       return 0
+      ;;
+    2)
+      # 2 = skip (placeholder or "not implemented") - propagate to outer as SKIP
+      echo "[$level] SKIP (exit 2 from command)"
+      return 2
       ;;
     124)
       echo "[$level] FAIL (timeout > ${LEVEL_TIMEOUT}s)"
