@@ -1,26 +1,53 @@
 {
   "id": "EPIC-024-B",
-  "title": "L1 match test 100+ 次 + EXPERT-EXTENSION-SPRINT-A-REPORT.md",
-  "type": "research",
+  "epicId": "EPIC-024",
+  "phaseId": "PHASE-002",
+  "title": "Sprint 2: 70+ extended 本地化 + SQLite FTS5 + 向量搜索 + expert:list",
+  "type": "feature",
   "priority": "P0",
   "file_scope": {
     "includes": [
-      "scripts/extension/l1-match-test.sh",
-      "confluence/decisions/EXPERT-EXTENSION-SPRINT-A-REPORT.md"
+      "experts/extended/INDEX.md",
+      "experts/INDEX.md",
+      ".kallax/data/expert_index.db",
+      "scripts/build-expert-index.sh",
+      "scripts/expert-match.sh",
+      "scripts/expert-list.sh",
+      "scripts/semantic-embed.py"
     ],
     "excludes": []
   },
-  "dependencies": [
-    "EPIC-024-A"
-  ],
+  "dependencies": ["EPIC-024-A"],
   "acceptance_criteria": [
-    "scripts/extension/l1-match-test.sh: 跑 5 expert × 25 ticket × 3 keyword match strategies = 375 次 match",
-    "match strategies: 精确匹配, 子串匹配, 关键词≥N 触发",
-    "输出每种 strategy 的 hit rate (5 expert 分别)",
-    "L1 miss rate 整体 < 30%? 决策: 不扩 vs Sprint B",
-    "写 EXPERT-EXTENSION-SPRINT-A-REPORT.md 报告 (PM 模板)",
-    "包含: data table, decision (validate / expand), Sprint B 建议 (若需)"
+    "experts/extended/INDEX.md 创建 (从 EKET 70+ 索引本地化):",
+    "  - 8 域: tech/ai/design/business/consulting/hr/knowledge/marketing/ops/pr/training",
+    "  - 每位 expert 模板: id / name_cn / role / emoji / domain / description / trigger",
+    "  - 总计 >= 70 个 expert (从 EKET 借鉴, 不复制内容只借鉴元数据)",
+    "experts/INDEX.md 创建 (自动合并 default + extended 索引):",
+    "  - 表格形式, 列: emoji | name | role | domain | tier | description",
+    "scripts/build-expert-index.sh 创建 (建 SQLite FTS5 + vec 表):",
+    "  - 解析 experts/default/*.md + experts/extended/*.md",
+    "  - FTS5 表: expert_fts (id, description, trigger)",
+    "  - vec 表: expert_vec (id, embedding BLOB 384-dim)",
+    "  - 接受 --rebuild 重建索引",
+    "scripts/semantic-embed.py 创建 (Python, 算 384-dim cosine):",
+    "  - 用 sentence-transformers (或 fallback TF-IDF + L2 norm)",
+    "  - 输入: requirement text",
+    "  - 输出: 384-dim vector",
+    "scripts/expert-match.sh 升级 (加 L2 fallback):",
+    "  - L1 miss 时调 build-expert-index.sh + FTS5 搜索",
+    "  - 加 cosine 相似度 (top-5)",
+    "  - threshold 0.6: 返回 L2 hit",
+    "  - threshold < 0.6: 标注 'L2 miss' (L3 Sprint 3 接)",
+    "  - 输出: via='L2', confidence, duration_ms, semantic_sim score",
+    "scripts/expert-list.sh 创建 (CLI 列出 expert):",
+    "  - --tier default|extended|generated",
+    "  - --domain security|ai|...|all",
+    "  - --count 只输出数字",
+    "  - 表格输出 (跟 eket INDEX.md 风格)",
+    "M2 KPI 验证: 跑 L1 miss 测 5 真实需求 (DBA/SRE/security/Web3/AI), L2 命中率 >= 60%",
+    "performance: M5 P99 < 200ms (FTS5 + 向量搜索用 cache)"
   ],
-  "estimated_hours": 2,
-  "notes": "8 专家共识 3/3 validate_first, 强 consensus Sprint A 是 decision gate, 不是建设"
+  "estimated_hours": 12,
+  "notes": "1.5d. 来源 EXPERT-EXTENSION-SCHEME §9 Sprint 2. 跨平台兼容 (macOS 跟 Linux), 不依赖 GPU (cosine 走 CPU). L2 命中率必须真验证, 不允许假 PASS (跟 Sprint A 教训一致)"
 }

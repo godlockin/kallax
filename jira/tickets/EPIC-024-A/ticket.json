@@ -1,22 +1,54 @@
 {
   "id": "EPIC-024-A",
-  "title": "收集 EPIC-016/021 ticket 描述 + trigger keyword 提取",
-  "type": "research",
+  "epicId": "EPIC-024",
+  "phaseId": "PHASE-002",
+  "title": "Sprint 1 (MVP L1): 5 default 加 trigger + TRIGGERS 决策树 + expert:match 命令",
+  "type": "feature",
   "priority": "P0",
   "file_scope": {
     "includes": [
-      ".kallax/data/expansion/l1-baseline-data.json",
-      "scripts/extension/l1-extract-keywords.sh"
+      ".kallax/experts/default/architect.md",
+      ".kallax/experts/default/backend.md",
+      ".kallax/experts/default/frontend.md",
+      ".kallax/experts/default/ux.md",
+      ".kallax/experts/default/product.md",
+      ".kallax/experts/default/security.md",
+      ".kallax/experts/default/pm.md",
+      "experts/TRIGGERS.md",
+      "scripts/expert-match.sh",
+      ".kallax/hooks/session_start.sh"
     ],
     "excludes": []
   },
   "dependencies": [],
   "acceptance_criteria": [
-    "读 jira/tickets/EPIC-016/ + jira/tickets/EPIC-021/ 共 25 ticket 描述",
-    "提取 5 expert (Architect/Backend/Frontend/UX/Product) 各自的 trigger keyword 列表",
-    "保存到 .kallax/data/expansion/l1-baseline-data.json (25 记录)",
-    "JSON schema: {ticket_id, expert, keywords[], title, description, actual_expert (从 review 字段读)}"
+    "7 default expert 文件 frontmatter 加 `trigger:` 字段 (逗号分隔关键词):",
+    "  - architect: 架构,边界,选型,微服务,模块,API契约",
+    "  - backend: API,数据库,SQL,鉴权,N+1,事务,索引,缓存,性能,后端",
+    "  - frontend: 组件,React,Vue,渲染,状态,包体积,LCP",
+    "  - ux: 交互,旅程,体验,可用性,一致性,认知",
+    "  - product: 优先级,RICE,PRD,MVP,价值,ROI,砍功能",
+    "  - security: 注入,越权,XSS,CSRF,鉴权,漏洞,OWASP,合规 (system risk only)",
+    "  - pm: 跨ticket,任务规划,协调,风险,ensuring,跨团队",
+    "experts/TRIGGERS.md 创建 (跟 scheme §2.3 一致, 4 信号加权决策树):",
+    "  - 性能/稳定性 段",
+    "  - 安全/合规 段",
+    "  - 业务/价值 段",
+    "  - 跨层/架构 段",
+    "scripts/expert-match.sh 创建 (L1 only, L2/L3 留 Sprint 2/3):",
+    "  - 接受 '<requirement>' 参数",
+    "  - 4 信号评分 (kw/symptom/domain + placeholder semantic_sim)",
+    "  - threshold 0.7: 返回 L1 hit",
+    "  - threshold < 0.7: 标注 'L1 miss' (L2/L3 后续接)",
+    "  - 输出: matched expert id, confidence, duration_ms, via='L1'",
+    "  - 写 .kallax/logs/expert_resolution_audit.jsonl (append-only audit)",
+    ".kallax/hooks/session_start.sh 加 expert matcher ready 段 (在现有 expert_invocations 段之后):",
+    "  - echo 'EXPERT MATCHER READY'",
+    "  - 列出 5 default 角色 (跟 SKILL.md 一致)",
+    "  - 提示: 'Try: kallax expert:match \"你的需求\"'",
+    "M1 KPI 验证: 跑 expert:match 测 5 真实需求 (接口慢/页面卡/优先级/鉴权/架构), 命中率 >= 80%",
+    "L4 脚本 (scripts/verify/) 必含 L1 验证 (跑 expert:match + 验输出 schema)"
   ],
-  "estimated_hours": 2,
-  "notes": "Sprint A 第 1 步, 收集 baseline. 5 专家共识 8/8: validate_first, PM hard data: 17 tickets 零调用"
+  "estimated_hours": 5,
+  "notes": "0.5d MVP. 来源 EXPERT-EXTENSION-SCHEME §9 Sprint 1. 注意: 之前 Sprint A 测试 1.7% hit rate 是 methodology 问题, 这次实施要确保 trigger 字段真覆盖用户症状语言 (不是技术实现语言). L1 必 work, 否则后续 Sprint 失去基础"
 }

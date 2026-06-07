@@ -1,45 +1,61 @@
 {
   "id": "EPIC-024",
   "phase": "PHASE-002",
-  "title": "EXPERT-EXTENSION Sprint A — L1 trigger 命中率验证 (0.5d)",
-  "scope": "1. 收集 EPIC-016 + EPIC-021 真实 ticket 描述 (L1 miss rate 基线)\n2. 跑 trigger keyword match test (3-5 关键词 × 5 expert)\n3. 报告 L1 命中率 + miss rate 分布\n4. 给后续 Sprint B/C 决策建议 (validate_first 的 hard data)",
+  "title": "EXPERT-EXTENSION-SCHEME 落地 — 3 Sprint (L1 触发 + L2 扩展 + L3 自动生成)",
+  "scope": "1. Sprint 1: 5 default 加 trigger 字段 + TRIGGERS 决策树 + expert:match 命令 + session_start 集成 (0.5d)\n2. Sprint 2: 70+ extended 索引本地化 + SQLite FTS5 + 向量相似度搜索 + expert:list (1.5d)\n3. Sprint 3: LLM 专家自动生成 + dedup + anatomy check + codemod 月度 review (1.5d)",
   "start_time": "2026-06-07",
-  "delivery_time": "2026-06-08",
+  "delivery_time": "2026-06-10",
   "status": "active",
   "baseline": {
-    "source": "EXPERT-EXTENSION-SCHEME-2026-06-07.md",
-    "8_expert_consensus": "validate_first (3/3 补专家)",
-    "program_manager_hard_data": "EPIC-016 17 tickets 零 expert 调用记录 (现状)",
-    "sprint_a_purpose": "data-driven 决策 — L1 miss rate < 30% 则不扩, > 30% 则需解决发现机制"
+    "source": "confluence/decisions/EXPERT-EXTENSION-SCHEME-2026-06-07.md §9 (3 Sprint 路径)",
+    "main_decision": "主公 2026-06-07 拍板: 24 确定要扩充, 参考 EXPERT-EXTENSION-SCHEME 全 3 Sprint",
+    "Sprint_A_precedent": "EPIC-024 Sprint A (1.7% hit rate, invalid sample) — methodology 需重设计, 但 schema 本身已确认"
   },
   "target": {
-    "l1_match_test_runs": ">= 50 (从 jira/tickets/EPIC-016/ + EPIC-021/ 收集)",
-    "l1_hit_rate_documented": true,
-    "miss_distribution_by_role": "5 expert (Architect/Backend/Frontend/UX/Product) 各自 miss rate",
-    "decision_artifact": "EXPERT-EXTENSION-SPRINT-A-REPORT.md"
+    "default_5_with_trigger": "5 files 加 trigger: frontmatter 字段",
+    "TRIGGERS_decision_tree": "experts/TRIGGERS.md (新建)",
+    "expert_match_l1_l2_l3": "scripts/expert-match.sh (3 层 fallback)",
+    "extended_local_count": "70+ (本地化 EKET 索引)",
+    "sqlite_fts5_index": ".kallax/data/expert_index.db",
+    "vector_similarity": "scripts/semantic-embed.py + cosine sim",
+    "expert_create_llm": "scripts/expert-generate.py (LLM 调用)",
+    "dedup_embedding": "scripts/expert-dedup.py (>0.85 视为重复)",
+    "monthly_codemod_review": "scripts/codemod-review-generated.sh"
+  },
+  "kpi": {
+    "M1_l1_hit_rate": ">= 70%",
+    "M2_l2_hit_rate": ">= 20%",
+    "M3_l3_fallback_rate": "<= 10%",
+    "M4_promote_rate": ">= 30% per quarter",
+    "M5_match_p99_latency_ms": "< 200"
   },
   "decisions": {
     "priority": 4,
-    "rationale": "8 专家共识 validate_first (PM hard data: 17 tickets 零调用)",
-    "8_expert_score": 6.67,
-    "purpose": "Sprint A 是 decision gate, 不是建设 — 0.5d 即可",
-    "if_l1_miss_high": "触发 Sprint B (发现机制: trigger 行 + 决策树接通)",
-    "if_l1_miss_low": "L2/L3 全部不动, 维持 5 expert"
+    "rationale": "8 专家共识 3/3 validate_first → 主公拍板 confirm 扩充",
+    "security_review_issues_addressed": 3,
+    "main_decision_by_user": "2026-06-07 拍板 confirm 扩充 EXPERT-EXTENSION"
   },
   "tickets": [
     {
       "id": "EPIC-024-A",
-      "title": "收集 EPIC-016/021 ticket 描述 + trigger keyword 提取",
+      "title": "Sprint 1 (MVP L1): 5 default 加 trigger + TRIGGERS 决策树 + expert:match 命令",
       "assignee": "performer-EPIC-024-A",
       "status": "ready",
       "blocked_by": null
     },
     {
       "id": "EPIC-024-B",
-      "title": "L1 match test 100+ 次 + EXPERT-EXTENSION-SPRINT-A-REPORT.md",
+      "title": "Sprint 2: 70+ extended 本地化 + SQLite FTS5 + 向量搜索 + expert:list",
       "assignee": "performer-EPIC-024-B",
       "status": "ready",
       "blocked_by": ["EPIC-024-A"]
+    },
+    {
+      "id": "EPIC-024-C",
+      "title": "Sprint 3: LLM 专家自动生成 + dedup + codemod 月度 review",
+      "assignee": "performer-EPIC-024-C",
+      "status": "ready",
+      "blocked_by": ["EPIC-024-B"]
     }
   ]
 }
