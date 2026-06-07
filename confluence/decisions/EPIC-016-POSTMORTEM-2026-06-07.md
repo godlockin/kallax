@@ -202,3 +202,24 @@
 4. **EPIC-020**: Workflow hardening (A+B+Security review 集成, worktree checker, perf gate)
 
 总投入: ~25 人天, 与 Permission Model 平行不冲突
+
+---
+
+## 附录: 模板一致性 (Template Conformance)
+
+**创建时间**: 2026-06-06 (早于 LESSONS-LEARNED 模板)
+**模板版本**: confluence/templates/EPIC-LESSONS-LEARNED-TEMPLATE.md v1 (2026-06-07)
+**映射关系**:
+
+| 模板节 | 本文档位置 | 状态 |
+|---|---|---|
+| 1. 结果摘要 (量化) | §1 结果摘要 | ✅ |
+| 2. 交付物清单 | §1.2 交付物清单 | ✅ |
+| 3. 关键事件时间线 | §1.3 关键事件时间线 | ✅ |
+| 4. 关键经验教训 (按类别) | §2 (7 节, 缺 People/Tooling 类别) | ⚠️ 需补 |
+| 5. A+B 2-Group Review 总结 | §2.3 | ✅ (合并) |
+| 6. EPIC 评估 | §3 (3.1/3.2/3.3) | ✅ |
+| 7. 跟其他 EPIC 关联 | §4 (隐含) | ⚠️ 缺独立节 |
+| 8. 下一步建议 | §4 | ✅ |
+
+**结论**: 7/8 节符合, §4 缺独立节, §2 缺 People/Tooling 类别. 后续 Phase 002 review 时补全.
