@@ -193,6 +193,28 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 - ❌ L4 bash 命令引用不存在脚本
 - ❌ ticket close 前 L4 脚本缺失
 
+### 9. 4-Level Fact-Forcing 强制 (KALLAX P0) — task:complete 前置
+
+**教训**: EPIC-021 D review CRITICAL — 4-Level 是 documentation, 不是 enforcement. 文档写"存在性/实质性/接线正确/数据流动", 但没有人真的去检查, 形成"review 通过, 部署完蛋"局面.
+
+**规则**: `task:complete <TICKET>` 前必须运行 `check-fact-forcing-preflight.sh <expert.md>`, 全部 L1/L2/L3/L4 通过才能 close ticket.
+
+**落地检查**: `scripts/check-fact-forcing-preflight.sh` 实现 4 级顺序执行, 任一 FAIL 则 preflight FAIL, ticket 保持 `in_progress`.
+
+**4 级执行顺序**:
+1. **L1 存在性**: 文件存在于 diff
+2. **L2 实质性**: 真实逻辑, 非 stub
+3. **L3 接线正确**: 正确 import/export
+4. **L4 数据流动**: 集成测试验证
+
+**失败处理**:
+- preflight FAIL → ticket 保持 `in_progress`
+- `check-fact-forcing-preflight.sh --force-merge` 可 override (需 master 授权)
+
+**红线**:
+- ❌ 跳过 preflight 直接 close ticket
+- ❌ preflight FAIL 但仍 close ticket
+
 ---
 
 ## 命令速查
