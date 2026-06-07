@@ -297,6 +297,31 @@ done
 unset _pid _etime _etime_sec _cmdline _instance_id
 
 # ============================================================
+# EPIC-026-B: session_start_safety check (fail-closed)
+# 5 项 safety check: fd/tty, no zombie daemon, no stale locks,
+# state/ writeable, bash -n syntax. 任何失败则 exit 1.
+# ============================================================
+source "${SCRIPTS_DIR}/lib/session-start-safety.sh" 2>/dev/null || true
+if command -v session_start_safety &>/dev/null; then
+  if ! session_start_safety; then
+    echo "[session_start] FATAL: safety check failed — not starting session" >&2
+    exit 1
+  fi
+fi
+
+# ============================================================
+# EPIC-026-B: Start watchdog in background (monitor session_start itself)
+# Only start if KALLAX_WATCHDOG is not explicitly disabled
+# ============================================================
+if [ "${KALLAX_WATCHDOG:-1}" != "0" ]; then
+  WATCHDOG_SCRIPT="${SCRIPTS_DIR}/heartbeat-watchdog.sh"
+  if [ -x "$WATCHDOG_SCRIPT" ]; then
+    stdbuf -oL -eL setsid bash "$WATCHDOG_SCRIPT" "$$" </dev/null >> "${LOG_DIR}/watchdog.log" 2>&1 &
+    echo "[session_start] watchdog started for pid=$$" >> "${LOG_DIR}/${INSTANCE_ID}.log" 2>/dev/null || true
+  fi
+fi
+
+# ============================================================
 # Start heartbeat daemon (on-demand, AC7) — SKIP on first boot
 # AC7: Only start if STALE master exists (on-demand); first boot skips.
 # Uses run_daemon() from scripts/lib/daemon.sh (AC3).
