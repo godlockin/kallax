@@ -8,6 +8,7 @@ KALLAX_ROOT="${KALLAX_ROOT:-.kallax}"
 INSTANCES_DIR="${KALLAX_ROOT}/instances"
 INBOX_DIR="${KALLAX_ROOT}/queue/inbox"
 LOG_DIR="${KALLAX_ROOT}/logs"
+SCRIPTS_DIR="${SCRIPTS_DIR:-$(cd "$(dirname "${KALLAX_ROOT}/..")/scripts" && pwd)}"
 
 HOSTNAME="${HOSTNAME:-$(hostname 2>/dev/null || echo 'unknown')}"
 PID="${$}"
@@ -58,6 +59,10 @@ fi
 INSTANCE_ID="${KALLAX_INSTANCE_ID:-${ROLE}_${HOSTNAME}_${PID}}"
 BRANCH="$(git branch --show-current 2>/dev/null || echo 'unknown')"
 CWD="$(pwd)"
+
+# Count existing instances BEFORE we create ours (used to skip heartbeat on first boot)
+mkdir -p "${INSTANCES_DIR}"
+EXISTING_INSTANCES_COUNT=$(find "${INSTANCES_DIR}" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
 
 # ============================================================
 # Worktree detection
@@ -165,26 +170,70 @@ cat > "${INSTANCES_DIR}/${INSTANCE_ID}/state.json" << STATE
 STATE
 
 # ============================================================
-# Start heartbeat daemon (multi-path fallback)
+# Start heartbeat daemon (on-demand, AC7) — SKIP on first boot
+# AC7: Only start if STALE master exists (on-demand); first boot skips.
+# Uses run_daemon() from scripts/lib/daemon.sh (AC3).
 # ============================================================
-REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || true)
-HEARTBEAT_SCRIPT=""
-for candidate in \
-  "${KALLAX_ROOT}/../scripts/heartbeat-daemon.sh" \
-  "${REPO_ROOT:+${REPO_ROOT}/scripts/heartbeat-daemon.sh}" \
-  "${KALLAX_ROOT}/hooks/heartbeat-daemon.sh"; do
-  if [ -n "$candidate" ] && [ -x "$candidate" ]; then
-    HEARTBEAT_SCRIPT="$candidate"
-    break
+if [ "${EXISTING_INSTANCES_COUNT}" -gt 0 ]; then
+  REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || true)
+  HEARTBEAT_SCRIPT=""
+  for candidate in \
+    "${KALLAX_ROOT}/../scripts/heartbeat-daemon.sh" \
+    "${REPO_ROOT:+${REPO_ROOT}/scripts/heartbeat-daemon.sh}" \
+    "${KALLAX_ROOT}/hooks/heartbeat-daemon.sh"; do
+    if [ -n "$candidate" ] && [ -x "$candidate" ]; then
+      HEARTBEAT_SCRIPT="$candidate"
+      break
+    fi
+  done
+  if [ -z "$HEARTBEAT_SCRIPT" ]; then
+    HEARTBEAT_SCRIPT="$(command -v heartbeat-daemon.sh 2>/dev/null || echo '')"
   fi
-done
-# PATH fallback
-if [ -z "$HEARTBEAT_SCRIPT" ]; then
-  HEARTBEAT_SCRIPT="$(command -v heartbeat-daemon.sh 2>/dev/null || echo '')"
+  if [ -n "$HEARTBEAT_SCRIPT" ] && [ -x "$HEARTBEAT_SCRIPT" ]; then
+    STATE_FILE="${INSTANCES_DIR}/${INSTANCE_ID}/state.json"
+    source "${SCRIPTS_DIR}/lib/daemon.sh" 2>/dev/null || true
+    if [ -n "${KALLAX_SKIP_HEARTBEAT_ON_FIRST_BOOT:-}" ] && [ "${KALLAX_SKIP_HEARTBEAT_ON_FIRST_BOOT}" = "0" ]; then
+      # Opt-in: force heartbeat on even first boot
+      run_daemon "heartbeat" "$HEARTBEAT_SCRIPT" "${INSTANCE_ID}" "${INSTANCES_DIR}" \
+        || echo "first-boot: heartbeat skipped" >> "${LOG_DIR}/${INSTANCE_ID}.log" 2>/dev/null || true
+    elif [ -f "${MASTER_STATE}" ]; then
+      # On-demand: only start if master exists and is STALE
+      MASTER_STATUS=$(jq -r '.status // "unknown"' "${MASTER_STATE}" 2>/dev/null || echo "unknown")
+      if [ "${MASTER_STATUS}" = "STALE" ] || [ "${MASTER_STATUS}" = "CLOSING" ]; then
+        run_daemon "heartbeat" "$HEARTBEAT_SCRIPT" "${INSTANCE_ID}" "${INSTANCES_DIR}" \
+          || echo "heartbeat: start failed" >> "${LOG_DIR}/${INSTANCE_ID}.log" 2>/dev/null || true
+      fi
+    fi
+  fi
+else
+  echo "first-boot: heartbeat skipped" >> "${LOG_DIR}/${INSTANCE_ID}.log" 2>/dev/null || true
 fi
-if [ -n "$HEARTBEAT_SCRIPT" ] && [ -x "$HEARTBEAT_SCRIPT" ]; then
-  "${HEARTBEAT_SCRIPT}" "${INSTANCE_ID}" "${INSTANCES_DIR}" &
-fi
+
+# ============================================================
+# EXIT trap: daemon cleanup + structured diagnostic log (AC4, AC6)
+# ============================================================
+on_session_exit() {
+  local daemon_pid=""
+  local exit_code=$?
+  daemon_pid=$(jq -r '.heartbeat.heartbeat_daemon_pid // empty' \
+    "${INSTANCES_DIR}/${INSTANCE_ID}/state.json" 2>/dev/null || true)
+  [ -n "$daemon_pid" ] && kill "$daemon_pid" 2>/dev/null || true
+  # Mark state as CLOSING
+  jq '.status = "CLOSING"' "${INSTANCES_DIR}/${INSTANCE_ID}/state.json" \
+    > "${INSTANCES_DIR}/${INSTANCE_ID}/state.json.tmp" 2>/dev/null && \
+    mv "${INSTANCES_DIR}/${INSTANCE_ID}/state.json.tmp" \
+       "${INSTANCES_DIR}/${INSTANCE_ID}/state.json" 2>/dev/null || true
+  # Structured diagnostic log (AC6)
+  jq -n \
+    --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+    --arg instance "${INSTANCE_ID}" \
+    --argjson pid "$$" \
+    --argjson daemon_pid "${daemon_pid:-null}" \
+    --argjson exit_code "${exit_code}" \
+    '{ts:$ts, event:"session_start_exit", instance:$instance, pid:$pid, daemon_pid:$daemon_pid, exit_code:$exit_code}' \
+    >> "${LOG_DIR}/session_start.diag.jsonl" 2>/dev/null || true
+}
+trap 'on_session_exit' EXIT INT TERM
 
 # ============================================================
 # Team count (jq preferred, grep fallback — no python3)
@@ -248,48 +297,14 @@ if [ "${IN_WORKTREE}" = "true" ] && [ "${#WT_DISPLAY}" -gt 35 ]; then
 fi
 
 # ============================================================
-# ASCII Card (CJK-aware alignment)
+# Lean ASCII Card — 7 lines (top, ROLE, INSTANCE, INBOX, NEXT, bottom)
 # ============================================================
-# visible_width: approximate display width (CJK=2, ASCII=1)
-_visible_width() {
-  local s="$1" bytes="" chars=""
-  bytes=$(printf '%s' "$s" | wc -c | tr -d ' ')
-  chars=$(printf '%s' "$s" | wc -m | tr -d ' ')
-  echo $(( (${bytes:-0} + ${chars:-0}) / 2 ))
-}
-
-# card_line: right-padded content, truncated to fit 54-char box
-_card_line() {
-  local content="$1" vw="" pad=""
-  vw=$(_visible_width "$content")
-  # Truncate with ellipsis if content exceeds available width
-  while [ $vw -gt 50 ] && [ ${#content} -gt 4 ]; do
-    content="${content:0:$((${#content} - 1))}..."
-    vw=$(_visible_width "$content")
-  done
-  pad=$((50 - vw))
-  [ $pad -lt 0 ] && pad=0
-  printf '║  %s%*s║\n' "$content" "$pad" ""
-}
-
-cat << "CARD_TOP"
-╔════════════════════════════════════════════════════╗
-║  KALLAX Session Start                       v1.0.0 ║
-╠════════════════════════════════════════════════════╣
-CARD_TOP
-_card_line "ROLE     ▸ ${ROLE}"
-_card_line "INSTANCE ▸ ${ROLE}@${BRANCH}"
-_card_line "WORKTREE ▸ ${WT_SHORT}"
-_card_line "TEAM     ▸ ${CONDUCTOR_COUNT} conductor / ${PERFORMER_COUNT} performer"
-printf '╠════════════════════════════════════════════════════╣\n'
-if [ "${INBOX_COUNT}" -eq 0 ]; then
-  _card_line "INBOX      [ ${INBOX_COUNT} ]   ← No pending items"
-else
-  _card_line "INBOX      [ ${INBOX_COUNT} ]   ← Pending!"
-fi
-printf '╠════════════════════════════════════════════════════╣\n'
-_card_line "NEXT: ${NEXT}"
-printf '╚════════════════════════════════════════════════════╝\n'
+printf '┌─ KALLAX ────────────────────────────────\n'
+printf '│ ROLE     ▸ %s\n' "${ROLE}"
+printf '│ INSTANCE ▸ %s@%s\n' "${ROLE}" "${BRANCH}"
+printf '│ INBOX    ▸ [%s] %s\n' "${INBOX_COUNT}" "$([ "${INBOX_COUNT}" -eq 0 ] && printf '.' || printf '!')"
+printf '│ NEXT     ▸ %s\n' "${NEXT}"
+printf '└────────────────────────────────────────\n'
 
 # ============================================================
 # Logging
