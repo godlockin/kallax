@@ -4,6 +4,24 @@
 # Runs on every new session. Failure does NOT block session.
 set -uo pipefail
 
+# ============================================================
+# state.json Edit/Write PROTECTION (EPIC-016-M)
+# Claude Code Edit/Write does NOT understand JSON semantics.
+# Editing .kallax/instances/*/state.json with Edit/Write can inject
+# duplicate keys or malformed JSON. To modify state.json, use jq:
+#
+#   jq '.heartbeat.last_beat = "'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'"' \
+#     state.json > state.json.tmp && mv state.json.tmp state.json
+#
+# If state.json gets corrupted (duplicate keys, invalid JSON):
+#   1. Stop all Claude sessions touching this instance
+#   2. Backup: cp state.json state.json.bak
+#   3. Remove duplicate last_beat lines:
+#      sed -i '' '/^[[:space:]]*"last_beat":/d' state.json
+#   4. Verify: jq . state.json  (must exit0)
+#   5. Restart session
+# ============================================================
+
 KALLAX_ROOT="${KALLAX_ROOT:-.kallax}"
 INSTANCES_DIR="${KALLAX_ROOT}/instances"
 INBOX_DIR="${KALLAX_ROOT}/queue/inbox"
@@ -146,8 +164,41 @@ mkdir -p "${LOG_DIR}"
 
 # ============================================================
 # Write state.json
+# AC1: duplicate last_beat key guard — validates template before write
 # ============================================================
 NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+_STATE_TEMPLATE=$(cat <<'TPL_CHECK'
+{
+  "instance_id": "",
+  "role": "",
+  "pid": 0,
+  "status": "ACTIVE",
+  "branch": "",
+  "cwd": "",
+  "in_worktree": false,
+  "worktree_path": null,
+  "created_at": "",
+  "started_at": "",
+  "heartbeat": {
+    "interval_seconds": 60,
+    "last_beat": "",
+    "missed_count": 0
+  },
+  "current_task": {
+    "ticket_id": null,
+    "worktree_path": null,
+    "progress_pct": null
+  }
+}
+TPL_CHECK
+)
+_LAST_BEAT_COUNT=$(echo "${_STATE_TEMPLATE}" | grep -c '^[[:space:]]*"last_beat":' || true)
+if [ "${_LAST_BEAT_COUNT}" -gt 1 ]; then
+  echo "[kallax] ERROR: state.json template has duplicate last_beat key (${_LAST_BEAT_COUNT} found). Aborting." >&2
+  echo "[kallax] See session_start.sh top comment for recovery SOP." >&2
+  exit 1
+fi
+unset _STATE_TEMPLATE _LAST_BEAT_COUNT
 cat > "${INSTANCES_DIR}/${INSTANCE_ID}/state.json" << STATE
 {
   "instance_id": "${INSTANCE_ID}",
