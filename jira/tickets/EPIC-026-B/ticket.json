@@ -1,0 +1,30 @@
+{
+  "id": "EPIC-026-B",
+  "title": "session_start.sh 黑洞风险防 (watchdog + fail-closed)",
+  "type": "feature",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      ".kallax/hooks/session_start.sh",
+      "scripts/heartbeat-watchdog.sh",
+      "scripts/lib/session-start-safety.sh"
+    ],
+    "excludes": []
+  },
+  "dependencies": [
+    "EPIC-026-A"
+  ],
+  "acceptance_criteria": [
+    "scripts/heartbeat-watchdog.sh: 监控 session_start 耗时, > 5s 报警 + kill",
+    "scripts/lib/session-start-safety.sh: 启动前 5 项 safety check (portable)",
+    "  1. fd 0/1/2 全部指向 tty 或 file, 不指向 pipe",
+    "  2. no zombie heartbeat-daemon",
+    "  3. no stale .kallax/state/*.lock",
+    "  4. .kallax/state/ 写入权限",
+    "  5. session_start.sh bash -n 通过",
+    "session_start.sh 集成: 启动前调用 session-start-safety.sh, 失败 fail-closed (exit 1 + 明确错误)",
+    "fail-closed 测试: 模拟 fd 指向 pipe, 验证 session_start 立即退出不 hang"
+  ],
+  "estimated_hours": 6,
+  "notes": "黑洞重演的最强防御. watchdog 监控 + fail-closed safety check 双保险"
+}
