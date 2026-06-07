@@ -1,0 +1,20 @@
+{
+  "id": "EPIC-025-C",
+  "title": "UP-3 Rule 6 修订 — 实施 commit 必带 LESSONS-LEARNED 草稿",
+  "type": "doc",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      "CLAUDE.md"
+    ],
+    "excludes": []
+  },
+  "dependencies": [],
+  "acceptance_criteria": [
+    "CLAUDE.md Rule 6 修订: 加 'EPIC 实施最后 commit 必带 jira/epics/EPIC-XXX/LESSONS-LEARNED.md 草稿 (master 终审后才 merge)'",
+    "原 Rule 6 保留 3 步: A+B review + 文档更新 + 经验教训, 现 4 步: A+B review + 文档更新 + 经验教训草稿 + LESSONS-LEARNED 终审",
+    "scripts/check-fact-forcing-preflight.sh 加 'LESSONS-LEARNED 存在性' 检查 (如 EPIC-XXX 已 done, 必须有 LESSONS-LEARNED.md)"
+  ],
+  "estimated_hours": 0.5,
+  "notes": "EPIC-021 LESSONS §8.3 UP-3, 教训: EPIC-021 实施完才补 LESSONS, 应该同 commit"
+}

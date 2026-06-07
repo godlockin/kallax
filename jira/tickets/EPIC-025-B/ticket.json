@@ -1,0 +1,25 @@
+{
+  "id": "EPIC-025-B",
+  "title": "UP-2 Rule 9 — 4-Level Fact-Forcing 强制 (scripts/check-fact-forcing-preflight.sh)",
+  "type": "feature",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      "scripts/check-fact-forcing-preflight.sh",
+      "scripts/lib/fact-forcing-preflight.sh",
+      "CLAUDE.md"
+    ],
+    "excludes": []
+  },
+  "dependencies": [],
+  "acceptance_criteria": [
+    "scripts/check-fact-forcing-preflight.sh 存在 +x, 接受 <commit-range> + <expert.md path>",
+    "行为: 读 expert.md, 提取 L1/L2/L3/L4 bash 命令, 顺序运行, 任一失败 exit 1",
+    "scripts/lib/fact-forcing-preflight.sh: 解析 output_format 4 节 + Verification 4 级 + 提取 bash + fork+exec",
+    "CLAUDE.md 新增 Rule 9: 'task:complete <TICKET> 前必跑 check-fact-forcing-preflight.sh, 失败则 ticket 保持 in_progress'",
+    "测试: 给一个 mock expert file, 跑 preflight, 验证 L1-L4 顺序执行",
+    "测试: 故意 fail L3, 验证 exit 1 + 输出错误 L 级"
+  ],
+  "estimated_hours": 1.5,
+  "notes": "EPIC-021 LESSONS §8.3 UP-2, D review CRITICAL 触发, 这是 4-Level 从文档变 enforcement 的关键"
+}

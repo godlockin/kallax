@@ -1,0 +1,26 @@
+{
+  "id": "EPIC-024-B",
+  "title": "L1 match test 100+ 次 + EXPERT-EXTENSION-SPRINT-A-REPORT.md",
+  "type": "research",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      "scripts/extension/l1-match-test.sh",
+      "confluence/decisions/EXPERT-EXTENSION-SPRINT-A-REPORT.md"
+    ],
+    "excludes": []
+  },
+  "dependencies": [
+    "EPIC-024-A"
+  ],
+  "acceptance_criteria": [
+    "scripts/extension/l1-match-test.sh: 跑 5 expert × 25 ticket × 3 keyword match strategies = 375 次 match",
+    "match strategies: 精确匹配, 子串匹配, 关键词≥N 触发",
+    "输出每种 strategy 的 hit rate (5 expert 分别)",
+    "L1 miss rate 整体 < 30%? 决策: 不扩 vs Sprint B",
+    "写 EXPERT-EXTENSION-SPRINT-A-REPORT.md 报告 (PM 模板)",
+    "包含: data table, decision (validate / expand), Sprint B 建议 (若需)"
+  ],
+  "estimated_hours": 2,
+  "notes": "8 专家共识 3/3 validate_first, 强 consensus Sprint A 是 decision gate, 不是建设"
+}
