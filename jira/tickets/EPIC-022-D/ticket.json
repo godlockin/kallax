@@ -1,0 +1,26 @@
+{
+  "id": "EPIC-022-D",
+  "title": "role transition (master/conductor/performer)",
+  "type": "feature",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      "src/roles/transition.ts",
+      "src/roles/master.ts",
+      "src/roles/conductor.ts",
+      "src/roles/performer.ts",
+      "tests/roles/transition*.test.ts"
+    ],
+    "excludes": []
+  },
+  "dependencies": ["EPIC-022-C"],
+  "acceptance_criteria": [
+    "master: 全权限 + 决策权",
+    "conductor: 协调 + 审核权",
+    "performer: 开发执行权",
+    "安全的状态转换 FSM"
+  ],
+  "estimated_hours": 24,
+  "estimated_days": 3,
+  "notes": "Phase 4: 角色转换"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "EPIC-022-A",
+  "title": "3 role definition (auditor + readonly + role binding)",
+  "type": "feature",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      "src/roles/auditor.ts",
+      "src/roles/readonly.ts",
+      "src/roles/role-binding.ts",
+      "tests/roles/*.test.ts"
+    ],
+    "excludes": []
+  },
+  "dependencies": [],
+  "acceptance_criteria": [
+    "auditor role: read-only audit log + cannot modify state",
+    "readonly role: full read access to all Kallax resources",
+    "role binding: dynamic role assignment per session",
+    "单元测试覆盖率 > 80%"
+  ],
+  "estimated_hours": 24,
+  "estimated_days": 3,
+  "notes": "Phase 1: role 定义先行"
+}

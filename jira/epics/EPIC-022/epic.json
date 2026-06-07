@@ -1,0 +1,27 @@
+{
+  "id": "EPIC-022",
+  "title": "PERMISSION-MODEL v1 全范围实施 (master+conductor+auditor+performer)",
+  "description": "v1 实施6 role system: master/conductor/auditor/performer + readonly + role binding.包含 pre-commit hook, workspace switch, read-only path, role transition.",
+  "status": "active",
+  "scope": {
+    "duration_days": 18,
+    "roles": [
+      "master",
+      "conductor",
+      "auditor",
+      "performer",
+      "readonly",
+      "role_binding"
+    ],
+    "target": "完成所有 v1 role 定义 + workspace switch + read-only path + role transition"
+  },
+  "tickets": [
+    "EPIC-022-A",
+    "EPIC-022-B",
+    "EPIC-022-C",
+    "EPIC-022-D",
+    "EPIC-022-E"
+  ],
+  "created_date": "2026-06-07",
+  "notes": "EPIC-022 v1 实施在 EPIC-026 P0 fix 完成后启动 (主公决策)"
+}

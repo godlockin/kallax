@@ -1,0 +1,23 @@
+{
+  "id": "EPIC-022-B",
+  "title": "pre-commit hook + conductor scope check",
+  "type": "feature",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      "src/hooks/pre-commit.ts",
+      "src/hooks/conductor-scope-check.ts",
+      "tests/hooks/*.test.ts"
+    ],
+    "excludes": []
+  },
+  "dependencies": ["EPIC-022-A"],
+  "acceptance_criteria": [
+    "pre-commit hook: 拦截 miao 上的写操作",
+    "conductor scope check: 验证 task分配在 conductor权限内",
+    "防止越权操作"
+  ],
+  "estimated_hours": 24,
+  "estimated_days": 3,
+  "notes": "Phase 2: 安全门控"
+}

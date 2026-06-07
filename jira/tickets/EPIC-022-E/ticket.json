@@ -1,0 +1,24 @@
+{
+  "id": "EPIC-022-E",
+  "title": "集成测试 + 5-expert A+B review",
+  "type": "test",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      "tests/integration/*.test.ts",
+      "tests/e2e/*.test.ts",
+      "tests/roles/integration*.test.ts"
+    ],
+    "excludes": []
+  },
+  "dependencies": ["EPIC-022-A", "EPIC-022-B", "EPIC-022-C", "EPIC-022-D"],
+  "acceptance_criteria": [
+    "集成测试:5 role完整流程",
+    "E2E 测试: session生命周期",
+    "5-expert review: A+B 模块交叉审核",
+    "CI 全量绿灯"
+  ],
+  "estimated_hours": 40,
+  "estimated_days": 5,
+  "notes": "Phase 5: 集成验证"
+}
