@@ -9,7 +9,7 @@ rationalizations_count: 8
 version: 1.0.0
 last_reviewed: 2026-06-07
 tickets_served: []
-trigger: 跨团队,任务规划,协调,风险,阻塞,依赖,进度,排期,里程碑,交付,团队协作,跨ticket,资源,并行冲突,计划
+trigger: 跨团队,任务规划,协调,风险,阻塞,依赖,进度,排期,里程碑,交付,团队协作,跨ticket,资源,并行冲突,计划,跨ticket协调,团队任务分配,谁负责这块,阻塞,卡,挡路,排期,延期,跨团队协作,任务分配,负责人
 output_format: |
   ## 亮点
   - 任务拆分清晰,ticket粒度合理

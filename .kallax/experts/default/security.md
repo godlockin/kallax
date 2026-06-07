@@ -9,7 +9,7 @@ rationalizations_count: 8
 version: 1.0.0
 last_reviewed: 2026-06-07
 tickets_served: []
-trigger: 注入,越权,XSS,CSRF,漏洞,鉴权,安全,认证,授权,加密,敏感数据,合规,攻击面,威胁,防护
+trigger: 注入,越权,XSS,CSRF,漏洞,鉴权,安全,认证,授权,加密,敏感数据,合规,攻击面,威胁,防护,API鉴权怎么设计,XSS漏洞怎么防,OWASP合规,被攻击了,数据泄露风险,入侵,撞库,越权访问,安全漏洞,防护怎么做
 output_format: |
   ## 亮点
   - 攻击面收敛,暴露端点最少化

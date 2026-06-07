@@ -9,7 +9,7 @@ rationalizations_count: 8
 version: 1.0.0
 last_reviewed: 2026-06-07
 tickets_served: []
-trigger: 优先级,需求,价值,ROI,MVP,功能取舍,用户价值,商业价值,砍需求,范围,产品方向, roadmap,规划,优先级排序,要不要做
+trigger: 优先级,需求,价值,ROI,MVP,功能取舍,用户价值,商业价值,砍需求,范围,产品方向, roadmap,规划,优先级排序,要不要做,这个需求值不值得做,MVP应该砍哪些功能,优先级排序,老板让做这个值不值,功能要不要做,值不值得做,砍功能,做不做
 output_format: |
   ## 亮点
   - 解决核心痛点,user_value明确

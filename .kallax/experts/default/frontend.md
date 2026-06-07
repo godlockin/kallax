@@ -9,7 +9,7 @@ rationalizations_count: 8
 version: 1.0.0
 last_reviewed: 2026-06-07
 tickets_served: []
-trigger: 页面卡,渲染慢,组件,React,Vue,状态管理,LCP,包体积,白屏,加载慢,交互延迟,卡顿,重渲染,样式,样式冲突
+trigger: 页面卡,渲染慢,组件,React,Vue,状态管理,LCP,包体积,白屏,加载慢,交互延迟,卡顿,重渲染,样式,样式冲突,页面渲染卡顿,组件状态管理混乱,React包体积怎么减小,白屏,首屏慢,样式错乱,加载慢,点击没反应,卡死,动画卡,滚动卡
 output_format: |
   ## 亮点
   - 组件复用率高,DRY原则遵循好
