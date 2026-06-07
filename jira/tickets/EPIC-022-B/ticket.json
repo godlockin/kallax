@@ -1,0 +1,34 @@
+{
+  "id": "EPIC-022-B",
+  "epic": "EPIC-022",
+  "title": "Pre-commit Hook + Conductor Scope Check",
+  "status": "blocked",
+  "estimate_days": 3,
+  "blocked_by": ["EPIC-022-A"],
+  "file_scope": [
+    ".git/hooks/pre-commit",
+    "src/permissions/conductor-scope.ts",
+    "src/permissions/authz-check.ts",
+    "tests/integration/conductor-scope*.sh"
+  ],
+  "acceptance_criteria": [
+    "AC-1: .git/hooks/pre-commit 调用 authz/check.sh --action miao.write --actor ${GIT_AUTHOR_NAME}",
+    "AC-2: conductor scope check: task 分配在 conductor 权限内 (task.assign, testing.merge)",
+    "AC-3: conductor 尝试写 miao 被拒绝 (exit 1 + 审计日志)",
+    "AC-4: authz/check.sh 错误时 fail-closed (exit 1, 不 silent allow)",
+    "AC-5: authz/check.sh 包含 set -euo pipefail + SIGTERM handler",
+    "AC-6: conductor-scope.ts 验证 task 分配权限 (角色 ∈ [conductor, master])",
+    "AC-7: L1 存在性: ls .git/hooks/pre-commit + src/permissions/conductor-scope.ts",
+    "AC-8: L2 实质性: wc -c .git/hooks/pre-commit > 200 bytes",
+    "AC-9: L3 接线正确: bash -n .git/hooks/pre-commit 无语法错误",
+    "AC-10: L4 数据流动: 模拟 conductor 越权场景, 验证 hook 拒绝 (exit 1)",
+    "AC-11: 模拟 performer 尝试 merge 到 miao, 验证 hook 拒绝",
+    "AC-12: audit log 写入 .kallax/data/authz.db (role, action, result, timestamp)"
+  ],
+  "p0_fixes": [
+    "FIFO 非阻塞写 (防 session_start.sh 类卡死)",
+    "hot path Python 实现 (bash 无法达到 10ms)",
+    "realpath 执行顺序在前"
+  ],
+  "source": "confluence/decisions/PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §3 + §4 (P0 修复项)"
+}
