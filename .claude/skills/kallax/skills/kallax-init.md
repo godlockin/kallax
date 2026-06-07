@@ -14,6 +14,14 @@ description: Initialize KALLAX session. STRICT MODE — 1 Bash call only. Auto-i
 - **NEVER fabricate** the card — verbatim from script stdout.
 - **NEVER hallucinate** ASCII card — must verbatim copy script stdout. If you output something you did not directly read from the script's stdout, you are hallucinating.
 
+## INBOX PATHS
+- `inbox/<instance_id>/` = **个人队列** (per-instance, 只给本 instance 看)
+- `inbox/<role>/` = **全局未认领** (per-role, 任何该 role instance 可读)
+- `outbox/<instance_id>/` = **本 instance 发出的消息**
+
+**ASCII card 上的 `INBOX(you)`** 指个人队列, 不是项目全局。
+项目全局 INBOX 需查看 `.kallax/queue/inbox/` 目录结构。
+
 ## EXACT SEQUENCE (3 steps — follow in order)
 
 ### Step 1: Confirm OR Install script (1-call self-bootstrap)
