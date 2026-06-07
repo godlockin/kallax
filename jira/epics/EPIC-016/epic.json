@@ -108,11 +108,12 @@
     },
     {
       "id": "EPIC-016-O",
-      "assignee": null,
-      "status": "ready",
+      "assignee": "performer-EPIC-016-O",
+      "status": "done",
       "blocked_by": [
         "EPIC-016-R"
-      ]
+      ],
+      "merge_commit": "56ebf9c"
     },
     {
       "id": "EPIC-016-P",
