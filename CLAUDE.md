@@ -174,6 +174,25 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 - ❌ 升级到 CLAUDE.md 没经过主公审批
 - ❌ 跨 phase 不对比, phase 边界模糊
 
+### 8. L4 脚本必须存在 (KALLAX P0) — ticket close 前置条件
+
+**教训**: EPIC-021 D review P1 CRITICAL — 5 角色 L4 引用 `verify-*.sh` / `test-*.sh` 脚本不存在. Review 时发现 4-Level verification 命令全部指向不存在的脚本, 形成"文档好看, 执行完蛋"局面.
+
+**规则**: 所有 ticket close 前, 对应的 L4 bash脚本必须存在 (可以是 stub, 但必须存在并可执行).
+
+**落地检查**: `check-fact-forcing-preflight.sh` 加 `L4_script_exists` check, 引用不存在脚本的 ticket拒绝 close.
+
+**5 角色 L4 占位脚本** (待 EPIC-022+ 真实实现):
+- `scripts/verify/architecture.sh` —架构验证
+- `scripts/verify/priority.sh` — 优先级验证
+- `scripts/verify/ux-flow.sh` — UX 流程验证
+- `scripts/verify/tickets-completed.sh` — Ticket 完成度验证
+- `scripts/verify/security.sh` — 安全验证
+
+**红线**:
+- ❌ L4 bash 命令引用不存在脚本
+- ❌ ticket close 前 L4 脚本缺失
+
 ---
 
 ## 命令速查
