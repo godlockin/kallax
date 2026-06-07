@@ -1,0 +1,36 @@
+{
+  "id": "EPIC-021-F",
+  "epicId": "EPIC-021",
+  "phaseId": "PHASE-002",
+  "title": "expert_invocations 降级链 (Redis→SQLite→file)",
+  "type": "feature",
+  "priority": "P0",
+  "status": "ready",
+  "created_by": "master_main",
+  "created_at": "2026-06-07T17:00:00Z",
+  "file_scope": {
+    "includes": [
+      ".kallax/state/state.json",
+      "scripts/heartbeat-daemon.sh",
+      "scripts/lib/expert-invocation-queue.sh",
+      ".kallax/queue/expert_invocations.jsonl"
+    ],
+    "excludes": []
+  },
+  "dependencies": [],
+  "acceptance_criteria": [
+    "scripts/lib/expert-invocation-queue.sh 提供 3 个函数: emit / drain / health",
+    "emit 接受 expert_id/ticket_id/timestamp, 自动选 backend (Redis 优先)",
+    "降级链: Redis Stream (主) → SQLite expert_invocations 表 (落盘) → .kallax/queue/expert_invocations.jsonl (兜底)",
+    "降级触发: Redis ping > 1s 切 SQLite; SQLite write > 500ms 或 ENOSPC 切 file; 每 5 min 试 Redis 一次回切",
+    ".kallax/state/state.json 扩展 expert_invocations 数组 (最大 1000 条 LRU, 溢出刷盘)",
+    "scripts/heartbeat-daemon.sh 集成 emit 调用, 每次心跳写一条 invocation",
+    "drain 函数: 读取 + 清空当前 backend, 给 metrics 消费用",
+    "health 函数: 返回 {backend, latency_ms, queue_size, last_error}, 给 kallax status 用",
+    "测试: 模拟 Redis down → 自动降 SQLite; 模拟 SQLite down → 自动降 file; 模拟全恢复 → 回切 Redis",
+    "bash -n 通过 + 集成测试脚本 (test-expert-queue.sh) 覆盖 3 场景"
+  ],
+  "estimated_hours": 1.5,
+  "performer": "performer-EPIC-021-F",
+  "notes": "借 EKET 北极星指标思路 (EKET 自己承认缺), KALLAX 复用已有 heartbeat 植入激活记录. 写盘 by default, 队列是升级路径. 降级链保证 99.99% 可用."
+}

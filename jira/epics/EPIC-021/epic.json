@@ -1,0 +1,75 @@
+{
+  "id": "EPIC-021",
+  "phase": "PHASE-002",
+  "title": "KALLAX 超越 EKET — 7 Expert 体系 + 降级队列 + 4-Level Fact-Forcing",
+  "scope": "1. 7 expert persona 文件 (5 现有 + Security + PM)\n2. KALLAX 专属字段 (worktree_role/review_group/tickets_served/version)\n3. 症状决策树 INDEX.md (10 emoji)\n4. output_format 4 节统一\n5. Fact-Forcing 4-Level 嵌入\n6. anatomy check 脚本 (6+ 项校验)\n7. expert_invocations 降级链 (Redis→SQLite→file)",
+  "start_time": "2026-06-07",
+  "delivery_time": "2026-06-08",
+  "status": "active",
+  "baseline": {
+    "source": "EKET-EXPERT-SYSTEM-DEEP-DIVE-2026-06-07.md",
+    "eket_expert_count": 7,
+    "eket_3_tier": ["default", "optional", "extended"],
+    "kallax_expert_count_v0": 0,
+    "kallax_expert_count_target": 7
+  },
+  "target": {
+    "expert_count": 7,
+    "anatomy_checks_min": 6,
+    "output_format_unified_sections": 4,
+    "fact_forcing_levels": 4,
+    "queue_degradation_chain": ["redis_stream", "sqlite", "file"]
+  },
+  "decisions": {
+    "expert_count": 7,
+    "security_scope": "system_risk_only (path/inject/auth/race/fd)",
+    "compliance_legal": "external_escalation_via_when_not_to_use",
+    "degradation_chain": "Redis → SQLite → file (write_disk_default)",
+    "review_governance": "A+B 2-Group (consistent with EPIC-016)",
+    "order": "A first → BCDE parallel (D blocked by C) → F independent"
+  },
+  "tickets": [
+    {
+      "id": "EPIC-021-A",
+      "title": "7 expert persona 文件 + KALLAX 专属字段",
+      "assignee": "performer-EPIC-021-A",
+      "status": "ready",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-021-B",
+      "title": "experts/INDEX.md 症状决策树 + 10 emoji",
+      "assignee": "performer-EPIC-021-B",
+      "status": "ready",
+      "blocked_by": ["EPIC-021-A"]
+    },
+    {
+      "id": "EPIC-021-C",
+      "title": "output_format 4 节统一 (7 文件)",
+      "assignee": "performer-EPIC-021-C",
+      "status": "ready",
+      "blocked_by": ["EPIC-021-A"]
+    },
+    {
+      "id": "EPIC-021-D",
+      "title": "Fact-Forcing 4-Level 嵌入 (7 文件)",
+      "assignee": "performer-EPIC-021-D",
+      "status": "ready",
+      "blocked_by": ["EPIC-021-A", "EPIC-021-C"]
+    },
+    {
+      "id": "EPIC-021-E",
+      "title": "check-skill-anatomy.sh KALLAX 专属 6+ 项校验",
+      "assignee": "performer-EPIC-021-E",
+      "status": "ready",
+      "blocked_by": ["EPIC-021-A"]
+    },
+    {
+      "id": "EPIC-021-F",
+      "title": "expert_invocations 降级链 (Redis→SQLite→file)",
+      "assignee": "performer-EPIC-021-F",
+      "status": "ready",
+      "blocked_by": null
+    }
+  ]
+}
