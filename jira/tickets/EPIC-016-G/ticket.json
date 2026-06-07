@@ -1,0 +1,37 @@
+{
+  "id": "EPIC-016-G",
+  "epicId": "EPIC-016",
+  "phaseId": "PHASE-001",
+  "title": "Layer A 平台级提案 — 写 ADR 文档 MCP lazy + skill metadata 按需发现",
+  "type": "docs",
+  "priority": "P3",
+  "status": "done",
+  "performer": "performer-EPIC-016-G",
+  "pr_url": "https://github.com/godlockin/kallax/pull/new/feature/EPIC-016-G-layer-a-adr",
+  "created_by": "master_main",
+  "created_at": "2026-06-06T04:45:00Z",
+  "file_scope": {
+    "includes": [
+      "confluence/decisions/ADR-016-A-mcp-lazy-loading.md",
+      "confluence/decisions/ADR-016-B-skill-metadata-discovery.md"
+    ],
+    "excludes": []
+  },
+  "dependencies": [
+    "EPIC-016-I"
+  ],
+  "acceptance_criteria": [
+    "ADR-016-A: 说明 MCP server 标 lazy 的设计(github/playwright 默认不加载,按需启用),预估节省 20-40K tokens/turn",
+    "ADR-016-B: 说明 skill metadata 改为「按需发现」的设计(只注入 description 摘要,full content 按需 Read),预估节省 8-10K tokens/turn",
+    "两个 ADR 都含:context(问题)、decision(决定)、consequences(取舍)、alternatives considered(备选方案)",
+    "confluence/decisions/ 下 index 同步更新"
+  ],
+  "estimated_hours": 2,
+  "completed_at": "2026-06-07T00:02:00Z",
+  "review": {
+    "reviewer": "master_main",
+    "reviewed_at": "2026-06-07T00:02:00Z",
+    "decision": "APPROVE",
+    "merged_to": "miao"
+  }
+}

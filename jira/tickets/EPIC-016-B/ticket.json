@@ -1,0 +1,27 @@
+{
+  "id": "EPIC-016-B",
+  "epicId": "EPIC-016",
+  "phaseId": "PHASE-001",
+  "title": "重写 kallax-init.md 收敛到「只读 1 文件 + 直跑脚本」",
+  "type": "refactor",
+  "priority": "P1",
+  "status": "done",
+  "created_by": "master_main",
+  "created_at": "2026-06-06T04:45:00Z",
+  "file_scope": {
+    "includes": [
+      "~/.claude/skills/kallax/skills/kallax-init.md",
+      "~/.claude/skills/kallax/SKILL.md"
+    ],
+    "excludes": []
+  },
+  "dependencies": ["EPIC-016-A"],
+  "acceptance_criteria": [
+    "kallax-init.md 指令收敛为:Step 1 用 Skill 工具加载自身,Step 2 直接 bash 跑 session_start.sh --role <role>,Step 3 报告身份",
+    "明确禁止:不读 META-GUIDELINES.md、不读 SKILL-DETAIL.md、不读 experts/ 下任何文件、不读 IDENTITY.md",
+    "kallax-init.md 长度 < 800 字节(当前 1011 字节)",
+    "SKILL.md 同步更新,标注 /kallax-init 的「lean mode」行为",
+    "用 benchmark-init.sh 验证:init 流程的 files_read 数量从 ~15 降到 ≤5"
+  ],
+  "estimated_hours": 0.5
+}

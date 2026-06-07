@@ -1,0 +1,83 @@
+{
+  "id": "EPIC-016-R",
+  "epicId": "EPIC-016",
+  "phaseId": "PHASE-001",
+  "title": "session_start.sh 永久卡死 — daemon stdio 全面防御 (含 zombie 循环 + 重定向标准 + Performer onboarding state-check)",
+  "type": "bug",
+  "priority": "P1",
+  "status": "done",
+  "created_by": "master_main",
+  "created_at": "2026-06-06T15:20:00Z",
+  "updated_at": "2026-06-06T15:25:00Z",
+  "performer": null,
+  "worktree": null,
+  "file_scope": {
+    "includes": [
+      ".kallax/hooks/session_start.sh",
+      "scripts/heartbeat-test.sh",
+      "scripts/check-stale.sh",
+      "scripts/heartbeat-daemon.sh",
+      "scripts/lib/daemon.sh",
+      "scripts/performer-session-init.sh",
+      "scripts/conductor-session-init.sh",
+      ".claude/skills/kallax/SKILL.md",
+      ".claude/skills/kallax/SKILL-DETAIL.md"
+    ],
+    "excludes": [
+      "node/src/**",
+      "rust/**",
+      ".kallax/instances/**",
+      ".kallax/logs/**"
+    ]
+  },
+  "dependencies": [],
+  "related": [
+    "EPIC-016-O",
+    "EPIC-016-P",
+    "EPIC-016-Q"
+  ],
+  "context": {
+    "incident_date": "2026-06-06",
+    "incident_severity_actual": "P1 (Product expert) — 100% 阻塞所有 kallax 开发者，1 天时长",
+    "incident_severity_ux": "P0 (UX expert) — 静默挂起，零反馈",
+    "root_cause_level": "L2 — 系统设计缺陷 (Architect)",
+    "fix_already_in_tree": ".kallax/hooks/session_start.sh:193 已含 >/dev/null 2>&1 & (uncommitted)",
+    "verified": "time bash session_start.sh = 0.685s, 8 个 heartbeat 进程健康",
+    "secondary_gap_2026-06-06T15:25": "用户报告: /kallax 初始化为Performer 时只 load skill + 几次 ls, 没有 state-check 流程. SKILL.md 'Performer: 自动引导 EnterWorktree' 只有一句话, 实际无协议. session_start.sh 给的 NEXT='inbox check / claim card / EnterWorktree' 是 hint 不是 protocol. 扩展 EPIC-016-R 范围覆盖 onboarding state-check 缺口."
+  },
+  "acceptance_criteria": [
+    "AC1: heartbeat-test.sh lines 99, 178 补 >/dev/null 2>&1（与 session_start.sh:193 同模式 bug，未修）",
+    "AC2: session_start.sh:193 升级为 `< /dev/null >/dev/null 2>&1 &`（Architect 建议：补 stdin 重定向防御）",
+    "AC3: 提取 scripts/lib/daemon.sh 标准函数 run_daemon()，封装「stdin/stdout/stderr 三件套 + setsid + disown」四要素，session_start.sh 和 heartbeat-test.sh 全部改用 run_daemon()",
+    "AC4: session_start.sh 加 SIGINT/SIGTERM/EXIT trap，启动时把 heartbeat_daemon_pid 写进 state.json，退出时 kill 该 PID 并标 state.json 为 CLOSING（防止 Ctrl-C 后 zombie 循环）",
+    "AC5: check-stale.sh 加 kill -0 PID 存活检查：daemon 死但 state ACTIVE 判为 ZOMBIE 状态，单独 log 行（与 EPIC-016-O 配合）",
+    "AC6: session_start.sh 加结构化诊断日志：trap EXIT 写 {ts, event, exit_code, instance, pid, heartbeat_daemon_pid} 到 .kallax/logs/session_start.diag.jsonl",
+    "AC7: 「首启动跳过心跳」优化要么加显式 opt-in flag（KALLAX_SKIP_HEARTBEAT_ON_FIRST_BOOT=0 关闭），要么改成「按需启动」（仅 STALE master 存在时守护）—— 任选其一，但必须有显式选择和文档",
+    "AC8: 写 scripts/test-no-hang.sh 回归测试：跑 N=10 次 session_start.sh，断言每次 < 1s 退出，且无残留 heartbeat 进程（EPIC-016 性能门禁）",
+    "AC9: .kallax/instances/ 现有 38 个僵尸实例，cleanup.sh 一键归档到 .kallax/instances/.archive/ 目录（不是删除，保留可追溯）",
+    "AC10: bash -n 语法检查 + manual time bash .kallax/hooks/session_start.sh = < 0.5s 实测",
+    "AC11: 提交 commit message 必须包含 incident_date + root_cause 链接，方便 git log 追溯",
+    "AC12: 新建 scripts/performer-session-init.sh，Performer 启动时自动执行 4 步 state-check 协议（详见 README §Performer Onboarding Protocol）：(a) 项目状态扫描：当前 EPIC、master 状态、ready tickets 列表；(b) session 状态扫描：当前 branch、worktree、是否在 feature/* 分支；(c) 候选 ticket 排序：按优先级 + 关键字匹配 + 锁定工时；(d) 用户确认后自动 claim + EnterWorktree + 写 state.json",
+    "AC13: 新建 scripts/conductor-session-init.sh，Conductor 启动时自动执行 3 步 state-check：(a) 扫描所有 in_progress performers；(b) 扫描 inbox 队列；(c) 显示待审 PR + 阻塞项（替换 SKILL.md 里 'Conductor: 团队状态/任务派发' 的一句话）",
+    "AC14: 同步更新 .claude/skills/kallax/SKILL.md：把 '如果是 Performer: 自动引导 EnterWorktree' 一句话扩成完整 'Performer Onboarding Protocol' 章节，含 4 步流程 + 失败兜底",
+    "AC15: 同步更新 .claude/skills/kallax/SKILL-DETAIL.md：新增 '## Performer 初始化协议' 章节，给出标准输出示例（参见 README §附录 A）",
+    "AC16: 写 scripts/test-performer-onboarding.sh 回归测试：模拟 4 个场景 (a) 全新项目无 EPIC → 引导用户初始化 (b) 有 master + ready tickets → 列出 3 个候选 (c) 已在 feature 分支有 in_progress → 提示继续而非重 claim (d) 无 master → 警告 + 引导用户初始化 master",
+    "AC17: 手动验证：在另一 session 跑 /kallax 初始化为Performer，预期看到 4 段自动输出：项目状态卡 + session 状态卡 + 候选 ticket 表 + EnterWorktree 引导"
+  ],
+  "estimated_hours": 5.0,
+  "implementation_hints": {
+    "AC3_run_daemon_signature": "run_daemon <name> <script> [args...] -> writes PID to $STATE_FILE.heartbeat.${name}_pid, returns 0 on success, 1 on failure within 3s timeout",
+    "AC7_first_boot_skip_alternative": "推荐方案 B：检查 INSTANCES_DIR 中是否存在 status=STALE 的 master_main/state.json，存在才启动守护；否则跳过",
+    "AC8_regression_test_template": "for i in {1..10}; do start=$(date +%s%N); bash .kallax/hooks/session_start.sh >/dev/null 2>&1; end=$(date +%s%N); [ $(( (end-start)/1000000 )) -lt 1000 ] || FAIL; done",
+    "AC12_performer_init_protocol": "见 README.md §Performer Onboarding Protocol 章节（即将随 AC15 同步补充）",
+    "AC16_test_scenarios_signature": "test_performer_onboarding <scenario_name> → assert that the actual init output matches the expected fixture"
+  },
+  "completed_at": "2026-06-07T14:25:00Z",
+  "review": {
+    "reviewer": "master_main",
+    "reviewed_at": "2026-06-07T14:25:00Z",
+    "decision": "APPROVE",
+    "merge_commit": "b7db764",
+    "note": "performer misrouted to main, master recovered by re-isolating to worktree"
+  }
+}

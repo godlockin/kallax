@@ -1,0 +1,39 @@
+{
+  "id": "EPIC-016-P",
+  "epicId": "EPIC-016",
+  "phaseId": "PHASE-001",
+  "title": "per-project 脚本自举 — lean skill 缺脚本时单调用完成 install + run",
+  "type": "bug",
+  "priority": "P1",
+  "status": "done",
+  "created_by": "master_main",
+  "created_at": "2026-06-06T06:00:00Z",
+  "file_scope": {
+    "includes": [
+      "~/.claude/skills/kallax/skills/kallax-init.md",
+      "~/.claude/skills/kallax/scripts/install-hooks.sh"
+    ],
+    "excludes": []
+  },
+  "dependencies": [
+    "EPIC-016-J"
+  ],
+  "acceptance_criteria": [
+    "识别根因:lean skill 在 per-project 缺脚本时不能 1-call 完成",
+    "方案 A:lean skill 改成 1-call,内含 if ! exist then install else run 的逻辑,heredoc 自带脚本内容",
+    "方案 B:写 scripts/install-hooks.sh,lean skill 在检测缺失时调它(1 call)",
+    "方案 C:把 session_start.sh 移回 ~/.claude/skills/kallax/hooks/ 作为 global,session_start.sh 自适应到当前 .kallax/",
+    "推荐 A (最小改动),B 是 fallback",
+    "验证:在干净 my_projects 跑 /kallax 初始化为master,tool calls = 1(包括 install + run)"
+  ],
+  "estimated_hours": 2,
+  "notes": "本次 my_projects init 触发:5 tool calls = 4 探索 + 1 bash install+run。修后应 ≤ 2",
+  "completed_at": "2026-06-07T15:35:00Z",
+  "review": {
+    "reviewer": "master_main",
+    "reviewed_at": "2026-06-07T15:35:00Z",
+    "decision": "APPROVE",
+    "merge_commit": "b3c4a1e",
+    "note": "performer blocked by permissions, master实施 directly"
+  }
+}

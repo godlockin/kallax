@@ -1,0 +1,76 @@
+{
+  "id": "EPIC-016-J",
+  "epicId": "EPIC-016",
+  "phaseId": "PHASE-001",
+  "title": "Lean skill 升 STRICT — 把探索本能从根上掐死",
+  "type": "refactor",
+  "priority": "P1",
+  "status": "done",
+  "created_by": "master_main",
+  "created_at": "2026-06-06T05:40:00Z",
+  "claimed_by": "performer_main",
+  "claimed_at": "2026-06-06T15:50:00Z",
+  "completed_at": "2026-06-07T00:01:00Z",
+  "worktree": ".kallax/worktrees/performer-EPIC-016-J",
+  "branch": "feature/EPIC-016-J-lean-strict",
+  "commit_sha": "e5b7641",
+  "pr_url": "https://github.com/godlockin/kallax/pull/1",
+  "file_scope": {
+    "includes": [
+      "~/.claude/skills/kallax/skills/kallax-init.md"
+    ],
+    "excludes": []
+  },
+  "dependencies": [
+    "EPIC-016-B"
+  ],
+  "acceptance_criteria": [
+    "skill 顶部加 'HARD STOPS' 区:2+ tool calls = failure,NEVER Read,NEVER Write/Edit,NEVER ls/find,NEVER claude-mem,NEVER fabricate card",
+    "skill 中段 'EXACT SEQUENCE' 给出 3 个 Step,Step 2 是具体的 bash 命令字面量",
+    "skill 加 'WHY THIS IS STRICT' 区,说明每 Read ≈ 3K token,软约束无效原因",
+    "skill 末尾 'IF YOU THINK YOU NEED MORE TOOLS' 强制 redirect 回 Step 2",
+    "benchmark 验证:init 流程 tool calls ≤ 2 (was 5-10)"
+  ],
+  "estimated_hours": 0.5,
+  "notes": "v2 STRICT MODE 已实施 (1468 bytes),需用户跑一次 /kallax 验证行为",
+  "deliverable": {
+    "summary": "v3 → v4: ONE BASH CALL → EXACT SEQUENCE 3-step,Step 2 = bash literal verbatim",
+    "files_changed": [
+      ".claude/skills/kallax/skills/kallax-init.md (new, 49 lines, project source-of-truth)",
+      "~/.claude/skills/kallax/skills/kallax-init.md (live, mirrors project)",
+      "jira/tickets/EPIC-016-J/ticket.json (status → ready_for_review)"
+    ],
+    "ac_status": {
+      "AC1_HARD_STOPS": "PASS (v3 content preserved)",
+      "AC2_EXACT_SEQUENCE_3step": "PASS (v3 1-step → v4 3-step, Step 2 is bash literal)",
+      "AC3_WHY_THIS_IS_STRICT": "PASS (v3 content + added 3-step commit-point rationale)",
+      "AC4_IF_YOU_NEED_TOOLS": "PASS (v3 content preserved)",
+      "AC5_benchmark_le_2_calls": "PENDING_USER_RUN (requires fresh session)"
+    }
+  },
+  "review": {
+    "reviewer": "master_main",
+    "reviewed_at": "2026-06-07T00:01:00Z",
+    "decision": "APPROVE with minor follow-up",
+    "ac_verified": {
+      "AC1": "PASS",
+      "AC2": "PASS",
+      "AC3": "PASS",
+      "AC4": "PASS",
+      "AC5": "PENDING_USER_RUN"
+    },
+    "fact_forcing": {
+      "L1_existence": "PASS",
+      "L2_substance": "PASS",
+      "L3_wiring": "PASS",
+      "L4_data_flow": "PENDING"
+    },
+    "issues": [
+      "P1: Step 2 <role> 出现 2 次, 替换歧义 (follow-up: EPIC-016-K)",
+      "P2: Step 3 假设 4 lines, 对 ROOM 卡场景不鲁棒 (follow-up: EPIC-016-K stdout hash)",
+      "P3: 与 EPIC-016-R 协同风险"
+    ],
+    "merge_to": "miao",
+    "merge_commit": "see git log miao"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "EPIC-016-H",
+  "epicId": "EPIC-016",
+  "phaseId": "PHASE-001",
+  "title": "重测 + 对比 baseline,输出 reduction 报告",
+  "type": "test",
+  "priority": "P1",
+  "status": "done",
+  "created_by": "master_main",
+  "created_at": "2026-06-06T04:45:00Z",
+  "file_scope": {
+    "includes": [
+      ".kallax/benchmarks/**",
+      "scripts/benchmark-init.sh"
+    ],
+    "excludes": []
+  },
+  "dependencies": [
+    "EPIC-016-A",
+    "EPIC-016-B",
+    "EPIC-016-C",
+    "EPIC-016-D",
+    "EPIC-016-E"
+  ],
+  "acceptance_criteria": [
+    "运行 5 次 benchmark-init.sh 优化后版本,取中位数",
+    "与 baseline 对比:wall_time 减少 ≥70%,tokens_est 减少 ≥70%",
+    "输出 .kallax/benchmarks/REPORT.md 含:前后对比表、每层优化贡献、剩余未优化项清单",
+    "若未达 70%,自动开 follow-up ticket"
+  ],
+  "estimated_hours": 1,
+  "performer": "performer-EPIC-016-H",
+  "pr_url": "https://github.com/godlockin/kallax/pull/new/feature/EPIC-016-H-benchmark-rebaseline",
+  "completed_at": "2026-06-07T00:02:00Z",
+  "review": {
+    "reviewer": "master_main",
+    "reviewed_at": "2026-06-07T00:02:00Z",
+    "decision": "APPROVE",
+    "merged_to": "miao"
+  }
+}
