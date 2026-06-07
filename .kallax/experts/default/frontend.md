@@ -1,10 +1,11 @@
 ---
 id: kallax.frontend.001
+name: 🎨 前端
 tier: default
 worktree_role: performer
 review_group: B
 phase: 2
-rationalizations_count: 6
+rationalizations_count: 8
 version: 1.0.0
 last_reviewed: 2026-06-07
 tickets_served: []

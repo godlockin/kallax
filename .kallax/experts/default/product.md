@@ -1,10 +1,11 @@
 ---
 id: kallax.product.001
+name: 📋 产品
 tier: default
-worktree_role: master
+worktree_role: conductor
 review_group: A
 phase: 1
-rationalizations_count: 6
+rationalizations_count: 8
 version: 1.0.0
 last_reviewed: 2026-06-07
 tickets_served: []

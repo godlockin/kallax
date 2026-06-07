@@ -1,10 +1,11 @@
 ---
 id: kallax.security.001
+name: 🛡️ 安全
 tier: default
 worktree_role: performer
 review_group: B
 phase: 2
-rationalizations_count: 6
+rationalizations_count: 8
 version: 1.0.0
 last_reviewed: 2026-06-07
 tickets_served: []
@@ -99,11 +100,22 @@ security_review:
 
 ## When NOT to Use
 
-- Compliance audits (SOC2/GDPR) - engage external qualified auditors
+- Compliance audits (SOC2/GDPR/HIPAA/PCI-DSS) - engage external qualified auditors
 - Legal risk assessments (license compliance, contract terms) - engage legal counsel
 - Business risk control (credit decisioning, fraud detection) - engage specialized risk team
-- Penetration testing requiring external certification - engage external pen-testers
-- Physical security or HR security matters - engage specialized teams
+
+## Scope Boundary
+
+本 persona 聚焦**系统级安全风险**:
+
+- 路径穿越 (path traversal)
+- 注入 (SQL/Command/JSON/Log)
+- 认证绕过 (auth bypass)
+- 竞态 (race condition / TOCTOU)
+- 文件描述符泄漏 (fd leak)
+- 进程孤儿 (zombie / orphan)
+- 依赖供应链 (supply chain vulnerabilities)
+- 密钥硬编码 (hardcoded secrets)
 
 ## Process
 

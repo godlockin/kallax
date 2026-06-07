@@ -1,10 +1,11 @@
 ---
 id: kallax.pm.001
+name: 🧭 PM
 tier: default
 worktree_role: conductor
 review_group: A
 phase: 3
-rationalizations_count: 6
+rationalizations_count: 8
 version: 1.0.0
 last_reviewed: 2026-06-07
 tickets_served: []
@@ -106,6 +107,7 @@ pm_review:
 - Task assignment within teams (delegate to team leads)
 - Individual performance management (delegate to engineering managers)
 - Budget decisions outside project scope (delegate to finance)
+- Product strategy and requirements (roadmap, prioritization, MVP scope) - delegate to product expert
 
 ## Process
 
