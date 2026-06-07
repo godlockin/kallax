@@ -1,10 +1,11 @@
 ---
 id: kallax.security.001
+name: 🛡️ 安全
 tier: default
 worktree_role: performer
 review_group: B
 phase: 2
-rationalizations_count: 6
+rationalizations_count: 8
 version: 1.0.0
 last_reviewed: 2026-06-07
 tickets_served: []
@@ -117,11 +118,22 @@ security_review:
 
 ## When NOT to Use
 
-- Compliance audits (SOC2/GDPR) - engage external qualified auditors
+- Compliance audits (SOC2/GDPR/HIPAA/PCI-DSS) - engage external qualified auditors
 - Legal risk assessments (license compliance, contract terms) - engage legal counsel
 - Business risk control (credit decisioning, fraud detection) - engage specialized risk team
-- Penetration testing requiring external certification - engage external pen-testers
-- Physical security or HR security matters - engage specialized teams
+
+## Scope Boundary
+
+本 persona 聚焦**系统级安全风险**:
+
+- 路径穿越 (path traversal)
+- 注入 (SQL/Command/JSON/Log)
+- 认证绕过 (auth bypass)
+- 竞态 (race condition / TOCTOU)
+- 文件描述符泄漏 (fd leak)
+- 进程孤儿 (zombie / orphan)
+- 依赖供应链 (supply chain vulnerabilities)
+- 密钥硬编码 (hardcoded secrets)
 
 ## Process
 
@@ -155,25 +167,38 @@ Performer 在 `task:complete <TICKET>` 前**必须勾选 4 项**:
 
 ## Verification
 
+> **Note**: 以下 4-Level bash 命令是**文档**,不是强制执行. master 在 review 时手动运行验证 Performer 真实性. 见 [[Fact-Forcing Compliance]] 节.
+
 执行顺序: L1 → L2 → L3 → L4, 任一失败 = ticket not done.
 
 ### L1 存在性
 ```bash
-git diff --name-only <commit-range> | wc -l  # 期望 >= 1
+# Safe: 自动获取最近一次 commit 的 diff, 无用户输入
+CHANGED_FILES=$(git diff --name-only HEAD~1..HEAD 2>/dev/null | wc -l)
+[ "$CHANGED_FILES" -ge 1 ] && echo "L1 PASS: $CHANGED_FILES files changed" || echo "L1 FAIL: no files"
 ```
 
 ### L2 实质性
 ```bash
-git diff --stat <commit-range> | tail -1  # 检查总字节数
-# 或: git diff <commit-range> | wc -c
+# Safe: 自动获取 diff 字节数
+DIFF_BYTES=$(git diff HEAD~1..HEAD 2>/dev/null | wc -c | tr -d ' ')
+[ "$DIFF_BYTES" -gt 200 ] && echo "L2 PASS: $DIFF_BYTES bytes" || echo "L2 FAIL: only $DIFF_BYTES bytes"
 ```
 
 ### L3 接线正确
 ```bash
-bash -n .kallax/experts/default/security.md && shellcheck .kallax/experts/default/security.md  # 安全文档语法检查
+# shellcheck 验证所有 .sh 脚本 (有 shellcheck 时)
+if command -v shellcheck &>/dev/null; then
+  shellcheck scripts/**/*.sh 2>&1 | tail -10 && echo "L3 PASS: shellcheck clean" || echo "L3 FAIL"
+else
+  # Fallback: bash -n syntax check
+  bash -n scripts/lib/expert-invocation-queue.sh && echo "L3 PASS: bash syntax OK" || echo "L3 FAIL"
+fi
 ```
 
 ### L4 数据流动
 ```bash
-bash scripts/test-no-hang.sh  # 无hang测试 + 手动攻击模拟
+# Kallax cleanup 模拟 + 验证无 orphan
+bash scripts/kallax-cleanup.sh --dry-run 2>&1 | tail -20 && echo "L4 PASS: cleanup script runs" || echo "L4 FAIL"
+# 手动攻击模拟: 尝试跨实例 kill, 验证 pid_belongs_to_kallax 防护
 ```

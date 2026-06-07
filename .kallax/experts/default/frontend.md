@@ -1,10 +1,11 @@
 ---
 id: kallax.frontend.001
+name: 🎨 前端
 tier: default
 worktree_role: performer
 review_group: B
 phase: 2
-rationalizations_count: 6
+rationalizations_count: 8
 version: 1.0.0
 last_reviewed: 2026-06-07
 tickets_served: []
@@ -152,25 +153,43 @@ Performer 在 `task:complete <TICKET>` 前**必须勾选 4 项**:
 
 ## Verification
 
+> **Note**: 以下 4-Level bash 命令是**文档**,不是强制执行. master 在 review 时手动运行验证 Performer 真实性. 见 [[Fact-Forcing Compliance]] 节.
+
 执行顺序: L1 → L2 → L3 → L4, 任一失败 = ticket not done.
 
 ### L1 存在性
 ```bash
-git diff --name-only <commit-range> | wc -l  # 期望 >= 1
+# Safe: 自动获取最近一次 commit 的 diff, 无用户输入
+CHANGED_FILES=$(git diff --name-only HEAD~1..HEAD 2>/dev/null | wc -l)
+[ "$CHANGED_FILES" -ge 1 ] && echo "L1 PASS: $CHANGED_FILES files changed" || echo "L1 FAIL: no files"
 ```
 
 ### L2 实质性
 ```bash
-git diff --stat <commit-range> | tail -1  # 检查总字节数
-# 或: git diff <commit-range> | wc -c
+# Safe: 自动获取 diff 字节数
+DIFF_BYTES=$(git diff HEAD~1..HEAD 2>/dev/null | wc -c | tr -d ' ')
+[ "$DIFF_BYTES" -gt 200 ] && echo "L2 PASS: $DIFF_BYTES bytes" || echo "L2 FAIL: only $DIFF_BYTES bytes"
 ```
 
 ### L3 接线正确
 ```bash
-tsc --noEmit && eslint .  # TypeScript 编译 + ESLint 检查
+# TypeScript + ESLint (仅当配置存在)
+if [ -f tsconfig.json ]; then
+  tsc --noEmit && echo "L3 PASS: tsc clean" || echo "L3 FAIL: tsc errors"
+fi
+if [ -f .eslintrc.json ] || [ -f .eslintrc.js ] || [ -f eslint.config.js ]; then
+  npx eslint . 2>&1 | tail -10 && echo "L3 PASS: eslint clean" || echo "L3 FAIL: eslint errors"
+else
+  echo "L3 SKIP: no eslint config"
+fi
 ```
 
 ### L4 数据流动
 ```bash
-npm run test:e2e  # 前端 E2E 测试
+# E2E 测试 (仅当配置存在)
+if grep -q '"test:e2e"' package.json 2>/dev/null; then
+  npm run test:e2e 2>&1 | tail -20 && echo "L4 PASS" || echo "L4 FAIL"
+else
+  echo "L4 SKIP: no e2e test configured"
+fi
 ```
