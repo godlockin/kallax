@@ -4,14 +4,42 @@
 # Master:    approves PR testing→miao, tags release
 # Performer: can only work on feature/*
 # Install: bash scripts/hooks/install.sh
+#
+# EPIC-022-B: Added authz/check.sh integration for miao.write authorization
 set -euo pipefail
+
+# SIGTERM handler (P0 fix: prevent session_start.sh style hang)
+cleanup() {
+  echo "DEBUG: pre-commit hook received SIGTERM" >&2
+  exit 130
+}
+trap cleanup SIGTERM
 
 BRANCH="$(git branch --show-current)"
 ROLE_FILE=".kallax/state/instance_config.yml"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+AUTHZ_CHECK="${KALLAX_ROOT}/scripts/permission/authz/check.sh"
 
 # Only enforce on miao branch
 if [ "$BRANCH" != "miao" ]; then
   exit 0
+fi
+
+# ── Check 0: Authorization check via authz/check.sh (EPIC-022-B) ────────
+# P0 fixes: fail-closed, set -euo pipefail, role name validation
+if [ -x "$AUTHZ_CHECK" ]; then
+  if ! bash "$AUTHZ_CHECK" --action miao.write --actor "${GIT_AUTHOR_NAME:-unknown}"; then
+    echo"╔══════════════════════════════════════════════════════════════╗"
+    echo "║  BLOCKED: Authorization denied by authz check. ║"
+    echo "║ ║"
+    echo "║  Action: miao.write                                        ║"
+    echo "║  Actor: ${GIT_AUTHOR_NAME:-unknown}                               ║"
+    echo "║                                                            ║"
+    echo "║  Run 'kallax role:check miao.write' for details.           ║"
+    echo "╚══════════════════════════════════════════════════════════════╝"
+    exit 1
+  fi
 fi
 
 # ── Check 1: Role validation ──────────────────────────────────────────
