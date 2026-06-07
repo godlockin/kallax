@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# scripts/expert-match.sh — L1 Expert Matching for KALLAX
+# scripts/expert-match.sh — DEPRECATED Wrapper for KALLAX
 #来源: EXPERT-EXTENSION-SCHEME §2.3
-# Sprint 1 (L1 only) — L2/L3 留 Sprint 2/3
+# DEPRECATED: Use kallax-expert-match (Rust binary) instead
+# This wrapper exists for backward compatibility only
 
 set -euo pipefail
 
@@ -9,15 +10,26 @@ REQ="${1:-}"
 if [ -z "$REQ" ]; then
   echo "Usage: bash scripts/expert-match.sh \"<requirement>\""
   echo "Example: bash scripts/expert-match.sh \"接口慢怎么优化\""
+  echo ""
+  echo "WARNING: This script is deprecated. Use the Rust binary instead:"
+  echo "  ./rust/target/release/kallax-expert-match \"<requirement>\""
   exit 1
 fi
 
-KALLAX_ROOT="${KALLAX_ROOT:-.kallax}"
-EXPERT_DIR="${KALLAX_ROOT}/experts/default"
-AUDIT_LOG="${HOME}/.kallax/logs/expert_resolution_audit.jsonl"
-mkdir -p "$(dirname "$AUDIT_LOG")"
+# Resolve to Rust binary
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+BIN="${REPO_ROOT}/rust/target/release/kallax-expert-match"
 
-START_MS=$(($(date +%s%N) / 1000000))
+# Check if binary exists
+if [ ! -f "$BIN" ]; then
+  echo "Error: Rust binary not found at $BIN" >&2
+  echo "Please run: cd rust && cargo build --release -p kallax-cli --bin kallax-expert-match" >&2
+  exit 1
+fi
+
+# Delegate to Rust binary
+exec "$BIN" "$@"
 
 # score_expert <expert_md> <requirement>: returns score0-100
 score_expert() {
