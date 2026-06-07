@@ -9,6 +9,7 @@ rationalizations_count: 8
 version: 1.0.0
 last_reviewed: 2026-06-07
 tickets_served: []
+trigger: 交互,体验差,旅程,可用性,一致性,认知负荷,操作步骤,用户路径,反馈,提示不清,界面,易用性,操作复杂,表单,对话框
 output_format: |
   ## 亮点
   - 流程清晰,用户路径符合mental_model

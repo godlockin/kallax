@@ -426,6 +426,37 @@ printf '│ NEXT     ▸ %s\n' "${NEXT}"
 printf '└────────────────────────────────────────\n'
 
 # ============================================================
+# EXPERT MATCHER READY — EPIC-024-A Sprint 1
+# ============================================================
+EXPERT_MATCHER_READY="false"
+if [ -f "$(pwd)/scripts/expert-match.sh" ]; then
+  EXPERT_MATCHER_READY="true"
+fi
+
+if [ "${EXPERT_MATCHER_READY}" = "true" ]; then
+  cat << 'EXPERT_READY'
+
+┌─ EXPERT MATCHER READY ─────────────────────
+│ 5 Default Experts (with trigger: fields):
+│   🏗️ architect  — 架构/边界/选型/微服务/模块
+│   💻 backend    — API/数据库/SQL/缓存/性能
+│   🎨 frontend  — 组件/渲染/LCP/状态/包体积
+│   🖌️ ux         — 交互/旅程/体验/可用性
+│   📋 product   — 优先级/价值/ROI/MVP
+│  🛡️ security   — 注入/越权/XSS/鉴权
+│   🧭 pm — 跨团队/任务规划/协调
+│
+│ Usage: bash scripts/expert-match.sh "<你的需求>"
+│ Example: bash scripts/expert-match.sh "接口响应很慢"
+│
+│ L1 Decision Tree: experts/TRIGGERS.md
+│ Audit Log: ~/.kallax/logs/expert_resolution_audit.jsonl
+└────────────────────────────────────────
+
+EXPERT_READY
+fi
+
+# ============================================================
 # Logging
 # ============================================================
 echo "${NOW} | START | role=${ROLE} | instance=${INSTANCE_ID} | branch=${BRANCH} | worktree=${IN_WORKTREE}" >> "${LOG_DIR}/${INSTANCE_ID}.log"
