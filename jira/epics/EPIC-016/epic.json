@@ -99,8 +99,8 @@
     },
     {
       "id": "EPIC-016-N",
-      "assignee": null,
-      "status": "ready",
+      "assignee": "performer-EPIC-016-N",
+      "status": "done",
       "blocked_by": [
         "EPIC-016-R",
         "EPIC-016-J"
