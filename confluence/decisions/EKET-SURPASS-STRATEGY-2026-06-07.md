@@ -32,6 +32,13 @@
 > EKET 的护城河是工程化质量门禁 (anatomy check + codemod),
 > KALLAX 的护城河是 **运行时约束 (worktree + heartbeat + 4-Level Fact-Forcing + 2-Group review)** — 静态文档无法伪造"已验证"。
 
+**用户决策 (2026-06-07 拍板)**:
+- **专家数量 = 7** (非 5): 5 现有 + Security (系统风险) + PM/Conductor (任务规划+ensuring). 7 维覆盖: 业务价值/技术实现/风险和漏洞/交互和使用/可实现性/任务规划+ensuring/前端实现
+- **Security 边界**: 聚焦系统风险 (path traversal/injection/auth/race/fd 泄漏). 合规 (SOC2/GDPR) 和法律 (许可证/合同) 用 `When NOT to Use` 节文档化, 走外部专家
+- **降级链 (F ticket)**: Redis Stream → SQLite expert_invocations → `.kallax/queue/expert_invocations.jsonl`. 写盘 by default, 队列兜底
+- **顺序**: A 先, BCDE 并行 (A 完成后), F 独立
+- **治理**: 全 ticket 走 A+B 2-Group review (跟 EPIC-016 一致)
+
 ---
 
 ## 2. KALLAX 5 维独有优势 (EKET 完全缺失)
@@ -287,14 +294,34 @@ Layer 3 (Sprint 10+, 1 月, 8h)
 
 | Ticket | 文件 | 估时 | 依赖 |
 |---|---|---|---|
-| **EPIC-021-A** `experts/default/{architect,backend,frontend,ux,product}.md` 5 文件, KALLAX 专属字段 | 新建 5 文件 | 1.5h | 无 |
-| **EPIC-021-B** `experts/INDEX.md` 症状决策树 + 8 emoji (含 5 扩展) | 新建 1 文件 | 0.5h | A |
-| **EPIC-021-C** output_format 4 节统一 (改 A 5 文件) | 改 5 文件 | 0.3h | A |
-| **EPIC-021-D** Fact-Forcing 4-Level 嵌入 (改 A 5 文件) | 改 5 文件 | 0.3h | A |
-| **EPIC-021-E** `scripts/check-skill-anatomy.sh` KALLAX 专属 6 项校验 | 新建 1 脚本 | 0.5h | A |
-| **EPIC-021-F** `state.json` expert_invocations 扩展 + heartbeat 写盘 | 改 1 文件 + heartbeat-daemon | 1h | 无 |
+| **EPIC-021-A** `experts/default/{architect,backend,frontend,ux,product,security,pm}.md` **7** 文件, KALLAX 专属字段 | 新建 7 文件 | 1.8h | 无 |
+| **EPIC-021-B** `experts/INDEX.md` 症状决策树 + 10 emoji (7 核心 + 3 治理) | 新建 1 文件 | 0.5h | A |
+| **EPIC-021-C** output_format 4 节统一 (改 A 7 文件) | 改 7 文件 | 0.4h | A |
+| **EPIC-021-D** Fact-Forcing 4-Level 嵌入 (改 A 7 文件) | 改 7 文件 | 0.4h | A |
+| **EPIC-021-E** `scripts/check-skill-anatomy.sh` KALLAX 专属 6+ 项校验 | 新建 1 脚本 | 0.6h | A |
+| **EPIC-021-F** `state.json` expert_invocations + 降级链 (Redis→SQLite→file) | 改 state.json + heartbeat-daemon + new queue 脚本 | 1.5h | 无 |
 
-**总估时**: 4.1h, **比 EKET 6h 评估更短** (因 KALLAX heartbeat 已存在, 复用现有基础设施)。
+**总估时**: 5.2h, **比 EKET 6h 评估更短** (因 KALLAX heartbeat 已存在, 复用现有基础设施).
+
+**依赖图**:
+```
+A ─┬─ B
+   ├─ C
+   ├─ D
+   └─ E
+F (独立, 跟 A 一起开始)
+```
+
+**7 expert 角色定义**:
+| ID | 角色 | worktree_role | review_group | phase | 何时用 |
+|---|---|---|---|---|---|
+| `kallax.architect.001` | 架构 | master | A | 1 | 边界/选型争议 |
+| `kallax.backend.001` | 后端 | performer | A | 2 | 接口慢/DB 撑不住 |
+| `kallax.frontend.001` | 前端 | performer | B | 2 | 页面卡/组件乱 |
+| `kallax.ux.001` | UX | performer | B | 2 | 交互难用/流程不顺 |
+| `kallax.product.001` | 产品 | master | A | 1 | 功能优先级/砍哪个 |
+| `kallax.security.001` | 安全 | performer | B | 2 | 系统风险 (path/inject/auth/race/fd) |
+| `kallax.pm.001` | PM/Conductor | conductor | A | 3 | 任务规划+ensuring (跨 ticket 协调) |
 
 ---
 
