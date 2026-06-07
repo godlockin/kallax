@@ -1,0 +1,37 @@
+{
+  "id": "EPIC-016-K",
+  "epicId": "EPIC-016",
+  "phaseId": "PHASE-001",
+  "title": "ASCII card 验证 — 加 stdout hash 比对,禁止幻觉渲染",
+  "type": "test",
+  "priority": "P1",
+  "status": "done",
+  "performer": "performer_StevendeMacBook-Pro.local_50326",
+  "pr_url": "https://github.com/godlockin/kallax/pull/2",
+  "created_by": "master_main",
+  "created_at": "2026-06-06T05:40:00Z",
+  "file_scope": {
+    "includes": [
+      "~/.claude/skills/kallax/skills/kallax-init.md",
+      "scripts/benchmark-init.sh"
+    ],
+    "excludes": []
+  },
+  "dependencies": [
+    "EPIC-016-J"
+  ],
+  "acceptance_criteria": [
+    "skill 增加 'REPORT ONLY SCRIPT OUTPUT' 条款,明示 ASCII card 必须 verbatim 复制脚本 stdout",
+    "benchmark-init.sh 输出 session_start.sh stdout 的 sha256 hash,作为 'expected output fingerprint'",
+    "用户在 init 后粘贴 ASCII card,人工对比 hash (1 次性 SOP)",
+    "如果未来要做自动化:加一个 claude-mem observation 记录 'agent output hash != script output hash = deviation'"
+  ],
+  "estimated_hours": 0.5,
+  "completed_at": "2026-06-07T02:00:00Z",
+  "review": {
+    "reviewer": "master_main",
+    "reviewed_at": "2026-06-07T02:00:00Z",
+    "decision": "APPROVE",
+    "merge_note": "K branched from pre-J miao, merge replaced J file with K superset (J 49 + K 24)"
+  }
+}
