@@ -13,34 +13,31 @@ INSTANCES_DIR="${KALLAX_ROOT}/instances"
 
 # check_1: fd 0/1/2 全部指向 tty 或 file, 不指向 pipe
 check_fd_safety() {
-  # 检查 fd 0 (stdin)
-  if [ -e "/dev/stdin" ]; then
-    if [ ! -t "/dev/stdin" ]; then
-      # 不是 tty, 检查是否是 pipe/FIFO
-      if [ -p "/dev/stdin" ] 2>/dev/null; then
-        echo "[safety] FAIL: fd 0 (stdin) is a pipe/FIFO — risk of blocking" >&2
-        return 1
-      fi
+  # 使用 -t 检查 fd 编号 (不是路径)
+  # -t 0 = stdin, -t 1 = stdout, -t 2 = stderr
+
+  # 检查 fd 0 (stdin) - 如果存在且不是 tty, 警告
+  if [ -e "/dev/stdin" ] && [ ! -t 0 ]; then
+    # 不是 tty, 可能是 pipe
+    if [ -p "/dev/stdin" ]; then
+      echo "[safety] FAIL: fd 0 (stdin) is a pipe/FIFO — risk of blocking" >&2
+      return 1
     fi
   fi
 
   # 检查 fd 1 (stdout) — 如果不是 tty 且是 pipe, 警告
-  if [ -e "/dev/stdout" ]; then
-    if [ ! -t "/dev/stdout" ]; then
-      if [ -p "/dev/stdout" ] 2>/dev/null; then
-        echo "[safety] WARN: fd 1 (stdout) is a pipe — may block if reader closes" >&2
-        # Warning 不是 fail-closed, 继续
-      fi
+  if [ -e "/dev/stdout" ] && [ ! -t 1 ]; then
+    if [ -p "/dev/stdout" ]; then
+      echo "[safety] WARN: fd 1 (stdout) is a pipe — may block if reader closes" >&2
+      # Warning 不是 fail-closed, 继续
     fi
   fi
 
   # 检查 fd 2 (stderr)
-  if [ -e "/dev/stderr" ]; then
-    if [ ! -t "/dev/stderr" ]; then
-      if [ -p "/dev/stderr" ] 2>/dev/null; then
-        echo "[safety] FAIL: fd 2 (stderr) is a pipe/FIFO — risk of blocking" >&2
-        return 1
-      fi
+  if [ -e "/dev/stderr" ] && [ ! -t 2 ]; then
+    if [ -p "/dev/stderr" ]; then
+      echo "[safety] FAIL: fd 2 (stderr) is a pipe/FIFO — risk of blocking" >&2
+      return 1
     fi
   fi
 

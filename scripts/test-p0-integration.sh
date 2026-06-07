@@ -51,13 +51,14 @@ test_sessions_no_hang() {
     start_time=$(date +%s)
 
     # 模拟 session_start.sh 执行 (带 timeout)
-    (
-      KALLAX_ROOT="$TEST_DIR/.kallax" \
-      INSTANCE_ID="$instance_id" \
-      bash .kallax/hooks/session_start.sh --role performer &
-    )
-
+    # 使用 temp file 传递 PID 避免 $! 作用域问题
+    local pid_file="${TEST_DIR}/session_pid_${i}.txt"
+    KALLAX_ROOT="$TEST_DIR/.kallax" \
+    INSTANCE_ID="$instance_id" \
+    bash .kallax/hooks/session_start.sh --role performer \
+      >> "${LOG_DIR}/session_test_${i}.log" 2>&1 &
     local pid=$!
+
     local timeout=10  # 10 秒超时
 
     # 等待进程完成或超时
@@ -113,8 +114,9 @@ test_emit_drain_race() {
 
   # 并发 emit (10 个并行)
   for i in $(seq 1 100); do
+    local expert_idx=$((i % 10))
     (
-      emit "test_expert_${((i % 10))}" "TEST-${i}" "$(date +%s)" 2>/dev/null || true
+      emit "test_expert_${expert_idx}" "TEST-${i}" "$(date +%s)" 2>/dev/null || true
     ) &
   done
 
