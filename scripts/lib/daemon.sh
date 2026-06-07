@@ -18,8 +18,9 @@ run_daemon() {
     return 1
   fi
 
-  # Three-part stdio isolation + setsid + disown
-  setsid "$script" "${args[@]}" </dev/null >/dev/null 2>&1 &
+  # Three-part stdio isolation + setsid + disown + line-buffering
+  # stdbuf -oL -eL prevents output buffering that could block the daemon
+  stdbuf -oL -eL setsid "$script" "${args[@]}" </dev/null >/dev/null 2>&1 &
   local pid=$!
   disown "$pid" 2>/dev/null || true
 

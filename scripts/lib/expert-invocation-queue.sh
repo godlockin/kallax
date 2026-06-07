@@ -38,6 +38,16 @@ mkdir -p "$INVOCATION_DIR" "$(dirname "$SQLITE_DB")" "$(dirname "$STATE_FILE")"
 chmod 0700 "$INVOCATION_DIR" 2>/dev/null || true
 chmod 0700 "$(dirname "$SQLITE_DB")" 2>/dev/null || true
 
+# EPIC-026-A Bug 3 Fix: SQLite WAL mode + busy_timeout
+# Avoids SQLITE_BUSY permanent hang on concurrent write/read
+init_sqlite() {
+  if [ -f "$SQLITE_DB" ]; then
+    sqlite3 "$SQLITE_DB" "PRAGMA journal_mode=WAL;" 2>/dev/null || true
+    sqlite3 "$SQLITE_DB" "PRAGMA busy_timeout=5000;" 2>/dev/null || true
+  fi
+}
+init_sqlite
+
 # 全局状态
 __expert_invocation_last_redis_probe=0
 __expert_invocation_redis_retry_interval=300  # 5 min in seconds
@@ -202,6 +212,7 @@ json_escape() {
 # $1: expert_id
 # $2: ticket_id
 # $3: timestamp (optional, default now)
+# EPIC-026-A Bug 2 Fix: emit+drain must be mutually exclusive (atomic)
 emit() {
   local expert_id="$1"
   local ticket_id="$2"
@@ -220,49 +231,57 @@ emit() {
     return 1
   fi
 
-  local backend=$(get_backend)
+  # EPIC-026-A Bug 2 Fix: use global __emit_* vars so sh -c can access them
+  __emit_expert_id="$expert_id"
+  __emit_ticket_id="$ticket_id"
+  __emit_ts="$ts"
 
-  # 尝试升级到 Redis（如果当前不是 redis）
-  if [ "$backend" != "redis" ]; then
-    try_upgrade_redis && backend=$(get_backend)
-  fi
+  with_lock "emit_drain" sh -c '
+    local backend
+    backend=$(get_backend)
 
-  # FIX: JSON escape user input
-  local safe_expert_id safe_ticket_id
-  safe_expert_id=$(json_escape "$expert_id")
-  safe_ticket_id=$(json_escape "$ticket_id")
-  local payload="{\"expert_id\":\"$safe_expert_id\",\"ticket_id\":\"$safe_ticket_id\",\"ts\":$ts,\"backend\":\"$backend\"}"
-
-   # Degradation chain: redis → sqlite → file
-  if [ "$backend" = "redis" ]; then
-    if probe_redis; then
-      # FIX: explicit error check (no silent fallthrough)
-      if redis-cli -x XADD "$REDIS_KEY" '*' payload "$payload" 2>/dev/null; then
-        write_state_invocations "$expert_id" "$ticket_id" "$ts" "$backend"
-        return 0
-      fi
-      LAST_ERROR="redis XADD failed despite probe success (ACL/stream config?)"
-      # fallthrough to sqlite
+    # 尝试升级到 Redis（如果当前不是 redis）
+    if [ "$backend" != "redis" ]; then
+      try_upgrade_redis && backend=$(get_backend)
     fi
-    set_backend sqlite
-    backend="sqlite"
-  fi
 
-  if [ "$backend" = "sqlite" ]; then
-    if probe_sqlite; then
-      if sqlite_emit "$payload"; then
-        write_state_invocations "$expert_id" "$ticket_id" "$ts" "$backend"
-        return 0
+    # FIX: JSON escape user input (use __emit_* globals from outer scope)
+    local safe_expert_id safe_ticket_id
+    safe_expert_id=$(json_escape "$__emit_expert_id")
+    safe_ticket_id=$(json_escape "$__emit_ticket_id")
+    local payload="{\"expert_id\":\"$safe_expert_id\",\"ticket_id\":\"$safe_ticket_id\",\"ts\":$__emit_ts,\"backend\":\"$backend\"}"
+
+     # Degradation chain: redis → sqlite → file
+    if [ "$backend" = "redis" ]; then
+      if probe_redis; then
+        # FIX: explicit error check (no silent fallthrough)
+        if redis-cli -x XADD "$REDIS_KEY" '"'"'*'"'"' payload "$payload" 2>/dev/null; then
+          write_state_invocations "$__emit_expert_id" "$__emit_ticket_id" "$__emit_ts" "$backend"
+          return 0
+        fi
+        LAST_ERROR="redis XADD failed despite probe success (ACL/stream config?)"
+        # fallthrough to sqlite
       fi
+      set_backend sqlite
+      backend="sqlite"
     fi
-    set_backend file
-    backend="file"
-  fi
 
-  if [ "$backend" = "file" ]; then
-    file_emit "$payload"
-    write_state_invocations "$expert_id" "$ticket_id" "$ts" "$backend"
-  fi
+    if [ "$backend" = "sqlite" ]; then
+      if probe_sqlite; then
+        if sqlite_emit "$payload"; then
+          write_state_invocations "$__emit_expert_id" "$__emit_ticket_id" "$__emit_ts" "$backend"
+          return 0
+        fi
+      fi
+      set_backend file
+      backend="file"
+    fi
+
+    if [ "$backend" = "file" ]; then
+      file_emit "$payload"
+      write_state_invocations "$__emit_expert_id" "$__emit_ticket_id" "$__emit_ts" "$backend"
+    fi
+  '
 }
 
 # FIX: escape single quotes for SQL safety (input already validated)
