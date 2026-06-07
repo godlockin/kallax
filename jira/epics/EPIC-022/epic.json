@@ -1,0 +1,84 @@
+{
+  "id": "EPIC-022",
+  "phase": "PHASE-001",
+  "title": "PERMISSION-MODEL v1 — 3 Role Definition + Hard Enforcement + Role Transition",
+  "scope": "A (3d): 3 role definition (auditor + readonly + role binding)\nB (3d): pre-commit hook + conductor scope check (blocked by A)\nC (4d): workspace switch + read-only path\nD (3d): role transition (master/conductor/performer)\nE (5d): integration tests + 5-expert A+B review (blocked by A+B+C+D)\nTotal: 18d",
+  "start_time": "2026-06-07",
+  "delivery_time": "2026-06-14",
+  "status": "active",
+  "baseline": {
+    "source": "confluence/decisions/PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md",
+    "main_decision": "主公 2026-06-07 拍板: PERMISSION v1 全范围 18d (接受 2/5 专家 NO 评分), 先 P0 fix 再批 v1",
+    "expert_consensus": "4/5 NO, 1/5 PARTIAL — 需 P0 修复项 (fail-closed, set -euo pipefail, FIFO non-blocking, hot path Python/Node)",
+    "scope_decision": "v1 做 3 role (readonly + auditor + role binding), super-admin/emergency-responder 推 v2"
+  },
+  "target": {
+    "A_3_role_definition": "src/permissions/roles/auditor.md + readonly.md + role-binding.md + role-loader.ts",
+    "B_precommit_conductor_scope": ".git/hooks/pre-commit + src/permissions/conductor-scope.ts",
+    "C_workspace_readonly": "src/permissions/workspace-switcher.ts + readonly-path.ts + state.json current_workspace",
+    "D_role_transition": "src/permissions/role-transition.ts + session_start.sh integration + CLI",
+    "E_integration_tests": "tests/integration/permission-v1-e2e.sh + role-matrix.json + 5-expert A+B review"
+  },
+  "kpi": {
+    "M1_zero_miao_write_by_conductor": "100%拦截",
+    "M2_delegation_ttl_auto_expire": "100%",
+    "M3_closing_residue": "< 2 instances",
+    "M4_role_adoption": "3/3 roles >= 1 active within 2 weeks",
+    "M5_authz_check_p99_latency_ms": "< 10"
+  },
+  "decisions": {
+    "priority": 1,
+    "rationale": "5 专家评审后 主公拍板全范围 18d — P0 修复项内置于各 ticket",
+    "security_review_issues_addressed": 10,
+    "main_decision_by_user": "2026-06-07 拍板: PERMISSION v1 全范围接受, EPIC-026 已修完 12 P0"
+  },
+  "p0_fixes_embedded": [
+    "fail-closed (authz check 错误时 exit 1 deny)",
+    "set -euo pipefail on all authz scripts",
+    "FIFO non-blocking + watchdog",
+    "hot path Python (bash 无法达到 10ms)",
+    "realpath 执行顺序在前"
+  ],
+  "tickets": [
+    {
+      "id": "EPIC-022-A",
+      "title": "3 Role Definition: auditor + readonly + role binding",
+      "assignee": "performer-EPIC-022",
+      "status": "ready",
+      "blocked_by": null,
+      "estimate_days": 3
+    },
+    {
+      "id": "EPIC-022-B",
+      "title": "Pre-commit Hook + Conductor Scope Check",
+      "assignee": "performer-EPIC-022",
+      "status": "blocked",
+      "blocked_by": ["EPIC-022-A"],
+      "estimate_days": 3
+    },
+    {
+      "id": "EPIC-022-C",
+      "title": "Workspace Switch + Read-Only Path",
+      "assignee": "performer-EPIC-022",
+      "status": "blocked",
+      "blocked_by": ["EPIC-022-A"],
+      "estimate_days": 4
+    },
+    {
+      "id": "EPIC-022-D",
+      "title": "Role Transition (master/conductor/performer)",
+      "assignee": "performer-EPIC-022",
+      "status": "blocked",
+      "blocked_by": ["EPIC-022-A"],
+      "estimate_days": 3
+    },
+    {
+      "id": "EPIC-022-E",
+      "title": "Integration Tests + 5-Expert A+B Review",
+      "assignee": "performer-EPIC-022",
+      "status": "blocked",
+      "blocked_by": ["EPIC-022-A", "EPIC-022-B", "EPIC-022-C", "EPIC-022-D"],
+      "estimate_days": 5
+    }
+  ]
+}

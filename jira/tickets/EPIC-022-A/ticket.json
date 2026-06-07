@@ -1,0 +1,35 @@
+{
+  "id": "EPIC-022-A",
+  "epic": "EPIC-022",
+  "title": "3 Role Definition: auditor + readonly + role binding",
+  "status": "in_progress",
+  "estimate_days": 3,
+  "blocked_by": [],
+  "file_scope": [
+    "src/permissions/roles/*.md",
+    "src/permissions/role-loader.ts",
+    "src/permissions/permissions-schema.ts",
+    "scripts/permission/*.sh",
+    "tests/unit/permissions/*.ts"
+  ],
+  "acceptance_criteria": [
+    "AC-1: auditor.md 包含完整角色 spec (inherits readonly, grants [audit.export, instance.read, log.read])",
+    "AC-2: readonly.md 限制只能读 *.read 动作, 明确定义拒绝写的场景",
+    "AC-3: role-binding.md 包含 role ↔ user/group 绑定 schema (role, subject_type, subject_id, granted_by, expires_at)",
+    "AC-4: role-loader.ts 运行时 load + validate (set -euo pipefail, fail-closed, try/catch e:unknown)",
+    "AC-5: permissions-schema.ts 包含 KALLAX-permission.json schema (roles, scope_bindings, action_grants)",
+    "AC-6: kallax role:list CLI 列出所有 roles",
+    "AC-7: kallax role:whoami 显示当前 role + permissions",
+    "AC-8: kallax role:check <action> 验证当前 role 是否有权执行 action",
+    "AC-9: L1 存在性: ls src/permissions/roles/ 返回 auditor.md + readonly.md + role-binding.md",
+    "AC-10: L2 实质性: wc -c 每个 .md 文件 > 500 bytes",
+    "AC-11: L3 接线正确: npx tsc --noEmit -p node/tsconfig.json 无错误",
+    "AC-12: L4 数据流动: bash scripts/verify/security.sh + bash scripts/verify/architecture.sh 全 PASS"
+  ],
+  "p0_fixes": [
+    "fail-closed: 任何 authz 错误 exit 1 deny",
+    "set -euo pipefail on all bash scripts",
+    "role 名称 validation (防 trailing space, typo)"
+  ],
+  "source": "confluence/decisions/PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §2 + §4 (P0 修复项)"
+}
