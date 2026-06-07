@@ -99,8 +99,29 @@ else
   echo "Ticket cannot be closed. Fix failures before proceeding."
   echo ""
   if [[ $FORCE_MERGE -eq 1 ]]; then
-    echo "[OVERRIDE] --force-merge was set, proceeding anyway..."
-    exit 0
+  # SECURITY: --force-merge requires KALLAX_MASTER_TOKEN env var
+  # matching the master token file. Override is logged for audit.
+  if [[ -z "${KALLAX_MASTER_TOKEN:-}" ]]; then
+    echo "[OVERRIDE REJECTED] --force-merge requires KALLAX_MASTER_TOKEN env var" >&2
+    exit 1
   fi
-  exit 1
+  TOKEN_FILE="${HOME}/.claude/state/kallax-master-token"
+  EXPECTED_TOKEN=""
+  if [[ -f "$TOKEN_FILE" ]]; then
+    EXPECTED_TOKEN=$(cat "$TOKEN_FILE" 2>/dev/null || echo "")
+  fi
+  if [[ "$KALLAX_MASTER_TOKEN" != "$EXPECTED_TOKEN" ]] || [[ -z "$EXPECTED_TOKEN" ]]; then
+    echo "[OVERRIDE REJECTED] token mismatch or empty" >&2
+    exit 1
+  fi
+  # Log the override
+  AUDIT_LOG="${HOME}/.kallax/logs/preflight-overrides.jsonl"
+  mkdir -p "$(dirname "$AUDIT_LOG")"
+  TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+  USER_NAME="${USER:-unknown}"
+  printf '{"ts":"%s","user":"%s","file":"%s","action":"force-merge-override"}\\n' "$TS" "$USER_NAME" "$EXPERT_FILE" >> "$AUDIT_LOG"
+  echo "[OVERRIDE ACCEPTED] force-merge token valid, proceeding (logged to $AUDIT_LOG)"
+  exit 0
+fi
+exit 1
 fi

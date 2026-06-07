@@ -1,36 +1,71 @@
 #!/usr/bin/env bash
 # scripts/lib/fact-forcing-preflight.sh
-# EPIC-025-B UP-2: Parse and execute 4-Level Fact-Forcing commands
+# EPIC-025-B UP-2 (FIXED): Parse and execute 4-Level Fact-Forcing commands
 # State-based awk parser (following EPIC-021-E pattern)
+#
+# 修复 (A+B review + security review):
+# - P0 hang risk: per-command timeout (60s default)
+# - P0 deadlock: stub exit 0 (跟 Rule 8 一致)
+# - HIGH security: bash -c execution limited to scripts/verify/ allowlist
+# - HIGH security: --force-merge requires KALLAX_MASTER_TOKEN env
+# - MEDIUM: exit code via case statement (not 0-eq-fail due to || expansion bug)
+# - MEDIUM: output truncated to 4KB
+# - MEDIUM: placeholder exact-match (not substring)
 
 set -euo pipefail
 
 LIB_DEBUG="${LIB_DEBUG:-0}"
+LEVEL_TIMEOUT="${LEVEL_TIMEOUT:-60}"
+MAX_OUTPUT_BYTES=4096
 
 log_debug() {
   [[ "$LIB_DEBUG" == "1" ]] && echo "[DEBUG] $*" >&2
 }
 
+# Truncate output to bounded length
+truncate_output() {
+  local out="$1"
+  local len=${#out}
+  if [[ $len -gt $MAX_OUTPUT_BYTES ]]; then
+    echo "${out:0:$MAX_OUTPUT_BYTES}... [truncated, total $len bytes]"
+  else
+    echo "$out"
+  fi
+}
+
+# Portable timeout: runs cmd in background, kills after N seconds
+with_timeout() {
+  local secs="$1"
+  shift
+  "$@" &
+  local pid=$!
+  local elapsed=0
+  while kill -0 "$pid" 2>/dev/null; do
+    if [[ $elapsed -ge $secs ]]; then
+      kill -9 "$pid" 2>/dev/null || true
+      wait "$pid" 2>/dev/null || true
+      return 124
+    fi
+    sleep 0.1 2>/dev/null || sleep 1
+    elapsed=$((elapsed + 1))
+  done
+  wait "$pid" 2>/dev/null
+  return $?
+}
+
 # Extract L1/L2/L3/L4 bash commands from expert.md using state machine
-# Returns all4 levels as tab-separated: level\tcommand
 extract_levels() {
   local file="$1"
 
   if [[ ! -f "$file" ]]; then
     echo "ERROR: file not found: $file" >&2
-    return1
+    return 1
   fi
-
-  # State machine: 0=normal, 1=in_code_block
-  local state=0
-  local current_level=""
 
   awk '
     BEGIN { state=0; current_level=""; }
 
-    # Match level headers: ### L1, ### L2, ### L3, ### L4 (with optional 存在性/实质性/etc suffix)
     /^### L[1-4]/ {
-      # Extract level number - get char after "L"
       level_str = substr($0, index($0, "L") + 1, 1)
       if (level_str ~ /^[1-4]$/) {
         current_level = "L" level_str
@@ -38,71 +73,98 @@ extract_levels() {
       next
     }
 
-    # Enter code block
     /^```bash$/ && current_level != "" {
       state = 1
       next
     }
 
-    # Exit code block
     /^```$/ && state == 1 {
       state = 0
       current_level = ""
       next
     }
 
-    # Inside code block: print level and command
     state == 1 && current_level != "" {
-      # Skip empty lines at start of block
       if ($0 ~ /^[[:space:]]*$/) next
-      # Remove leading/trailing whitespace
       gsub(/^[[:space:]]+|[[:space:]]+$/, "")
       print current_level "\t" $0
     }
   ' "$file"
 }
 
+# SECURITY: Check if command is on the allowlist (scripts/verify/ only)
+# KALLAX trust boundary: expert.md content is untrusted;
+# only scripts under scripts/verify/ are trusted to execute.
+is_allowed_command() {
+  local cmd="$1"
+  # Match commands that execute a script in scripts/verify/
+  if [[ "$cmd" =~ (^|[[:space:]])bash[[:space:]]+(scripts/verify/[a-zA-Z0-9._-]+)[[:space:]]* ]]; then
+    local script_path="${BASH_REMATCH[2]}"
+    if [[ -f "$script_path" ]]; then
+      return 0
+    fi
+  fi
+  # Allow safe built-in test commands for L1/L2 self-check
+  if [[ "$cmd" =~ ^[[:space:]]*(echo|true|false|\[|test|ls|wc|jq|cat|head|tail|grep)[[:space:]] ]]; then
+    return 0
+  fi
+  return 1
+}
+
 # Execute a single level command
-# Returns: 0=pass, 1=fail, 2=not implemented
+# Returns: 0=pass, 1=fail, 2=not implemented placeholder
 execute_command() {
   local level="$1"
   local cmd="$2"
-  local level_dir="$3"
+  local expert_file="$3"
 
   log_debug "Executing $level: $cmd"
 
-  # Check if command is a placeholder (not implemented yet)
-  if echo "$cmd" | grep -q "not implemented yet\|TODO:"; then
+  # SECURITY: exact-match placeholder check (not substring)
+  if [[ "$cmd" == "TODO" || "$cmd" == "SKIP" || "$cmd" == "NOT_IMPLEMENTED" ]]; then
     echo "[$level] SKIP (placeholder)"
     return 2
   fi
 
-  # Execute the command
-  local output
-  local exit_code
-
-  output=$(bash -c "$cmd" 2>&1) || exit_code=$?
-
-  if [[ "${exit_code:-0}" -eq 0 ]]; then
-    echo "[$level] PASS"
-    log_debug "  → PASS"
-    return 0
-  else
-    echo "[$level] FAIL (exit $exit_code)"
-    echo "  Command: $cmd"
-    echo "  Output: $output"
-    log_debug "  → FAIL: $output"
+  # SECURITY: allowlist check (scripts/verify/ or safe builtin)
+  if ! is_allowed_command "$cmd"; then
+    echo "[$level] FAIL (not on allowlist: scripts/verify/ or safe builtin only)"
+    log_debug "  → ALLOWLIST FAIL: $cmd"
     return 1
   fi
+
+  # P0: per-command timeout to prevent individual level hangs
+  local output
+  local exit_code=0
+
+  output=$(with_timeout "$LEVEL_TIMEOUT" bash -c "$cmd" 2>&1) || exit_code=$?
+
+  case "$exit_code" in
+    0)
+      echo "[$level] PASS"
+      log_debug "  → PASS"
+      return 0
+      ;;
+    124)
+      echo "[$level] FAIL (timeout > ${LEVEL_TIMEOUT}s)"
+      return 1
+      ;;
+    *)
+      echo "[$level] FAIL (exit $exit_code)"
+      if [[ "$LIB_DEBUG" == "1" ]]; then
+        echo "  Command: $cmd"
+      fi
+      echo "  Output: $(truncate_output "$output")"
+      return 1
+      ;;
+  esac
 }
 
 # Main execution: parse and run all 4 levels
-# Usage: extract_and_execute <expert.md> [--check-lessons <epic-id>]
 extract_and_execute() {
   local file=""
   local check_lessons=""
 
-  # Parse arguments
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --check-lessons)
@@ -126,7 +188,6 @@ extract_and_execute() {
     return 1
   fi
 
-  # Check lessons if requested
   if [[ -n "$check_lessons" ]]; then
     local lessons_file="jira/epics/${check_lessons}/LESSONS-LEARNED.md"
     if [[ ! -f "$lessons_file" ]]; then
@@ -139,9 +200,9 @@ extract_and_execute() {
   echo "=========================================="
   echo "4-Level Fact-Forcing Preflight"
   echo "File: $file"
+  echo "Timeout per level: ${LEVEL_TIMEOUT}s"
   echo "=========================================="
 
-  # Extract all levels
   local entries
   entries=$(extract_levels "$file")
 
@@ -150,7 +211,6 @@ extract_and_execute() {
     return 0
   fi
 
-  # Execute each level in order
   local has_fail=0
   local pass_count=0
   local fail_count=0
@@ -159,17 +219,13 @@ extract_and_execute() {
   while IFS=$'\t' read -r level cmd; do
     [[ -z "$level" ]] && continue
 
-    if execute_command "$level" "$cmd" "$file"; then
-      ((pass_count++))
-    else
-      exit_code=$?
-      if [[ $exit_code -eq 2 ]]; then
-        ((skip_count++))
-      else
-        ((fail_count++))
-        has_fail=1
-      fi
-    fi
+    execute_command "$level" "$cmd" "$file"
+    local rc=$?
+    case "$rc" in
+      0) pass_count=$((pass_count + 1)) ;;
+      2) skip_count=$((skip_count + 1)) ;;
+      *) fail_count=$((fail_count + 1)); has_fail=1 ;;
+    esac
   done <<< "$entries"
 
   echo "=========================================="
@@ -185,9 +241,6 @@ extract_and_execute() {
   fi
 }
 
-# Shell function for direct sourcing
-# Usage: source fact-forcing-preflight.sh && extract_and_execute <file>
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-  # Called directly as script
   extract_and_execute "$@"
 fi
