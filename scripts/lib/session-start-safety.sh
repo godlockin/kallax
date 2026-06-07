@@ -33,9 +33,17 @@ check_fd_safety() {
     fi
   fi
 
-  # 检查 fd 2 (stderr)
-  if [ -e "/dev/stderr" ] && [ ! -t 2 ]; then
-    if [ -p "/dev/stderr" ]; then
+  # 检查 fd 2 (stderr) — macOS 兼容实现
+  # 优先用 /dev/fd/2 (POSIX 标准, 总是反映 fd 2 实际指向)
+  # fallback /dev/stderr (Linux 传统, macOS 有时不可用)
+  local fd2_target=""
+  if [ -e "/dev/fd/2" ]; then
+    fd2_target="/dev/fd/2"
+  elif [ -e "/dev/stderr" ]; then
+    fd2_target="/dev/stderr"
+  fi
+  if [ -n "$fd2_target" ] && [ ! -t 2 ]; then
+    if [ -p "$fd2_target" ]; then
       echo "[safety] FAIL: fd 2 (stderr) is a pipe/FIFO — risk of blocking" >&2
       return 1
     fi

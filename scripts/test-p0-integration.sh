@@ -179,10 +179,20 @@ SCRIPT
   if [ -x "scripts/lib/session-start-safety.sh" ]; then
     pass "session-start-safety.sh exists and is executable"
     # 运行 safety check
-    if source scripts/lib/session-start-safety.sh && session_start_safety; then
-      pass "session_start_safety passed (environment OK)"
+    # Construct explicit pipe environment to verify fail-closed behavior
+    test_pipe=$(mktemp -u)
+    mkfifo "$test_pipe" || { fail "could not create pipe for fail-closed test"; return 1; }
+    # In subshell with fd 2 redirected to pipe, safety check MUST return non-zero
+    (
+      source scripts/lib/session-start-safety.sh
+      session_start_safety
+    ) 2>"$test_pipe"
+    rc=$?
+    rm -f "$test_pipe"
+    if [[ $rc -ne 0 ]]; then
+      pass "fail-closed CORRECTLY returned non-zero (rc=$rc) in pipe environment"
     else
-      warn "session_start_safety returned non-zero (may be expected in test env)"
+      fail "fail-closed FAILED: should have returned non-zero in pipe environment, got rc=$rc"
     fi
   else
     fail "session-start-safety.sh not found or not executable"
