@@ -364,3 +364,82 @@ jq '.expert_invocations[0:1000]' "${STATE_FILE}"
 **Author**: EPIC-021-F Performer
 **Reviewers**: A-Forward (backend), B-Attack (security)
 **Approved**: master_main
+
+---
+
+## §11. Operational SOP (接手指南)
+
+### 启动 / 停止 Heartbeat Daemon
+
+```bash
+# 启动 (在 session 中自动, 但可以手动触发)
+bash scripts/heartbeat-daemon.sh start  # 后台 daemon, 60s 心跳
+
+# 停止 (优雅)
+bash scripts/heartbeat-daemon.sh stop
+
+# 强制 kill (orphan cleanup)
+bash scripts/kallax-cleanup.sh --force
+```
+
+### 检查 Queue Health
+
+```bash
+# 1. expert_invocations queue 状态
+bash scripts/lib/expert-invocation-queue.sh health
+
+# 2. emit/drain 测试
+source scripts/lib/expert-invocation-queue.sh
+emit "kallax.backend.001" "EPIC-XXX-test" "$(date +%s)"
+drain
+
+# 3. state.json expert_invocations array
+jq '.expert_invocations | length' .kallax/state/state.json
+```
+
+### 响应 STALE Instance
+
+```bash
+# 1. 扫描 STALE (last_beat > 5min)
+bash scripts/kallax-cleanup.sh --dry-run
+
+# 2. 看具体哪 些 STALE
+bash scripts/audit-closing-instances.sh
+
+# 3. 强制清理 (master only, 需 KALLAX_MASTER_TOKEN)
+KALLAX_MASTER_TOKEN=$(cat ~/.claude/state/kallax-master-token) bash scripts/kallax-cleanup.sh --force
+```
+
+### 紧急降级 (Redis/SQLite 都不工作时)
+
+```bash
+# 1. 强制使用 file backend
+# 改 scripts/lib/expert-invocation-queue.sh:
+#   set_backend() 强制 echo "file" > STATE_FILE
+
+# 2. 验证 file 队列可用
+ls -la .kallax/queue/expert_invocations.jsonl
+
+# 3. 监控 .kallax/queue/ 大小
+du -sh .kallax/queue/
+# 超过 100MB 需考虑归档
+```
+
+### 关键路径 (Path Cheat Sheet)
+
+- Heartbeat: `.kallax/hooks/session_start.sh` → `scripts/heartbeat-daemon.sh`
+- 队列: `.kallax/queue/expert_invocations.jsonl` (file) / `expert_invocations` (Redis Stream) / `.kallax/state/expert_invocations.db` (SQLite)
+- State: `.kallax/state/state.json` → `expert_invocations[]` (LRU 1000)
+- Logs: `.kallax/logs/orphan_kills.jsonl` (daemon kill audit) / `.kallax/logs/preflight-overrides.jsonl` (force-merge audit)
+- Rollback: `confluence/runbooks/permission-p0-rollback.md` / `confluence/runbooks/instance-pre-clean.md`
+
+---
+
+## §9. Cross-References
+
+- [docs/architecture/FRAMEWORK.md](../docs/architecture/FRAMEWORK.md) — KALLAX 架构白皮书
+- [docs/architecture/DEGRADATION-STRATEGY.md](../docs/architecture/DEGRADATION-STRATEGY.md) — 3 层降级策略设计
+- [confluence/decisions/index.md](../decisions/index.md) — 决策文档总索引
+- [confluence/decisions/EXPERT-PRIORITY-SYNTHESIS-2026-06-07.md](../decisions/EXPERT-PRIORITY-SYNTHESIS-2026-06-07.md) — 8 专家优先级综合
+- [scripts/check-skill-anatomy.sh](../../scripts/check-skill-anatomy.sh) — 7 文件 KALLAX 校验 (10 项)
+- [scripts/lib/expert-invocation-queue.sh](../../scripts/lib/expert-invocation-queue.sh) — Queue 库 (跨 EPIC 复用)
