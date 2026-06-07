@@ -74,27 +74,61 @@ score_expert() {
   echo "$score"
 }
 
-# Find best expert
+# Find best expert (L1a keyword match)
 best_id=""
 best_score=0
+declare -a CANDIDATES=()
 for f in "${EXPERT_DIR}"/*.md; do
   [ -f "$f" ] || continue
   s=$(score_expert "$f" "$REQ")
+  eid=$(basename "$f" .md)
+  CANDIDATES+=("{\"id\":\"$eid\",\"score\":$s}")
   if (( s > best_score )); then
     best_score=$s
-    best_id=$(basename "$f" .md)
+    best_id=$eid
   fi
 done
 
 END_MS=$(($(date +%s%N) / 1000000))
 DURATION=$((END_MS - START_MS))
 
-# Threshold0.7: >= 70 pts → L1 HIT
+# L1b Smart Router: precision layer (only when L1 hit, to resolve ambiguity)
+L1B_RESULT=""
+L1B_VIA="L1"
 if (( best_score >= 70 )); then
-  via="L1"
-  echo "MATCHED via=$via id=$best_id score=$best_score duration=${DURATION}ms"
+  # Build candidates JSON
+  CANDIDATES_JSON="[$(IFS=','; echo "${CANDIDATES[*]}")]"
+
+  # Call L1b router (pure bash, no LLM)
+  L1B_SCRIPT="${KALLAX_ROOT}/scripts/l1b-router.sh"
+  if [ -f "$L1B_SCRIPT" ]; then
+    L1B_RESULT=$(l1b_route "$CANDIDATES_JSON" "$REQ" 2>/dev/null || echo "")
+  fi
+
+  if [ -n "$L1B_RESULT" ] && [ "$L1B_RESULT" != "{}" ]; then
+    L1B_ID=$(echo "$L1B_RESULT" | jq -r '.best // empty')
+    L1B_SCORE=$(echo "$L1B_RESULT" | jq -r '.score // empty')
+    L1B_AMBIGUOUS=$(echo "$L1B_RESULT" | jq -r '.ambiguous // false')
+    L1B_REASON=$(echo "$L1B_RESULT" | jq -r '.reason // empty')
+
+    if [ "$L1B_AMBIGUOUS" = "true" ]; then
+      # ambiguous → L2/L3 接
+      echo "AMBIGUOUS via=L1b id=$L1B_ID score=$L1B_SCORE reason=$L1B_REASON (L2/L3 接)"
+      printf '{"ts":"%s","req":"%s","via":"L1b","id":"%s","score":%s,"ambiguous":true,"reason":"%s","duration_ms":%s}\n' \
+        "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$REQ" "$L1B_ID" "$L1B_SCORE" "$L1B_REASON" "$DURATION" \
+        >> "$AUDIT_LOG"
+      exit 0
+    else
+      # resolved → L1b 输出 best
+      L1B_VIA="L1b"
+      best_id=$L1B_ID
+      best_score=$L1B_SCORE
+    fi
+  fi
+
+  echo "MATCHED via=$L1B_VIA id=$best_id score=$best_score duration=${DURATION}ms"
   printf '{"ts":"%s","req":"%s","via":"%s","id":"%s","score":%s,"duration_ms":%s}\n' \
-    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$REQ" "$via" "$best_id" "$best_score" "$DURATION" \
+    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$REQ" "$L1B_VIA" "$best_id" "$best_score" "$DURATION" \
     >> "$AUDIT_LOG"
   exit 0
 else
