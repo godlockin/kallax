@@ -1,0 +1,35 @@
+{
+  "id": "EPIC-022-D",
+  "epic": "EPIC-022",
+  "title": "Role Transition (master/conductor/performer)",
+  "status": "blocked",
+  "estimate_days": 3,
+  "blocked_by": ["EPIC-022-A"],
+  "file_scope": [
+    "src/permissions/role-transition.ts",
+    "scripts/role-transition.sh",
+    ".kallax/hooks/session_start.sh",
+    "tests/integration/role-transition*.sh"
+  ],
+  "acceptance_criteria": [
+    "AC-1: role-transition.ts 实现 master/conductor/performer 状态机",
+    "AC-2: session_start.sh 启动时验证 role, 必要时 transition",
+    "AC-3: kallax role:transition <from> <to> --reason <why> CLI (带 audit log)",
+    "AC-4: transition 需要 auditor+ role 权限",
+    "AC-5: transition 记录审计日志 (from_role, to_role, reason, actor, timestamp)",
+    "AC-6: 无效 transition (e.g., performer → master) 被拒绝",
+    "AC-7: TTL 自动 expire (delegation TTL 实现)",
+    "AC-8: break-glass transition ≤ 1h TTL + 全 audit",
+    "AC-9: L1 存在性: ls src/permissions/role-transition.ts",
+    "AC-10: L2 实质性: wc -c role-transition.ts > 400 bytes",
+    "AC-11: L3 接线正确: npx tsc --noEmit 无错误",
+    "AC-12: L4 数据流动: 模拟跨 role transition, 验证审计 + 权限变更",
+    "AC-13: 循环继承检测 (A inherits B, B inherits A → reject)"
+  ],
+  "p0_fixes": [
+    "循环继承检测",
+    "transition fail-closed",
+    "break-glass TTL ≤ 1h + 全 audit"
+  ],
+  "source": "confluence/decisions/PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §2.3 + §4"
+}
