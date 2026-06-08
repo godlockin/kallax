@@ -6,8 +6,9 @@
 # - fail-closed: any error exit 1 deny
 # - realpath execution order first
 # - transition requires auditor+ role
+# - role MUST come from state.json (--role CLI removed)
 #
-# Usage: workspace/switch.sh --workspace <name> --actor <actor> [--role <role>]
+# Usage: workspace/switch.sh --workspace <name> --actor <actor>
 # Example: workspace/switch.sh --workspace conductor --actor "Steven Chen"
 #
 # Source: confluence/decisions/PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §3
@@ -24,11 +25,11 @@ trap cleanup SIGTERM
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 AUDIT_DB="${KALLAX_ROOT}/.kallax/data/authz.db"
+STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
 
 # Default values
 WORKSPACE=""
 ACTOR=""
-ROLE=""
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -41,13 +42,9 @@ while [[ $# -gt 0 ]]; do
       ACTOR="$2"
       shift 2
       ;;
-    --role)
-      ROLE="$2"
-      shift 2
-      ;;
     *)
       echo "ERROR: Unknown argument: $1" >&2
-      echo "Usage: $0 --workspace <name> --actor <actor> [--role <role>]" >&2
+      echo "Usage: $0 --workspace <name> --actor <actor>" >&2
       exit 1
       ;;
   esac
@@ -76,9 +73,11 @@ if [[ "$VALID_WORKSPACES" != *" $WORKSPACE "* ]] && [[ "$VALID_WORKSPACES" != "$
   fi
 fi
 
-# Get current role from state file if not provided
+# Get current role from state file ONLY — no CLI/env fallback
+ROLE="$(jq -r '.role // ""' "$STATE_FILE")"
 if [[ -z "$ROLE" ]]; then
-  ROLE="${KALLAX_CURRENT_ROLE:-$(cat "$KALLAX_ROOT/.kallax/state/state.json" 2>/dev/null | jq -r '.role // "unknown"')}"
+  echo "ERROR: role not found in $STATE_FILE" >&2
+  exit 1
 fi
 
 # Audit logging
