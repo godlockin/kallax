@@ -199,7 +199,7 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 ### 9. 4-Level Fact-Forcing 强制 (KALLAX P0) — task:complete 前置
 
-**教训**: EPIC-021 D review CRITICAL — 4-Level 是 documentation, 不是 enforcement. 文档写"存在性/实质性/接线正确/数据流动", 但没有人真的去检查, 形成"review 通过, 部署完蛋"局面.
+**教训**: EPIC-021 D review CRITICAL — 4-Level 是 documentation, 不是 enforcement. 文档写"存在性/实质性/接线正确/数据流动", 但没有人真的去检查, 形成"review 通过, 部署完蛋"局面. EPIC-024/028 KPI falsification 3 次 (51125b9 假 100% / 6563362 估数 PARTIAL / 33cfc48 build fail) 强化此教训.
 
 **规则**: `task:complete <TICKET>` 前必须运行 `check-fact-forcing-preflight.sh <expert.md>`, 全部 L1/L2/L3/L4 通过才能 close ticket.
 
@@ -211,13 +211,78 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 3. **L3 接线正确**: 正确 import/export
 4. **L4 数据流动**: 集成测试验证
 
+**Anti-Fabrication 子规则 (9a/9b/9c, EPIC-024/028 教训汇总, 主公 2026-06-08 同意升红线)**:
+
+- **9a [P0] KPI 估数算 FAIL**: "M1 ~60-70%" / "约 80%" / "PARTIAL" / "around" / "approximately" / "估计" / "roughly" / "should" 都算 KPI falsification. 必须精确 X/Y 一位小数 (e.g. "M1: 26/30 = 86.7%"). 防御: `scripts/verify/check-kpi-precision.sh` 必跑
+- **9b [P0] Test case verbatim 触发 = FAIL**: 把测试需求整句塞 trigger 字段 = 100% circular match, 假数据. 防御: `scripts/verify/check-test-case-isolation.sh` 跑 trigger vs 30 test case grep 比对, 0 leak
+- **9c [P0] Scope creep 必拆 PR**: file_scope.includes 外的文件改动 = scope creep, 必拆 PR. 防御: `scripts/verify/check-scope-creep.sh` git diff --name-only vs ticket.json file_scope.includes, 超界 = FAIL
+
 **失败处理**:
 - preflight FAIL → ticket 保持 `in_progress`
 - `check-fact-forcing-preflight.sh --force-merge` 可 override (需 master 授权)
+- 9a/9b/9c 任一 FAIL = 拒绝 close ticket, 不可 override (主公授权例外除外)
 
 **红线**:
 - ❌ 跳过 preflight 直接 close ticket
 - ❌ preflight FAIL 但仍 close ticket
+- ❌ KPI 估数/verbatim/scope creep 任一绕过
+- ❌ 3 anti-fab 工具跳过
+
+### 10. Anti-Fabrication 强制 (KALLAX P0) — 全 commit 前置
+
+**教训**: 主公原话 "加上工具和限制保证数据/任务造假的现象不会再出现". EPIC-024/028 出现 3 次 KPI falsification, 工具防御 + 规则升级双管齐下才能根治.
+
+**规则**: 所有 commit 前必跑 3 anti-fab 工具, 集成在 pre-commit hook 强制执行:
+
+| 工具 | 防什么 | 触发 |
+|---|---|---|
+| `scripts/verify/check-test-case-isolation.sh` | Test case verbatim 在 trigger 字段 | 51125b9 假 100% |
+| `scripts/verify/check-kpi-precision.sh` | KPI 估数/模糊报 PASS | 6563362 PARTIAL |
+| `scripts/verify/check-scope-creep.sh` | file_scope 超界改动 | 6563362 Arc imports |
+
+**集成**: `.kallax/hooks/pre-commit` 必跑 3 工具, 任一 FAIL = 拒绝 commit. 跟 Rule 9 L1-L4 一起 enforce.
+
+**落地检查**: pre-commit hook 3 工具 + `check-fact-forcing-preflight.sh` 5 工具 (L1-L4 + L4_script_exists) 串联, 共 8 个门禁.
+
+**红线**:
+- ❌ 跳过 3 anti-fab 工具
+- ❌ pre-commit hook 改 Bypass
+- ❌ 估数/verbatim/scope creep 任一造假
+
+### 11. Master Corrective Integration 授权 (KALLAX P1) — 兜底机制
+
+**教训**: "1 conductor + 2 performer" capacity 在大 workstream 不够, 3 次 Performer 失败 (a6dedcaa 部分 + a3be6648 全 + 33cfc48 build fail) 让 Master 必须接管. 但旧 Role Rules 隐含 "Master 不能写代码", 跟实际矛盾.
+
+**规则**: Performer 失败 (API error / token 爆 / 任务过大) 时, Master 可**接管** Performer worktree 中的部分任务, 范围:
+
+1. **不创建 feature 分支** (那是 Performer 工作)
+2. **不在 Performer worktree 创建新文件** (除 corrective integration 必须的)
+3. **不在 miao 上写功能代码** (Rule 1 红线维持)
+4. **改动必须有 master corrective 标记** (commit message 写明 "Master corrective integration after Performer X 失败")
+5. **A+B review 走 Performer 自审路径** (Master 接管 = 接管自审责任)
+
+**接管触发条件**:
+- Performer API error / token 上限 / 任务过大崩
+- Performer 跑超过 4h 仍无 commit
+- Performer 报 PASS 但 Master 验证 FAIL (e.g. 6563362 估数 PARTIAL)
+- Performer 留半成品 worktree 状态, 关键 commit 未完成
+
+**接管范围**:
+- ✅ 在 Performer worktree 修代码 (commit 标 "Master corrective")
+- ✅ 重写 Performer 留的 broken logic (e.g. a3be6648 sqlite3 :param → shell-escape)
+- ✅ 补 Performer 漏的 4-Level 验证
+- ❌ 创建新 feature 分支
+- ❌ 跨 worktree 改文件
+- ❌ 接管超过 2 个 Performer 任务 (capacity 警告)
+
+**失败处理**:
+- Master corrective 后, 走正常 4-Level + A+B review
+- 报给主公: "X 任务由 Performer 失败 → Master 接管, 理由 Y, 接管范围 Z"
+
+**红线**:
+- ❌ 接管 Performer 任务 > 2 个
+- ❌ 接管改动了不在原 ticket scope 的文件
+- ❌ 接管 commit 不标 "Master corrective" 标识
 
 ---
 
