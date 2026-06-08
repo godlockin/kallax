@@ -281,8 +281,16 @@ export async function roleList(): Promise<void> {
 
 export async function roleWhoami(): Promise<void> {
   const loader = createRoleLoader();
-  // 从环境变量或 state.json 获取当前 role
-  const currentRole = process.env['KALLAX_CURRENT_ROLE'] || 'unknown';
+  // PHASE-002 9c + security review: role 必从 state.json 读，禁止 env 兜底
+  const statePath = path.join(process.cwd(), '.kallax/state/state.json');
+  const stateContent = fs.readFileSync(statePath, 'utf-8');
+  const state = JSON.parse(stateContent);
+  const currentRole = state.role;
+
+  if (!currentRole) {
+    throw new Error('No role in state.json — fail-closed');
+  }
+
   const permissions = loader.getRolePermissions(currentRole);
   console.log(`Current role: ${currentRole}`);
   console.log(`Grants: ${permissions.grants.join(', ')}`);
@@ -291,7 +299,15 @@ export async function roleWhoami(): Promise<void> {
 
 export async function roleCheck(action: string): Promise<void> {
   const loader = createRoleLoader();
-  const currentRole = process.env['KALLAX_CURRENT_ROLE'] || 'unknown';
+  // PHASE-002 9c + security review: role 必从 state.json 读，禁止 env 兜底
+  const statePath = path.join(process.cwd(), '.kallax/state/state.json');
+  const stateContent = fs.readFileSync(statePath, 'utf-8');
+  const state = JSON.parse(stateContent);
+  const currentRole = state.role;
+
+  if (!currentRole) {
+    throw new Error('No role in state.json — fail-closed');
+  }
 
   if (loader.can(currentRole, action)) {
     console.log(`ALLOWED: ${action} for role ${currentRole}`);

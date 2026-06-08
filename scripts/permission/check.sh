@@ -18,8 +18,12 @@ if [[ -z "$ACTION" ]]; then
   exit 1
 fi
 
-# 获取当前 role
-CURRENT_ROLE="${KALLAX_CURRENT_ROLE:-$(cat "$KALLAX_ROOT/.kallax/state/state.json" 2>/dev/null | jq -r '.current_role // "unknown"')}"
+# 获取当前 role: PHASE-002 9c + security review, role 必从 state.json 读，禁止 env 兜底
+CURRENT_ROLE="$(cat "$KALLAX_ROOT/.kallax/state/state.json" 2>/dev/null | jq -r '.role // ""')"
+if [[ -z "$CURRENT_ROLE" ]]; then
+  echo "ERROR: No role in state.json ($KALLAX_ROOT/.kallax/state/state.json)" >&2
+  exit 1
+fi
 
 # 权限检查函数
 check_permission() {
