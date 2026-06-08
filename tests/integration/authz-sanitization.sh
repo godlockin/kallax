@@ -130,13 +130,19 @@ test_valid_actor_preserved() {
 
 # ── Test 5: Unknown role from state.json → exit 1 ───────────────────────────
 test_unknown_role_fail_closed() {
-  # Use KALLAX_CURRENT_ROLE env var to inject invalid role
-  # (check.sh loads from env var before state.json)
+  # Save current state, inject invalid role via state.json, restore
+  local backup_state
+  backup_state="$(cat "$STATE_FILE")"
+  jq --arg r "hacker" '.role = $r' "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"
+
   local result
-  result="$(KALLAX_CURRENT_ROLE="hacker" bash "$AUTHZ_CHECK" --action log.read --actor "tester" 2>&1)" || true
+  result="$(env -u KALLAX_CURRENT_ROLE bash "$AUTHZ_CHECK" --action log.read --actor "tester" 2>&1)" || true
+
+  # Restore state
+  printf '%s\n' "$backup_state" > "$STATE_FILE"
 
   if echo "$result" | grep -q "ERROR: Role not in allowlist\|ERROR: Unknown role"; then
-    echo "  ✓ Unknown role from env → fail-closed (exit 1)"
+    echo "  ✓ Unknown role from state.json → fail-closed (exit 1)"
     PASS=$((PASS + 1))
   else
     echo "  ✗ Unknown role not rejected: [$result]"
