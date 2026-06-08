@@ -4,6 +4,9 @@
 # Tests the full KALLAX permission flow:
 # task:claim → worktree → commit → merge
 #
+# PHASE-002 follow-up: --role CLI removed, switch via state.json (see scripts/permission/authz/check.sh).
+# Test injects role into .kallax/state/state.json temporarily, restores on exit.
+#
 # Source: confluence/decisions/PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §6
 
 set -euo pipefail
@@ -13,10 +16,28 @@ KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 AUTHZ_CHECK="${KALLAX_ROOT}/scripts/permission/authz/check.sh"
 WORKSPACE_SWITCH="${KALLAX_ROOT}/scripts/workspace/switch.sh"
 ROLE_TRANSITION="${KALLAX_ROOT}/scripts/role-transition.sh"
+STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
 
 echo "=== KALLAX Permission v1 E2E Integration Tests ==="
 PASS=0
 FAIL=0
+
+# Save original state, restore on exit
+ORIGINAL_STATE=""
+if [[ -f "$STATE_FILE" ]]; then
+  ORIGINAL_STATE="$(cat "$STATE_FILE")"
+fi
+restore_state() {
+  if [[ -n "$ORIGINAL_STATE" ]]; then
+    printf '%s\n' "$ORIGINAL_STATE" > "$STATE_FILE"
+  fi
+}
+trap restore_state EXIT
+
+switch_role() {
+  local new_role="$1"
+  jq --arg r "$new_role" '.role = $r' "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"
+}
 
 test_authz() {
   local role="$1"
@@ -24,7 +45,9 @@ test_authz() {
   local expected="$3"
   local test_name="$4"
 
-  if bash "$AUTHZ_CHECK" --action "$action" --actor "e2e-test" --role "$role" 2>/dev/null; then
+  switch_role "$role"
+
+  if bash "$AUTHZ_CHECK" --action "$action" --actor "e2e-test" 2>/dev/null; then
     actual="ALLOWED"
   else
     actual="DENIED"
@@ -45,7 +68,9 @@ test_workspace() {
   local expected="$3"
   local test_name="$4"
 
-  if bash "$WORKSPACE_SWITCH" --workspace "$workspace" --actor "e2e-test" --role "$role" 2>/dev/null; then
+  switch_role "$role"
+
+  if bash "$WORKSPACE_SWITCH" --workspace "$workspace" --actor "e2e-test" 2>/dev/null; then
     actual="ALLOWED"
   else
     actual="DENIED"
@@ -67,7 +92,10 @@ test_transition() {
   local expected="$4"
   local test_name="$5"
 
-  if bash "$ROLE_TRANSITION" --from "$from_role" --to "$to_role" --actor "e2e-test" --reason "$reason" 2>/dev/null; then
+  # Switch role in state.json (--from removed per PHASE-002 + a6dedcaa)
+  switch_role "$from_role"
+
+  if bash "$ROLE_TRANSITION" --to "$to_role" --actor "e2e-test" --reason "$reason" 2>/dev/null; then
     actual="ALLOWED"
   else
     actual="DENIED"

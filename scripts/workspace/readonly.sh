@@ -7,8 +7,9 @@
 # - realpath execution order first
 # - unknown role = readonly (fail-closed)
 # - role allowlist validation
+# - role MUST come from state.json (--role CLI removed, PHASE-002 9c + security review)
 #
-# Usage: workspace/readonly.sh --path <path> --actor <actor> [--role <role>]
+# Usage: workspace/readonly.sh --path <path> --actor <actor>
 # Example: workspace/readonly.sh --path miao/ --actor "Steven Chen"
 #
 # Source: confluence/decisions/PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §3
@@ -24,6 +25,7 @@ trap cleanup SIGTERM
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 AUDIT_DB="${KALLAX_ROOT}/.kallax/data/authz.db"
+STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
 
 TARGET_PATH=""
 ACTOR=""
@@ -80,10 +82,6 @@ while [[ $# -gt 0 ]]; do
       ACTOR="$2"
       shift 2
       ;;
-    --role)
-      ROLE="$2"
-      shift 2
-      ;;
     *)
       echo "ERROR: Unknown argument: $1" >&2
       exit 1
@@ -101,8 +99,12 @@ if [[ -z "$ACTOR" ]]; then
   exit 1
 fi
 
+# Role MUST come from state.json (--role CLI removed for security)
+# Unconditionally read state.json; missing/empty role fails the allowlist check below
+ROLE="$(jq -r '.role // ""' "$STATE_FILE")"
 if [[ -z "$ROLE" ]]; then
-  ROLE="$(jq -r '.role // ""' "$KALLAX_ROOT/.kallax/state/state.json")"
+  echo "ERROR: No role in state.json ($STATE_FILE)" >&2
+  exit 1
 fi
 
 # Fail-closed: unknown role is denied (readonly)
