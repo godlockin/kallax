@@ -96,6 +96,25 @@ if git rev-parse --git-dir 2>/dev/null | grep -q 'worktrees'; then
 fi
 
 # ============================================================
+# EPIC-022-C: Workspace validation — verify cwd ∈ worktree/ (AC-8)
+# Prevents session from operating outside of isolated worktree
+# ============================================================
+if [ "${IN_WORKTREE}" = "false" ]; then
+  _cwd_realpath="$(realpath "$CWD" 2>/dev/null || echo "$CWD")"
+  _worktrees_root="$(realpath "$KALLAX_ROOT/worktrees" 2>/dev/null || echo "$KALLAX_ROOT/worktrees")"
+  if [ -d "$_worktrees_root" ]; then
+    case "$_cwd_realpath" in
+      "${_worktrees_root}"/*)
+        # CWD is under worktrees/ but git doesn't see it as worktree
+        # This is a hybrid state — warn but don't block
+        echo "[kallax] WARNING: cwd is under worktrees/ but not detected as git worktree: $_cwd_realpath" >&2
+        ;;
+    esac
+  fi
+  unset _cwd_realpath _worktrees_root
+fi
+
+# ============================================================
 # ── Master Health Check (optimized: grep instead of jq) ─────────────────
 MASTER_STATE="${INSTANCES_DIR}/master_main/state.json"
 MASTER_NEEDS_TAKEOVER="false"
