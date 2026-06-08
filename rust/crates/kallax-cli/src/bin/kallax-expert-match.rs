@@ -78,33 +78,59 @@ pub struct MatchResult {
 // ============================================================================
 
 const KALLAX_TERMS: &[&str] = &[
-    // architect (from trigger + manual)
+    // architect (from trigger + manual + expanded)
     "微服务", "服务拆分", "模块边界", "解耦", "依赖管理", "循环依赖",
     "接口对不上", "跨服务调用", "分布式", "系统设计", "架构", "重构",
-    "抽象层", "技术选型", "模块耦合", "接口契约", "API定义",
-    // backend (from trigger + manual)
-    "接口慢", "数据库索引", "请求超时", "5xx", "缓存击穿", "死锁",
-    "慢SQL", "N+1", "连接池", "服务端", "后端报错", "API", "接口",
-    "SQL", "查询", "事务", "缓存", "性能", "后端", "数据层", "锁竞争",
-    "慢查询", "数据库", "查询慢",
-    // frontend (from trigger + manual)
+    "抽象层", "技术选型", "模块耦合", "接口契约", "API定义", "链路追踪",
+    "灰度发布", "灰度", "SLA", "SLO", "容量规划", "服务网格", "Sidecar",
+    "容器化", "K8s", "Kubernetes", "弹性伸缩", "熔断", "限流", "降级",
+    "读写分离", "分库分表", "CQRS", "事件溯源", " Saga模式",
+    // backend (from trigger + manual + expanded)
+    "接口慢", "数据库索引", "请求超时", "5xx", "504", "502", "503",
+    "缓存击穿", "死锁", "deadlock", "锁", "锁竞争", "连接耗尽", "GC",
+    "OOM", "内存泄漏", "慢SQL", "N+1", "连接池", "服务端", "后端报错",
+    "API", "接口", "SQL", "查询", "事务", "缓存", "性能", "后端",
+    "数据层", "慢查询", "数据库", "查询慢", "数据库崩溃", "数据库连接",
+    "主从复制", "读写分离", "慢查询优化", "SQL注入", "跨库查询",
+    "分布式事务", "TCC", "可靠消息", "最终一致性", "压测", "基准测试",
+    "连接池配置", "连接泄漏", "半开连接", "重试机制", "幂等性",
+    // frontend (from trigger + manual + expanded)
     "页面卡", "白屏", "首屏慢", "样式错乱", "加载慢", "点击没反应",
     "动画卡", "滚动卡", "重渲染", "组件耦合", "状态管理混乱",
     "页面", "组件", "渲染", "React", "Vue", "样式", "DOM", "LCP",
-    "首屏", "懒加载", "重渲染", "UI",
-    // ux (from trigger + manual)
+    "首屏", "懒加载", "重渲染", "UI", "FCP", "FID", "CLS", "TTI",
+    "闪退", "黑屏", "抖动", "卡帧", "内存溢出", "包体积", "代码分割",
+    "TreeShaking", "SSR", "SSG", " hydration", "虚拟列表", "无限滚动",
+    "骨架屏", "loading", "spinner", "loading态", "错误边界", "降级UI",
+    "可访问性", "a11y", "WCAG", "键盘导航", "屏幕阅读器", "ARIA",
+    // ux (from trigger + manual + expanded)
     "用户跳出", "按钮点击率", "学习成本", "新用户不会用", "步骤太多",
     "用户旅程", "界面卡", "操作复杂", "体验", "旅程", "流程", "可用性",
-    "认知", "行为", "转化", "跳出", "流失",
-    // product (from trigger + manual)
+    "认知", "行为", "转化", "跳出", "流失", "留存", "活跃", "转化漏斗",
+    "NPS", "用户留存", "日活", "月活", "用户粘性", "跳出率", "转化率",
+    "漏斗分析", "用户路径", "行为分析", "热力图", "点击图", "滚动深度",
+    "A/B测试", "ABtest", "用户研究", "访谈", "问卷", "反馈", "评价",
+    // product (from trigger + manual + expanded)
     "要不要做", "砍功能", "MVP", "ROI", "PRD", "优先级排序",
     "需求", "功能", "优先级", "价值", "版本", "规划", "路线图",
-    // security (from trigger + manual)
+    "灰度发布", "A/B测试", "用户故事", "PRD", "MRD", "BRD",
+    "路线图", "版本规划", "迭代", " sprint", "backlog", "kanban",
+    "需求池", "需求评审", "优先级评估", "价值评估", "工作量评估",
+    "技术债", "产品策略", "增长", "留存", "活跃", "变现",
+    // security (from trigger + manual + expanded)
     "被攻击", "数据泄露", "越权", "撞库", "XSS", "CSRF", "OWASP",
-    "漏洞", "攻击", "注入", "鉴权", "泄露", "合规",
-    // pm (from trigger + manual)
+    "漏洞", "攻击", "注入", "鉴权", "泄露", "合规", "SSRF", "IDOR",
+    "提权", "权限提升", "越权访问", "未授权", "认证", "授权", "OAuth",
+    "JWT", "Token", "会话管理", "Cookie", "Session", "CSRF", "SQL注入",
+    "命令注入", "路径穿越", "文件上传", "下载", "敏感信息", "密码",
+    "加密", "解密", "哈希", "签名", "证书", "TLS", "HTTPS", "安全审计",
+    "渗透测试", "漏洞扫描", "安全加固", "安全配置", "防火墙", "WAF",
+    // pm (from trigger + manual + expanded)
     "跨ticket", "团队任务分配", "延期", "谁负责", "排期", "owner",
     "协调", "任务", "排期", "风险", "跨团队", "对接", "阻塞",
+    "资源冲突", "依赖关系", "风险评估", "项目延期", "进度延迟",
+    "任务阻塞", " blocker", "critical", "P0", "P1", "hotfix", "紧急修复",
+    "发布阻塞", "环境问题", "环境配置", "部署失败", "回滚", "数据迁移",
 ];
 
 // ============================================================================
@@ -429,7 +455,7 @@ fn load_last_expert(audit_log: &Path) -> Option<String> {
 // L1a: Keyword Match Scoring
 // ============================================================================
 
-fn score_l1a(tokens: &[String], triggers: &[String]) -> u32 {
+fn score_l1a(tokens: &[String], triggers: &[String], kallax_terms: &[&str]) -> u32 {
     let mut score: u32 = 0;
 
     for token in tokens {
@@ -440,17 +466,19 @@ fn score_l1a(tokens: &[String], triggers: &[String]) -> u32 {
             continue;
         }
 
+        // Expert-specific trigger match: 30 pts (strong signal)
         for trigger in triggers {
-            // Exact match
-            if token == trigger {
+            if token_match(token, trigger) {
                 score = score.saturating_add(30);
                 break;
             }
+        }
 
-            // For tokens >= 2 chars, check if trigger starts with token (prefix match)
-            // e.g., "页面卡" starts with "页面"
-            if token_len >= 2 && trigger.starts_with(token.as_str()) {
-                score = score.saturating_add(30);
+        // KALLAX domain dict match: 10 pts (weak signal, used as tiebreaker/recall booster)
+        // Lower weight avoids "all experts tied" when KALLAX dict has shared terms
+        for term in kallax_terms {
+            if token_match(token, term) {
+                score = score.saturating_add(10);
                 break;
             }
         }
@@ -458,6 +486,24 @@ fn score_l1a(tokens: &[String], triggers: &[String]) -> u32 {
 
     // Cap at 90 (3 keyword matches = full w1)
     score.min(90)
+}
+
+fn token_match(token: &str, candidate: &str) -> bool {
+    // 1. Exact match
+    if token == candidate {
+        return true;
+    }
+
+    // 2. Bidirectional substring (token contains candidate OR vice versa)
+    if token.contains(candidate) || candidate.contains(token) {
+        return true;
+    }
+
+    // NOTE: 2-gram window removed — too many false ties (e.g. "数据" matches both
+    // backend's "数据库" and security's "数据泄露"). If recall is needed, expand
+    // expert triggers or KALLAX dict with explicit short forms instead.
+
+    false
 }
 
 // ============================================================================
@@ -576,6 +622,63 @@ fn apply_rule4_tiebreaker(candidates: &mut Vec<(String, u32)>) -> bool {
 }
 
 // ============================================================================
+// L2 Fallback — Fuzzy Search via l1b-router.sh (M6 integration)
+// Called when L1b tiebreaker triggers ambiguous=true
+// Uses SQLite FTS5 + cosine similarity as second opinion
+// ============================================================================
+
+#[derive(Debug, Deserialize)]
+struct L2Result {
+    best: String,
+    score: u32,
+    ambiguous: bool,
+    reason: String,
+}
+
+fn apply_l2_fallback(
+    candidates: &[(String, u32)],
+    requirement: &str,
+    kallax_root: &Path,
+) -> Option<(String, u32)> {
+    // Build candidates JSON for l1b-router.sh
+    let candidates_json: String = candidates
+        .iter()
+        .map(|(id, score)| format!(r#"{{"id":"{}","score":{}}}"#, id, score))
+        .collect::<Vec<_>>()
+        .join(",");
+
+    let full_json = format!("[{}]", candidates_json);
+
+    // Call l1b-router.sh
+    let l1b_script = kallax_root.join("scripts").join("l1b-router.sh");
+    if !l1b_script.exists() {
+        return None;
+    }
+
+    let output = std::process::Command::new("bash")
+        .arg(l1b_script)
+        .arg(full_json)
+        .arg(requirement)
+        .output()
+        .ok()?;
+
+    if !output.status.success() {
+        return None;
+    }
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let result: L2Result = serde_json::from_str(stdout.trim()).ok()?;
+
+    // L2 threshold: similarity > 0.6 to accept
+    // Score 80+ out of 100 maps to > 0.6 similarity
+    if result.score > 60 && !result.ambiguous {
+        return Some((result.best, result.score));
+    }
+
+    None
+}
+
+// ============================================================================
 // Audit Log Writing
 // ============================================================================
 
@@ -673,11 +776,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         std::process::exit(1);
     }
 
-    // L1a: keyword match
+    // L1a: keyword match (expert trigger + KALLAX domain dict)
     let mut candidates: Vec<(String, u32)> = experts
         .iter()
         .map(|e| {
-            let score = score_l1a(&tokens, &e.trigger);
+            let score = score_l1a(&tokens, &e.trigger, KALLAX_TERMS);
             (e.id.clone(), score)
         })
         .collect();
@@ -699,9 +802,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // L1b Rule 4: Tiebreaker
     let ambiguous = apply_rule4_tiebreaker(&mut candidates);
 
-    // Pick best
-    candidates.sort_by(|a, b| b.1.cmp(&a.1));
-    let (best_id, best_score) = candidates.first().cloned().unwrap_or_else(|| ("none".to_string(), 0));
+    // M6: L2 Fallback when ambiguous — call l1b-router.sh FTS5 for second opinion
+    let mut l2_used = false;
+    let mut best_id;
+    let mut best_score;
+
+    if ambiguous {
+        if let Some((l2_id, l2_score)) = apply_l2_fallback(&candidates, requirement, &kallax_root) {
+            best_id = l2_id;
+            best_score = l2_score;
+            l2_used = true;
+        } else {
+            // L2 failed or low confidence — fall back to L1 miss
+            best_id = "none".to_string();
+            best_score = 0;
+        }
+    } else {
+        // Pick best from L1b
+        candidates.sort_by(|a, b| b.1.cmp(&a.1));
+        (best_id, best_score) = candidates.first().cloned().unwrap_or_else(|| ("none".to_string(), 0));
+    }
 
     // Build reason string
     let mut reason_parts = Vec::new();
@@ -718,11 +838,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         reason_parts.push(format!("history:+5({})", last_expert.as_ref().unwrap_or(&String::new())));
     }
     if ambiguous {
+        if l2_used {
+            reason_parts.push("L2:resolved".to_string());
+        } else {
+            reason_parts.push("L1_miss:L2_low_confidence".to_string());
+        }
+    } else {
         reason_parts.push("tiebreak:resolved".to_string());
     }
     let reason = reason_parts.join("; ");
 
-    let via = if ambiguous {
+    let via = if l2_used {
+        "L2"
+    } else if ambiguous {
         "L1b_ambiguous"
     } else if noun_mapped || history_applied || !zeroed.is_empty() {
         "L1b"
