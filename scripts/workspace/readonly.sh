@@ -5,6 +5,8 @@
 # - set -euo pipefail
 # - fail-closed: any error exit 1 deny
 # - realpath execution order first
+# - unknown role = readonly (fail-closed)
+# - role allowlist validation
 #
 # Usage: workspace/readonly.sh --path <path> --actor <actor> [--role <role>]
 # Example: workspace/readonly.sh --path miao/ --actor "Steven Chen"
@@ -26,6 +28,47 @@ AUDIT_DB="${KALLAX_ROOT}/.kallax/data/authz.db"
 TARGET_PATH=""
 ACTOR=""
 ROLE=""
+
+ROLE_ALLOWLIST="master conductor performer readonly auditor"
+
+log_readonly_check() {
+  local path="$1"
+  local role="$2"
+  local result="$3"
+  local timestamp
+  timestamp="$(date +%s)"
+  mkdir -p "$(dirname "$AUDIT_DB")"
+  echo "[$timestamp] path=$path role=$role actor=$ACTOR result=$result" >> "${AUDIT_DB}.log"
+}
+
+is_readonly_for_role() {
+  local path="$1"
+  local role="$2"
+
+  case "$role" in
+    master)
+      # master can write anywhere
+      return 1  # not readonly
+      ;;
+    conductor)
+      # conductor cannot write to miao/
+      [[ "$path" == "miao/"* ]] || [[ "$path" == "miao" ]]
+      ;;
+    performer)
+      # performer cannot write to miao/, .git/hooks/, .kallax/config/
+      [[ "$path" == "miao/"* ]] || [[ "$path" == "miao" ]] || \
+      [[ "$path" == ".git/hooks/"* ]] || [[ "$path" == ".git/hooks" ]] || \
+      [[ "$path" == ".kallax/config/"* ]] || [[ "$path" == ".kallax/config" ]]
+      ;;
+    readonly|auditor)
+      # readonly and auditor roles cannot write anywhere
+      return 0  # all paths are readonly
+      ;;
+    *)
+      return 0  # unknown role = readonly (fail-closed)
+      ;;
+  esac
+}
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -59,61 +102,22 @@ if [[ -z "$ACTOR" ]]; then
 fi
 
 if [[ -z "$ROLE" ]]; then
-  ROLE="${KALLAX_CURRENT_ROLE:-$(cat "$KALLAX_ROOT/.kallax/state/state.json" 2>/dev/null | jq -r '.role // "unknown"')}"
+  ROLE="$(jq -r '.role // ""' "$KALLAX_ROOT/.kallax/state/state.json")"
 fi
 
-# Check if path is readonly for the given role
-# Role-dependent readonly paths:
-# - performer: miao/, .git/hooks/, .kallax/config/
-# - conductor: miao/
-# - master: none (can write anywhere)
-# - readonly/auditor: all paths (read-only roles)
-
-is_readonly_for_role() {
-  local path="$1"
-  local role="$2"
-
-  case "$role" in
-    master)
-      # master can write anywhere
-      return 1  # not readonly
-      ;;
-    conductor)
-      # conductor cannot write to miao/
-      [[ "$path" == "miao/"* ]] || [[ "$path" == "miao" ]]
-      ;;
-    performer)
-      # performer cannot write to miao/, .git/hooks/, .kallax/config/
-      [[ "$path" == "miao/"* ]] || [[ "$path" == "miao" ]] || \
-      [[ "$path" == ".git/hooks/"* ]] || [[ "$path" == ".git/hooks" ]] || \
-      [[ "$path" == ".kallax/config/"* ]] || [[ "$path" == ".kallax/config" ]]
-      ;;
-    readonly|auditor)
-      # readonly and auditor roles cannot write anywhere
-      return 0  # all paths are readonly
-      ;;
-    *)
-      return 1  # unknown role = writable (fail open for safety)
-      ;;
-  esac
-}
-
-log_readonly_check() {
-  local path="$1"
-  local role="$2"
-  local result="$3"
-  local timestamp
-  timestamp="$(date +%s)"
-  mkdir -p "$(dirname "$AUDIT_DB")"
-  echo "[$timestamp] path=$path role=$role actor=$ACTOR result=$result" >> "${AUDIT_DB}.log"
-}
+# Fail-closed: unknown role is denied (readonly)
+if [[ " $ROLE_ALLOWLIST " != *" $ROLE "* ]]; then
+  log_readonly_check "$TARGET_PATH" "$ROLE" "READONLY"
+  echo "READONLY: $TARGET_PATH is marked as read-only for unknown role $ROLE"
+  exit 1
+fi
 
 if is_readonly_for_role "$TARGET_PATH" "$ROLE"; then
   log_readonly_check "$TARGET_PATH" "$ROLE" "READONLY"
   echo "READONLY: $TARGET_PATH is marked as read-only for role $ROLE"
-  exit 1  # exit 1 = readonly (test maps exit 1 → if branch → WRITABLE... NO that's wrong, let me trace again)
+  exit 1
 else
   log_readonly_check "$TARGET_PATH" "$ROLE" "WRITABLE"
   echo "WRITABLE: $TARGET_PATH is writable for role $ROLE"
-  exit 0  # exit 0 = writable
+  exit 0
 fi

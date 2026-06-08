@@ -36,6 +36,14 @@ export interface RoleTransitionRecord {
 export const BREAK_GLASS_MAX_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 /**
+ * Check if a break-glass transition has expired
+ */
+export function isBreakGlassExpired(record: RoleTransitionRecord): boolean {
+  if (!record.expiresAt) return true; // no TTL set = treat as expired
+  return Date.now() > record.expiresAt;
+}
+
+/**
  * Allowed role transitions
  * Format: from -> allowed to roles
  */
@@ -129,8 +137,8 @@ export function verifyTransition(
   toRole: RoleName,
   actor: string,
   reason: string,
-  recentTransitions: RoleTransitionRecord[] = []
-): KallaxResult<{ allowed: boolean; from: RoleName; to: RoleName; reason?: string; isBreakGlass?: boolean }> {
+  recentTransitions: RoleTransitionRecord[] // required — no default [] (silent bypass)
+): KallaxResult<{ allowed: boolean; from: RoleName; to: RoleName; reason?: string; isBreakGlass?: boolean; expiresAt?: number }> {
   try {
     // Validate inputs
     const validRoles: RoleName[] = ['master', 'conductor', 'performer', 'readonly', 'auditor'];
@@ -160,6 +168,20 @@ export function verifyTransition(
     const isBreakGlass = reason.toLowerCase().includes('break-glass') ||
                           reason.toLowerCase().includes('emergency') ||
                           reason.toLowerCase().includes('urgent');
+
+    // Break-glass TTL enforcement: reject if any prior break-glass record has expired
+    if (isBreakGlass) {
+      for (const t of recentTransitions) {
+        if (t.isBreakGlass && isBreakGlassExpired(t)) {
+          return ok({
+            allowed: false,
+            from: fromRole,
+            to: toRole,
+            reason: 'break-glass TTL expired',
+          });
+        }
+      }
+    }
 
     // No-op transition
     if (fromRole === toRole) {
@@ -200,6 +222,7 @@ export function verifyTransition(
       to: toRole,
       reason: isBreakGlass ? 'break-glass transition' : 'normal transition',
       isBreakGlass,
+      expiresAt: isBreakGlass ? Date.now() + BREAK_GLASS_MAX_TTL_MS : undefined,
     });
   } catch (e: unknown) {
     return err(new KallaxError(KallaxErrorCode.INTERNAL_ERROR, 'Role transition verification failed', { cause: e }));
@@ -232,4 +255,42 @@ export function createBreakGlassTransition(
     expiresAt: now + BREAK_GLASS_MAX_TTL_MS,
     isBreakGlass: true,
   };
+}
+
+/**
+ * Read recent transitions from the audit log file
+ * Used to provide recentTransitions to verifyTransition (required param)
+ */
+export async function readRecentTransitions(
+  auditLogPath: string,
+  limit = 100
+): Promise<RoleTransitionRecord[]> {
+  try {
+    const { readFile } = await import('fs/promises');
+    const content = await readFile(auditLogPath, 'utf-8');
+    const lines = content.trim().split('\n').slice(-limit);
+    const records: RoleTransitionRecord[] = [];
+
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      try {
+        const entry = JSON.parse(line);
+        records.push({
+          fromRole: entry.from as RoleName,
+          toRole: entry.to as RoleName,
+          reason: entry.reason,
+          actor: entry.actor,
+          timestamp: entry.ts,
+          expiresAt: entry.expires_at,
+          isBreakGlass: entry.is_break_glass,
+        });
+      } catch {
+        // skip malformed lines
+      }
+    }
+
+    return records;
+  } catch {
+    return []; // file not found or unreadable = empty
+  }
 }

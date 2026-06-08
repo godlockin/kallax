@@ -10,6 +10,7 @@
  */
 
 import { err, ok } from 'neverthrow';
+import { resolve } from 'path';
 import type { KallaxResult } from '../types/index.js';
 import { KallaxError, KallaxErrorCode } from '../types/index.js';
 
@@ -25,12 +26,22 @@ export const READONLY_PATHS = [
 ] as const;
 
 /**
+ * Normalize a path: resolve to absolute and remove traversal segments (../ etc.)
+ * This prevents symlink/relative-path bypass of readonly checks.
+ */
+function normalizePath(p: string): string {
+  // Resolve to absolute, then remove any ../ and ./ segments
+  return resolve(p).replace(/\/\.\//g, '/').replace(/\/\.\.$/g, '');
+}
+
+/**
  * Check if a path is a read-only path
+ * Uses path.resolve + normalization to prevent traversal bypass.
  */
 export function isReadonlyPath(targetPath: string): boolean {
-  const normalized = targetPath.replace(/\/$/, '');
+  const normalized = normalizePath(targetPath);
   return READONLY_PATHS.some((readonlyPath) => {
-    const rp = readonlyPath.replace(/\/$/, '');
+    const rp = normalizePath(readonlyPath);
     return normalized === rp || normalized.startsWith(rp + '/');
   });
 }
