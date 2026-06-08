@@ -16,16 +16,32 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 AUTHZ_CHECK="${KALLAX_ROOT}/scripts/permission/authz/check.sh"
 PRE_COMMIT="${KALLAX_ROOT}/scripts/hooks/pre-commit"
+STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
 
 echo "=== KALLAX Authz Sanitization Integration Tests ==="
 PASS=0
 FAIL=0
 
+# Save original state, restore on exit
+ORIGINAL_STATE=""
+if [[ -f "$STATE_FILE" ]]; then
+  ORIGINAL_STATE="$(cat "$STATE_FILE")"
+fi
+restore_state() {
+  if [[ -n "$ORIGINAL_STATE" ]]; then
+    printf '%s\n' "$ORIGINAL_STATE" > "$STATE_FILE"
+  fi
+}
+trap restore_state EXIT
+
+# Set role to conductor (tests use conductor for sanitization checks; --role CLI removed)
+jq --arg r "conductor" '.role = $r' "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"
+
 # ── Test 1: Actor injection chars sanitized ────────────────────────────────────
 test_injection_sanitize() {
   local actor="'; DROP TABLE users; --"
   local result
-  result="$(bash "$AUTHZ_CHECK" --action log.read --actor "$actor" --role conductor 2>&1)" || true
+  result="$(bash "$AUTHZ_CHECK" --action log.read --actor "$actor" 2>&1)" || true
 
   # Audit log must not contain SQL injection chars
   AUDIT_LOG="${KALLAX_ROOT}/.kallax/data/authz.db.log"
@@ -57,7 +73,7 @@ test_crlf_sanitize() {
   # Use log.read which conductor has in check.sh permission matrix
   local output
   local exit_code
-  output="$(bash "$AUTHZ_CHECK" --action log.read --actor "$actor" --role conductor 2>&1)" || exit_code=$?
+  output="$(bash "$AUTHZ_CHECK" --action log.read --actor "$actor" 2>&1)" || exit_code=$?
 
   # If it exits 1, check whether it's due to audit log mkdir (env issue) vs actor injection
   if [[ -n "${exit_code:-}" ]]; then
@@ -103,7 +119,7 @@ test_precommit_fail_open_fixed() {
 # ── Test 4: Valid actor with printable chars preserved ────────────────────────
 test_valid_actor_preserved() {
   local actor="Steven Chen <steven@example.com>"
-  if bash "$AUTHZ_CHECK" --action log.read --actor "$actor" --role conductor 2>/dev/null; then
+  if bash "$AUTHZ_CHECK" --action log.read --actor "$actor" 2>/dev/null; then
     echo "  ✓ Valid actor with special chars preserved"
     PASS=$((PASS + 1))
   else

@@ -14,10 +14,28 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 AUTHZ_CHECK="${KALLAX_ROOT}/scripts/permission/authz/check.sh"
+STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
 
 echo "=== Conductor Scope Integration Tests ==="
 PASS=0
 FAIL=0
+
+# Save original state, restore on exit
+ORIGINAL_STATE=""
+if [[ -f "$STATE_FILE" ]]; then
+  ORIGINAL_STATE="$(cat "$STATE_FILE")"
+fi
+restore_state() {
+  if [[ -n "$ORIGINAL_STATE" ]]; then
+    printf '%s\n' "$ORIGINAL_STATE" > "$STATE_FILE"
+  fi
+}
+trap restore_state EXIT
+
+switch_role() {
+  local new_role="$1"
+  jq --arg r "$new_role" '.role = $r' "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"
+}
 
 # Test helper
 test_authz() {
@@ -26,8 +44,11 @@ test_authz() {
   local expected="$3"  # "ALLOWED" or "DENIED"
   local test_name="$4"
 
+  # Switch role in state.json (--role CLI removed per PHASE-002 9c + security review)
+  switch_role "$role"
+
   # Run in subshell to handle set -euo pipefail
-  if bash "$AUTHZ_CHECK" --action "$action" --actor "test-user" --role "$role" 2>/dev/null; then
+  if bash "$AUTHZ_CHECK" --action "$action" --actor "test-user" 2>/dev/null; then
     actual="ALLOWED"
   else
     actual="DENIED"
