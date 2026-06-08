@@ -8,7 +8,51 @@ import { logger } from '../utils/logger.js';
 import { KallaxError } from '../types/index.js';
 
 export function registerDbCommands(program: Command, ctx: AppContext): void {
-  const dbCmd = program.command('db').description('Database migration management');
+  const dbCmd = program.command('db').description('Database management (team collaboration)');
+
+  dbCmd
+    .command('init')
+    .description('Create .kallax/kallax.db and initialize team collaboration tables')
+    .action(async () => {
+      try {
+        const { existsSync, mkdirSync } = await import('node:fs');
+        const Database = (await import('better-sqlite3')).default;
+        const { initializeTeamSchema } = await import('../core/sqlite/index.js');
+
+        const dbDir = '.kallax';
+        const dbPath = '.kallax/kallax.db';
+
+        if (existsSync(dbPath)) {
+          process.stdout.write(JSON.stringify({
+            action: 'init',
+            status: 'exists',
+            path: dbPath,
+            message: 'Database already exists',
+          }) + '\n');
+          return;
+        }
+
+        if (!existsSync(dbDir)) mkdirSync(dbDir, { recursive: true });
+
+        const db = new Database(dbPath);
+        db.pragma('journal_mode = WAL');
+        db.pragma('synchronous = NORMAL');
+        db.pragma('foreign_keys = ON');
+
+        initializeTeamSchema(db);
+        db.close();
+
+        process.stdout.write(JSON.stringify({
+          action: 'init',
+          status: 'ok',
+          path: dbPath,
+          tables: ['phases', 'epics', 'project_tickets', 'team_instances', 'heartbeat_log'],
+        }) + '\n');
+      } catch (error: unknown) {
+        logger.kallaxError(KallaxError.fromUnknown(error));
+        process.exit(1);
+      }
+    });
 
   dbCmd
     .command('migrate')

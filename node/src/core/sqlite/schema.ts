@@ -107,3 +107,86 @@ export function initializeSchema(db: Database.Database): void {
     CREATE INDEX IF NOT EXISTS idx_performer_sessions_updated ON performer_sessions(updated_at);
   `);
 }
+
+/**
+ * Team collaboration schema — phases, epics, tickets, team instances, heartbeat log.
+ * Idempotent: all tables use CREATE IF NOT EXISTS.
+ */
+export function initializeTeamSchema(db: Database.Database): void {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS phases (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      scope TEXT NOT NULL,
+      status TEXT NOT NULL,
+      start_time TEXT,
+      delivery_time TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS epics (
+      id TEXT PRIMARY KEY,
+      phase_id TEXT NOT NULL,
+      title TEXT NOT NULL,
+      scope TEXT NOT NULL,
+      status TEXT NOT NULL,
+      start_time TEXT,
+      delivery_time TEXT,
+      FOREIGN KEY (phase_id) REFERENCES phases(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS project_tickets (
+      id TEXT PRIMARY KEY,
+      epic_id TEXT NOT NULL,
+      title TEXT NOT NULL,
+      type TEXT NOT NULL,
+      priority TEXT NOT NULL,
+      status TEXT NOT NULL,
+      assignee TEXT,
+      file_scope TEXT,
+      acceptance_criteria TEXT NOT NULL,
+      FOREIGN KEY (epic_id) REFERENCES epics(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS team_instances (
+      instance_id TEXT PRIMARY KEY,
+      role TEXT NOT NULL,
+      status TEXT NOT NULL,
+      branch TEXT,
+      pid INTEGER NOT NULL,
+      heartbeat_at INTEGER,
+      missed_count INTEGER NOT NULL DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS heartbeat_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      instance_id TEXT NOT NULL,
+      tick_at INTEGER NOT NULL,
+      status TEXT NOT NULL,
+      FOREIGN KEY (instance_id) REFERENCES team_instances(instance_id)
+    );
+
+    -- Phase indexes
+    CREATE INDEX IF NOT EXISTS idx_phases_status ON phases(status);
+
+    -- Epic indexes
+    CREATE INDEX IF NOT EXISTS idx_epics_phase ON epics(phase_id);
+    CREATE INDEX IF NOT EXISTS idx_epics_status ON epics(status);
+
+    -- Project ticket indexes
+    CREATE INDEX IF NOT EXISTS idx_project_tickets_epic ON project_tickets(epic_id);
+    CREATE INDEX IF NOT EXISTS idx_project_tickets_status ON project_tickets(status);
+    CREATE INDEX IF NOT EXISTS idx_project_tickets_assignee ON project_tickets(assignee);
+
+    -- Team instance indexes
+    CREATE INDEX IF NOT EXISTS idx_team_instances_role ON team_instances(role);
+    CREATE INDEX IF NOT EXISTS idx_team_instances_status ON team_instances(status);
+    CREATE INDEX IF NOT EXISTS idx_team_instances_heartbeat ON team_instances(heartbeat_at);
+
+    -- Heartbeat log indexes
+    CREATE INDEX IF NOT EXISTS idx_heartbeat_log_instance ON heartbeat_log(instance_id);
+    CREATE INDEX IF NOT EXISTS idx_heartbeat_log_tick ON heartbeat_log(tick_at);
+  `);
+}
+
+/** Current version of the team collaboration schema */
+export const TEAM_SCHEMA_VERSION = 1;

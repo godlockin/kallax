@@ -1,0 +1,27 @@
+{
+  "id": "EPIC-016-A",
+  "epicId": "EPIC-016",
+  "phaseId": "PHASE-001",
+  "title": "写 benchmark-init.sh 测量 init 流程的 wall-time 和 token 消耗",
+  "type": "feature",
+  "priority": "P1",
+  "status": "ready",
+  "created_by": "master_main",
+  "created_at": "2026-06-06T04:45:00Z",
+  "file_scope": {
+    "includes": [
+      "scripts/benchmark-init.sh",
+      ".kallax/benchmarks/**"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/benchmark-init.sh 可执行,接受 [--out <path>] [--label <name>] 参数",
+    "测量维度:wall_time_seconds、files_read_count、bash_calls_count、estimated_tokens(从 .kallax/logs 推算)",
+    "输出 JSON 格式,字段含:timestamp, label, wall_time, files_read, bash_calls, tokens_est, notes",
+    "写入 .kallax/benchmarks/<label>-<unix_ts>.json,append 到 .kallax/benchmarks/history.jsonl",
+    "支持 diff 模式:benchmark-init.sh --diff <label1> <label2>,打印 reduction 百分比",
+    "Shell 语法通过 bash -n 验证"
+  ],
+  "estimated_hours": 1.5
+}

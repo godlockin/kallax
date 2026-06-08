@@ -1,0 +1,24 @@
+{
+  "id": "EPIC-015-G",
+  "epicId": "EPIC-015",
+  "phaseId": "PHASE-001",
+  "title": "performer-complete.sh — Performer 交付协议固化",
+  "type": "feature",
+  "priority": "P0",
+  "status": "backlog",
+  "created_by": "master_main",
+  "created_at": "2026-06-06T09:30:00Z",
+  "file_scope": {
+    "includes": ["scripts/performer-complete.sh", ".kallax/hooks/"],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "`performer-complete.sh <ticket-id>` 一键完成交付流程",
+    "自动检测未提交变更 → git add + commit",
+    "自动运行自测 (bash -n / vitest / tsc)",
+    "自动更新 jira/tickets/<id>/ticket.json status → done",
+    "写入 review 请求到 .kallax/queue/inbox/conductor_main/",
+    "review 请求包含: ticket_id, branch, 变更文件列表, 自测结果",
+    "输出交付摘要供 Performer 确认"
+  ]
+}

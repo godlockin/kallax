@@ -1,0 +1,26 @@
+{
+  "id": "EPIC-016-E",
+  "epicId": "EPIC-016",
+  "phaseId": "PHASE-001",
+  "title": "session_start.sh 瘦身 — 跳过 heartbeat + 极简 ASCII card",
+  "type": "perf",
+  "priority": "P2",
+  "status": "done",
+  "created_by": "master_main",
+  "created_at": "2026-06-06T04:45:00Z",
+  "file_scope": {
+    "includes": [
+      ".kallax/hooks/session_start.sh"
+    ],
+    "excludes": []
+  },
+  "dependencies": [],
+  "acceptance_criteria": [
+    "session_start.sh 首次启动(EXISTING_INSTANCES_COUNT==0)时跳过 heartbeat-daemon 启动",
+    "ASCII card 缩减到 6 行(顶部+ROLE+INSTANCE+INBOX+NEXT+底部),去 WORKTREE / TEAM 统计",
+    "TEAM count 计算整体删除(init 期不重要)",
+    "session_start.sh cold 目标 < 300ms(实测 224ms ✓);warm avg 目标 < 400ms(实测 262ms ✓)",
+    "bash -n 通过,bench-init.sh 5 次连续执行 max < 350ms"
+  ],
+  "estimated_hours": 1
+}

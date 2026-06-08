@@ -1,0 +1,51 @@
+{
+  "id": "EPIC-023",
+  "phase": "PHASE-002",
+  "title": "EKET-SURPASS Layer 2-3 — TS Zod + 北极星指标",
+  "scope": "1. TS Zod schema for 7 expert persona (runtime 强类型校验)\n2. 3 阶段 Preamble + trigger 行融合 (UX friction 减少)\n3. 北极星指标 implementation (复用 F ticket 的 expert_invocations queue)\n4. Cross-epic reuse 率 + ab_hit_rate metric (Product 决策用)\n5. integration test + A+B review",
+  "start_time": "2026-06-07",
+  "delivery_time": "2026-06-08",
+  "status": "active",
+  "baseline": {
+    "source": "EKET-SURPASS-STRATEGY-2026-06-07.md (Layer 1 已落地 EPIC-021)",
+    "eket_zod": false,
+    "north_star_metrics": false,
+    "kallax_expert_count": 7
+  },
+  "target": {
+    "zod_schema": true,
+    "preamble_stages": 3,
+    "north_star_metrics": ["expert_activation_rate", "cross_epic_reuse_rate", "ab_hit_rate", "mis_dispatch_rate"],
+    "integration_test_passes": true
+  },
+  "decisions": {
+    "priority": 2,
+    "rationale": "5/5 专家共识 top 2 (Architect/Backend/Frontend/UX/Product 全部 rank top 2)",
+    "8_expert_score": 7.52,
+    "reuse": "Layer 1 已落地 (EPIC-021 7 files + check 脚本), Layer 2-3 接续",
+    "dependency": "无 (复用 .kallax/queue/expert-invocation-queue.sh + heartbeat)"
+  },
+  "tickets": [
+    {
+      "id": "EPIC-023-A",
+      "title": "TS Zod schema for 7 expert persona (src/schema/persona.ts)",
+      "assignee": "performer-EPIC-023-A",
+      "status": "ready",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-023-B",
+      "title": "3 阶段 Preamble + trigger 行融合 (SKILL.md 更新)",
+      "assignee": "performer-EPIC-023-B",
+      "status": "ready",
+      "blocked_by": ["EPIC-023-A"]
+    },
+    {
+      "id": "EPIC-023-C",
+      "title": "北极星指标 implementation (scripts/metrics/sprint-metrics.sh)",
+      "assignee": "performer-EPIC-023-C",
+      "status": "ready",
+      "blocked_by": null
+    }
+  ]
+}

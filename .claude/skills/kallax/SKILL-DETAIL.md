@@ -1,382 +1,205 @@
-# KALLAX Skills 详细文档
-
-## 概述
-
-KALLAX Skills 是一个多专家协作系统，通过模拟专业团队协作来提升复杂任务的解决质量。
-
-## 核心理念
-
-### Expert Panel 设计原则
-
-1. **专业分工**: 每个专家专注特定领域
-2. **并行思考**: 多视角同时分析问题
-3. **协调整合**: Conductor 汇总形成统一决策
-4. **按需扩展**: 可动态引入扩展专家
-
-## 命令详解
-
-### /kallax-panel
-
-启动完整专家评审面板。
-
-**语法**:
-```
-/kallax-panel [topic] [--experts <list>] [--depth <level>]
-```
-
-**参数**:
-- `topic`: 讨论主题 (可选，默认从上下文推断)
-- `--experts`: 自定义专家组合 (默认: architect,backend,frontend,ux,product)
-- `--depth`: 分析深度 (quick/standard/deep，默认: standard)
-
-**执行流程**:
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    Phase 1: 架构师先行                    │
-├─────────────────────────────────────────────────────────┤
-│  🏗️ Architect                                           │
-│  - 全局扫描代码库                                         │
-│  - 识别关键约束和依赖                                      │
-│  - 输出: 架构上下文报告                                    │
-└─────────────────────────────────────────────────────────┘
-                          ↓
-┌─────────────────────────────────────────────────────────┐
-│                   Phase 2: 并行分析                      │
-├─────────────────────────────────────────────────────────┤
-│  💻 Backend    │  🎨 Frontend  │  🖌️ UX    │  📋 Product │
-│  - API 设计    │  - 组件规划   │  - 体验   │  - 需求     │
-│  - 数据模型    │  - 状态管理   │  - 流程   │  - 优先级   │
-│  - 性能考量    │  - 性能优化   │  - 可用性 │  - ROI      │
-└─────────────────────────────────────────────────────────┘
-                          ↓
-┌─────────────────────────────────────────────────────────┐
-│                  Phase 3: 汇总决策                       │
-├─────────────────────────────────────────────────────────┤
-│  🎼 Conductor                                           │
-│  - 整合各专家意见                                         │
-│  - 解决冲突和权衡                                         │
-│  - 输出: 统一实施方案                                     │
-└─────────────────────────────────────────────────────────┘
-```
-
-**输出格式**:
-
-```markdown
-## Expert Panel 评审报告
-
-### 主题
-[讨论主题]
-
-### 架构上下文 (Architect)
-[架构师的全局分析]
-
-### 专家意见
-
-#### 💻 Backend
-[后端专家意见]
-
-#### 🎨 Frontend
-[前端专家意见]
-
-#### 🖌️ UX
-[UX 专家意见]
-
-#### 📋 Product
-[产品专家意见]
-
-### 综合决策 (Conductor)
-
-#### 推荐方案
-[最终推荐]
-
-#### 实施路径
-1. [步骤1]
-2. [步骤2]
-...
-
-#### 风险与缓解
-| 风险 | 概率 | 影响 | 缓解措施 |
-|------|------|------|----------|
-| ... | ... | ... | ... |
-
-#### 后续行动
-- [ ] [Action Item 1]
-- [ ] [Action Item 2]
-```
-
+---
+name: kallax-detail
+description: Detailed reference for KALLAX — daemon invocation standard, zombie defense, Performer onboarding protocol, diagnostic logging.
 ---
 
-### /kallax-expert
+# KALLAX Detailed Reference
 
-召唤单个专家进行分析。
+## Daemon Invocation Standard (AC3)
 
-**语法**:
-```
-/kallax-expert <role> [context] [--output <format>]
-```
-
-**参数**:
-- `role`: 专家角色 (见 SKILL.md 列表)
-- `context`: 上下文信息 (可选)
-- `--output`: 输出格式 (markdown/json/brief，默认: markdown)
-
-**核心专家详解**:
-
-#### 🏗️ Architect (架构师)
-
-**触发场景**:
-- 系统设计评审
-- 技术选型决策
-- 性能/扩展性分析
-- 依赖关系梳理
-
-**输出内容**:
-- 架构图 (Mermaid)
-- 组件依赖分析
-- 技术栈推荐
-- 风险评估
-
-#### 💻 Backend (后端工程师)
-
-**触发场景**:
-- API 设计
-- 数据模型设计
-- 后端性能优化
-- 安全性考量
-
-**输出内容**:
-- API 规范 (OpenAPI)
-- 数据模型 (ERD)
-- 实现方案
-- 测试策略
-
-#### 🎨 Frontend (前端工程师)
-
-**触发场景**:
-- 组件设计
-- 状态管理方案
-- 前端性能优化
-- 构建配置
-
-**输出内容**:
-- 组件树
-- 状态流图
-- 实现方案
-- 性能指标
-
-#### 🖌️ UX (UX 研究员)
-
-**触发场景**:
-- 用户流程设计
-- 交互模式评审
-- 可用性分析
-- 信息架构
-
-**输出内容**:
-- 用户旅程图
-- 线框图建议
-- 交互规范
-- 可访问性检查
-
-#### 📋 Product (产品经理)
-
-**触发场景**:
-- 需求分析
-- 优先级排序
-- 验收标准定义
-- ROI 评估
-
-**输出内容**:
-- PRD 大纲
-- 用户故事
-- 验收标准
-- 发布计划
-
----
-
-### /kallax-skill
-
-执行特定技能。
-
-**语法**:
-```
-/kallax-skill <name> [target] [--params <json>]
-```
-
-**参数**:
-- `name`: 技能名称
-- `target`: 目标文件/目录 (可选)
-- `--params`: 额外参数 (JSON 格式)
-
-**技能详解**:
-
-#### code-analysis
-静态代码分析，识别问题和改进点。
-
-```
-/kallax-skill code-analysis src/ --params '{"depth": "deep", "focus": ["security", "performance"]}'
-```
-
-#### requirements-analysis
-需求分析，提取用户故事和验收标准。
-
-```
-/kallax-skill requirements-analysis "用户需要能够..." --params '{"format": "agile"}'
-```
-
-#### tdd
-测试驱动开发引导。
-
-```
-/kallax-skill tdd "实现用户认证功能"
-```
-
-#### prompt-engineering
-提示词工程优化。
-
-```
-/kallax-skill prompt-engineering "当前提示词内容"
-```
-
----
-
-### /kallax-list
-
-列出所有可用资源。
-
-**语法**:
-```
-/kallax-list [--category <cat>] [--format <fmt>]
-```
-
-**输出示例**:
-
-```
-KALLAX 可用资源
-
-专家 (55)
-├── 核心专家 (5)
-│   ├── architect - 系统架构、技术选型
-│   ├── backend - 后端实现、API 设计
-│   ├── frontend - 前端实现、组件设计
-│   ├── ux - 用户体验、交互设计
-│   └── product - 产品规划、需求分析
-└── 扩展专家 (50)
-    ├── AI/ML (6)
-    ├── Business (5)
-    ├── Consulting (3)
-    ...
-
-技能 (16)
-├── Algorithm (1)
-├── Analysis (2)
-├── Data (1)
-...
-```
-
----
-
-## 高级用法
-
-### 自定义专家组合
-
-```
-/kallax-panel "微服务拆分" --experts architect,backend,devops,sre
-```
-
-### 深度分析模式
-
-```
-/kallax-panel "安全架构评审" --depth deep
-```
-
-### 链式调用
+Every daemon MUST be launched via `run_daemon()` from `scripts/lib/daemon.sh`:
 
 ```bash
-# 先分析，再实施
-/kallax-expert architect "评审当前设计"
-/kallax-skill code-analysis src/
-/kallax-skill refactoring "基于分析结果重构"
+source "${SCRIPTS_DIR}/lib/daemon.sh"
+run_daemon "heartbeat" "$HEARTBEAT_SCRIPT" "${INSTANCE_ID}" "${INSTANCES_DIR}"
 ```
 
-### 与其他工具集成
+**Four mandatory elements:**
+1. `< /dev/null` — stdin isolation (prevents parent shell pipe hang)
+2. `> /dev/null 2>&1` — stdout/stderr isolation
+3. `setsid` — new session/process group (orphans from parent)
+4. `disown` — remove from shell job table
+
+**Failure mode without isolation:**
+- Node.js `child_process.spawn` inherits parent stdout/stderr pipes
+- Parent waits for all child fd to close → permanent hang
+- Seen in: EPIC-016-R incident (session_start.sh:193 missing `>/dev/null 2>&1`)
+
+## run_daemon() Contract
 
 ```bash
-# 结合 Git 工作流
-/kallax-panel "PR #123 架构变更评审"
-
-# 结合 CI/CD
-/kallax-skill ci-cd "优化构建流程"
+run_daemon <name> <script> [args...] → writes PID to $STATE_FILE.heartbeat.${name}_pid
+- Returns 0: daemon confirmed within 3s via state.json
+- Returns 1: timeout or not executable
+- State file must contain: .heartbeat.${name}_pid field
 ```
 
----
+## ZOMBIE Detection (AC5)
 
-## 最佳实践
+**Definition:** Daemon process is dead but state.json still shows ACTIVE.
 
-### 1. 选择合适的粒度
+**check-stale.sh detection:**
+```bash
+DAEMON_PID=$(jq -r '.heartbeat.heartbeat_daemon_pid // empty' "${state_file}" 2>/dev/null || true)
+if [ -n "$DAEMON_PID" ] && ! kill -0 "$DAEMON_PID" 2>/dev/null; then
+  jq '.status = "ZOMBIE"' "${state_file}" > "${state_file}.tmp" 2>/dev/null && \
+    mv "${state_file}.tmp" "${state_file}" 2>/dev/null || true
+  echo "  ZOMBIE ${INSTANCE_ID} (daemon pid ${DAEMON_PID} dead, state was ACTIVE)"
+fi
+```
 
-| 任务类型 | 推荐方式 |
-|----------|----------|
-| 新产品/新 EPIC | `/kallax-panel` |
-| 单一领域问题 | `/kallax-expert` |
-| 具体技术任务 | `/kallax-skill` |
-| 简单修复 | 直接执行 |
+**ZOMBIE causes:**
+- Ctrl-C without EXIT trap firing
+- Daemon crash (OOM, segfault)
+- `kill -9` without cleanup
 
-### 2. 提供充分上下文
+**Prevention:** EXIT/INT/TERM trap in session_start.sh kills daemon on any exit.
+
+## Performer 初始化协议 (AC15)
+
+### Trigger Conditions
+
+- `/kallax` init → select Performer role
+- `KALLAX_ROLE=performer bash .kallax/hooks/session_start.sh`
+- `bash scripts/performer-session-init.sh`
+
+### 4-Step State-Check Output Format
+
+**Step 1/4: Project State**
+```
+─── Step 1/4: Project State ───
+  Master: ACTIVE
+  Active EPICs: EPIC-016
+  Ready tickets:
+   [EPIC-016-R] session_start.sh 卡死全面防御 [P1]
+   [EPIC-016-N] ...
+```
+
+**Step 2/4: Session State**
+```
+─── Step 2/4: Session State ───
+  Branch: miao
+  In worktree: no
+  Current task: none
+```
+
+**Step 3/4: Candidate Ranking**
+```
+─── Step 3/4: Candidate Tickets ───
+  Top candidates:
+    [EPIC-016-R] session_start.sh 卡死全面防御 [P1] ★ recommended
+    [EPIC-016-N] ...
+```
+
+**Step 4/4: Claim Confirmation**
+```
+─── Step 4/4: Claim Ticket ───
+Select ticket to claim (or 'q' to skip): 1
+
+  ✓ Claimed EPIC-016-R
+  ✓ Worktree: /path/to/.kallax/worktrees/performer-EPIC-016-R
+  ✓ State updated
+
+╔════════════════════════════════════════════════════╗
+║  READY TO WORK                                      ║
+╠════════════════════════════════════════════════════╣
+║  TICKET  ▸ EPIC-016-R                               ║
+║  WORKTREE▸ .kallax/worktrees/performer-EPIC-016-R ║
+║  BRANCH  ▸ feature/epic-016-r-stdio-defense        ║
+╠════════════════════════════════════════════════════╣
+║  NEXT: cd worktree && implement ACs                 ║
+╚════════════════════════════════════════════════════╝
+```
+
+### 4 Failure Scenarios
+
+| Scenario | Output |
+|---|---|
+| (a) No EPIC | "请先由 master 初始化一个 EPIC" |
+| (b) Normal flow | Proceed through Steps 1-4 |
+| (c) Already on feature branch | "你已在处理 EPIC-016-X，是否继续？(y/n)" |
+| (d) No master | "⚠ 无 master 协调，建议先初始化 master" |
+
+## Diagnostic JSONL Format (AC6)
+
+On every session_start.sh exit, structured diagnostic is written:
+
+```json
+{"ts":"2026-06-06T15:30:00Z","event":"session_start_exit","instance":"performer_host_12345","pid":98765,"daemon_pid":98766,"exit_code":0}
+```
+
+**Fields:**
+- `ts` — ISO 8601 UTC timestamp
+- `event` — always `session_start_exit`
+- `instance` — instance_id
+- `pid` — session_start.sh PID ($$)
+- `daemon_pid` — heartbeat daemon PID (null if not started)
+- `exit_code` — exit code of the shell
+
+**Log location:** `.kallax/logs/session_start.diag.jsonl`
+
+## First-Boot Heartbeat Skip (AC7)
+
+**Two modes:**
+
+1. **Opt-in (default):** `KALLAX_SKIP_HEARTBEAT_ON_FIRST_BOOT=0` forces heartbeat even on first boot
+2. **On-demand (recommended):** Only start daemon if `master_main/state.json` exists AND status is STALE/CLOSING
+
+**Implementation:**
+```bash
+if [ "${EXISTING_INSTANCES_COUNT}" -gt 0 ]; then
+  # ... candidate resolution ...
+  if [ -n "${KALLAX_SKIP_HEARTBEAT_ON_FIRST_BOOT:-}" ] && \
+     [ "${KALLAX_SKIP_HEARTBEAT_ON_FIRST_BOOT}" = "0" ]; then
+    run_daemon "heartbeat" "$HEARTBEAT_SCRIPT" "${INSTANCE_ID}" "${INSTANCES_DIR}"
+  elif [ -f "${MASTER_STATE}" ]; then
+    MASTER_STATUS=$(jq -r '.status // "unknown"' "${MASTER_STATE}" 2>/dev/null || echo "unknown")
+    if [ "${MASTER_STATUS}" = "STALE" ] || [ "${MASTER_STATUS}" = "CLOSING" ]; then
+      run_daemon "heartbeat" "$HEARTBEAT_SCRIPT" "${INSTANCE_ID}" "${INSTANCES_DIR}"
+    fi
+  fi
+fi
+```
+
+## Cleanup & Archive (AC9)
+
+Zombie/stale instances are archived (NOT deleted) to `.kallax/instances/.archive/`:
 
 ```bash
-# ❌ 上下文不足
-/kallax-panel
+# Criteria: ZOMBIE or STALE, or daemon process dead
+IS_ZOMBIE=false
+if [ "$STATUS" = "ZOMBIE" ] || [ "$STATUS" = "STALE" ]; then
+  IS_ZOMBIE=true
+elif [ -n "$DAEMON_PID" ] && ! kill -0 "$DAEMON_PID" 2>/dev/null; then
+  IS_ZOMBIE=true
+fi
 
-# ✅ 上下文充分
-/kallax-panel "设计实时消息系统，需支持10万并发，消息持久化，已有 PostgreSQL 和 Redis"
+if [ "$IS_ZOMBIE" = true ]; then
+  ARCHIVE_SUBDIR="${ARCHIVE_DIR}/$(date +%Y%m%d_%H%M%S)_${INSTANCE_ID}"
+  mkdir -p "$ARCHIVE_SUBDIR"
+  mv "$INSTANCE_DIR"/* "$ARCHIVE_SUBDIR/" 2>/dev/null || true
+  rmdir "$INSTANCE_DIR" 2>/dev/null || true
+fi
 ```
 
-### 3. 迭代式使用
+Archive naming: `{date}_{instance_id}/` — sortable, timestamp-prefixed.
 
+## Performance Gate (AC10)
+
+**bash -n syntax check** on all modified scripts:
 ```bash
-# 第一轮: 粗粒度分析
-/kallax-panel "用户系统设计" --depth quick
-
-# 第二轮: 针对性深入
-/kallax-expert security "认证模块安全评审"
+bash -n .kallax/hooks/session_start.sh
+bash -n scripts/heartbeat-test.sh
+bash -n scripts/check-stale.sh
+bash -n scripts/test-no-hang.sh
 ```
 
-### 4. 记录决策
+**Time gate:** `time bash .kallax/hooks/session_start.sh < 0.5s`
 
-专家评审的输出可直接作为 ADR (Architecture Decision Record) 的基础。
+## Test Scripts
 
----
-
-## 故障排除
-
-### 专家意见冲突
-
-当专家意见产生冲突时，Conductor 会:
-1. 明确列出冲突点
-2. 分析各方理由
-3. 基于项目约束给出建议
-4. 标记需人工决策的事项
-
-### 分析超时
-
-对于大型代码库:
-```bash
-# 限制分析范围
-/kallax-skill code-analysis src/core/ --params '{"maxFiles": 100}'
-
-# 使用快速模式
-/kallax-panel "问题" --depth quick
-```
-
-### 缺少领域专家
-
-如果需要的专家不在列表中:
-```bash
-# 使用最接近的专家
-/kallax-expert mgmt "项目管理问题"
-
-# 或请求添加新专家
-# (提交 PR 到 experts/extended/)
-```
+| Script | Purpose |
+|---|---|
+| `scripts/test-no-hang.sh` | AC8: 10 iterations, < 1s each, no orphan heartbeat |
+| `scripts/test-performer-onboarding.sh` | AC16: 4 scenarios (a/b/c/d) |
+| `scripts/heartbeat-test.sh` | Full E2E: daemon start → tick → stale → revival |

@@ -1,0 +1,58 @@
+{
+  "id": "EPIC-025",
+  "phase": "PHASE-002",
+  "title": "WORKFLOW Hardening — 4 UP 升级 (UP-1~4 from EPIC-021 LESSONS §8.3)",
+  "scope": "1. UP-1: Rule 8 \"L4 脚本必须存在, 否则 ticket 不 close\" (CLAUDE.md 修订)\n2. UP-2: Rule 9 \"4-Level Fact-Forcing 强制机制 = task:complete 集成\" (新脚本 + pre-flight check)\n3. UP-3: Rule 6 修订 \"EPIC 实施 commit 必带 LESSONS-LEARNED 草稿\" (CLAUDE.md 修订)\n4. UP-4: 新建 architecture/heartbeat-observability.md (F ticket 沉淀)\n5. integration test + A+B review",
+  "start_time": "2026-06-07",
+  "delivery_time": "2026-06-08",
+  "status": "active",
+  "baseline": {
+    "source": "EPIC-021 LESSONS-LEARNED §8.3 (4 升级候选)",
+    "current_rules": "Rule 6 + Rule 7 已在 CLAUDE.md (本会话 WORKFLOW-RULES 落地)",
+    "gap": "EPIC-021 复盘 4 项精准修复未应用, 知识沉淀未升级为 enforcement"
+  },
+  "target": {
+    "claude_md_rules_added": 2,
+    "claude_md_rules_revised": 1,
+    "new_scripts": 1,
+    "new_architecture_docs": 1,
+    "all_4_up_merged": true
+  },
+  "decisions": {
+    "priority": 3,
+    "rationale": "8 专家共识高 (5/5 中段, 实施零风险高复利)",
+    "8_expert_score": 7.11,
+    "cost": "极低 (1-2h, 4 小修改)",
+    "compound_value": "高 (UP-2 task:complete pre-flight 防止 LESSONS-LEARNED 漏写)"
+  },
+  "tickets": [
+    {
+      "id": "EPIC-025-A",
+      "title": "UP-1 Rule 8 — L4 脚本存在性强制 (CLAUDE.md 修订)",
+      "assignee": "performer-EPIC-025-A",
+      "status": "ready",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-025-B",
+      "title": "UP-2 Rule 9 — 4-Level Fact-Forcing 强制 (scripts/check-fact-forcing-preflight.sh)",
+      "assignee": "performer-EPIC-025-B",
+      "status": "ready",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-025-C",
+      "title": "UP-3 Rule 6 修订 — 实施 commit 必带 LESSONS-LEARNED 草稿",
+      "assignee": "performer-EPIC-025-C",
+      "status": "ready",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-025-D",
+      "title": "UP-4 architecture/heartbeat-observability.md (F ticket 沉淀)",
+      "assignee": "performer-EPIC-025-D",
+      "status": "ready",
+      "blocked_by": null
+    }
+  ]
+}

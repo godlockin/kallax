@@ -1,0 +1,35 @@
+{
+  "id": "EPIC-016-Q",
+  "epicId": "EPIC-016",
+  "phaseId": "PHASE-001",
+  "title": "\"然后就不动了\" — 排查 post-result 卡死",
+  "type": "bug",
+  "priority": "P1",
+  "status": "done",
+  "created_by": "master_main",
+  "created_at": "2026-06-06T06:00:00Z",
+  "file_scope": {
+    "includes": [
+      "confluence/decisions/REVIEW-016-postresult-hang.md"
+    ],
+    "excludes": []
+  },
+  "dependencies": [],
+  "acceptance_criteria": [
+    "现象:result 输出后 'Crunched 1m 43s' 然后会话不响应输入",
+    "对照历史:5.5min 那次 'Churned 3m 13s' 是同样模式",
+    "嫌疑排序:(a) Stop hook 同步阻塞 (b) claude-mem worker query 慢 (c) Recap 生成后 idle 状态不释放 (d) Claude Code 内部 bug",
+    "提供诊断 SOP:跑新 session 时另开 terminal,fs_usage + lsof -p $PPID 持续 5min,记录 hang 时点的 syscall",
+    "短期 workaround:在 ~/.claude/settings.json 的 Stop hook 加 timeout 10s + '|| true'",
+    "长期:不归 Claude Code 修不了的,等平台 issue"
+  ],
+  "estimated_hours": 3,
+  "notes": "P1 因为这个阻塞新会话可用性,用户工作流完全停摆",
+  "completed_at": "2026-06-07T00:02:00Z",
+  "review": {
+    "reviewer": "master_main",
+    "reviewed_at": "2026-06-07T00:02:00Z",
+    "decision": "APPROVE",
+    "merged_to": "miao"
+  }
+}

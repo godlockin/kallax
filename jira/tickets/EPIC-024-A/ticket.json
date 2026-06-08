@@ -1,0 +1,22 @@
+{
+  "id": "EPIC-024-A",
+  "title": "收集 EPIC-016/021 ticket 描述 + trigger keyword 提取",
+  "type": "research",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      ".kallax/data/expansion/l1-baseline-data.json",
+      "scripts/extension/l1-extract-keywords.sh"
+    ],
+    "excludes": []
+  },
+  "dependencies": [],
+  "acceptance_criteria": [
+    "读 jira/tickets/EPIC-016/ + jira/tickets/EPIC-021/ 共 25 ticket 描述",
+    "提取 5 expert (Architect/Backend/Frontend/UX/Product) 各自的 trigger keyword 列表",
+    "保存到 .kallax/data/expansion/l1-baseline-data.json (25 记录)",
+    "JSON schema: {ticket_id, expert, keywords[], title, description, actual_expert (从 review 字段读)}"
+  ],
+  "estimated_hours": 2,
+  "notes": "Sprint A 第 1 步, 收集 baseline. 5 专家共识 8/8: validate_first, PM hard data: 17 tickets 零调用"
+}
