@@ -82,9 +82,9 @@ fi
 
 # Get current role: prefer KALLAX_CURRENT_ROLE env (test seam) > state.json
 # (--role CLI removed per PHASE-002 9c + security review)
-ROLE="${KALLAX_CURRENT_ROLE:-$(jq -r '.role // ""' "$STATE_FILE" 2>/dev/null)}"
+ROLE="$(jq -r '.role // ""' "$STATE_FILE" 2>/dev/null)"
 if [[ -z "$ROLE" ]]; then
-  echo "ERROR: No role in env or state.json ($STATE_FILE)" >&2
+  echo "ERROR: No role in state.json ($STATE_FILE)" >&2
   exit 1
 fi
 
@@ -157,22 +157,53 @@ log_audit() {
     '{timestamp: ($ts | tonumber), role: $role, action: $action, actor: $actor, result: $result}')
 
   # Atomic append: flock on Linux, direct append on macOS (acceptable race for dev env)
-  # Emit non-fatal WARN on stderr if audit write fails (PHASE-002 + security review MEDIUM)
+  # PHASE-002 + security review MEDIUM: state-changing actions fail-closed on audit failure
+  is_state_changing() {
+    # Actions that modify persistent state (miao/testing/instance) MUST be audited
+    case "$1" in
+      *.write|*.merge|*.commit|*.push|*.delete|*.create|*.terminate|*.assign|*.claim)
+        return 0  # state-changing
+        ;;
+      *)
+        return 1  # read-only
+        ;;
+    esac
+  }
+
+  local audit_ok=false
   if command -v flock >/dev/null 2>&1; then
-    if ! flock -n "${AUDIT_DB}.log.lock" -- bash -c "printf '%s\n' \"$log_entry\" >> '${AUDIT_DB}.log'" 2>/dev/null; then
-      echo "WARN: audit log write failed for $ACTION (flock)" >&2
+    if flock -n "${AUDIT_DB}.log.lock" -- bash -c "printf '%s\n' \"$log_entry\" >> '${AUDIT_DB}.log'" 2>/dev/null; then
+      audit_ok=true
+    else
+      # Fallback to synchronous unbuffered append (security review MEDIUM)
+      if printf '%s\n' "$log_entry" >> "${AUDIT_DB}.log.fallback" 2>/dev/null; then
+        echo "WARN: primary audit log write failed; wrote to fallback for $ACTION" >&2
+        audit_ok=true
+      fi
     fi
   else
-    # macOS fallback: direct append (minimal risk in dev env)
-    if ! printf '%s\n' "$log_entry" >> "${AUDIT_DB}.log" 2>/dev/null; then
-      echo "WARN: audit log write failed for $ACTION (append)" >&2
+    # macOS fallback: direct append
+    if printf '%s\n' "$log_entry" >> "${AUDIT_DB}.log" 2>/dev/null; then
+      audit_ok=true
+    elif printf '%s\n' "$log_entry" >> "${AUDIT_DB}.log.fallback" 2>/dev/null; then
+      echo "WARN: primary audit log write failed; wrote to fallback for $ACTION" >&2
+      audit_ok=true
     fi
+  fi
+
+  # State-changing actions: fail-closed if audit cannot be written
+  if [[ "$audit_ok" != "true" ]] && is_state_changing "$action"; then
+    echo "ERROR: audit log write failed for state-changing action $ACTION — fail-closed" >&2
+    return 1  # signal failure to caller
   fi
 }
 
 # Perform check
 if check_permission "$ROLE" "$ACTION"; then
-  log_audit "$ROLE" "$ACTION" "ALLOWED"
+  if ! log_audit "$ROLE" "$ACTION" "ALLOWED"; then
+    echo "DENIED: $ACTION — audit log write failed for state-changing action" >&2
+    exit 1
+  fi
   exit 0
 else
   log_audit "$ROLE" "$ACTION" "DENIED"
