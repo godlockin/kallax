@@ -88,3 +88,5 @@ export type {
   TaskDistribution,
   TeamHealth,
 } from './system.js';
+
+export { registerInitCommands } from './init.js';

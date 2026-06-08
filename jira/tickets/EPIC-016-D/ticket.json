@@ -1,0 +1,24 @@
+{
+  "id": "EPIC-016-D",
+  "epicId": "EPIC-016",
+  "phaseId": "PHASE-001",
+  "title": "用一次 Bash 多命令合并替换多次单独 ls/find/cat",
+  "type": "refactor",
+  "priority": "P2",
+  "status": "done",
+  "created_by": "master_main",
+  "created_at": "2026-06-06T04:45:00Z",
+  "file_scope": {
+    "includes": [
+      "~/.claude/skills/kallax/skills/kallax-init.md"
+    ],
+    "excludes": []
+  },
+  "dependencies": ["EPIC-016-C"],
+  "acceptance_criteria": [
+    "kallax-init.md 提供「single-shot probe」示例:`ls .kallax/ 2>/dev/null; cat .kallax/state/instance_config.yml 2>/dev/null; hostname; pwd`",
+    "推荐 Claude 用 `&&` 或 `;` 链式合并多查询为 1 次 Bash 调用",
+    "预期 bash_calls 从 ≤2 降到 1"
+  ],
+  "estimated_hours": 0.2
+}

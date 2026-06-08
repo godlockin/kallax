@@ -1,0 +1,45 @@
+{
+  "id": "EPIC-026",
+  "phase": "PHASE-002",
+  "title": "PERMISSION 12 P0 Fixes — Phase 0.2 (先修 P0 再批 v1)",
+  "scope": "1. Bash hot path FIFO/SQLite 并发 6 bug 修\n2. session_start.sh 黑洞同类风险防\n3. rollback SOP 文档 + 12 P0 fix 集成测试",
+  "start_time": "2026-06-07",
+  "delivery_time": "2026-06-09",
+  "status": "active",
+  "baseline": {
+    "source": "PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §5 (12 P0 fixes)",
+    "main_decision": "主公批准 v1 全范围, 但先 P0 fix"
+  },
+  "target": {
+    "p0_fixes_applied": 12,
+    "rollback_sop_documented": true,
+    "session_start_black_hole_risk": "mitigated"
+  },
+  "tickets": [
+    {
+      "id": "EPIC-026-A",
+      "title": "Bash hot path 6 并发 bug 修 (FIFO/SQLite race)",
+      "assignee": "performer-EPIC-026-A",
+      "status": "ready",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-026-B",
+      "title": "session_start.sh 黑洞风险防 (watchdog + fail-closed)",
+      "assignee": "performer-EPIC-026-B",
+      "status": "ready",
+      "blocked_by": [
+        "EPIC-026-A"
+      ]
+    },
+    {
+      "id": "EPIC-026-C",
+      "title": "rollback SOP 文档 + 12 P0 fix 集成测试",
+      "assignee": "performer-EPIC-026-C",
+      "status": "ready",
+      "blocked_by": [
+        "EPIC-026-B"
+      ]
+    }
+  ]
+}

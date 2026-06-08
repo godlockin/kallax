@@ -13,7 +13,27 @@ export type {
   TaskFilter,
   InstanceFilter,
   DatabaseStats,
+  PhaseRow,
+  EpicRow,
+  ProjectTicketRow,
+  TeamInstanceRow,
+  HeartbeatLogRow,
 } from './types.js';
-export { rowToTicket, rowToTask, rowToInstance, rowToMessage } from './types.js';
-export { initializeSchema } from './schema.js';
+export {
+  rowToTicket,
+  rowToTask,
+  rowToInstance,
+  rowToMessage,
+  rowToPhase,
+  phaseToRow,
+  rowToEpic,
+  epicToRow,
+  rowToProjectTicket,
+  projectTicketToRow,
+  rowToTeamInstance,
+  teamInstanceToRow,
+  rowToHeartbeatLog,
+  heartbeatLogToRow,
+} from './types.js';
+export { initializeSchema, initializeTeamSchema, TEAM_SCHEMA_VERSION } from './schema.js';
 export { createSQLiteManager, getSqliteManager } from './sync-client.js';

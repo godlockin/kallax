@@ -1,0 +1,36 @@
+{
+  "id": "EPIC-027",
+  "phase": "PHASE-002",
+  "title": "Phase 0 立即 actions — EPIC-022 tracking + pre-clean + rollback SOP",
+  "scope": "1. EPIC-022 ticket 结构 + tracking (0.1)\n2. 21 CLOSING instance pre-clean (0.3)\n3. Rollback SOP 文档 (0.4)",
+  "start_time": "2026-06-07",
+  "delivery_time": "2026-06-08",
+  "status": "active",
+  "baseline": {
+    "source": "PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §7 Phase 0 4 项",
+    "main_decision": "主公批准全部 4 项 (0.4-0.5d)"
+  },
+  "target": {
+    "epic_022_tickets_ready": "5 ticket 拆分",
+    "closing_instances_cleaned": "21 instances (无 orphan)",
+    "rollback_sop_documented": true
+  },
+  "tickets": [
+    {
+      "id": "EPIC-027-A",
+      "title": "EPIC-022 ticket 结构 + tracking (Phase 0.1)",
+      "assignee": "performer-EPIC-027-A",
+      "status": "ready",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-027-B",
+      "title": "21 CLOSING instance pre-clean + rollback SOP (Phase 0.3+0.4)",
+      "assignee": "performer-EPIC-027-B",
+      "status": "ready",
+      "blocked_by": [
+        "EPIC-027-A"
+      ]
+    }
+  ]
+}

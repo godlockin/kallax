@@ -76,6 +76,18 @@ for state_file in "${INSTANCES_DIR}"/*/state.json; do
         echo "  STALE  ${INSTANCE_ID} (${ROLE}) -- last beat: ${LAST_BEAT}, missed: ${NEW_MISSED}"
       fi
     fi
+
+    # AC5: ZOMBIE detection -- daemon dead but state still ACTIVE
+    DAEMON_PID=$(jq -r '.heartbeat.heartbeat_daemon_pid // empty' "${state_file}" 2>/dev/null || true)
+    if [ -n "$DAEMON_PID" ] && ! kill -0 "$DAEMON_PID" 2>/dev/null; then
+      jq '.status = "ZOMBIE"' "${state_file}" > "${state_file}.tmp" 2>/dev/null && \
+        mv "${state_file}.tmp" "${state_file}" 2>/dev/null || true
+      if [ "${CRON_MODE}" = true ]; then
+        echo "ZOMBIE|${INSTANCE_ID}|${ROLE}|${NEW_MISSED}|${LAST_BEAT}"
+      else
+        echo "  ZOMBIE ${INSTANCE_ID} (daemon pid ${DAEMON_PID} dead, state was ACTIVE)"
+      fi
+    fi
   elif [ "${STATUS}" = "STALE" ]; then
     STALE_COUNT=$((STALE_COUNT + 1))
     if [ "${CRON_MODE}" = true ]; then
@@ -95,6 +107,29 @@ if [ "${CRON_MODE}" = false ]; then
   echo ""
   if [ "${STALE_COUNT}" -eq 0 ]; then
     echo "All instances healthy."
+  # Master-specific: if master_main is STALE, alert for takeover
+  MASTER_STATE="${INSTANCES_DIR}/master_main/state.json"
+  MASTER_HANDOFF="${INSTANCES_DIR}/master_main/handoff.json"
+  if [ -f "${MASTER_STATE}" ]; then
+    MASTER_STATUS=$(jq -r '.status // "unknown"' "${MASTER_STATE}" 2>/dev/null || echo "unknown")
+    if [ "${MASTER_STATUS}" = "STALE" ] || [ "${MASTER_STATUS}" = "CLOSING" ]; then
+      echo ""
+      echo "  ╔════════════════════════════════════════════════════╗"
+      echo "  ║  MASTER TAKEOVER REQUIRED                          ║"
+      echo "  ╠════════════════════════════════════════════════════╣"
+      echo "  ║  master_main is ${MASTER_STATUS}                        ║"
+      echo "  ║  Handoff: $([ -f "${MASTER_HANDOFF}" ] && echo 'AVAILABLE' || echo 'NOT FOUND')                              ║"
+      echo "  ║  Action: KALLAX_ROLE=master bash session_start.sh  ║"
+      echo "  ╚════════════════════════════════════════════════════╝"
+      
+      # Write alert to conductor inbox
+      ALERT_FILE=".kallax/queue/inbox/conductor_main/master_takeover_$(date +%s).json"
+      mkdir -p "$(dirname "${ALERT_FILE}")"
+      cat > "${ALERT_FILE}" << ALERT
+{"type":"master_takeover","master_status":"${MASTER_STATUS}","handoff_available":$([ -f "${MASTER_HANDOFF}" ] && echo 'true' || echo 'false'),"detected_at":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","action":"KALLAX_ROLE=master bash .kallax/hooks/session_start.sh --role master"}
+ALERT
+    fi
+  fi
   else
     echo "${STALE_COUNT} stale instance(s) detected."
   fi

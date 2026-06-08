@@ -1,0 +1,149 @@
+{
+  "id": "EPIC-016",
+  "phase": "PHASE-001",
+  "title": "Init Performance Optimization — Kallax Session Start 提速降 token",
+  "scope": "1. Baseline 测量\n2. Layer B 行为优化(Claude 探索收敛)\n3. Layer C 脚本瘦身\n4. Layer A 平台级提案\n5. 迭代验证 60-80% 节省目标",
+  "start_time": "2026-06-06",
+  "delivery_time": "2026-06-08",
+  "status": "active",
+  "baseline": {
+    "wall_time_seconds": 600,
+    "tokens_estimate": 2500000,
+    "source": "observation #5115 (my_projects session, 2026-06-06 12:38 PM)",
+    "method": "user-reported + claude-mem"
+  },
+  "target": {
+    "wall_time_seconds_max": 180,
+    "tokens_estimate_max": 750000,
+    "reduction_pct_min": 70
+  },
+  "tickets": [
+    {
+      "id": "EPIC-016-A",
+      "assignee": "master_main",
+      "status": "done"
+    },
+    {
+      "id": "EPIC-016-B",
+      "assignee": "master_main",
+      "status": "done"
+    },
+    {
+      "id": "EPIC-016-C",
+      "assignee": "master_main",
+      "status": "done"
+    },
+    {
+      "id": "EPIC-016-D",
+      "assignee": "master_main",
+      "status": "done"
+    },
+    {
+      "id": "EPIC-016-E",
+      "assignee": "master_main",
+      "status": "done"
+    },
+    {
+      "id": "EPIC-016-F",
+      "assignee": "master_main",
+      "status": "done"
+    },
+    {
+      "id": "EPIC-016-G",
+      "assignee": "performer-EPIC-016-G",
+      "status": "done",
+      "blocked_by": null,
+      "merge_commit": "be3c6c0"
+    },
+    {
+      "id": "EPIC-016-H",
+      "assignee": "performer-EPIC-016-H",
+      "status": "done",
+      "merge_commit": "f6aeb41"
+    },
+    {
+      "id": "EPIC-016-I",
+      "assignee": "master_main",
+      "status": "done"
+    },
+    {
+      "id": "EPIC-016-J",
+      "assignee": "performer_main",
+      "status": "done",
+      "pr_url": "https://github.com/godlockin/kallax/pull/1",
+      "commit_sha": "e5b7641",
+      "merge_commit": "e16d8b4"
+    },
+    {
+      "id": "EPIC-016-K",
+      "assignee": "performer_StevendeMacBook-Pro.local_50326",
+      "status": "done",
+      "blocked_by": [
+        "EPIC-016-J"
+      ],
+      "merge_commit": "9c4a35f"
+    },
+    {
+      "id": "EPIC-016-L",
+      "assignee": "master_main",
+      "status": "done"
+    },
+    {
+      "id": "EPIC-016-M",
+      "assignee": "performer-EPIC-016-M",
+      "status": "done",
+      "blocked_by": [
+        "EPIC-016-R"
+      ],
+      "merge_commit": "ebb6cc3"
+    },
+    {
+      "id": "EPIC-016-N",
+      "assignee": "performer-EPIC-016-N",
+      "status": "done",
+      "blocked_by": [
+        "EPIC-016-R",
+        "EPIC-016-J"
+      ]
+    },
+    {
+      "id": "EPIC-016-O",
+      "assignee": "performer-EPIC-016-O",
+      "status": "done",
+      "blocked_by": [
+        "EPIC-016-R"
+      ],
+      "merge_commit": "56ebf9c"
+    },
+    {
+      "id": "EPIC-016-P",
+      "assignee": "master_main",
+      "status": "done",
+      "blocked_by": [
+        "EPIC-016-J"
+      ],
+      "merge_commit": "b3c4a1e"
+    },
+    {
+      "id": "EPIC-016-Q",
+      "assignee": "performer-EPIC-016-Q",
+      "status": "done",
+      "blocked_by": null,
+      "merge_commit": "51a26da"
+    },
+    {
+      "id": "EPIC-016-R",
+      "assignee": "performer-EPIC-016-R",
+      "status": "done",
+      "title": "session_start.sh 卡死全面防御 (stdio/zombie/daemon标准 + Performer onboarding state-check)",
+      "merge_commit": "b7db764"
+    },
+    {
+      "id": "EPIC-016-S",
+      "assignee": "performer-EPIC-016-S",
+      "status": "done",
+      "merge_commit": "b59cb02",
+      "title": "Layer A 实施 + session_start 回归修复"
+    }
+  ]
+}

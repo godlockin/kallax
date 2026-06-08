@@ -39,6 +39,7 @@ import { registerSystemCommands } from './commands/system-cmd.js';
 import { registerStartCommands } from './commands/start-cmd.js';
 import { registerEpicCommands } from './commands/epic-cmd.js';
 import { registerBranchCommands } from './commands/branch-cmd.js';
+import { registerInitCommands } from './commands/init.js';
 
 import { registerRouteCommands } from './commands/route-cmd.js';
 function findProjectRoot(): string {
@@ -93,6 +94,7 @@ registerStartCommands(program, ctx);
 registerEpicCommands(program, ctx);
 registerBranchCommands(program);
 registerRouteCommands(program);
+registerInitCommands(program);
 
 program.parseAsync(process.argv).catch((error: unknown) => {
   logger.kallaxError(KallaxError.fromUnknown(error, KallaxErrorCode.INTERNAL_ERROR));

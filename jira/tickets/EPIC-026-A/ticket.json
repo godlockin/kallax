@@ -1,0 +1,28 @@
+{
+  "id": "EPIC-026-A",
+  "title": "Bash hot path 6 并发 bug 修 (FIFO/SQLite race)",
+  "type": "bug",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      ".kallax/hooks/session_start.sh",
+      "scripts/heartbeat-daemon.sh",
+      "scripts/lib/daemon.sh"
+    ],
+    "excludes": []
+  },
+  "dependencies": [],
+  "acceptance_criteria": [
+    "6 个 bash hot path bug 全修 (来源 PERMISSION-MODEL-EXPERT-REVIEW §5):",
+    "  1. session_start.sh fd 重定向 (防 EPIC-016 黑洞重演)",
+    "  2. heartbeat-daemon.sh FIFO race (emit vs drain 原子)",
+    "  3. SQLite WAL mode + busy_timeout (避免 SQLITE_BUSY 永久 hang)",
+    "  4. heartbeat-daemon.sh 双写 (写盘 + 队列, 队列是升级路径)",
+    "  5. scripts/lib/daemon.sh run_daemon() stdbuf/redirect 标准化",
+    "  6. session_start.sh 启动前 zombie daemon 自动清理",
+    "测试: bash -n 通过, 集成测试 scripts/test-session-start-no-hang.sh 全 PASS",
+    "rollback 路径明确 (每个 fix 单独 commit, 可单独 revert)"
+  ],
+  "estimated_hours": 8,
+  "notes": "P0 fixes 是 v1 全范围的前置, 估时 8h. 避免 session_start.sh 黑洞在 v1 实施期间复现"
+}
