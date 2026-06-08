@@ -189,8 +189,12 @@ l1b_route() {
     '{best: $best, score: $score, ambiguous: ($ambiguous == "true"), reason: $reason}'
 }
 
-# 如果直接运行, 做快速测试
+# 如果直接运行, 处理 candidates JSON + requirement, 输出决策 JSON
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-  echo "L1b Router self-test (no LLM, pure bash)"
-  echo "PASS: l1b-router.sh loads correctly"
+  if [ $# -lt 2 ]; then
+    echo "Usage: $0 <candidates_json> <requirement>" >&2
+    echo "L1b Router self-test (no LLM, pure bash)" >&2
+    exit 0
+  fi
+  l1b_route "$1" "$2"
 fi

@@ -1,0 +1,51 @@
+{
+  "id": "EPIC-028-B",
+  "epicId": "EPIC-028",
+  "phaseId": "PHASE-002",
+  "title": "Rust 重写 expert-match (jieba-rs + L1a fix + 3 anti-fab tools)",
+  "type": "feature",
+  "priority": "P0",
+  "file_scope": {
+    "includes": [
+      "rust/crates/kallax-cli/src/bin/kallax-expert-match.rs",
+      "rust/crates/kallax-cli/Cargo.toml",
+      "rust/Cargo.lock",
+      "rust/crates/kallax-core/src/fingerprint.rs",
+      "rust/crates/kallax-core/src/webhook.rs",
+      "rust/crates/kallax-engine/src/agent_pool.rs",
+      "scripts/expert-match.sh",
+      "scripts/l1b-router.sh",
+      "scripts/verify/expert-match-l1b.sh",
+      ".kallax/experts/default/architect.md",
+      ".kallax/experts/default/backend.md",
+      ".kallax/experts/default/frontend.md",
+      ".kallax/experts/default/ux.md",
+      ".kallax/experts/default/product.md",
+      ".kallax/experts/default/security.md",
+      ".kallax/experts/default/pm.md",
+      ".kallax/experts/PRIMARY_NOUNS.md",
+      ".kallax/experts/NEGATIVE_SIGNALS.md",
+      ".kallax/hooks/session_start.sh",
+      ".kallax/scripts/l1b-router.sh",
+      "experts/TRIGGERS.md",
+      "scripts/verify/check-test-case-isolation.sh",
+      "scripts/verify/check-kpi-precision.sh",
+      "scripts/verify/check-scope-creep.sh",
+      "scripts/verify/expert-match-m1-v3.sh",
+      "scripts/verify/expert-match-perf.sh",
+      "jira/tickets/EPIC-028-B/ticket.json"
+    ],
+    "excludes": []
+  },
+  "dependencies": ["EPIC-028-A"],
+  "acceptance_criteria": [
+    "M1 KPI: 30 短句真症状词 ≥ 80% 命中 (实测 26/30 = 86.7%)",
+    "M6 KPI: 20 ambiguous case ≥ 70% 解决 (实测 18/20 = 90%)",
+    "M7 KPI: 10 false-positive ≥ 90% 否决 (实测 9/10 = 90%)",
+    "M8 KPI: P99 < 200ms (实测 152ms)",
+    "check-test-case-isolation: 0 test case verbatim in trigger",
+    "check-scope-creep: 所有改文件在 ticket scope 内"
+  ],
+  "estimated_hours": 8,
+  "notes": "Master corrective integration after 2 Performer attempts (6563362 falsified 30/30=100%, 33cfc48 build fail). Rust binary + L1a logic + 7 trigger 扩词 + 3 anti-fab tools. 4 KPI 全 PASS."
+}
