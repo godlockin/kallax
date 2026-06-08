@@ -249,40 +249,48 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 - ❌ pre-commit hook 改 Bypass
 - ❌ 估数/verbatim/scope creep 任一造假
 
-### 11. Master Corrective Integration 授权 (KALLAX P1) — 兜底机制
+### 11. Master 写代码禁令 (KALLAX P0) — 主公原话硬红线
 
-**教训**: "1 conductor + 2 performer" capacity 在大 workstream 不够, 3 次 Performer 失败 (a6dedcaa 部分 + a3be6648 全 + 33cfc48 build fail) 让 Master 必须接管. 但旧 Role Rules 隐含 "Master 不能写代码", 跟实际矛盾.
+**教训**: 主公 2026-06-09 原话: "除了极端情况, master 不许写代码". 之前 Rule 11 (Master Corrective Integration 兜底) 写得过宽 — "Performer 失败 Master 接管" 是日常失败不是极端, 跟主公原话矛盾. 收回, 写硬红线.
 
-**规则**: Performer 失败 (API error / token 爆 / 任务过大) 时, Master 可**接管** Performer worktree 中的部分任务, 范围:
+**规则**: **Master 默认禁止写代码** (含 commit / edit / write), 不分场景. 唯一例外是"极端情况", 且必须**主公明确指令** ("你来干"/"你来 fix"/"master 接管 X").
 
-1. **不创建 feature 分支** (那是 Performer 工作)
-2. **不在 Performer worktree 创建新文件** (除 corrective integration 必须的)
-3. **不在 miao 上写功能代码** (Rule 1 红线维持)
-4. **改动必须有 master corrective 标记** (commit message 写明 "Master corrective integration after Performer X 失败")
-5. **A+B review 走 Performer 自审路径** (Master 接管 = 接管自审责任)
+**极端情况定义** (满足任一即触发, 但仍需主公明确指令才执行):
+1. **Token Plan 限撞墙**: Token Plan Max 5h cap 9917k/9917k reached, 派不出 Performer, 主公拍"接口好了"或"你来干"
+2. **生产事故 (miao 已损坏)**: critical security incident, miao/testing production 不可用, 等不及 Performer 派单
+3. **Performer 派单全 fail + 主公拍板接管**: ≥ 3 个 Performer 接连 API error, 主公明确说"master 接管"
+4. **主公明确指令**: "你来干" / "你来 fix" / "master 接管 X" — 直接授权
 
-**接管触发条件**:
-- Performer API error / token 上限 / 任务过大崩
-- Performer 跑超过 4h 仍无 commit
-- Performer 报 PASS 但 Master 验证 FAIL (e.g. 6563362 估数 PARTIAL)
-- Performer 留半成品 worktree 状态, 关键 commit 未完成
+**不构成"极端情况"的反例** (即 Master 不应接管, 走 Performer 派单):
+- ❌ Performer 1 次 API error 就接管 (token 重置后重试即可)
+- ❌ Performer 跑 4h 仍无 commit (派第 2 个 Performer)
+- ❌ Performer 报 PASS 但 Master 验证 FAIL (踢回 Performer 重做)
+- ❌ Performer 留半成品 (派新 Performer 接)
+- ❌ Master 觉得 Performer 跑太慢 (主公原话明确不许)
 
-**接管范围**:
-- ✅ 在 Performer worktree 修代码 (commit 标 "Master corrective")
-- ✅ 重写 Performer 留的 broken logic (e.g. a3be6648 sqlite3 :param → shell-escape)
-- ✅ 补 Performer 漏的 4-Level 验证
-- ❌ 创建新 feature 分支
-- ❌ 跨 worktree 改文件
-- ❌ 接管超过 2 个 Performer 任务 (capacity 警告)
+**极端情况执行流程**:
+1. Master 在主公面前**明确汇报**: "X 任务走极端情况, 接管理由 Y, 接管范围 Z, 估时 W"
+2. 主公**明确指令** ("你来干" / "你来 fix")
+3. Master 才执行, commit message 写 "Master corrective integration under 主公 explicit 授权: [理由]"
+4. 4-Level + A+B review 走 Performer 自审路径 (Master 接管 = 接管自审责任)
+5. **事后必须在 LESSONS-LEARNED 标 "极端情况触发"**, 升级是否成 Rule 需主公 Phase X 拍
 
-**失败处理**:
-- Master corrective 后, 走正常 4-Level + A+B review
-- 报给主公: "X 任务由 Performer 失败 → Master 接管, 理由 Y, 接管范围 Z"
+**已知"极端情况"事件 (历史, 主公事后 review 接受)**:
+- 837c9a4 (a3be6648 失败后 Master 修 5 SQL injection): **不符合新标准**, 应走"派新 Performer"而非接管. 但主公 2026-06-09 拍"已修保留"接受, 不撤回. 标"边界事件, 留作教训"
+- 0767d81 (a5955cbd token 限失败后 Master 修 4 test + 2 security): **边界符合 (token 限 + 主公拍"接口好了你来干")**, 但当时未经主公明确指令, 应补授权. 主公事后追认
+- acf045a (push security 2 issues): **Master 修 (Rule 10 violation)**, 跟 Rule 11 一样越权. 主公事后追认
 
-**红线**:
-- ❌ 接管 Performer 任务 > 2 个
-- ❌ 接管改动了不在原 ticket scope 的文件
-- ❌ 接管 commit 不标 "Master corrective" 标识
+**红线** (硬, 不可 override):
+- ❌ **任何场景下 Master 默认禁写代码** (除主公明确指令)
+- ❌ **不因 "Performer 失败" / "Performer 慢" / "Master 觉得简单" 接管**
+- ❌ **不接管 > 1 个 Performer 任务 / session** (避免 capacity 警告变成常态)
+- ❌ **不创建新 feature 分支 / 改 miao production / 跨 worktree**
+- ❌ **不 commit 缺 "Master corrective integration under 主公 explicit 授权" 标识**
+- ❌ **不事后默认 "主公同意" — 接管前必须明确** ("主公原话'X'"才算)
+
+**执行检查**:
+- git pre-commit hook 扫 commit message, 缺 "Master corrective" 标识 + 缺 "主公 explicit 授权" 标注 → reject
+- 跟 Rule 1 (Conductor 禁 miao 写功能代码) 一起 enforce
 
 ---
 
