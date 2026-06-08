@@ -33,13 +33,31 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Build query
+# TIER allowlist validation (strict — only known values)
+VALID_TIERS="default extended generated all"
+if [[ ! " $VALID_TIERS " =~ " $TIER " ]]; then
+  echo "ERROR: Invalid tier '$TIER'. Must be one of: $VALID_TIERS" >&2
+  exit 1
+fi
+
+# DOMAIN validation: alphanumeric + dash/underscore only (rejects SQL meta-chars)
+if [[ "$DOMAIN" != "all" ]] && [[ ! "$DOMAIN" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+  echo "ERROR: Invalid domain '$DOMAIN'. Must be alphanumeric, dash, or underscore." >&2
+  exit 1
+fi
+
+# Build query — values escaped via single-quote wrap + double-single-quote for embedded '
+# (sqlite3 CLI does NOT support :param or ? placeholders, so shell-escape is the only option)
+# Since TIER is allowlisted and DOMAIN is regex-validated above, escape is a defense-in-depth.
+TIER_ESC="${TIER//\'/\'\'}"
+DOMAIN_ESC="${DOMAIN//\'/\'\'}"
+
 WHERE_CLAUSE="1=1"
 if [[ "$TIER" != "all" ]]; then
-  WHERE_CLAUSE="tier='$TIER'"
+  WHERE_CLAUSE="tier='$TIER_ESC'"
 fi
 if [[ "$DOMAIN" != "all" ]]; then
-  WHERE_CLAUSE="$WHERE_CLAUSE AND domain='$DOMAIN'"
+  WHERE_CLAUSE="$WHERE_CLAUSE AND domain='$DOMAIN_ESC'"
 fi
 
 # Check database exists
@@ -50,8 +68,7 @@ fi
 
 # Count query
 if [[ "$COUNT_ONLY" == true ]]; then
-  COUNT=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM expert WHERE $WHERE_CLAUSE;")
-  echo "$COUNT"
+  sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM expert WHERE $WHERE_CLAUSE;"
   exit 0
 fi
 

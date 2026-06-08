@@ -25,6 +25,22 @@ if [[ $# -lt 1 ]]; then
 fi
 REQUIREMENT="$1"
 
+# Issue 2 fix: REQUIREMENT validation - reject dangerous SQL chars
+# Prevent SQL injection via requirement text
+# Check for dangerous chars: ' " ; \ -- newlines
+case "$REQUIREMENT" in
+  *\'*|*\"*|*\;*|*\\*|*--*|*$'\n'*|*$'\r'*)
+    echo "ERROR: Invalid characters in requirement (rejected: ' \" ; \\ -- newlines)" >&2
+    exit 1
+    ;;
+esac
+
+# Shell-escape REQUIREMENT for safe SQL string interpolation.
+# sqlite3 CLI does NOT support :param or ? placeholders, so we must escape at shell level.
+# Single-quote wrap + double-single-quote for embedded quotes.
+REQUIREMENT_ESC="${REQUIREMENT//\'/\'\'}"
+TOP_K_ESC="${L2_TOP_K//\'/\'\'}"
+
 # Ensure database exists
 if [[ ! -f "$DB_PATH" ]]; then
   # Auto-build index if missing
@@ -37,11 +53,13 @@ match_l1() {
   local result
 
   # Match by trigger field (keyword match in trigger or description)
+  # Issue 2 fix: shell-escaped value (sqlite3 CLI has no :param binding)
+  local req_esc="${req//\'/\'\'}"
   result=$(sqlite3 "$DB_PATH" \
     "SELECT id, name_cn, role, emoji, domain, tier, description, trigger
      FROM expert
      WHERE tier = 'default'
-       AND (trigger LIKE '%$req%' OR description LIKE '%$req%')
+       AND (trigger LIKE '%' || '$req_esc' || '%' OR description LIKE '%' || '$req_esc' || '%')
      LIMIT 1;" 2>/dev/null || echo "")
 
   if [[ -z "$result" ]]; then
@@ -60,15 +78,18 @@ match_l2() {
 
   # Use LIKE for substring search (more reliable for Chinese)
   # Output as CSV to avoid delimiter issues with | in data
+  # Issue 2 fix: shell-escaped values (sqlite3 CLI has no :param binding)
+  local req_esc="${req//\'/\'\'}"
+  local topk_esc="${top_k//\'/\'\'}"
   local results
   results=$(sqlite3 -csv "$DB_PATH" \
     "SELECT id, name_cn, role, emoji, domain, tier, description, trigger,
-            (CASE WHEN trigger LIKE '%$req%' THEN 2 ELSE 0 END +
-             CASE WHEN description LIKE '%$req%' THEN 1 ELSE 0 END) as relevance
+            (CASE WHEN trigger LIKE '%' || '$req_esc' || '%' THEN 2 ELSE 0 END +
+             CASE WHEN description LIKE '%' || '$req_esc' || '%' THEN 1 ELSE 0 END) as relevance
      FROM expert
-     WHERE trigger LIKE '%$req%' OR description LIKE '%$req%'
+     WHERE trigger LIKE '%' || '$req_esc' || '%' OR description LIKE '%' || '$req_esc' || '%'
      ORDER BY relevance DESC, RANDOM()
-     LIMIT $top_k;" 2>/dev/null || echo "")
+     LIMIT $topk_esc;" 2>/dev/null || echo "")
 
   if [[ -z "$results" ]]; then
     # Fallback to random selection when no match
@@ -124,6 +145,7 @@ PYEOF
 }
 
 # Write audit log
+# Issue 3 fix: use jq -n to construct JSON safely (prevents injection)
 write_audit() {
   local via="$1"
   local confidence="$2"
@@ -135,11 +157,17 @@ write_audit() {
   local timestamp
   timestamp=$(date +%FT%T%z)
 
+  # Use jq to safely construct JSON (prevents injection via requirement field)
   local entry
-  entry=$(cat <<EOF
-{"timestamp":"$timestamp","via":"$via","confidence":"$confidence","duration_ms":$duration_ms,"matched_expert":"$matched_id","semantic_sim":$semantic_sim,"requirement":"$requirement"}
-EOF
-)
+  entry=$(jq -n \
+    --arg ts "$timestamp" \
+    --arg v "$via" \
+    --arg conf "$confidence" \
+    --arg dur "$duration_ms" \
+    --arg mid "$matched_id" \
+    --arg sim "$semantic_sim" \
+    --arg req "$requirement" \
+    '{timestamp: $ts, via: $v, confidence: $conf, duration_ms: ($dur | tonumber), matched_expert: $mid, semantic_sim: ($sim | tonumber), requirement: $req}')
 
   echo "$entry" >> "$AUDIT_LOG"
 }
@@ -150,10 +178,9 @@ main() {
 
   # L1 attempt
   if result=$(match_l1 "$REQUIREMENT"); then
-    matched_id=$(echo "$result" | sqlite3 -noheader -column "SELECT id FROM (SELECT id FROM expert WHERE id='$(echo "$result" | cut -d'|' -f1)') LIMIT 1;" 2>/dev/null || echo "")
-    if [[ -z "$matched_id" ]]; then
-      matched_id=$(echo "$result" | cut -d'|' -f1)
-    fi
+    # matched_id is the first pipe-delimited field of L1 result
+    # (no SQL needed — L1 result already came from sqlite3 with LIKE-bound req)
+    matched_id=$(echo "$result" | cut -d'|' -f1)
     via="L1"
     confidence="high"
     semantic_sim="1.0"
@@ -214,8 +241,10 @@ main() {
     echo "  via=$via confidence=$confidence duration_ms=$DURATION_MS semantic_sim=$semantic_sim"
   else
     local expert_info
+    # Issue 2 fix: shell-escaped matched_id (sqlite3 CLI has no :param binding)
+    local matched_id_esc="${matched_id//\'/\'\'}"
     expert_info=$(sqlite3 "$DB_PATH" \
-      "SELECT emoji, name_cn, role, domain FROM expert WHERE id='$matched_id' LIMIT 1;" 2>/dev/null || echo "||")
+      "SELECT emoji, name_cn, role, domain FROM expert WHERE id='$matched_id_esc' LIMIT 1;" 2>/dev/null || echo "||")
 
     echo "Matched expert: $matched_id"
     echo "  $expert_info"

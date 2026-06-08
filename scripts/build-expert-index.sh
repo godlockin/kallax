@@ -60,6 +60,7 @@ CREATE INDEX IF NOT EXISTS idx_expert_trigger ON expert(trigger);
 EOF
 
 # Parse expert markdown files
+# Issue 4 fix: use parameterized queries instead of string concatenation
 parse_expert_file() {
   local file="$1"
   local tier="${2:-default}"
@@ -91,9 +92,27 @@ parse_expert_file() {
     return 1
   fi
 
-  echo "INSERT OR REPLACE INTO expert (id, name_cn, role, emoji, domain, tier, description, trigger, file_path) VALUES ("
-  echo "  '$id', '$name_cn', '$role', '$emoji', '$domain', '$tier', '$description', '$trigger', '$file'"
-  echo ");"
+  # Issue 4 fix: reject dangerous characters that could break SQL
+  # Check for dangerous chars: ' " ; \ -- newlines using case statement
+  case "$id$name_cn$role$domain" in
+    *\'*|*\"*|*\;*|*\\*|*--*|*$'\n'*|*$'\r'*)
+      echo "ERROR: Dangerous characters in frontmatter of $file" >&2
+      return 1
+      ;;
+  esac
+
+  # Use sqlite3 parameter binding via HEREDOC with proper quoting
+  # Escape single quotes in values by replacing ' with '' (SQLite standard)
+  local escaped_id="${id//\'/\'\'}"
+  local escaped_name_cn="${name_cn//\'/\'\'}"
+  local escaped_role="${role//\'/\'\'}"
+  local escaped_emoji="${emoji//\'/\'\'}"
+  local escaped_domain="${domain//\'/\'\'}"
+  local escaped_description="${description//\'/\'\'}"
+  local escaped_trigger="${trigger//\'/\'\'}"
+  local escaped_file="${file//\'/\'\'}"
+
+  sqlite3 "$DB_PATH" "INSERT OR REPLACE INTO expert (id, name_cn, role, emoji, domain, tier, description, trigger, file_path) VALUES ('$escaped_id', '$escaped_name_cn', '$escaped_role', '$escaped_emoji', '$escaped_domain', '$tier', '$escaped_description', '$escaped_trigger', '$escaped_file');"
 }
 
 # Index default experts
@@ -101,10 +120,8 @@ DEFAULT_DIR="$REPO_ROOT/.kallax/experts/default"
 if [[ -d "$DEFAULT_DIR" ]]; then
   for md_file in "$DEFAULT_DIR"/*.md; do
     if [[ -f "$md_file" ]]; then
-      sql=$(parse_expert_file "$md_file" "default")
-      if [[ -n "$sql" ]]; then
-        sqlite3 "$DB_PATH" "$sql"
-      fi
+      # Issue 4 fix: parse_expert_file now directly executes sqlite3 (no return value)
+      parse_expert_file "$md_file" "default" || echo "Warning: failed to index $md_file" >&2
     fi
   done
 fi
@@ -115,14 +132,13 @@ if [[ -d "$EXTENDED_DIR" ]]; then
   # First process individual .md files (skip INDEX.md)
   for md_file in "$EXTENDED_DIR"/*.md; do
     if [[ -f "$md_file" ]] && [[ "$md_file" != "$EXTENDED_DIR/INDEX.md" ]]; then
-      sql=$(parse_expert_file "$md_file" "extended")
-      if [[ -n "$sql" ]]; then
-        sqlite3 "$DB_PATH" "$sql"
-      fi
+      # Issue 4 fix: parse_expert_file now directly executes sqlite3 (no return value)
+      parse_expert_file "$md_file" "extended" || echo "Warning: failed to index $md_file" >&2
     fi
   done
 
   # Then process consolidated INDEX.md using Python
+  # Issue 5 fix: use sqlite3 parameter binding instead of string concatenation
   INDEX_FILE="$EXTENDED_DIR/INDEX.md"
   if [[ -f "$INDEX_FILE" ]] && command -v python3 &> /dev/null; then
     # Write Python script to temp file first
@@ -130,13 +146,21 @@ if [[ -d "$EXTENDED_DIR" ]]; then
     cat > "$PYTHON_SCRIPT" <<'PYEOF'
 import re
 import sys
+import sqlite3
+import os
 
+db_path = os.environ.get('DB_PATH', '/dev/null')
 index_file = sys.argv[1]
+
 with open(index_file, 'r') as f:
     content = f.read()
 
 blocks = re.split(r'(?:^|\n)---\n', content)
 
+conn = sqlite3.connect(db_path)
+cursor = conn.cursor()
+
+# Issue 5 fix: use parameterized queries with ? placeholders
 for block in blocks:
     if len(block) < 10:
         continue
@@ -160,21 +184,18 @@ for block in blocks:
     description = desc_match.group(1).strip() if desc_match else ''
     trigger = trigger_match.group(1).strip() if trigger_match else ''
 
-    name_cn = name_cn.replace("'", "''")
-    role = role.replace("'", "''")
-    description = description.replace("'", "''")
-    trigger = trigger.replace("'", "''")
+    # Use parameterized queries - sqlite3 will handle escaping automatically
+    cursor.execute("""
+        INSERT OR REPLACE INTO expert (id, name_cn, role, emoji, domain, tier, description, trigger, file_path)
+        VALUES (?, ?, ?, ?, ?, 'extended', ?, ?, ?)
+    """, (id, name_cn, role, emoji, domain, description, trigger, index_file))
 
-    print(f"INSERT OR REPLACE INTO expert (id, name_cn, role, emoji, domain, tier, description, trigger, file_path) VALUES ('{id}', '{name_cn}', '{role}', '{emoji}', '{domain}', 'extended', '{description}', '{trigger}', '{index_file}');")
+conn.commit()
+conn.close()
 PYEOF
 
-    python3 "$PYTHON_SCRIPT" "$INDEX_FILE" > /tmp/extended_experts.sql
+    DB_PATH="$DB_PATH" python3 "$PYTHON_SCRIPT" "$INDEX_FILE"
     rm -f "$PYTHON_SCRIPT"
-
-    if [[ -f /tmp/extended_experts.sql ]] && [[ -s /tmp/extended_experts.sql ]]; then
-      sqlite3 "$DB_PATH" < /tmp/extended_experts.sql
-      rm -f /tmp/extended_experts.sql
-    fi
   fi
 fi
 
