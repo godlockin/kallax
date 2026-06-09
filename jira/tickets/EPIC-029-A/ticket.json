@@ -1,0 +1,27 @@
+{
+  "id": "EPIC-029-A",
+  "epicId": "EPIC-029",
+  "phaseId": "PHASE-004",
+  "title": "state.json mode + mode_lock schema + mode-set.sh CLI",
+  "type": "feature",
+  "priority": "P0",
+  "status": "ready",
+  "created_by": "master_main",
+  "created_at": "2026-06-09T22:30:00+08:00",
+  "file_scope": {
+    "includes": [
+      "scripts/permission/mode-set.sh",
+      "tests/integration/3-modes/state-schema-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "L1 存在性: scripts/permission/mode-set.sh 存在 + 可执行 + tests/integration/3-modes/state-schema-test.sh 存在",
+    "L2 实质性: mode-set.sh 真实验证 mode ∈ {ai-auto, ai-copilot, manual}, 写 state.json.mode + mode_set_at, 写 mode_lock 文件, 拒绝无效 mode",
+    "L3 接线正确: state.json jq 操作合法, mode_lock PID 检测 kill -0, 错误信息清晰",
+    "L4 数据流动: state-schema-test.sh 跑 PASS, 测试覆盖文件存在性 + 可执行性"
+  ],
+  "estimated_hours": 1.5,
+  "borrowed_from_eket": "P1-3 interactive:start 多模式 (UX §5.1)",
+  "related_design": "docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md §7-§8"
+}

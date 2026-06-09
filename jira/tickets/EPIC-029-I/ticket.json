@@ -1,0 +1,27 @@
+{
+  "id": "EPIC-029-I",
+  "epicId": "EPIC-029",
+  "phaseId": "PHASE-004",
+  "title": "CLAUDE.md Rule 13 3 模式决策权分配",
+  "type": "docs",
+  "priority": "P0",
+  "status": "ready",
+  "created_by": "master_main",
+  "created_at": "2026-06-09T22:30:00+08:00",
+  "file_scope": {
+    "includes": [
+      "CLAUDE.md"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "L1 存在性: CLAUDE.md 加 Rule 13 节 (3 模式决策权分配 KALLAX P0 — 主公原话 2026-06-09), 在 Rule 12 之后",
+    "L2 实质性: Rule 13 包含 3 模式定义 + 生效范围 (Performer + Conductor, Master 不受控) + 模式存储 (state.json.mode + mode_lock) + 5 类 Block + 3 类危险 + 5 阶段复杂度 + 落地位置 + 审计 + 4 红线, 跟设计文档 §1-§10 完全对齐",
+    "L3 接线正确: Markdown 格式跟 Rule 1-12 一致, 引用 docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md + docs/superpowers/plans/2026-06-09-kallax-3-modes.md",
+    "L4 数据流动: grep -E '^### 13\\.' CLAUDE.md 命中, 跟 Rule 1-12 格式对比一致"
+  ],
+  "estimated_hours": 1.0,
+  "blocked_by": ["EPIC-029-H"],
+  "borrowed_from_eket": "Rule 6 EPIC 交付四件套 + Rule 11 Master 写代码禁令 升级模式",
+  "related_design": "docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md §10"
+}

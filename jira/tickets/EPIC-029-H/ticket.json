@@ -1,0 +1,27 @@
+{
+  "id": "EPIC-029-H",
+  "epicId": "EPIC-029",
+  "phaseId": "PHASE-004",
+  "title": "3 模式 × 4 维度 E2E 集成测试 (16 场景)",
+  "type": "test",
+  "priority": "P0",
+  "status": "ready",
+  "created_by": "master_main",
+  "created_at": "2026-06-09T22:30:00+08:00",
+  "file_scope": {
+    "includes": [
+      "tests/integration/3-modes-e2e.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "L1 存在性: tests/integration/3-modes-e2e.sh 存在 + 可执行",
+    "L2 实质性: E2E 真实跑 16 场景 = 3 模式 × 4 维度 (ai-auto: claim/analysis/danger/block = 4 场景, ai-copilot: claim/analysis/in_progress/test/review/danger = 6 场景, manual: claim/analysis/in_progress/test/review/block = 6 场景), 用 test_case helper 验证 exit code (0=ALLOW, 2=ASK), 总结 PASS/FAIL",
+    "L3 接线正确: 调 mode-set.sh 设 mode, 调 stage-gate.sh 测 5 阶段, 调 decision-gate.sh 测 block/danger, 保存 + 恢复 state.json via trap",
+    "L4 数据流动: E2E 跑 16/16 PASS, 0 FAIL (4-Level 强制)"
+  ],
+  "estimated_hours": 2.0,
+  "blocked_by": ["EPIC-029-B", "EPIC-029-C", "EPIC-029-D", "EPIC-029-E", "EPIC-029-F", "EPIC-029-G"],
+  "borrowed_from_eket": "Performer §5.5 PR Size CI + self-test fixture (P0-5 EKET 借鉴)",
+  "related_design": "docs/superpowers/plans/2026-06-09-kallax-3-modes.md Task 8"
+}
