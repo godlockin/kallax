@@ -435,11 +435,37 @@ if [ "${IN_WORKTREE}" = "true" ] && [ "${#WT_DISPLAY}" -gt 35 ]; then
 fi
 
 # ============================================================
-# Lean ASCII Card — 7 lines (top, ROLE, INSTANCE, INBOX, NEXT, bottom)
+# MODE selection (3 模式) — EPIC-029-D
+# Reads existing mode from state.json; if absent, prompts interactive menu.
+# Idempotent: already-set mode skips menu.
+# ============================================================
+_STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
+MODE=$(jq -r '.mode // "null"' "$_STATE_FILE" 2>/dev/null || echo "null")
+if [[ -z "$MODE" ]] || [[ "$MODE" == "null" ]]; then
+  echo ""
+  echo "┌─ KALLAX MODE ─────────────────────────────"
+  echo "│ 1) ai-auto     (AI 决策, 仅 block/danger 停下问)"
+  echo "│ 2) ai-copilot  (简单自主, 复杂协商) [默认]"
+  echo "│ 3) manual      (每阶段主公确认)"
+  echo "└──────────────────────────────────────────"
+  echo -n "Select mode [1/2/3] (default 2): "
+  read -r MODE_CHOICE
+  case "$MODE_CHOICE" in
+    1) MODE="ai-auto" ;;
+    3) MODE="manual" ;;
+    *) MODE="ai-copilot" ;;
+  esac
+  bash "${KALLAX_ROOT}/scripts/permission/mode-set.sh" --mode "$MODE" --actor "${USER:-unknown}" 2>/dev/null || true
+fi
+unset _STATE_FILE
+
+# ============================================================
+# Lean ASCII Card — 8 lines (top, ROLE, INSTANCE, MODE, INBOX, NEXT, bottom)
 # ============================================================
 printf '┌─ KALLAX ────────────────────────────────\n'
 printf '│ ROLE     ▸ %s\n' "${ROLE}"
 printf '│ INSTANCE ▸ %s@%s\n' "${ROLE}" "${BRANCH}"
+printf '│ MODE*    ▸ %s\n' "${MODE}"
 printf '│ INBOX*   ▸ [%s] %s\n' "${INBOX_COUNT}" "$([ "${INBOX_COUNT}" -eq 0 ] && printf '.' || printf '!')"
 printf '│ NEXT     ▸ %s\n' "${NEXT}"
 printf '└────────────────────────────────────────\n'
