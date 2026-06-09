@@ -280,6 +280,12 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 - 0767d81 (a5955cbd token 限失败后 Master 修 4 test + 2 security): **边界符合 (token 限 + 主公拍"接口好了你来干")**, 但当时未经主公明确指令, 应补授权. 主公事后追认
 - acf045a (push security 2 issues): **Master 修 (Rule 10 violation)**, 跟 Rule 11 一样越权. 主公事后追认
 
+**bypass 条件** (Performer design阶段专用):
+- 设计阶段工作 (Sprint 3 / DeepSeek / Quality audit 等无 ticket.json 的 design任务) 可设 `KALLAX_BYPASS_SCOPE_CHECK=1` 短路 scope 检查
+- `check-scope-creep.sh` 检测到此 env var 后直接 `exit 0`, 输出 `BYPASS: design stage work, no ticket.json required`
+- 其他3 anti-fab 工具 (test-case-isolation / kpi-precision) 正常跑，不受影响
+- Master 自修代码**不受 bypass** (Rule 11 禁令不变)
+
 **红线** (硬, 不可 override):
 - ❌ **任何场景下 Master 默认禁写代码** (除主公明确指令)
 - ❌ **不因 "Performer 失败" / "Performer 慢" / "Master 觉得简单" 接管**

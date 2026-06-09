@@ -2,11 +2,22 @@
 # scripts/verify/check-scope-creep.sh — File scope enforcement
 # Verifies changed files stay within ticket.json file_scope.includes
 # Previous issue: 6563362 changed 3 unrelated files (scope creep)
+#
+# BYPASS: set KALLAX_BYPASS_SCOPE_CHECK=1 to skip check (design stage work)
 
 set -euo pipefail
 
 TICKET_ID="${1:-}"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+# BYPASS: design stage work (no ticket.json required)
+if [ "${KALLAX_BYPASS_SCOPE_CHECK:-0}" = "1" ]; then
+    echo "=========================================="
+    echo "Scope Creep Check (BYPASS)"
+    echo "=========================================="
+    echo "BYPASS: design stage work, no ticket.json required"
+    exit 0
+fi
 
 echo "=========================================="
 echo "Scope Creep Check"
