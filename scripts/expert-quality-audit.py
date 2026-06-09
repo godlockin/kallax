@@ -15,6 +15,7 @@ import os
 import re
 import json
 import subprocess
+import argparse
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass, field, asdict
@@ -473,7 +474,7 @@ def audit_domain_distribution(experts: List[Expert]) -> AuditResult:
 # Dimension 4: Tier-Domain Consistency
 # ============================================================================
 
-def audit_tier_consistency(experts: List[Expert]) -> AuditResult:
+def audit_tier_consistency(experts: List[Expert], enforce_tier_domain: bool = False) -> AuditResult:
     """Check tier-domain alignment."""
     failures = []
 
@@ -491,6 +492,17 @@ def audit_tier_consistency(experts: List[Expert]) -> AuditResult:
     generated_domains = {e.domain for e in by_tier.get("generated", [])}
     expected_generated = {"data", "legal"}
     generated_mismatches = generated_domains - expected_generated
+
+    # With --enforce-tier-domain: generated must NOT use default 7 domains
+    if enforce_tier_domain:
+        generated_using_default = generated_domains & expected_defaults
+        if generated_using_default:
+            failures.append({
+                "type": "generated_uses_default_domain",
+                "domains": list(generated_using_default),
+                "expected": "generated should not use default 7 domains",
+                "severity": "P1"
+            })
 
     # Check for duplicates between tiers
     all_ids = defaultdict(list)
@@ -532,7 +544,8 @@ def audit_tier_consistency(experts: List[Expert]) -> AuditResult:
             "generated_domains": list(generated_domains),
             "expected_default": list(expected_defaults),
             "expected_generated": list(expected_generated),
-            "duplicate_count": len(duplicates)
+            "duplicate_count": len(duplicates),
+            "enforce_tier_domain": enforce_tier_domain
         },
         failures=failures
     )
@@ -668,6 +681,12 @@ def run_anti_fab_tools() -> Dict[str, Any]:
 # ============================================================================
 
 def main():
+    parser = argparse.ArgumentParser(description="KALLAX Expert Quality Audit")
+    parser.add_argument("--enforce-tier-domain", action="store_true",
+                        help="Enforce tier-domain consistency (FAIL if generated uses default domains)")
+    parser.add_argument("--verbose", action="store_true", help="Verbose output")
+    args = parser.parse_args()
+
     print("=" * 60)
     print("KALLAX Expert Quality Audit (5 Dimensions)")
     print("=" * 60)
@@ -706,7 +725,7 @@ def main():
         print(f"  Under-represented: {domain_result.details['top5_underrepresented']}")
 
     print("\n[5] Running Dimension 4: Tier-Domain Consistency...")
-    tier_result = audit_tier_consistency(all_experts)
+    tier_result = audit_tier_consistency(all_experts, enforce_tier_domain=args.enforce_tier_domain)
     print(f"  {tier_result.status}: {tier_result.passed}/{tier_result.total} passed, {tier_result.failed} issues")
     if tier_result.failures:
         print(f"  Issues: {[f['type'] for f in tier_result.failures]}")
