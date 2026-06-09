@@ -107,13 +107,19 @@ def parse_frontmatter(content: str) -> Dict[str, Any]:
     """Parse YAML frontmatter from markdown."""
     fm = {}
     if content.startswith("---"):
-        parts = content[3:].split("---", 1)
-        if len(parts) > 1:
-            fm_text = parts[0].strip()
-            for line in fm_text.split("\n"):
-                if ":" in line:
-                    key, val = line.split(":", 1)
-                    fm[key.strip()] = val.strip()
+        # Find the closing --- that's on its own line (not in field values)
+        # The content after first --- ends at the next \n---\n
+        lines = content.split("\n")
+        fm_lines = []
+        for line in lines[1:]:  # Skip the opening ---
+            if line.strip() == "---":
+                break
+            fm_lines.append(line)
+        fm_text = "\n".join(fm_lines)
+        for line in fm_text.split("\n"):
+            if ":" in line:
+                key, val = line.split(":", 1)
+                fm[key.strip()] = val.strip()
     return fm
 
 def parse_trigger_field(trigger_str: str) -> List[str]:
@@ -247,49 +253,42 @@ def load_extended_experts() -> List[Expert]:
         return experts
 
     content = EXTENDED_INDEX.read_text()
-    lines = content.split("\n")
 
-    current_expert = None
-    current_lines = []
-    in_frontmatter = False
-    line_num = 0
+    # Split by \n---\n - each chunk is a record
+    # Note: the delimiter \n---\n consumes the newline after ---
+    # so consecutive --- markers (closing prev + opening next) merge
+    records = re.split(r"\n---\n", content)
 
-    for i, line in enumerate(lines):
-        line_num = i + 1
-        stripped = line.strip()
+    for chunk in records:
+        if not chunk.strip():
+            continue
+        # Chunk may start with --- (if it was the closing delimiter of prev record)
+        # In that case, we need to add back the opening --- for parsing
+        if chunk.startswith("---"):
+            parse_content = chunk
+        else:
+            # First record or chunk that retained opening ---
+            parse_content = "---\n" + chunk
 
-        if stripped == "---":
-            if not in_frontmatter:
-                in_frontmatter = True
-                current_lines = [line]
-            else:
-                # End of frontmatter
-                current_lines.append(line)
-                fm = parse_frontmatter("\n".join(current_lines))
+        fm = parse_frontmatter(parse_content)
+        if fm.get("id"):
+            trigger_raw = fm.get("trigger", "")
+            trigger = parse_trigger_field(trigger_raw)
 
-                if fm.get("id"):
-                    trigger_raw = fm.get("trigger", "")
-                    trigger = parse_trigger_field(trigger_raw)
-
-                    expert = Expert(
-                        id=fm.get("id", ""),
-                        name_cn=fm.get("name_cn", ""),
-                        role=fm.get("role", ""),
-                        emoji=fm.get("emoji", ""),
-                        domain=fm.get("domain", ""),
-                        tier=fm.get("tier", "extended"),
-                        description=fm.get("description", ""),
-                        trigger=trigger,
-                        trigger_raw=trigger_raw,
-                        source="extended",
-                        line_num=line_num
-                    )
-                    experts.append(expert)
-
-                current_lines = []
-                in_frontmatter = False
-        elif in_frontmatter:
-            current_lines.append(line)
+            expert = Expert(
+                id=fm.get("id", ""),
+                name_cn=fm.get("name_cn", ""),
+                role=fm.get("role", ""),
+                emoji=fm.get("emoji", ""),
+                domain=fm.get("domain", ""),
+                tier=fm.get("tier", "extended"),
+                description=fm.get("description", ""),
+                trigger=trigger,
+                trigger_raw=trigger_raw,
+                source="extended",
+                line_num=0
+            )
+            experts.append(expert)
 
     return experts
 
