@@ -1,0 +1,102 @@
+{
+  "description": "KALLAX Permission v1 Role Matrix — 6 roles × 10 actions",
+  "source": "confluence/decisions/PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §2",
+  "roles": {
+    "master": {
+      "description": "Full system access, approves releases",
+      "permissions": ["*"],
+      "denied_actions": ["instance.terminate"]
+    },
+    "conductor": {
+      "description": "Task assignment, testing merge, no miao write",
+      "permissions": ["testing.*", "task.assign", "instance.read", "log.read"],
+      "denied_actions": ["miao.write", "miao.merge", "release.tag"]
+    },
+    "performer": {
+      "description": "Work in feature worktrees, claim tasks",
+      "permissions": ["task.claim", "worktree.create", "worktree.commit", "ticket.read", "log.read"],
+      "denied_actions": ["task.assign", "testing.merge", "miao.write"]
+    },
+    "readonly": {
+      "description": "Read-only access to tickets and logs",
+      "permissions": ["*.read"],
+      "denied_actions": ["*write", "task.claim", "task.assign"]
+    },
+    "auditor": {
+      "description": "Inherits readonly + audit export",
+      "permissions": ["*.read", "audit.export"],
+      "denied_actions": ["*write", "task.claim", "task.assign"]
+    },
+    "super-admin": {
+      "description": "Emergency override (break-glass only)",
+      "permissions": ["*"],
+      "denied_actions": [],
+      "note": "Super-admin is break-glass only, not for normal use"
+    }
+  },
+  "actions": [
+    {
+      "action": "task.claim",
+      "allowed_roles": ["performer", "master"]
+    },
+    {
+      "action": "task.assign",
+      "allowed_roles": ["conductor", "master"]
+    },
+    {
+      "action": "worktree.create",
+      "allowed_roles": ["performer", "master"]
+    },
+    {
+      "action": "worktree.commit",
+      "allowed_roles": ["performer", "master"]
+    },
+    {
+      "action": "testing.merge",
+      "allowed_roles": ["conductor", "master"]
+    },
+    {
+      "action": "miao.write",
+      "allowed_roles": ["master"]
+    },
+    {
+      "action": "miao.merge",
+      "allowed_roles": ["master"]
+    },
+    {
+      "action": "ticket.read",
+      "allowed_roles": ["performer", "readonly", "auditor", "conductor", "master"]
+    },
+    {
+      "action": "log.read",
+      "allowed_roles": ["performer", "readonly", "auditor", "conductor", "master"]
+    },
+    {
+      "action": "audit.export",
+      "allowed_roles": ["auditor", "master"]
+    }
+  ],
+  "test_cases": {
+    "conductor_miao_write_blocked": {
+      "role": "conductor",
+      "action": "miao.write",
+      "expected": "DENIED"
+    },
+    "performer_testing_merge_blocked": {
+      "role": "performer",
+      "action": "testing.merge",
+      "expected": "DENIED"
+    },
+    "master_miao_write_allowed": {
+      "role": "master",
+      "action": "miao.write",
+      "expected": "ALLOWED"
+    },
+    "delegation_ttl_expires": {
+      "role": "performer",
+      "action": "task.claim",
+      "delegation_expires": true,
+      "expected": "DENIED_after_TTL"
+    }
+  }
+}

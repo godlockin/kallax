@@ -11,6 +11,7 @@ use sha2::{Digest, Sha256};
 use std::collections::HashSet;
 use std::io::Read;
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 use std::time::SystemTime;
 
 use crate::{KallaxError, Result};
