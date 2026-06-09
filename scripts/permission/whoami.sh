@@ -10,8 +10,12 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-# 获取当前 role (从 state.json 或环境变量)
-CURRENT_ROLE="${KALLAX_CURRENT_ROLE:-$(cat "$KALLAX_ROOT/.kallax/state/state.json" 2>/dev/null | jq -r '.current_role // "unknown"')}"
+# 获取当前 role: PHASE-002 9c + security review, role 必从 state.json 读，禁止 env 兜底
+CURRENT_ROLE="$(cat "$KALLAX_ROOT/.kallax/state/state.json" 2>/dev/null | jq -r '.role // ""')"
+if [[ -z "$CURRENT_ROLE" ]]; then
+  echo "ERROR: No role in state.json ($KALLAX_ROOT/.kallax/state/state.json)" >&2
+  exit 1
+fi
 
 echo "Current role: ${CURRENT_ROLE}"
 
