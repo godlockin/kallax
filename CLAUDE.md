@@ -216,6 +216,7 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 - **9a [P0] KPI 估数算 FAIL**: "M1 ~60-70%" / "约 80%" / "PARTIAL" / "around" / "approximately" / "估计" / "roughly" / "should" 都算 KPI falsification. 必须精确 X/Y 一位小数 (e.g. "M1: 26/30 = 86.7%"). 防御: `scripts/verify/check-kpi-precision.sh` 必跑
 - **9b [P0] Test case verbatim 触发 = FAIL**: 把测试需求整句塞 trigger 字段 = 100% circular match, 假数据. 防御: `scripts/verify/check-test-case-isolation.sh` 跑 trigger vs 30 test case grep 比对, 0 leak
 - **9c [P0] Scope creep 必拆 PR**: file_scope.includes 外的文件改动 = scope creep, 必拆 PR. 防御: `scripts/verify/check-scope-creep.sh` git diff --name-only vs ticket.json file_scope.includes, 超界 = FAIL
+- **9e [P1] Tier-Domain 一致性 = FAIL**: default tier 必须用 {architect, backend, frontend, ux, product, security, pm} 中之一; generated tier 不在 default 7 域范围 (避免跟 default 重名); extended tier 任意域. 防御: `python3 scripts/expert-quality-audit.py --enforce-tier-domain` 必跑; 来源: EPIC-024 质量 audit 维度 4 揭露 10/15 generated 用 product/ux/finance (跟 default 冲突)
 
 **失败处理**:
 - preflight FAIL → ticket 保持 `in_progress`
