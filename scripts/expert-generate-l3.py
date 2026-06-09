@@ -31,8 +31,8 @@ OUTPUT_FILE = Path("/tmp/l3-candidates-generated.md")
 
 # LLM API config from env
 LLM_API_KEY = os.environ.get("KALLAX_LLM_API_KEY", "")
-LLM_BASE_URL = os.environ.get("KALLAX_LLM_BASE_URL", "https://api.openai.com/v1")
-LLM_MODEL = os.environ.get("KALLAX_LLM_MODEL", "gpt-4o-mini")
+LLM_BASE_URL = os.environ.get("KALLAX_LLM_BASE_URL", "https://api.deepseek.com/anthropic")
+LLM_MODEL = os.environ.get("KALLAX_LLM_MODEL", "deepseek-chat")
 
 # Allowed domains (from design doc)
 ALLOWED_DOMAINS = {
@@ -125,14 +125,16 @@ def analyze_domain_gaps(experts: list[dict]) -> list[tuple[str, int]]:
 
 # === LLM API ===
 def call_llm_api(prompt: str) -> Optional[dict]:
-    """Call OpenAI-compatible LLM API. Returns JSON response or None on error."""
+    """Call Anthropic-compatible LLM API (DeepSeek /anthropic endpoint).
+    Returns JSON response or None on error."""
     if not LLM_API_KEY:
         return None
 
     import urllib.request
     import urllib.error
 
-    url = f"{LLM_BASE_URL}/chat/completions"
+    # Anthropic Messages API format
+    url = f"{LLM_BASE_URL}/v1/messages"
     payload = json.dumps({
         "model": LLM_MODEL,
         "messages": [{"role": "user", "content": prompt}],
@@ -144,7 +146,8 @@ def call_llm_api(prompt: str) -> Optional[dict]:
         url,
         data=payload.encode("utf-8"),
         headers={
-            "Authorization": f"Bearer {LLM_API_KEY}",
+            "x-api-key": LLM_API_KEY,
+            "anthropic-version": "2023-06-01",
             "Content-Type": "application/json"
         },
         method="POST"
@@ -153,7 +156,8 @@ def call_llm_api(prompt: str) -> Optional[dict]:
     try:
         with urllib.request.urlopen(req, timeout=60) as resp:
             result = json.loads(resp.read().decode("utf-8"))
-            content = result["choices"][0]["message"]["content"]
+            # Anthropic response: result["content"][0]["text"]
+            content = result["content"][0]["text"]
             # Parse JSON from response
             # Strip markdown code blocks if present
             content = content.strip()
@@ -425,7 +429,7 @@ def main():
     # Step 3: Generate experts via LLM or mock
     print("[3/6] Generating experts for gap domains...")
     if LLM_API_KEY:
-        print(f"  LLM API: {LLM_BASE_URL}/chat/completions (model: {LLM_MODEL})")
+        print(f"  LLM API: {LLM_BASE_URL}/v1/messages (model: {LLM_MODEL})")
     else:
         print("  LLM API: NOT SET — using mock fallback")
     print()
