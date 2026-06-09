@@ -292,6 +292,44 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 - git pre-commit hook 扫 commit message, 缺 "Master corrective" 标识 + 缺 "主公 explicit 授权" 标注 → reject
 - 跟 Rule 1 (Conductor 禁 miao 写功能代码) 一起 enforce
 
+### 12. 质量 ensure 强制 (KALLAX P1) — expert > 50 必跑 audit
+
+**教训**: EPIC-024 expert 规模 77 个, 无系统质量检查导致 KPI 混乱/Tier-Domain 随意/M1 评分缺依据. PHASE-003 review 5 升级候选 UP-4 (c0379bf76), 主公 2026-06-09 拍 3 P0 必做开工.
+
+**规则**: expert 数量 > 50 时, 必须运行 `scripts/expert-quality-audit.py` 做 5 维度质量检查:
+
+| 维度 | 检查内容 | FAIL 标准 |
+|---|---|---|
+| Schema | expert.json 字段完整性/类型正确 | 缺必填字段/类型错误 |
+| Tier-Domain | tier/domain 分布合理性 | tier 缺失/domain 错配 > 20% |
+| M1 | M1 评分存在且精确 (X/Y 格式, 非估数) | M1 缺/估数/PARTIAL |
+| Trigger | trigger 字段非 test case verbatim | trigger = test case verbatim |
+| Domain | domain 覆盖度合理 | domain 覆盖 < 80% 或 > 120% |
+
+**触发条件** (满足任一即必须跑 audit):
+1. **飞轮"迭代"阶段**: Phase 状态从"运行" → "迭代" 转换时必跑
+2. **Merge 前置**: `feature/EPIC-024-expert-quality-*` 合并到 testing 前必跑
+3. **Index 变更**: 任何 expert 新增/删除操作后必跑 (含单个 expert 增删)
+
+**FAIL 处理** (任一 FAIL = 拒绝 merge, 走 corrective 流程):
+- Schema FAIL → Performer 修复 JSON schema
+- Tier-Domain FAIL → Performer 重审 tier/domain 分布
+- M1 FAIL → Performer 补全/修正 M1 评分 (禁止估数, 必须是精确 X/Y)
+- Trigger FAIL → Performer 重写 trigger 字段 (禁止 verbatim)
+- Domain FAIL → Performer 补全 domain 覆盖
+
+**WARN 处理** (WARN 不 reject, 记录但不阻断):
+- Trigger WARN → warning log, 不拒绝 merge
+- Domain WARN → warning log, 不拒绝 merge
+
+**工具就位**: `scripts/expert-quality-audit.py` (0684f4a commit, EPIC-024 质量 audit)
+
+**红线**:
+- ❌ expert > 50 但未跑 audit 就 merge
+- ❌ Schema/Tier-Domain/M1 任一 FAIL 但仍 merge
+- ❌ M1 填估数 ("~60%", "约 80%", "PARTIAL") — 算 KPI falsification
+- ❌ Trigger 字段直接复制 test case 文本
+
 ---
 
 ## 命令速查
