@@ -156,43 +156,53 @@ log_audit() {
     --arg result "$result" \
     '{timestamp: ($ts | tonumber), role: $role, action: $action, actor: $actor, result: $result}')
 
-  # Atomic append: flock on Linux, direct append on macOS (acceptable race for dev env)
-  # PHASE-002 + security review MEDIUM: state-changing actions fail-closed on audit failure
-  is_state_changing() {
-    # Actions that modify persistent state (miao/testing/instance) MUST be audited
+  # CLOSED deny-set: explicit read-only actions. Everything else = state-changing → fail-closed.
+  # To add a new read-only action, update this list. Otherwise defaults to state-changing.
+  is_read_only() {
     case "$1" in
-      *.write|*.merge|*.commit|*.push|*.delete|*.create|*.terminate|*.assign|*.claim)
-        return 0  # state-changing
+      *.read|log.read|ticket.read|instance.read|audit.export|*.list|*.get|*.show|*.status)
+        return 0  # read-only
         ;;
       *)
-        return 1  # read-only
+        return 1  # state-changing (default fail-closed)
         ;;
     esac
   }
 
   local audit_ok=false
   if command -v flock >/dev/null 2>&1; then
-    if flock -n "${AUDIT_DB}.log.lock" -- bash -c "printf '%s\n' \"$log_entry\" >> '${AUDIT_DB}.log'" 2>/dev/null; then
+    # Issue 3 fix: herestring avoids variable expansion in bash -c (prevents injection)
+    if flock -n "${AUDIT_DB}.log.lock" bash -c 'cat >> "${AUDIT_DB}.log"' 2>/dev/null <<<"$log_entry"; then
       audit_ok=true
     else
-      # Fallback to synchronous unbuffered append (security review MEDIUM)
+      # Primary flock failed (contention). Try fallback before fail-closed.
       if printf '%s\n' "$log_entry" >> "${AUDIT_DB}.log.fallback" 2>/dev/null; then
-        echo "WARN: primary audit log write failed; wrote to fallback for $ACTION" >&2
-        audit_ok=true
+        if is_read_only "$action"; then
+          echo "WARN: primary audit flock failed for read-only $ACTION; wrote to fallback" >&2
+          audit_ok=true
+        else
+          echo "ERROR: audit flock contended for state-changing $ACTION — wrote to fallback, still fail-closed" >&2
+        fi
+      elif ! is_read_only "$action"; then
+        echo "ERROR: audit log write failed for state-changing $ACTION — fail-closed (no record)" >&2
       fi
     fi
   else
-    # macOS fallback: direct append
+    # macOS fallback: direct append (Issue 1: mirror Linux branch read-only gating)
     if printf '%s\n' "$log_entry" >> "${AUDIT_DB}.log" 2>/dev/null; then
       audit_ok=true
     elif printf '%s\n' "$log_entry" >> "${AUDIT_DB}.log.fallback" 2>/dev/null; then
-      echo "WARN: primary audit log write failed; wrote to fallback for $ACTION" >&2
-      audit_ok=true
+      if is_read_only "$action"; then
+        echo "WARN: primary audit log write failed for read-only $ACTION on macOS; wrote to fallback" >&2
+        audit_ok=true
+      else
+        echo "ERROR: primary audit log write failed for state-changing $ACTION on macOS — fail-closed" >&2
+      fi
     fi
   fi
 
   # State-changing actions: fail-closed if audit cannot be written
-  if [[ "$audit_ok" != "true" ]] && is_state_changing "$action"; then
+  if [[ "$audit_ok" != "true" ]] && ! is_read_only "$action"; then
     echo "ERROR: audit log write failed for state-changing action $ACTION — fail-closed" >&2
     return 1  # signal failure to caller
   fi
@@ -206,7 +216,10 @@ if check_permission "$ROLE" "$ACTION"; then
   fi
   exit 0
 else
-  log_audit "$ROLE" "$ACTION" "DENIED"
+  # Issue 2 fix: check log_audit return in DENIED path too for consistency
+  if ! log_audit "$ROLE" "$ACTION" "DENIED"; then
+    echo "ERROR: audit log write failed for DENIED action $ACTION" >&2
+  fi
   echo "DENIED: $ACTION for role $ROLE (actor: $ACTOR)" >&2
   exit 1 # P0: fail-closed
 fi
