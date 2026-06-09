@@ -5,8 +5,12 @@
 #   --force overwrites existing files (dirs are always incremental)
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
 FORCE=false
 PROJECT_ROOT=""
+MODE_CHOICE=""
 
 # Parse args (simple, no getopts needed for 1 optional flag + 1 positional)
 for arg in "$@"; do
@@ -15,6 +19,10 @@ for arg in "$@"; do
     --dry-run)
       echo "[WARN] --dry-run is handled by the CLI wrapper, not by this script"
       ;;
+    --mode)
+      MODE_CHOICE="$2"
+      shift 2
+      ;;
     *)
       if [ -z "$PROJECT_ROOT" ]; then
         PROJECT_ROOT="$arg"
@@ -22,6 +30,17 @@ for arg in "$@"; do
       ;;
   esac
 done
+
+# Validate --mode argument
+case "$MODE_CHOICE" in
+  ai-auto|ai-copilot|manual|"") ;;
+  *) echo "ERROR: --mode must be ai-auto|ai-copilot|manual, got: $MODE_CHOICE"; exit 1 ;;
+esac
+
+# If --mode provided, write to state.json via mode-set.sh
+if [[ -n "$MODE_CHOICE" ]]; then
+  bash "${KALLAX_ROOT}/scripts/permission/mode-set.sh" --mode "$MODE_CHOICE" --actor "${USER:-unknown}" 2>/dev/null || true
+fi
 
 PROJECT_ROOT="${PROJECT_ROOT:-$PWD}"
 
