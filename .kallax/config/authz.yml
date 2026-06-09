@@ -1,0 +1,74 @@
+# KALLAX Permission Model v1 — Authz Configuration
+#
+# Source: confluence/decisions/PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §2.3
+# P0 修复项内置:
+#   - fail-closed: 任何错误 deny
+#   - set -euo pipefail
+#   - 循环继承检测
+
+roles:
+  master:       { inherits: conductor, grants: [miao.write, miao.merge, release.tag, instance.gc, testing.read, task.read] }
+  conductor:    { inherits: null,     grants: [testing.merge, testing.write, task.assign, instance.read, log.read] }
+  performer:    { inherits: null,     grants: [task.claim, worktree.create, worktree.commit, ticket.read, log.read] }
+  readonly:     { inherits: null,     grants: [*.read], denies: [*.write, *.commit, *.merge, task.claim, worktree.create] }
+  auditor:      { inherits: readonly, grants: [audit.export, instance.read, log.read] }
+  super-admin:  { inherits: master,   grants: [authz.modify, emergency.override] }
+  emergency-responder: { inherits: super-admin, grants: [instance.terminate] }
+
+scope_bindings:
+  EPIC-022-A:
+    allowed_paths: ["jira/tickets/EPIC-022-A/**", ".kallax/worktrees/**/EPIC-022-A/**"]
+    ttl_seconds: 10800  # 3h
+
+  EPIC-022-B:
+    allowed_paths: ["jira/tickets/EPIC-022-B/**", ".kallax/worktrees/**/EPIC-022-B/**"]
+    ttl_seconds: 10800
+
+  EPIC-022-C:
+    allowed_paths: ["jira/tickets/EPIC-022-C/**", ".kallax/worktrees/**/EPIC-022-C/**"]
+    ttl_seconds: 14400  # 4h
+
+  EPIC-022-D:
+    allowed_paths: ["jira/tickets/EPIC-022-D/**", ".kallax/worktrees/**/EPIC-022-D/**"]
+    ttl_seconds: 10800
+
+  EPIC-022-E:
+    allowed_paths: ["jira/tickets/EPIC-022-E/**", ".kallax/worktrees/**/EPIC-022-E/**"]
+    ttl_seconds: 18000  # 5h
+
+action_grants:
+  - id: perm_001
+    role: performer
+    action: task.claim
+    ticket: EPIC-022-A
+    granted_by: conductor
+    granted_at: "2026-06-07T10:00:00Z"
+    expires_at: "2026-06-07T18:00:00Z"
+    status: active
+
+  - id: perm_002
+    role: performer
+    action: worktree.create
+    ticket: EPIC-022-A
+    granted_by: conductor
+    granted_at: "2026-06-07T10:00:00Z"
+    expires_at: "2026-06-07T18:00:00Z"
+    status: active
+
+  - id: perm_003
+    role: conductor
+    action: task.assign
+    ticket: null
+    granted_by: master
+    granted_at: "2026-06-07T00:00:00Z"
+    expires_at: null
+    status: active
+
+  - id: perm_004
+    role: auditor
+    action: audit.export
+    ticket: null
+    granted_by: master
+    granted_at: "2026-06-07T00:00:00Z"
+    expires_at: null
+    status: active

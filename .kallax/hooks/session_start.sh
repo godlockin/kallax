@@ -96,6 +96,25 @@ if git rev-parse --git-dir 2>/dev/null | grep -q 'worktrees'; then
 fi
 
 # ============================================================
+# EPIC-022-C: Workspace validation — verify cwd ∈ worktree/ (AC-8)
+# Prevents session from operating outside of isolated worktree
+# ============================================================
+if [ "${IN_WORKTREE}" = "false" ]; then
+  _cwd_realpath="$(realpath "$CWD" 2>/dev/null || echo "$CWD")"
+  _worktrees_root="$(realpath "$KALLAX_ROOT/worktrees" 2>/dev/null || echo "$KALLAX_ROOT/worktrees")"
+  if [ -d "$_worktrees_root" ]; then
+    case "$_cwd_realpath" in
+      "${_worktrees_root}"/*)
+        # CWD is under worktrees/ but git doesn't see it as worktree
+        # This is a hybrid state — warn but don't block
+        echo "[kallax] WARNING: cwd is under worktrees/ but not detected as git worktree: $_cwd_realpath" >&2
+        ;;
+    esac
+  fi
+  unset _cwd_realpath _worktrees_root
+fi
+
+# ============================================================
 # ── Master Health Check (optimized: grep instead of jq) ─────────────────
 MASTER_STATE="${INSTANCES_DIR}/master_main/state.json"
 MASTER_NEEDS_TAKEOVER="false"
@@ -424,6 +443,37 @@ printf '│ INSTANCE ▸ %s@%s\n' "${ROLE}" "${BRANCH}"
 printf '│ INBOX*   ▸ [%s] %s\n' "${INBOX_COUNT}" "$([ "${INBOX_COUNT}" -eq 0 ] && printf '.' || printf '!')"
 printf '│ NEXT     ▸ %s\n' "${NEXT}"
 printf '└────────────────────────────────────────\n'
+
+# ============================================================
+# EXPERT MATCHER READY — EPIC-024-A Sprint 1
+# ============================================================
+EXPERT_MATCHER_READY="false"
+if [ -f "$(pwd)/scripts/expert-match.sh" ]; then
+  EXPERT_MATCHER_READY="true"
+fi
+
+if [ "${EXPERT_MATCHER_READY}" = "true" ]; then
+  cat << 'EXPERT_READY'
+
+┌─ EXPERT MATCHER READY ─────────────────────
+│ 5 Default Experts (with trigger: fields):
+│   🏗️ architect  — 架构/边界/选型/微服务/模块
+│   💻 backend    — API/数据库/SQL/缓存/性能
+│   🎨 frontend  — 组件/渲染/LCP/状态/包体积
+│   🖌️ ux         — 交互/旅程/体验/可用性
+│   📋 product   — 优先级/价值/ROI/MVP
+│  🛡️ security   — 注入/越权/XSS/鉴权
+│   🧭 pm — 跨团队/任务规划/协调
+│
+│ Usage: bash scripts/expert-match.sh "<你的需求>"
+│ Example: bash scripts/expert-match.sh "接口响应很慢"
+│
+│ L1 Decision Tree: experts/TRIGGERS.md
+│ Audit Log: ~/.kallax/logs/expert_resolution_audit.jsonl
+└────────────────────────────────────────
+
+EXPERT_READY
+fi
 
 # ============================================================
 # Logging

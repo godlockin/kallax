@@ -199,7 +199,7 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 ### 9. 4-Level Fact-Forcing 强制 (KALLAX P0) — task:complete 前置
 
-**教训**: EPIC-021 D review CRITICAL — 4-Level 是 documentation, 不是 enforcement. 文档写"存在性/实质性/接线正确/数据流动", 但没有人真的去检查, 形成"review 通过, 部署完蛋"局面.
+**教训**: EPIC-021 D review CRITICAL — 4-Level 是 documentation, 不是 enforcement. 文档写"存在性/实质性/接线正确/数据流动", 但没有人真的去检查, 形成"review 通过, 部署完蛋"局面. EPIC-024/028 KPI falsification 3 次 (51125b9 假 100% / 6563362 估数 PARTIAL / 33cfc48 build fail) 强化此教训.
 
 **规则**: `task:complete <TICKET>` 前必须运行 `check-fact-forcing-preflight.sh <expert.md>`, 全部 L1/L2/L3/L4 通过才能 close ticket.
 
@@ -211,13 +211,86 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 3. **L3 接线正确**: 正确 import/export
 4. **L4 数据流动**: 集成测试验证
 
+**Anti-Fabrication 子规则 (9a/9b/9c, EPIC-024/028 教训汇总, 主公 2026-06-08 同意升红线)**:
+
+- **9a [P0] KPI 估数算 FAIL**: "M1 ~60-70%" / "约 80%" / "PARTIAL" / "around" / "approximately" / "估计" / "roughly" / "should" 都算 KPI falsification. 必须精确 X/Y 一位小数 (e.g. "M1: 26/30 = 86.7%"). 防御: `scripts/verify/check-kpi-precision.sh` 必跑
+- **9b [P0] Test case verbatim 触发 = FAIL**: 把测试需求整句塞 trigger 字段 = 100% circular match, 假数据. 防御: `scripts/verify/check-test-case-isolation.sh` 跑 trigger vs 30 test case grep 比对, 0 leak
+- **9c [P0] Scope creep 必拆 PR**: file_scope.includes 外的文件改动 = scope creep, 必拆 PR. 防御: `scripts/verify/check-scope-creep.sh` git diff --name-only vs ticket.json file_scope.includes, 超界 = FAIL
+
 **失败处理**:
 - preflight FAIL → ticket 保持 `in_progress`
 - `check-fact-forcing-preflight.sh --force-merge` 可 override (需 master 授权)
+- 9a/9b/9c 任一 FAIL = 拒绝 close ticket, 不可 override (主公授权例外除外)
 
 **红线**:
 - ❌ 跳过 preflight 直接 close ticket
 - ❌ preflight FAIL 但仍 close ticket
+- ❌ KPI 估数/verbatim/scope creep 任一绕过
+- ❌ 3 anti-fab 工具跳过
+
+### 10. Anti-Fabrication 强制 (KALLAX P0) — 全 commit 前置
+
+**教训**: 主公原话 "加上工具和限制保证数据/任务造假的现象不会再出现". EPIC-024/028 出现 3 次 KPI falsification, 工具防御 + 规则升级双管齐下才能根治.
+
+**规则**: 所有 commit 前必跑 3 anti-fab 工具, 集成在 pre-commit hook 强制执行:
+
+| 工具 | 防什么 | 触发 |
+|---|---|---|
+| `scripts/verify/check-test-case-isolation.sh` | Test case verbatim 在 trigger 字段 | 51125b9 假 100% |
+| `scripts/verify/check-kpi-precision.sh` | KPI 估数/模糊报 PASS | 6563362 PARTIAL |
+| `scripts/verify/check-scope-creep.sh` | file_scope 超界改动 | 6563362 Arc imports |
+
+**集成**: `.kallax/hooks/pre-commit` 必跑 3 工具, 任一 FAIL = 拒绝 commit. 跟 Rule 9 L1-L4 一起 enforce.
+
+**落地检查**: pre-commit hook 3 工具 + `check-fact-forcing-preflight.sh` 5 工具 (L1-L4 + L4_script_exists) 串联, 共 8 个门禁.
+
+**红线**:
+- ❌ 跳过 3 anti-fab 工具
+- ❌ pre-commit hook 改 Bypass
+- ❌ 估数/verbatim/scope creep 任一造假
+
+### 11. Master 写代码禁令 (KALLAX P0) — 主公原话硬红线
+
+**教训**: 主公 2026-06-09 原话: "除了极端情况, master 不许写代码". 之前 Rule 11 (Master Corrective Integration 兜底) 写得过宽 — "Performer 失败 Master 接管" 是日常失败不是极端, 跟主公原话矛盾. 收回, 写硬红线.
+
+**规则**: **Master 默认禁止写代码** (含 commit / edit / write), 不分场景. 唯一例外是"极端情况", 且必须**主公明确指令** ("你来干"/"你来 fix"/"master 接管 X").
+
+**极端情况定义** (满足任一即触发, 但仍需主公明确指令才执行):
+1. **Token Plan 限撞墙**: Token Plan Max 5h cap 9917k/9917k reached, 派不出 Performer, 主公拍"接口好了"或"你来干"
+2. **生产事故 (miao 已损坏)**: critical security incident, miao/testing production 不可用, 等不及 Performer 派单
+3. **Performer 派单全 fail + 主公拍板接管**: ≥ 3 个 Performer 接连 API error, 主公明确说"master 接管"
+4. **主公明确指令**: "你来干" / "你来 fix" / "master 接管 X" — 直接授权
+
+**不构成"极端情况"的反例** (即 Master 不应接管, 走 Performer 派单):
+- ❌ Performer 1 次 API error 就接管 (token 重置后重试即可)
+- ❌ Performer 跑 4h 仍无 commit (派第 2 个 Performer)
+- ❌ Performer 报 PASS 但 Master 验证 FAIL (踢回 Performer 重做)
+- ❌ Performer 留半成品 (派新 Performer 接)
+- ❌ Master 觉得 Performer 跑太慢 (主公原话明确不许)
+
+**极端情况执行流程**:
+1. Master 在主公面前**明确汇报**: "X 任务走极端情况, 接管理由 Y, 接管范围 Z, 估时 W"
+2. 主公**明确指令** ("你来干" / "你来 fix")
+3. Master 才执行, commit message 写 "Master corrective integration under 主公 explicit 授权: [理由]"
+4. 4-Level + A+B review 走 Performer 自审路径 (Master 接管 = 接管自审责任)
+5. **事后必须在 LESSONS-LEARNED 标 "极端情况触发"**, 升级是否成 Rule 需主公 Phase X 拍
+
+**已知"极端情况"事件 (历史, 主公事后 review 接受)**:
+- 837c9a4 (a3be6648 失败后 Master 修 5 SQL injection): **不符合新标准**, 应走"派新 Performer"而非接管. 但主公 2026-06-09 拍"已修保留"接受, 不撤回. 标"边界事件, 留作教训"
+- 0767d81 (a5955cbd token 限失败后 Master 修 4 test + 2 security): **边界符合 (token 限 + 主公拍"接口好了你来干")**, 但当时未经主公明确指令, 应补授权. 主公事后追认
+- acf045a (push security 2 issues): **Master 修 (Rule 10 violation)**, 跟 Rule 11 一样越权. 主公事后追认
+
+**红线** (硬, 不可 override):
+- ❌ **任何场景下 Master 默认禁写代码** (除主公明确指令)
+- ❌ **不因 "Performer 失败" / "Performer 慢" / "Master 觉得简单" 接管**
+- ❌ **不接管 > 1 个 Performer 任务 / session** (避免 capacity 警告变成常态)
+- ❌ **不创建新 feature 分支 / 改 miao production / 跨 worktree**
+- ❌ **不 commit 缺 "Master corrective integration under 主公 explicit 授权" 标识**
+- ❌ **不事后默认 "主公同意" — 接管前必须明确** ("主公原话'X'"才算)
+
+**执行检查**:
+- git pre-commit hook 扫 commit message, 缺 "Master corrective" 标识 + 缺 "主公 explicit 授权" 标注 → reject
+- 跟 Rule 1 (Conductor 禁 miao 写功能代码) 一起 enforce
 
 ---
 

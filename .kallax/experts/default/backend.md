@@ -9,6 +9,7 @@ rationalizations_count: 8
 version: 1.0.0
 last_reviewed: 2026-06-07
 tickets_served: []
+trigger: API,接口慢,数据库,SQL,查询慢,索引,n+1,事务,缓存,性能,后端,服务端,数据层,连接池,锁竞争,慢查询,超时,内存,GC,泄漏,死锁,压测,瓶颈,监控,告警,分布式
 output_format: |
   ## 亮点
   - 接口设计清晰,符合REST语义
