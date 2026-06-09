@@ -98,15 +98,22 @@ echo ""
 echo "[decision-gate-test] L3: ask file + audit jsonl written"
 
 # Verify inbox file created for danger.data_destruction
-INBOX_FILES_BEFORE=$(ls "$INBOX_DIR"/decision-danger_data_destruction-* 2>/dev/null | wc -l | tr -d ' ')
+# Use a unique marker in context to identify the file created by this specific test run
+# This avoids BEFORE/AFTER accumulation issues when date +%s returns same second
+TEST_MARKER="test_$$_$(date +%s%N)"
+bash "$DECISION_GATE" --action danger.data_destruction --cmd 'rm -rf prod/' --context "{\"marker\":\"$TEST_MARKER\"}" >/dev/null 2>&1 || true
 
-# Trigger danger.data_destruction again
-bash "$DECISION_GATE" --action danger.data_destruction --cmd 'rm -rf prod/' >/dev/null 2>&1 || true
+# Find the file created by this test run by searching for our unique marker
+CREATED_FILE=""
+for f in "$INBOX_DIR"/decision-danger_data_destruction-*.md; do
+  if [[ -f "$f" ]] && grep -q "$TEST_MARKER" "$f" 2>/dev/null; then
+    CREATED_FILE="$f"
+    break
+  fi
+done
 
-INBOX_FILES_AFTER=$(ls "$INBOX_DIR"/decision-danger_data_destruction-* 2>/dev/null | wc -l | tr -d ' ')
-
-if [[ "$INBOX_FILES_AFTER" -gt "$INBOX_FILES_BEFORE" ]]; then
-  echo "  ✓ inbox ask file created for danger.data_destruction"
+if [[ -n "$CREATED_FILE" ]]; then
+  echo "  ✓ inbox ask file created for danger.data_destruction: $(basename "$CREATED_FILE")"
   PASS=$((PASS + 1))
 else
   echo "  ✗ inbox ask file NOT created"
