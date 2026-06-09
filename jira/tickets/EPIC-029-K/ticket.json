@@ -1,0 +1,31 @@
+{
+  "id": "EPIC-029-K",
+  "epicId": "EPIC-029",
+  "phaseId": "PHASE-004",
+  "title": "全量集成测试 + testing → miao promote",
+  "type": "release",
+  "priority": "P0",
+  "status": "ready",
+  "created_by": "master_main",
+  "created_at": "2026-06-09T22:30:00+08:00",
+  "file_scope": {
+    "includes": [
+      "tests/integration/3-modes-e2e.sh",
+      "tests/integration/permission-v1-e2e.sh",
+      "tests/integration/conductor-scope.sh",
+      "tests/integration/workspace-switch.sh",
+      "tests/integration/authz-sanitization.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "L1 存在性: 5 套 E2E 测试脚本全存在",
+    "L2 实质性: 5 套全过 (3-modes 16 + permission-v1 20 + conductor-scope 18 + workspace-switch 15 + authz-sanitization 5 = 74 PASS, 0 FAIL), 真实运行 stdout 记录",
+    "L3 接线正确: 5 套 E2E 串联运行, 跟 4-Level 验证串联, 跟 Rule 9 强制",
+    "L4 数据流动: feature/EPIC-029-3-modes → testing 合并 → 全量测试 PASS → testing → miao 合并 → push origin miao 成功, miao HEAD 更新"
+  ],
+  "estimated_hours": 1.0,
+  "blocked_by": ["EPIC-029-J"],
+  "borrowed_from_eket": "Rule 6 EPIC 交付四件套 + PHASE-003 review 5 升级模式",
+  "related_design": "docs/superpowers/plans/2026-06-09-kallax-3-modes.md Task 11"
+}
