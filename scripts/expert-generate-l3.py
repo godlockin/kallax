@@ -191,6 +191,7 @@ Generate 3-5 expert candidates for the gap domain: {domain}
 5. trigger must have ≥20 pipe-separated tokens (keywords)
 6. description must be ≥20 characters
 7. DO NOT include test case phrases verbatim in trigger fields
+8. **CRITICAL DOMAIN CONSTRAINT**: generated tier MUST NOT use these default domains: architect, backend, frontend, ux, product, security, pm, ai (default tier), also NOT in default 7 expert trigger high-frequency range. Use gap domains: {', '.join(GAP_DOMAINS)} (legal, finance, data) or细分 ai subdomains
 
 ## Existing experts (for dedup):
 {existing_info}
