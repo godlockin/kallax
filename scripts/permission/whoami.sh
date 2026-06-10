@@ -19,6 +19,10 @@ fi
 
 echo "Current role: ${CURRENT_ROLE}"
 
+# 获取当前 mode: 从 state.json 读，默认 ai-copilot
+CURRENT_MODE="$(cat "$KALLAX_ROOT/.kallax/state/state.json" 2>/dev/null | jq -r '.mode // "ai-copilot"')"
+echo "mode: ${CURRENT_MODE}"
+
 # 显示权限
 case "$CURRENT_ROLE" in
   master)
