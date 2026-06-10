@@ -1,0 +1,28 @@
+{
+  "id": "EPIC-029-E",
+  "epicId": "EPIC-029",
+  "phaseId": "PHASE-004",
+  "title": "pre-commit 串联 decision-gate.sh",
+  "type": "feature",
+  "priority": "P0",
+  "status": "ready",
+  "created_by": "master_main",
+  "created_at": "2026-06-09T22:30:00+08:00",
+  "file_scope": {
+    "includes": [
+      ".kallax/hooks/pre-commit",
+      "tests/integration/3-modes/precommit-integration-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "L1 存在性: pre-commit 包含 'decision-gate' 字符串 + tests/integration/3-modes/precommit-integration-test.sh 存在",
+    "L2 实质性: pre-commit 在 3 anti-fab 工具之后调 decision-gate.sh, 检测 commit msg 包含 'merge.*miao|push.*--force|rm -rf|reset --hard' 触发 danger.data_destruction 等, manual 模式跳过 (主公已 OK), 其它模式 ASK",
+    "L3 接线正确: KALLAX_ROOT 路径正确, decision-gate.sh exit 2 时 exit 1 阻断 commit, 不破坏现有 3 anti-fab 串联",
+    "L4 数据流动: precommit-integration-test.sh 跑 PASS, 验证 pre-commit 引用 decision-gate"
+  ],
+  "estimated_hours": 1.0,
+  "blocked_by": ["EPIC-029-C"],
+  "borrowed_from_eket": "Performer §5.4 Hook Profile 三档 + Rule 10 anti-fab 集成",
+  "related_design": "docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md §8 + §10"
+}

@@ -1,0 +1,28 @@
+{
+  "id": "EPIC-029-D",
+  "epicId": "EPIC-029",
+  "phaseId": "PHASE-004",
+  "title": "session_start.sh MODE 选择菜单",
+  "type": "feature",
+  "priority": "P0",
+  "status": "ready",
+  "created_by": "master_main",
+  "created_at": "2026-06-09T22:30:00+08:00",
+  "file_scope": {
+    "includes": [
+      ".kallax/hooks/session_start.sh",
+      "tests/integration/3-modes/session-start-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "L1 存在性: session_start.sh 包含 'MODE' 字符串 + tests/integration/3-modes/session-start-test.sh 存在",
+    "L2 实质性: session_start.sh 真实显示 ASCII MODE 选择菜单 (1.ai-auto / 2.ai-copilot [默认] / 3.manual), 读 stdin 选 mode, 调 mode-set.sh 写 state.json, ASCII card 模板加 '│ MODE* ▸ $MODE' 一行, 已设 mode 时跳过菜单",
+    "L3 接线正确: 调用 mode-set.sh 路径正确, ASCII card 格式不破坏其他字段",
+    "L4 数据流动: session-start-test.sh 跑 PASS, 验证 session_start.sh 含 MODE + 3 mode 字符串"
+  ],
+  "estimated_hours": 1.5,
+  "blocked_by": ["EPIC-029-A"],
+  "borrowed_from_eket": "UX §5.1 interactive:start 多模式 (P1-3 EKET 借鉴)",
+  "related_design": "docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md §7 + §8"
+}
