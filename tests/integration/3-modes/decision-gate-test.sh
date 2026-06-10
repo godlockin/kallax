@@ -200,5 +200,98 @@ test_case "invalid context JSON = reject (exit 2)" \
   "bash $DECISION_GATE --action danger.data_destruction --context '{invalid}'" 2
 
 echo ""
+echo "[decision-gate-test] L4: redaction broadened (Issue 1 + 2 fixes)"
+
+# Test: Token header variant — secret_token_xyz redacted
+AUDIT_BEFORE_LINES=$(wc -l < "$AUDIT_FILE" 2>/dev/null || echo 0)
+bash "$DECISION_GATE" --action danger.data_destruction --cmd 'curl -H "Token: secret_token_xyz"' >/dev/null 2>&1 || true
+AUDIT_AFTER_LINES=$(wc -l < "$AUDIT_FILE" 2>/dev/null || echo 0)
+if [[ "$AUDIT_AFTER_LINES" -gt "$AUDIT_BEFORE_LINES" ]]; then
+  LAST_LINE=$(tail -1 "$AUDIT_FILE")
+  if echo "$LAST_LINE" | grep -q 'secret_token_xyz'; then
+    echo "  ✗ Token header redaction FAILED — secret_token_xyz still in audit"
+    FAIL=$((FAIL + 1))
+  else
+    echo "  ✓ Token header redaction PASS — secret_token_xyz replaced"
+    PASS=$((PASS + 1))
+  fi
+else
+  echo "  ✗ Token header redaction FAILED — no new audit line"
+  FAIL=$((FAIL + 1))
+fi
+
+# Test: X-Auth-Token header — my_x_auth_token_abc redacted
+AUDIT_BEFORE_LINES=$(wc -l < "$AUDIT_FILE" 2>/dev/null || echo 0)
+bash "$DECISION_GATE" --action danger.data_destruction --cmd 'curl -H "X-Auth-Token: my_x_auth_token_abc"' >/dev/null 2>&1 || true
+AUDIT_AFTER_LINES=$(wc -l < "$AUDIT_FILE" 2>/dev/null || echo 0)
+if [[ "$AUDIT_AFTER_LINES" -gt "$AUDIT_BEFORE_LINES" ]]; then
+  LAST_LINE=$(tail -1 "$AUDIT_FILE")
+  if echo "$LAST_LINE" | grep -q 'my_x_auth_token_abc'; then
+    echo "  ✗ X-Auth-Token header redaction FAILED — my_x_auth_token_abc still in audit"
+    FAIL=$((FAIL + 1))
+  else
+    echo "  ✓ X-Auth-Token header redaction PASS — my_x_auth_token_abc replaced"
+    PASS=$((PASS + 1))
+  fi
+else
+  echo "  ✗ X-Auth-Token header redaction FAILED — no new audit line"
+  FAIL=$((FAIL + 1))
+fi
+
+# Test: Basic auth URL — admin:pass123 replaced with [REDACTED]:[REDACTED]
+AUDIT_BEFORE_LINES=$(wc -l < "$AUDIT_FILE" 2>/dev/null || echo 0)
+bash "$DECISION_GATE" --action danger.data_destruction --cmd 'curl https://admin:pass123@api.example.com/users' >/dev/null 2>&1 || true
+AUDIT_AFTER_LINES=$(wc -l < "$AUDIT_FILE" 2>/dev/null || echo 0)
+if [[ "$AUDIT_AFTER_LINES" -gt "$AUDIT_BEFORE_LINES" ]]; then
+  LAST_LINE=$(tail -1 "$AUDIT_FILE")
+  if echo "$LAST_LINE" | grep -q 'admin:pass123'; then
+    echo "  ✗ Basic auth URL redaction FAILED — admin:pass123 still in audit"
+    FAIL=$((FAIL + 1))
+  else
+    echo "  ✓ Basic auth URL redaction PASS — admin:pass123 replaced"
+    PASS=$((PASS + 1))
+  fi
+else
+  echo "  ✗ Basic auth URL redaction FAILED — no new audit line"
+  FAIL=$((FAIL + 1))
+fi
+
+# Test: Long hex token fallback — abc123def456ghi789jkl012mno redacted (>= 24 chars)
+AUDIT_BEFORE_LINES=$(wc -l < "$AUDIT_FILE" 2>/dev/null || echo 0)
+bash "$DECISION_GATE" --action danger.data_destruction --cmd 'aws s3 cp s3://bucket/file --token abc123def456ghi789jkl012mno' >/dev/null 2>&1 || true
+AUDIT_AFTER_LINES=$(wc -l < "$AUDIT_FILE" 2>/dev/null || echo 0)
+if [[ "$AUDIT_AFTER_LINES" -gt "$AUDIT_BEFORE_LINES" ]]; then
+  LAST_LINE=$(tail -1 "$AUDIT_FILE")
+  if echo "$LAST_LINE" | grep -q 'abc123def456ghi789jkl012mno'; then
+    echo "  ✗ Long hex token fallback FAILED — abc123def456ghi789jkl012mno still in audit"
+    FAIL=$((FAIL + 1))
+  else
+    echo "  ✓ Long hex token fallback PASS — long token replaced"
+    PASS=$((PASS + 1))
+  fi
+else
+  echo "  ✗ Long hex token fallback FAILED — no new audit line"
+  FAIL=$((FAIL + 1))
+fi
+
+# Test: password= variant with quotes — passw0rd redacted
+AUDIT_BEFORE_LINES=$(wc -l < "$AUDIT_FILE" 2>/dev/null || echo 0)
+bash "$DECISION_GATE" --action danger.data_destruction --cmd "mysql -u root --password='passw0rd'" >/dev/null 2>&1 || true
+AUDIT_AFTER_LINES=$(wc -l < "$AUDIT_FILE" 2>/dev/null || echo 0)
+if [[ "$AUDIT_AFTER_LINES" -gt "$AUDIT_BEFORE_LINES" ]]; then
+  LAST_LINE=$(tail -1 "$AUDIT_FILE")
+  if echo "$LAST_LINE" | grep -q 'passw0rd'; then
+    echo "  ✗ password variant redaction FAILED — passw0rd still in audit"
+    FAIL=$((FAIL + 1))
+  else
+    echo "  ✓ password variant redaction PASS — passw0rd replaced"
+    PASS=$((PASS + 1))
+  fi
+else
+  echo "  ✗ password variant redaction FAILED — no new audit line"
+  FAIL=$((FAIL + 1))
+fi
+
+echo ""
 echo "=== Summary: $PASS PASS, $FAIL FAIL ==="
 if [[ "$FAIL" -gt 0 ]]; then exit 1; fi

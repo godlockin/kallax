@@ -9,16 +9,25 @@ KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
 AUDIT_DIR="${KALLAX_ROOT}/.kallax/audit"
 
-# Issue 2附加: redaction函数 — 剥离 Authorization/Bearer/password/token
-# Order: Bearer BEFORE Authorization to avoid Authorization consuming Bearer token
+# Issue 2附加: redaction函数 — 剥离 Authorization/Bearer/password/token/Token/X-Auth-Token
+# Single-pass combined regex + basic auth URL + 兜底长串
+# Issue 1: broadened to cover Token/X-Auth-Token/basic auth URL/long hex/base64
+# Issue 2: Authorization/Bearer 合并为单 regex, 避免 2-pass 互相干扰
 redact_cmd() {
   local cmd="$1"
-  # Bearer first (avoids Authorization pattern consuming the Bearer keyword)
-  cmd=$(echo "$cmd" | sed -E 's/(Bearer[[:space:]]+)[^[:space:]]+/\1[REDACTED]/gI')
-  # Authorization after Bearer (now safe since Bearer already replaced)
-  cmd=$(echo "$cmd" | sed -E 's/(Authorization:[[:space:]]*)[^[:space:]]+/\1[REDACTED]/gI')
-  cmd=$(echo "$cmd" | sed -E 's/(password[[:space:]]*=[[:space:]]*)[^[:space:]]+/\1[REDACTED]/gI')
-  cmd=$(echo "$cmd" | sed -E 's/(token[[:space:]]*=[[:space:]]*)[^[:space:]]+/\1[REDACTED]/gI')
+
+  # 1. Authorization / Token / X-Auth-Token header (bare or with Bearer prefix)
+  cmd=$(echo "$cmd" | sed -E 's/(Authorization|Token|X-Auth-Token)[:=][[:space:]]*(Bearer[[:space:]]+)?[^[:space:]]+/\1[=:] [REDACTED]/gI')
+
+  # 2. password= / secret= (value ends at whitespace or end of string)
+  cmd=$(echo "$cmd" | sed -E 's/(password|secret)[:=][[:space:]]*[^[:space:]]+/\1[=:] [REDACTED]/gI')
+
+  # 3. Basic auth URL 凭据 (https://user:pass@host)
+  cmd=$(echo "$cmd" | sed -E 's#(https?://)[^:/@]+:[^@]+@#\1[REDACTED]:[REDACTED]@#gI')
+
+  # 4. 兜底: 长 hex/base64 串 (>= 24 chars)
+  cmd=$(echo "$cmd" | sed -E 's/[A-Za-z0-9+\/=_-]{24,}/[REDACTED-TOKEN]/g')
+
   echo "$cmd"
 }
 
