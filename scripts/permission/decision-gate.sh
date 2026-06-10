@@ -17,9 +17,27 @@ AUDIT_DIR="${KALLAX_ROOT}/.kallax/audit"
 redact_cmd() {
   local cmd="$1"
 
+  # 0. 已知 token prefix — 先于 header redaction 处理 (EPIC-031 扩 4 个)
+  # ASIA/AKIA: capture only prefix (ASIA/AKIA), replace 16-char ID with [REDACTED]
+  cmd=$(echo "$cmd" | sed -E 's/(ASIA)[0-9A-Z]{16}/\1[REDACTED]/g')
+  cmd=$(echo "$cmd" | sed -E 's/(AKIA)[0-9A-Z]{16}/\1[REDACTED]/g')
+  # ya29. (GCP): capture prefix ya29., replace identifier with [REDACTED]
+  cmd=$(echo "$cmd" | sed -E 's/(ya29\.)[A-Za-z0-9_-]+/\1[REDACTED]/g')
+  # Azure SAS sig= value: replace sig=VALUE with sig=[REDACTED]
+  cmd=$(echo "$cmd" | sed -E 's/sig=[A-Za-z0-9%]+/sig=[REDACTED]/g')
+  # xox[abprs]- (Slack): capture prefix+first2 num segments, redact3rd segment
+  cmd=$(echo "$cmd" | sed -E 's/(xox[abprs]-[0-9]+-[0-9]+-)[A-Za-z0-9]+/\1[REDACTED]/g')
+  # Original prefixes (ghp_/gho_/github_pat_/sk-ant-/sk-/xox[abp]-)
+  cmd=$(echo "$cmd" | sed -E 's/(ghp_|gho_|github_pat_|sk-ant-|sk-|xox[abp]-)[A-Za-z0-9_=-]+/\1[REDACTED]/g')
+
   # 1. Header (curl -H "Authorization: ..." / "Token: ..." / "X-Auth-Token: ...")
   #    保留原始 `:` 分隔符, Bearer 也可保留
-  cmd=$(echo "$cmd" | sed -E 's/(Authorization|Token|X-Auth-Token):[[:space:]]*(Bearer[[:space:]]+)?[^[:space:]]+/\1: \2[REDACTED]/gI')
+  #    Fix: 如果值已含 [REDACTED] (Pass 0 先命中), 保留前缀; 否则通用 redaction
+  cmd=$(echo "$cmd" | sed -E '
+    s/(Authorization|Token|X-Auth-Token):[[:space:]]*(Bearer[[:space:]]+)?([^[:space:]]*)(\[[^]]+\])/\1: \2\3\4/gI
+    t
+    s/(Authorization|Token|X-Auth-Token):[[:space:]]*(Bearer[[:space:]]+)?[^[:space:]\[]+/\1: \2[REDACTED]/gI
+  ')
 
   # 2. CLI flag (--password=xxx / password=xxx) — 保留原 `=`
   cmd=$(echo "$cmd" | sed -E 's/(password|secret)=[[:space:]]*[^[:space:]]+/\1=[REDACTED]/gI')
@@ -33,16 +51,13 @@ redact_cmd() {
   # 5. Basic auth URL — 扩 scheme list (https / postgres(ql)? / mysql / mongodb(+srv)? / redis / amqp / amqps)
   cmd=$(echo "$cmd" | sed -E 's#(https?|postgres(ql)?|mysql|mongodb(\+srv)?|redis|amqps?)://[^:/@]+:[^@]+@#\1://[REDACTED]:[REDACTED]@#gI')
 
-  # 6. 已知 token prefix (ghp_/gho_/github_pat_/sk-/sk-ant-/xox[abp]-/AKIA[0-9A-Z]{16})
-  cmd=$(echo "$cmd" | sed -E 's/(ghp_|gho_|github_pat_|sk-ant-|sk-|xox[abp]-|AKIA[0-9A-Z]{16})[A-Za-z0-9_=-]+/\1[REDACTED]/g')
-
-  # 7. JWT pattern
+  # 6. JWT pattern
   cmd=$(echo "$cmd" | sed -E 's/eyJ[A-Za-z0-9_=-]+\.eyJ[A-Za-z0-9_=-]+\.[A-Za-z0-9_=-]+/[REDACTED-JWT]/g')
 
-  # 8. Env-var assignment (KEY=value, 16+ hex / 20+ base64)
+  # 7. Env-var assignment (KEY=value, 16+ hex / 20+ base64)
   cmd=$(echo "$cmd" | sed -E 's/([[:space:]]|^)([A-Z_][A-Z0-9_]+)=([A-Fa-f0-9]{16,}|[A-Za-z0-9+/=]{20,})/\1\2=[REDACTED-ENV]/g')
 
-  # 9. Fallback: 24+ alphanumeric string with at least 1 digit (catches tokens; avoids over-redacting commit msgs)
+  # 8. Fallback: 24+ alphanumeric string with at least 1 digit (catches tokens; avoids over-redacting commit msgs)
   cmd=$(echo "$cmd" | sed -E 's/[A-Za-z0-9]*[0-9][A-Za-z0-9]{23,}/[REDACTED]/g')
 
   echo "$cmd"

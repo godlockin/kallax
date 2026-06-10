@@ -9,6 +9,7 @@ set -euo pipefail
 
 TICKET_ID="${1:-}"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
+SCOPE_CHECK_MODE="${KALLAX_SCOPE_CHECK_MODE:-per-commit}"
 
 # BYPASS: design stage work (no ticket.json required)
 if [ "${KALLAX_BYPASS_SCOPE_CHECK:-0}" = "1" ]; then
@@ -22,6 +23,7 @@ fi
 echo "=========================================="
 echo "Scope Creep Check"
 echo "=========================================="
+echo "Mode: $SCOPE_CHECK_MODE (KALLAX_SCOPE_CHECK_MODE)"
 
 if [ -z "$TICKET_ID" ]; then
     echo "Usage: $0 <TICKET_ID>"
@@ -54,8 +56,17 @@ if ! ALLOWED=$(jq -r '.file_scope.includes[]' "$TICKET_FILE" 2>/dev/null); then
     exit 0
 fi
 
-# Get changed files relative to miao (the base branch)
-CHANGED=$(git diff --name-only miao...HEAD 2>/dev/null || git diff --name-only HEAD~1..HEAD)
+# Get changed files based on mode:
+# - per-commit: last commit only (HEAD~1..HEAD)
+# - per-branch: entire feature branch (miao...HEAD)
+case "$SCOPE_CHECK_MODE" in
+    per-branch)
+        CHANGED=$(git diff --name-only miao...HEAD)
+        ;;
+    per-commit|*)
+        CHANGED=$(git diff --name-only HEAD~1..HEAD)
+        ;;
+esac
 
 if [ -z "$CHANGED" ]; then
     echo "No changed files detected."

@@ -342,5 +342,54 @@ else
 fi
 
 echo ""
+echo "[decision-gate-test] L4: EPIC-031 4 new known token prefixes (AWS/GCP/Azure/Slack)"
+
+AUDIT_FILE="${AUDIT_DIR}/decision-$(date -u +%Y-%m-%d).jsonl"
+
+# 5. AWS_SESSION_TOKEN (ASIA prefix)
+MARKER="test-aws-$(date +%s%N)"
+bash "$DECISION_GATE" --action danger.security_failing --cmd "aws s3 cp --acl public ASIAIOSFODNN7EXAMPLE" --context "{\"marker\":\"$MARKER\"}" >/dev/null 2>&1 || true
+if grep -q "ASIA\[REDACTED\]" "$AUDIT_FILE" 2>/dev/null; then
+  echo "  ✓ AWS_SESSION_TOKEN (ASIA prefix) redacted"
+  PASS=$((PASS + 1))
+else
+  echo "  ✗ AWS_SESSION_TOKEN NOT redacted"
+  FAIL=$((FAIL + 1))
+fi
+
+# 6. GCP service account (ya29.)
+MARKER="test-gcp-$(date +%s%N)"
+bash "$DECISION_GATE" --action danger.security_failing --cmd "curl -H 'Authorization: Bearer ya29.a0AfH6SMBxxxxxxxxxxxxxxx'" --context "{\"marker\":\"$MARKER\"}" >/dev/null 2>&1 || true
+if grep -q "ya29\.\[REDACTED\]" "$AUDIT_FILE" 2>/dev/null; then
+  echo "  ✓ GCP service account (ya29.) redacted"
+  PASS=$((PASS + 1))
+else
+  echo "  ✗ GCP service account NOT redacted"
+  FAIL=$((FAIL + 1))
+fi
+
+# 7. Azure SAS (sig=)
+MARKER="test-azure-$(date +%s%N)"
+bash "$DECISION_GATE" --action danger.security_failing --cmd "https://example.blob.core.windows.net/?sv=2020-08-04&ss=b&srt=sco&sp=rwdlacx&se=2026-12-31&st=2026-01-01&spr=https&sig=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnop%3D" --context "{\"marker\":\"$MARKER\"}" >/dev/null 2>&1 || true
+if grep -q "sig=\[REDACTED\]" "$AUDIT_FILE" 2>/dev/null; then
+  echo "  ✓ Azure SAS (sig=) redacted"
+  PASS=$((PASS + 1))
+else
+  echo "  ✗ Azure SAS NOT redacted"
+  FAIL=$((FAIL + 1))
+fi
+
+# 8. Slack token (xox[abprs]-)
+MARKER="test-slack-$(date +%s%N)"
+bash "$DECISION_GATE" --action danger.security_failing --cmd "curl -H 'Authorization: Bearer xoxb-1234567890-1234567890123-abcdefghijklmnopqrstuvwx'" --context "{\"marker\":\"$MARKER\"}" >/dev/null 2>&1 || true
+if grep -q "xoxb-\[REDACTED\]" "$AUDIT_FILE" 2>/dev/null; then
+  echo "  ✓ Slack token (xoxb-) redacted"
+  PASS=$((PASS + 1))
+else
+  echo "  ✗ Slack token NOT redacted"
+  FAIL=$((FAIL + 1))
+fi
+
+echo ""
 echo "=== Summary: $PASS PASS, $FAIL FAIL ==="
 if [[ "$FAIL" -gt 0 ]]; then exit 1; fi
