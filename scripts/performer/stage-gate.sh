@@ -35,12 +35,44 @@ case "$STAGE" in
 esac
 [[ "$STAGE_COMPLEXITY" == "unknown" ]] && { echo "ERROR: unknown stage $STAGE"; exit 1; }
 
+# simple stages: ai-auto allows, ai-copilot/manual ask
 if [[ "$STAGE_COMPLEXITY" == "simple" ]]; then
-  echo "ALLOW: stage=$STAGE mode=$MODE (simple)"
-  exit 0
+  case "$MODE" in
+    ai-auto)
+      echo "ALLOW: stage=$STAGE mode=$MODE (simple)"
+      exit 0
+      ;;
+    ai-copilot)
+      # Simple stages: AI can handle autonomously
+      echo "ALLOW: stage=$STAGE mode=$MODE (simple)"
+      exit 0
+      ;;
+    manual)
+      ASK_FILE="${KALLAX_ROOT}/.kallax/inbox/ask-stage-${TICKET}-${STAGE}.md"
+      mkdir -p "$(dirname "$ASK_FILE")"
+      cat > "$ASK_FILE" <<EOF
+# Ask: stage=$STAGE ticket=$TICKET
+
+## Context
+- Mode: $MODE
+- Stage: $STAGE (simple)
+- Time: $(date -u +"%Y-%m-%dT%H:%M:%S+00:00")
+
+## 选项
+1. Approve — 继续执行
+2. Cancel — 终止 ticket
+EOF
+      echo "ASK: stage=$STAGE ticket=$TICKET → wrote $ASK_FILE, exit 2"
+      exit 2
+      ;;
+    *)
+      echo "ERROR: unknown mode $MODE"
+      exit 1
+      ;;
+  esac
 fi
 
-# 复杂阶段: 按 mode 分流
+# complex stages: ai-auto allows, ai-copilot/manual ask
 case "$MODE" in
   ai-auto)
     echo "ALLOW: stage=$STAGE mode=$MODE (complex but auto)"
