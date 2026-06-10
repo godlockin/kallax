@@ -1,0 +1,27 @@
+{
+  "id": "EPIC-029-J",
+  "epicId": "EPIC-029",
+  "phaseId": "PHASE-004",
+  "title": "用户文档 docs/architecture/3-MODES.md",
+  "type": "docs",
+  "priority": "P0",
+  "status": "ready",
+  "created_by": "master_main",
+  "created_at": "2026-06-09T22:30:00+08:00",
+  "file_scope": {
+    "includes": [
+      "docs/architecture/3-MODES.md"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "L1 存在性: docs/architecture/3-MODES.md 存在",
+    "L2 实质性: 文档覆盖 6 节 (怎么选 / 什么时候选 / 3 模式行为差异 / 怎么改 / 怎么回应 / 审计) + 1 节 (故障排查), ASCII mode 选择菜单跟 session_start 一致, 表格列 5 推荐场景 (跑 Sprint 3 / 日常开发 / 新 EPIC 设计 / 高风险 migration / 修复紧急 bug)",
+    "L3 接线正确: 引用 CLAUDE.md Rule 13 + 3 模式设计文档 + 实施计划, Markdown 格式清晰",
+    "L4 数据流动: 文档可读, 故障排查表覆盖 5 常见问题 (mode 没生效 / 误报 / 改 mode 无效 / ask file 没出现 / 审计)"
+  ],
+  "estimated_hours": 1.5,
+  "blocked_by": ["EPIC-029-I"],
+  "borrowed_from_eket": "P1-3 interactive:start 文档化 + UX §5.1 多模式",
+  "related_design": "docs/superpowers/plans/2026-06-09-kallax-3-modes.md Task 10"
+}
