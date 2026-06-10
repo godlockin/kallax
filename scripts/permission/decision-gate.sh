@@ -13,20 +13,37 @@ AUDIT_DIR="${KALLAX_ROOT}/.kallax/audit"
 # Single-pass combined regex + basic auth URL + 兜底长串
 # Issue 1: broadened to cover Token/X-Auth-Token/basic auth URL/long hex/base64
 # Issue 2: Authorization/Bearer 合并为单 regex, 避免 2-pass 互相干扰
+# Issue 1+2+3 (Round 3): 8-pass redaction — header(:) / CLI flag(=) / GNU style / -a-p short / URL scheme扩 / known prefix / JWT / env-var
 redact_cmd() {
   local cmd="$1"
 
-  # 1. Authorization / Token / X-Auth-Token header (bare or with Bearer prefix)
-  cmd=$(echo "$cmd" | sed -E 's/(Authorization|Token|X-Auth-Token)[:=][[:space:]]*(Bearer[[:space:]]+)?[^[:space:]]+/\1[=:] [REDACTED]/gI')
+  # 1. Header (curl -H "Authorization: ..." / "Token: ..." / "X-Auth-Token: ...")
+  #    保留原始 `:` 分隔符, Bearer 也可保留
+  cmd=$(echo "$cmd" | sed -E 's/(Authorization|Token|X-Auth-Token):[[:space:]]*(Bearer[[:space:]]+)?[^[:space:]]+/\1: \2[REDACTED]/gI')
 
-  # 2. password= / secret= (value ends at whitespace or end of string)
-  cmd=$(echo "$cmd" | sed -E 's/(password|secret)[:=][[:space:]]*[^[:space:]]+/\1[=:] [REDACTED]/gI')
+  # 2. CLI flag (--password=xxx / password=xxx) — 保留原 `=`
+  cmd=$(echo "$cmd" | sed -E 's/(password|secret)=[[:space:]]*[^[:space:]]+/\1=[REDACTED]/gI')
 
-  # 3. Basic auth URL 凭据 (https://user:pass@host)
-  cmd=$(echo "$cmd" | sed -E 's#(https?://)[^:/@]+:[^@]+@#\1[REDACTED]:[REDACTED]@#gI')
+  # 3. GNU-style --password value (无 `=`, 空格分隔)
+  cmd=$(echo "$cmd" | sed -E 's/--password[[:space:]]+[^[:space:]]+/--password [REDACTED]/gI')
 
-  # 4. 兜底: 长 hex/base64 串 (>= 24 chars)
-  cmd=$(echo "$cmd" | sed -E 's/[A-Za-z0-9+\/=_-]{24,}/[REDACTED-TOKEN]/g')
+  # 4. -a / -p 短 flag (curl/psql 等)
+  cmd=$(echo "$cmd" | sed -E 's/(-a|-p)[[:space:]]+([^[:space:]-][^[:space:]]+)/\1 [REDACTED]/g')
+
+  # 5. Basic auth URL — 扩 scheme list (https / postgres(ql)? / mysql / mongodb(+srv)? / redis / amqp / amqps)
+  cmd=$(echo "$cmd" | sed -E 's#(https?|postgres(ql)?|mysql|mongodb(\+srv)?|redis|amqps?)://[^:/@]+:[^@]+@#\1://[REDACTED]:[REDACTED]@#gI')
+
+  # 6. 已知 token prefix (ghp_/gho_/github_pat_/sk-/sk-ant-/xox[abp]-/AKIA[0-9A-Z]{16})
+  cmd=$(echo "$cmd" | sed -E 's/(ghp_|gho_|github_pat_|sk-ant-|sk-|xox[abp]-|AKIA[0-9A-Z]{16})[A-Za-z0-9_=-]+/\1[REDACTED]/g')
+
+  # 7. JWT pattern
+  cmd=$(echo "$cmd" | sed -E 's/eyJ[A-Za-z0-9_=-]+\.eyJ[A-Za-z0-9_=-]+\.[A-Za-z0-9_=-]+/[REDACTED-JWT]/g')
+
+  # 8. Env-var assignment (KEY=value, 16+ hex / 20+ base64)
+  cmd=$(echo "$cmd" | sed -E 's/([[:space:]]|^)([A-Z_][A-Z0-9_]+)=([A-Fa-f0-9]{16,}|[A-Za-z0-9+/=]{20,})/\1\2=[REDACTED-ENV]/g')
+
+  # 9. Fallback: 24+ alphanumeric string with at least 1 digit (catches tokens; avoids over-redacting commit msgs)
+  cmd=$(echo "$cmd" | sed -E 's/[A-Za-z0-9]*[0-9][A-Za-z0-9]{23,}/[REDACTED]/g')
 
   echo "$cmd"
 }
