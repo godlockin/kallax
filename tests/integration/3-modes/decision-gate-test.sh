@@ -293,5 +293,54 @@ else
 fi
 
 echo ""
+echo "[decision-gate-test] L4: 5-issue Round 3 redaction fix"
+
+AUDIT_FILE="${AUDIT_DIR}/decision-$(date -u +%Y-%m-%d).jsonl"
+
+# 1. Format correct (Issue 1: Authorization: Bearer [REDACTED] format)
+MARKER="test-format-$(date +%s%N)"
+bash "$DECISION_GATE" --action danger.security_failing --cmd "curl -H 'Authorization: Bearer abc123'" --context "{\"marker\":\"$MARKER\"}" >/dev/null 2>&1 || true
+if grep -q "Authorization: Bearer \[REDACTED\]" "$AUDIT_FILE" 2>/dev/null; then
+  echo "  ✓ Authorization: Bearer [REDACTED] format correct"
+  PASS=$((PASS + 1))
+else
+  echo "  ✗ Authorization format WRONG (expected 'Authorization: Bearer [REDACTED]')"
+  FAIL=$((FAIL + 1))
+fi
+
+# 2. GNU-style --password value (Issue 3)
+MARKER="test-gnu-$(date +%s%N)"
+bash "$DECISION_GATE" --action danger.security_failing --cmd "mysql -u root --password secret_db_pass" --context "{\"marker\":\"$MARKER\"}" >/dev/null 2>&1 || true
+if grep -q "\-\-password \[REDACTED\]" "$AUDIT_FILE" 2>/dev/null; then
+  echo "  ✓ GNU-style --password [REDACTED] correct"
+  PASS=$((PASS + 1))
+else
+  echo "  ✗ GNU-style --password redaction WRONG"
+  FAIL=$((FAIL + 1))
+fi
+
+# 3. GitHub token prefix (Issue 3)
+MARKER="test-ghp-$(date +%s%N)"
+bash "$DECISION_GATE" --action danger.security_failing --cmd "git push https://ghp_abcdefghijklmnopqrstuvwxyz@github.com" --context "{\"marker\":\"$MARKER\"}" >/dev/null 2>&1 || true
+if grep -q "ghp_\[REDACTED\]" "$AUDIT_FILE" 2>/dev/null; then
+  echo "  ✓ ghp_ token prefix redacted"
+  PASS=$((PASS + 1))
+else
+  echo "  ✗ ghp_ token prefix NOT redacted"
+  FAIL=$((FAIL + 1))
+fi
+
+# 4. Negative — legit flag preserved (Issue 5: no over-redaction)
+MARKER="test-neg-$(date +%s%N)"
+bash "$DECISION_GATE" --action danger.security_failing --cmd "git commit -m 'resolve_abcdefghijklmnop_qrstuvwx_bug' --max-tokens=500" --context "{\"marker\":\"$MARKER\"}" >/dev/null 2>&1 || true
+if grep -q "max-tokens=500" "$AUDIT_FILE" 2>/dev/null && grep -q "resolve_abcdefghijklmnop_qrstuvwx_bug" "$AUDIT_FILE" 2>/dev/null; then
+  echo "  ✓ legit flag --max-tokens=500 + commit msg preserved (no over-redaction)"
+  PASS=$((PASS + 1))
+else
+  echo "  ✗ legit flag over-redacted"
+  FAIL=$((FAIL + 1))
+fi
+
+echo ""
 echo "=== Summary: $PASS PASS, $FAIL FAIL ==="
 if [[ "$FAIL" -gt 0 ]]; then exit 1; fi
