@@ -1,0 +1,28 @@
+{
+  "id": "EPIC-029-C",
+  "epicId": "EPIC-029",
+  "phaseId": "PHASE-004",
+  "title": "decision-gate.sh block + danger 统一检查",
+  "type": "feature",
+  "priority": "P0",
+  "status": "ready",
+  "created_by": "master_main",
+  "created_at": "2026-06-09T22:30:00+08:00",
+  "file_scope": {
+    "includes": [
+      "scripts/permission/decision-gate.sh",
+      "tests/integration/3-modes/decision-gate-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "L1 存在性: scripts/permission/decision-gate.sh 存在 + 可执行 + tests/integration/3-modes/decision-gate-test.sh 存在",
+    "L2 实质性: decision-gate.sh 真实支持 5 block (block.ambiguous_options / block.performer_failure / block.rule_exception / block.epic_critical / block.high_impact) + 3 danger (danger.miao_modify / danger.security_failing / danger.data_destruction), 命中即 exit 2 写 .kallax/inbox/decision-<ACTION>-<TS>.md + 写 .kallax/audit/decision-YYYY-MM-DD.jsonl 审计, 非 block/danger action 0 退出",
+    "L3 接线正确: jq 读 .mode 兼容, JSONL 格式合法, ask file markdown 模板含 Approve/Reject/Defer 3 选项",
+    "L4 数据流动: decision-gate-test.sh 跑 PASS, 覆盖 ai-auto + danger.delete_data 场景"
+  ],
+  "estimated_hours": 2.0,
+  "blocked_by": ["EPIC-029-A"],
+  "borrowed_from_eket": "Conductor §5.3 waiting-for-expert + Security §4 审计",
+  "related_design": "docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md §4-§5 + §8"
+}

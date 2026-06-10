@@ -337,6 +337,49 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 - ❌ M1 填估数 ("~60%", "约 80%", "PARTIAL") — 算 KPI falsification
 - ❌ Trigger 字段直接复制 test case 文本
 
+### 13. 3 模式决策权分配 (KALLAX P0) — 主公原话 2026-06-09
+
+**教训**: 之前 Conductor/Performer 决策权模糊, 主公要么 "放手" (误操作风险), 要么 "每步问" (主公疲劳). 借鉴 EKET `interactive:start` 多模式 + 主公原话硬决策.
+
+**规则**: 3 模式 = `ai-auto` (AI 自主 + block/danger 停下问) / `ai-copilot` (默认, 简单自主 + 复杂协商) / `manual` (主公确认每阶段).
+
+**生效范围**: Performer + Conductor (Master 不受控, 跟 Rule 11 联动).
+
+**模式存储**: `state.json.mode` 字段, 每个 session_start 选一次, `mode_lock` 防热切换.
+
+**Block 决策 (5 类, 3 模式都触发)**:
+1. `block.ambiguous_options` — 多个选项无明显最优
+2. `block.performer_failure` — Performer 失败/超时/3 次 retry
+3. `block.rule_exception` — 规则冲突/Exception 请求
+4. `block.epic_critical` — EPIC 交付关键节点
+5. `block.high_impact` — 可能有重大影响/风险
+
+**危险操作 (3 类, 3 模式都触发)**:
+1. `danger.miao_modify` — 修改 miao 分支
+2. `danger.security_failing` — 安全检查 FAIL
+3. `danger.data_destruction` — rm -rf / reset --hard / drop table
+
+**5 阶段复杂度 (Performer)**:
+- `claim` (简单) / `analysis` (复杂) / `in_progress` (简单) / `test` (复杂) / `review` (复杂)
+
+**落地**: `scripts/performer/stage-gate.sh` + `scripts/permission/decision-gate.sh` + `scripts/permission/mode-set.sh`, pre-commit 集成 decision-gate.
+
+**审计**: `.kallax/audit/decision-YYYY-MM-DD.jsonl` 每日轮转.
+
+**安全加固 (3 轮审查)**:
+- 1st: action 严格 allowlist (regex `^[a-z_]+\\.[a-z_]+$`) + JSONL jq -n + fail-closed unknown
+- 2nd: redaction 加固 4-pass (Authorization/Token/X-Auth-Token + password/secret + Basic Auth URL + 24-char 兜底)
+- 3rd: 9-pass redaction (含已知 token prefix ghp_/sk-/AKIA + JWT + env-var + 数字要求兜底)
+
+**设计文档**: `docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md`
+**实施计划**: `docs/superpowers/plans/2026-06-09-kallax-3-modes.md`
+
+**红线**:
+- ❌ 跳过 decision-gate.sh 自行决定危险操作
+- ❌ 跳过 stage-gate.sh 在 5 阶段复杂步骤独断
+- ❌ 运行时热切换 mode (需 restart session)
+- ❌ mode_lock 文件被绕过直接写 state.json
+
 ---
 
 ## 命令速查
