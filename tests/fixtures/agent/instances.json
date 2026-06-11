@@ -1,0 +1,25 @@
+{
+  "instances": [
+    {
+      "id": "performer-alpha",
+      "role": "performer",
+      "skills": ["bash", "typescript", "rust"],
+      "expertise_cosine": 0.85,
+      "trust_score": 0.92
+    },
+    {
+      "id": "performer-beta",
+      "role": "performer",
+      "skills": ["python", "data-analysis"],
+      "expertise_cosine": 0.72,
+      "trust_score": 0.88
+    },
+    {
+      "id": "conductor-gamma",
+      "role": "conductor",
+      "skills": ["coordination", "analysis"],
+      "expertise_cosine": 0.65,
+      "trust_score": 0.95
+    }
+  ]
+}
