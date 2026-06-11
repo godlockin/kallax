@@ -11,13 +11,13 @@ PROFILE="${KALLAX_HOOK_PROFILE:-standard}"
 
 case "$PROFILE" in
   minimal)
-    HOOKS=("check-test-case-isolation.sh")
+    HOOKS=("check-test-case-isolation.sh" "check-commit-amend-verify.sh")
     ;;
   standard)
-    HOOKS=("check-test-case-isolation.sh" "check-kpi-precision.sh" "check-scope-creep.sh")
+    HOOKS=("check-test-case-isolation.sh" "check-kpi-precision.sh" "check-scope-creep.sh" "check-commit-amend-verify.sh")
     ;;
   strict)
-    HOOKS=("check-test-case-isolation.sh" "check-kpi-precision.sh" "check-scope-creep.sh" "check-fact-forcing-preflight.sh")
+    HOOKS=("check-test-case-isolation.sh" "check-kpi-precision.sh" "check-scope-creep.sh" "check-commit-amend-verify.sh" "check-fact-forcing-preflight.sh")
     ;;
   *)
     echo "ERROR: KALLAX_HOOK_PROFILE must be minimal|standard|strict, got: $PROFILE" >&2
