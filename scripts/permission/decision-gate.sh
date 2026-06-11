@@ -33,8 +33,11 @@ redact_cmd() {
   # 5. Basic auth URL — 扩 scheme list (https / postgres(ql)? / mysql / mongodb(+srv)? / redis / amqp / amqps)
   cmd=$(echo "$cmd" | sed -E 's#(https?|postgres(ql)?|mysql|mongodb(\+srv)?|redis|amqps?)://[^:/@]+:[^@]+@#\1://[REDACTED]:[REDACTED]@#gI')
 
-  # 6. 已知 token prefix (ghp_/gho_/github_pat_/sk-/sk-ant-/xox[abp]-/AKIA[0-9A-Z]{16})
-  cmd=$(echo "$cmd" | sed -E 's/(ghp_|gho_|github_pat_|sk-ant-|sk-|xox[abp]-|AKIA[0-9A-Z]{16})[A-Za-z0-9_=-]+/\1[REDACTED]/g')
+  # 6. 已知 token prefix (ghp_/gho_/github_pat_/sk-/sk-ant-/sk_live_/xox[abp]-/AKIA[0-9A-Z]{16}/cognito/aws_cognito)
+  cmd=$(echo "$cmd" | sed -E 's/(ghp_|gho_|github_pat_|sk-ant-|sk-|sk_live_|xox[abp]-|AKIA[0-9A-Z]{16}|us-east-1:[a-f0-9-]+)[A-Za-z0-9_=:-]+/\1[REDACTED]/g')
+
+  # 6b. GCP OAuth 2.0 tokens (ya29./Cik./1//)
+  cmd=$(echo "$cmd" | sed -E 's/(ya29\.|Cik\.|1\/\w{10,})[A-Za-z0-9_.-]+/\1[REDACTED]/g')
 
   # 7. JWT pattern
   cmd=$(echo "$cmd" | sed -E 's/eyJ[A-Za-z0-9_=-]+\.eyJ[A-Za-z0-9_=-]+\.[A-Za-z0-9_=-]+/[REDACTED-JWT]/g')

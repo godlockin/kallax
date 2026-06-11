@@ -54,8 +54,10 @@ if ! ALLOWED=$(jq -r '.file_scope.includes[]' "$TICKET_FILE" 2>/dev/null); then
     exit 0
 fi
 
-# Get changed files relative to miao (the base branch)
-CHANGED=$(git diff --name-only miao...HEAD 2>/dev/null || git diff --name-only HEAD~1..HEAD)
+# Get changed files — use last commit only (not entire branch history)
+# On multi-ticket branch, miao...HEAD includes all tickets' changes causing false positives
+# Using HEAD~1..HEAD limits to the most recent commit's changes
+CHANGED=$(git diff --name-only HEAD~1..HEAD 2>/dev/null)
 
 if [ -z "$CHANGED" ]; then
     echo "No changed files detected."
