@@ -1,0 +1,7 @@
+[
+  {"name": "small PR", "lines": 30, "expected": "PASS"},
+  {"name": "boundary 100", "lines": 100, "expected": "PASS"},
+  {"name": "boundary 101 (WARN)", "lines": 101, "expected": "WARN"},
+  {"name": "boundary 500 (WARN)", "lines": 500, "expected": "WARN"},
+  {"name": "huge PR (FAIL)", "lines": 600, "expected": "FAIL"}
+]
