@@ -1,0 +1,28 @@
+{
+  "id": "EPIC-030-D",
+  "epicId": "EPIC-030",
+  "phaseId": "PHASE-005",
+  "title": "Hook Profile 三档 minimal/standard/strict (主公 D 串行第 4)",
+  "type": "feature",
+  "priority": "P0",
+  "status": "ready",
+  "created_by": "master_main",
+  "created_at": "2026-06-11T00:00:00+08:00",
+  "file_scope": {
+    "includes": [
+      ".kallax/hooks/hook-profile.sh",
+      ".kallax/hooks/pre-commit",
+      "tests/integration/hook-profile-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "L1 存在性: .kallax/hooks/hook-profile.sh + pre-commit 改造 + test 存在",
+    "L2 实质性: hook-profile.sh 真实验证 KALLAX_HOOK_PROFILE ∈ {minimal, standard, strict}, 3 档对应不同 hook 触发 (minimal=safety / standard=safety+quality / strict=+lint+test-coverage+security-audit), pre-commit 调用 hook-profile.sh 决定跑哪些检查",
+    "L3 接线正确: KALLAX_HOOK_PROFILE env var 默认 standard, 不破坏现有 pre-commit 流程",
+    "L4 数据流动: test 跑 PASS, 覆盖 3 档 env var + 默认 + 不破坏现有"
+  ],
+  "estimated_days": 0.5,
+  "blocked_by": null,
+  "borrowed_from": "Performer §5.4 hook-flags.ts 三档"
+}
