@@ -9,9 +9,12 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 INSTANCES_FILE="${KALLAX_ROOT}/.kallax/state/instances.json"
-# Fallback to fixture for test/CI environments (state/ is gitignored)
-if [[ ! -f "$INSTANCES_FILE" ]]; then
+# Test/CI env 允许 fallback via explicit env var (production fail-closed)
+if [[ ! -f "$INSTANCES_FILE" ]] && [[ "${KALLAX_TEST_FIXTURES:-0}" == "1" ]]; then
   INSTANCES_FILE="${KALLAX_ROOT}/tests/fixtures/agent/instances.json"
+elif [[ ! -f "$INSTANCES_FILE" ]]; then
+  echo "ERROR: state/instances.json missing (set KALLAX_TEST_FIXTURES=1 for test/CI)" >&2
+  exit 1  # fail-closed in production
 fi
 
 best_matching_slaver() {
