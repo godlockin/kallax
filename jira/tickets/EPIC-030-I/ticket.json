@@ -1,0 +1,27 @@
+{
+  "id": "EPIC-030-I",
+  "epicId": "EPIC-030",
+  "phaseId": "PHASE-005",
+  "title": "Brief Inference 任务理解强制 (kallax task:claim, 主公 D 串行第 9)",
+  "type": "feature",
+  "priority": "P0",
+  "status": "ready",
+  "created_by": "master_main",
+  "created_at": "2026-06-11T00:00:00+08:00",
+  "file_scope": {
+    "includes": [
+      "scripts/task-claim-brief.sh",
+      "tests/integration/brief-inference-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "L1 存在性: scripts/task-claim-brief.sh + test 存在",
+    "L2 实质性: task-claim-brief.sh 真实强制 task:claim 后输出 📋 任务理解: [任务类型] | [核心目标] | [技术方案] | [风险点] 一行, 写入 ticket.json.brief_inference 字段, 无 brief_inference 字段 exit 1 拒绝",
+    "L3 接线正确: jq 合法, 跟 task:claim 现有流程兼容",
+    "L4 数据流动: test 跑 PASS, 覆盖有 brief_inference (PASS) + 无 (FAIL exit 1)"
+  ],
+  "estimated_days": 0.5,
+  "blocked_by": null,
+  "borrowed_from": "Performer §5.1 Brief Inference 强制 (eket SLAVER-RULES.md §2.5)"
+}

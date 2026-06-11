@@ -1,0 +1,41 @@
+{
+  "id": "EPIC-030",
+  "phase": "PHASE-005",
+  "title": "EKET P0 借鉴清单 9 项 — TrustScore / scoring_trace / waiting / Hook Profile / PR Size / system:doctor / AuditMiddleware / persona 字段 / Brief Inference",
+  "scope": "1. T1 TrustScore 三层匹配 + 向量 cosine (算法骨架 + 人工拍板, 2d)\n2. T2 scoring_trace.jsonl 每日轮转 (0.5d)\n3. T3 waiting-for-expert 自动降级 (0.5d)\n4. T4 Hook Profile 三档 minimal/standard/strict (0.5d)\n5. T5 PR Size CI + self-test fixture (1d)\n6. T6 system:doctor JSON 结构化 (0.5d)\n7. T7 AuditMiddleware audit_log 表 (新 DB 独立, 1.5d)\n8. T8 KALLAX 专属 persona 字段 (7 default, extended 留 P2) (1d)\n9. T9 Brief Inference 任务理解强制 (0.5d)",
+  "start_time": "2026-06-11",
+  "delivery_time": "2026-06-20",
+  "status": "active",
+  "baseline": {
+    "source": "主公 2026-06-09 拍板: 'eket 有强过我们的, 值得借鉴的, 都要借鉴过来'",
+    "borrowed_from_eket": "EKET 5 视角对比报告 (Conductor/Performer/UX/Architect/Security) + EPIC-021 战略 12 借鉴点",
+    "eket_p0_remaining": 9,
+    "epic-029_landed": "P1-3 interactive:start 多模式 (1 项已落地)"
+  },
+  "target": {
+    "tickets_total": 9,
+    "eket_p0_items": 9,
+    "estimated_days": 9,
+    "execution_mode": "主公拍: 串行 (1 Conductor 1 Performer capacity, 1 ticket 1 跑)",
+    "must_keep": "T1 派发权部分让渡 + 算法建议 + 人工拍板 (跟 3 模式借鉴 A1 经验)"
+  },
+  "decisions": {
+    "A_trustscore": "落地, 加 '算法建议 + 人工拍板' 模式 (主公 2026-06-11 拍)",
+    "B_ticket_split": "9 ticket (1 ticket 1 项, 跟 EKET 借鉴清单对齐)",
+    "C_audit_db": "新 SQLite .kallax/data/audit.db (独立表, 不污染现有)",
+    "D_execution": "串行 (主公 2026-06-11 改 3-3-3 三批 → 串行)",
+    "E_persona_scope": "先改 7 default expert, 90 extended 留 P2 用到时再完善"
+  },
+  "tickets": [
+    {"id": "EPIC-030-A", "title": "TrustScore 三层匹配 + 向量 cosine 算法骨架", "blocked_by": null, "est_days": 2.0, "borrowed_from": "Conductor §5.1"},
+    {"id": "EPIC-030-B", "title": "scoring_trace.jsonl 每日轮转", "blocked_by": ["EPIC-030-A"], "est_days": 0.5, "borrowed_from": "Conductor §5.1"},
+    {"id": "EPIC-030-C", "title": "waiting-for-expert 自动降级 + inbox 提示", "blocked_by": ["EPIC-030-A"], "est_days": 0.5, "borrowed_from": "Conductor §5.3"},
+    {"id": "EPIC-030-D", "title": "Hook Profile 三档 minimal/standard/strict", "blocked_by": null, "est_days": 0.5, "borrowed_from": "Performer §5.4"},
+    {"id": "EPIC-030-E", "title": "PR Size CI + self-test fixture 回归", "blocked_by": null, "est_days": 1.0, "borrowed_from": "Performer §5.5"},
+    {"id": "EPIC-030-F", "title": "system:doctor JSON 结构化输出", "blocked_by": null, "est_days": 0.5, "borrowed_from": "UX §5.2"},
+    {"id": "EPIC-030-G", "title": "AuditMiddleware audit_log 新 SQLite 表", "blocked_by": null, "est_days": 1.5, "borrowed_from": "Security §5.2"},
+    {"id": "EPIC-030-H", "title": "KALLAX 专属 persona 5 字段 (7 default)", "blocked_by": null, "est_days": 1.0, "borrowed_from": "EPIC-021 §3.1"},
+    {"id": "EPIC-030-I", "title": "Brief Inference 任务理解强制 (kallax task:claim)", "blocked_by": null, "est_days": 0.5, "borrowed_from": "Performer §5.1"}
+  ],
+  "total_estimated_days": 8.0
+}
