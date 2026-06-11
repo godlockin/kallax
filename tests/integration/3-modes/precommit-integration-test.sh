@@ -41,18 +41,31 @@ else
   FAIL=$((FAIL + 1))
 fi
 
-# L1: pre-commit has 3 anti-fab tools (check each individually)
-ANTIFAB_MISSING=0
-for tool in check-test-case-isolation check-kpi-precision check-scope-creep; do
-  if grep -q "$tool" "$PRE_COMMIT"; then
-    echo "  ✓ pre-commit references $tool"
-    PASS=$((PASS + 1))
-  else
-    echo "  ✗ pre-commit missing $tool"
-    FAIL=$((FAIL + 1))
-    ANTIFAB_MISSING=1
-  fi
-done
+# L1: pre-commit references hook-profile.sh (EPIC-030-D refactor)
+HOOK_PROFILE="${KALLAX_ROOT}/.kallax/hooks/hook-profile.sh"
+if grep -q "hook-profile" "$PRE_COMMIT"; then
+  echo "  ✓ pre-commit references hook-profile.sh"
+  PASS=$((PASS + 1))
+else
+  echo "  ✗ pre-commit missing hook-profile.sh"
+  FAIL=$((FAIL + 1))
+fi
+
+# L1: hook-profile.sh contains the 3 anti-fab tools (EPIC-030-D)
+if [[ -f "$HOOK_PROFILE" ]]; then
+  for tool in check-test-case-isolation check-kpi-precision check-scope-creep; do
+    if grep -q "$tool" "$HOOK_PROFILE"; then
+      echo "  ✓ hook-profile.sh contains $tool"
+      PASS=$((PASS + 1))
+    else
+      echo "  ✗ hook-profile.sh missing $tool"
+      FAIL=$((FAIL + 1))
+    fi
+  done
+else
+  echo "  ✗ hook-profile.sh missing"
+  FAIL=$((FAIL + 1))
+fi
 
 # L2: decision-gate called after authz check
 AUTHZ_LINE=$(grep -n "authz/check.sh" "$PRE_COMMIT" | head -1 | cut -d: -f1 || echo "0")
@@ -65,17 +78,19 @@ else
   FAIL=$((FAIL + 1))
 fi
 
-# L2: 3 anti-fab tools present (count total occurrences across file)
+# L2: hook-profile.sh contains ≥3 anti-fab tools (EPIC-030-D)
 ANTIFAB_COUNT=0
-for tool in check-test-case-isolation check-kpi-precision check-scope-creep; do
-  COUNT=$(grep -c "$tool" "$PRE_COMMIT" || echo "0")
-  ANTIFAB_COUNT=$((ANTIFAB_COUNT + COUNT))
-done
+if [[ -f "$HOOK_PROFILE" ]]; then
+  for tool in check-test-case-isolation check-kpi-precision check-scope-creep; do
+    COUNT=$(grep -c "$tool" "$HOOK_PROFILE" || echo "0")
+    ANTIFAB_COUNT=$((ANTIFAB_COUNT + COUNT))
+  done
+fi
 if [[ "$ANTIFAB_COUNT" -ge 3 ]]; then
-  echo "  ✓ 3 anti-fab tools present ($ANTIFAB_COUNT total occurrences)"
+  echo "  ✓ hook-profile.sh ≥3 anti-fab tools ($ANTIFAB_COUNT total occurrences)"
   PASS=$((PASS + 1))
 else
-  echo "  ✗ only $ANTIFAB_COUNT anti-fab tool occurrences (expected ≥3)"
+  echo "  ✗ only $ANTIFAB_COUNT anti-fab tool occurrences in hook-profile.sh (expected ≥3)"
   FAIL=$((FAIL + 1))
 fi
 
