@@ -15,6 +15,10 @@
 
 set -euo pipefail
 
+# Force fixture mode so test uses tests/fixtures/agent/instances.json (conductor-gamma)
+# instead of .kallax/state/instances.json (instance-003) — EPIC-031 fix
+export KALLAX_TEST_FIXTURES=1
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 DISPATCH="${KALLAX_ROOT}/scripts/conductor/dispatch.sh"

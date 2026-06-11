@@ -9,8 +9,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 INSTANCES_FILE="${KALLAX_ROOT}/.kallax/state/instances.json"
-# Test/CI env 允许 fallback via explicit env var (production fail-closed)
-if [[ ! -f "$INSTANCES_FILE" ]] && [[ "${KALLAX_TEST_FIXTURES:-0}" == "1" ]]; then
+# Test/CI env 强制 fixture 覆盖 state (EPIC-031-A fix 配套)
+if [[ "${KALLAX_TEST_FIXTURES:-0}" == "1" ]]; then
   INSTANCES_FILE="${KALLAX_ROOT}/tests/fixtures/agent/instances.json"
 elif [[ ! -f "$INSTANCES_FILE" ]]; then
   echo "ERROR: state/instances.json missing (set KALLAX_TEST_FIXTURES=1 for test/CI)" >&2
