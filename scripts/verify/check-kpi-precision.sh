@@ -5,8 +5,8 @@
 
 set -euo pipefail
 
-TARGET="${1:-last-commit}"
-MSG=$(git log -1 --pretty=%B "$TARGET")
+TARGET="${1:-HEAD}"
+MSG=$(git log -1 --pretty=%B -- "$TARGET")
 
 echo "=========================================="
 echo "KPI Precision Check (Anti-Falsification)"
