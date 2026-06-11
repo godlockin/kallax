@@ -2,8 +2,10 @@
 # tests/integration/3-modes/session-start-test.sh
 # L4: session_start.sh MODE selection integration test
 set -uo pipefail
-# Absolute path to worktree root (parent of tests/)
-SESSION_START="/Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.kallax/worktrees/performer-EPIC-029/.kallax/hooks/session_start.sh"
+# Derive SESSION_START from KALLAX_ROOT (worktree-aware)
+# KALLAX_ROOT should point to the .kallax directory
+KALLAX_ROOT="${KALLAX_ROOT:-.kallax}"
+SESSION_START="${KALLAX_ROOT}/hooks/session_start.sh"
 
 PASS=0
 FAIL=0
