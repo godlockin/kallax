@@ -7,8 +7,8 @@ review_group: B
 phase: 2
 rationalizations_count: 8
 version: 1.0.0
-last_reviewed: 2026-06-07
-tickets_served: []
+last_reviewed: 2026-06-11
+tickets_served: [EPIC-030]
 trigger: 交互,体验差,旅程,可用性,一致性,认知负荷,操作步骤,用户路径,反馈,提示不清,界面,易用性,操作复杂,表单,对话框,按钮,点击率,留存,流失,跳出,转化,认知,易学,易用,操作,流程
 output_format: |
   ## 亮点

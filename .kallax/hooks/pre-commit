@@ -94,25 +94,9 @@ if [[ -x "$DECISION_GATE" ]]; then
   fi
 fi
 
-# ── 3 anti-fab tools (Rule 10) ──────────────────────────────────────────
-# Run on ALL branches to catch KPI falsification, test verbatim, scope creep
-ANTIFAB_FAILED=0
-for _tool in check-test-case-isolation check-kpi-precision check-scope-creep; do
-  _tool_path="${KALLAX_ROOT}/scripts/verify/${_tool}.sh"
-  if [[ -x "$_tool_path" ]]; then
-    if ! bash "$_tool_path" >/dev/null 2>&1; then
-      echo "╔══════════════════════════════════════════════════════════════╗"
-      echo "║  BLOCKED: $_tool FAILED                            ║"
-      echo "║  Run the tool manually to see details:                    ║"
-      echo "║  bash scripts/verify/${_tool}.sh ║"
-      echo "╚══════════════════════════════════════════════════════════════╝"
-      ANTIFAB_FAILED=1
-    fi
-  fi
-done
-if [[ "$ANTIFAB_FAILED" -eq 1 ]]; then
-  exit 1
-fi
+# ── Hook Profile — Rule 10 anti-fab via hook-profile.sh (EPIC-030-D) ─────
+# KALLAX_HOOK_PROFILE: minimal | standard (default) | strict
+bash "${KALLAX_ROOT}/.kallax/hooks/hook-profile.sh" || exit 1
 
 # ── Only enforce miao-specific rules on miao branch ───────────────────
 if [ "$BRANCH" != "miao" ]; then

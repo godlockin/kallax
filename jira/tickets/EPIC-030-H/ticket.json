@@ -1,0 +1,35 @@
+{
+  "id": "EPIC-030-H",
+  "epicId": "EPIC-030",
+  "phaseId": "PHASE-005",
+  "title": "KALLAX 专属 persona 5 字段 (7 default, 主公 D 串行第 8, 主公 E 先 7 default)",
+  "type": "docs",
+  "priority": "P0",
+  "status": "ready",
+  "created_by": "master_main",
+  "created_at": "2026-06-11T00:00:00+08:00",
+  "file_scope": {
+    "includes": [
+      ".kallax/experts/default/architect.md",
+      ".kallax/experts/default/backend.md",
+      ".kallax/experts/default/frontend.md",
+      ".kallax/experts/default/ux.md",
+      ".kallax/experts/default/product.md",
+      ".kallax/experts/default/security.md",
+      ".kallax/experts/default/pm.md"
+    ],
+    "excludes": [
+      ".kallax/experts/extended/*"
+    ]
+  },
+  "acceptance_criteria": [
+    "L1 存在性: 7 default expert 全部加 5 字段 (worktree_role / tickets_served / review_group / version / last_reviewed)",
+    "L2 实质性: frontmatter 真实加字段, worktree_role ∈ {master, conductor, performer, auditor, readonly}, review_group ∈ {A, B, AB}, version semver (默认 1.0.0), last_reviewed ISO date",
+    "L3 接线正确: 7 文件 frontmatter 解析合法, 跟现有 trigger / tier / domain 字段不冲突, expert-quality-audit.py 解析新字段通过",
+    "L4 数据流动: 跑 expert-quality-audit.py --enforce-tier-domain, 7/7 PASS, 0 FAIL"
+  ],
+  "estimated_days": 1.0,
+  "blocked_by": null,
+  "borrowed_from": "EPIC-021 §3.1 KALLAX 专属 persona 字段 (5 字段)",
+  "must_keep": "主公 2026-06-11 拍: 先改 7 default, 90 extended 留 P2 用到时再完善"
+}
