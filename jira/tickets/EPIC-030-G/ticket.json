@@ -1,0 +1,30 @@
+{
+  "id": "EPIC-030-G",
+  "epicId": "EPIC-030",
+  "phaseId": "PHASE-005",
+  "title": "AuditMiddleware audit_log 新 SQLite 表 (主公 D 串行第 7, 主公 C 选新 DB)",
+  "type": "feature",
+  "priority": "P0",
+  "status": "ready",
+  "created_by": "master_main",
+  "created_at": "2026-06-11T00:00:00+08:00",
+  "file_scope": {
+    "includes": [
+      "scripts/audit/audit-middleware.sh",
+      "scripts/audit/audit-db.sh",
+      ".kallax/data/audit.db",
+      "tests/integration/audit-middleware-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "L1 存在性: scripts/audit/audit-middleware.sh + audit-db.sh + audit.db + test 存在",
+    "L2 实质性: audit-db.sh 真实建新 SQLite .kallax/data/audit.db 含 audit_log 表 (id / command / ticket_id / slaver_id / elapsed_ms / created_at), audit-middleware.sh 在 check-fact-forcing-preflight.sh 执行时写 audit_log, command/ticket_id/elapsed_ms 真实采集",
+    "L3 接线正确: sqlite3 CLI 合法, schema 跟 eket 一致 (审计表), 不破坏现有 .kallax/data/ 目录 (新独立 DB)",
+    "L4 数据流动: test 跑 PASS, 覆盖建表 + 写 1 条 + 查 + 跨多 command 写多"
+  ],
+  "estimated_days": 1.5,
+  "blocked_by": null,
+  "borrowed_from": "Security §5.2 AuditMiddleware SQLite 审计 (新 DB 独立, 不污染现有 .kallax/data/)",
+  "must_keep": "主公 2026-06-11 拍: 新 SQLite .kallax/data/audit.db 独立, 不污染现有"
+}

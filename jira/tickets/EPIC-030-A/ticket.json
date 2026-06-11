@@ -1,0 +1,29 @@
+{
+  "id": "EPIC-030-A",
+  "epicId": "EPIC-030",
+  "phaseId": "PHASE-005",
+  "title": "TrustScore 三层匹配 + 向量 cosine 算法骨架 (主公 D 串行第 1)",
+  "type": "feature",
+  "priority": "P0",
+  "status": "ready",
+  "created_by": "master_main",
+  "created_at": "2026-06-11T00:00:00+08:00",
+  "file_scope": {
+    "includes": [
+      "scripts/agent/trust-score.sh",
+      "scripts/agent/best-matching-slaver.sh",
+      "tests/integration/agent/trust-score-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "L1 存在性: scripts/agent/trust-score.sh + best-matching-slaver.sh + test 存在 + 可执行",
+    "L2 实质性: trust-score.sh 真实验证 3 因子 (success_rate_7d / uptime_30d / avg_latency_norm / error_rate), best-matching-slaver.sh 跑 3 层 (空 required_expertise → TrustScore / 向量 cosine ≥ 0.5 → 标签评分 fallback)",
+    "L3 接线正确: 跟 Conductor 现有派发逻辑兼容, 加 '算法建议 + 人工拍板' 出口 (3 模式 A1 经验, KALLAX 不让算法完全覆盖 Conductor 决策)",
+    "L4 数据流动: test 跑 PASS, 覆盖 3 层匹配 + TrustScore 计算 + 边界 case (无 slaver / 多 slaver / cosine < 0.5)"
+  ],
+  "estimated_days": 2.0,
+  "blocked_by": null,
+  "borrowed_from": "Conductor §5.1 best_matching_slaver() + compute_trust()",
+  "must_keep": "TrustScore 算法骨架 + '算法建议 + 人工拍板' 出口 (主公 2026-06-11 拍)"
+}

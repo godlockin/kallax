@@ -3,9 +3,44 @@
 # Usage: ./scripts/check-pr-size.sh [--json]
 set -euo pipefail
 
+self_test() {
+  local fixture="tests/fixtures/pr-size/cases.json"
+  [[ ! -f "$fixture" ]] && { echo "FAIL: fixture $fixture not found"; exit 1; }
+
+  local total
+  total=$(jq 'length' "$fixture")
+  local pass=0
+
+  for i in $(seq 0 $((total - 1))); do
+    local name
+    local lines
+    local expected
+    name=$(jq -r ".[$i].name" "$fixture")
+    lines=$(jq -r ".[$i].lines" "$fixture")
+    expected=$(jq -r ".[$i].expected" "$fixture")
+
+    local actual
+    if [[ $lines -gt 500 ]]; then actual="FAIL"
+    elif [[ $lines -gt 100 ]]; then actual="WARN"
+    else actual="PASS"; fi
+
+    if [[ "$actual" == "$expected" ]]; then
+      echo "  [PASS] case $i: $name ($lines lines -> $actual)"
+      pass=$((pass + 1))
+    else
+      echo "  [FAIL] case $i: $name expected $expected, got $actual"
+    fi
+  done
+
+  echo "=== Summary: $pass/$total PASS ==="
+  [[ $pass -eq "$total" ]] || exit 1
+}
+
+[[ "${1:-}" == "--self-test" ]] && { self_test; exit $?; }
+
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-JSON_OUT="${1:-}"
-BASE_BRANCH="${2:-main}"
+JSON_OUT="${2:-}"
+BASE_BRANCH="${3:-main}"
 
 MAX_FILES=20
 MAX_INSERTIONS=500
