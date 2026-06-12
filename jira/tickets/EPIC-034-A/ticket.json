@@ -1,0 +1,31 @@
+{
+  "id": "EPIC-034-A",
+  "epicId": "EPIC-034",
+  "phaseId": "PHASE-006",
+  "title": "M1 100 test case 扩域 (data + legal + finance + cross-domain, Step 1)",
+  "type": "feature",
+  "priority": "P0",
+  "status": "in_progress",
+  "created_by": "performer-EPIC-034",
+  "created_at": "2026-06-12T00:00:00Z",
+  "file_scope": {
+    "includes": [
+      "scripts/verify/expert-match-m1-v3.sh",
+      "jira/epics/EPIC-034/",
+      "jira/tickets/EPIC-034-A/"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/verify/expert-match-m1-v3.sh TESTS 数组从 50 → 100 (新增 50 个场景:10 data + 10 legal + 10 finance + 10 cross-domain + 10 已有域回填)",
+    "新增 test case 覆盖: 数据血缘/Snowflake性能/ClickHouse优化/Presto联邦查询/dbt转换/Airflow调度/Kafka流处理/数据湖架构/OLAP cube/数据质量监控 (data)",
+    "新增 test case 覆盖: 合同审查/GDPR数据保护/知识产权侵权/反垄断分析/劳动法纠纷/SOX合规/数据隐私/跨境数据流/争议解决/法规跟踪 (legal)",
+    "新增 test case 覆盖: 财务报告/预算分析/现金流建模/投资组合/风险评估/税务规划/审计跟踪/应收账款/应付账款/成本核算 (finance)",
+    "新增 test case 覆盖: 金融+数据实时风控/法律+数据合规审计/金融+法律合同条款/UX+数据用户行为/安全+数据威胁建模 (cross-domain)",
+    "check-test-case-isolation.sh PASS (0/100 leaked)",
+    "check-kpi-precision.sh PASS (commit msg 精确 50→100)",
+    "check-scope-creep.sh PASS",
+    "check-commit-amend-verify.sh 4 PASS"
+  ],
+  "estimated_hours": 1
+}

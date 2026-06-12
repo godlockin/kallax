@@ -1,0 +1,36 @@
+{
+  "id": "EPIC-032",
+  "phase": "PHASE-005",
+  "title": "M1 co-evolution — 50 test case扩域 (data + legal 场景)",
+  "scope": "1. EPIC-031 anti-fab 工具落地后, M1 需要更多真实 test case 验证 recall\n2. 30 → 50 test case (扩 data + legal 场景, 触发 4 generated expert: finance×4 + product×3 + ux×3)\n3. 跑 expert-quality-audit.py 验证 M1 Recall 30/30 → 50/50 提升",
+  "start_time": "2026-06-11",
+  "delivery_time": "2026-06-12",
+  "status": "active",
+  "baseline": {
+    "source": "EPIC-031 anti-fab 工具 (check-commit-amend-verify.sh)",
+    "current_m1_test_cases": 30,
+    "m1_recall_baseline": "30/30 = 100% (but limited scope)",
+    "gap": "缺少 data + legal 场景, 4 generated expert 未激活"
+  },
+  "target": {
+    "m1_test_cases": ">= 50 (扩20 个 data + legal 场景)",
+    "m1_recall_documented": true,
+    "generated_expert_activation": "finance×4 + product×3 + ux×3 (共 10 个新 expert 触发)",
+    "expert_quality_audit": "M1 Recall 提升验证"
+  },
+  "decisions": {
+    "priority": 1,
+    "rationale": "主公 2026-06-11 拍 B 落地升级 1+2+5 (P0 三项)",
+    "phase": "PHASE-005 Phase 4 主公审批 B 升级",
+    "co-evolution": "Backend/Frontend/UX/Product/Security 5 专家一致 (Phase 2)"
+  },
+  "tickets": [
+    {
+      "id": "EPIC-032-A",
+      "title": "M1 50 test case 扩域 (data + legal 场景)",
+      "assignee": "performer-EPIC-032",
+      "status": "in_progress",
+      "blocked_by": null
+    }
+  ]
+}

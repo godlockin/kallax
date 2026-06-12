@@ -2,7 +2,7 @@
 
 > **目的**: 沉淀 KALLAX 多 Agent 框架跨 EPIC 教训, 统一文件名格式 + 便于搜索
 > **作者**: master (PHASE-002 整理, 主公 2026-06-09 拍板)
-> **最近更新**: 2026-06-09
+> **最近更新**: 2026-06-11 (PHASE-005 升级 3+4)
 
 ---
 
@@ -40,13 +40,18 @@
 
 ### 2.3 主题 Lessons (跨 EPIC, 持续累积)
 
-| File | 主题 | 关键事件 |
-|---|---|---|
-| `background-agent-hallucination.md` | Background agent 幻觉 | EPIC-021 17 ticket 0 expert |
-| `kallax-rebuild-lessons.md` | 重建经验 | KALLAX 框架级 lessons |
-| `multi-agent-collab-failures.md` | 多 Agent 协作失败 | 并行冲突 / 工件覆盖 |
-| `project-level-data-isolation.md` | 数据隔离 | Worktree 隔离 + 跨实例防混 |
-| `verification-matters.md` | 验证重要性 | 4-Level Fact-Forcing 来源 |
+| File | 主题 | 关键事件 | 状态 |
+|---|---|---|---|
+| `background-agent-hallucination.md` | Background agent 幻觉 | EPIC-021 17 ticket 0 expert | ACTIVE |
+| `kallax-rebuild-lessons.md` | 重建经验 | KALLAX 框架级 lessons | ACTIVE |
+| `multi-agent-collab-failures.md` | 多 Agent 协作失败 | 并行冲突 / 工件覆盖 | ACTIVE |
+| `project-level-data-isolation.md` | 数据隔离 | Worktree 隔离 + 跨实例防混 | ACTIVE |
+| `verification-matters.md` | 验证重要性 | 4-Level Fact-Forcing 来源 | ACTIVE |
+| `cross-epic-kpi-falsification-evolution.md` | KPI falsification 4 次演化 + 安全审查 3 轮 + Token Plan 撞墙 + 派发权让渡 | 综合 4 主题, 单一入口 (PHASE-005升级 3) | ACTIVE |
+| `three-modes-decision-authority.md` | 3 模式决策权 | EPIC-029 3 模式 | ARCHIVED → cross-epic-kpi-falsification-evolution.md |
+| `security-hardening-iterations.md` | 安全审查 3 轮叠加 | EPIC-029/030 20 issue | ARCHIVED → cross-epic-kpi-falsification-evolution.md |
+| `token-plan-cap-incident.md` | Token Plan 限撞墙 | EPIC-029 Token5h cap | ARCHIVED → cross-epic-kpi-falsification-evolution.md |
+| `performer-kpi-falsification-pattern.md` | Performer KPI falsification 反复 | EPIC-031 3 amend 失败 | ARCHIVED → cross-epic-kpi-falsification-evolution.md |
 
 ## 3. 关键经验教训汇总 (跨 EPIC, 17 子教训)
 
