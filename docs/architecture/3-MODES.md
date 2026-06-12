@@ -76,7 +76,53 @@ exit  # 或 Ctrl+D
 
 不能在 session 中热切换, 避免状态不一致 (mode_lock 保护).
 
-## 7. 怎么回应 AI 的"停下问"?
+## 7. 派发权让渡比例 (主公 D2 决策, 渐进升级)
+
+> **主公 2026-06-11 D2 决策**: EKET P1 #1 派发权让渡比例从 60% AI → 80% AI 渐进升级.
+> 未来可调至 90% AI (待主公拍板).
+
+### 7.1 3 模式 × 3 派发权比例矩阵 (9 场景)
+
+| 模式 | 60% AI | 80% AI | 90% AI |
+|---|---|---|---|
+| **ai-auto** | 60% AI 默认 Accept, 40% 显式 override 必填 | 80% AI 默认 Accept, 20% 显式 override 必填 | 90% AI 默认 Accept, 10% 显式 override 必填 |
+| **ai-copilot (默认)** | 默认 Accept (60% AI 默认), 40% 人工 override 显式 | 默认 Accept (80% AI 默认), 20% 人工 override 显式 | 默认 Accept (90% AI 默认), 10% 人工 override 显式 |
+| **manual** | 100% 人工, 显式 override 必填 | 100% 人工, 显式 override 必填 | 100% 人工, 显式 override 必填 |
+
+### 7.2 派发权让渡比例演进
+
+| EPIC | AI 比例 | 人工比例 | 决策 | 状态 |
+|---|---|---|---|---|
+| EPIC-031 | 60% AI | 40% 人工 | 主公 2026-06-11 拍 | 已完成 |
+| **EPIC-033** | **80% AI** | **20% 人工** | **主公 2026-06-11 D2 决策** | **本次升级** |
+| 未来 (待定) | 90% AI | 10% 人工 | 主公未来拍板 | 规划 |
+
+### 7.3 env var 配置
+
+```bash
+# KALLAX_AI_DELEGATION_RATIO: 60 = 60% AI / 40% 人工, 80 = 80% AI / 20% 人工, 90 = 90% AI / 10% 人工
+export KALLAX_AI_DELEGATION_RATIO=80  # 默认 80% AI (主公 D2 决策)
+
+# 查看当前配置
+echo $KALLAX_AI_DELEGATION_RATIO
+```
+
+### 7.4 20% 人工 override 场景
+
+当 `KALLAX_AI_DELEGATION_RATIO=80` 时:
+- 80% AI: Conductor 默认 Accept ALGO_SUGGEST (一键 Approve)
+- 20% 人工: 必须显式 `--dispatch-to <performer_id>` 或 `--human-override-required <performer_id>`
+
+示例:
+```bash
+# 80% AI 模式: 默认 Accept ALGO (一键 Approve)
+kallax-dispatch.sh --ticket EPIC-033-T001 --expertise bash
+
+# 20% 人工 override: 显式指定 performer
+kallax-dispatch.sh --ticket EPIC-033-T001 --expertise bash --dispatch-to performer-beta
+```
+
+## 8. 怎么回应 AI 的"停下问"?
 
 AI 写 ask file 到 `.kallax/inbox/`:
 - `ask-stage-<TICKET>-<STAGE>.md` (ai-copilot 复杂阶段)
@@ -87,7 +133,7 @@ AI 写 ask file 到 `.kallax/inbox/`:
 1. 编辑 ask file 写 "Approve" / "Modify" / "Reject"
 2. AI 读 ask file 继续执行
 
-## 8. 审计
+## 9. 审计
 
 所有 AI 决策写到 `.kallax/audit/decision-YYYY-MM-DD.jsonl`:
 - 每条记录: timestamp / actor / mode / action / cmd (redacted) / context
@@ -99,7 +145,7 @@ AI 写 ask file 到 `.kallax/inbox/`:
 - JSONL 用 jq -n 构建 (不 echo 拼字符串)
 - 9-pass redaction (Authorization/Token/X-Auth-Token + password/secret + GNU-style + -a/-p + Basic Auth URL 多种 scheme + 已知 token prefix ghp_/sk-/AKIA + JWT + env-var + 数字要求兜底)
 
-## 9. 故障排查
+## 10. 故障排查
 
 | 问题 | 排查 |
 |---|---|
@@ -108,9 +154,11 @@ AI 写 ask file 到 `.kallax/inbox/`:
 | 改 mode 无效 | 确认 session 已重启 (不能热切换) |
 | ask file 没出现 | 检查 `.kallax/inbox/` 目录权限 |
 | audit jsonl 没记录 | 检查 `.kallax/audit/` 目录权限, 看 mode 是否为 ai-copilot (default) |
+| 派发权比例没生效 | 检查 `KALLAX_AI_DELEGATION_RATIO` env var 是否设置 (默认 80) |
 
-## 10. 关联文档
+## 11. 关联文档
 
 - [CLAUDE.md Rule 13](../CLAUDE.md)
 - [设计 spec](../superpowers/specs/2026-06-09-kallax-3-modes-design.md)
 - [实施 plan](../superpowers/plans/2026-06-09-kallax-3-modes.md)
+- [派发权升级 EPIC-033](../epics/EPIC-033/epic.json)

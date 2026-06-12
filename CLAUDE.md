@@ -216,7 +216,9 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 - **9a [P0] KPI 估数算 FAIL**: "M1 ~60-70%" / "约 80%" / "PARTIAL" / "around" / "approximately" / "估计" / "roughly" / "should" 都算 KPI falsification. 必须精确 X/Y 一位小数 (e.g. "M1: 26/30 = 86.7%"). 防御: `scripts/verify/check-kpi-precision.sh` 必跑
 - **9b [P0] Test case verbatim 触发 = FAIL**: 把测试需求整句塞 trigger 字段 = 100% circular match, 假数据. 防御: `scripts/verify/check-test-case-isolation.sh` 跑 trigger vs 30 test case grep 比对, 0 leak
 - **9c [P0] Scope creep 必拆 PR**: file_scope.includes 外的文件改动 = scope creep, 必拆 PR. 防御: `scripts/verify/check-scope-creep.sh` git diff --name-only vs ticket.json file_scope.includes, 超界 = FAIL
-- **9e [P1] Tier-Domain 一致性 = FAIL**: default tier 必须用 {architect, backend, frontend, ux, product, security, pm} 中之一; generated tier 不在 default 7 域范围 (避免跟 default 重名); extended tier 任意域. 防御: `python3 scripts/expert-quality-audit.py --enforce-tier-domain` 必跑; 来源: EPIC-024 质量 audit 维度 4 揭露 10/15 generated 用 product/ux/finance (跟 default 冲突)
+- **9e [P0] Performer 工具调用自验证 = FAIL**: Edit 后未 grep 验证 / git commit 后未 log 验证 SHA 真变 / test 后未看 stdout 验证 — 报 PASS 实际 FAIL, KPI falsification. 防御: Performer 工具调用后必自验证; 来源: EPIC-031-A 3 amend 连续失败, Performer 报 PASS 实际 FAIL
+- **9f [P1] Tier-Domain 一致性 = FAIL**: default tier 必须用 {architect, backend, frontend, ux, product, security, pm} 中之一; generated tier 不在 default 7 域范围 (避免跟 default 重名); extended tier 任意域. 防御: `python3 scripts/expert-quality-audit.py --enforce-tier-domain` 必跑; 来源: EPIC-024 质量 audit 维度 4 揭露 10/15 generated 用 product/ux/finance (跟 default 冲突)
+- **9g [P0] Scope creep 必拆 PR** (新预留)
 
 **失败处理**:
 - preflight FAIL → ticket 保持 `in_progress`
@@ -298,6 +300,13 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 **执行检查**:
 - git pre-commit hook 扫 commit message, 缺 "Master corrective" 标识 + 缺 "主公 explicit 授权" 标注 → reject
 - 跟 Rule 1 (Conductor 禁 miao 写功能代码) 一起 enforce
+
+**v2.1 Master Performer report 强验证 checklist** (不接管 + 强验证 = 2 防御层):
+- **L1**: `git log --oneline -1` 看 SHA 真变 (不是缓存/假 commit)
+- **L2**: `git show HEAD:file | grep "期望"` 看内容真改 (不是 stub/空函数)
+- **L3**: 跑全量 E2E (跟 ticket AC 逐条验证)
+- **L4**: 跑 `scripts/verify/check-commit-amend-verify.sh` 4 PASS
+- 来源: Phase 1 跑 2 Performer 都报假报告, Master 强验证发现
 
 ### 12. 质量 ensure 强制 (KALLAX P1) — expert > 50 必跑 audit
 
@@ -492,3 +501,49 @@ L4 数据流动：集成测试验证
 - [反模式集合](template/docs/ANTI-PATTERNS.md)
 - [架构白皮书](docs/architecture/FRAMEWORK.md)
 - [降级策略](docs/architecture/DEGRADATION-STRATEGY.md)
+
+---
+
+## 角色 Session 边界 (主公 2026-06-12 拍, R-NEW 升级红线)
+
+### 14. Conductor 不能越界 Performer 实施 (KALLAX P0) — R-NEW 升级红线
+
+**教训**: 主公 2026-06-12 拍 "每个角色, 无论 Conductor 还是 Performer 都是独立存在的 session/subagent, 初始化时都需根据需求加载对应初始化设定". Conductor session 越界 Performer 角色 6 事件 (R5 commit + 4 ticket 实施), PR #8/9/10/11/12 全 close, 重新派 Performer session 接力.
+
+**红线 (硬, 不可 override 日常)**:
+- ❌ Conductor session Edit/Write/Commit 代码 (含 ticket 实施, 测试脚本, binary 改, Rust 源码)
+- ❌ Conductor session 跑 Performer 工作流 (写 test + 写实施 + 4 anti-fab + push)
+- ❌ Conductor spawn Performer session 后越界接 Performer 实施 (spawn 5+ 次 hang 应推主公开新 session, 不自己写)
+- ❌ Conductor 改 binary/Rust 源码
+- ❌ Conductor 改 .md (除 CLAUDE.md 跟 confluence/decisions/ 边界文件)
+
+**唯一豁免** (满足任一 + 主公 explicit 拍 "你来干"/"你来 fix"):
+1. Token Plan 限撞墙 (Rule 11 已定)
+2. miao 已损坏 (Rule 11 已定)
+3. ≥ 3 Performer API error + 主公拍"接管" (Rule 11 已定)
+4. 主公原话 "你来干" / "你来 fix" / "master 接管 X" 等等 explicit 指令
+
+**落地**:
+- Conductor 写代码 commit message 必标 "Conductor corrective integration under 主公 explicit 授权: [理由]"
+- 留 `boundary_event_YYYYMMDD.json` 在 `.kallax/queue/outbox/conductor_<id>/`
+- 跟 Rule 1 联动: 模式 G Conductor 禁 miao 写功能代码
+- PHASE-007 review 时, Conductor boundary events 累计 ≥ 3 必 review + 决定升 Rule
+
+**来源**: 2026-06-12 主公原话 + Conductor 越界 6 事件 (撞 Rule 1 + 模式 G + R-NEW 升级触发)
+
+### 15. Performer Session 自动加载 (KALLAX P0) — R-NEW 升级红线
+
+**教训**: 跟 Rule 14 联动. Performer 角色必须独立 session/subagent, 初始化时根据当前 ticket 加载 CLAUDE.md + ROLE-RULES + ticket.json 上下文. 启用 `bash .kallax/hooks/session_start.sh --role performer` 自动:
+- 拉 .kallax/state/instance_config.yml 注册 performer instance
+- 自动 claim ticket + 写 jira/tickets/<TICKET>/Performer Note
+- 自动建 worktree (基于 testing)
+- 自动加载当前 ticket 上下文 + worktree + AC 列表
+- 持续工作 4-6h 真实开发 + 报 PASS 给 Conductor inbox
+
+**红线**:
+- ❌ Performer session 跳 session_start.sh 直接跑 (无 CLAUDE.md + ROLE-RULES + ticket 上下文)
+- ❌ Conductor session 跑 Performer 实施 (撞 Rule 14 + 模式 G)
+- ❌ Performer session 跑 Conductor 工作 (拆卡 / merge / review)
+- ❌ 角色混淆 (Conductor 写代码 / Performer 拆卡 / Master 实施)
+
+**来源**: R-NEW 升级红线 (2026-06-12 主公原话)

@@ -560,9 +560,9 @@ def audit_m1_recall() -> AuditResult:
         return AuditResult(
             dimension="5. M1 Recall",
             status="WARN",
-            total=30,
+            total=50,
             passed=0,
-            failed=30,
+            failed=50,
             details={"error": f"Test script not found: {M1_TEST_SCRIPT}"},
             failures=[{"error": "Test script missing"}]
         )
@@ -576,13 +576,13 @@ def audit_m1_recall() -> AuditResult:
         )
         output = result.stdout + result.stderr
 
-        # Parse M1 result: "M1 KPI: X/30 = Y%"
+               # Parse M1 result: "M1 KPI: X/50 = Y%"
         m = re.search(r'M1 KPI:\s*(\d+)/(\d+)\s*=\s*([\d.]+)%', output)
         if m:
             passed = int(m.group(1))
             total = int(m.group(2))
             rate = float(m.group(3))
-            status = "PASS" if passed >= 24 else "FAIL"
+            status = "PASS" if passed >= 40 else "FAIL"
 
             return AuditResult(
                 dimension="5. M1 Recall",
@@ -593,7 +593,7 @@ def audit_m1_recall() -> AuditResult:
                 details={
                     "rate": f"{rate}%",
                     "target": "80%",
-                    "co_evolution_debt": "4 generated experts (data+legal) not triggered by current 30 test cases"
+                    "co_evolution_debt": "4 generated experts (data+legal) triggered by expanded 50 test cases"
                 },
                 failures=[]
             )
@@ -601,9 +601,9 @@ def audit_m1_recall() -> AuditResult:
             return AuditResult(
                 dimension="5. M1 Recall",
                 status="WARN",
-                total=30,
+                total=50,
                 passed=0,
-                failed=30,
+                failed=50,
                 details={"error": "Could not parse M1 output", "output": output[-500:]},
                 failures=[{"error": "Parse failed"}]
             )
@@ -611,9 +611,9 @@ def audit_m1_recall() -> AuditResult:
         return AuditResult(
             dimension="5. M1 Recall",
             status="FAIL",
-            total=30,
+            total=50,
             passed=0,
-            failed=30,
+            failed=50,
             details={"error": "Test timed out"},
             failures=[{"error": "Timeout"}]
         )
@@ -621,9 +621,9 @@ def audit_m1_recall() -> AuditResult:
         return AuditResult(
             dimension="5. M1 Recall",
             status="FAIL",
-            total=30,
+            total=50,
             passed=0,
-            failed=30,
+            failed=50,
             details={"error": str(e)},
             failures=[{"error": str(e)}]
         )

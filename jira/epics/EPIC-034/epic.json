@@ -1,0 +1,55 @@
+{
+  "id": "EPIC-034",
+  "phase": "PHASE-006",
+  "title": "M1 co-evolution — 100 test case 扩域 (data + legal + finance + cross-domain)",
+  "scope": "1. 主公 2026-06-12 拍拆小: Step 1 加 50 新 test case + metadata, Step 2 跑 audit 验证 M1 Recall >= 80/100\n2. 50 → 100 test case (扩 data + legal + finance + cross-domain 场景, 触发 4 generated expert: finance + product + ux + security)\n3. Step 1: 加 50 新 case 不跑 audit (拆小降 token风险)\n4. Step 2: 跑 expert-quality-audit.py 验证 M1 Recall >= 80/100 + 加新集成测试",
+  "start_time": "2026-06-12",
+  "delivery_time": "2026-06-13",
+  "status": "active",
+  "baseline": {
+    "source": "EPIC-032 M1 50 test case (data + legal)",
+    "current_m1_test_cases": 50,
+    "m1_recall_baseline": "50/50 = 100% (limited scope)",
+    "gap": "缺少 finance + cross-domain 场景, 4 generated expert 未充分激活"
+  },
+  "target": {
+    "m1_test_cases": ">= 100 (扩 50 个 data + legal + finance + cross-domain + 已有域回填)",
+    "m1_recall_documented": true,
+    "generated_expert_activation": "finance + product + ux + security (cross-domain 触发)",
+    "expert_quality_audit": "Step 2验证 M1 Recall >= 80/100 (本 EPIC Step 2)"
+  },
+  "decisions": {
+    "priority": 1,
+    "rationale": "主公 2026-06-12 拍拆小: Step 1 加 50 case + metadata (1d), Step 2 跑 audit (1d)",
+    "phase": "PHASE-006 Step 1 (Step 2 跟 Phase 6 衔接)",
+    "co-evolution": "Backend/Frontend/UX/Product/Security 5 专家一致 (Phase 2)"
+  },
+  "step_delivery": {
+    "step1": {
+      "scope": "加 50 新 test case + 3 metadata 文件 + 跑 check-test-case-isolation",
+      "deliverables": ["epic.json", "ticket-A.json", "ticket-B.json", "expert-match-m1-v3.sh 扩 100 case"],
+      "not_included": "expert-quality-audit (留 Step 2)"
+    },
+    "step2": {
+      "scope": "跑 expert-quality-audit.py验证 M1 Recall >= 80/100 + 加新集成测试",
+      "deliverables": ["M1 Recall 验证报告", "新集成测试"],
+      "depends_on": "Step 1 merge"
+    }
+  },
+  "tickets": [
+    {
+      "id": "EPIC-034-A",
+      "title": "M1 100 test case 扩域 (data + legal + finance + cross-domain, Step 1)",
+      "assignee": "performer-EPIC-034",
+      "status": "in_progress",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-034-B",
+      "title": "M1 audit 验证 + 加新集成测试 (Step 2, 跟 Phase 6 衔接)",
+      "assignee": "performer-EPIC-034",
+      "status": "pending",
+      "blocked_by": "EPIC-034-A"
+    }
+  ]
+}

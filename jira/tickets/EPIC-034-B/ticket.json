@@ -1,0 +1,33 @@
+{
+  "id": "EPIC-034-B",
+  "epicId": "EPIC-034",
+  "phaseId": "PHASE-006",
+  "title": "M1 audit 验证 + 加新集成测试 (Step 2, 跟 Phase 6 衔接)",
+  "type": "feature",
+  "priority": "P1",
+  "status": "pending",
+  "created_by": "performer-EPIC-034",
+  "created_at": "2026-06-12T00:00:00Z",
+  "blocked_by": "EPIC-034-A",
+  "file_scope": {
+    "includes": [
+      "scripts/expert-quality-audit.py",
+      "jira/tickets/EPIC-034-B/",
+      "scripts/verify/architecture.sh",
+      "scripts/verify/priority.sh",
+      "scripts/verify/ux-flow.sh",
+      "scripts/verify/tickets-completed.sh",
+      "scripts/verify/security.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "expert-quality-audit.py 验证 M1 Recall >= 80/100 (精确 X/Y 格式, 非估数)",
+    "5 角色 L4 验证脚本存在且可执行 (architecture.sh + priority.sh + ux-flow.sh + tickets-completed.sh + security.sh)",
+    "L4_script_exists check PASS (check-fact-forcing-preflight.sh)",
+    "新增集成测试覆盖 cross-domain 场景 (金融+数据/法律+数据/UX+数据/安全+数据)",
+    "Rule 99d 9e强验证 PASS",
+    "Rule 12 质量 ensure PASS"
+  ],
+  "estimated_hours": 1
+}

@@ -1,0 +1,32 @@
+{
+  "id": "EPIC-037-A",
+  "epicId": "EPIC-037",
+  "phaseId": "PHASE-006",
+  "title": "continuous-audit.sh + kpi-audit.sh 实现 (TDD, 9-pass + KPI 估数检测)",
+  "type": "feature",
+  "priority": "P1",
+  "status": "pending",
+  "created_by": "master_main (Top 4 开工, 2026-06-12 拍)",
+  "created_at": "2026-06-12T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-037-A/",
+      "scripts/audit/continuous-audit.sh",
+      "scripts/audit/kpi-audit.sh",
+      "tests/integration/continuous-audit-test.sh",
+      "tests/integration/kpi-audit-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/audit/continuous-audit.sh 跑 9-pass redaction 验证 (Authorization/Token/X-Auth-Token/password/secret/Basic Auth URL/24-char 兜底 + 已知 prefix ghp_/sk-/AKIA + JWT + env-var)",
+    "scripts/audit/kpi-audit.sh 验证 Rule 9a KPI 估数 (M1 ~60-70% / 约 80% / PARTIAL / around / approximately / 估计 / roughly / should 都 FAIL)",
+    "tests/integration/continuous-audit-test.sh PASS (≥4 case: 9-pass detection)",
+    "tests/integration/kpi-audit-test.sh PASS (≥4 case: 估数/精确数对比)",
+    "Rule 9 9a/9b/9c/9d/9e PASS",
+    "Rule 12 质量 ensure PASS"
+  ],
+  "estimated_hours": 6
+}

@@ -9,7 +9,7 @@ rationalizations_count: 8
 version: 1.0.0
 last_reviewed: 2026-06-11
 tickets_served: [EPIC-030]
-trigger: 注入,越权,XSS,CSRF,漏洞,鉴权,安全,认证,授权,加密,敏感数据,合规,攻击面,威胁,防护,权限,控制,数据,泄露,撞库,提权,审计,密钥,签名
+trigger: 注入,越权,XSS,CSRF,漏洞,鉴权,安全,认证,授权,加密,敏感数据,合规,攻击面,威胁,防护,权限,控制,数据,泄露,撞库,提权,审计,密钥,签名,GDPR,SOX,数据隐私,跨境数据,合规审计,安全合规,隐私保护,数据保护
 output_format: |
   ## 亮点
   - 攻击面收敛,暴露端点最少化

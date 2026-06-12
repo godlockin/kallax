@@ -1,0 +1,33 @@
+{
+  "id": "EPIC-034-D",
+  "epicId": "EPIC-034",
+  "phaseId": "PHASE-006",
+  "title": "binary 读 INDEX.md 同步 + 6 generated 真激活 (P0, 8h, Rule 14 升级触发)",
+  "type": "feature",
+  "priority": "P0",
+  "status": "pending",
+  "blocked_by": "EPIC-034-C",
+  "worktree_role": "performer",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-034-D/",
+      "rust/crates/kallax-engine/src/l1_match.rs",
+      "scripts/export/index-md-to-sqlite.py",
+      ".kallax/experts/extended/INDEX.md",
+      "tests/integration/binary-index-sync-test.sh",
+      "scripts/verify/binary-index-sync.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/export/index-md-to-sqlite.py 实现 (INDEX.md → SQLite experts 表)",
+    "rust binary 改 l1_match.rs (加 INDEX.md 同步读 + 重 build)",
+    "跑 M1 v3 期望 ≥ 80/100",
+    "tests/integration/binary-index-sync-test.sh PASS (≥4 case)",
+    "scripts/verify/binary-index-sync.sh L4 存在可执行",
+    "Rule 9 9a/9b/9c/9d/9e PASS",
+    "Rule 12 质量 ensure PASS",
+    "Rule 14 (新 P0) Binary 同步强制"
+  ],
+  "estimated_hours": 8
+}
