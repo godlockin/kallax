@@ -5,7 +5,7 @@
   "title": "binary 读 INDEX.md 同步 + 6 generated 真激活 (P0, 8h, Rule 14 升级触发)",
   "type": "feature",
   "priority": "P0",
-  "status": "pending",
+  "status": "done",
   "blocked_by": "EPIC-034-C",
   "worktree_role": "performer",
   "file_scope": {
@@ -29,5 +29,10 @@
     "Rule 12 质量 ensure PASS",
     "Rule 14 (新 P0) Binary 同步强制"
   ],
-  "estimated_hours": 8
+  "estimated_hours": 8,
+  "claimed_by": "performer-EPIC-034 (subagent, R5 实证)",
+  "claimed_at": "2026-06-12T16:00:00Z",
+  "last_modified_by": "master_77704 (Rule 11 v2.1 强验证, ticket 状态同步)",
+  "last_modified_at": "2026-06-12T16:29:55Z",
+  "last_modified_reason": "Master Rule 11 v2.1 强验证同步: subagent 报告 (commit 3f2c594) → ticket 状态从 pending → done"
 }
