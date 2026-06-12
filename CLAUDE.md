@@ -501,3 +501,49 @@ L4 数据流动：集成测试验证
 - [反模式集合](template/docs/ANTI-PATTERNS.md)
 - [架构白皮书](docs/architecture/FRAMEWORK.md)
 - [降级策略](docs/architecture/DEGRADATION-STRATEGY.md)
+
+---
+
+## 角色 Session 边界 (主公 2026-06-12 拍, R-NEW 升级红线)
+
+### 14. Conductor 不能越界 Performer 实施 (KALLAX P0) — R-NEW 升级红线
+
+**教训**: 主公 2026-06-12 拍 "每个角色, 无论 Conductor 还是 Performer 都是独立存在的 session/subagent, 初始化时都需根据需求加载对应初始化设定". Conductor session 越界 Performer 角色 6 事件 (R5 commit + 4 ticket 实施), PR #8/9/10/11/12 全 close, 重新派 Performer session 接力.
+
+**红线 (硬, 不可 override 日常)**:
+- ❌ Conductor session Edit/Write/Commit 代码 (含 ticket 实施, 测试脚本, binary 改, Rust 源码)
+- ❌ Conductor session 跑 Performer 工作流 (写 test + 写实施 + 4 anti-fab + push)
+- ❌ Conductor spawn Performer session 后越界接 Performer 实施 (spawn 5+ 次 hang 应推主公开新 session, 不自己写)
+- ❌ Conductor 改 binary/Rust 源码
+- ❌ Conductor 改 .md (除 CLAUDE.md 跟 confluence/decisions/ 边界文件)
+
+**唯一豁免** (满足任一 + 主公 explicit 拍 "你来干"/"你来 fix"):
+1. Token Plan 限撞墙 (Rule 11 已定)
+2. miao 已损坏 (Rule 11 已定)
+3. ≥ 3 Performer API error + 主公拍"接管" (Rule 11 已定)
+4. 主公原话 "你来干" / "你来 fix" / "master 接管 X" 等等 explicit 指令
+
+**落地**:
+- Conductor 写代码 commit message 必标 "Conductor corrective integration under 主公 explicit 授权: [理由]"
+- 留 `boundary_event_YYYYMMDD.json` 在 `.kallax/queue/outbox/conductor_<id>/`
+- 跟 Rule 1 联动: 模式 G Conductor 禁 miao 写功能代码
+- PHASE-007 review 时, Conductor boundary events 累计 ≥ 3 必 review + 决定升 Rule
+
+**来源**: 2026-06-12 主公原话 + Conductor 越界 6 事件 (撞 Rule 1 + 模式 G + R-NEW 升级触发)
+
+### 15. Performer Session 自动加载 (KALLAX P0) — R-NEW 升级红线
+
+**教训**: 跟 Rule 14 联动. Performer 角色必须独立 session/subagent, 初始化时根据当前 ticket 加载 CLAUDE.md + ROLE-RULES + ticket.json 上下文. 启用 `bash .kallax/hooks/session_start.sh --role performer` 自动:
+- 拉 .kallax/state/instance_config.yml 注册 performer instance
+- 自动 claim ticket + 写 jira/tickets/<TICKET>/Performer Note
+- 自动建 worktree (基于 testing)
+- 自动加载当前 ticket 上下文 + worktree + AC 列表
+- 持续工作 4-6h 真实开发 + 报 PASS 给 Conductor inbox
+
+**红线**:
+- ❌ Performer session 跳 session_start.sh 直接跑 (无 CLAUDE.md + ROLE-RULES + ticket 上下文)
+- ❌ Conductor session 跑 Performer 实施 (撞 Rule 14 + 模式 G)
+- ❌ Performer session 跑 Conductor 工作 (拆卡 / merge / review)
+- ❌ 角色混淆 (Conductor 写代码 / Performer 拆卡 / Master 实施)
+
+**来源**: R-NEW 升级红线 (2026-06-12 主公原话)
