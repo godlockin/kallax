@@ -1,0 +1,32 @@
+{
+  "id": "EPIC-034-C",
+  "epicId": "EPIC-034",
+  "phaseId": "PHASE-006",
+  "title": "真创建 6 generated experts (legal×3 + finance×3) + 修 audit 脚本 stale (Y 方案拆卡, 主公 2026-06-12 拍)",
+  "type": "feature",
+  "priority": "P0",
+  "status": "pending",
+  "blocked_by": "EPIC-034-A",
+  "worktree_role": "performer",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-034-C/",
+      ".kallax/experts/extended/INDEX.md",
+      "scripts/expert-generate-l3.py",
+      "scripts/expert-quality-audit.py",
+      "tests/integration/generated-experts-test.sh",
+      "tests/integration/audit-stale-text-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "6 generated experts 真 append INDEX.md",
+    "scripts/expert-generate-l3.py mock fallback 修 (写 INDEX.md 强制落地)",
+    "scripts/expert-quality-audit.py:596 修 stale 文案 (4 generated → 6 generated)",
+    "tests/integration/generated-experts-test.sh PASS (≥3 case)",
+    "tests/integration/audit-stale-text-test.sh PASS (≥2 case)",
+    "Rule 9 9a/9b/9c/9d/9e PASS",
+    "Rule 12 质量 ensure PASS"
+  ],
+  "estimated_hours": 6
+}
