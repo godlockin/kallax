@@ -1,0 +1,52 @@
+{
+  "id": "EPIC-038",
+  "phase": "PHASE-006",
+  "title": "4 层接手能力 (Rule 15 + Performer sub-role 体系, 主公 2026-06-12 5 问 + 拍 A)",
+  "scope": "1. 4 层接手 (浅层/维护/深度重构/亮点借鉴) — Rule 15 + Performer sub-role\n2. 跟 EPIC-035-A/B/C/D 同步做 (worktree_role 4 字段 + handoff_depth 1 字段 + Auditor 角色)\n3. ticket.json schema 扩 (handoff_depth enum + Performer role sub-type)\n4. dispatch.sh 扩 4 类 Performer 派单模式 (analyst/incremental/major/auditor)\n5. 1+4 容量 (1 conductor + 4 Performer types, 动态)\n6. Auditor 角色 (新) 跟 AuditMiddleware 联动\n7. 跨项目 import 脚本 (经验教训迁移 Q5 闭环)",
+  "start_time": "2026-06-12",
+  "delivery_time": "2026-06-15",
+  "status": "active",
+  "baseline": {
+    "source": "KALLAX-5-CAPABILITY-RESEARCH-2026-06-12.md §4 4 层接手 (重大 Gap 40%) + §5 经验教训迁移 (75%)",
+    "current_state": "Performer 1 类 flat, 不区分 4 层接手深度, Auditor 角色未独立",
+    "gap": "主公 2026-06-12 5 问 Q4 + 拍 A 立即派. 4 层接手需 EPIC-038-A/B/C (3d, 跟 Wave 4-5 同步)"
+  },
+  "target": {
+    "rule_15": "Rule 15 4 层接手能力写 CLAUDE.md (跟 Rule 14 Anti-Hang 同级)",
+    "handoff_depth_schema": "ticket.json handoff_depth 字段 (enum: L1/L2/L3/L4)",
+    "performer_subrole": "Performer 4 sub-role (analyst/incremental/major/auditor) + 跟 worktree_role 联动",
+    "dispatch_4_modes": "dispatch.sh 4 派单模式 (read/incremental/major/auditor)",
+    "capacity_1_plus_4": "1 conductor + 4 Performer (动态 N, 默认 4 类型各 1)",
+    "auditor_role": "Auditor 角色 (新, 跟 Performer 区别) + L4 派单模式",
+    "cross_project_import": "scripts/import/lessons-import.py (跨项目 lessons 迁移, Q5 闭环)"
+  },
+  "decisions": {
+    "priority": 1,
+    "rationale": "主公 2026-06-12 拍'A 立即派 EPIC-038-A/B/C' (5 能力研究 Q4 重大 Gap 40%→100%)",
+    "phase": "PHASE-006",
+    "master_recommendation": "跟 Wave 4-5 同步, 3d 落地, PHASE-007 review 拍 Rule 15 制度化"
+  },
+  "tickets": [
+    {
+      "id": "EPIC-038-A",
+      "title": "Rule 15 + Performer sub-role schema (跟 EPIC-035-A 一起做)",
+      "assignee": "performer-EPIC-038",
+      "status": "pending",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-038-B",
+      "title": "4 类 Performer 实例 + 1+4 容量 + dispatch 4 派单模式 (跟 EPIC-036-A 一起做)",
+      "assignee": "performer-EPIC-038",
+      "status": "pending",
+      "blocked_by": "EPIC-038-A"
+    },
+    {
+      "id": "EPIC-038-C",
+      "title": "Auditor 角色 + L4 派单 + 跨项目 import 脚本 (跟 EPIC-037-A 一起做)",
+      "assignee": "performer-EPIC-038",
+      "status": "pending",
+      "blocked_by": "EPIC-038-B"
+    }
+  ]
+}
