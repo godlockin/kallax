@@ -1,0 +1,45 @@
+{
+  "id": "EPIC-040",
+  "epicId": "EPIC-040",
+  "phaseId": "PHASE-006",
+  "title": "subagent 完工后没更新文档/卡/PR 根因调查 (思路+方法+强制限制流程)",
+  "type": "investigation",
+  "priority": "P0",
+  "status": "in_progress",
+  "created_by": "master_main (主公 2026-06-12 拍'再见张卡专门用来调查')",
+  "created_at": "2026-06-12T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "master",
+  "handoff_depth": "L4",
+  "investigation_type": "root_cause_digging",
+  "scope": {
+    "includes": [
+      "jira/tickets/EPIC-040/",
+      "confluence/decisions/EPIC-040-SUBAGENT-DOC-UPDATE-RC-2026-06-12.md (新, 根因报告)",
+      ".kallax/queue/outbox/master_77704/EPIC-040-根因报告-20260612.md (新, outbox 报告)"
+    ],
+    "excludes": [
+      "scripts/* (调查卡不写代码, 跟 Rule 11 联动)",
+      "jira/tickets/其他 ticket.json (调查不直接改其他 ticket 状态)"
+    ]
+  },
+  "investigation_questions": {
+    "q1_why_not_update_doc": "为什么 subagent 完工后不更新文档? (root cause)",
+    "q2_why_not_update_ticket": "为什么 subagent 完工后不更新卡 (ticket.json status)? (root cause)",
+    "q3_why_not_submit_pr": "为什么 subagent 完工后不提交 PR 给 master review? (root cause)",
+    "q4_workflow_缺口": "当前 KALLAX 流程哪里缺口? (跟 dispatch.sh / task-claim / ticket-status-sync 联动)",
+    "q5_forced_constraint": "什么强制限制流程能让 subagent 必更新? (Rule 16 草案)",
+    "q6_alignment_epic_039": "跟 EPIC-039 Sprint 4 修复执行怎么对齐?"
+  },
+  "acceptance_criteria": [
+    "根因报告 (5 Why + 跟历史 8 次 KPI falsification + 4 BE 边界事件对比)",
+    "5 候选思路 + 5 候选方法 + Master 推荐 (跟 Gap 9 元能力 + Rule 14/15 联动)",
+    "Rule 16 草案 (强制限制流程, 跟 L1 战术拆 commit 联动)",
+    "跟 EPIC-039 Sprint 4 修复对齐表 (4 票 + 升 Token Plan)",
+    "PHASE-007 review 触发建议 (跟 5+ ticket + 4 BE 一致)",
+    "Master 强验证 6 维度写报告 (跟 Rule 11 v2.1 联动)"
+  ],
+  "estimated_hours": 4,
+  "l1_tactic_required": "调查卡不写代码, 只写报告 (跟 Rule 11 联动)",
+  "master_强验证_6_维度_required": "L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实"
+}
