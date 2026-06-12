@@ -1,7 +1,7 @@
 #!/bin/bash
 # conductor/dispatch.sh — Conductor 派发集成
 # 依赖: EPIC-030-A (best-matching-slaver.sh) + EPIC-030-B (scoring-trace.sh)
-# 主公 2026-06-11 派发权决策: 60% AI 默认 Accept + 40% 人工一键 Approve
+# 主公 2026-06-11 D2 决策: 派发权 60%→80% AI 渐进升级, 默认 80% AI + 20% 人工 override
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -13,9 +13,14 @@ REQUIRED_EXPERTISE="${2:-}"
 DECISION="${3:-accept}"  # accept / veto / override
 OVERRIDE_TO="${4:-}"
 
+# AI 派发权比例 (主公 D2 决策: 渐进升级 60%→80%→90%)
+# KALLAX_AI_DELEGATION_RATIO: 60 = 60% AI / 40% 人工, 80 = 80% AI / 20% 人工, 90 = 90% AI / 10% 人工
+AI_RATIO="${KALLAX_AI_DELEGATION_RATIO:-80}"
+
 # Use argument count to detect if args were provided (empty string is valid for expertise)
 if [[ $# -lt 2 ]]; then
   echo "Usage: $0 <TICKET_ID> <REQUIRED_EXPERTISE> [accept|veto|override] [OVERRIDE_TO]" >&2
+  echo "       AI delegation ratio: KALLAX_AI_DELEGATION_RATIO=$AI_RATIO (60/80/90, default 80)" >&2
   exit 1
 fi
 
@@ -48,26 +53,26 @@ fi
 case "$DECISION" in
   accept)
     FINAL_ID="$ALGO_ID"
-    REASON="Conductor Accept ALGO_SUGGEST"
+    REASON="Conductor Accept ALGO_SUGGEST (${AI_RATIO}% AI delegation)"
     ;;
   veto)
     FINAL_ID="VETOED"
-    REASON="Conductor Veto"
+    REASON="Conductor Veto (${AI_RATIO}% AI delegation)"
     ;;
   override)
     FINAL_ID="$OVERRIDE_TO"
-    REASON="Conductor Override ALGO_SUGGEST ($ALGO_ID)"
+    REASON="Conductor Override ALGO_SUGGEST ($ALGO_ID) → $OVERRIDE_TO (${AI_RATIO}% AI delegation)"
     ;;
 esac
 
 # 写 scoring audit (跟 EPIC-030-B scoring-trace.sh 集成)
-# factors: [1.0, 0.0, 0.0] = accept signal, decision=$DECISION
+# factors: [1.0, 0.0, 0.0] = accept signal, decision=$DECISION, ai_ratio=$AI_RATIO
 bash "${KALLAX_ROOT}/scripts/agent/scoring-trace.sh" append \
   "$ALGO_ID" \
   "$FINAL_ID" \
-  "0.5" \
+  "$AI_RATIO" \
   '[1.0,0.0,0.0]' \
   "$DECISION" \
   >/dev/null 2>&1 || true
 
-echo "DISPATCH: ticket=$TICKET_ID algo_suggest=$ALGO_ID final=$FINAL_ID decision=$DECISION reason=$REASON"
+echo "DISPATCH: ticket=$TICKET_ID algo_suggest=$ALGO_ID final=$FINAL_ID decision=$DECISION ai_ratio=${AI_RATIO}% reason=$REASON"
