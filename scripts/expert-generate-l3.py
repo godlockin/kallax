@@ -24,9 +24,20 @@ from collections import Counter
 from typing import Optional
 
 # === CONFIG ===
-REPO_ROOT = Path("/Users/chenchen/working/sourcecode/tools/dev-tools/kallax")
+# Resolve REPO_ROOT from script location: walk up to git toplevel so this works
+# in both main repo and worktrees (Round 2 fix: REPO_ROOT was hardcoded to main
+# repo, causing writes to silently land in main instead of current worktree).
+SCRIPT_DIR = Path(__file__).resolve().parent
+def _find_repo_root(start: Path) -> Path:
+    cur = start
+    while cur != cur.parent:
+        if (cur / ".git").exists() or (cur / ".git").is_file():
+            return cur
+        cur = cur.parent
+    return start
+REPO_ROOT = _find_repo_root(SCRIPT_DIR)
 DEFAULT_EXPERTS_DIR = REPO_ROOT / ".kallax/experts/default"
-EXTENDED_INDEX = REPO_ROOT / ".kallax/worktrees/performer-EPIC-024-B/.kallax/experts/extended/INDEX.md"
+EXTENDED_INDEX = REPO_ROOT / ".kallax/experts/extended/INDEX.md"
 OUTPUT_FILE = Path("/tmp/l3-candidates-generated.md")
 
 # LLM API config from env
@@ -224,13 +235,13 @@ def mock_llm_call(domain: str, gap_count: int) -> list[dict]:
         "legal": [
             {
                 "id": "kallax.generated.001",
-                "name_cn": "法务顾问",
+                "name_cn": "法务合规总监",
                 "role": "首席法律顾问",
                 "emoji": "⚖️",
                 "domain": "legal",
                 "tier": "generated",
                 "description": "合同审核/知识产权/监管合规/法律风险控制,10年+经验",
-                "trigger": "合同法务|知识产权|监管合规|法律风险|合同审核|许可协议|商标专利|著作权|数据合规|GDPR|隐私政策|法律顾问|首席|顾问|法务|合规|风险|审核|协议|许可|商标|专利|版权|监管|数据保护|跨境法律|诉讼|仲裁|合规培训|合规审计|合规检查|合规报告"
+                "trigger": "合同法务|法律风险|合同审核|许可协议|商标专利|著作权|法律顾问|首席|顾问|法务|合规|风险|审核|协议|许可|商标|专利|版权|监管|跨境法律|诉讼|仲裁|合规培训|合规审计|合规检查|合规报告|合同谈判|诉讼策略|法律意见书|监管申报|尽职调查|法律咨询"
             },
             {
                 "id": "kallax.generated.002",
@@ -256,7 +267,7 @@ def mock_llm_call(domain: str, gap_count: int) -> list[dict]:
         "finance": [
             {
                 "id": "kallax.generated.004",
-                "name_cn": "财务分析师",
+                "name_cn": "高级财务分析师",
                 "role": "财务总监",
                 "emoji": "💹",
                 "domain": "finance",
@@ -281,7 +292,7 @@ def mock_llm_call(domain: str, gap_count: int) -> list[dict]:
                 "emoji": "🧾",
                 "domain": "finance",
                 "tier": "generated",
-                "description": "税务筹划/转让定价/跨境税务/税务合规",
+                "description": "跨境税务架构/转让定价规划/反避税合规咨询",
                 "trigger": "税务筹划|转让定价|跨境税务|税务合规|企业所得税|个人所得税|增值税|税务规划|税务优化|税务风险|税务审计|国际税务|税务协定|税收优惠|税务申报|税负分析|税务筹划|转让定价|预提所得税|税务备案|税务调查|税务处罚|税务复议|税务诉讼"
             },
         ],
@@ -332,6 +343,21 @@ def generate_experts_for_domain(domain: str, all_expert_ids: list[str], all_expe
             return result
         print(f"  [LLM] API failed, falling back to mock")
     return mock_llm_call(domain, 0)
+
+
+def preflight_dedup_check(candidates: list[dict], existing_names: set) -> list[dict]:
+    """
+    Pre-mock dedup check: grep INDEX.md for any candidate name_cn that already exists.
+    Returns filtered list (deduped candidates) and prints warnings for skipped ones.
+    EPIC-034-C Round 2c: 主公拍 A 方案, mock fallback 跑前先 grep 检测, 重复则 skip + warn.
+    """
+    filtered = []
+    for cand in candidates:
+        if cand["name_cn"] in existing_names:
+            print(f"    ! DEDUP_SKIP: {cand['id']} '{cand['name_cn']}' already in INDEX.md")
+            continue
+        filtered.append(cand)
+    return filtered
 
 # === VALIDATE ===
 def validate_candidate(candidate: dict, existing_ids: set, existing_names: set) -> tuple[bool, str]:
@@ -439,11 +465,17 @@ def main():
     existing_names = {e["name_cn"] for e in all_experts}
     all_candidates = []
 
-    # Generate for top-3 gap domains
-    for domain, count in gaps[:3]:
-        print(f"  Generating for domain: {domain}")
+    # Generate for SPRINT 3 target gap domains (legal + finance = 6 candidates 001-006)
+    # Round 2: 主公指示 6 个 (legal×3 + finance×3), 跟 Sprint 3 design ID 对齐
+    target_domains = [d for d in GAP_DOMAINS if d in {"legal", "finance"}]
+    for domain in target_domains:
+        count = domain_counts.get(domain, 0)
+        print(f"  Generating for domain: {domain} (current count: {count})")
         candidates = generate_experts_for_domain(domain,
             list(existing_ids), list(existing_names))
+
+        # EPIC-034-C Round 2c: preflight dedup — skip mock candidates whose name_cn already in INDEX.md
+        candidates = preflight_dedup_check(candidates, existing_names)
 
         for candidate in candidates:
             valid, msg = validate_candidate(candidate, existing_ids, existing_names)
@@ -467,17 +499,25 @@ def main():
 
     # Read existing content
     existing_content = EXTENDED_INDEX.read_text()
-    if existing_content.endswith("---\n"):
-        append_content = ""
-    else:
-        append_content = "\n"
 
+    # Always start append with newline separator (works regardless of whether
+    # existing content ends with --- or plain text). Force \n split so each new
+    # YAML block is on its own line.
+    append_content = "\n"
     for candidate in all_candidates:
         append_content += format_expert_yaml(candidate)
 
-    new_content = existing_content.rstrip() + append_content
+    new_content = existing_content.rstrip() + "\n" + append_content
     EXTENDED_INDEX.write_text(new_content)
+
+    # Verify actually wrote (Round 2 fix: confirm bytes appended, not just len)
+    final_size = EXTENDED_INDEX.stat().st_size
+    delta = final_size - len(existing_content.encode("utf-8"))
     print(f"  Appended {len(all_candidates)} candidates to {EXTENDED_INDEX}")
+    print(f"  [verify] INDEX size: {len(existing_content)} -> {final_size} bytes (delta {delta:+d})")
+    print(f"  [verify] target = {EXTENDED_INDEX}")
+    print(f"  [verify] exists = {EXTENDED_INDEX.exists()}")
+    print(f"  [verify] is in REPO_ROOT (.kallax/experts/extended) = {str(EXTENDED_INDEX).startswith(str(REPO_ROOT) + '/.kallax/experts/extended')}")
     print()
 
     # Step 5: Write temp output file for review
