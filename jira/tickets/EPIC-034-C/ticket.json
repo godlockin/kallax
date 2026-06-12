@@ -5,7 +5,7 @@
   "title": "真创建 6 generated experts (legal×3 + finance×3) + 修 audit 脚本 stale (Y 方案拆卡, 主公 2026-06-12 拍)",
   "type": "feature",
   "priority": "P0",
-  "status": "pending",
+  "status": "done",
   "blocked_by": "EPIC-034-A",
   "worktree_role": "performer",
   "file_scope": {
@@ -28,5 +28,10 @@
     "Rule 9 9a/9b/9c/9d/9e PASS",
     "Rule 12 质量 ensure PASS"
   ],
-  "estimated_hours": 6
+  "estimated_hours": 6,
+  "claimed_by": "performer-EPIC-034 (subagent, R5 实证)",
+  "claimed_at": "2026-06-12T16:00:00Z",
+  "last_modified_by": "master_77704 (Rule 11 v2.1 强验证, ticket 状态同步)",
+  "last_modified_at": "2026-06-12T16:29:55Z",
+  "last_modified_reason": "Master Rule 11 v2.1 强验证同步: subagent 报告 (commit 4490f8b) → ticket 状态从 pending → done"
 }

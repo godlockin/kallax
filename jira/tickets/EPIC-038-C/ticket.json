@@ -1,0 +1,40 @@
+{
+  "id": "EPIC-038-C",
+  "epicId": "EPIC-038",
+  "phaseId": "PHASE-006",
+  "title": "Auditor 角色 + L4 派单 + 跨项目 import 脚本 (跟 EPIC-037-A 一起做, Q5 闭环)",
+  "type": "feature",
+  "priority": "P1",
+  "status": "pending",
+  "created_by": "master_main (主公 2026-06-12 拍 A, EPIC-038-C 跟 EPIC-037-A 一起做, 经验教训迁移 Q5 闭环)",
+  "created_at": "2026-06-12T00:00:00Z",
+  "blocked_by": "EPIC-038-B",
+  "worktree_role": "performer",
+  "handoff_depth": "L4",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-038-C/",
+      "scripts/conductor/auditor-dispatch.sh (新)",
+      "scripts/import/lessons-import.py (新, 跨项目 lessons 迁移)",
+      "scripts/audit/AuditMiddleware.py (Auditor 联动)",
+      "tests/integration/auditor-l4-test.sh",
+      "tests/integration/lessons-import-test.sh",
+      "scripts/verify/auditor-l4.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "Auditor 角色 (新, 跟 Performer 区别): 跨 worktree 读 + 写 lessons, 不改原项目代码",
+    "scripts/conductor/auditor-dispatch.sh: L4 派单模式, dispatch to Auditor instance",
+    "scripts/import/lessons-import.py: 跨项目 lessons 迁移 (从其他 KALLAX 实例 import lessons 文档)",
+    "scripts/audit/AuditMiddleware.py 跟 Auditor 联动: 9-pass redaction + 持续 audit (跟 EPIC-037-A 整合)",
+    "tests/integration/auditor-l4-test.sh PASS (≥4 case: 借鉴/隐患/迁移/不强写)",
+    "tests/integration/lessons-import-test.sh PASS (≥4 case: import/export/merge/diff)",
+    "scripts/verify/auditor-l4.sh L4 存在可执行 (Rule 8)",
+    "Rule 9 9a/9b/9c/9d/9e PASS (3 anti-fab + 强验证, 跟 Rule 15 联动)",
+    "Rule 12 质量 ensure PASS (audit 5 维度, 跟 EPIC-037-A 联动)"
+  ],
+  "estimated_hours": 8,
+  "l1_tactic_required": "拆 commit 为单 prompt (防 hang)",
+  "q5_closure": "经验教训迁移机制 (Q5 75%→90%, 跟跨项目 import 脚本闭环)"
+}
