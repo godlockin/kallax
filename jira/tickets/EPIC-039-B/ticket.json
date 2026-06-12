@@ -1,0 +1,34 @@
+{
+  "id": "EPIC-039-B",
+  "epicId": "EPIC-039",
+  "phaseId": "PHASE-006",
+  "title": "Conductor 真实 review 流程 (3 anti-fab + preflight + Master 6 维度)",
+  "type": "feature",
+  "priority": "P0",
+  "status": "pending",
+  "created_by": "master_main (主公 2026-06-12 拍 B 立即派)",
+  "created_at": "2026-06-12T00:00:00Z",
+  "blocked_by": "EPIC-039-A",
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-039-B/",
+      "scripts/conductor/review.sh (新, Conductor review 入口)",
+      "scripts/verify/review-checkpoint.sh (Rule 8 L4)",
+      "tests/integration/review-flow-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/conductor/review.sh 实现: 跑 3 anti-fab (test-case-isolation + kpi-precision + scope-creep) + check-fact-forcing-preflight.sh + check-commit-amend-verify.sh 4 PASS",
+    "review.sh 输出 5 PASS/FAIL + exit code (跟 PHASE-007 review 模板一致)",
+    "Conductor merge 前必跑 review.sh, FAIL 不 merge (跟 Master 6 维度联动)",
+    "tests/integration/review-flow-test.sh PASS (≥4 case: 3 anti-fab FAIL 不 merge / preflight FAIL 不 merge / amend-verify FAIL 不 merge / 全 PASS merge)",
+    "scripts/verify/review-checkpoint.sh L4 存在可执行 (Rule 8)",
+    "Rule 9 9a/9b/9c/9d/9e PASS",
+    "Rule 12 质量 ensure PASS"
+  ],
+  "estimated_hours": 6,
+  "l1_tactic_required": "拆 commit 为单 prompt"
+}
