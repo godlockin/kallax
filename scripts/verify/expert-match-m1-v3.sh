@@ -36,15 +36,15 @@ if [ ! -f "$BINARY" ]; then
 fi
 
 echo "=========================================="
-echo "M1 Domain Coverage Test (50 cases)"
-echo "Target: >= 80% accuracy (40/50)"
+echo "M1 Domain Coverage Test (100 cases)"
+echo "Target: >= 80% accuracy (80/100)"
 echo "Binary: $BINARY"
 echo "=========================================="
 echo ""
 
-# 50 test cases - all NOT verbatim in trigger fields
+# 100 test cases - all NOT verbatim in trigger fields
 # Format: "requirement" expected_expert
-# EPIC-032 expansion: 30 original + 20 new (10 data + 10 legal)
+# EPIC-034 Step 1 expansion: 50 original + 50 new (10 data + 10 legal + 10 finance + 10 cross-domain + 10 existing domain backfill)
 declare -a TESTS=(
     # Original 30 (performance + architecture + product +ux + security)
     "接口慢怎么优化" "backend"
@@ -99,12 +99,67 @@ declare -a TESTS=(
     "数据隐私怎么保护" "security"
     "跨境数据流合规" "security"
     "争议解决怎么选" "product"
+    # Legal scenarios (10 more) — EPIC-034 Step 1 expansion beyond EPIC-032
+    "数据保护法怎么遵守" "security"
+    "隐私政策怎么设计" "ux"
+    "用户协议怎么写" "product"
+    "商标侵权怎么查" "product"
+    "专利布局怎么做" "product"
+    "劳动仲裁怎么准备" "product"
+    "合同纠纷怎么预防" "product"
+    "数据跨境怎么传" "security"
+    "监管合规怎么应对" "security"
+    "法律科技怎么落地" "product"
+    # Data scenarios (10 more) — EPIC-034 Step 1 expansion beyond EPIC-032
+    "数据湖架构怎么设计" "architect"
+    "OLAP cube怎么优化" "backend"
+    "数据质量监控怎么做" "backend"
+    "dbt转换怎么写" "backend"
+    "Airflow调度怎么配" "backend"
+    "Presto联邦查询怎么优化" "backend"
+    "ClickHouse索引怎么建" "backend"
+    "Snowflake性能怎么调优" "backend"
+    "Kafka流处理怎么优化" "backend"
+    "数据血缘怎么追溯" "backend"
+    # Finance scenarios (10) — EPIC-034 Step 1 expansion
+    "财务报告怎么做" "product"
+    "预算分析怎么做" "product"
+    "现金流建模怎么做" "product"
+    "投资组合怎么分析" "product"
+    "风险评估怎么做" "product"
+    "税务规划怎么做" "product"
+    "审计跟踪怎么设计" "security"
+    "应收账款怎么管理" "product"
+    "应付账款怎么管理" "product"
+    "成本核算怎么做" "product"
+    # Cross-domain scenarios (10) — EPIC-034 Step 1 expansion
+    "金融实时风控怎么做" "security"
+    "法律合规审计怎么做" "security"
+    "金融合同条款怎么审" "product"
+    "用户行为数据怎么分析" "ux"
+    "安全威胁建模怎么做" "security"
+    "产品数据分析怎么做" "product"
+    "技术债务优先级怎么排" "product"
+    "架构可扩展性怎么评估" "architect"
+    "API设计规范怎么定" "architect"
+    "数据库选型怎么决策" "architect"
+    # Existing domain backfill (10) — triggered by4 generated experts
+    "风险建模怎么优化" "product"
+    "应收审计怎么跑" "product"
+    "UX调研怎么做" "ux"
+    "安全审计怎么跑" "security"
+    "压测结果怎么分析" "backend"
+    "缓存策略怎么选" "backend"
+    "微服务通信怎么优化" "backend"
+    "日志规范怎么定" "backend"
+    "监控看板怎么搭" "backend"
+    "灾备方案怎么设计" "architect"
 )
 
 m1_pass=0
 m1_fail=0
 
-for i in $(seq 0 49); do
+for i in $(seq 0 99); do
     idx=$((i * 2))
     req="${TESTS[$idx]}"
     expect="${TESTS[$((idx + 1))]}"
@@ -121,7 +176,7 @@ for i in $(seq 0 49); do
     fi
 done
 
-m1_total=50
+m1_total=100
 m1_rate=$(awk "BEGIN {printf \"%.1f\", $m1_pass * 100 / $m1_total}")
 
 echo ""
@@ -129,7 +184,7 @@ echo "=========================================="
 echo "M1 KPI: $m1_pass/$m1_total = $m1_rate% (target >= 80%)"
 echo "=========================================="
 
-if [ "$m1_pass" -ge 40 ]; then
+if [ "$m1_pass" -ge 80 ]; then
     echo "PASS"
     exit 0
 else
