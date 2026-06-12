@@ -1,0 +1,45 @@
+{
+  "id": "EPIC-041",
+  "epicId": "EPIC-041",
+  "phaseId": "PHASE-006",
+  "title": "痛点 6: 并发文件竞争调查+修复 (主公 2026-06-12 拍'第 6 痛点')",
+  "type": "investigation",
+  "priority": "P0",
+  "status": "in_progress",
+  "created_by": "master_main (主公 2026-06-12 拍'还有个痛点是相互影响, 同时修改/编辑文件/文件夹引起工作文件的(不正常/始料未及地)丢失/修改')",
+  "created_at": "2026-06-12T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "master",
+  "handoff_depth": "L4",
+  "investigation_type": "root_cause_digging",
+  "scope": {
+    "includes": [
+      "jira/tickets/EPIC-041/",
+      "confluence/decisions/EPIC-041-CONCURRENT-FILE-RC-2026-06-12.md (新, 根因报告)",
+      ".kallax/queue/outbox/master_77704/EPIC-041-RC-INTERIM-20260612.md (新, outbox 报告)"
+    ],
+    "excludes": [
+      "scripts/* (调查卡不写代码, 跟 Rule 11 联动)",
+      "jira/tickets/其他 ticket.json (调查不直接改其他 ticket 状态)"
+    ]
+  },
+  "investigation_questions": {
+    "q1_pain_point_6_definition": "痛点 6 精确定义: 并发文件竞争的具体表现 (跟痛点 4 资源覆盖区别)",
+    "q2_why_file_loss": "为什么会发生文件丢失/异常修改? (5 Why 链)",
+    "q3_evidence_in_session": "本 session 实战证据 (Performer-EPIC-036 '环境问题' + pre-commit 干扰 + 20+ worktree 累积)",
+    "q4_differences_pain_4": "跟痛点 4 资源覆盖的区别 (并发 vs 跨资源)",
+    "q5_workflow_gap": "KALLAX 当前缺口 (文件级锁 + 原子写 + 冲突检测)",
+    "q6_forced_constraint": "Rule 17 草案 (强制限制流程, 跟 Rule 14/15/16 联动)"
+  },
+  "acceptance_criteria": [
+    "根因报告 (5 Why + 跟 5 痛点 + EKET P2 #25 + EPIC-022 治理 + EPIC-039 Sprint 4 + Performer-EPIC-036 假 PASS 对比)",
+    "5 候选思路 + 5 候选方法 + Master 推荐 (跟 Gap 9 元能力 + Rule 14/15/16 联动)",
+    "Rule 17 草案 (强制限制流程, 跟 Rule 14/15/16 同级)",
+    "跟 EPIC-041-B/C/D 4 票修复对齐表",
+    "PHASE-007 review 触发建议 (跟 5+ ticket + 5 BE + 第 9 次 KPI falsification 一致)",
+    "Master 强验证 6 维度写报告 (跟 Rule 11 v2.1 联动)"
+  ],
+  "estimated_hours": 4,
+  "l1_tactic_required": "调查卡不写代码, 只写报告 (跟 Rule 11 联动)",
+  "master_强验证_6_维度_required": "L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实"
+}
