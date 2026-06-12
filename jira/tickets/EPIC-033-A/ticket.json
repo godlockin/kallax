@@ -1,0 +1,53 @@
+{
+  "id": "EPIC-033-A",
+  "type": "feature",
+  "title": "派发权 60→80% 升级 + Conductor 简化 (主公 D2 决策, 渐进升级 EKET P1 #1)",
+  "epic": "EPIC-033",
+  "status": "in_progress",
+  "priority": "P1",
+  "assignee": "performer",
+  "created": "2026-06-11",
+  "due": "2026-06-11",
+  "estimate_days": 1.0,
+  "acceptance_criteria": {
+    "L1": [
+      "scripts/conductor/dispatch.sh 修改存在且有 KALLAX_AI_DELEGATION_RATIO=80 env var",
+      "scripts/kallax-dispatch.sh 修改存在且 mode-aware 默认行为正确",
+      "docs/architecture/3-MODES.md 修改存在且有派发权让渡比例矩阵 (3×3)",
+      "tests/integration/kallax-dispatch-test.sh 修改存在且加 6 新场景 (3 mode × 2 ratio)"
+    ],
+    "L2": [
+      "dispatch.sh: KALLAX_AI_DELEGATION_RATIO=80 时 80% AI 默认 Accept, 20% 人工 override 必填 override_to",
+      "kallax-dispatch.sh: ai-auto 100% AI / ai-copilot 80% 默认 Accept / manual 100% 人工 mode-aware 正确"
+    ],
+    "L3": [
+      "dispatch.sh: jq 语法合法 (jq -n 构建 audit 字段)",
+      "kallax-dispatch.sh: 跟 dispatch.sh 接口兼容, --algo-accept/--veto/--dispatch-to 3 flag 保留"
+    ],
+    "L4": [
+      "bash tests/integration/kallax-dispatch-test.sh → 34 PASS (28 existing + 6 new)",
+      "grep '80% AI' docs/architecture/3-MODES.md → 命中",
+      "grep 'KALLAX_AI_DELEGATION_RATIO' scripts/conductor/dispatch.sh → 命中",
+      "bash scripts/verify/check-commit-amend-verify.sh → 4 PASS"
+    ]
+  },
+  "file_scope": {
+    "includes": [
+      "scripts/conductor/dispatch.sh",
+      "scripts/kallax-dispatch.sh",
+      "docs/architecture/3-MODES.md",
+      "tests/integration/kallax-dispatch-test.sh",
+      "jira/epics/EPIC-033/epic.json",
+      "jira/epics/EPIC-033/LESSONS-LEARNED.md",
+      "jira/tickets/EPIC-033-A/ticket.json"
+    ],
+    "excludes": []
+  },
+  "trigger": "bash tests/integration/kallax-dispatch-test.sh → 34 PASS (28 existing + 6 new)",
+  "m1_score": null,
+  "kpi": {
+    "dispatch_ratio_upgrade": "60% AI → 80% AI (主公 D2 决策)",
+    "test_coverage": "34 E2E PASS (28 + 6 new)",
+    "env_flexibility": "KALLAX_AI_DELEGATION_RATIO 支持 60/80/90 可调"
+  }
+}

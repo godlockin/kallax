@@ -45,8 +45,17 @@ append_waiting_for_expert() {
     > "$tmp_file"
   mv "$tmp_file" "$WAITING_FILE"
 
+  # 严格 allowlist 验证 (fail-closed)
+  if [[ ! "$ticket_id" =~ ^[A-Z][A-Z0-9_-]{1,30}$ ]]; then
+    echo "ERROR: invalid ticket_id: $ticket_id (must match ^[A-Z][A-Z0-9_-]{1,30}$)" >&2
+    return 1
+  fi
+  # 安全 basename (防 ../ traversal)
+  local safe_id
+  safe_id=$(basename "$ticket_id")
+
   # 写 inbox 提示
-  cat > "${INBOX_DIR}/need-expert-${ticket_id}.md" <<EOF
+  cat > "${INBOX_DIR}/need-expert-${safe_id}.md" <<EOF
 # Need Expert: ${ticket_id}
 
 ## 任务
