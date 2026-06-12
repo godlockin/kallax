@@ -1,0 +1,34 @@
+{
+  "id": "EPIC-034-C",
+  "epicId": "EPIC-034",
+  "phaseId": "PHASE-006",
+  "title": "修根因: 真创建 6 generated experts + audit 脚本 stale 修 + 2 集成测试 (Y 方案拆卡, 主公 2026-06-12 15:15 拍)",
+  "type": "bugfix",
+  "priority": "P0",
+  "status": "in_progress",
+  "created_by": "performer-EPIC-034",
+  "created_at": "2026-06-12T15:30:00Z",
+  "blocked_by": "EPIC-034-A",
+  "file_scope": {
+    "includes": [
+      "scripts/expert-generate-l3.py",
+      "scripts/expert-quality-audit.py",
+      ".kallax/experts/extended/INDEX.md",
+      "tests/integration/generated-experts-test.sh",
+      "tests/integration/audit-stale-text-test.sh",
+      "jira/tickets/EPIC-034-C/"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/expert-generate-l3.py: REPO_ROOT 动态解析 (从硬编码 worktree 路径修), Step 4 写入逻辑修, 加 preflight_dedup_check 函数",
+    "scripts/expert-quality-audit.py:596: stale 文案修 4→6 generated, 50→100 test cases",
+    ".kallax/experts/extended/INDEX.md: 6 generated 真 append (001 法务合规总监/002 合规官/003 知识产权顾问/004 高级财务分析师/005 投融资顾问/006 税务顾问)",
+    "tests/integration/generated-experts-test.sh: 3 case PASS (T1 6 真存在 + T2 dedup + T3 INDEX sync)",
+    "tests/integration/audit-stale-text-test.sh: 2 case PASS (T1 audit count == actual + T2 audit tc == m1_total)",
+    "Rule 9a/9b/9c/9d/9e PASS (4 anti-fab 工具)",
+    "Rule 12 质量 ensure PASS (expert-quality-audit.py 5 维度)",
+    "check-fact-forcing-preflight.sh L1-L4 + L4_script_exists 5 工具 PASS"
+  ],
+  "estimated_hours": 1
+}

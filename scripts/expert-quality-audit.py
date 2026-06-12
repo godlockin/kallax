@@ -593,7 +593,7 @@ def audit_m1_recall() -> AuditResult:
                 details={
                     "rate": f"{rate}%",
                     "target": "80%",
-                    "co_evolution_debt": "4 generated experts (data+legal) triggered by expanded 50 test cases"
+                    "co_evolution_debt": "6 generated experts (legal+finance) triggered by expanded 100 test cases"
                 },
                 failures=[]
             )
