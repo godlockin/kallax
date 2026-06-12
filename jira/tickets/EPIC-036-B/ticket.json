@@ -1,0 +1,28 @@
+{
+  "id": "EPIC-036-B",
+  "epicId": "EPIC-036",
+  "phaseId": "PHASE-006",
+  "title": "dispatch.sh 集成 --cross-worktree 选项 + E2E 验证",
+  "type": "feature",
+  "priority": "P1",
+  "status": "pending",
+  "created_by": "master_main (Top 4 开工, 2026-06-12 拍)",
+  "created_at": "2026-06-12T00:00:00Z",
+  "blocked_by": "EPIC-036-A",
+  "worktree_role": "performer",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-036-B/",
+      "scripts/conductor/dispatch.sh",
+      "tests/integration/dispatch-cross-worktree-e2e.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/conductor/dispatch.sh 新增 --cross-worktree=<source_wt> 选项",
+    "派单时跨 worktree 调用 cross-worktree-dispatch.sh",
+    "tests/integration/dispatch-cross-worktree-e2e.sh PASS (E2E 验证: 1 Performer 完成后跨 worktree 派 2 Performer)",
+    "Rule 9 + Rule 12 PASS"
+  ],
+  "estimated_hours": 4
+}

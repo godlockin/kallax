@@ -1,0 +1,29 @@
+{
+  "id": "EPIC-032-A",
+  "epicId": "EPIC-032",
+  "phaseId": "PHASE-005",
+  "title": "M1 50 test case 扩域 (data + legal 场景)",
+  "type": "feature",
+  "priority": "P0",
+  "status": "in_progress",
+  "created_by": "performer-EPIC-032",
+  "created_at": "2026-06-11T00:00:00Z",
+  "file_scope": {
+    "includes": [
+      "scripts/verify/check-test-case-isolation.sh",
+      "jira/epics/EPIC-032/",
+      "jira/tickets/EPIC-032-A/"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/verify/check-test-case-isolation.sh TEST_CASES 数组从 30 → 50 (新增 20 个 data + legal 场景)",
+    "新增 test case 覆盖: data consistency, data pipeline, data quality, legal compliance, privacy, GDPR, data retention, data migration",
+    "expert-quality-audit.py验证 M1 Recall 50/50",
+    "check-test-case-isolation.sh PASS (0 leak)",
+    "check-kpi-precision.sh PASS",
+    "check-scope-creep.sh PASS",
+    "check-commit-amend-verify.sh 4 PASS"
+  ],
+  "estimated_hours": 2
+}

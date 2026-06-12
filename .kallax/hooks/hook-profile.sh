@@ -11,13 +11,13 @@ PROFILE="${KALLAX_HOOK_PROFILE:-standard}"
 
 case "$PROFILE" in
   minimal)
-    HOOKS=("check-test-case-isolation.sh")
+    HOOKS=("check-test-case-isolation.sh" "check-commit-amend-verify.sh")
     ;;
   standard)
-    HOOKS=("check-test-case-isolation.sh" "check-kpi-precision.sh" "check-scope-creep.sh")
+    HOOKS=("check-test-case-isolation.sh" "check-kpi-precision.sh" "check-scope-creep.sh" "check-commit-amend-verify.sh")
     ;;
   strict)
-    HOOKS=("check-test-case-isolation.sh" "check-kpi-precision.sh" "check-scope-creep.sh" "check-fact-forcing-preflight.sh")
+    HOOKS=("check-test-case-isolation.sh" "check-kpi-precision.sh" "check-scope-creep.sh" "check-commit-amend-verify.sh" "check-fact-forcing-preflight.sh")
     ;;
   *)
     echo "ERROR: KALLAX_HOOK_PROFILE must be minimal|standard|strict, got: $PROFILE" >&2
@@ -29,11 +29,14 @@ FAILED=0
 for hook in "${HOOKS[@]}"; do
   hook_path="${KALLAX_ROOT}/scripts/verify/${hook}"
   # scope-creep requires TICKET_ID which isn't available in pre-commit context
-  # → bypass via KALLAX_BYPASS_SCOPE_CHECK (Rule 10: anti-fab still runs where possible)
+  # → explicit WARN + fail-open (not silent bypass)
+  # KALLAX_BYPASS_SCOPE_CHECK=1 only set by design-stage work, not pre-commit context
   if [[ "$hook" == "check-scope-creep.sh" ]]; then
-    KALLAX_BYPASS_SCOPE_CHECK=1 bash "$hook_path" >/dev/null 2>&1 && continue
-    echo "BLOCKED: ${hook} FAIL (bypass failed)" >&2
-    FAILED=1
+    if [[ -z "${KALLAX_TICKET_ID:-}" ]]; then
+      echo "WARN: check-scope-creep.sh skipped (no TICKET_ID in pre-commit context)" >&2
+      continue  # fail-open with explicit warn, not silent bypass
+    fi
+    bash "$hook_path" || { echo "BLOCKED: ${hook} FAIL"; FAILED=1; }
     continue
   fi
   if [[ ! -x "$hook_path" ]]; then
