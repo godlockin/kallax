@@ -1,0 +1,43 @@
+{
+  "id": "EPIC-037",
+  "phase": "PHASE-006",
+  "title": "持续 audit 机制 (redaction 半年 + KPI cron)",
+  "scope": "1. 写 scripts/audit/continuous-audit.sh 跑 9-pass redaction 验证\n2. 写 scripts/audit/kpi-audit.sh 验证 8 次 KPI falsification 反复教训 (Rule 9a)\n3. 配置 cron (或 systemd timer) 半年跑一次\n4. 失败时自动 alert (写 .kallax/audit/alert-YYYY-MM-DD.jsonl)",
+  "start_time": "2026-06-12",
+  "delivery_time": "2026-06-13",
+  "status": "active",
+  "baseline": {
+    "source": "PROJECT-STATUS-AND-LESSONS-2026-06-12.md §2.4 Gap 5 (主公 2026-06-12 拍 Top 4 开工)",
+    "current_state": "9-pass redaction + 3 轮审查 20 issue + AuditMiddleware 已落 (EPIC-029/030/031), 但持续 audit 机制缺",
+    "gap": "Phase 6 半年 review 是临时机制, 需自动化"
+  },
+  "target": {
+    "continuous_audit_script": "scripts/audit/continuous-audit.sh 存在且可执行 (跑 9-pass redaction 验证)",
+    "kpi_audit_script": "scripts/audit/kpi-audit.sh 存在且可执行 (验证 Rule 9a 估数)",
+    "cron_config": "scripts/audit/cron-continuous-audit.cron (半年跑一次)",
+    "alert_mechanism": "失败时写 .kallax/audit/alert-YYYY-MM-DD.jsonl",
+    "L4_verify_script": "scripts/verify/continuous-audit.sh (Rule 8 L4)"
+  },
+  "decisions": {
+    "priority": 1,
+    "rationale": "主公 2026-06-12 拍 Top 4 开工 (Gap #4)",
+    "phase": "PHASE-006",
+    "eket_origin": "PROJECT-STATUS-AND-LESSONS-2026-06-12.md §2.4 Gap 5"
+  },
+  "tickets": [
+    {
+      "id": "EPIC-037-A",
+      "title": "continuous-audit.sh + kpi-audit.sh 实现 (TDD, 9-pass + KPI 估数检测)",
+      "assignee": "performer-EPIC-037",
+      "status": "pending",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-037-B",
+      "title": "cron 配置 + alert 机制 + L4 verify 脚本 (Rule 8)",
+      "assignee": "performer-EPIC-037",
+      "status": "pending",
+      "blocked_by": "EPIC-037-A"
+    }
+  ]
+}
