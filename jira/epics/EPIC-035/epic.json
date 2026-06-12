@@ -1,0 +1,42 @@
+{
+  "id": "EPIC-035",
+  "phase": "PHASE-006",
+  "title": "worktree_role 强制绑定 (EKET P1 #16)",
+  "scope": "1. ticket.json 新增 worktree_role 字段声明 (master/conductor/performer/auditor)\n2. Conductor 派单时验证 ticket.worktree_role 跟 worktree 当前 owner 匹配\n3. isolation:check 增加 worktree_role 交叉验证\n4. 防 'Performer 拿到 Conductor ticket' / 'Auditor ticket 落到 Performer' 错配",
+  "start_time": "2026-06-12",
+  "delivery_time": "2026-06-13",
+  "status": "active",
+  "baseline": {
+    "source": "EKET P1 #16 (EKET 5 专家 panel EPIC-021 治理推荐)",
+    "current_state": "worktree 强制隔离已落 (Rule P0-1), 但 ticket.json 缺 role 字段声明",
+    "gap": "Conductor 派单时无法验证 worktree 跟 role 匹配, 错配风险"
+  },
+  "target": {
+    "ticket_json_schema": "新增 worktree_role 字段 (enum: master/conductor/performer/auditor)",
+    "conductor_dispatch_validation": "派单时验证 role 匹配, mismatch → veto",
+    "isolation_check_role_cross": "isolation:check 增加 worktree_role 交叉验证",
+    "rule_8_L4_script_exists": "scripts/verify/worktree-role.sh 存在且可执行"
+  },
+  "decisions": {
+    "priority": 1,
+    "rationale": "主公 2026-06-12 拍 Top 4 开工 (Gap #2)",
+    "phase": "PHASE-006",
+    "eket_origin": "EKET P1 #16 worktree_role 强制绑定"
+  },
+  "tickets": [
+    {
+      "id": "EPIC-035-A",
+      "title": "ticket.json schema 加 worktree_role 字段 + Conductor 验证 (TDD)",
+      "assignee": "performer-EPIC-035",
+      "status": "pending",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-035-B",
+      "title": "isolation:check 加 worktree_role 交叉 + L4 verify 脚本 (Rule 8)",
+      "assignee": "performer-EPIC-035",
+      "status": "pending",
+      "blocked_by": "EPIC-035-A"
+    }
+  ]
+}
