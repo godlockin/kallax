@@ -1,0 +1,31 @@
+{
+  "id": "EPIC-035-A",
+  "epicId": "EPIC-035",
+  "phaseId": "PHASE-006",
+  "title": "ticket.json schema 加 worktree_role 字段 + Conductor 验证 (TDD)",
+  "type": "feature",
+  "priority": "P1",
+  "status": "pending",
+  "created_by": "master_main (Top 4 开工, 2026-06-12 拍)",
+  "created_at": "2026-06-12T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-035-A/",
+      "scripts/conductor/dispatch.sh",
+      "tests/integration/worktree-role-test.sh",
+      "scripts/verify/worktree-role.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "ticket.json schema 新增 worktree_role 字段 (enum: master/conductor/performer/auditor)",
+    "Conductor dispatch.sh 验证 ticket.worktree_role 跟 worktree owner 匹配, mismatch → veto + 报错",
+    "tests/integration/worktree-role-test.sh PASS (≥4 case: master/conductor/performer/auditor)",
+    "Rule 8 L4_script_exists check PASS (scripts/verify/worktree-role.sh stub)",
+    "Rule 9 9a/9b/9c/9d/9e PASS (3 anti-fab + 强验证)",
+    "Rule 12 质量 ensure PASS (audit 5 维度)"
+  ],
+  "estimated_hours": 4
+}
