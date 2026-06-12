@@ -1,0 +1,56 @@
+{
+  "id": "EPIC-039",
+  "phase": "PHASE-006",
+  "title": "Sprint 4: ticket 状态自动同步 + 真实 review + merge 流程 (主公 2026-06-12 拍 B)",
+  "scope": "1. Master Rule 11 v2.1 强验证发现: 4 ticket 状态没跟 subagent 报告同步 + Conductor 报 5 waves 但实际 0 review + 走 R-NEW PR (#13) 跳过 Conductor merge\n2. Sprint 4 拆 4 票: (A) 升 Token Plan 档 + (B) ticket 状态自动同步 + (C) 真实 review 流程 + (D) 真实 merge 流程\n3. 跟 4 BE 边界事件 (BE-1 C/D bypass + BE-2 035-A stale + BE-3 034-B blocked + BE-4 ticket 状态没更新) 闭环\n4. 跟 Phase 6 决策 B 升 Token Plan 档 (主公 2026-06-12 拍升)\n5. 跟'Checkpoint 时间旅行' 6 EPIC 后拍同步 (PHASE-007 review 拍 Performer 持久化 L3 架构)",
+  "start_time": "2026-06-12",
+  "delivery_time": "2026-06-15",
+  "status": "active",
+  "baseline": {
+    "source": "Master 强验证 2026-06-12 16:29 修复 4 ticket 状态 (commit 4e6c4ff)",
+    "current_state": "4 ticket 状态刚修, 流程仍是手动 + Conductor 报 5 waves 但实际 0 review + R-NEW PR 跳 Conductor merge",
+    "gap": "主公 2026-06-12 拍 B 立即派 Sprint 4"
+  },
+  "target": {
+    "ticket_status_auto_sync": "subagent 报 PASS/FAIL 触发 jq 自动更新 ticket 状态 (跟 task-claim 流程联动)",
+    "real_review_flow": "Conductor 跑 3 anti-fab + check-fact-forcing-preflight.sh + Master 强验证 6 维度 (per Rule 11 v2.1)",
+    "real_merge_flow": "Conductor merge feature → testing (跟之前 testing→miao 流程一致, 跳过 R-NEW PR)",
+    "token_plan_upgrade": "Phase 6 决策 B 升 Token Plan 档 (5h → 8h/12h/24h, 跟 Conductor decision-record 一致)"
+  },
+  "decisions": {
+    "priority": 1,
+    "rationale": "主公 2026-06-12 拍 B 立即派 (Master 强验证 6 维度 0 后)",
+    "phase": "PHASE-006 Sprint 4",
+    "boundary_events_closure": "BE-1 C/D bypass + BE-2 035-A stale + BE-3 034-B blocked + BE-4 ticket 状态没更新 闭环"
+  },
+  "tickets": [
+    {
+      "id": "EPIC-039-A",
+      "title": "升 Token Plan 档 + ticket 状态自动同步机制 (跟 subagent 报告联动)",
+      "assignee": "performer-EPIC-039",
+      "status": "pending",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-039-B",
+      "title": "Conductor 真实 review 流程 (3 anti-fab + preflight + Master 6 维度)",
+      "assignee": "performer-EPIC-039",
+      "status": "pending",
+      "blocked_by": "EPIC-039-A"
+    },
+    {
+      "id": "EPIC-039-C",
+      "title": "Conductor merge feature → testing 真实流程 (跳过 R-NEW PR)",
+      "assignee": "performer-EPIC-039",
+      "status": "pending",
+      "blocked_by": "EPIC-039-B"
+    },
+    {
+      "id": "EPIC-039-D",
+      "title": "Master 6 维度强验证 checkpoint (L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实)",
+      "assignee": "performer-EPIC-039",
+      "status": "pending",
+      "blocked_by": "EPIC-039-C"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "EPIC-039-A",
+  "epicId": "EPIC-039",
+  "phaseId": "PHASE-006",
+  "title": "升 Token Plan 档 + ticket 状态自动同步机制 (跟 subagent 报告联动)",
+  "type": "feature",
+  "priority": "P0",
+  "status": "pending",
+  "created_by": "master_main (主公 2026-06-12 拍 B 立即派 Sprint 4)",
+  "created_at": "2026-06-12T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-039-A/",
+      "scripts/conductor/ticket-status-sync.sh (新, ticket 状态自动同步)",
+      "scripts/performer/performer-report.sh (新, subagent 报 PASS/FAIL 触发)",
+      "scripts/verify/ticket-status-sync.sh (Rule 8 L4)",
+      "tests/integration/ticket-status-sync-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/conductor/ticket-status-sync.sh 实现: subagent 报 PASS/FAIL → 自动 jq 更新 ticket.json (status + claimed_by + claimed_at + last_modified_by + last_modified_at + last_modified_reason)",
+    "scripts/performer/performer-report.sh 实现: Performer 完工时自动跑 (从 outbox/performer-*/ 读报告, 调用 ticket-status-sync.sh)",
+    "scripts/conductor/ticket-status-sync.sh 集成到 Conductor dispatch 流程 (ticket 派单后, 报告回 outbox 后自动同步)",
+    "Phase 6 决策 B 升 Token Plan 档 (5h → 8h/12h/24h): 写 Token Plan 升档指南 (跟 Conductor decision-record 联动)",
+    "tests/integration/ticket-status-sync-test.sh PASS (≥4 case: PASS 同步 / FAIL 同步 / outbox 不存在 / ticket 已 done 不覆盖)",
+    "scripts/verify/ticket-status-sync.sh L4 存在可执行 (Rule 8)",
+    "Rule 9 9a/9b/9c/9d/9e PASS (3 anti-fab + 强验证)",
+    "Rule 12 质量 ensure PASS (audit 5 维度)"
+  ],
+  "estimated_hours": 6,
+  "l1_tactic_required": "拆 commit 为单 prompt (跟 EPIC-035-A 同模式, 防 hang)"
+}
