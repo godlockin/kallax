@@ -1,0 +1,41 @@
+{
+  "id": "EPIC-039-D",
+  "epicId": "EPIC-039",
+  "phaseId": "PHASE-006",
+  "title": "Master 6 维度强验证 checkpoint (L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实)",
+  "type": "feature",
+  "priority": "P0",
+  "status": "pending",
+  "created_by": "master_main (主公 2026-06-12 拍 B 立即派, 跟 Rule 11 v2.1 联动)",
+  "created_at": "2026-06-12T00:00:00Z",
+  "blocked_by": "EPIC-039-C",
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-039-D/",
+      "scripts/master/strong-verify-6d.sh (新, Master 6 维度强验证脚本)",
+      "scripts/verify/master-6d-checkpoint.sh (Rule 8 L4)",
+      "tests/integration/master-6d-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/master/strong-verify-6d.sh 实现 Master 强验证 6 维度:",
+    "  L1: git log --oneline -1 看 SHA 真变",
+    "  L2: git show HEAD:file | grep 看内容真改",
+    "  L3: 跑全量 E2E (跟 ticket AC 逐条)",
+    "  L4: check-fact-forcing-preflight.sh + 4 anti-fab + Rule 14/15",
+    "  L5: 任何 Rule 1/11 边界事件标 + 留 LESSONS-LEARNED 草稿",
+    "  L6: 诚实 (报假 PASS = FAIL, 跟 Rule 9e 联动)",
+    "strong-verify-6d.sh 输出 6 维度 PASS/FAIL + exit code (跟 PHASE-007 review 模板一致)",
+    "Master 跑 strong-verify-6d.sh 在 Conductor merge 后必跑 (跟 EPIC-039-C 联动, 不强验证不 promote)",
+    "Master promote testing → miao 前必过 strong-verify-6d.sh 6 PASS",
+    "tests/integration/master-6d-test.sh PASS (≥6 case: 6 维度各 PASS/FAIL)",
+    "scripts/verify/master-6d-checkpoint.sh L4 存在可执行 (Rule 8)",
+    "Rule 9 9a/9b/9c/9d/9e PASS",
+    "Rule 12 质量 ensure PASS"
+  ],
+  "estimated_hours": 6,
+  "l1_tactic_required": "拆 commit 为单 prompt"
+}
