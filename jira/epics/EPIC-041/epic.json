@@ -1,0 +1,57 @@
+{
+  "id": "EPIC-041",
+  "phase": "PHASE-006",
+  "title": "痛点 6: 并发文件竞争调查+修复 (主公 2026-06-12 拍'还有个痛点')",
+  "scope": "1. 主公 2026-06-12 拍'还有个痛点是相互影响, 同时修改/编辑文件/文件夹引起工作文件的(不正常/始料未及地)丢失/修改'\n2. 跟 5 痛点 (假装完成/上下文失忆/角色越界/资源覆盖/安全立体) 不同, 是第 6 痛点 = 并发文件竞争\n3. Master 强验证 6 维度调查 + 跟 EPIC-040 调查模式一致 (Master 协调不写代码, 跟 Rule 11 联动)\n4. 4 票拆卡: 痛点 6 调查 (挖根因) + 文件级锁 + 原子写 + 冲突检测 (跟 EPIC-036 跨 worktree 联动)\n5. 跟 EKET P2 #25 workspace isolation v2 + EPIC-022 治理 + EPIC-039 Sprint 4 修复对齐",
+  "start_time": "2026-06-12",
+  "delivery_time": "2026-06-15",
+  "status": "active",
+  "baseline": {
+    "source": "Master 强验证 2026-06-12 16:37 (EPIC-040 调查落地后, 主公新痛点)",
+    "current_state": "本 session 91 ticket + 20+ worktree 累积 + 5 subagent 跑 + Performer-EPIC-036 报'文件被删除' (实际 0 commit) + pre-commit 干扰 miao 写",
+    "gap": "KALLAX 缺文件级锁 + 原子写 + 冲突检测机制"
+  },
+  "target": {
+    "pain_point_6_definition": "主公原话'相互影响/同时修改/编辑文件/文件夹引起工作文件的(不正常/始料未及地)丢失/修改' = 并发文件竞争",
+    "root_cause_report": "5 Why 调查 (跟 EPIC-040 模式, 挖根因)",
+    "思路_方法_强制限制": "5 候选思路 + 5 候选方法 (跟 EPIC-040 一致) + 强制限制流程 (Rule 17 草案)",
+    "fix_4_tickets": "EPIC-041-A 调查 + B 文件级锁 + C 原子写 + D 冲突检测",
+    "eket_alignment": "跟 EKET P2 #25 workspace isolation v2 关联, PHASE-007 review 拍"
+  },
+  "decisions": {
+    "priority": 1,
+    "rationale": "主公 2026-06-12 拍'第 6 痛点', 跟 EPIC-040 调查 + EPIC-039 Sprint 4 修复对齐",
+    "phase": "PHASE-006 Sprint 4 痛点 6",
+    "master_强验证_6_维度": "Master 0 后, 写专门调查卡 (跟 Rule 11 联动, 不写代码但协调)"
+  },
+  "tickets": [
+    {
+      "id": "EPIC-041-A",
+      "title": "痛点 6 调查: 5 Why + 5 候选思路 + 5 候选方法 + 强制限制流程 (Rule 17 草案)",
+      "assignee": "master_main (调查卡, 跟 EPIC-040 模式一致)",
+      "status": "in_progress",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-041-B",
+      "title": "文件级锁机制 (file-level lock, 跟 git index lock 同模式, 防止多 subagent 同时改同一文件)",
+      "assignee": "performer-EPIC-041",
+      "status": "pending",
+      "blocked_by": "EPIC-041-A"
+    },
+    {
+      "id": "EPIC-041-C",
+      "title": "原子写机制 (atomic write, 写临时文件 + mv 原子替换, 防止写一半被覆盖)",
+      "assignee": "performer-EPIC-041",
+      "status": "pending",
+      "blocked_by": "EPIC-041-B"
+    },
+    {
+      "id": "EPIC-041-D",
+      "title": "冲突检测机制 (conflict detect, 跟 EPIC-036 跨 worktree 联动 + git diff 比对 + 自动化冲突解决)",
+      "assignee": "performer-EPIC-041",
+      "status": "pending",
+      "blocked_by": "EPIC-041-C"
+    }
+  ]
+}
