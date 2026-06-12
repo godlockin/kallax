@@ -1,15 +1,16 @@
 #!/bin/bash
 # kallax-dispatch-test.sh — Integration test for kallax-dispatch.sh
 #
-# 12 scenarios: 4 modes × 3 behaviors
+# 22 scenarios: 4 modes × 3 behaviors + 6 new ratio scenarios + 4 error handling
 # 4 modes: default, ai-auto, ai-copilot, manual
 # 3 behaviors: accept, veto, override
+# 6 new (EPIC-033-A): 3 modes × 2 ratios (60/80) for accept behavior
 #
-# Source: EPIC-031-B ticket.json AC
+# Source: EPIC-031-B ticket.json AC + EPIC-033-A AC
 #   L1: scripts/kallax-dispatch.sh + test exist
-#   L2: 真支持 3 flag (--algo-accept / --veto / --dispatch-to)
+#   L2: 真支持 3 flag (--algo-accept / --veto / --dispatch-to) + mode-aware defaults
 #   L3: 跟 A 兼容, 调 dispatch.sh 4 mode (default/ai-auto/ai-copilot/manual) 默认行为
-#   L4: 12 测试 PASS (4 mode × 3 behavior)
+#   L4: 22 测试 PASS (16 existing + 6 new ratio scenarios)
 #
 set -euo pipefail
 
@@ -19,7 +20,7 @@ DISPATCH="${KALLAX_ROOT}/scripts/kallax-dispatch.sh"
 CONDUCTOR_DISPATCH="${KALLAX_ROOT}/scripts/conductor/dispatch.sh"
 AUDIT_DIR="${KALLAX_ROOT}/.kallax/audit"
 
-echo "=== kallax-dispatch.sh Integration Tests (12 scenarios) ==="
+echo "=== kallax-dispatch.sh Integration Tests (22 scenarios: 16 existing + 6 new ratio) ==="
 PASS=0
 FAIL=0
 
@@ -50,7 +51,8 @@ test_dispatch() {
   if [[ -n "$mode_env" ]]; then
     export KALLAX_MODE="$mode_env"
   else
-    unset KALLAX_MODE
+    # Reset to default ai-copilot (not unset, to avoid subshell isolation issues)
+    export KALLAX_MODE="ai-copilot"
   fi
 
   if output=$(bash "$DISPATCH" --ticket "$ticket" --expertise "$expertise" $extra_args 2>&1); then
@@ -64,14 +66,20 @@ test_dispatch() {
       FAIL=$((FAIL + 1))
     fi
   else
-    echo "  ✗ $test_name (command failed)"
-    echo "    output: $output"
-    FAIL=$((FAIL + 1))
+    # Command failed — check if we expected failure
+    if [[ "$expected_final" == "FAIL" ]]; then
+      echo "  ✓ $test_name (expected failure)"
+      PASS=$((PASS + 1))
+    else
+      echo "  ✗ $test_name (command failed, expected $expected_final)"
+      echo "    output: $output"
+      FAIL=$((FAIL + 1))
+    fi
   fi
 }
 
 # ============================================================
-# 4 modes × 3 behaviors = 12 scenarios
+# 4 modes × 3 behaviors = 12 scenarios (existing)
 # ============================================================
 
 echo ""
@@ -103,15 +111,47 @@ test_dispatch "ai-copilot" "EPIC-031-T018" "bash" "--dispatch-to performer-beta"
 
 echo ""
 echo "[Mode: manual] 3 behaviors"
-test_dispatch "manual" "EPIC-031-T019" ""         ""                        "conductor-gamma" "manual+accept: empty expertise"
-test_dispatch "manual" "EPIC-031-T020" "bash"    ""                        "conductor-gamma" "manual+accept: expertise bash"
+test_dispatch "manual" "EPIC-031-T019" ""         ""                        "FAIL"           "manual+accept: should fail (no default Accept)"
+test_dispatch "manual" "EPIC-031-T020" "bash"    ""                        "FAIL"           "manual+accept: should fail (no default Accept)"
 test_dispatch "manual" "EPIC-031-T021" ""         "--veto"                  "VETOED"         "manual+veto: empty expertise"
-test_dispatch "manual" "EPIC-031-T022" "bash"    "--veto"                  "VETOED"         "manual+veto: expertise bash"
+test_dispatch "manual" "EPIC-031-T022" "bash"    "--veto"                  "VETOED"         "manual+veto: expertise python"
 test_dispatch "manual" "EPIC-031-T023" ""         "--dispatch-to performer-beta" "performer-beta" "manual+override: empty"
 test_dispatch "manual" "EPIC-031-T024" "bash"    "--dispatch-to performer-beta" "performer-beta" "manual+override: expertise bash"
 
+# ============================================================
+# 6 new ratio scenarios (EPIC-033-A): 3 modes × 2 ratios (60/80)
+# ============================================================
+
+echo ""
+echo "[EPIC-033-A: 3 modes × 2 ratios (60/80) for accept behavior]"
+
+# KALLAX_AI_DELEGATION_RATIO=60 (60% AI, 40% human override)
+# ai-auto mode with ratio=60: 60% AI default Accept, 40% human override
+export KALLAX_AI_DELEGATION_RATIO=60
+test_dispatch "ai-auto" "EPIC-033-T101" "bash"   ""                        "conductor-gamma" "ai-auto+ratio60+accept: 60% AI default Accept"
+test_dispatch "ai-auto" "EPIC-033-T102" "bash"   "--dispatch-to performer-beta" "performer-beta" "ai-auto+ratio60+override: 40% human override"
+
+# KALLAX_AI_DELEGATION_RATIO=80 (80% AI, 20% human override) — default ratio
+export KALLAX_AI_DELEGATION_RATIO=80
+test_dispatch "ai-auto" "EPIC-033-T103" "bash"   ""                        "conductor-gamma" "ai-auto+ratio80+accept: 80% AI default Accept"
+test_dispatch "ai-copilot" "EPIC-033-T104" "bash" ""                        "conductor-gamma" "ai-copilot+ratio80+accept: 80% AI default Accept (default ratio)"
+
+# KALLAX_AI_DELEGATION_RATIO=80 + manual mode: 100% human, no default Accept
+export KALLAX_AI_DELEGATION_RATIO=80
+test_dispatch "manual" "EPIC-033-T105" "bash"   ""                        "FAIL"           "manual+ratio80+accept: should fail (100% human, no default Accept)"
+
+# KALLAX_AI_DELEGATION_RATIO=60 + manual mode: 100% human, no default Accept
+export KALLAX_AI_DELEGATION_RATIO=60
+test_dispatch "manual" "EPIC-033-T106" "bash"   ""                        "FAIL"           "manual+ratio60+accept: should fail (100% human, no default Accept)"
+
+# Reset ratio
+export KALLAX_AI_DELEGATION_RATIO=80
+
 echo ""
 echo "[Error handling]"
+# Reset KALLAX_MODE to default before error handling tests (parent shell state from last test_dispatch)
+export KALLAX_MODE="ai-copilot"
+
 # Missing --ticket
 if bash "$DISPATCH" --expertise "bash" 2>/dev/null; then
   echo "  ✗ missing --ticket should fail"
