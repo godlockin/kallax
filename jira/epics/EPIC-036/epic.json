@@ -1,0 +1,43 @@
+{
+  "id": "EPIC-036",
+  "phase": "PHASE-006",
+  "title": "跨 worktree 派单优化 (Phase 5 模式 G)",
+  "scope": "1. 写跨 worktree 派单脚本 cross-worktree-dispatch.sh\n2. 自动 cherry-pick / patch 传递 (1 Performer 完成后跨 worktree 给 2 Performer)\n3. 解决 Phase 5 模式 G 记录的 friction\n4. 集成 conductor/dispatch.sh 支持 --cross-worktree 选项",
+  "start_time": "2026-06-12",
+  "delivery_time": "2026-06-13",
+  "status": "active",
+  "baseline": {
+    "source": "PROJECT-STATUS-AND-LESSONS-2026-06-12.md §2.6 推荐 C (主公 2026-06-12 拍 Top 4 开工)",
+    "current_state": "1 Performer 完成后跨 worktree 给 2 Performer 用有 friction (Phase 5 模式 G)",
+    "gap": "需手动 cherry-pick / patch, 错位风险"
+  },
+  "target": {
+    "cross_worktree_dispatch_script": "scripts/conductor/cross-worktree-dispatch.sh 存在且可执行",
+    "auto_cherry_pick": "自动从源 worktree cherry-pick commits 到目标 worktree",
+    "patch_diff_pass": "git format-patch + git am 传递 (无冲突场景)",
+    "conflict_detection": "冲突时 STOP + 报告, 不自动 merge",
+    "integration_with_dispatch": "conductor/dispatch.sh 支持 --cross-worktree=<source_wt>"
+  },
+  "decisions": {
+    "priority": 1,
+    "rationale": "主公 2026-06-12 拍 Top 4 开工 (Gap #3)",
+    "phase": "PHASE-006",
+    "eket_origin": "Phase 5 模式 G (跨 worktree 派单 friction)"
+  },
+  "tickets": [
+    {
+      "id": "EPIC-036-A",
+      "title": "cross-worktree-dispatch.sh 实现 (TDD, auto cherry-pick + conflict detect)",
+      "assignee": "performer-EPIC-036",
+      "status": "pending",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-036-B",
+      "title": "dispatch.sh 集成 --cross-worktree 选项 + E2E 验证",
+      "assignee": "performer-EPIC-036",
+      "status": "pending",
+      "blocked_by": "EPIC-036-A"
+    }
+  ]
+}
