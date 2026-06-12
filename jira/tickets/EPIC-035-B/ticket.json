@@ -1,0 +1,29 @@
+{
+  "id": "EPIC-035-B",
+  "epicId": "EPIC-035",
+  "phaseId": "PHASE-006",
+  "title": "isolation:check 加 worktree_role 交叉 + L4 verify 脚本 (Rule 8)",
+  "type": "feature",
+  "priority": "P1",
+  "status": "pending",
+  "created_by": "master_main (Top 4 开工, 2026-06-12 拍)",
+  "created_at": "2026-06-12T00:00:00Z",
+  "blocked_by": "EPIC-035-A",
+  "worktree_role": "performer",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-035-B/",
+      "scripts/isolation/check.sh",
+      "scripts/verify/worktree-role.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/isolation/check.sh 加 worktree_role 交叉验证 (T1.worktree_role 跟 T2.worktree_role 兼容检测)",
+    "scripts/verify/worktree-role.sh 实现并可执行 (Rule 8 L4)",
+    "5 角色 (master/conductor/performer/auditor) 兼容性矩阵 PASS",
+    "tests/integration/worktree-role-isolation-test.sh PASS (跨 worktree 派单 mismatch → reject)",
+    "Rule 9 + Rule 12 PASS"
+  ],
+  "estimated_hours": 4
+}
