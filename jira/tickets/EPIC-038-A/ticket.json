@@ -1,0 +1,45 @@
+{
+  "id": "EPIC-038-A",
+  "epicId": "EPIC-038",
+  "phaseId": "PHASE-006",
+  "title": "Rule 15 + Performer sub-role schema (跟 EPIC-035-A 一起做)",
+  "type": "feature",
+  "priority": "P1",
+  "status": "pending",
+  "created_by": "master_main (主公 2026-06-12 拍 A, 5 能力研究 Q4 重大 Gap 40% 立即派)",
+  "created_at": "2026-06-12T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-038-A/",
+      "CLAUDE.md (Rule 15 章节)",
+      "scripts/conductor/dispatch.sh",
+      "jira/tickets/TICKET-TEMPLATE.md (handoff_depth 字段)",
+      "tests/integration/handoff-depth-test.sh",
+      "scripts/verify/handoff-depth.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "CLAUDE.md 加 Rule 15 章节 (跟 Rule 14 Anti-Hang 同级)",
+    "Rule 15 包含: 4 层接手 (L1/L2/L3/L4) + Performer sub-role + schema 扩展 + 容量 1+4 + 5 红线",
+    "ticket.json schema 扩 handoff_depth 字段 (enum: L1/L2/L3/L4)",
+    "TICKET-TEMPLATE.md 加 handoff_depth 字段 (跟 worktree_role 联动)",
+    "scripts/conductor/dispatch.sh 接受 handoff_depth 参数 (--handoff-depth=L1/L2/L3/L4)",
+    "tests/integration/handoff-depth-test.sh PASS (≥4 case: L1/L2/L3/L4 派单)",
+    "scripts/verify/handoff-depth.sh L4 存在可执行 (Rule 8)",
+    "Rule 9 9a/9b/9c/9d/9e PASS (3 anti-fab + 强验证)",
+    "Rule 12 质量 ensure PASS (audit 5 维度)"
+  ],
+  "estimated_hours": 8,
+  "l1_tactic_required": "拆 commit 为单 prompt (跟 EPIC-035-A 同模式, 防 hang)",
+  "master_strong_verification_after_completion": {
+    "L1": "git log --oneline -1 看 SHA 真变",
+    "L2": "git show HEAD:CLAUDE.md | grep 'Rule 15'",
+    "L3": "跑 tests/integration/handoff-depth-test.sh 看真 PASS (≥4 case)",
+    "L4": "跑 check-fact-forcing-preflight.sh + 4 anti-fab + Rule 14/15 10 验证",
+    "source": "Rule 11 v2.1 Master 强验证 6 维度 checklist"
+  }
+}
