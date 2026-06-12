@@ -1,0 +1,41 @@
+{
+  "id": "EPIC-038-B",
+  "epicId": "EPIC-038",
+  "phaseId": "PHASE-006",
+  "title": "4 类 Performer 实例 + 1+4 容量 + dispatch 4 派单模式 (跟 EPIC-036-A 一起做)",
+  "type": "feature",
+  "priority": "P1",
+  "status": "pending",
+  "created_by": "master_main (主公 2026-06-12 拍 A, EPIC-038-B 跟 EPIC-036-A 一起做)",
+  "created_at": "2026-06-12T00:00:00Z",
+  "blocked_by": "EPIC-038-A",
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-038-B/",
+      "scripts/conductor/dispatch.sh (扩 4 派单模式)",
+      "scripts/conductor/capacity-check.sh (1+4 容量)",
+      "tests/integration/performer-subrole-test.sh",
+      "tests/integration/capacity-1plus4-test.sh",
+      "scripts/verify/performer-subrole.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "4 类 Performer 实例 (跟 sub-role 联动):",
+    "  - analyst (L1, read-only, 1-2h)",
+    "  - incremental (L2, write-incremental, 2-3d)",
+    "  - major (L3, write-major + A+B review, 5-10d)",
+    "  - auditor (L4, cross-project + lessons, 1-2d)",
+    "scripts/conductor/dispatch.sh 4 派单模式: --handoff-depth=L1 → analyst, L2 → incremental, L3 → major, L4 → auditor",
+    "scripts/conductor/capacity-check.sh 实现 1+4 容量验证 (1 conductor + 4 Performer types, 动态 N)",
+    "tests/integration/performer-subrole-test.sh PASS (≥8 case: 4 类 × 2 mode)",
+    "tests/integration/capacity-1plus4-test.sh PASS (≥4 case: 1+2/1+4/1+6 容量)",
+    "scripts/verify/performer-subrole.sh L4 存在可执行 (Rule 8)",
+    "Rule 9 9a/9b/9c/9d/9e PASS",
+    "Rule 12 质量 ensure PASS"
+  ],
+  "estimated_hours": 8,
+  "l1_tactic_required": "拆 commit 为单 prompt (防 hang)"
+}
