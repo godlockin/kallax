@@ -1,0 +1,38 @@
+{
+  "id": "EPIC-039-C",
+  "epicId": "EPIC-039",
+  "phaseId": "PHASE-006",
+  "title": "Conductor merge feature → testing 真实流程 (跳过 R-NEW PR)",
+  "type": "feature",
+  "priority": "P0",
+  "status": "pending",
+  "created_by": "master_main (主公 2026-06-12 拍 B 立即派, BE-1 + BE-4 闭环)",
+  "created_at": "2026-06-12T00:00:00Z",
+  "blocked_by": "EPIC-039-B",
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-039-C/",
+      "scripts/conductor/merge-to-testing.sh (新, 真实 merge 流程)",
+      "scripts/verify/merge-checkpoint.sh (Rule 8 L4)",
+      "tests/integration/merge-flow-test.sh"
+    ],
+    "excludes": [
+      "scripts/conductor/dispatch.sh (不重写, 跟 review.sh 联动即可)"
+    ]
+  },
+  "acceptance_criteria": [
+    "scripts/conductor/merge-to-testing.sh 实现: 跑 review.sh (EPIC-039-B) 全 PASS → git merge feature → testing, 跟之前 testing→miao 流程一致",
+    "merge-to-testing.sh 跳过 R-NEW PR 模式 (跟 BE-1 + BE-4 闭环, 走 Conductor 直接 merge)",
+    "merge 后写 handoff.json (跟 master-handoff.sh 同模式, Conductor 续接管用)",
+    "merge 后写 .kallax/audit/decision-YYYY-MM-DD.jsonl (跟 Rule 13 联动)",
+    "merge 后自动 ticket 状态 → done (跟 EPIC-039-A 联动, ticket-status-sync.sh 触发)",
+    "tests/integration/merge-flow-test.sh PASS (≥4 case: review FAIL 不 merge / merge 成功 / merge 冲突 STOP / handoff 写入)",
+    "scripts/verify/merge-checkpoint.sh L4 存在可执行 (Rule 8)",
+    "Rule 9 9a/9b/9c/9d/9e PASS",
+    "Rule 12 质量 ensure PASS"
+  ],
+  "estimated_hours": 6,
+  "l1_tactic_required": "拆 commit 为单 prompt"
+}
