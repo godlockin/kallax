@@ -37,6 +37,23 @@ if [[ "$DECISION" == "override" ]] && [[ -z "$OVERRIDE_TO" ]]; then
   exit 1
 fi
 
+# EPIC-035-A: 验证 ticket.worktree_role 跟当前 worktree owner role 匹配
+# KALLAX_WORKTREE_ROLE: 当前 session role (performer/conductor/master/auditor)
+# ticket.worktree_role: ticket.json schema 字段, 标注此 ticket 应由哪个 role 执行
+# mismatch → veto (exit 2) + 报错, 防止 master 写代码 / performer 串到 conductor ticket
+WORKTREE_ROLE="${KALLAX_WORKTREE_ROLE:-performer}"
+# KALLAX_TICKETS_DIR: 测试用 env var 覆盖默认 tickets 目录 (默认 KALLAX_ROOT/jira/tickets)
+TICKETS_DIR="${KALLAX_TICKETS_DIR:-${KALLAX_ROOT}/jira/tickets}"
+TICKET_JSON="${TICKETS_DIR}/${TICKET_ID}/ticket.json"
+if [[ -f "$TICKET_JSON" ]]; then
+  TICKET_ROLE=$(grep -o '"worktree_role"[[:space:]]*:[[:space:]]*"[^"]*"' "$TICKET_JSON" | sed -E 's/.*"worktree_role"[[:space:]]*:[[:space:]]*"([^"]*)".*/\1/' | head -1)
+  if [[ -n "$TICKET_ROLE" ]] && [[ "$TICKET_ROLE" != "$WORKTREE_ROLE" ]]; then
+    echo "ERROR: worktree_role mismatch — ticket.worktree_role=$TICKET_ROLE but worktree owner=$WORKTREE_ROLE" >&2
+    echo "DISPATCH: ticket=$TICKET_ID decision=veto reason=worktree_role_mismatch ticket_role=$TICKET_ROLE owner_role=$WORKTREE_ROLE" >&2
+    exit 2
+  fi
+fi
+
 # 调 best-matching-slaver.sh 拿 ALGO_SUGGEST
 # 使用 KALLAX_TEST_FIXTURES=1 在 test/CI 环境下使用 fixtures
 SUGGEST=$(KALLAX_TEST_FIXTURES=1 bash "${KALLAX_ROOT}/scripts/agent/best-matching-slaver.sh" "$REQUIRED_EXPERTISE" 2>/dev/null | head -1)
