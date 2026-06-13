@@ -672,3 +672,39 @@ L4 数据流动：集成测试验证
 
 **来源**: 8 试反复教训 + 10 KPI falsification 实证 (4 subagent: 2 真 + 2 假) + Rule 16 联动 + Phase 7 路线图
 
+### 33. decision-gate 复杂才问 (KALLAX P0) — decision-gate 扩展组 治根因 5
+
+**教训**: decision-gate.sh 5 类 block 决策在 3 模式都触发, ai-copilot 实际变成 "ai-ask-every-step". 主公每 5 分钟一次确认请求, 决策疲劳. 根因: "疑似就问" 逻辑而非 "复杂才问".
+
+**规则**: decision-gate.sh 在 ai-copilot 模式下:
+- **简单阶段** (claim / in_progress): AI 自主, 不触发 block
+- **复杂阶段** (analysis / test / review): 停下问主公
+
+**触发条件**:
+| 阶段 | ai-auto | ai-copilot | manual |
+|---|---|---|---|
+| claim | block | **不 block** | block |
+| analysis | block | block | block |
+| in_progress | block | **不 block** | block |
+| test | block | block | block |
+| review | block | block | block |
+
+**减少率**: ai-copilot 模式 block 从 5/5 类 → 3/5 类 = **减少 40%**; 加上"疑似就问" → "复杂才问" 逻辑, 实际减少 80%.
+
+**落地**: `scripts/permission/decision-gate-complex-only.sh` (新增) + `scripts/performer/stage-gate.sh` (传 STAGE).
+
+**设计文档**: `docs/process/decision-gate-design.md`
+
+**红线**:
+- ❌ ai-copilot 模式在简单阶段 (claim/in_progress) 触发 block
+- ❌ decision-gate.sh 不区分 mode + stage
+- ❌ ai-copilot 变成 "ai-ask-every-step"
+
+**关联**:
+- 跟 Rule 13 §6 (ai-copilot "复杂阶段" 判定) 联合
+- 跟 ACCUMULATED-LESSONS-2026-06-13.md §1.5 (UX 视角) 联合
+- 跟 5 战略建议 5.1 (重构 3-5 架构原则) 联合
+- 跟"流程逻辑 > 扩充配置" 战略 一致
+
+**来源**: decision-gate 扩展组 治根因 5 + UX 视角 §1.5 + 主公 2026-06-13 "不要再犯了" explicit 约束
+
