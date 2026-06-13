@@ -115,6 +115,21 @@ if [ "${IN_WORKTREE}" = "false" ]; then
 fi
 
 # ============================================================
+# EPIC-044: Rule 22 Worktree Path Engineering Validation
+# Strategic suggestion 5.3: git worktree list + pwd verification
+# BE-13 lesson: 5 subagent out-of-bounds reverse, all worktree write + main checkout copy
+# ============================================================
+if [ -f "${KALLAX_ROOT}/../scripts/verify/worktree-path-check.sh" ]; then
+  if bash "${KALLAX_ROOT}/../scripts/verify/worktree-path-check.sh" >/dev/null 2>&1; then
+    : # PASS - worktree path validation OK
+  else
+    echo "[kallax] Rule 22 FAIL: worktree path validation failed" >&2
+    echo "[kallax] Run manually: bash scripts/verify/worktree-path-check.sh" >&2
+    # Don't block session_start, but warn
+  fi
+fi
+
+# ============================================================
 # ── Master Health Check (optimized: grep instead of jq) ─────────────────
 MASTER_STATE="${INSTANCES_DIR}/master_main/state.json"
 MASTER_NEEDS_TAKEOVER="false"

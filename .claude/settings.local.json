@@ -68,7 +68,9 @@
       "Bash(awk '{print $5, $9}')",
       "Bash(sqlite3 .kallax/data/kallax.db \"SELECT id, status, type FROM tasks;\")",
       "Bash(sqlite3 .kallax/data/kallax.db \"SELECT id, status, performer_id FROM tasks WHERE id='task_1780504522354_v81e27';\")",
-      "Bash(sqlite3 /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/node/.kallax/data/kallax.db \"SELECT id, title, status FROM tickets ORDER BY created_at DESC LIMIT 3;\")"
+      "Bash(sqlite3 /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/node/.kallax/data/kallax.db \"SELECT id, title, status FROM tickets ORDER BY created_at DESC LIMIT 3;\")",
+      "Bash(bash tests/integration/subagent-self-verify-test.sh)",
+      "Bash(chmod +x scripts/audit/subagent-pass-gate.sh scripts/audit/conductor-receive-gate.sh)"
     ]
   }
 }
