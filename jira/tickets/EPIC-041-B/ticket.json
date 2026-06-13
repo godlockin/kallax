@@ -1,0 +1,33 @@
+{
+  "id": "EPIC-041-B",
+  "epicId": "EPIC-041",
+  "phaseId": "PHASE-007",
+  "title": "文件级锁机制 (file-lock.sh, 跟 Rule 17 Step 1 联动, 痛点 6 治根)",
+  "type": "feature",
+  "priority": "P0",
+  "status": "done",
+  "created_by": "master_main (主公 2026-06-12 拍'召唤团队干活', Sprint 4 Wave 1)",
+  "created_at": "2026-06-12T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-041-B/",
+      "scripts/io/file-lock.sh",
+      "tests/integration/file-lock-test.sh",
+      "scripts/verify/file-lock.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/io/file-lock.sh 实现 (flock + 纯 bash 双模式, 锁获取 + 锁竞争 + 锁释放 + 超时 10s + with_lock + try + is_locked)",
+    "tests/integration/file-lock-test.sh 7/7 PASS (锁获取/竞争/释放/超时/with_lock/try/is_locked)",
+    "scripts/verify/file-lock.sh L4 12 PASS (Rule 8)",
+    "Rule 17 Step 1 落地 (跟痛点 6 表现 1 文件丢失 治根)",
+    "Rule 9 9a/9b/9c/9d/9e PASS (跟 Performer 报'PASS' 一致, M1 KPI 精确 X/Y 格式, 7/7 PASS=100.0%)",
+    "Rule 12 质量 ensure PASS"
+  ],
+  "estimated_hours": 6,
+  "status_set_by": "master_77704 (Rule 11 v2.1 强验证 6 维度, 跟 Performer-EPIC-041-C 同模式)"
+}
