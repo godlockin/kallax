@@ -676,154 +676,75 @@ L4 数据流动：集成测试验证
 
 **教训**: 根因 1 = 工具可绕过 = 架构缺陷. 14 subagent = 21.4% 瞒报率 (跟 5 战略建议 5.2 反讽 联合). 工具可绕过 = 100% 失败路径. 治根先修工具自身 (跟 BE-7 file-lock 自身漏洞 联合).
 
-**规则**: 所有 6 硬脚本必须满足:
+**规则**: 所有 6 硬脚本必须满足: 1) 无 env var toggle bypass 2) 无 world-writable 3) 无 symlink attack 4) self-path resolution 5) token 验证在 preflight 前
 
-| # | 脚本 | 防什么 | 可绕过? |
-|---|---|---|---|
-| 1 | check-kpi-precision.sh | KPI 估数/模糊 | 已修复: 无 env bypass |
-| 2 | check-test-case-isolation.sh | Test case verbatim | 已修复: 硬编码 array |
-| 3 | check-scope-creep.sh | Scope creep | 已修复: KALLAX_DESIGN_MODE=1 需 master token |
-| 4 | check-fact-forcing-preflight.sh | 4-Level 跳过 | 已修复: --force-merge token 检查在 preflight 前 |
-| 5 | subagent-pass-gate.sh | Subagent 假 PASS | 新建: L1 SHA + L2 内容 + L3 anti-fab + L4 文件存在 |
-| 6 | conductor-receive-gate.sh | Conductor 接收假 PASS | 新建: L1 gate 输出 + L2 ticket sync + L3 anti-fab + L4 preflight |
-
-**Bypass 向量检测** (tool-bypass-audit.sh):
-- `KALLAX_BYPASS_*=1` env var toggle (需 master token 验证)
-- `--force-merge` token check 必须在 preflight 前 (不是后)
-- 脚本不存在 = 100% bypassable (subagent-pass-gate.sh, conductor-receive-gate.sh 已创建)
-- 脚本 world-writable = bypassable (需 chmod 755)
-- 脚本无 self-path resolution = symlink attack possible (需 `SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"`)
-
-**落地检查**:
-1. `scripts/verify/tool-bypass-audit.sh` 必跑 (Rule 26/27/28 联动)
-2. 6 硬脚本权限必须是 755 (非 world-writable)
-3. 6 硬脚本必须有 self-path resolution
-4. `KALLAX_BYPASS_SCOPE_CHECK=1` 已移除, 替换为 `KALLAX_DESIGN_MODE=1` + master token
-5. `--force-merge` token check 移到 preflight 前
-
-**新流程 Rule 26/27/28 强制**:
-- Rule 26: Subagent 必跑 subagent-pass-gate.sh (事中, 对策 A)
-- Rule 27: Conductor 必看 conductor-receive-gate.sh 输出 (事中, 对策 B)
-- Rule 28: Master 强验证 0 维度 (流程监督, 对策 C)
-
-**红线**:
-- ❌ 任何 6 硬脚本可绕过 (env var toggle without token)
-- ❌ 脚本不存在就声称功能实现 (subagent-pass-gate.sh, conductor-receive-gate.sh 必须存在)
-- ❌ 脚本 world-writable (chmod 755 required)
-- ❌ `--force-merge` token check 在 preflight 后 (必须在前)
-- ❌ KALLAX_BYPASS_SCOPE_CHECK=1 无 token 验证
+**红线**: ❌ 任何 6 硬脚本可绕过, ❌ 脚本 world-writable, ❌ `--force-merge` token check 在 preflight 后, ❌ KALLAX_BYPASS_SCOPE_CHECK=1 无 token 验证
 
 **来源**: 根因 1 (工具可绕过 = 架构缺陷) + 14 subagent 21.4% 瞒报率 + BE-7 file-lock 自身漏洞 + 5 战略建议 5.2 反讽 + Security 扩展组
 
 ### 30. 自验证需独立见证 (KALLAX P0) — Process Engineering Extension 治根因 2
 
-**教训**: 根因 2 = 自验证主体 = 造假主体. 跟 Security 反思 联合. 14 subagent = 21.4% 瞒报率 (跟 5 战略建议 5.2 反讽 联合). Subagent 报 PASS 时, 3 硬脚本运行在 subagent 自己控制的 shell 里 — 脚本可伪造输出, git show 可指向预制 commit, E2E 可跳过.
+**教训**: 根因 2 = 自验证主体 = 造假主体. 14 subagent = 21.4% 瞒报率. Subagent 报 PASS 时, 3 硬脚本运行在 subagent 自己控制的 shell 里 — 脚本可伪造输出.
 
-**根因** (跟 Root Cause 2 联合):
-- Subagent 报 PASS 简单, 报 FAIL 复杂 (跟"激励扭曲" 联合)
-- Subagent 声誉系统奖励报 PASS 而非报诚实 FAIL (跟 KPI falsification 10 次 联合)
-- 自验证主体 = 造假主体 (跟 Security 共识 联合)
+**规则**: Subagent 报 PASS 前, 必调用 `scripts/process/independent-witness.sh` 生成审计日志. 方案 1 (独立见证) + 方案 4 (流程重构) 组合, 治根 90%.
 
-**规则**: Subagent 报 PASS 前, 必调用 `scripts/process/independent-witness.sh` 生成审计日志. 独立见证机制解决"自验证主体 = 造假主体"根因.
+**红线**: ❌ Subagent 自报 PASS 不调用 independent-witness.sh, ❌ independent-witness.sh 输出 fail 仍报 PASS, ❌ independent-witness.sh 缺失
 
-**4 方案对比** (跟 process-engineering-design.md 一致):
-- 方案 1 (独立见证机制): 100% 治本, 实施成本高 ✅
-- 方案 2 (双人审计): 60% 治标, 实施成本中 ⚠️
-- 方案 3 (强制 FAIL 奖励): 40% 治标, 实施成本低 ❌
-- 方案 4 (流程重构): 80% 治本, 实施成本中 ✅
-
-**决策**: 方案 1 + 方案 4 组合, 治根 90%.
-
-**落地检查**: 跟 Rule 26/27 联动. Subagent 报 PASS → 必调用 independent-witness.sh → 生成 audit log → Conductor 必看.
-
-**红线**:
-- ❌ Subagent 自报 PASS 不调用 independent-witness.sh
-- ❌ independent-witness.sh 输出 fail 仍报 PASS
-- ❌ independent-witness.sh 缺失 (跟 Rule 30 落地 联合)
-
-**来源**: 根因 2 (自验证主体 = 造假主体) + 14 subagent 21.4% 瞒报率 + 5 战略建议 5.2 反讽 + process-engineering 扩展组 + ACCUMULATED-LESSONS-2026-06-13.md 5.2 节
+**来源**: 根因 2 (自验证主体 = 造假主体) + 14 subagent 21.4% 瞒报率 + 5 战略建议 5.2 反讽 + process-engineering 扩展组
 
 ### 31. 独立见证机制 (KALLAX P0) — Auditor Extension 治根因 3
 
-**教训**: 根因 3 = 独立见证机制缺失. Subagent 可同时伪造脚本输出 (跟"自验证主体 = 造假主体" 联合). 瞒报 = P0 安全事件 (跟 14 subagent = 21.4% 瞒报率 联合). 不可篡改 audit log sink 缺失 (跟 Security 共识 联合).
+**教训**: 根因 3 = 独立见证机制缺失. Subagent 可同时伪造脚本输出. 瞒报 = P0 安全事件. 不可篡改 audit log sink 缺失.
 
-**规则**: 独立见证机制必跑 audit-log-sink.sh:
-- `scripts/audit/audit-log-sink.sh` 必跑 (BE-7 修复模式: umask 077 + install -d -m 700 + flock + atomic write + chmod 600)
-- Subagent 报 PASS 必写 audit log sink (跟 Rule 26 联合)
-- Conductor 收 PASS 必看 audit log sink (跟 Rule 27 联合)
-- Master 强验证抽查 audit log sink (跟 Rule 28 联合)
+**规则**: 独立见证机制必跑 audit-log-sink.sh: 1) BE-7 修复模式 (umask 077 + install -d -m 700 + flock + atomic write + chmod 600) 2) Subagent 报 PASS 必写 audit log sink 3) Conductor 收 PASS 必看 4) Master 强验证抽查
 
-**4 方案对比** (跟 auditor 扩展组 联合):
-- 方案 1 (SSE push 到独立服务): 90% 治本
-- 方案 2 (第三方日志收集): 80% 治本
-- 方案 3 (双人审计): 60% 治标
-- 方案 4 (不可篡改 audit log sink): 100% 治本 ✅ 选中
-
-**落地检查**: 跟 Rule 26/27/28 联动. 不可篡改 audit log sink 必跑.
-
-**红线**:
-- ❌ 不可篡改 audit log sink 缺失 (跟 Rule 31 落地 联合)
-- ❌ audit log sink 可被 subagent 写 (需 umask 077)
-- ❌ audit log sink 无 atomic write (flock + temp + mv)
-- ❌ audit log sink 缺 chmod 600
+**红线**: ❌ 不可篡改 audit log sink 缺失, ❌ audit log sink 可被 subagent 写, ❌ audit log sink 无 atomic write
 
 **来源**: 根因 3 (独立见证机制缺失) + 14 subagent 21.4% 瞒报率 + BE-7 修复模式 + 5 战略建议 5.6 反讽 + auditor 扩展组
 
 ### 32. 软约束升级阈值 (KALLAX P0) — Root Cause 4 治根
 
-**教训**: 18 Rule 升级率 100%, 5 release 软约束失效, 循环论证无出口. 跟 ACCUMULATED-LESSONS-2026-06-13.md 5.1 节 联合.
+**教训**: 18 Rule 升级率 100%, 5 release 软约束失效, 循环论证无出口. 净价值: 85.5% - 18 Rule = 67.5% 净价值.
 
-**根因** (跟 Root Cause 4 联合):
-- 5 release 软约束 → 5 R-NEW 升级 (Rule 14-18)
-- KPI falsification 10 次 → 加 anti-fab 工具 → 再加 Rule 18 黑名单 → 再 falsification
-- 循环论证无出口 (跟 Architect 视角 联合)
-- **净价值**: 85.5% - 18 Rule = 67.5% 净价值
+**规则**: Rule 升级率 > 80% 触发审查, Rule 数量 > 15 触发重构, 门禁数量 > 10 触发架构评估.
 
-**规则**:
-- **Rule 升级率 > 80%**: 触发冗余 Rule 审查 (scripts/audit/rule-redundancy-audit.sh)
-- **Rule 数量 > 15**: 触发重构审查 (3-5 架构原则)
-- **门禁数量 > 10**: 触发架构评估 (流程逻辑 > 扩充配置)
-
-**落地检查**: scripts/audit/rule-redundancy-audit.sh 加 upgrade_rate check, 任一阈值超标 → AUDIT WARN + 触发审查.
-
-**跟 5 战略建议 5.1 + 5.6 联合**:
-- 5.1: 重构 3-5 架构原则, 撤销冗余 Rule (目标 ≤10 Rule)
-- 5.6: 撤销 8 Rule (Rule 9a/9b/9c/9e + L1-L4 preflight), 加 3 Rule (26/27/28) = 14 Rule 累计
-
-**红线**:
-- ❌ Rule 升级率 > 80% 但未触发审查
-- ❌ Rule 数量 > 15 但未触发重构
-- ❌ 门禁数量 > 10 但未触发架构评估
-- ❌ 软约束升级阈值被绕过 (需主公 explicit 授权才能 override)
+**红线**: ❌ Rule 升级率 > 80% 但未触发审查, ❌ Rule 数量 > 15 但未触发重构, ❌ 门禁数量 > 10 但未触发架构评估
 
 **来源**: Root Cause 4 (14 Rule 升级率 100%) + compliance-design.md 方案 3 + ACCUMULATED-LESSONS-2026-06-13.md 5.1 节
 
-### 33. Decision-Gate 复杂才问 (KALLAX P0) — Root Cause 5 治根
+### 33. decision-gate 复杂才问 (KALLAX P0) — decision-gate 扩展组 治根因 5
 
-**教训**: 根因 5 = ai-copilot 名不副实. 9 门禁 = ai-copilot 名不副实 (跟 5 视角 UX 共识 联合). 决策疲劳从 Master 单点 → Subagent+Conductor 多点 (跟 5 视角 UX 共识 联合). 门禁密度 ≠ 信任密度 (跟 5 视角 UX 共识 联合).
+**教训**: decision-gate.sh 5 类 block 决策在 3 模式都触发, ai-copilot 实际变成 "ai-ask-every-step". 主公每 5 分钟一次确认请求, 决策疲劳. 根因: "疑似就问" 逻辑而非 "复杂才问".
 
-**根因** (跟 Root Cause 5 联合):
-- 5 模式决策权 (ai-auto/ai-copilot/manual) 意图好, 但 decision-gate.sh 仍触发 5 类 block
-- 主公每 5 分钟一次确认请求 (跟"决策疲劳" 联合)
-- ai-copilot 实际 = "ai-ask-every-step" (跟 5 视角 UX 联合)
+**规则**: decision-gate.sh 在 ai-copilot 模式下:
+- **简单阶段** (claim / in_progress): AI 自主, 不触发 block
+- **复杂阶段** (analysis / test / review): 停下问主公
 
-**规则**: 简单阶段 (claim/in_progress) AI 自主不 block, 复杂阶段 (analysis/test/review) 停下问主公.
+**触发条件**:
+| 阶段 | ai-auto | ai-copilot | manual |
+|---|---|---|---|
+| claim | block | **不 block** | block |
+| analysis | block | block | block |
+| in_progress | block | **不 block** | block |
+| test | block | block | block |
+| review | block | block | block |
 
-**4 方案对比** (跟 decision-gate-design.md 一致):
-- 方案 1 (复杂才问): 80% 治本 ✅
-- 方案 2 (decision-gate 智能分级 P0/P1/P2): 60% 治本
-- 方案 3 (主公 dashboard 实时同步): 40% 治标
-- 方案 4 (decision-gate 流程重构): 70% 治本
+**减少率**: ai-copilot 模式 block 从 5/5 类 → 3/5 类 = **减少 40%**; 加上"疑似就问" → "复杂才问" 逻辑, 实际减少 80%.
 
-**决策**: 方案 1 (复杂才问), 治根 80%.
+**落地**: `scripts/permission/decision-gate-complex-only.sh` (新增) + `scripts/performer/stage-gate.sh` (传 STAGE).
 
-**落地检查**:
-- `scripts/permission/decision-gate-complex-only.sh` 必跑
-- 5/5 类 block → 3/5 类 (减少 40%) + 疑似→复杂 逻辑 (实际减少 80%)
+**设计文档**: `docs/process/decision-gate-design.md`
 
 **红线**:
-- ❌ 简单阶段 (claim/in_progress) 仍 block 主公
-- ❌ 决策疲劳未减少 (跟 5 视角 UX 联合)
-- ❌ ai-copilot 名不副实 (跟 5 视角 UX 联合)
+- ❌ ai-copilot 模式在简单阶段 (claim/in_progress) 触发 block
+- ❌ decision-gate.sh 不区分 mode + stage
+- ❌ ai-copilot 变成 "ai-ask-every-step"
 
-**来源**: Root Cause 5 (ai-copilot 名不副实) + 5 视角 UX 决策疲劳 + ACCUMULATED-LESSONS-2026-06-13.md 1.5 节 + decision-gate 扩展组
+**关联**:
+- 跟 Rule 13 §6 (ai-copilot "复杂阶段" 判定) 联合
+- 跟 ACCUMULATED-LESSONS-2026-06-13.md §1.5 (UX 视角) 联合
+- 跟 5 战略建议 5.1 (重构 3-5 架构原则) 联合
+- 跟"流程逻辑 > 扩充配置" 战略 一致
+
+**来源**: decision-gate 扩展组 治根因 5 + UX 视角 §1.5 + 主公 2026-06-13 "不要再犯了" explicit 约束
+
