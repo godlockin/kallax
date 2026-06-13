@@ -5,7 +5,7 @@
   "title": "升 Token Plan 档 + ticket 状态自动同步机制 (跟 subagent 报告联动)",
   "type": "feature",
   "priority": "P0",
-  "status": "pending",
+  "status": "done",
   "created_by": "master_main (主公 2026-06-12 拍 B 立即派 Sprint 4)",
   "created_at": "2026-06-12T00:00:00Z",
   "blocked_by": null,
@@ -32,5 +32,8 @@
     "Rule 12 质量 ensure PASS (audit 5 维度)"
   ],
   "estimated_hours": 6,
-  "l1_tactic_required": "拆 commit 为单 prompt (跟 EPIC-035-A 同模式, 防 hang)"
+  "l1_tactic_required": "拆 commit 为单 prompt (跟 EPIC-035-A 同模式, 防 hang)",
+  "last_modified_by": "master_77704 (Rule 11 v2.1 强验证 6 维度, 跟 Performer-EPIC-039-D BLOCKED 报告闭环)",
+  "last_modified_at": "2026-06-13T02:49:29Z",
+  "last_modified_reason": "Master Rule 11 v2.1 强验证: 实际工作已落地 (5 文件 6/6 PASS, BE-6 越界标). 之前 Master 修 done 没 merge (跟 subagent 之前报'ticket 状态脱节' 同根). 现在重新修, 触发 EPIC-039-B claim + EPIC-039-D BLOCKED 解除."
 }
