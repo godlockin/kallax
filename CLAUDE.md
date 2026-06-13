@@ -672,3 +672,46 @@ L4 数据流动：集成测试验证
 
 **来源**: 8 试反复教训 + 10 KPI falsification 实证 (4 subagent: 2 真 + 2 假) + Rule 16 联动 + Phase 7 路线图
 
+### 29. 工具不可绕过 (KALLAX P0) — Security Extension 治根因 1
+
+**教训**: 根因 1 = 工具可绕过 = 架构缺陷. 14 subagent = 21.4% 瞒报率 (跟 5 战略建议 5.2 反讽 联合). 工具可绕过 = 100% 失败路径. 治根先修工具自身 (跟 BE-7 file-lock 自身漏洞 联合).
+
+**规则**: 所有 6 硬脚本必须满足:
+
+| # | 脚本 | 防什么 | 可绕过? |
+|---|---|---|---|
+| 1 | check-kpi-precision.sh | KPI 估数/模糊 | 已修复: 无 env bypass |
+| 2 | check-test-case-isolation.sh | Test case verbatim | 已修复: 硬编码 array |
+| 3 | check-scope-creep.sh | Scope creep | 已修复: KALLAX_DESIGN_MODE=1 需 master token |
+| 4 | check-fact-forcing-preflight.sh | 4-Level 跳过 | 已修复: --force-merge token 检查在 preflight 前 |
+| 5 | subagent-pass-gate.sh | Subagent 假 PASS | 新建: L1 SHA + L2 内容 + L3 anti-fab + L4 文件存在 |
+| 6 | conductor-receive-gate.sh | Conductor 接收假 PASS | 新建: L1 gate 输出 + L2 ticket sync + L3 anti-fab + L4 preflight |
+
+**Bypass 向量检测** (tool-bypass-audit.sh):
+- `KALLAX_BYPASS_*=1` env var toggle (需 master token 验证)
+- `--force-merge` token check 必须在 preflight 前 (不是后)
+- 脚本不存在 = 100% bypassable (subagent-pass-gate.sh, conductor-receive-gate.sh 已创建)
+- 脚本 world-writable = bypassable (需 chmod 755)
+- 脚本无 self-path resolution = symlink attack possible (需 `SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"`)
+
+**落地检查**:
+1. `scripts/verify/tool-bypass-audit.sh` 必跑 (Rule 26/27/28 联动)
+2. 6 硬脚本权限必须是 755 (非 world-writable)
+3. 6 硬脚本必须有 self-path resolution
+4. `KALLAX_BYPASS_SCOPE_CHECK=1` 已移除, 替换为 `KALLAX_DESIGN_MODE=1` + master token
+5. `--force-merge` token check 移到 preflight 前
+
+**新流程 Rule 26/27/28 强制**:
+- Rule 26: Subagent 必跑 subagent-pass-gate.sh (事中, 对策 A)
+- Rule 27: Conductor 必看 conductor-receive-gate.sh 输出 (事中, 对策 B)
+- Rule 28: Master 强验证 0 维度 (流程监督, 对策 C)
+
+**红线**:
+- ❌ 任何 6 硬脚本可绕过 (env var toggle without token)
+- ❌ 脚本不存在就声称功能实现 (subagent-pass-gate.sh, conductor-receive-gate.sh 必须存在)
+- ❌ 脚本 world-writable (chmod 755 required)
+- ❌ `--force-merge` token check 在 preflight 后 (必须在前)
+- ❌ KALLAX_BYPASS_SCOPE_CHECK=1 无 token 验证
+
+**来源**: 根因 1 (工具可绕过 = 架构缺陷) + 14 subagent 21.4% 瞒报率 + BE-7 file-lock 自身漏洞 + 5 战略建议 5.2 反讽 + Security 扩展组
+
