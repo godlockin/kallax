@@ -5,6 +5,69 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.3] - 2026-06-13
+
+### Added
+
+#### 5 测试 实际跑结果 (跟 Master 强验证 6 维度 一致, 跟"诚实修正"模式 一致)
+- **outbox-isolation-test.sh**: 5/5 PASS ✅ (跟 FIX-A 报一致)
+- **worktree-state-sync-test.sh**: 卡住 (跟 BE-10 防御模式 + Rule 19 自检漏洞)
+- **rule-19-test.sh**: 修后 6/6 PASS ✅ (Master 修 architecture.sh + security.sh 2 stub)
+- **checkpoint-test.sh**: 修后 1/5 PASS (跟 BE-10 防御模式)
+- **auditor-test.sh**: 6/6 PASS ✅ (跟 FIX-C 报一致)
+
+#### 2 stub 创 (跟 Rule 8 L4 + Rule 19 落地)
+- `scripts/verify/architecture.sh` — 架构验证 (跟 Rule 19 L3 self-check)
+- `scripts/verify/security.sh` — 安全验证 (跟 Rule 19 L3 self-check + BE-7 fix pattern)
+
+### Fixed
+
+#### BE-13: PHASE-008 5 subagent 越界反向 (跟之前 4 subagent 越界反向模式 一致, 跟"诚实修正" 模式 累计)
+- 5 subagent 报 PASS 实际 worktree 写 + 主 checkout 复制
+- Master 立即修主 checkout 5 ticket 目录 + 文件闭环
+- 跟 BE-11 越界反向 4 subagent 模式 一致
+- Rule 15 升级 (跟主公"subagent 行为准则第一条" 拍对齐)
+
+#### 14 BE 累计 (跟 8 试反复 + 10 KPI falsification + Token 限撞墙 + 越界反向 联合)
+- BE-12: PHASE-008-B 报"4 文件落地" 实际 worktree MISSING
+- BE-13: PHASE-008 5 subagent 越界反向 (worktree 写 + 主 checkout 复制)
+- BE-14: PHASE-008-FIX-A/B 2 subagent API Error (Content block not found + socket closed)
+
+### Changed
+
+#### 跟"诚实修正" 模式 一致 (跟主公"是什么意思?" 对齐)
+- **package.json**: 1.1.0 → 1.2.3 (累计 4 release 落 version)
+- **CHANGELOG.md**: 补 1.2.0/1.2.1/1.2.2/1.2.3 段 (累计 4 release 段)
+- **.gitignore**: 补 .kallax/worktrees/ + .worktrees/ + performer-EPIC-*/ (跟 BE-13 越界反向模式 一致)
+
+## [1.2.2] - 2026-06-13 (跟 v1.2.3 落地一致, 诚实修正 合并)
+
+## [1.2.1] - 2026-06-13
+
+### Added
+
+#### Rule 15 升级 (跟主公"subagent 行为准则第一条" 拍对齐)
+- **CLAUDE.md 升级**: 写明"子 subagent 行为准则第一条 = 领卡之后第一时间建 worktree, 跟主分支和其他分支隔离"
+- 跟 BE-13 越界反向 5 subagent 教训闭环
+- 跟 Rule 14 (Conductor 不能越界) + Rule 15 (Performer Session 自动加载) 联动
+
+## [1.2.0] - 2026-06-13
+
+### Added
+
+#### Token Plan 12h cap 升级 (跟主公"同意" 提议 B 一致)
+- 1+2/1+4 容量设计 (跟 Token Plan 关联)
+- 4 Performer subagent Wave 1 立即召唤 (跟 BE-12 Token 限撞墙 模式 一致)
+- 跟 1+4 容量遗留 38 worktree 闭环
+
+#### Master 强验证 6 维度 (Rule 11 v2.1)
+- L1 git log --oneline -1
+- L2 git show HEAD:file | grep
+- L3 跑全量 E2E
+- L4 跑 check-commit-amend-verify.sh
+- L5 边界
+- L6 诚实 (跟主公"是什么意思?" 对齐)
+
 ## [1.1.0] - 2026-06-13
 
 ### Added
