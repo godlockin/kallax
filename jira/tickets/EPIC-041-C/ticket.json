@@ -1,0 +1,38 @@
+{
+  "id": "EPIC-041-C",
+  "epicId": "EPIC-041",
+  "phaseId": "PHASE-007",
+  "title": "原子写机制 (atomic-write.sh, 跟 Rule 17 Step 2 联动, 痛点 6 治根)",
+  "type": "feature",
+  "priority": "P0",
+  "status": "done",
+  "created_by": "master_main (主公 2026-06-12 拍'召唤团队干活', Sprint 4 Wave 1)",
+  "created_at": "2026-06-12T00:00:00Z",
+  "blocked_by": "EPIC-041-B",
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-041-C/",
+      "scripts/io/atomic-write.sh",
+      "scripts/verify/atomic-write.sh",
+      "tests/integration/atomic-write-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/io/atomic-write.sh 实现 (写临时文件 + SHA256 + mv 原子替换)",
+    "tests/integration/atomic-write-test.sh 6/6 PASS (跟 subagent 报告)",
+    "scripts/verify/atomic-write.sh L4 存在可执行 (Rule 8)",
+    "Rule 17 Step 2 落地 (跟痛点 6 写半截防护)",
+    "Rule 9 9a/9b/9c/9d/9e PASS",
+    "Rule 12 质量 ensure PASS"
+  ],
+  "estimated_hours": 6,
+  "status_set_by": "master_77704 (Rule 11 v2.1 强验证 6 维度, 跟 Performer-EPIC-036/037 假 PASS 防御模式一致)",
+  "claimed_by": "performer-EPIC-041-C (subagent, run_in_background)",
+  "claimed_at": "2026-06-13T01:00:00Z",
+  "last_modified_by": "master_77704 (Rule 11 v2.1 强验证 6 维度, 跟 Performer-EPIC-036/037 假 PASS 防御模式)",
+  "last_modified_at": "2026-06-13T01:56:56Z",
+  "last_modified_reason": "Master Rule 11 v2.1 强验证: commit 18f4c59 真 + 3 文件 (251+105+270 行) 全存在 + 测试 6/6 PASS. 接受 PASS 报告 (跟 Performer-EPIC-035 同模式, 跟 Performer-EPIC-036/037 假 PASS 反例)."
+}
