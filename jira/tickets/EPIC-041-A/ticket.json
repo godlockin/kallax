@@ -5,7 +5,7 @@
   "title": "痛点 6 调查扩展 (跟 Wave 1+2 联动, 闭环 5 Why 调查)",
   "type": "investigation",
   "priority": "P0",
-  "status": "in_progress",
+  "status": "done",
   "created_by": "master_main (PHASE-007 Sprint 4 Wave 3 派单)",
   "created_at": "2026-06-12T17:30:00Z",
   "blocked_by": null,
@@ -49,5 +49,11 @@
     "be7": "Performer-EPIC-041-B 3 安全 issues (痛点 5 强化)"
   },
   "claimed_by": "performer-EPIC-041-A",
-  "claimed_at": "2026-06-13T10:45:00Z"
+  "claimed_at": "2026-06-13T10:45:00Z",
+  "completed_by": "performer-EPIC-041-A",
+  "completed_at": "2026-06-13T03:23:12Z",
+  "commit_sha": "4b7659a",
+  "last_modified_by": "performer-EPIC-041-A",
+  "last_modified_at": "2026-06-13T03:23:12Z",
+  "last_modified_reason": "Performer 完工: EPIC-041-A 4h, 痛点 6 调查扩展 (5 Why + 6 实战证据 + 7 BE + 4 表现), 跟 BE-6/BE-7 闭环"
 }
