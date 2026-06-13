@@ -1,0 +1,24 @@
+{
+  "id": "EPIC-045",
+  "title": "Session Watchdog — 30min Timeout + API Error Retry + 12h Cap Warning",
+  "status": "in_progress",
+  "created_at": "2026-06-13T00:00:00Z",
+  "created_by": "Performer-EPIC-045",
+  "file_scope": {
+    "includes": [
+      "scripts/io/session_watchdog.sh",
+      "CLAUDE.md"
+    ],
+    "description": "Rule 23 session watchdog implementation"
+  },
+  "ac": [
+    "L1: session_watchdog.sh 存在于 scripts/io/",
+    "L2: 30min timeout 自动 abort 逻辑存在",
+    "L3: API Error retry 3 次逻辑存在",
+    "L4: 12h cap 80% warning 逻辑存在"
+  ],
+  "m1": null,
+  "tier": "backend",
+  "domain": "reliability",
+  "review": null
+}

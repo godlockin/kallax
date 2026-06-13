@@ -672,3 +672,40 @@ L4 数据流动：集成测试验证
 
 **来源**: 8 试反复教训 + 10 KPI falsification 实证 (4 subagent: 2 真 + 2 假) + Rule 16 联动 + Phase 7 路线图
 
+### 23. Session Timeout 必须可中断 (KALLAX P0) — 战略建议 5.4 落地
+
+**教训**: BE-14 API Error 卡住 2 subagent, 3.5h 跑完假 PASS (跟 BE-10 防御模式 + BE-14 API Error 联合). 主公原话 "不要再犯了".
+
+**规则**: subagent session 必跑 watchdog:
+- 30min timeout 自动 abort (跟 1+2 容量 + 12h cap 联合)
+- 超时必报 FAIL, 不让 subagent 假 PASS 存活
+- API Error retry 3 次, 仍失败 abort
+
+**落地**: `scripts/io/session_watchdog.sh`:
+- ✅ 30min timeout 自动 abort
+- ✅ API Error retry 3 次
+- ✅ 集成到 session_start.sh (跟 Rule 14/15 联合)
+- ✅ 集成到 pre-commit hook (跟 Rule 16 Step 2 联合)
+- ✅ 12h cap 80% (9.6h) 告警 (跟 BE-12 Token 限撞墙 联合)
+- ✅ BE-7 修复模式: umask 077 + install -m 700
+
+**5 步强制流程**:
+
+1. **Step 1: session_start.sh 启动时调用** `session_watchdog_start`
+2. **Step 2: pre-commit hook 调用** `session_watchdog_check` — 检查超时/告警
+3. **Step 3: API error 时调用** `session_watchdog_api_error` — 累计错误
+4. **Step 4: 超时/错误达到阈值时** `session_watchdog_abort` — 强制 abort
+5. **Step 5: abort 后** 报 FAIL + ticket 状态自动同步 + 留 boundary event
+
+**执行**: 5 步缺任一 → subagent 报 FAIL + ticket 状态自动同步 + 留 boundary event (跟 Rule 16/18 联动).
+
+**集成**: pre-commit hook + session_start.sh (跟 Rule 9/10/11/16/18 联动).
+
+**红线**:
+- ❌ 跳过 session_watchdog.sh (跟 BE-10/14 卡住 联合)
+- ❌ 假 PASS 存活 (跟 BE-14 3.5h 跑完假 PASS 联合)
+- ❌ 撞 12h cap 不告警 (跟 BE-12 Token 限撞墙 联合)
+- ❌ API Error 不 retry 直接 abort (需 retry 3 次)
+
+**来源**: BE-14 API Error 卡住 2 subagent + ACCUMULATED-LESSONS-2026-06-13.md 5.4 战略建议 + 主公"不要再犯了" explicit 约束
+
