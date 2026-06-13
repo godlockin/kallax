@@ -540,13 +540,32 @@ L4 数据流动：集成测试验证
 - 自动加载当前 ticket 上下文 + worktree + AC 列表
 - 持续工作 4-6h 真实开发 + 报 PASS 给 Conductor inbox
 
-**红线**:
+**🚨 行为准则第一条 (主公 2026-06-13 拍)** — 跟 BE-13 越界反向 5 subagent 教训闭环:
+
+**子 subagent 行为准则第一条 = 领卡之后第一时间建 worktree, 跟主分支和其他分支隔离** (主公 2026-06-13 原话).
+
+- ✅ **领卡后第一时间**: `git worktree add -b feature/<TICKET>-<name> .kallax/worktrees/performer-<TICKET>-<name> miao`
+- ✅ **跟主分支 (miao) 隔离**: worktree 是基于 miao 创建的 feature 分支, 不在 miao 主 checkout 写
+- ✅ **跟其他分支隔离**: 每个 Performer session 独立 worktree, 跨 worktree 不直接共享文件
+- ✅ **所有写操作都在 worktree 里**: 实施 + 测试 + verify + commit + push 都在 worktree
+- ✅ **主 checkout 缺文件 (跟 BE-11 越界反向模式一致)**: Master 立即修主 checkout 闭环
+
+**红线** (跟主公"subagent 行为准则第一条"对齐, 跟 BE-13 越界反向 5 subagent 教训闭环):
+- ❌ **Performer session 跳过 worktree 直接写 miao 主 checkout** (跟 BE-6 越界模式)
+- ❌ **Performer session 在主 checkout 写文件 (即使 worktree 已有)** (跟 BE-11/BE-13 越界反向模式, 跟 9 subagent 越界反向教训)
+- ❌ **Performer session 跳 worktree 写 miao** (跟主公"subagent 行为准则第一条"硬冲突)
 - ❌ Performer session 跳 session_start.sh 直接跑 (无 CLAUDE.md + ROLE-RULES + ticket 上下文)
 - ❌ Conductor session 跑 Performer 实施 (撞 Rule 14 + 模式 G)
 - ❌ Performer session 跑 Conductor 工作 (拆卡 / merge / review)
 - ❌ 角色混淆 (Conductor 写代码 / Performer 拆卡 / Master 实施)
 
-**来源**: R-NEW 升级红线 (2026-06-12 主公原话)
+**跟 BE-13 实战教训联合** (跟 PHASE-008 retry 5 subagent 集体越界反向 闭环):
+- BE-13: PHASE-008 retry 5 subagent 集体越界反向 (worktree 写 + 主 checkout 复制, 跟 BE-11 模式一致)
+- 5 subagent 都被 Master 强验证 6 维度发现越界反向, 跟之前 4 subagent (Performer-EPIC-039-B + 041-A) 越界反向模式一致
+- Master 立即修主 checkout 5 ticket 目录 + 文件闭环 (跟之前 4 subagent 越界反向修复模式一致)
+- 升级路径: 跟主公"subagent 行为准则第一条"对齐, 跟 BE-13 实战教训闭环, 跟 Rule 14/15 R-NEW 升级红线 联动
+
+**来源**: R-NEW 升级红线 (2026-06-12 主公原话) + 主公 2026-06-13 "subagent 行为准则第一条" 强化 (跟 BE-13 越界反向 5 subagent 教训闭环)
 
 ### 16. Subagent 5 步强制流程 (KALLAX P0) — Phase 7 R-NEW 升级红线
 
