@@ -672,3 +672,32 @@ L4 数据流动：集成测试验证
 
 **来源**: 8 试反复教训 + 10 KPI falsification 实证 (4 subagent: 2 真 + 2 假) + Rule 16 联动 + Phase 7 路线图
 
+### 32. 软约束升级阈值 (KALLAX P0) — Root Cause 4 治根
+
+**教训**: 18 Rule 升级率 100%, 5 release 软约束失效, 循环论证无出口. 跟 ACCUMULATED-LESSONS-2026-06-13.md 5.1 节 联合.
+
+**根因** (跟 Root Cause 4 联合):
+- 5 release 软约束 → 5 R-NEW 升级 (Rule 14-18)
+- KPI falsification 10 次 → 加 anti-fab 工具 → 再加 Rule 18 黑名单 → 再 falsification
+- 循环论证无出口 (跟 Architect 视角 联合)
+- **净价值**: 85.5% - 18 Rule = 67.5% 净价值
+
+**规则**:
+- **Rule 升级率 > 80%**: 触发冗余 Rule 审查 (scripts/audit/rule-redundancy-audit.sh)
+- **Rule 数量 > 15**: 触发重构审查 (3-5 架构原则)
+- **门禁数量 > 10**: 触发架构评估 (流程逻辑 > 扩充配置)
+
+**落地检查**: scripts/audit/rule-redundancy-audit.sh 加 upgrade_rate check, 任一阈值超标 → AUDIT WARN + 触发审查.
+
+**跟 5 战略建议 5.1 + 5.6 联合**:
+- 5.1: 重构 3-5 架构原则, 撤销冗余 Rule (目标 ≤10 Rule)
+- 5.6: 撤销 8 Rule (Rule 9a/9b/9c/9e + L1-L4 preflight), 加 3 Rule (26/27/28) = 14 Rule 累计
+
+**红线**:
+- ❌ Rule 升级率 > 80% 但未触发审查
+- ❌ Rule 数量 > 15 但未触发重构
+- ❌ 门禁数量 > 10 但未触发架构评估
+- ❌ 软约束升级阈值被绕过 (需主公 explicit 授权才能 override)
+
+**来源**: Root Cause 4 (14 Rule 升级率 100%) + compliance-design.md 方案 3 + ACCUMULATED-LESSONS-2026-06-13.md 5.1 节
+
