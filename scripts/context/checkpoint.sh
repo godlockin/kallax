@@ -232,15 +232,14 @@ METADATA
 
     # 5. Update symlink to latest
     local latest_link="${CHECKPOINT_DIR}/latest"
-    if [ -e "$latest_link" ]; then
-        if [ -L "$latest_link" ]; then
-            rm -f "$latest_link"
-        else
-            log "WARN" "Latest link exists but is not a symlink"
-            rm -rf "$latest_link"
-        fi
+    # Use -L to detect symlinks regardless of whether target exists (handles broken symlinks)
+    if [ -L "$latest_link" ]; then
+        rm -f "$latest_link"
+    elif [ -e "$latest_link" ]; then
+        log "WARN" "Latest link exists but is not a symlink"
+        rm -rf "$latest_link"
     fi
-    ln -s "$checkpoint_path" "$latest_link"
+    ln -s "$(basename "$checkpoint_path")" "$latest_link"
 
     log "INFO" "Checkpoint saved: $checkpoint_id"
     echo "$checkpoint_id"

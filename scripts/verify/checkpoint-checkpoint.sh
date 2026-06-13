@@ -108,7 +108,8 @@ fi
 test_save() {
     local checkpoint_id
     checkpoint_id="$(bash "$KALLAX_ROOT/scripts/context/checkpoint.sh" save --label "l4-test" 2>/dev/null | tail -1)"
-    [ -n "$checkpoint_id" ] && [ -d "$KALLAX_ROOT/checkpoints/$checkpoint_id" ]
+    # checkpoint.sh uses KALLAX_ROOT/.kallax/checkpoints (relative .kallax default)
+    [ -n "$checkpoint_id" ] && [ -d "$KALLAX_ROOT/.kallax/checkpoints/$checkpoint_id" ]
 }
 
 if test_save; then
