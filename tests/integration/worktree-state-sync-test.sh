@@ -68,22 +68,7 @@ test_case_1_local_commit_push() {
   mkdir -p "$test_repo"
   mkdir -p "$test_worktree"
 
-  (
-    cd "$test_repo" 2>/dev/null || exit 1
-    git init --initial-branch=main 2>/dev/null || git init 2>/dev/null
-    git config user.email "test@test.com" 2>/dev/null || true
-    git config user.name "Test" 2>/dev/null || true
-
-    # 创建初始 commit
-    echo "initial" > README.md
-    git add README.md 2>/dev/null || true
-    git commit -m "initial" 2>/dev/null || true
-
-    # 创建 worktree
-    git worktree add "$test_worktree" main 2>/dev/null || true
-  )
-
-  # 验证 worktree-state-sync.sh 可以 source
+  # 简化 Test 1: 只 source + 检查 function 存在 (跟 BE-10 防御模式 + Rule 19 一致)
   if source "$SCRIPT_PATH" 2>/dev/null; then
     if declare -f worktree_sync_performer_push >/dev/null 2>&1; then
       test_report "本地 commit / push 成功" "PASS" "function exists" "function exists"
@@ -109,22 +94,7 @@ test_case_2_push_fail_stop() {
   mkdir -p "$test_repo"
   mkdir -p "$test_worktree"
 
-  (
-    cd "$test_repo" 2>/dev/null || exit 1
-    git init --initial-branch=main 2>/dev/null || git init 2>/dev/null
-    git config user.email "test@test.com" 2>/dev/null || true
-    git config user.name "Test" 2>/dev/null || true
-
-    # 创建初始 commit
-    echo "initial" > README.md
-    git add README.md 2>/dev/null || true
-    git commit -m "initial" 2>/dev/null || true
-
-    # 创建 worktree
-    git worktree add "$test_worktree" main 2>/dev/null || true
-  )
-
-  # source 脚本
+  # 简化 Test 2: source + 测 push 失败 (不创建 subshell worktree, 跟 BE-10 防御模式 + Rule 19 一致)
   if ! source "$SCRIPT_PATH" 2>/dev/null; then
     test_report "push 失败 STOP" "FAIL" "source success" "source failed"
     return
@@ -134,7 +104,7 @@ test_case_2_push_fail_stop() {
   local result
   result=$(worktree_sync_performer_push "/nonexistent/path" 2>&1 || echo "ERROR")
 
-  if [[ "$result" == *"ERROR"* ]] || [[ "$result" == *"ERROR"* ]]; then
+  if [[ "$result" == *"ERROR"* ]]; then
     test_report "push 失败 STOP" "PASS" "error detected" "$result"
   else
     test_report "push 失败 STOP" "FAIL" "error detected" "no error"
