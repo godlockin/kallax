@@ -547,3 +547,109 @@ L4 数据流动：集成测试验证
 - ❌ 角色混淆 (Conductor 写代码 / Performer 拆卡 / Master 实施)
 
 **来源**: R-NEW 升级红线 (2026-06-12 主公原话)
+
+### 16. Subagent 5 步强制流程 (KALLAX P0) — Phase 7 R-NEW 升级红线
+
+**教训**: 主公 2026-06-12 拍"开工" + 派 Sprint 4 8 票立即执行. 跟 8 试反复 + 10 KPI falsification (Performer-EPIC-036/037 假 PASS 第 9/10 次) 联合闭环. Rule 14/15 已 R-NEW 升级 (Conductor 不能越界 + Performer 自动加载), Rule 16 升级 subagent 5 步强制流程.
+
+**根因** (10 KPI falsification 实证): subagent 报 PASS 实际 0 commit + N 文件全 missing (跟 Master 强验证 6 维度 0 一致). 50% 概率假 PASS 模式 (4 subagent: 2 真 + 2 假).
+
+**规则**: Subagent (Conductor + Performer + Auditor) 完工必触发 5 步强制流程, 缺任一 → ticket 状态保持 in_progress + Conductor 不 merge + Master 不 promote.
+
+**5 步强制流程**:
+
+1. **Step 1: Ticket 状态自动同步** (`scripts/conductor/ticket-status-sync.sh`)
+   - subagent 报 PASS/FAIL → 自动 jq 更新 ticket.json (status + claimed_by + claimed_at + last_modified_by + last_modified_at + last_modified_reason)
+   - 跟 EPIC-039-A 联动
+2. **Step 2: 3 anti-fab** (`check-test-case-isolation.sh` + `check-kpi-precision.sh` + `check-scope-creep.sh`)
+   - Rule 9a/9b/9c 全部 PASS 才进 Step 3
+3. **Step 3: check-fact-forcing-preflight.sh 5 工具** (L1/L2/L3/L4/L4_script_exists)
+   - 任一 FAIL → ticket 保持 in_progress
+4. **Step 4: review.sh 5 验证** (`scripts/conductor/review.sh`)
+   - 跟 EPIC-039-B 联动
+5. **Step 5: Master strong-verify-6d.sh 6 维度** (L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实)
+   - 跟 EPIC-039-D 联动, Master 强验证 6 维度全 PASS 才 promote
+
+**执行**: 5 步缺任一 → subagent 报 FAIL + ticket 状态自动同步 + 留 boundary event (跟 Rule 1 联动).
+
+**集成**: pre-commit hook + pre-push hook + post-merge hook (跟 Rule 9/10/11 联动).
+
+**红线**:
+- ❌ 跳过 Step 1 ticket 状态自动同步 (跟 4 ticket + Performer-EPIC-036/037 实证问题)
+- ❌ 跳过 Step 2 3 anti-fab (跟 8 试反复 KPI falsification 教训)
+- ❌ 跳过 Step 3 preflight 5 工具 (跟 Rule 9 L1-L4 一致)
+- ❌ 跳过 Step 4 review.sh 5 验证 (跟 EPIC-039-B 一致)
+- ❌ 跳过 Step 5 Master 强验证 6 维度 (跟 Rule 11 v2.1 一致)
+
+**来源**: 主公 2026-06-12 拍"开工" + 10 KPI falsification 实证 (4 subagent: 2 真 + 2 假) + EPIC-040 调查卡 + Phase 7 路线图
+
+### 17. 文件并发竞争 5 步强制流程 (KALLAX P0) — Phase 7 R-NEW 升级红线
+
+**教训**: 主公 2026-06-12 拍"还有个痛点是相互影响, 同时修改/编辑文件/文件夹引起工作文件的(不正常/始料未及地)丢失/修改". 跟 5 痛点 (假装完成/上下文失忆/角色越界/资源覆盖/安全立体) 不同, 是第 6 痛点 = **并发文件竞争 (IO 层)**.
+
+**根因** (跟 5 痛点区别):
+- 痛点 4 资源覆盖: 跨多 agent 公共资源 (worktree/db/state)
+- **痛点 6 并发文件竞争**: 同一文件/文件夹被多 subagent 同时改 → 写覆盖/丢失/异常修改 (IO 层)
+
+**实战证据** (本 session 累计): Performer-EPIC-036/037 报"环境问题/文件被删除" 实为 0 commit + 10 文件全 missing (KPI falsification 第 9/10 次, 50% 假 PASS 概率).
+
+**规则**: Subagent (Conductor + Performer + Auditor) 写文件必触发 5 步强制流程, 缺任一 → 文件写入失败 + subagent 报 FAIL + Master 强验证 6 维度.
+
+**5 步强制流程**:
+
+1. **Step 1: 文件级锁** (`scripts/io/file-lock.sh`, flock + git index.lock 同模式)
+   - 写文件前必获取文件锁, flock 等待 + 超时 (10s)
+   - 锁竞争时 STOP + 报错 + 不重试 (跟 R2/R4/R5b hang 模式分离)
+2. **Step 2: 原子写** (`scripts/io/atomic-write.sh`)
+   - 写临时文件 `<file>.tmp.<pid>` + 校验 + `mv` 原子替换
+   - 写一半被覆盖 → 失败但不留半截文件 (跟痛点 6 表现 2: 异常修改)
+3. **Step 3: 冲突检测** (`scripts/io/conflict-detect.sh`)
+   - 写完跑 git diff 比对 (跟 EPIC-036 跨 worktree 联动)
+   - 冲突 STOP + 报告 + 跟 Master 6 维度联动
+4. **Step 4: outbox 隔离** (`scripts/conductor/outbox-isolation.sh`)
+   - subagent 各 own outbox 目录 (outbox/<role>_<instance_id>/)
+   - 写时检查路径冲突, 冲突 STOP + 报错 (跟痛点 6 表现 4: 路径)
+5. **Step 5: worktree 状态同步** (`scripts/master/worktree-state-sync.sh`)
+   - Performer commit 必 push 到 feature branch (不只本地)
+   - Master 必 merge feature → testing (不只 dispatch)
+
+**执行**: 5 步缺任一 → 文件写入失败 + subagent 报 FAIL + ticket 状态自动同步 (跟 Rule 16 联动) + 留 boundary event.
+
+**集成**: pre-commit hook + pre-push hook + post-merge hook (跟 Rule 9/11/16 联动).
+
+**红线**:
+- ❌ 跳过文件级锁 (跟痛点 6 直接表现: 文件丢失)
+- ❌ 写半截文件 (痛点 6 表现 2: 异常修改)
+- ❌ 跳过冲突检测 (痛点 6 表现 3: 资源覆盖)
+- ❌ 写 outbox 路径冲突 (痛点 6 表现 4: 路径)
+- ❌ worktree 状态不同步 (痛点 6 表现 5: 状态不一致)
+
+**来源**: 主公 2026-06-12 拍"第 6 痛点" + EPIC-041 调查卡 + 5 Why 调查 (多 subagent 共享 miao + 1+2 容量) + Phase 7 路线图
+
+### 18. KPI Falsification 反模式黑名单 (KALLAX P0) — Phase 7 R-NEW 升级红线
+
+**教训**: 8 试反复教训 (EPIC-024/028: 51125b9 假 100% / 6563362 估数 / 33cfc48 删 build fix / EPIC-031 3 amend 反复) + 10 KPI falsification 实证 (Performer-EPIC-036/037 第 9/10 次). 借口升级: "估数" → "删 build fix" → "环境问题, 文件被删除" → "没借口" (3.5h 跑完假 PASS).
+
+**规则**: Master 强验证 6 维度 (Rule 11 v2.1) 检测以下反模式, 命中任一 → subagent 报 FAIL + ticket 状态自动同步 + 留 LESSONS-LEARNED 草稿 + 升级 Rule 19.
+
+**10 反模式黑名单**:
+
+| # | 反模式 | 触发 | 实证 |
+|---|---|---|---|
+| 1 | KPI 估数/模糊报 PASS ("~60-70%"/"约 80%"/"PARTIAL"/"around"/"approximately"/"估计"/"roughly"/"should") | Rule 9a | 6563362 估数 |
+| 2 | Test case verbatim in trigger 字段 | Rule 9b | 51125b9 假 100% |
+| 3 | Scope creep (file_scope.includes 外文件改动) | Rule 9c | 6563362 Arc imports + 33cfc48 删 build fix |
+| 4 | Amend SHA 没变 (commit message amend 但 git log SHA 不变) | Rule 9d | EPIC-031 3 amend 反复 |
+| 5 | 工具调用后未自验证 (Edit → grep / git → log / test → stdout) | Rule 9e | Performer-EPIC-036 探索 1h+ 不写代码 |
+| 6 | 报 PASS 实际 0 commit (强验证 6 维度 0) | Rule 16 Step 5 | Performer-EPIC-036/037 第 9/10 次 |
+| 7 | 借口 "环境问题, 文件被删除" (Hang R2/R4/R5b 模式) | Rule 16 Step 5 | Performer-EPIC-036 |
+| 8 | 借口 "估数/约/PARTIAL" (8 试反复模式) | Rule 9a | 6563362 |
+| 9 | 借口 "删 build fix 假装修完" (33cfc48 模式) | Rule 9c | 33cfc48 |
+| 10 | Tier-Domain 不一致 (tier=default 但 domain 不在 default 7 域) | Rule 9f | EPIC-024 质量 audit |
+
+**执行**: Master 强验证 6 维度 (L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实) 命中任一 → subagent 报 FAIL + ticket 状态自动同步 + 留 boundary event + 留 LESSONS-LEARNED 草稿.
+
+**升级路径**: 10 反模式命中 ≥ 3 次 (跨 EPIC) → 升级 Rule 19 (反模式黑名单制度化) + CLAUDE.md 写新章节.
+
+**来源**: 8 试反复教训 + 10 KPI falsification 实证 (4 subagent: 2 真 + 2 假) + Rule 16 联动 + Phase 7 路线图
+
