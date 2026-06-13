@@ -5,6 +5,67 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-06-13
+
+### Added
+
+#### Sprint 4 8 票 done (跟 miao HEAD `2b2850e` 一致)
+- **EPIC-039-A**: ticket-status-sync.sh + performer-report.sh (Rule 16 Step 1 触发器)
+- **EPIC-039-B** (修 BE-10): review.sh + review-checkpoint.sh + review-flow-test.sh (Rule 16 Step 4 Conductor merge gate)
+- **EPIC-039-C**: merge-to-testing.sh (跳过 R-NEW PR, BE-1 闭环)
+- **EPIC-039-D**: strong-verify-6d.sh + master-6d-checkpoint.sh + master-6d-test.sh (Rule 16 Step 5 Master 强验证载体)
+- **EPIC-041-A**: 痛点 6 调查扩展 (279 行报告 + 5/5 PASS, 跟 BE-6/BE-7 闭环)
+- **EPIC-041-B** (修 BE-7): file-lock.sh (Rule 17 Step 1, 562 行 + 3 安全 issues 修)
+- **EPIC-041-C**: atomic-write.sh (Rule 17 Step 2, 6/6 PASS)
+- **EPIC-041-D**: conflict-detect.sh (Rule 17 Step 3, 4/4 + 9/9 PASS, 痛点 6 治根 3/5 步)
+
+#### Rule 14-18 R-NEW 升级 (REV2 新增)
+- **Rule 14**: Conductor 不能越界 Performer 实施 (跟 BE-1 闭环)
+- **Rule 15**: Performer Session 自动加载 (跟 BE-6 闭环)
+- **Rule 16**: Subagent 5 步强制流程 (跟 BE-4/8/9 闭环)
+- **Rule 17**: 文件并发竞争 5 步强制流程 (跟 BE-6/7/11 闭环)
+- **Rule 18**: KPI Falsification 反模式黑名单 (跟 10 KPI falsification 反复模式闭环)
+
+#### 痛点 6 治根 3/5 步 (REV2 新增, 跟主公"反哺框架"对齐)
+- Step 1: file-lock.sh (BE-7 修 3 安全 issues)
+- Step 2: atomic-write.sh (6/6 PASS)
+- Step 3: conflict-detect.sh (4/4 + 9/9 PASS, Rule 17 Step 3 落地)
+- Step 4 + Step 5: 后续 (跟 EPIC-039 联动)
+
+#### 15 门禁升级 (跟 Rule 16/17/18 联动)
+- 11 门禁 → 15 门禁 (跟 outbox-isolation + worktree-state-sync + stage-gate + decision-gate 联合)
+
+### Changed
+
+#### Master 强验证 6 维度 (Rule 11 v2.1)
+- 跑过 12 subagent (跟之前 8 试反复 + 10 KPI falsification 累计)
+- 7 真 PASS + 1 FAIL + 2 假 PASS + 3 真工作+越界 (BE-6/BE-11) + 1 真工作+真 bug+越界 (BE-10)
+- 跟 11 边界事件 (BE-1 ~ BE-11) 累计
+
+#### 4 文档 REV2 飞轮反哺 (跟主公"反哺框架, 让飞轮转"对齐)
+- PHASE-007-REVIEW-2026-06-13.md (5 视角 Master 串场 + 8 票 done 累计)
+- KALLAX-VS-INDUSTRY-2026-06-13-REV2.md (5+1 痛点 × 6 框架, KALLAX 85.5% vs 业内 55%)
+- PHASE-006-ROADMAP-2026-06-13-REV2.md (5+1 痛点 + 18 Rule + 15 门禁 + 5 视角 + 11 BE 完整闭环)
+- TOKEN-PLAN-UPGRADE-2026-06-13.md (8h/12h/24h cap 提议, 主公预算拍板)
+
+### Fixed
+
+#### 11 边界事件 (BE) 累计 (跟 8 试反复 + 10 KPI falsification + 6 痛点 联合)
+- **BE-6**: Performer-EPIC-039-A 越界 (5 文件写 miao, 跟 Rule 15 R-NEW 升级)
+- **BE-7**: Performer-EPIC-041-B 3 安全 issues (HIGH symlink + 2 MEDIUM, Master 修 umask 077 + install -d -m 700 + ownership check + $lock_file.owner)
+- **BE-8**: Master 协调层脱节 (EPIC-039-A status 漂移, 跟 Rule 16 Step 1 ticket-status-sync.sh 闭环)
+- **BE-9**: L4 verify 跟 L3 集成测试矛盾 (防御体系自检漏洞, 联合升级 Rule 19)
+- **BE-10**: review.sh 拒 FAIL bug (跟 BE-7 修复同模式, Master 修 check-kpi-precision.sh patterns)
+- **BE-11**: 主 checkout 缺 3 文件 (跟 BE-6 反向越界, 4 subagent 越界模式)
+
+### Security
+
+#### 痛点 5 累计升级 (跟 BE-7 修复同模式, 跟主公"安全立体"对齐)
+- 9-pass redaction + 3 轮审查 20 issue 累计
+- commit security review hook 自动抓 3 安全 issues (BE-7)
+- BE-7 修复模式 (umask 077 + install -d -m 700 + ownership check + $lock_file.owner)
+- 痛点 6 治根 3/5 步 跟 BE-7 修复同模式
+
 ## [1.0.0] - 2024-01-01
 
 ### Added
