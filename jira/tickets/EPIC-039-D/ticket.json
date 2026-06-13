@@ -14,6 +14,7 @@
   "file_scope": {
     "includes": [
       "jira/tickets/EPIC-039-D/",
+      "jira/tickets/EPIC-039-D/ticket.json",
       "scripts/master/strong-verify-6d.sh",
       "scripts/verify/master-6d-checkpoint.sh",
       "tests/integration/master-6d-test.sh"
