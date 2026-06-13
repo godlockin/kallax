@@ -16,14 +16,14 @@ echo ""
 
 # Detection patterns for estimate/falsification anti-patterns
 LEAKED_PATTERNS=(
-    '~[0-9]+%'           # ~70%
-    'around [0-9]+'       # around 80
-    '大约 [0-9]+'         # 大约 90
-    'approximately [0-9]+' # approximately 80
-    'PARTIAL'             # PARTIAL reported as PASS
-    '估计'                # 估计
-    '约[0-9]+'            # 约70%
-    '大概 [0-9]+'         # 大概 80
+    '~\s*[0-9]+\s*%'        # ~70% / ~ 70% / ~70 %
+    'around\s+[0-9]+'         # around 80 / around  80
+    '大约\s*[0-9]+'           # 大约 90 / 大约 90
+    'approximately\s+[0-9]+'   # approximately 80
+    'PARTIAL'                  # PARTIAL reported as PASS
+    '估计'                     # 估计
+    '约\s*[0-9]+'             # 约70% / 约 70%
+    '大概\s*[0-9]+'           # 大概 80
 )
 
 FOUND=()

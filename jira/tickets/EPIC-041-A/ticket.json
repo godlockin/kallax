@@ -1,0 +1,59 @@
+{
+  "id": "EPIC-041-A",
+  "epicId": "EPIC-041",
+  "phaseId": "PHASE-007",
+  "title": "痛点 6 调查扩展 (跟 Wave 1+2 联动, 闭环 5 Why 调查)",
+  "type": "investigation",
+  "priority": "P0",
+  "status": "done",
+  "created_by": "master_main (PHASE-007 Sprint 4 Wave 3 派单)",
+  "created_at": "2026-06-12T17:30:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L4",
+  "investigation_type": "root_cause_digging_extended",
+  "scope": {
+    "includes": [
+      "jira/tickets/EPIC-041-A/",
+      "confluence/decisions/EPIC-041-A-PAIN6-EXTENDED-2026-06-13.md (新, 扩展调查报告)"
+    ],
+    "excludes": [
+      "scripts/* (调查卡不写代码, 跟 Rule 11 联动)",
+      "jira/tickets/其他 ticket.json (调查不直接改其他 ticket 状态)"
+    ]
+  },
+  "investigation_questions": {
+    "q1_5why_extension": "5 Why 调查扩展 (根因链: 5 Why 调查 + 6 实战证据 + 10 KPI falsification + 7 边界事件 BE-1~BE-7)",
+    "q2_pain6_symptoms": "痛点 6 表现 1-5 实战证据 (文件丢失/异常修改/资源覆盖/路径冲突/状态不一致)",
+    "q3_be7_security": "BE-7 安全 issues 闭环 (痛点 6 治根脚本本身需要安全审查)",
+    "q4_rule17_strengthening": "Rule 17 强化 (跟 5 Why 调查 2 票延伸对齐)",
+    "q5_5_candidates": "5 候选思路 (A-E) + 5 候选方法 (1-5) 跟 Phase 7 路线图对齐"
+  },
+  "acceptance_criteria": [
+    "痛点 6 调查扩展报告 (5 Why + 6 实战证据 + 7 BE + 4 表现 + 跟 BE-6/BE-7 闭环)",
+    "5 候选思路 (A-E) + 5 候选方法 (1-5) 跟 Phase 7 路线图对齐",
+    "Rule 17 强化 (跟 5 Why 调查 2 票延伸对齐)",
+    "tests/integration/EPIC-041-A-investigation-test.sh PASS (≥2 case: 5 Why 验证 + 思路方法验证)",
+    "L1 存在性: 文件存在于 diff",
+    "L2 实质性: 真实逻辑, 非 stub",
+    "L3 接线正确: 正确 import/export",
+    "L4 数据流动: 集成测试验证"
+  ],
+  "estimated_hours": 4,
+  "l1_tactic_required": "拆 commit 为单 prompt (跟 Rule 14 联动, 防 hang)",
+  "master_强验证_6_维度_required": "L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实",
+  "rule_alignment": "Rule 16 + Rule 17 + Rule 18 + 5 Why 调查扩展",
+  "wave_position": "Wave 3 单票 (跟 Wave 1+2 串行)",
+  "epic_041_be6_be7_closure": {
+    "be6": "Performer-EPIC-039-A 越界 (Rule 15 强化)",
+    "be7": "Performer-EPIC-041-B 3 安全 issues (痛点 5 强化)"
+  },
+  "claimed_by": "performer-EPIC-041-A",
+  "claimed_at": "2026-06-13T10:45:00Z",
+  "completed_by": "performer-EPIC-041-A",
+  "completed_at": "2026-06-13T03:23:12Z",
+  "commit_sha": "4b7659a",
+  "last_modified_by": "master_77704 (Rule 11 v2.1 强验证 6 维度, 跟 Performer-EPIC-039-A 越界 BE-6 闭环 + BE-11 越界修复)",
+  "last_modified_at": "2026-06-13T03:31:25Z",
+  "last_modified_reason": "Master Rule 11 v2.1 强验证: 2 commit (4b7659a + 3b1db72) 真存在 + 3 文件 (13300+2899+5415 bytes) + 5/5 PASS. 跟 Performer-EPIC-039-A 越界 BE-6 模式一致 (worktree 实施 + 主 checkout 目录缺失), Master 修主 checkout 目录闭环. 真 PASS 接受 (跟 Performer-EPIC-041-C/B 同模式)."
+}
