@@ -1,0 +1,41 @@
+{
+  "id": "PHASE-008-C",
+  "type": "task",
+  "title": "Rule 19 L4 verify self-check — detect L4 lying about L3 results",
+  "description": "PHASE-008-C: Rule 19 L4 verify self-check implementation\n\nScope:\n- scripts/verify/l4-verify-self-check.sh: L4 verify must self-check L3 actually ran and passed\n- L4 verify FAIL 时自动跑 L3 实际测试, 自检 L3 FAIL 报 PASS 时检测漏洞\n- 跟 strong-verify-6d.sh (EPIC-039-D 11/11 PASS) 联动\n- 跟 review.sh (EPIC-039-B 修 BE-10) 联动\n- 集成到 Conductor merge 流程 + pre-commit hook\n- 跟 Rule 9a/9d (KPI 估数 + amend SHA 没变) + Rule 18 (KPI falsification 反模式) 联动\n- tests/integration/rule-19-test.sh PASS (≥6 case)\n- scripts/verify/rule-19-checkpoint.sh L4 存在可执行 (Rule 8)\n\n\n关键约束:\n- 禁止 mkdir 不防 symlink (跟 BE-7 Issue 1 同根)\n- 禁止只 worktree 实施, 主 checkout 缺文件 (跟 BE-11 越界反向)\n- 禁止写 miao 主 checkout (跟 BE-6 越界)\n- install -d -m 700 (BE-7 修复模式)\n- ownership check (BE-7 修复模式)\n- umask 077 (BE-7 修复模式)",
+  "status": "done",
+  "priority": "P0",
+  "estimated_hours": 6,
+  "handoff_depth": "L2",
+  "blocked_by": "none",
+  "expertise_required": "backend",
+  "file_scope": {
+    "includes": [
+      "scripts/verify/l4-verify-self-check.sh",
+      "tests/integration/rule-19-test.sh",
+      "scripts/verify/rule-19-checkpoint.sh"
+    ]
+  },
+  "ac": [
+    "AC1: l4-verify-self-check.sh 实现 L4 自检 L3 实际跑结果",
+    "AC2: L4 verify FAIL 时自动跑 L3 实际测试",
+    "AC3: 自检 L3 FAIL 报 PASS 时检测漏洞并报 FAIL",
+    "AC4: 跟 strong-verify-6d.sh 联动",
+    "AC5: 跟 review.sh 联动",
+    "AC6: tests/integration/rule-19-test.sh ≥6 test case PASS",
+    "AC7: scripts/verify/rule-19-checkpoint.sh L4 验证存在可执行"
+  ],
+  "rule_references": [
+    "Rule 19 (L4 verify self-check)",
+    "Rule 18 (KPI falsification blacklist)",
+    "Rule 9a/9d (anti-fab)",
+    "Rule 8 (L4 script exists)",
+    "BE-9 + BE-10 (L4 自检漏洞)"
+  ],
+  "created_at": "2026-06-13T14:20:00Z",
+  "claimed_by": "performer-PHASE-008-C",
+  "claimed_at": "2026-06-13T14:20:00Z",
+  "last_modified_by": "master_77704 (Rule 11 v2.1 强验证 6 维度, 跟 11 BE 累计 + BE-13 越界反向修复 + 12h cap Token 充裕)",
+  "last_modified_at": "2026-06-13T11:51:41Z",
+  "last_modified_reason": "Master Rule 11 v2.1 强验证: 5 subagent 实际 3 文件真工作 + 越界反向 (BE-13, 跟 BE-11 模式一致). 12h cap Token 充裕 + Master merge 闭环. 真工作接受 (跟 Performer-EPIC-035 + 041-C + 039-C + 041-A + 041-D + 039-D 同模式). 痛点 6 治根 4/5 步 + Rule 19 落地 + 痛点 2 升级 + Auditor 角色."
+}

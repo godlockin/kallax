@@ -1,0 +1,38 @@
+{
+  "id": "PHASE-008-B",
+  "type": "task",
+  "title": "worktree-state-sync.sh 实现 — Rule 17 Step 5, 痛点 6 治根 5/5 步",
+  "description": "PHASE-008-B: worktree-state-sync.sh 实现\n\nScope:\n- scripts/master/worktree-state-sync.sh 实现: Performer commit 必 push 到 feature branch (不只本地)\n- Master 必 merge feature → testing (不只 dispatch)\n- 跟 merge-to-testing.sh (EPIC-039-C 跳过 R-NEW PR, BE-1 闭环) 联动\n- 跟 atomic-write.sh (EPIC-041-C) + conflict-detect.sh (EPIC-041-D) 联动\n- 集成到 Conductor merge 流程 + pre-push hook + post-merge hook\n- tests/integration/worktree-state-sync-test.sh PASS (≥4 case: 本地 commit / push 失败 STOP / merge 成功 / state 同步)\n- scripts/verify/worktree-state-sync.sh L4 存在可执行 (Rule 8)\n\n\n关键约束 (跟痛点 6 表现 5 状态不一致 治根 + 跟 BE-7 修复同模式):\n- 禁止 mkdir 不防 symlink (跟 BE-7 Issue 1 同根)\n- 禁止只 worktree 实施, 主 checkout 缺文件 (跟 BE-11 越界反向)\n- 禁止写 miao 主 checkout (跟 BE-6 越界)\n- install -d -m 700 (BE-7 修复模式)\n- ownership check (BE-7 修复模式)\n- umask 077 (BE-7 修复模式)",
+  "status": "done",
+  "priority": "P0",
+  "estimated_hours": 6,
+  "handoff_depth": "L2",
+  "blocked_by": "none",
+  "expertise_required": "backend",
+  "file_scope": {
+    "includes": [
+      "scripts/master/worktree-state-sync.sh",
+      "tests/integration/worktree-state-sync-test.sh",
+      "scripts/verify/worktree-state-sync.sh"
+    ]
+  },
+  "ac": [
+    "AC1: worktree-state-sync.sh 实现 Performer commit push 到 feature branch",
+    "AC2: worktree-state-sync.sh 实现 Master merge feature → testing",
+    "AC3: 集成到 pre-push hook + post-merge hook",
+    "AC4: tests/integration/worktree-state-sync-test.sh ≥4 test case PASS",
+    "AC5: scripts/verify/worktree-state-sync.sh L4 验证存在可执行",
+    "AC6: 跟 atomic-write.sh + conflict-detect.sh 联动"
+  ],
+  "rule_references": [
+    "Rule 17 Step 5",
+    "Rule 8 (L4 script exists)",
+    "BE-7 fix pattern"
+  ],
+  "created_at": "2026-06-13T14:19:00Z",
+  "claimed_by": "performer-PHASE-008-B",
+  "claimed_at": "2026-06-13T14:19:00Z",
+  "last_modified_by": "master_77704 (Rule 11 v2.1 强验证 6 维度, 跟 11 BE 累计 + BE-13 越界反向修复 + 12h cap Token 充裕)",
+  "last_modified_at": "2026-06-13T11:51:41Z",
+  "last_modified_reason": "Master Rule 11 v2.1 强验证: 5 subagent 实际 3 文件真工作 + 越界反向 (BE-13, 跟 BE-11 模式一致). 12h cap Token 充裕 + Master merge 闭环. 真工作接受 (跟 Performer-EPIC-035 + 041-C + 039-C + 041-A + 041-D + 039-D 同模式). 痛点 6 治根 4/5 步 + Rule 19 落地 + 痛点 2 升级 + Auditor 角色."
+}

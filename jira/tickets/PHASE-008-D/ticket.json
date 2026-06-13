@@ -1,0 +1,40 @@
+{
+  "id": "PHASE-008-D",
+  "type": "task",
+  "title": "checkpoint.sh 实现 — Performer session 自动 checkpoint, LangGraph 借鉴, 痛点 2 升级",
+  "description": "PHASE-008-D: checkpoint.sh 实现\n\nScope:\n- scripts/context/checkpoint.sh 实现: Performer session 自动 checkpoint (跟 LangGraph 借鉴)\n- Checkpoint 包含: state.json + handoff.json + 知识库 ~/.claude/knowledge/ 增量\n- 跟 auto memory + handoff.json + 知识库 联动 (跟之前 context 工程 一致)\n- 跟 strong-verify-6d.sh (EPIC-039-D 11/11 PASS) 联动\n- 跟 ticket-status-sync.sh (EPIC-039-A Rule 16 Step 1) 联动\n- 集成到 Performer session_start.sh + claim + complete 流程\n- tests/integration/checkpoint-test.sh PASS (≥4 case: 写 checkpoint / 恢复 checkpoint / 跟 LangGraph 一致 / 跟痛点 2 落后 10 分 闭环)\n- scripts/verify/checkpoint-checkpoint.sh L4 存在可执行 (Rule 8)\n\n\n关键约束 (跟痛点 2 升级 + LangGraph Checkpoint 模式借鉴):\n- 禁止 mkdir 不防 symlink (跟 BE-7 Issue 1 同根)\n- 禁止只 worktree 实施, 主 checkout 缺文件 (跟 BE-11 越界反向)\n- 禁止写 miao 主 checkout (跟 BE-6 越界)\n- install -d -m 700 (BE-7 修复模式)\n- ownership check (BE-7 修复模式)\n- umask 077 (BE-7 修复模式)\n- 跟 KALLAX-VS-INDUSTRY-2026-06-13-REV2.md 借鉴",
+  "status": "done",
+  "priority": "P0",
+  "estimated_hours": 6,
+  "handoff_depth": "L2",
+  "blocked_by": "none",
+  "expertise_required": "backend",
+  "file_scope": {
+    "includes": [
+      "scripts/context/checkpoint.sh",
+      "tests/integration/checkpoint-test.sh",
+      "scripts/verify/checkpoint-checkpoint.sh"
+    ]
+  },
+  "ac": [
+    "AC1: scripts/context/checkpoint.sh 实现 Performer session 自动 checkpoint",
+    "AC2: Checkpoint 包含 state.json + handoff.json + 知识库增量",
+    "AC3: 跟 auto memory + handoff.json + 知识库 联动",
+    "AC4: 跟 strong-verify-6d.sh + ticket-status-sync.sh 联动",
+    "AC5: 集成到 Performer session_start.sh + claim + complete 流程",
+    "AC6: tests/integration/checkpoint-test.sh ≥4 test case PASS",
+    "AC7: scripts/verify/checkpoint-checkpoint.sh L4 验证存在可执行"
+  ],
+  "rule_references": [
+    "Rule 16 Step 1",
+    "Rule 8 (L4 script exists)",
+    "BE-7 fix pattern",
+    "LangGraph Checkpoint pattern"
+  ],
+  "created_at": "2026-06-13T15:00:00Z",
+  "claimed_by": "performer-PHASE-008-D",
+  "claimed_at": "2026-06-13T15:00:00Z",
+  "last_modified_by": "master_77704 (Rule 11 v2.1 强验证 6 维度, 跟 11 BE 累计 + BE-13 越界反向修复 + 12h cap Token 充裕)",
+  "last_modified_at": "2026-06-13T11:51:41Z",
+  "last_modified_reason": "Master Rule 11 v2.1 强验证: 5 subagent 实际 3 文件真工作 + 越界反向 (BE-13, 跟 BE-11 模式一致). 12h cap Token 充裕 + Master merge 闭环. 真工作接受 (跟 Performer-EPIC-035 + 041-C + 039-C + 041-A + 041-D + 039-D 同模式). 痛点 6 治根 4/5 步 + Rule 19 落地 + 痛点 2 升级 + Auditor 角色."
+}
