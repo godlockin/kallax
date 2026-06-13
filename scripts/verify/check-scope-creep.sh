@@ -3,19 +3,33 @@
 # Verifies changed files stay within ticket.json file_scope.includes
 # Previous issue: 6563362 changed 3 unrelated files (scope creep)
 #
-# BYPASS: set KALLAX_BYPASS_SCOPE_CHECK=1 to skip check (design stage work)
+# SECURITY: KALLAX_BYPASS_SCOPE_CHECK removed — scope creep is a P0 anti-fab violation
+# Design stage work must use KALLAX_DESIGN_MODE=1 (requires master token validation)
 
 set -euo pipefail
 
 TICKET_ID="${1:-}"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 
-# BYPASS: design stage work (no ticket.json required)
-if [ "${KALLAX_BYPASS_SCOPE_CHECK:-0}" = "1" ]; then
+# Design stage bypass: requires master token (not env var toggle)
+if [ "${KALLAX_DESIGN_MODE:-0}" = "1" ]; then
+    if [[ -z "${KALLAX_MASTER_TOKEN:-}" ]]; then
+        echo "FAIL: KALLAX_DESIGN_MODE=1 requires KALLAX_MASTER_TOKEN"
+        exit 1
+    fi
+    TOKEN_FILE="${HOME}/.claude/state/kallax-master-token"
+    EXPECTED_TOKEN=""
+    if [[ -f "$TOKEN_FILE" ]]; then
+        EXPECTED_TOKEN=$(cat "$TOKEN_FILE" 2>/dev/null || echo "")
+    fi
+    if [[ "$KALLAX_MASTER_TOKEN" != "$EXPECTED_TOKEN" ]] || [[ -z "$EXPECTED_TOKEN" ]]; then
+        echo "FAIL: KALLAX_DESIGN_MODE=1 token validation failed"
+        exit 1
+    fi
     echo "=========================================="
-    echo "Scope Creep Check (BYPASS)"
+    echo "Scope Creep Check (DESIGN MODE)"
     echo "=========================================="
-    echo "BYPASS: design stage work, no ticket.json required"
+    echo "OK: design stage work with master token validated"
     exit 0
 fi
 
