@@ -14,8 +14,8 @@
   "file_scope": {
     "includes": [
       "jira/tickets/EPIC-039-D/",
-      "scripts/master/strong-verify-6d.sh (新, Master 6 维度强验证脚本)",
-      "scripts/verify/master-6d-checkpoint.sh (Rule 8 L4)",
+      "scripts/master/strong-verify-6d.sh",
+      "scripts/verify/master-6d-checkpoint.sh",
       "tests/integration/master-6d-test.sh"
     ],
     "excludes": []
