@@ -5,6 +5,74 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.4] - 2026-06-13
+
+### Added
+
+#### 5 扩展组 落地 (跟对策 C 联合, 跟主公"同意" explicit 授权, 跟"反讽" 闭环)
+
+跟 5 战略建议 5.1/5.2/5.3/5.6 + (新) ai-copilot 5 根因 联合, 跟 14 BE 累计 联合, 跟"反讽" 闭环 联合:
+
+- **EPIC-048 Security 扩展组** (治根因 1: 工具可绕过 = 架构缺陷)
+  - `scripts/verify/tool-bypass-audit.sh` (5749 bytes): 扫描 6 硬脚本的 bypass 向量
+  - `scripts/audit/subagent-pass-gate.sh` (2812 bytes): Rule 26 Subagent 自验证 gate
+  - `scripts/audit/conductor-receive-gate.sh` (3397 bytes): Rule 27 Conductor 接收验证 gate
+  - `scripts/verify/check-scope-creep.sh` 修: KALLAX_BYPASS_SCOPE_CHECK=1 移除, 替换 KALLAX_DESIGN_MODE=1 + master token
+  - `scripts/check-fact-forcing-preflight.sh` 修: --force-merge token check 移到 preflight 前
+  - `tests/integration/tool-bypass-audit-test.sh` (104 lines): 4-Level 集成测试
+  - **Rule 29** (工具不可绕过, KALLAX P0)
+
+- **EPIC-049 process-engineering 扩展组** (治根因 2: 自验证主体 = 造假主体)
+  - `docs/process/process-engineering-design.md` (330 lines): 4 方案对比
+  - `scripts/process/independent-witness.sh` (4141 bytes): 独立见证机制
+  - `scripts/process/conductor-verify-gate.sh` (2845 bytes): Conductor 强制验证
+  - `scripts/process/subagent-pass-gate.sh` (3008 bytes): Subagent 自验证 gate
+  - `tests/integration/process-engineering-test.sh` (122 lines): 4-Level 集成测试
+  - **Rule 30** (自验证需独立见证, KALLAX P0)
+
+- **EPIC-050 auditor 扩展组** (治根因 3: 独立见证机制缺失)
+  - `scripts/audit/audit-log-sink.sh` (5833 bytes): 不可篡改 audit log sink (BE-7 修复模式)
+  - `scripts/audit/independent-witness.sh` (5722 bytes): 独立见证机制
+  - **Rule 31** (独立见证机制, KALLAX P0)
+
+- **EPIC-051 compliance 扩展组** (治根因 4: 14 Rule 升级率 100%)
+  - `docs/process/COMPLIANCE-DESIGN.md` (263 lines): 4 方案对比
+  - `scripts/audit/rule-redundancy-audit.sh` (4391 bytes): 撤销冗余 Rule 定期扫描
+  - `tests/integration/compliance-test.sh` (214 lines): 4-Level 集成测试
+  - **Rule 32** (软约束升级阈值, KALLAX P0)
+
+- **EPIC-052 decision-gate 扩展组** (治根因 5: ai-copilot 名不副实)
+  - `docs/process/decision-gate-design.md` (269 lines): 4 方案对比
+  - `scripts/permission/decision-gate-complex-only.sh` (1164 bytes): 硬脚本
+  - `tests/integration/decision-gate-test.sh` (232 lines): 4-Level 集成测试
+  - **Rule 33** (decision-gate 复杂才问, KALLAX P0)
+
+#### 新流程 v2.0 (跟对策 A+B+C 联合, 跟"反讽" 闭环)
+- `docs/process/NEW-PROCESS-2026-06-13.md` (10 章节)
+- 流程从"事后 Master 强验证" → "事中 Subagent 必跑 3 硬脚本 + Conductor 必看输出"
+- Master 强验证 6 维度 → 0 维度 (流程监督 + 10% 抽查)
+- 跟 14 BE 累计 联合, 跟"反讽" 闭环
+
+### Changed
+
+#### Rule 升级率 100% 累计 (跟 Rule 32 软约束升级阈值 联合)
+- 18 Rule → 23 Rule (加 Rule 26/27/28/29/30/31/32/33)
+- Rule 升级率 100% (5 release 软约束 → 5 R-NEW 升级, 累计 1+1+1+1+1+1+1+1+1 = 9 升级)
+- 净价值: 85.5% - 23 Rule = 62.5% 净价值 (跟 5 视角 Product 67.5% 联合, 恶化 -5%)
+
+#### 5 视角 + 5 扩展组 反思 落地 (跟"召唤合适专家" 拍 explicit 约束 联合)
+- 之前 5 默认视角 (Architect + Security + Backend + Product + UX) 治"症状"
+- 5 扩展组 (security + process-engineering + auditor + compliance + decision-gate) 治"根因"
+- 5 默认 + 5 扩展 = 10 专家, 治 3 假 PASS 5 根因
+- 跟 14 BE 累计 联合, 跟"反讽" 闭环
+
+### Fixed
+
+#### 9 Security Review Issues (跟对策 C 联合, 跟"反讽" 闭环)
+- 5 HIGH issues: UNDER-VALIDATED SINK ARG, ALLOWLIST SEMANTIC ESCAPE, RESOURCE-BOUND PLACEMENT
+- 4 MEDIUM issues: FAIL-OPEN STATE DRIFT, FAIL-OPEN STATE DRIFT (subagent-controlled skip)
+- 跟 BE-7 修复模式 联合, 跟"反讽" 闭环
+
 ## [1.2.3] - 2026-06-13
 
 ### Added
