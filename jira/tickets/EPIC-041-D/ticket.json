@@ -1,0 +1,1 @@
+{"id": "EPIC-041-D", "epicId": "EPIC-041", "phaseId": "PHASE-007", "title": "冲突检测机制 (conflict-detect.sh, 跟 Rule 17 Step 3 联动, 痛点 6 治根)", "type": "feature", "priority": "P0", "status": "in_progress", "blocked_by": null, "worktree_role": "performer", "handoff_depth": "L2", "created_at": "2026-06-12T00:00:00Z"}
