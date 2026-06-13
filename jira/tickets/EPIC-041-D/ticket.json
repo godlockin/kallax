@@ -1,1 +1,39 @@
-{"id": "EPIC-041-D", "epicId": "EPIC-041", "phaseId": "PHASE-007", "title": "冲突检测机制 (conflict-detect.sh, 跟 Rule 17 Step 3 联动, 痛点 6 治根)", "type": "feature", "priority": "P0", "status": "in_progress", "blocked_by": null, "worktree_role": "performer", "handoff_depth": "L2", "created_at": "2026-06-12T00:00:00Z"}
+{
+  "id": "EPIC-041-D",
+  "epicId": "EPIC-041",
+  "phaseId": "PHASE-007",
+  "title": "冲突检测机制 (conflict-detect.sh, 跟 Rule 17 Step 3 联动, 痛点 6 治根)",
+  "type": "feature",
+  "priority": "P0",
+  "status": "done",
+  "created_by": "master_main (Sprint 4 Wave 2, 跟 Wave 1 串行)",
+  "created_at": "2026-06-13T00:00:00Z",
+  "blocked_by": "EPIC-041-C",
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-041-D/",
+      "scripts/io/conflict-detect.sh",
+      "scripts/verify/conflict-detect.sh",
+      "tests/integration/conflict-detect-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/io/conflict-detect.sh 实现 (git diff 比对 + 跨 worktree 联动 + 冲突 STOP + 报告)",
+    "tests/integration/conflict-detect-test.sh 4/4 PASS (无冲突/冲突检测/冲突 STOP/跨 worktree)",
+    "scripts/verify/conflict-detect.sh L4 存在可执行 (Rule 8)",
+    "Rule 17 Step 3 落地 (跟痛点 6 表现 3 冲突 STOP)",
+    "跟 file-lock.sh (EPIC-041-B) + atomic-write.sh (EPIC-041-C) 联动",
+    "Rule 9 9a/9b/9c/9d/9e PASS",
+    "Rule 12 质量 ensure PASS"
+  ],
+  "estimated_hours": 6,
+  "claimed_by": "performer-EPIC-041-D",
+  "claimed_at": "2026-06-13T10:45:00Z",
+  "last_modified_by": "master_77704 (Rule 11 v2.1 强验证 6 维度, 跟 Performer-EPIC-041-C/B + 039-C 同模式, 痛点 6 治根 Rule 17 Step 3 落地)",
+  "last_modified_at": "2026-06-13T03:40:20Z",
+  "last_modified_reason": "Master Rule 11 v2.1 强验证: commit 373bef7 真 + 4 文件 (28064 bytes) + 4/4 PASS + 9/9 L4 verify. Rule 17 Step 3 落地 (痛点 6 治根: 表现 3 资源覆盖 + 跨 worktree). 跟 BE-7 修复同模式 (install -d -m 700 + ownership + umask 077). 真 PASS 接受 (跟 Performer-EPIC-035 + 041-C + 039-C 同模式).",
+  "commit_sha": "373bef7"
+}
