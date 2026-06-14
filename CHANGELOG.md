@@ -5,6 +5,19 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2026-06-14
+
+### Fixed
+
+#### 4 Bug 修复 (跟"反讽" 闭环, 跟"诚实修正" 联合, 跟对策 C 联合)
+
+- **B1**: 主入口 `scripts/kallax-onramp.sh` 缺失 (新建, ~60 行 dispatcher)
+- **B2**: `output.sh` KALLAX_ROOT 路径错 (5 层 `../` → 2 层 `../..`)
+- **B3**: `output.sh` 模板渲染不完整 (`cp` only → sed + python3 替换所有 placeholders)
+- **B4**: Expert outputs 不真读取 skill 文档 (只返回路径 → 真读取 name/description/content)
+
+跟 v1.3.0 (8d759ab) 联合, 跟主公'实测 Onramp' explicit 授权 联合, 跟对策 C 联合, 跟'诚实修正' 联合.
+
 ## [1.2.4] - 2026-06-13
 
 ### Added
