@@ -31,7 +31,10 @@ else
   RATIONALE="低 ROI → 1 Architect 简单分析"
 fi
 
-# 选 L2 专家 (按 smell + domain)
+# 选 L2/L3 专家 (按 smell + domain + recommendation)
+# L1 (recommendation=A): 1 Architect
+# L2 (recommendation=B): 3-5 专家 (default, 按 smell 加)
+# L3 (recommendation=C): 5 default + 5 extended = 10 视角
 experts_json='["architect","backend","security"]'
 if [[ "${RECOMMENDATION}" == "B" ]]; then
   smell_count=$(echo "${SCAN_JSON}" | jq -r '.smell_indicators | length' 2>/dev/null || echo 0)
@@ -39,6 +42,10 @@ if [[ "${RECOMMENDATION}" == "B" ]]; then
     experts_json='["architect","backend","security","process-engineering","auditor"]'
     EXPERT_COUNT=5
   fi
+elif [[ "${RECOMMENDATION}" == "C" ]]; then
+  # L3 完整审计: 5 default + 5 extended = 10 视角 (跟"反讽" 闭环, 跟 v1.3.2 修)
+  experts_json='["architect","backend","security","compliance-rule-merge","auditor-independent-witness","process-engineering-self-verify","security-tool-bypass","decision-gate-complex-only","frontend","ux","product"]'
+  EXPERT_COUNT=10
 fi
 
 cat <<EOF
