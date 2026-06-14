@@ -89,27 +89,40 @@ if [[ -z "${expert_outputs}" ]]; then
 "
 fi
 
-# B3: 渲染 - sed replace single-line placeholders
-cp "${template}" "${tmp_file}"
-LC_ALL=C sed -i '' "s|{{project}}|${project}|g" "${tmp_file}"
-LC_ALL=C sed -i '' "s|{{date}}|${date}|g" "${tmp_file}"
-LC_ALL=C sed -i '' "s|{{loc}}|${loc}|g" "${tmp_file}"
-LC_ALL=C sed -i '' "s|{{files}}|${files}|g" "${tmp_file}"
-LC_ALL=C sed -i '' "s|{{modules}}|${modules}|g" "${tmp_file}"
-LC_ALL=C sed -i '' "s|{{language_mix}}|${language_mix}|g" "${tmp_file}"
-LC_ALL=C sed -i '' "s|{{has_claude_md}}|${has_claude_md}|g" "${tmp_file}"
-LC_ALL=C sed -i '' "s|{{has_readme}}|${has_readme}|g" "${tmp_file}"
-LC_ALL=C sed -i '' "s|{{git_log_days}}|${git_log_days}|g" "${tmp_file}"
+# 计算 expert_count 和 experts_list (跟 B3 渲染 联合, 跟"反讽" 联合)
+expert_count=$(echo "${CHOICE_JSON}" | jq -r '.experts | length')
+experts_list=$(echo "${CHOICE_JSON}" | jq -r '.experts | join(", ")')
 
-# B3: expert_output multiline - use python3 for robust replacement
-python3 -c "
-import sys
-with open('${tmp_file}', 'r', encoding='utf-8') as f:
-    content = f.read()
-content = content.replace('{{expert_output}}', '''${expert_outputs}''')
-with open('${tmp_file}', 'w', encoding='utf-8') as f:
-    f.write(content)
-"
+# B3: 渲染 - 用 substitute.py 替代 sed+python interpolation (security fix)
+cp "${template}" "${tmp_file}"
+
+# 写 substitutions 到 JSON file (跟 security review 建议 联合, 跟"反讽" 联合)
+substitutions_file="${tmp_file}.subs.json"
+cat > "${substitutions_file}" <<EOF
+{
+  "project": "${project}",
+  "date": "${date}",
+  "loc": "${loc}",
+  "files": "${files}",
+  "modules": "${modules}",
+  "language_mix": "${language_mix}",
+  "has_claude_md": "${has_claude_md}",
+  "has_readme": "${has_readme}",
+  "git_log_days": "${git_log_days}",
+  "expert_count": "${expert_count}",
+  "experts_list": "${experts_list}",
+  "expert_output": "见下方各专家分析",
+  "expert_outputs": $(jq -Rs . <<< "${expert_outputs}"),
+  "epic_suggestions": "基于上述分析, 建议启动 EPIC 拆解 (子 ticket).",
+  "highlights": "待各专家在 expert_outputs 中提取.",
+  "weaknesses": "待各专家在 expert_outputs 中提取.",
+  "risks": "待各专家在 expert_outputs 中提取."
+}
+EOF
+
+# 用 python3 sys.argv 模式 (不字符串插值) — 跟 security review 建议 联合
+python3 "${ONRAMP_DIR}/lib/substitute.py" "${tmp_file}" "${substitutions_file}"
+rm -f "${substitutions_file}"
 
 # Atomic mv (跟 Rule 17 联合)
 mv "${tmp_file}" "${output_file}"
