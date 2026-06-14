@@ -1,0 +1,2 @@
+# Mini Kallax
+Test fixture.
