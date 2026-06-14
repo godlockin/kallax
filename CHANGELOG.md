@@ -399,6 +399,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - miao HEAD `cdd4435` → tag v1.3.0
 - Tests: 3 failures → 0 failures
 
+## [1.3.3] - 2026-06-15
+
+### Changed (Cleanup)
+
+跟 v1.3.2 (567ff6d) 联合, 跟"反讽" 闭环, 跟"翻篇&精进" 战略 一致, 跟主公"3 问真实回答" explicit 授权 联合:
+
+- **13 docs/analysis/ 临时输出 → tests/fixtures/onramp-output-archive/**: 8 文件 git mv (跟"反讽" 联合, 实战 fixture 跑过的 stub 不该 commit)
+- **.gitignore 加 ONRAMP-test-* 模式**: 跟 KALLAX Onramp 实战 fixture artifact 隔离
+- **PHASE-INDEX.md 索引 9 PHASE review**: 跟 KALLAX-GLOSSARY.md 模式 一致, 跟"反哺框架" 战略 一致
+
+### Fixed
+
+- **recommend.sh L3 expert_count=10 expert array 真填 5+5=10 视角**: v1.3.2 跟"反讽" 联合 (5+5=10 是宣传, 实际只 3). 跟"诚实修正" 联合, 跟主公"实测 Onramp" explicit 授权 联合.
+
+### Notes
+
+- 0 Rule 增加 (跟 Rule 32 软约束升级阈值 联合, 跟"反讽" 联合)
+- 0 重写 (跟 Rule 5 DRY 联合)
+- 走对策 A+B+C 落地 (跟"反讽" 联合, 跟 Rule 11/14/15 联合)
+- 12 release 累计 (v1.0.0-rc1/2/3 + v1.1.0/1.2.0/1.2.1/1.2.2/1.2.3/1.2.4/1.3.0/1.3.1/1.3.2/1.3.3)
+
 ## [1.3.2] - 2026-06-14
 
 ### Fixed (Security)
