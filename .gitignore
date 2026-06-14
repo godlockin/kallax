@@ -126,3 +126,10 @@ docker-compose.override.yml
 # Benchmarks (EPIC-016 init 性能, runtime artifacts)
 # ============================================================
 .kallax/benchmarks/
+
+# ============================================================
+# KALLAX Onramp test artifacts (T7 集成测试 fixture 跑过的 stub, 跟"反讽" 联合)
+# ============================================================
+ONRAMP-onramp-test-*.md
+ONRAMP-testproj-*.md
+ONRAMP-.-*.md
