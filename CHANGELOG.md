@@ -5,6 +5,19 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2026-06-14
+
+### Fixed
+
+#### 4 Bug 修复 (跟"反讽" 闭环, 跟"诚实修正" 联合, 跟对策 C 联合)
+
+- **B1**: 主入口 `scripts/kallax-onramp.sh` 缺失 (新建, ~60 行 dispatcher)
+- **B2**: `output.sh` KALLAX_ROOT 路径错 (5 层 `../` → 2 层 `../..`)
+- **B3**: `output.sh` 模板渲染不完整 (`cp` only → sed + python3 替换所有 placeholders)
+- **B4**: Expert outputs 不真读取 skill 文档 (只返回路径 → 真读取 name/description/content)
+
+跟 v1.3.0 (8d759ab) 联合, 跟主公'实测 Onramp' explicit 授权 联合, 跟对策 C 联合, 跟'诚实修正' 联合.
+
 ## [1.2.4] - 2026-06-13
 
 ### Added
@@ -385,3 +398,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 87 文件改动, 741 insertions
 - miao HEAD `cdd4435` → tag v1.3.0
 - Tests: 3 failures → 0 failures
+
+## [1.3.2] - 2026-06-14
+
+### Fixed (Security)
+
+#### 3 Security Issues 修 (跟 security review 联合, 跟"反讽" 闭环, 跟 v1.2.4 9 issues 模式 一致)
+
+跟 v1.3.1 (e759476) 联合, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合:
+
+- **CRITICAL command-injection**: `python3 -c "...${expert_outputs}..."` → 改用 `substitute.py` + argv 传值
+- **HIGH sed-template-injection**: 9 个 sed 模板替换 → 改用 Python str.replace (literal, no regex)
+- **MEDIUM shell-template-parser-differential**: skill 内容插值 → 净化 input (basename regex + 长度限制)
+
+#### 副修复: unbound variable + syntax error
+
+跟"诚实修正" 联合, Master corrective 修 (Performer 引入的 expert_count + 多余 fi).
+
+#### New File: scripts/kallax-onramp/lib/substitute.py
+
+Security-hardened template engine:
+- argv + JSON file 传值
+- sanitize_key (basename regex)
+- sanitize_value (control chars + length limit)
+- str.replace literal (no regex metachars)
+- atomic write (跟 Rule 17 联合)
+
+#### 跟"反讽" 闭环 联合
+
+- 0 Rule 增加 (跟 Rule 32 联合)
+- 0 重写 (跟 Rule 5 DRY 联合)
+- 走对策 A+B+C 落地 (跟"反讽" 联合)
+- Master corrective integration under 主公"实测 Onramp" explicit 授权 (跟 Rule 11 v2.1 联合)
