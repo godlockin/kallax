@@ -1,20 +1,20 @@
-# {{project}} — L1 轻量分析
+# mini-kallax — L1 轻量分析
 
-**日期**: {{date}}
+**日期**: 2026-06-14
 **调用**: /kallax-onramp
 **深度**: L1 (1 Architect)
 
 ## 项目扫描
 
-- **规模**: {{loc}} LOC, {{files}} 文件, {{modules}} 模块
-- **语言**: {{language_mix}}
-- **CLAUDE.md**: {{has_claude_md}}
-- **README**: {{has_readme}}
-- **Git 活跃**: {{git_log_days}} commits / 30d
+- **规模**: 3 LOC, 3 文件, 1 模块
+- **语言**: Shell:66,TS:0,PY:0,MD:33,RS:0,GO:0
+- **CLAUDE.md**: false
+- **README**: true
+- **Git 活跃**: 385 commits / 30d
 
 ## Architect 视角 (1 段总结)
 
-{{expert_output}}
+见下方各专家分析
 
 ## 下一步
 
