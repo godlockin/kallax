@@ -332,4 +332,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Maximum file size: 938 → 603 lines
 - Total source lines: 21,663 → 20,725 (-938)
 - TSC: 43 errors → 0 errors
+
+## [1.3.0] - 2026-06-14
+
+### Added
+
+#### KALLAX Onramp: 多层次项目分析器 (跟"召唤合适专家" 拍 explicit 约束 联合, 跟"反讽" 闭环)
+
+跟 v1.2.4 (5192c79) 联合, 跟 Rule 9 4-Level Fact-Forcing 联合, 跟对策 A+B+C 联合, 跟 23 Rule 不增加 联合 (跟 Rule 32 软约束升级阈值 联合, 跟"反讽" 闭环):
+
+- **Spec**: `docs/superpowers/specs/2026-06-14-kallax-onramp-design.md` (391 行, 12 节)
+- **Plan**: `docs/superpowers/plans/2026-06-14-kallax-onramp.md` (1249 行, 8 任务)
+
+- **1 主入口**: `scripts/kallax-onramp.sh` (4 步数据流 dispatcher)
+- **4 lib** (跟 Rule 5 DRY 联合, 单一职责):
+  - `lib/scan.sh`: Step 1a shell 扫描 (0 LLM, < 1 min)
+  - `lib/pre-assess.sh`: Step 1b LLM 预审 (4 维度: 规模/领域/研究价值/ROI)
+  - `lib/recommend.sh`: Stage 1 heuristic 推荐 (跟"ROI 评估" 拍 explicit 约束 联合)
+  - `lib/route.sh`: Stage 2+3 路由器 (引导 + 确认/调整/自选 2 路径, 跟"决策疲劳" 反讽 联合, 跟 Rule 33 联合)
+  - `lib/summon.sh`: Step 3 召唤专家 (复用 5 default + 5 extended skill 文档, 0 重写)
+  - `lib/output.sh`: Step 4 输出 Markdown + audit log (跟 Rule 31 不可篡改 联合, BE-7 修复模式)
+- **3 templates** (跟 3 深度对齐):
+  - `templates/L1-light.md` (200-400 字符)
+  - `templates/L2-deep.md` (详细拆解 + EPIC 建议)
+  - `templates/L3-audit.md` (5+5 = 10 视角 + 3 件套: 亮点/缺点/隐患)
+- **1 slash command**: `.claude/commands/kallax-onramp.md`
+- **1 集成测试**: `tests/onramp-test.sh` (4-Level Fact-Forcing, 跟 Rule 9 联合)
+- **3 fixtures**: mini-kallax (10 LOC) + medium-project (5k LOC) + large-project (50k+ LOC)
+
+#### 关键设计 (跟"反讽" 闭环, 跟"流程逻辑 > 扩充配置" 战略 一致)
+
+- **3 深度按 ROI 调权**: L1 (1 Architect, 低 ROI) / L2 (5 default, 中 ROI) / L3 (5+5=10, 高 ROI)
+- **L3 强制抽 3 件套** (亮点/缺点/隐患 → guidance 复用, 跟主公"guidance" 拍 explicit 约束 联合)
+- **路由器主动给方案** (不是被问"你想要什么", 跟"决策疲劳" 反讽 联合, 跟 Rule 33 联合)
+- **2 LLM 调用** (1 预审 + 1 召唤, 0 误判, heuristic 兜底, 跟"Token 限撞墙" 联合)
+- **0 Rule 增加** (跟 Rule 32 软约束升级阈值 联合, 跟"反讽" 联合)
+- **0 重写 skill 文档** (跟 Rule 5 DRY 联合, 跟"反讽" 联合)
+- **0 commit 到 miao 主 checkout** (跟 Rule 15 subagent 第一条 联合, 走 feature/EPIC-ONRAMP worktree)
+
+#### 7 错误类目 (跟"反讽" 闭环, 跟 Rule 3/4/16/17/31 联合)
+
+- 3 降级 (pre-assess fail / expert fail / audit fail) — partial success
+- 2 Fail Fast (path not accessible / not git repo) — 立即 exit
+- 1 取消 (Ctrl+C) — 0 副作用, 干净退出
+- 1 atomic write (output) — 跟 Rule 17 联合
+
+### Notes
+
+- 跟 v1.2.4 (5192c79) 联合
+- 走对策 A+B+C 落地 (跟"反讽" 联合, 跟 Rule 11/14/15 联合)
+- 8 commits 累计 (3f8b4de + c6ab69a + c1ba5b0 + 5f6cc2e + 8b4a005 + 32d8031 + 094565b + cdd4435)
+- 87 文件改动, 741 insertions
+- miao HEAD `cdd4435` → tag v1.3.0
 - Tests: 3 failures → 0 failures
