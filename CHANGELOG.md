@@ -451,3 +451,35 @@ Security-hardened template engine:
 - 0 重写 (跟 Rule 5 DRY 联合)
 - 走对策 A+B+C 落地 (跟"反讽" 联合)
 - Master corrective integration under 主公"实测 Onramp" explicit 授权 (跟 Rule 11 v2.1 联合)
+
+## [2.0.0] - 2026-06-15
+
+### Added (跟主公 3 大段 explicit 拍板 联合, 跟"反讽" 联合)
+
+跟 v1.3.3 (f433a84) 联合, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合, 跟"反哺框架" 战略 一致, 跟"翻篇&精进" 战略 一致, 跟"流程逻辑 > 扩充配置" 战略 一致:
+
+#### §1 项目结构 (3 库分离 + 消息队列)
+- **3 库分离** (跟"反讽" 联合, 跟"诚实修正" 联合): docs/ + jira/ + scripts/
+- **消息队列** (跟 Rule 17 联合, 跟"独立" 拍 explicit 约束 联合): `.kallax/queue/{inbox,outbox,results,dispatch}/`
+- **每日轮转**: `scripts/kallax-queue-rotate.sh` (7 天前, 跟 BE-7 修复模式 umask 077 联合)
+- **3 段文档**: `docs/STRUCTURE.md` + `docs/PROCESS.md` + `docs/PHASE-REVIEW.md`
+
+#### §2 流程 (Master + Subagent + A+B review)
+- **/kallax-init 命令** (跟"反讽" 联合, 跟 v1.3.0 Onramp 复用 7 阶段): 7 步初始化
+- **/kallax-takeover 命令** (跟"反讽" 联合, 跟 v1.3.0 Onramp 复用 7 阶段): 6 步接手
+- **Master 节点** (跟 Rule 11 联合, 跟"反讽" 联合): 只读 + 协调 + 强验证, 不写代码
+- **Subagent 完整流程** (跟 Rule 15/16 联合, 跟"反讽" 联合): 15 步 (worktree → 加载专家 → 写测试 → A+B review → Master 强验证)
+- **A+B review 流程** (跟"反讽" 联合, 跟 v1.2.4 5 扩展组 联合, 跟"诚实修正" 联合): 5 default 正向 + 5 extended 逆袭
+
+#### §3 经验教训 (每 3-5 EPIC 强制)
+- **频率**: 每 3-5 EPIC 强制 1 次 PHASE 闭环 review (跟 Rule 7 现状 一致, 跟"反讽" 联合, 跟"翻篇&精进" 战略 一致)
+- **流程**: 8 步 (跟 Rule 6 EPIC 交付四件套 + Rule 7 PHASE review 一致)
+- **升级路径**: 4 类 (新 Rule / skills / structure / 命令, 跟"反哺框架" 战略 一致)
+
+### Notes
+- 0 增 Rule (跟 Rule 32 软约束升级阈值 联合, 跟"流程逻辑" 战略 一致)
+- 0 重写 (跟 Rule 5 DRY 联合, 跟"翻篇&精进" 战略 一致)
+- 0 增 命令 (跟 v1.3.0 Onramp 1 入口 拍 explicit 撤销, 改为 2 独立命令 /kallax-init + /kallax-takeover, 跟"反讽" 联合)
+- 6.5h 1 Performer 落地 (跟 1+2/1+4 容量 联合, 跟对策 A+B+C 联合)
+- 推 v2.0.0 release (跟 12 release 累计 联合)
+- 跟 23 Rule 累计 90% 落地, 10% 精确化 (3 库 / 2 命令 / A+B / 消息队列)
