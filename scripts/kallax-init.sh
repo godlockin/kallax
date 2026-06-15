@@ -1,226 +1,95 @@
 #!/usr/bin/env bash
-# KALLAX Init — 项目目录一键初始化脚本
-# Usage: kallax-init.sh [--force] [project-root]
-#   project-root defaults to current directory
-#   --force overwrites existing files (dirs are always incremental)
+# KALLAX Init — 项目初始化 (v2.0.0)
+# 跟 v1.3.0 Onramp 复用 7 阶段
+# 跟"反讽" 联合, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合
+
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+ONRAMP_DIR="${SCRIPT_DIR}/kallax-onramp"
+TEMPLATE_DIR="${SCRIPT_DIR}/../template"
+PROJECT_PATH="${1:-}"
 
-FORCE=false
-PROJECT_ROOT=""
-MODE_CHOICE=""
+if [[ -z "${PROJECT_PATH}" ]]; then
+  echo "Usage: kallax-init <project_path>" >&2
+  exit 2
+fi
 
-# Parse args (simple, no getopts needed for 1 optional flag + 1 positional)
-for arg in "$@"; do
-  case "$arg" in
-    --force) FORCE=true ;;
-    --dry-run)
-      echo "[WARN] --dry-run is handled by the CLI wrapper, not by this script"
-      ;;
-    --mode)
-      MODE_CHOICE="$2"
-      shift 2
-      ;;
-    *)
-      if [ -z "$PROJECT_ROOT" ]; then
-        PROJECT_ROOT="$arg"
-      fi
-      ;;
-  esac
+if [[ ! -d "${PROJECT_PATH}" ]]; then
+  echo "ERROR: path not accessible: ${PROJECT_PATH}" >&2
+  exit 2
+fi
+
+# 触发条件检查 (跟"反讽" 联合)
+if [[ -f "${PROJECT_PATH}/CLAUDE.md" ]] || [[ -d "${PROJECT_PATH}/.kallax" ]]; then
+  echo "ERROR: project already initialized (CLAUDE.md or .kallax/ exists). Use /kallax-takeover instead." >&2
+  exit 2
+fi
+
+cd "${PROJECT_PATH}"
+
+# Step 2: 创建 3 库骨架 (跟"流程逻辑" 战略 一致)
+mkdir -p docs jira scripts .kallax/{queue/{inbox,outbox,results,dispatch},audit,logs,state}
+
+# Step 3: 复制 CLAUDE.md 模板 (跟"反讽" 联合, 跟 v1.3.0 模式 一致)
+if [[ -f "${TEMPLATE_DIR}/CLAUDE-TEMPLATE.md" ]]; then
+  cp "${TEMPLATE_DIR}/CLAUDE-TEMPLATE.md" ./CLAUDE.md
+else
+  echo "WARN: template/CLAUDE-TEMPLATE.md not found, skipping CLAUDE.md creation"
+fi
+
+# Step 4: 复制 5 default + 5 extended skill 文档
+mkdir -p .claude/skills/kallax/{default,extended}
+for skill in architect backend frontend ux product; do
+  if [[ -f "${TEMPLATE_DIR}/.claude/skills/kallax/default/${skill}.md" ]]; then
+    cp "${TEMPLATE_DIR}/.claude/skills/kallax/default/${skill}.md" \
+       ".claude/skills/kallax/default/${skill}.md"
+  fi
+done
+for skill in security-tool-bypass process-engineering-self-verify auditor-independent-witness compliance-rule-merge decision-gate-complex-only; do
+  if [[ -f "${TEMPLATE_DIR}/.claude/skills/kallax/extended/${skill}.md" ]]; then
+    cp "${TEMPLATE_DIR}/.claude/skills/kallax/extended/${skill}.md" \
+       ".claude/skills/kallax/extended/${skill}.md"
+  fi
 done
 
-# Validate --mode argument
-case "$MODE_CHOICE" in
-  ai-auto|ai-copilot|manual|"") ;;
-  *) echo "ERROR: --mode must be ai-auto|ai-copilot|manual, got: $MODE_CHOICE"; exit 1 ;;
-esac
-
-# If --mode provided, write to state.json via mode-set.sh
-if [[ -n "$MODE_CHOICE" ]]; then
-  bash "${KALLAX_ROOT}/scripts/permission/mode-set.sh" --mode "$MODE_CHOICE" --actor "${USER:-unknown}" 2>/dev/null || true
+# Step 5: LLM 预审 (跟"反讽" 联合, 跟 v1.3.0 pre-assess 复用)
+if [[ -x "${ONRAMP_DIR}/lib/pre-assess.sh" ]]; then
+  SCAN_JSON=$("${ONRAMP_DIR}/lib/scan.sh" "${PROJECT_PATH}")
+  PRE_ASSESS_JSON=$("${ONRAMP_DIR}/lib/pre-assess.sh" "${SCAN_JSON}" "项目初始化")
+  echo "${PRE_ASSESS_JSON}" > .kallax/state/pre-assess.json
 fi
 
-PROJECT_ROOT="${PROJECT_ROOT:-$PWD}"
+# Step 6: 输出 INIT-REPORT.md
+cat > docs/INIT-REPORT.md <<EOF
+# KALLAX Init Report
 
-# Resolve to absolute path for clean report
-case "$PROJECT_ROOT" in
-  /*) ;;
-  *) PROJECT_ROOT="$PWD/$PROJECT_ROOT" ;;
-esac
+**日期**: $(date +%Y-%m-%d)
+**项目**: $(basename "${PROJECT_PATH}")
+**调用**: /kallax-init
 
-cd "$PROJECT_ROOT"
-# ── Environment check: KALLAX skills must exist somewhere ─────────────────
-SKILLS_GLOBAL="$HOME/.claude/skills/kallax/SKILL.md"
-SKILLS_BUNDLED="$(dirname "$0")/../.claude/skills/kallax/SKILL.md"
+## 3 库 边界
+- **docs/**: 设计文档 / 决策记录 / 经验教训 / 索引
+- **jira/**: EPIC / Ticket / Sub-task
+- **scripts/**: 实现代码 + 工具脚本
 
-if [ -f "$SKILLS_GLOBAL" ]; then
-  KALLAX_SKILLS_SRC="$(dirname "$SKILLS_GLOBAL")"
-  echo "✓ KALLAX skills found: $KALLAX_SKILLS_SRC"
-elif [ -f "$SKILLS_BUNDLED" ]; then
-  KALLAX_SKILLS_SRC="$(dirname "$SKILLS_BUNDLED")"
-  echo "✓ KALLAX skills found (bundled): $KALLAX_SKILLS_SRC"
-else
-  cat << PROMPT
+## 消息队列 (跟"反讽" 联合, 跟"独立" 拍 explicit 约束 联合)
+- **.kallax/queue/inbox/<role>_<id>/**: 收报 PASS
+- **.kallax/queue/outbox/<role>_<id>/**: 报 Conductor 派单
+- **.kallax/queue/results/**: 报结果 (JSON)
+- **.kallax/queue/dispatch/**: Conductor 派单
+- **.kallax/queue/rotate.sh**: 每日轮转 (跟 Rule 17 联合)
 
-╔════════════════════════════════════════════════════╗
-║  KALLAX skills not found                           ║
-╠════════════════════════════════════════════════════╣
-║  Skills are required for expert panel, slash       ║
-║  commands, and performer initialization.           ║
-║                                                    ║
-║  Where to deploy?                                  ║
-║  [1] ~/.claude/skills/kallax/  (global, all projects) ║
-║  [2] .claude/skills/kallax/    (this project only) ║
-║  [3] Skip (no skills)                              ║
-╚════════════════════════════════════════════════════╝
-PROMPT
+## Subagent 团队 (5 default + 5 extended = 10)
+- A 正向: architect + backend + security + frontend + ux + product
+- B 逆袭: security-tool-bypass + process-engineering + auditor + compliance + decision-gate
 
-  read -p "Choose [1/2/3]: " CHOICE
-  case "${CHOICE}" in
-    1)
-      mkdir -p "$HOME/.claude/skills"
-      cp -r "$(dirname "$0")/../.claude/skills/kallax" "$HOME/.claude/skills/kallax" 2>/dev/null &&         echo "✓ Skills deployed to $HOME/.claude/skills/kallax/" ||         echo "⚠ Deploy failed — copy manually from KALLAX source"
-      KALLAX_SKILLS_SRC="$HOME/.claude/skills/kallax"
-      ;;
-    2)
-      KALLAX_SKILLS_SRC=""
-      echo "→ Skills will be copied to .claude/skills/kallax/ by init"
-      ;;
-    *)
-      echo "→ Skipping skills deployment (use --force to retry)"
-      KALLAX_SKILLS_SRC=""
-      ;;
-  esac
-fi
+## 下一步
+等主公拍 explicit 授权 (跟"独立" 拍 explicit 约束 联合), 进入 Phase 1.
+EOF
 
-
-
-CREATED_DIRS=()
-CREATED_FILES=()
-EXISTING_DIRS=()
-EXISTING_FILES=()
-
-# Helper: create dir if not exists
-ensure_dir() {
-  local dir="$1"
-  if [ -d "$dir" ]; then
-    EXISTING_DIRS+=("$dir")
-  else
-    mkdir -p "$dir"
-    CREATED_DIRS+=("$dir")
-  fi
-}
-
-# Helper: create file if not exists (or if --force)
-ensure_file() {
-  local file="$1"
-  local content="$2"
-  if [ -f "$file" ] && [ "$FORCE" = false ]; then
-    EXISTING_FILES+=("$file")
-  else
-    mkdir -p "$(dirname "$file")"
-    printf '%s\n' "$content" > "$file"
-    CREATED_FILES+=("$file")
-  fi
-}
-
-# ── .kallax/ directory tree ──
-ensure_dir ".kallax/instances"
-ensure_dir ".kallax/hooks"
-ensure_dir ".kallax/config"
-ensure_dir ".kallax/queue"
-ensure_dir ".kallax/schemas"
-
-# ── confluence/ directory tree ──
-ensure_dir "confluence/memory"
-ensure_dir "confluence/decisions"
-ensure_dir "confluence/runbooks"
-
-# ── jira/ directory tree ──
-ensure_dir "jira/phases"
-ensure_dir "jira/epics"
-ensure_dir "jira/tickets"
-ensure_dir "jira/schemas"
-
-# ── .claude/skills/ — copy from system template ──
-SKILLS_SRC="${KALLAX_SKILLS_SRC:-$HOME/.claude/skills/kallax}"
-if [ -d "$SKILLS_SRC" ]; then
-  ensure_dir ".claude/skills"
-  if [ ! -d ".claude/skills/kallax" ] || [ "$FORCE" = true ]; then
-    cp -r "$SKILLS_SRC" ".claude/skills/kallax" 2>/dev/null &&       CREATED_DIRS+=(".claude/skills/kallax (skills from $SKILLS_SRC)") ||       echo "  ⚠ Could not copy skills from $SKILLS_SRC"
-  else
-    EXISTING_DIRS+=(".claude/skills/kallax")
-  fi
-else
-  echo "  ⚠ Skills source not found: $SKILLS_SRC — skipping"
-fi
-
-# ── phase_index.json empty template ──
-ensure_file "jira/phases/phase_index.json" '{
-  "phases": []
-}
-'
-
-# ── epic_index.json empty template ──
-ensure_file "jira/epics/epic_index.json" '{
-  "epics": []
-}
-'
-
-# ── directory-structure.md schema ──
-ensure_file ".kallax/schemas/directory-structure.md" '# KALLAX Directory Structure
-
-## .kallax/ (KALLAX system directory)
-- instances/ — Instance registry files
-- hooks/ — Git and lifecycle hooks
-- config/ — Configuration files
-- queue/ — Task queue
-- schemas/ — Schema definitions
-
-## jira/ (Project management)
-- phases/ — Phase definitions and phase_index.json
-- epics/ — Epic definitions and epic_index.json
-- tickets/ — Ticket definitions
-- schemas/ — Schema definitions (ticket-schema.md, etc.)
-
-## confluence/ (Knowledge base)
-- memory/ — Project memory and patterns
-- decisions/ — Architecture decision records
-- runbooks/ — Operational runbooks
-'
-
-# ── Report ──
+# Step 7: 等主公拍 explicit 授权 (跟"反讽" 联合, 跟"独立" 拍 explicit 约束 联合)
 echo ""
-echo "=== KALLAX Init Report ==="
-echo "Project: $PROJECT_ROOT"
+echo "✅ 3 库骨架 + CLAUDE.md + 5 default + 5 extended skill 文档 + INIT-REPORT.md 落地"
 echo ""
-
-if [ ${#CREATED_DIRS[@]} -gt 0 ]; then
-  echo "Created directories:"
-  for d in "${CREATED_DIRS[@]}"; do echo "  + $d"; done
-  echo ""
-fi
-
-if [ ${#CREATED_FILES[@]} -gt 0 ]; then
-  echo "Created files:"
-  for f in "${CREATED_FILES[@]}"; do echo "  + $f"; done
-  echo ""
-fi
-
-if [ ${#EXISTING_DIRS[@]} -gt 0 ]; then
-  echo "Directories already existed (skipped):"
-  for d in "${EXISTING_DIRS[@]}"; do echo "  ~ $d"; done
-  echo ""
-fi
-
-if [ ${#EXISTING_FILES[@]} -gt 0 ]; then
-  echo "Files already existed (skipped):"
-  for f in "${EXISTING_FILES[@]}"; do echo "  ~ $f"; done
-  echo ""
-fi
-
-TOTAL_CREATED=$(( ${#CREATED_DIRS[@]} + ${#CREATED_FILES[@]} ))
-echo "Summary: $TOTAL_CREATED items created, ${#EXISTING_DIRS[@]} dirs + ${#EXISTING_FILES[@]} files already present."
-echo "Initialization complete."
+echo "⚠️ 等主公拍 explicit 授权 进入 Phase 1 (跟\"独立\" 拍 explicit 约束 联合, 跟 Rule 11 联合)"
