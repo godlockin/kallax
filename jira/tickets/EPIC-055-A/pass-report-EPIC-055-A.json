@@ -1,0 +1,87 @@
+{
+  "ticket_id": "EPIC-055-A",
+  "performer_id": "performer-EPIC-055-A",
+  "commit_sha": "106293adb3d197cd4a01011f702d846117d8d442",
+  "branch": "feature/EPIC-055-A-claude-glossary-dedup",
+  "worktree": "/Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.kallax/worktrees/performer-EPIC-055-A",
+  "files_created": [
+    "jira/tickets/EPIC-055-A/IMPLEMENTATION-PLAN.md",
+    "jira/tickets/EPIC-055-A/LESSONS-LEARNED.md",
+    "tests/integration/doc-dedup-test.sh"
+  ],
+  "files_modified": [
+    "CLAUDE.md",
+    "docs/KALLAX-GLOSSARY.md",
+    "docs/PHASE-INDEX.md"
+  ],
+  "test_output_raw": "PASS tests/integration/doc-dedup-test.sh\nTests: 6 passed, 6 total\n\n  [PASS] TC1: 重复章节扫描 (CLAUDE.md 顶部外链 ≥5 条, 治 14 重复概念) [4/4 sub-checks: 7 links to GLOSSARY, 2 inline refs]\n  [PASS] TC2: 外链完整性 (CLAUDE.md → GLOSSARY ≥7 锚链接, GLOSSARY → CLAUDE.md ≥2 链接) [3/3 sub-checks: 7/7 anchors + 31 back-links]\n  [PASS] TC3: 体量减少 (CLAUDE.md + GLOSSARY ≤ 35000 bytes, from 70035 baseline) [3/3 sub-checks: CLAUDE.md=22130 (-46.0%), GLOSSARY=11871, total=34001 (-51.5%)]\n  [PASS] TC4: 章节唯一性 (CLAUDE.md vs GLOSSARY H2/H3 标题无大段重复) [3/3 sub-checks: CLAUDE.md has 23 Rules, GLOSSARY has 34 术语]\n  [PASS] TC5: 死链检测 (CLAUDE.md 跟 GLOSSARY 互链 + PHASE-INDEX 链接 target 存在) [4/4 sub-checks: GLOSSARY.md exists + PHASE-INDEX link + relative path + 📖 SoT section]\n  [PASS] TC6: 一致性校验 (CLAUDE.md 跟 GLOSSARY 共同提到 Rule 16/Rule 11/Rule 9 等, 编号一致) [6/6 sub-checks: Rule 9/11/16 编号 在 CLAUDE.md 跟 GLOSSARY 一致]\n\n==========================================\nSummary: 6/6 PASS (100.0%)\n==========================================\n\nPer-TC sub-checks:\n  TC1: 4/4 sub-checks\n  TC2: 3/3 sub-checks\n  TC3: 3/3 sub-checks\n  TC4: 3/3 sub-checks\n  TC5: 4/4 sub-checks\n  TC6: 6/6 sub-checks\n\nSize baseline vs current:\n  CLAUDE.md: 40970 → 22130 bytes\n  GLOSSARY:  29065 → 11871 bytes\n  Total:     70035 → 34001 bytes (-51.5%)\n\nSTATUS: ALL PASS (6/6 = 100.0%)\nEPIC-055-A SoT 闭环: CLAUDE.md (Rule) + GLOSSARY (术语) 互链 + 体量 -51.5%",
+  "anti_fab_results": {
+    "check-test-case-isolation": "PASS (0/50 test cases leaked)",
+    "check-kpi-precision": "PASS (0 estimate patterns)",
+    "check-scope-creep": "PASS (5 files within ticket scope)",
+    "check-fact-forcing-preflight": "PASS (4-Level Fact-Forcing 强验证)",
+    "l3-l4-consistency": "PASS (L3 PASS/L4 PASS — consistent, BE-9 防御)",
+    "kpi-evidence-chain": "PASS",
+    "tool-self-check": "PASS (8/8 = 100.0%, Rule 29 工具不可绕过)"
+  },
+  "kpi_x_of_y": "6/6 (100.0%)",
+  "lessons_learned_path": "jira/tickets/EPIC-055-A/LESSONS-LEARNED.md",
+  "implementation_plan_path": "jira/tickets/EPIC-055-A/IMPLEMENTATION-PLAN.md",
+  "be_events": [],
+  "boundary_violations": 0,
+  "master_strong_verification_ready": true,
+  "size_baseline_bytes": 70035,
+  "size_current_bytes": 34001,
+  "size_target_bytes": "≤35000 (-50%)",
+  "size_reduction_pct": "-51.5%",
+  "claude_md_baseline": 40970,
+  "claude_md_current": 22130,
+  "claude_md_reduction": "-46.0%",
+  "glossary_baseline": 29065,
+  "glossary_current": 11871,
+  "glossary_reduction": "-59.2%",
+  "sot_design": {
+    "claude_md_role": "Rule SoT (规则/红线/必读, Rule 1-18 + 29-33)",
+    "glossary_role": "术语 SoT (黑话/概念, 34 个术语)",
+    "phase_index_role": "PHASE 文档索引 (含 SoT 索引 章节)",
+    "cross_reference_strategy": "双向顶部锚定 (CLAUDE.md → GLOSSARY, GLOSSARY → CLAUDE.md, 用 Rule 编号 + 短描述 + 链 形式)",
+    "linked_tickets": [
+      "EPIC-054-D (Rule 合并 proposal 候选 B 反讽治根)",
+      "EPIC-055-B (主公拍板分级 P0/P1/P2, 已 merged 2b4771c)"
+    ]
+  },
+  "rules_referenced_in_glossary": [
+    "Rule 5 (类型安全强制化 / DRY)",
+    "Rule 6 (经验沉淀强制化)",
+    "Rule 7 (PHASE 闭环 review)",
+    "Rule 9 (4-Level Fact-Forcing)",
+    "Rule 9a/9b/9c (Anti-Fabrication 子规则)",
+    "Rule 10 (Anti-Fabrication 强制)",
+    "Rule 11 (Master 写代码禁令)",
+    "Rule 13 (3 模式决策权分配)",
+    "Rule 14 (Conductor 不能越界)",
+    "Rule 15 (Performer Session 自动加载)",
+    "Rule 16 (Subagent 5 步强制流程)",
+    "Rule 17 (文件并发竞争 5 步)",
+    "Rule 18 (KPI Falsification 反模式黑名单)",
+    "Rule 29 (工具不可绕过)",
+    "Rule 30 (自验证需独立见证)",
+    "Rule 31 (独立见证机制)",
+    "Rule 32 (软约束升级阈值)"
+  ],
+  "next_action": "Conductor merge feature/EPIC-055-A-claude-glossary-dedup → testing (Performer 不 merge, 跟 Rule 11 + Rule 16 联合)",
+  "do_not_list": {
+    "background_mode": false,
+    "scope_creep": false,
+    "delete_content": false,
+    "merge_to_miao": false,
+    "self_review": false,
+    "simplified_pass": false
+  },
+  "report_date": "2026-06-17",
+  "kallax_root": "/Users/chenchen/working/sourcecode/tools/dev-tools/kallax",
+  "phase": "PHASE-009",
+  "ticket_priority": "P1",
+  "ticket_type": "refactor",
+  "estimated_hours": 6
+}
