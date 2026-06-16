@@ -2,6 +2,26 @@
 
 > **跟"反讽" 联合, 跟"反哺框架" 战略 一致, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合**
 
+## 📖 SoT 索引 (跟 Rule 5 DRY 联合, 跟 EPIC-055-A 联动)
+
+KALLAX 文档 Single Source of Truth (SoT) — 修订前查 SoT 边界, 避免重复知识 (跟 A5 治根 联合):
+
+| SoT 文件 | 内容 | 适用场景 |
+|---|---|---|
+| [CLAUDE.md](../CLAUDE.md) | **Rule SoT** — 规则/红线/必读 (Rule 1-18 + 29-33) | 改 Rule / 加红线 / 必读章节 |
+| [KALLAX-GLOSSARY.md](KALLAX-GLOSSARY.md) | **术语 SoT** — 黑话/概念/术语 (34 个) | 改术语定义 / 加新黑话 |
+| [PHASE-INDEX.md](PHASE-INDEX.md) | **PHASE 文档索引** (本文档) | 引用 PHASE review / 决策文档 |
+
+**修订规则**:
+- 改 Rule → 只改 CLAUDE.md (Rule SoT)
+- 改术语定义 → 只改 KALLAX-GLOSSARY.md (术语 SoT)
+- 跨 SoT 引用 → 用相对路径 + anchor link (e.g. `[CLAUDE.md Rule 16](../CLAUDE.md#16-...)`)
+- ❌ **禁止**: 在 GLOSSARY 复制 Rule 全文, 或在 CLAUDE.md 复制术语全文
+
+**联动 ticket**: EPIC-055-A (CLAUDE.md + KALLAX-GLOSSARY.md 去重, 单一 SoT, 治 A5 重复知识, Rule 5 DRY 落地)
+
+---
+
 ## 累计 PHASE 文档 (跟 v1.3.3 联合)
 
 | 文档 | 路径 | 关键内容 | 跟"反讽" 联合 |
