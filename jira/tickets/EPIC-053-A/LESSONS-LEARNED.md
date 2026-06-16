@@ -63,6 +63,20 @@ L4 FAIL  ERROR   OK
 
 ---
 
+## L6 — check-scope-creep 工具局限性 (诚实记录, 待修)
+
+**发现**: EPIC-053-A 自己 file_scope 包含 `jira/tickets/EPIC-053-A/` (目录), 但 `check-scope-creep.sh` 只做 exact string match, 不支持 directory glob 模式. 跑本工单的 scope check 时, IMPLEMENTATION-PLAN.md + LESSONS-LEARNED.md 被错报为 out-of-scope (exit=1).
+
+**真相**: 5 个文件全部在 file_scope.includes 里 (3 explicit + 2 in directory). 是工具的局限性, 不是边界越界.
+
+**修法建议** (给后续工单): `check-scope-creep.sh` 应支持 `*/` 目录模式 — 当 allowed 以 `/` 结尾, 用 prefix match; 否则 exact match. 跟 `l3-l4-consistency` 一样需要修.
+
+**本工单处理**: 不修 check-scope-creep (不在 file_scope). 在 pass-report 里诚实标记为 `FAIL (tool limitation, not actual scope violation)`, boundary_violations = 0 (按 intent 算). 跟 Rule 9 (no falsification) 联合.
+
+**Rule 联动**: Rule 9 KPI 精确, Rule 18 黑名单 (不报伪 PASS).
+
+---
+
 ## 与 EPIC-053-B/C/D 的接口
 
 | Ticket | 责任 | 跟 EPIC-053-A 联动 |
