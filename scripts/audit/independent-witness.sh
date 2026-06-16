@@ -4,10 +4,12 @@
 # 根因 3: 独立见证机制缺失 — 治 root cause
 # 跟 BE-7 修复模式 联合 (umask 077 + install -d -m 700)
 # 跟 Rule 31 联合 (独立见证机制)
+# 跟 EPIC-053-B 联合: 4-Level KPI Evidence Chain 集成
 #
 # 用法:
 #   bash scripts/audit/independent-witness.sh verify <subagent_id> <ticket_id>
 #   bash scripts/audit/independent-witness.sh witness <subagent_id> <ticket_id> <evidence_type>
+#   bash scripts/audit/independent-witness.sh verify-4level <ticket_id> <commit_sha> <stdout_file>
 #
 # 设计:
 #   - 方案 4: 不可篡改 audit log sink (跟 audit-log-sink.sh 联合)
@@ -15,6 +17,7 @@
 #   - 独立见证由 audit-log-sink.sh 记录 (subagent 不能写自己的 audit)
 #   - 跟 subagent-pass-gate.sh 集成 (Rule 26 联合)
 #   - 跟 conductor-receive-gate.sh 集成 (Rule 27 联合)
+#   - 跟 kpi-evidence-chain.sh 集成 (EPIC-053-B 联合) — verify-4level 子命令
 #===============================================================================
 
 set -euo pipefail
@@ -22,6 +25,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 AUDIT_SINK_SCRIPT="$SCRIPT_DIR/audit-log-sink.sh"
+EVIDENCE_CHAIN_SCRIPT="$KALLAX_ROOT/scripts/verify/kpi-evidence-chain.sh"
 
 # 独立见证验证
 witness_verify() {
@@ -121,6 +125,54 @@ witness_record() {
     fi
 }
 
+# -------------------------------------------------------
+# 4-Level evidence chain verification (EPIC-053-B 联动)
+# Args: $1 = ticket_id, $2 = commit_sha, $3 = test_stdout_file
+# Returns: 0 if all 4 levels PASS, 1 if any FAIL
+# -------------------------------------------------------
+witness_verify_4level() {
+    local ticket_id="$1"
+    local commit_sha="$2"
+    local stdout_file="$3"
+
+    if [[ -z "$ticket_id" ]] || [[ -z "$commit_sha" ]] || [[ -z "$stdout_file" ]]; then
+        echo "Usage: $0 verify-4level <ticket_id> <commit_sha> <test_stdout_file>" >&2
+        return 1
+    fi
+
+    if [[ ! -x "$EVIDENCE_CHAIN_SCRIPT" ]]; then
+        echo "FAIL: kpi-evidence-chain.sh not found or not executable: $EVIDENCE_CHAIN_SCRIPT"
+        return 1
+    fi
+
+    echo "=========================================="
+    echo "Independent Witness — 4-Level Evidence Chain (EPIC-053-B)"
+    echo "=========================================="
+    echo "Ticket: $ticket_id"
+    echo "Commit: $commit_sha"
+    echo "Stdout: $stdout_file"
+    echo ""
+
+    # Delegate to kpi-evidence-chain.sh verify command
+    if bash "$EVIDENCE_CHAIN_SCRIPT" verify "$ticket_id" "$commit_sha" "$stdout_file"; then
+        # Record 4-level witness into audit-log-sink (跟 Rule 31 联合)
+        if [[ -x "$AUDIT_SINK_SCRIPT" ]]; then
+            local timestamp
+            timestamp="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            bash "$AUDIT_SINK_SCRIPT" write "witness_4level" "$ticket_id" \
+                "sha=$commit_sha level=4/4 ts=$timestamp source=independent-witness" \
+                >/dev/null 2>&1 || true
+        fi
+        echo ""
+        echo "PASS: 4-Level evidence chain witnessed for $ticket_id"
+        return 0
+    fi
+
+    echo ""
+    echo "FAIL: 4-Level evidence chain verification FAILED for $ticket_id"
+    return 1
+}
+
 # CLI 入口
 main() {
     local action="${1:-}"
@@ -143,15 +195,27 @@ main() {
             fi
             witness_record "$subagent_id" "$ticket_id" "$evidence_type"
             ;;
+        verify-4level)
+            local v4l_ticket_id="${2:-}"
+            local v4l_commit_sha="${3:-}"
+            local v4l_stdout_file="${4:-}"
+            if [[ -z "$v4l_ticket_id" ]] || [[ -z "$v4l_commit_sha" ]] || [[ -z "$v4l_stdout_file" ]]; then
+                echo "Usage: $0 verify-4level <ticket_id> <commit_sha> <test_stdout_file>" >&2
+                exit 1
+            fi
+            witness_verify_4level "$v4l_ticket_id" "$v4l_commit_sha" "$v4l_stdout_file"
+            ;;
         *)
-            echo "Usage: $0 <verify|witness> [args...]" >&2
+            echo "Usage: $0 <verify|witness|verify-4level> [args...]" >&2
             echo ""
             echo "Commands:"
-            echo "  verify <subagent_id> <ticket_id>              — Verify subagent PASS with independent witness"
-            echo "  witness <subagent_id> <ticket_id> <type>      — Record evidence to audit-log-sink"
+            echo "  verify <subagent_id> <ticket_id>                       — Verify subagent PASS with independent witness"
+            echo "  witness <subagent_id> <ticket_id> <type>               — Record evidence to audit-log-sink"
+            echo "  verify-4level <ticket_id> <commit_sha> <stdout_file>   — 4-Level evidence chain verify (EPIC-053-B)"
             echo ""
             echo "跟 Rule 31 联合: 独立见证机制"
             echo "跟 BE-7 修复模式 联合: umask 077 + install -d -m 700"
+            echo "跟 EPIC-053-B 联合: 4-Level KPI Evidence Chain 集成"
             exit 1
             ;;
     esac
