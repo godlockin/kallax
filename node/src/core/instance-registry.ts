@@ -1,6 +1,12 @@
 /**
  * KALLAX Instance Registry
  * Track and manage Conductor/Performer instances
+ *
+ * EPIC-054-B: 升级 TTL 30s → 7d (Resource Management 硬要求)
+ *   - instanceCache TTL = 7 * 24 * 60 * 60 * 1000 ms (7 天)
+ *   - register() 检查 lastHeartbeat, 超 7 天自动 unregister 老实例
+ *   - markInstancesByTTL(thresholdMs) 新增 — LRU 排序 + 超 threshold unregister
+ *   - 跟 scripts/instance/cleanup.sh 联动 (shell 层 + node 层双覆盖)
  */
 
 import * as os from 'node:os';
@@ -9,6 +15,12 @@ import type { KallaxResult, Instance, InstanceRole, InstanceStatus } from '../ty
 import { logger } from '../utils/logger.js';
 import { createCache, type Cache } from './cache-layer.js';
 import type { SQLiteManager } from './sqlite/index.js';
+
+// EPIC-054-B: TTL 7 days = 604,800,000 ms (was 30s)
+export const INSTANCE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+export const INSTANCE_CACHE_MAX = 100;
+// Protected roles that survive TTL expiry (conductor/master are precious)
+export const PROTECTED_ROLES: ReadonlySet<InstanceRole | string> = new Set(['conductor', 'master']);
 
 export interface InstanceRegistry {
   register: (role: InstanceRole, capabilities?: string[]) => Promise<KallaxResult<Instance>>;
@@ -19,6 +31,7 @@ export interface InstanceRegistry {
   listByRole: (role: InstanceRole) => Promise<KallaxResult<Instance[]>>;
   listActive: () => Promise<KallaxResult<Instance[]>>;
   markStaleInstances: (thresholdMs: number) => Promise<KallaxResult<Instance[]>>;
+  markInstancesByTTL: (thresholdMs: number) => Promise<KallaxResult<Instance[]>>;
   getCurrentInstance: () => Instance | null;
 }
 
@@ -29,15 +42,47 @@ function generateInstanceId(): string {
 export function createInstanceRegistry(db: SQLiteManager): InstanceRegistry {
   let currentInstance: Instance | null = null;
 
-  // Local cache for faster lookups
+  // EPIC-054-B: TTL 30s → 7d (Resource Management 硬要求)
+  // 7 天覆盖典型周末 + 短假, 平衡"及时清理僵尸" vs "误删活跃 session"
   const instanceCache: Cache<string, Instance> = createCache('instance-registry', {
-    max: 100,
-    ttlMs: 30000, // 30 seconds
+    max: INSTANCE_CACHE_MAX,
+    ttlMs: INSTANCE_TTL_MS,
+    updateAgeOnGet: true,
+    dispose: (value, key) => {
+      logger.info({ cacheName: 'instance-registry', key }, 'instance cache entry disposed (7d TTL)');
+    },
   });
 
   return {
     async register(role, capabilities = []): Promise<KallaxResult<Instance>> {
       const now = Date.now();
+
+      // EPIC-054-B: register 前先扫 TTL 过期实例 (RLU 自我清理)
+      // 跟 scripts/instance/cleanup.sh 联动 — node 层 + shell 层双覆盖
+      const staleResult = db.listInstances();
+      if (staleResult.isOk()) {
+        const stale = staleResult.value.filter((i) => {
+          const ageMs = now - i.lastHeartbeat;
+          return ageMs > INSTANCE_TTL_MS && !PROTECTED_ROLES.has(i.role);
+        });
+        if (stale.length > 0) {
+          logger.info(
+            { count: stale.length, thresholdMs: INSTANCE_TTL_MS },
+            'EPIC-054-B: sweeping TTL-expired instances before register'
+          );
+          for (const old of stale) {
+            const updateResult = db.updateInstance(old.id, { status: 'error' });
+            if (updateResult.isOk()) {
+              instanceCache.delete(old.id);
+              logger.warn(
+                { instanceId: old.id, lastHeartbeat: old.lastHeartbeat },
+                'EPIC-054-B: instance auto-unregistered (>7d no heartbeat)'
+              );
+            }
+          }
+        }
+      }
+
       const instance: Instance = {
         id: generateInstanceId(),
         role,
@@ -55,7 +100,7 @@ export function createInstanceRegistry(db: SQLiteManager): InstanceRegistry {
         return err(regResult.error);
       }
 
-      instanceCache.set(instance.id, instance);
+      instanceCache.set(instance.id, instance, INSTANCE_TTL_MS);
       currentInstance = instance;
 
       logger.info(
@@ -171,6 +216,52 @@ export function createInstanceRegistry(db: SQLiteManager): InstanceRegistry {
       }
 
       return ok(staleResult.value);
+    },
+
+    /**
+     * EPIC-054-B: LRU 排序 + 超 thresholdMs unregister
+     * 跟 scripts/instance/cleanup.sh 语义一致 — protected roles 优先保留
+     * Sort by lastHeartbeat asc (oldest first = LRU victim first)
+     */
+    async markInstancesByTTL(thresholdMs): Promise<KallaxResult<Instance[]>> {
+      const listResult = db.listInstances();
+      if (listResult.isErr()) {
+        return listResult;
+      }
+
+      const now = Date.now();
+      // Filter: lastHeartbeat 超 threshold 且 role 非 protected
+      const candidates = listResult.value.filter((i) => {
+        const ageMs = now - i.lastHeartbeat;
+        const expired = ageMs > thresholdMs;
+        const protectedRole = PROTECTED_ROLES.has(i.role);
+        return expired && !protectedRole;
+      });
+
+      // LRU 排序: 按 lastHeartbeat 升序 (oldest first)
+      candidates.sort((a, b) => a.lastHeartbeat - b.lastHeartbeat);
+
+      const removed: Instance[] = [];
+      for (const instance of candidates) {
+        const updateResult = db.updateInstance(instance.id, { status: 'error' });
+        if (updateResult.isErr()) {
+          logger.warn({ instanceId: instance.id }, 'failed to mark TTL-expired instance');
+          continue;
+        }
+        instanceCache.delete(instance.id);
+        removed.push(instance);
+        logger.warn(
+          {
+            instanceId: instance.id,
+            role: instance.role,
+            lastHeartbeat: instance.lastHeartbeat,
+            ageMs: now - instance.lastHeartbeat,
+          },
+          'EPIC-054-B: marked instance as TTL-expired (7d)'
+        );
+      }
+
+      return ok(removed);
     },
 
     getCurrentInstance(): Instance | null {
