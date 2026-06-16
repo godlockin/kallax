@@ -16,7 +16,8 @@
       "jira/tickets/EPIC-053-F/",
       "scripts/verify/check-scope-creep.sh",
       "tests/integration/l3-l4-consistency-test.sh",
-      "tests/integration/l3-l4-consistency-truth-table-test.sh"
+      "tests/integration/l3-l4-consistency-truth-table-test.sh",
+      "tests/integration/scope-creep-glob-test.sh"
     ],
     "excludes": []
   },
