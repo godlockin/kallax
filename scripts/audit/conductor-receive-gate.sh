@@ -92,6 +92,47 @@ else
     echo "[L4 PASS] preflight PASS"
 fi
 
+# L5: EPIC-053-E — l3-l4-consistency.sh wired into conductor receive gate (治 BE-5 反讽)
+# Conductor 接收 subagent PASS 报告时, 必须确认 subagent 自报 PASS 跟 verify 系统的 PASS 一致 (L3↔L4).
+# 这是 ticket close 链的关键 gate, 不能 0 命中 l3-l4-consistency.
+echo ""
+echo "--- L5: L3/L4 Consistency Wiring (EPIC-053-E, 治 BE-5 反讽) ---"
+L3L4_SCRIPT="$KALLAX_ROOT/scripts/verify/l3-l4-consistency.sh"
+L3L4_FAIL=0
+if [[ ! -x "$L3L4_SCRIPT" ]]; then
+    echo "[L5 FAIL] l3-l4-consistency.sh not found or not executable: $L3L4_SCRIPT"
+    L3L4_FAIL=1
+else
+    # Self-test 1: PASS/PASS = OK (consistent — same status)
+    set +e
+    bash "$L3L4_SCRIPT" --l3-status=PASS --l4-status=PASS >/dev/null 2>&1
+    RC1=$?
+    set -e
+    if [[ $RC1 -ne 0 ]]; then
+        echo "[L5 FAIL] l3-l4-consistency PASS/PASS expected OK, got ERROR (exit=$RC1)"
+        L3L4_FAIL=1
+    else
+        echo "[L5 PASS] l3-l4-consistency PASS/PASS = OK (consistent)"
+    fi
+    # Self-test 2: PASS/FAIL = ERROR (contradiction detected)
+    set +e
+    bash "$L3L4_SCRIPT" --l3-status=PASS --l4-status=FAIL >/dev/null 2>&1
+    RC2=$?
+    set -e
+    if [[ $RC2 -eq 0 ]]; then
+        echo "[L5 FAIL] l3-l4-consistency PASS/FAIL expected ERROR (contradiction), got OK (exit=$RC2)"
+        L3L4_FAIL=1
+    else
+        echo "[L5 PASS] l3-l4-consistency PASS/FAIL = ERROR (contradiction detected)"
+    fi
+fi
+
+if [[ $L3L4_FAIL -ne 0 ]]; then
+    echo ""
+    echo "BLOCKED: l3-l4-consistency.sh not wired into conductor receive gate (BE-5 反讽)"
+    exit 1
+fi
+
 echo ""
 echo "=========================================="
 echo "GATE RESULT: PASS"
