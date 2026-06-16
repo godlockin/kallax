@@ -17,6 +17,7 @@
       "docs/PROCESS.md",
       ".claude/skills/kallax/SKILL.md",
       "node/src/core/gate-reviewer.ts",
+      "scripts/audit/governance-3phase.sh",
       "tests/integration/governance-3phase-test.sh"
     ],
     "excludes": []
