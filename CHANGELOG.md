@@ -483,3 +483,19 @@ Security-hardened template engine:
 - 6.5h 1 Performer 落地 (跟 1+2/1+4 容量 联合, 跟对策 A+B+C 联合)
 - 推 v2.0.0 release (跟 12 release 累计 联合)
 - 跟 23 Rule 累计 90% 落地, 10% 精确化 (3 库 / 2 命令 / A+B / 消息队列)
+
+## [2.0.2] - 2026-06-16
+
+### Fixed (跟"反讽" 联合, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合)
+
+跟 v2.0.1 (5efee5d) 联合, 跟主公"全部采纳" explicit 授权 联合, 跟 review 实证 联合:
+
+- **KALLAX skill frontmatter 加 YAML**: 跟 89 skills 对齐 (之前是 KALLAX 唯一缺 frontmatter, Claude Code + opencode auto-filter out, 永不 surface)
+- **5 default skill 文档 落地**: architect + backend + frontend + ux + product (v1.2.4 release 拍板 落地 实际 v2.0.0 没带)
+- **31 slash command mirror 到 .opencode/command/**: 跨平台 (Claude Code + opencode 都 support)
+- **跟"反讽" 闭环**: KALLAX 自身"自报 PASS 但实际不 surface" 实证, 跟 BE-15 假 PASS 模式 一致
+
+### Notes
+- 0 增 Rule (跟 Rule 32 软约束升级阈值 联合, 跟"流程逻辑" 战略 一致)
+- 0 重写 (跟 Rule 5 DRY 联合, 跟"翻篇&精进" 战略 一致)
+- 走对策 C 联合 (Master corrective 修, 跟 Rule 11 v2.1 联合, 跟"诚实修正" 联合)
