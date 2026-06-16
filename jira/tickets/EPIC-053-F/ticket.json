@@ -1,0 +1,34 @@
+{
+  "id": "EPIC-053-F",
+  "epicId": "EPIC-053",
+  "phaseId": "PHASE-009",
+  "title": "check-scope-creep.sh glob bug fix + tests/integration/l3-l4-consistency-test.sh 命名误导 (重命名 truth-table)",
+  "type": "bug",
+  "priority": "P1",
+  "status": "ready",
+  "created_by": "master_main (B 组 5 extended review 逆袭发现 #2 + #3, 2026-06-16)",
+  "created_at": "2026-06-16T22:00:00Z",
+  "blocked_by": "EPIC-053-A",
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-053-F/",
+      "scripts/verify/check-scope-creep.sh",
+      "tests/integration/l3-l4-consistency-test.sh",
+      "tests/integration/l3-l4-consistency-truth-table-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/verify/check-scope-creep.sh 修 — glob pattern 改 support jira/tickets/EPIC-XXX/ 目录 (B 组实测 exit=1 false positive 复现)",
+    "tests/integration/l3-l4-consistency-test.sh git mv → l3-l4-consistency-truth-table-test.sh (B 组命名误导发现, 实际是 truth-table unit test 不是 Integration)",
+    "Bash 5.x 兼容 patterns (跟 EPIC-053-C 联动, 治 BE-10 模式)",
+    "tests/integration/l3-l4-consistency-truth-table-test.sh 跑通 4/4 PASS (跟原 test 一致)",
+    "check-scope-creep.sh 跑 jira/tickets/EPIC-053-A/ 不再 exit=1 (实测验证)",
+    "tests/integration/scope-creep-glob-test.sh 4/4 PASS (4 pattern: file, dir, glob, no-match)",
+    "Rule 9 KPI 精确 X/Y 格式 — 4/4 + 4/4 = 8/8 PASS = 100.0%"
+  ],
+  "estimated_hours": 4,
+  "status_set_by": "master_main (B 组 5 extended review 逆袭发现 #2+#3, P1 工具 bug + 命名误导)"
+}

@@ -1,0 +1,38 @@
+{
+  "id": "EPIC-053-E",
+  "epicId": "EPIC-053",
+  "phaseId": "PHASE-009",
+  "title": "新 preflight wiring gap (新 l3-l4-consistency 0 命中 ROOT-level preflight + ticket-gate 链, 治 BE-5 反讽)",
+  "type": "bug",
+  "priority": "P0",
+  "status": "ready",
+  "created_by": "master_main (B 组 5 extended review 逆袭发现 #1, 2026-06-16)",
+  "created_at": "2026-06-16T22:00:00Z",
+  "blocked_by": "EPIC-053-A",
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-053-E/",
+      "scripts/verify/check-fact-forcing-preflight.sh",
+      "scripts/audit/subagent-pass-gate.sh",
+      "scripts/audit/conductor-receive-gate.sh",
+      "scripts/master/strong-verify-6d.sh",
+      "scripts/conductor/review.sh",
+      "tests/integration/l3-l4-wiring-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/verify/l3-l4-consistency.sh 接入 ROOT-level preflight (不是只接 pre-commit hook, B 组发现 ROOT-level preflight/master/conductor/audit/process/workflows 0 命中)",
+    "scripts/audit/subagent-pass-gate.sh 升级 — 调 l3-l4-consistency.sh 验证 subagent 自报 PASS 真伪",
+    "scripts/audit/conductor-receive-gate.sh 升级 — 调 l3-l4-consistency.sh 验证 ticket close 链",
+    "scripts/master/strong-verify-6d.sh 升级 — L4 preflight 检查 包含 l3-l4-consistency",
+    "scripts/conductor/review.sh 升级 — 调 l3-l4-consistency.sh 验证 PASS",
+    "tests/integration/l3-l4-wiring-test.sh 6/6 PASS (5 调用点 + 1 集成 E2E)",
+    "BE-5 反讽 治根闭环 — 治 BE-9 工具在自己生产路径跑",
+    "Rule 9 KPI 精确 X/Y 格式 — 6/6 PASS = 100.0%"
+  ],
+  "estimated_hours": 8,
+  "status_set_by": "master_main (B 组 5 extended review 逆袭发现, P0 critical 治 BE-5 反讽)"
+}
