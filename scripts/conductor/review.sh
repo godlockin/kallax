@@ -82,6 +82,36 @@ else
 fi
 echo ""
 
+# --- 6. EPIC-053-E: l3-l4-consistency.sh wired into Conductor review (治 BE-5 反讽) ---
+# Conductor 合并前 review 必须确认 l3-l4-consistency 在生产路径, 否则治 BE-9 工具自己不在生产路径 — BE-5 反讽.
+echo "--- 6. L3/L4 Consistency Wiring (EPIC-053-E, 治 BE-5 反讽) ---"
+L3L4_SCRIPT="$KALLAX_ROOT/scripts/verify/l3-l4-consistency.sh"
+if [ ! -x "$L3L4_SCRIPT" ]; then
+    fail "l3-l4-consistency.sh missing or not executable: $L3L4_SCRIPT"
+else
+    # Self-test 1: PASS/PASS = OK
+    set +e
+    bash "$L3L4_SCRIPT" --l3-status=PASS --l4-status=PASS >/dev/null 2>&1
+    RC1=$?
+    set -e
+    if [ "$RC1" -ne 0 ]; then
+        fail "l3-l4-consistency PASS/PASS expected OK, got ERROR (exit=$RC1)"
+    else
+        pass "l3-l4-consistency PASS/PASS = OK (consistent)"
+    fi
+    # Self-test 2: PASS/FAIL = ERROR (contradiction detection)
+    set +e
+    bash "$L3L4_SCRIPT" --l3-status=PASS --l4-status=FAIL >/dev/null 2>&1
+    RC2=$?
+    set -e
+    if [ "$RC2" -eq 0 ]; then
+        fail "l3-l4-consistency PASS/FAIL expected ERROR (contradiction), got OK (exit=$RC2)"
+    else
+        pass "l3-l4-consistency PASS/FAIL = ERROR (contradiction detected)"
+    fi
+fi
+echo ""
+
 # --- Summary ---
 echo "=========================================="
 echo "REVIEW RESULT: $PASS_COUNT PASS, $FAIL_COUNT FAIL"
