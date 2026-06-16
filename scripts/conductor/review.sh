@@ -2,7 +2,37 @@
 # scripts/conductor/review.sh — Conductor review flow for merge gate
 # Runs 3 anti-fab + preflight + amend-verify before Conductor merge
 # EPIC-039-B: Step 4 of Rule 16 5-step flow
+#
+# EPIC-053-C: BE-10 治根
+#   - Self-guard: 静态检查本脚本不复发 [[:space:]] 数组模式 (bash 5.x 兼容要求 \s)
+#   - 跟 check-kpi-precision.sh / tool-self-check.sh 同步
+#   - 跟 EPIC-053-B 4-Level 证据链 联动, 跟 EPIC-048 tool-bypass-audit 模式 一致
+
 set -euo pipefail
+
+# Self-guard: BE-10 模式治根 — 拒 [[:space:]] 数组模式 (bash 5.x 兼容要求 \s)
+# 跟 tool-self-check.sh / check-kpi-precision.sh 中的 guard 一致
+_b53_guard_ok=1
+_awk_b53=$(awk '
+    BEGIN { in_a = 0; d = 0 }
+    {
+        line = $0
+        gsub(/\$\(\(/, "", line)
+        gsub(/\$\(/, "", line)
+        if (in_a == 0) {
+            if (match(line, /[A-Za-z_][A-Za-z0-9_]*[ ]*(\+)?=\(/)) { in_a = 1; d = 1 }
+        } else {
+            d += gsub(/\(/, "x", line) - gsub(/\)/, "x", line)
+            if (match(line, /\[\[:space:\]\]/)) { exit 1 }
+            if (d <= 0) in_a = 0
+        }
+    }
+' "$0" 2>/dev/null) || _b53_guard_ok=0
+if [ "$_b53_guard_ok" -eq 0 ]; then
+    echo "BE-10 模式复发: [[:space:]] 在数组模式 (bash 5.x 不兼容). 用 \\s 替代." >&2
+    exit 1
+fi
+unset _b53_guard_ok _awk_b53
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
