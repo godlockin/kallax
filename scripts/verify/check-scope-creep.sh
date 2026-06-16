@@ -5,8 +5,43 @@
 #
 # SECURITY: KALLAX_BYPASS_SCOPE_CHECK removed — scope creep is a P0 anti-fab violation
 # Design stage work must use KALLAX_DESIGN_MODE=1 (requires master token validation)
+#
+# EPIC-053-F: Added match_glob() helper supporting directory prefix patterns
+#   (e.g. "jira/tickets/EPIC-XXX/" matches files inside that directory).
+#   Fixes exit=1 false positive on tickets whose file_scope includes a directory.
+#   Bash 5.x compatible — uses "$@" iteration, no [[:space:]] character class arrays
+#   (跟 EPIC-053-C BE-10 模式联动).
 
 set -euo pipefail
+
+# match_glob <file> <allowed1> [allowed2] ...
+# Returns 0 if <file> matches any <allowed> pattern, 1 otherwise.
+#   - Exact match: "scripts/foo.sh" == "scripts/foo.sh"
+#   - Directory prefix match: "jira/tickets/EPIC-XXX/" prefix-matches files inside
+# Future: glob `*` support (out of EPIC-053-F scope)
+match_glob() {
+    local file="$1"
+    shift
+    local allowed
+    for allowed in "$@"; do
+        if [[ "$allowed" == */ ]]; then
+            if [[ "$file" == "$allowed"* ]]; then
+                return 0
+            fi
+        else
+            if [[ "$file" == "$allowed" ]]; then
+                return 0
+            fi
+        fi
+    done
+    return 1
+}
+
+# Main execution guarded: only run when executed, not when sourced for testing
+# Pattern: BASH_SOURCE[0] check (Bash 3.2+ compatible)
+if [[ "${BASH_SOURCE[0]:-$0}" != "${0}" ]] && return 0 2>/dev/null; then
+    return 0
+fi
 
 TICKET_ID="${1:-}"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
@@ -78,13 +113,15 @@ if [ -z "$CHANGED" ]; then
     exit 0
 fi
 
-echo "Changed files (${CHANGED_COUNT:-unknown}):"
+CHANGED_COUNT=$(echo "$CHANGED" | wc -l | tr -d ' ')
+
+echo "Changed files ($CHANGED_COUNT):"
 echo "$CHANGED" | while read -r f; do
     echo "  $f"
 done
 echo ""
 
-# Check each changed file against allowed scope
+# Check each changed file against allowed scope using match_glob (dir prefix + exact)
 OUT_OF_SCOPE=()
 ALLOWED_ARRAY=()
 while IFS= read -r line; do
@@ -92,19 +129,10 @@ while IFS= read -r line; do
 done <<< "$ALLOWED"
 
 for file in $CHANGED; do
-    MATCHED=0
-    for allowed in "${ALLOWED_ARRAY[@]}"; do
-        if [ "$file" = "$allowed" ]; then
-            MATCHED=1
-            break
-        fi
-    done
-    if [ "$MATCHED" -eq 0 ]; then
+    if ! match_glob "$file" "${ALLOWED_ARRAY[@]}"; then
         OUT_OF_SCOPE+=("$file")
     fi
 done
-
-CHANGED_COUNT=$(echo "$CHANGED" | wc -l | tr -d ' ')
 
 if [ ${#OUT_OF_SCOPE[@]} -gt 0 ]; then
     echo "FAIL: ${#OUT_OF_SCOPE[@]} files outside ticket scope:"
