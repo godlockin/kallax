@@ -133,3 +133,12 @@ docker-compose.override.yml
 ONRAMP-onramp-test-*.md
 ONRAMP-testproj-*.md
 ONRAMP-.-*.md
+
+# ============================================================
+# Performer runtime artifacts (pass-report + test-output, 跟"翻篇&精进" 一致)
+# EPIC-053/054/055/056 Performer subagent 跑过的 .json + .txt, 跑过即丢, 不入库
+# ============================================================
+jira/tickets/**/pass-report*.json
+jira/tickets/**/test-output*.txt
+jira/tickets/**/test_result*.json
+jira/tickets/**/*.tmp
