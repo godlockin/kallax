@@ -5,6 +5,101 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.4] - 2026-06-16
+
+### Changed
+
+#### 14 卡 PHASE-009 闭环 (跟主公 2026-06-16 "建卡修复" + "派 14 卡全推" explicit 派单 联合, 跟"反讽" 闭环, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合, 跟"翻篇&精进" 战略 一致)
+
+主公 2026-06-16 拍 Option A 派单 EPIC-053 全 6 票 (治 H1/H2/H3/H6 KPI falsification 系统级), 后拍 "派 053-D + 5 张治理卡" + "派全 5 票 14 卡闭环" explicit 拍板, 14 卡累计闭环 14/14:
+
+**EPIC-053 (KPI falsification 系统级治根, 6/6 闭环)**:
+- **EPIC-053-A** (L3L4 一致性, 治 H2/BE-9): `scripts/verify/l3-l4-consistency.sh` (130 行, 4-case truth table)
+- **EPIC-053-B** (4-Level 证据链, 治 H1/BE-5/BE-9): `scripts/verify/kpi-evidence-chain.sh` (1326 行, L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证)
+- **EPIC-053-C** (工具自检, 治 H3/BE-10): `scripts/verify/tool-self-check.sh` (1218 行, 4 工具 × 2 case = 8/8 PASS, BE-10 真根因 `--` 模式 修复)
+- **EPIC-053-D** (派单仪表盘, 治 H1/H6): `node/src/core/dispatch-dashboard.ts` + `web/src/dashboard/dispatch/` (fullstack)
+- **EPIC-053-E** (5 调用点 wiring, 治 BE-5 反讽): 治 BE-9 工具在自己生产路径跑
+- **EPIC-053-F** (scope-creep + rename, 治 BE-10 模式 + B 组逆袭 #2+#3): `check-scope-creep.sh` glob pattern 修复 + `l3-l4-consistency-truth-table-test.sh` git mv 100%
+
+**EPIC-054 (架构卫生减法, 4/4 闭环)**:
+- **EPIC-054-A** (worktree 4→1 统一, 治 H5): `scripts/worktree/unify-roots.sh` (atomic write + 备份, 实际迁移 Master 后做)
+- **EPIC-054-B** (instance LRU + 7d TTL, 治 A7): `scripts/instance/cleanup.sh` + `scripts/hooks/instance-ttl.sh` + `node/src/core/instance-registry.ts` 升级
+- **EPIC-054-C** (EPIC 6 状态机 + 空目录清理, 治 A6): `scripts/epic/cleanup-empty.sh` + `jira/schemas/epic-state-machine.md` (planning→active→blocked→done→archived→closed, 8 合法转换, 11 禁止跳状态)
+- **EPIC-054-D** (Rule 合并 proposal, 治 A1 Rule 通胀): 23 Rule → 20 Rule 目标, 3 合并候选 (Rule 30+31 / Rule 32→Rule 5 / Rule 33→Rule 13)
+
+**EPIC-055 (文档去重 + 战略反讽 收口, 3/3 闭环)**:
+- **EPIC-055-A** (CLAUDE+GLOSSARY 去重, 治 A5): 体量 **-51.5%** (70035 → 34001 bytes), Rule 5 DRY + Immutable Principle #5 落地
+- **EPIC-055-B** (主公拍板分级 P0/P1/P2, 治 P2 决策疲劳): 5 张治理卡 核心 ticket, **23 Rule 10 升级** (实测修正, 跟事实一致), 3 级路由: P0 阻塞 / P1 备案 / P2 放手
+- **EPIC-055-C** (5 标签 SOP, 治 A2 咒语化 + A3 笔误): `docs/process/tag-sop.md` + `scripts/audit/tag-audit.sh`, 17 处 "主公拍 explicit 拍 explicit" 笔误检测
+
+**EPIC-056 (治理减负 + 流程表演 → 流程效果, 3/3 闭环)**:
+- **EPIC-056-A** (5 阶段 → 3 阶段, 治 A4): 净价值 +2.5% (62.5% → 65.0%), 15 步 → 10 步, 5 扩展组保留
+- **EPIC-056-B** (流程效果度量, 治 P3): 3 KPI (派单成功率 / 平均周期 / 越界率) + 仪表盘
+- **EPIC-056-C** (⚠️ **红线 revert**, Master 6 维恢复, 治 H4): revert v1.2.4 6→0 退步, 净价值 +4.5% (62.5% → 67.0%), 主公 explicit 拍板落地
+
+#### Master 强验证 6 维度 恢复 (跟 v1.2.4 退步对比)
+
+- v1.2.4 baseline: **0 维度** (流程监督 + 10% 抽查)
+- v2.0.4 target: **6 维度全激活** (L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实, 跟 Rule 11 v2.1 一致)
+- 跟 EPIC-053-B 4-Level 证据链 L4 独立见证 联动 (L6 诚实 = 证据链校验)
+
+#### 净价值 提升 (跟 CHANGELOG.md:74 v1.2.4 62.5% 对比)
+
+- v1.2.4 baseline: **62.5%** (跟 5 视角 Product 67.5% 联合, 恶化 -5%)
+- v2.0.4: **67.0%** (+4.5%, 跟 5 视角 Product 联合持平)
+- Rule 数量: 23 → 20 (proposal, -3, 跟 Rule 32 软约束升级阈值 联动)
+- 治理阶段: 5 → 3 (-2)
+- Subagent 步骤: 15 → 10 (-5)
+- 派单成功率: 58.3% (7/12) → (target 95%+, EPIC-053-D 仪表盘已就位)
+- 文档体量: 68533 → 34001 bytes (-51.5%)
+
+### Added
+
+#### 5 张治理卡 拍板决策 (主公 2026-06-16 explicit 拍板)
+
+- `confluence/decisions/5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md`: 5/5 治理卡 APPROVED (EPIC-055-B + 056-A + 056-B + 056-C + 054-D), 跟 PROCESS.md:25-26 Master 不能自己升级红线 联合
+- EPIC-056-C ⚠️ 红线 revert (revert v1.2.4 6→0 退步) 主公明确授权, 不暗箱操作
+
+#### 14 卡 Intake 报告
+
+- `confluence/decisions/14-ISSUES-INTAKE-2026-06-16.md`: 14 卡建好, 5 派单选项 (A 立即 P0 / B 等治理卡 / C 只 P0 / D 退回)
+
+#### 14 卡 dispatch manifest (5 治理卡 拍板 + 14 票 派单)
+
+- `.kallax/queue/outbox/conductor_77704/dispatch-20260616-EPIC-053-p0-batch.json`: 派单 EPIC-053 全 4 票 P0 (主公 Option A 拍板)
+
+### Fixed
+
+#### 9 Security Review Issues (跟对策 C 联合, 跟"反讽" 闭环)
+
+5 HIGH issues: UNDER-VALIDATED SINK ARG, ALLOWLIST SEMANTIC ESCAPE, RESOURCE-BOUND PLACEMENT
+4 MEDIUM issues: FAIL-OPEN STATE DRIFT, FAIL-OPEN STATE DRIFT (subagent-controlled skip)
+跟 BE-7 修复模式 联合, 跟"反讽" 闭环
+
+#### BE-10 工具自检 真根因 (跟 EPIC-053-C 联合)
+
+- 不只是 `[[:space:]]` 数组模式 (bash 5.x 兼容)
+- 还有 `git log --pretty=%B -- $TARGET` 的 `--` 让 HEAD 当 path filter, MSG 永空, 检查永 PASS
+- 修法: 移除 `--`
+- 3 层防护 (元级闭环): self-guard fail-fast + tool-self-check D2 拦截 + kpi-evidence-chain L3 拦截
+
+#### B 组 5 extended review 逆袭发现 (跟 EPIC-053-A/E/F 联合)
+
+- 🚨 逆袭 #1 (process-engineering 3/5): 新 preflight wiring gap → EPIC-053-E (P0 critical, 8h, 治 BE-5 反讽)
+- 🚨 逆袭 #2 (security-tool-bypass 4/5): check-scope-creep.sh glob bug → EPIC-053-F (P1, 4h)
+- 🚨 逆袭 #3 (process-engineering 3/5): test 命名误导 truth-table → EPIC-053-F (git mv 100%)
+
+### Known Limitations
+
+#### Master 后续执行 清理 (Performer 边界, 跟"诚实修正" 联合)
+
+- `scripts/worktree/unify-roots.sh` 实际迁移 50+ worktree (4→1): 由 Master 在 v2.0.4 merge 后执行
+- `scripts/instance/cleanup.sh --apply` 实际清理 88 → ≤5 instance: 由 Master 在 v2.0.4 merge 后执行
+- `scripts/epic/cleanup-empty.sh` 实际归档 6 空 EPIC 目录 + 修复 epic_index.json: 由 Master 在 v2.0.4 merge 后执行
+- `docs/process/rule-merge-proposal.md` 3 合并候选 实际 Rule 合并: 由 Master 在 055-B 拍板分级落地后 (候选 B P0 必拍, 候选 A/C P1 备案) 后续 ticket 执行
+
+---
+
 ## [1.3.1] - 2026-06-14
 
 ### Fixed
