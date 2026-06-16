@@ -1,5 +1,14 @@
 /**
  * KALLAX Epic Command Registration
+ *
+ * EPIC-054-C: 6-state machine validation
+ *   planning → active → blocked → done → archived → closed
+ *   Reject state-jumps (e.g. planning → done)
+ *   Allow unblock (blocked → active) and reopen (done → active, archived → done)
+ *
+ * State machine doc: jira/schemas/epic-state-machine.md
+ * Cleanup script:    scripts/epic/cleanup-empty.sh
+ * Integration test:  tests/integration/epic-state-machine-test.sh (8/8 PASS)
  */
 
 import { Command } from 'commander';
@@ -11,6 +20,38 @@ import { generateDagYaml } from '../core/dag-generator.js';
 import { createDagExecutor } from '../core/dag-executor.js';
 import { renderDagTree, renderDagSummary } from '../core/dag-visualizer.js';
 import * as fs from 'node:fs';
+
+// EPIC-054-C: 6-state machine definition
+export const EPIC_STATES = ['planning', 'active', 'blocked', 'done', 'archived', 'closed'] as const;
+export type EpicState = typeof EPIC_STATES[number];
+
+// Valid forward + recovery transitions
+const VALID_TRANSITIONS: Readonly<Record<EpicState, ReadonlyArray<EpicState>>> = {
+  planning: ['active'],
+  active:   ['blocked', 'done'],
+  blocked:  ['active'],           // unblock
+  done:     ['archived', 'active'], // archive OR reopen
+  archived: ['closed', 'done'],     // close OR restore
+  closed:   [],                     // terminal — no further transitions
+};
+
+/**
+ * EPIC-054-C: validate a state transition.
+ * Returns null if valid, error string if invalid.
+ */
+export function validateTransition(from: string, to: string): string | null {
+  if (!EPIC_STATES.includes(from as EpicState)) {
+    return `Invalid current state: '${from}' (must be one of ${EPIC_STATES.join(', ')})`;
+  }
+  if (!EPIC_STATES.includes(to as EpicState)) {
+    return `Invalid target state: '${to}' (must be one of ${EPIC_STATES.join(', ')})`;
+  }
+  const allowed = VALID_TRANSITIONS[from as EpicState];
+  if (!allowed.includes(to as EpicState)) {
+    return `Invalid transition: ${from} → ${to} (forbidden state-jump; allowed from ${from}: ${allowed.join(', ') || 'none (terminal)'})`;
+  }
+  return null;
+}
 
 export function registerEpicCommands(program: Command, ctx: AppContext): void {
   const epic = program.command('epic').description('EPIC management');
@@ -91,6 +132,68 @@ export function registerEpicCommands(program: Command, ctx: AppContext): void {
         fs.mkdirSync(dir, { recursive: true });
         fs.writeFileSync(`${dir}/${epicId}-dag.yml`, yaml);
         process.stdout.write(yaml);
+      } catch (error: unknown) {
+        logger.kallaxError(KallaxError.fromUnknown(error));
+        process.exit(1);
+      }
+    });
+
+  // EPIC-054-C: status subcommand with 6-state machine validation
+  epic
+    .command('status <epicId> <newStatus>')
+    .description('Transition EPIC to a new state (6-state machine: planning→active→blocked→done→archived→closed)')
+    .action((epicId: string, newStatus: string) => {
+      try {
+        if (!EPIC_STATES.includes(newStatus as EpicState)) {
+          logger.error({
+            event: 'epic_status_invalid_state',
+            epicId,
+            newStatus,
+            validStates: EPIC_STATES,
+          }, `Invalid state: '${newStatus}' (must be one of ${EPIC_STATES.join(', ')})`);
+          process.exit(1);
+        }
+        const epicPath = `jira/epics/${epicId}/epic.json`;
+        if (!fs.existsSync(epicPath)) {
+          logger.error({ epicId, epicPath }, 'EPIC not found');
+          process.exit(1);
+        }
+        const content = fs.readFileSync(epicPath, 'utf-8');
+        const epicData: { status?: string } = JSON.parse(content);
+        const currentStatus = epicData.status ?? 'planning';
+
+        const validationError = validateTransition(currentStatus, newStatus);
+        if (validationError !== null) {
+          logger.error({
+            event: 'epic_status_invalid_transition',
+            epicId,
+            from: currentStatus,
+            to: newStatus,
+            reason: validationError,
+          }, `State transition rejected: ${validationError}`);
+          process.exit(1);
+        }
+
+        // Apply transition (atomic write: tmp + rename, 跟 EPIC-041-C 原子写联动)
+        const updated = { ...epicData, status: newStatus };
+        const tmpPath = `${epicPath}.tmp`;
+        fs.writeFileSync(tmpPath, JSON.stringify(updated, null, 2));
+        fs.renameSync(tmpPath, epicPath);
+
+        logger.info({
+          event: 'epic_status_transitioned',
+          epicId,
+          from: currentStatus,
+          to: newStatus,
+          timestamp: new Date().toISOString(),
+        }, `EPIC ${epicId} transitioned: ${currentStatus} → ${newStatus}`);
+
+        process.stdout.write(JSON.stringify({
+          epicId,
+          from: currentStatus,
+          to: newStatus,
+          transitionedAt: new Date().toISOString(),
+        }, null, 2) + '\n');
       } catch (error: unknown) {
         logger.kallaxError(KallaxError.fromUnknown(error));
         process.exit(1);
