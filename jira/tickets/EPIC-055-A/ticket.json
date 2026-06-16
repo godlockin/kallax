@@ -1,0 +1,35 @@
+{
+  "id": "EPIC-055-A",
+  "epicId": "EPIC-055",
+  "phaseId": "PHASE-009",
+  "title": "CLAUDE.md + KALLAX-GLOSSARY 去重 — 单一 SoT (跟 Rule 5 DRY 联动, 治 A5)",
+  "type": "refactor",
+  "priority": "P1",
+  "status": "ready",
+  "created_by": "master_main (主公 2026-06-16 拍'建卡修复', 14 问题 A5 explicit 派单)",
+  "created_at": "2026-06-16T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-055-A/",
+      "CLAUDE.md",
+      "docs/KALLAX-GLOSSARY.md",
+      "docs/PHASE-INDEX.md",
+      "tests/integration/doc-dedup-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "CLAUDE.md 39468 bytes + KALLAX-GLOSSARY 29065 bytes = 68KB → 单一 SoT 后预计 -50% 体量",
+    "CLAUDE.md 改 — 留下规则/红线/必读, glossary 章节外链到 docs/KALLAX-GLOSSARY.md",
+    "docs/KALLAX-GLOSSARY.md 改 — 只保留术语表 + 链接到 CLAUDE.md 规则章, 不复制规则",
+    "A5 治根 — 重复知识闭环, 跟 Rule 5 DRY (Single Source of Truth) 联合, 跟 Immutable Principle #5 一致",
+    "tests/integration/doc-dedup-test.sh 6/6 PASS (重复章节扫描 + 外链完整性 + 体量减少 + 章节唯一性 + 死链检测 + 一致性校验)",
+    "docs/PHASE-INDEX.md 同步更新 — 链接到去重后的 SoT",
+    "Rule 9 KPI 精确 X/Y 格式 — 6/6 PASS = 100.0%"
+  ],
+  "estimated_hours": 6,
+  "status_set_by": "master_main (2026-06-16 14 问题分析 A5 explicit 派单)"
+}

@@ -1,0 +1,35 @@
+{
+  "id": "EPIC-054-C",
+  "epicId": "EPIC-054",
+  "phaseId": "PHASE-009",
+  "title": "空 EPIC 目录清理 + 6 状态机 (planning→active→blocked→done→archived→closed, 治 A6)",
+  "type": "chore",
+  "priority": "P1",
+  "status": "pending",
+  "created_by": "master_main (主公 2026-06-16 拍'建卡修复', 14 问题 A6 explicit 派单)",
+  "created_at": "2026-06-16T00:00:00Z",
+  "blocked_by": "EPIC-054-B",
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-054-C/",
+      "scripts/epic/cleanup-empty.sh",
+      "node/src/commands/epic-cmd.ts",
+      "jira/schemas/epic-state-machine.md",
+      "tests/integration/epic-state-machine-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "6 空 EPIC 目录 (EPIC-042~047) 清理 — 删除空目录 + 修复 epic_index.json (现只含 EPIC-015, 严重过期)",
+    "scripts/epic/cleanup-empty.sh 实现 — 自动扫描空 EPIC 目录 + 自动归档 archived/ 状态",
+    "node/src/commands/epic-cmd.ts 升级 — EPIC 6 状态机校验: planning→active→blocked→done→archived→closed, 不许跳状态",
+    "jira/schemas/epic-state-machine.md 文档化 — 跟 ticket-schema.md 状态机对齐",
+    "tests/integration/epic-state-machine-test.sh 8/8 PASS (空目录清理 + 6 状态切换 + 跳状态拒绝 + 归档恢复 + epic_index.json 同步)",
+    "A6 治根 — 6 空 EPIC 目录 (承诺但未实做) 闭环",
+    "Rule 9 KPI 精确 X/Y 格式 — 8/8 PASS = 100.0%"
+  ],
+  "estimated_hours": 4,
+  "status_set_by": "master_main (2026-06-16 14 问题分析 A6 explicit 派单)"
+}

@@ -1,0 +1,35 @@
+{
+  "id": "EPIC-055-C",
+  "epicId": "EPIC-055",
+  "phaseId": "PHASE-009",
+  "title": "'反讽/诚实修正/独立' 标签 SOP 化 (每条引用带证据链, 治 A2/A3)",
+  "type": "docs",
+  "priority": "P1",
+  "status": "pending",
+  "created_by": "master_main (主公 2026-06-16 拍'建卡修复', 14 问题 A2/A3 explicit 派单)",
+  "created_at": "2026-06-16T00:00:00Z",
+  "blocked_by": "EPIC-055-B",
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-055-C/",
+      "docs/process/tag-sop.md",
+      "scripts/audit/tag-audit.sh",
+      "CLAUDE.md",
+      "tests/integration/tag-sop-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "docs/process/tag-sop.md — '反讽/诚实修正/独立/翻篇&精进/流程逻辑' 5 标签 SOP, 每条引用必须带: (1) 证据文件 + 行号 OR commit hash (2) 反驳/支持案例 (3) 实际影响",
+    "scripts/audit/tag-audit.sh 扫描 — 统计标签使用频率, 找出 50+ 咒语化引用 (无证据链的纯装饰引用)",
+    "A2 治根 — 50+ 反讽咒语化 闭环, 跟'诚实修正' 战略联合",
+    "A3 治根 — 笔误/重复 ('主公拍 explicit 拍 explicit') 闭环",
+    "CLAUDE.md 同步 — 5 标签 SOP 加入 核心原则 章",
+    "tests/integration/tag-sop-test.sh 5/5 PASS (5 标签扫描 + 证据链校验 + 咒语化检测 + 笔误识别 + SOP 合规性)",
+    "Rule 9 KPI 精确 X/Y 格式 — 5/5 PASS = 100.0%"
+  ],
+  "estimated_hours": 4,
+  "status_set_by": "master_main (2026-06-16 14 问题分析 A2/A3 explicit 派单)"
+}

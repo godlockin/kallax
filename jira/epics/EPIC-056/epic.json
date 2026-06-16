@@ -1,0 +1,48 @@
+{
+  "id": "EPIC-056",
+  "phase": "PHASE-009",
+  "title": "治理减负 + 流程表演 → 流程效果 (跟 A4/P1/P3/H4 闭环, ⚠️ 全部需主公拍板)",
+  "scope": "1. Master 强验证 2026-06-16 跟 A4 (5 default + 5 extended = 10 专家 治理爆炸) + P1 (流程逻辑 > 扩充配置 反讽) + P3 (15 步流程表演化) + H4 (Master 6→0 维度 退步) 联合 explicit 派单\n2. 跟'流程逻辑 > 扩充配置' 战略 联合, 跟 净价值 62.5% (-5% 恶化) 闭环\n3. ⚠️ 全部 3 票都是治理升级, Master 不能自己升级红线 (跟 PROCESS.md:25-26 联合), 全部需主公拍板后才执行\n4. EPIC-056-C 是 revert v1.2.4 主公拍板的'6→0 维度' 决策, 需主公拍 explicit 拍板 (跟'独立' 拍板 联合)\n5. 跟 Rule 11 v2.1 Master 强验证 联动, 跟 v1.2.4 5 扩展组 (security/process-engineering/auditor/compliance/decision-gate) 集成",
+  "start_time": "2026-06-16",
+  "delivery_time": "2026-07-21",
+  "status": "active",
+  "baseline": {
+    "source": "Master 强验证 2026-06-16 (跟主公 14 问题分析联合)",
+    "current_state": "1 票 5 阶段治理 (Architect→4 并行→Conductor→5 扩展→Master→主公) + Subagent 15 步流程表演 + 净价值 62.5% (跟 5 视角 Product 67.5% 联合 恶化 -5%) + Master 强验证 6→0 维度 (v1.2.4 退步)",
+    "gap": "KALLAX 治理开销 > 实际收益, 流程表演 > 流程效果"
+  },
+  "target": {
+    "governance_3_phase": "5 阶段 → 3 阶段 (Conductor + 5 扩展 + 主公), Architect 跟 Conductor 合并, 4 专家并行保留 (跟 5 default 一致)",
+    "process_effectiveness_metric": "流程表演 vs 流程效果 度量 (KPI: 派单成功率 / 周期 / 越界率, 治 P3)",
+    "master_6d_recovery": "Master 强验证 6 维度恢复 (L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实, 治 H4)"
+  },
+  "decisions": {
+    "priority": 3,
+    "rationale": "主公 2026-06-16 拍'建卡修复' 联合 P2 治理减负, 但全部 3 票都是治理升级, 需主公拍 explicit 拍板",
+    "phase": "PHASE-009 治理减负 + 流程效果",
+    "explicit_p2_with_master_signoff": "⚠️ 全部 3 票需主公拍板, 跟'独立' 拍 explicit 约束 联合, 跟'反讽' 闭环 (跟 5 阶段治理 反讽, 跟 0 增命令 反讽)"
+  },
+  "tickets": [
+    {
+      "id": "EPIC-056-A",
+      "title": "5 阶段治理 → 3 阶段 (Architect 并入 Conductor, 保留 4 专家并行 + 5 扩展, 治 A4, ⚠️ 需主公拍板)",
+      "assignee": "performer-EPIC-056",
+      "status": "pending",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-056-B",
+      "title": "流程表演 vs 流程效果度量 (KPI: 派单成功率/周期/越界率, 治 P3, ⚠️ 需主公拍板)",
+      "assignee": "performer-EPIC-056",
+      "status": "pending",
+      "blocked_by": "EPIC-056-A"
+    },
+    {
+      "id": "EPIC-056-C",
+      "title": "Master 强验证 6 维度恢复 (revert v1.2.4 6→0 退步, 治 H4, ⚠️ 需主公拍板)",
+      "assignee": "performer-EPIC-056",
+      "status": "pending",
+      "blocked_by": "EPIC-056-B"
+    }
+  ]
+}

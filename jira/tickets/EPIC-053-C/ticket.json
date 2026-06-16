@@ -1,0 +1,35 @@
+{
+  "id": "EPIC-053-C",
+  "epicId": "EPIC-053",
+  "phaseId": "PHASE-009",
+  "title": "review.sh / check-kpi-precision.sh 工具自检 (BE-10 模式治根, bash 5.x 兼容 patterns)",
+  "type": "bug",
+  "priority": "P0",
+  "status": "pending",
+  "created_by": "master_main (主公 2026-06-16 拍'建卡修复', 14 问题 H3 explicit 派单)",
+  "created_at": "2026-06-16T00:00:00Z",
+  "blocked_by": "EPIC-053-B",
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-053-C/",
+      "scripts/conductor/review.sh",
+      "scripts/verify/check-kpi-precision.sh",
+      "tests/integration/tool-self-check-test.sh",
+      "scripts/verify/tool-self-check.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/verify/tool-self-check.sh 实现 — 跑 review.sh + check-kpi-precision.sh 自身 4 维度自检 (语法 + patterns 兼容 + 真 PASS 判 PASS + 真 FAIL 判 FAIL)",
+    "BE-10 (review.sh 拒 FAIL bug, bash 5.x 数组 [[:space:]] → \\s 兼容) 治根",
+    "tests/integration/tool-self-check-test.sh 8/8 PASS (4 工具 × 2 case: 真 PASS + 真 FAIL)",
+    "scripts/conductor/review.sh 修 — patterns 改用 bash 5.x 兼容 (\\s 替代 [[:space:]] 数组内模式)",
+    "scripts/verify/check-kpi-precision.sh 修 — 跟 review.sh 同步 patterns 升级",
+    "Rule 9 KPI 精确 X/Y 格式 — 8/8 PASS = 100.0%",
+    "跟 EPIC-053-B 联动 — 证据链工具本身也是被检查对象, 形成元级闭环"
+  ],
+  "estimated_hours": 6,
+  "status_set_by": "master_main (2026-06-16 14 问题分析 H3 explicit 派单, BE-10 模式治根)"
+}

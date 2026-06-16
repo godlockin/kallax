@@ -1,0 +1,36 @@
+{
+  "id": "EPIC-054-D",
+  "epicId": "EPIC-054",
+  "phaseId": "PHASE-009",
+  "title": "Rule 合并/撤销定期扫描 (跟 Rule 32 联动, 23 Rule → 20 Rule 目标, 治 A1)",
+  "type": "refactor",
+  "priority": "P1",
+  "status": "pending",
+  "created_by": "master_main (主公 2026-06-16 拍'建卡修复', 14 问题 A1 explicit 派单)",
+  "created_at": "2026-06-16T00:00:00Z",
+  "blocked_by": "EPIC-054-C",
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-054-D/",
+      "scripts/audit/rule-redundancy-audit.sh",
+      "docs/process/rule-merge-proposal.md",
+      "CLAUDE.md",
+      "tests/integration/rule-merge-scan-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/audit/rule-redundancy-audit.sh 升级 — 跑 Rule 合并/撤销扫描, 输出 candidate 列表 (跟 v1.2.4 EPIC-051 联动)",
+    "docs/process/rule-merge-proposal.md — 提 3 个合并候选 (e.g. Rule 26/27 合并, Rule 30/31 合并, Rule 32 撤销/合并)",
+    "23 Rule → 20 Rule 目标 (减 3), 跟 v1.2.4 EPIC-051 合规设计一致",
+    "A1 治根 — Rule 通胀 + Rule 32 治 Rule 通胀 反讽 闭环",
+    "tests/integration/rule-merge-scan-test.sh 6/6 PASS (23 Rule mock + 3 合并候选 + 撤销影响分析 + 净价值计算)",
+    "CLAUDE.md 同步 — Rule 数量从 23 → 20 后更新 KALLAX Rules 章节",
+    "Rule 9 KPI 精确 X/Y 格式 — 6/6 PASS = 100.0%",
+    "⚠️ Rule 撤销/合并是治理升级, 跟 EPIC-055-B 主公拍板分级 联动, 需主公拍板后才执行"
+  ],
+  "estimated_hours": 8,
+  "status_set_by": "master_main (2026-06-16 14 问题分析 A1 explicit 派单)"
+}

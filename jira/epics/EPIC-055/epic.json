@@ -1,0 +1,48 @@
+{
+  "id": "EPIC-055",
+  "phase": "PHASE-009",
+  "title": "文档去重 + 战略反讽 收口 (跟 A2/A3/A5/P2 闭环, 跟 Rule 5 DRY 联动)",
+  "scope": "1. Master 强验证 2026-06-16 跟 A5 (CLAUDE.md 39KB + GLOSSARY 29KB 重复) + A2/A3 (反讽咒语化 + 笔误) + P2 (主公拍板决策疲劳) 联合 explicit 派单\n2. 跟'诚实修正' 战略 联合, 跟'独立' 拍 explicit 约束 联合 — 文档去重 + 拍板分级\n3. 跟 Rule 5 DRY (Single Source of Truth) 联合, 跟 Immutable Principle #5 一致\n4. 跟'翻篇&精进' 战略 联合 — 文档做减法, 不再加内容\n5. 3 票拆卡: CLAUDE.md+GLOSSARY 去重 + 主公拍板 P0/P1/P2 分级 + 反讽/诚实修正/独立 标签 SOP 化\n6. ⚠️ EPIC-055-B 跟'独立' 拍 explicit 约束 联合 — 主公拍板分级是 治理升级, Master 不能自己升级红线, 需主公拍板后才执行",
+  "start_time": "2026-06-16",
+  "delivery_time": "2026-07-07",
+  "status": "active",
+  "baseline": {
+    "source": "Master 强验证 2026-06-16 (跟主公 14 问题分析联合)",
+    "current_state": "CLAUDE.md 39468 bytes + KALLAX-GLOSSARY 29065 bytes 重复知识 + 50+ 文档含'反讽' 咒语 + 23 Rule 都要主公拍板 决策疲劳 + 文档笔误 (主公拍 explicit 拍 explicit)",
+    "gap": "KALLAX 缺 SoT 治理 + 拍板分级机制 + 标签 SOP"
+  },
+  "target": {
+    "doc_dedup": "CLAUDE.md + GLOSSARY 去重 → 单一 SoT, 跟 Rule 5 DRY 一致 (预计 -50% 体量)",
+    "master_approval_tiering": "主公拍板 P0 (战略红线) / P1 (流程升级) / P2 (操作备案) 三级, P2 备案即可, 不再每条都拍",
+    "tag_sop": "'反讽/诚实修正/独立' 标签使用 SOP, 去除咒语化, 每条引用必须带证据链"
+  },
+  "decisions": {
+    "priority": 2,
+    "rationale": "主公 2026-06-16 拍'建卡修复' 联合 P1 文档质量, 跟'诚实修正' 战略联合",
+    "phase": "PHASE-009 文档去重 + 战略反讽收口",
+    "explicit_p1": "文档去重 (A5) + 标签 SOP (A2/A3) 是 P1 重要, 主公拍板分级 (P2) 需主公 explicit 拍板后才执行"
+  },
+  "tickets": [
+    {
+      "id": "EPIC-055-A",
+      "title": "CLAUDE.md + KALLAX-GLOSSARY 去重 — 单一 SoT (跟 Rule 5 DRY 联动, 治 A5)",
+      "assignee": "performer-EPIC-055",
+      "status": "pending",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-055-B",
+      "title": "主公拍板分级 P0/P1/P2 (P2 备案即可, 治 P2 决策疲劳, ⚠️ 需主公拍板)",
+      "assignee": "performer-EPIC-055",
+      "status": "pending",
+      "blocked_by": "EPIC-055-A"
+    },
+    {
+      "id": "EPIC-055-C",
+      "title": "'反讽/诚实修正/独立' 标签 SOP 化 (每条引用带证据链, 治 A2/A3)",
+      "assignee": "performer-EPIC-055",
+      "status": "pending",
+      "blocked_by": "EPIC-055-B"
+    }
+  ]
+}
