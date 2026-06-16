@@ -1,7 +1,7 @@
 ---
 name: kallax
-description: Use when user types `/kallax-panel`, `/kallax-expert`, `/kallax-skill`, `/kallax-init`, `/kallax-takeover`, or mentions "expert panel", "architecture review", "kallax expert", "召唤专家", "专家评审", "kallax 多 agent", "subagent workflow", "EPIC 拆解", "PHASE review", "BE 教训", or invokes a multi-role expert review for a new EPIC, architectural decision, or major refactor. Spawns a 5-person panel (Architect, Backend, Frontend, UX, Product) + 5 extended (security-tool-bypass + process-engineering + auditor + compliance + decision-gate). Do NOT trigger for simple bug fixes, single-domain tasks, or chores.
-triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专家评审, multi-agent, subagent, EPIC 拆解, PHASE review, 实战, 反思, BE 教训, A+B review, 5 扩展组, 5 视角, 决策疲劳, KALLAX Onramp, 跟"反讽" 闭环, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合]
+description: Use when user types `/kallax-panel`, `/kallax-expert`, `/kallax-skill`, `/kallax-init`, `/kallax-takeover`, or mentions "expert panel", "architecture review", "kallax expert", "召唤专家", "专家评审", "kallax 多 agent", "subagent workflow", "EPIC 拆解", "PHASE review", "BE 教训", or invokes a multi-role expert review for a new EPIC, architectural decision, or major refactor. Spawns a 3-phase governance (v2.0.3 EPIC-056-A): Phase 1 Conductor 全局扫描 (Architect 合并) + Phase 2 4 default (Backend/Frontend/UX/Product) + 5 extended (security-tool-bypass + process-engineering + auditor + compliance + decision-gate) 并行 + Phase 3 Master 仲裁 + 主公拍板. Do NOT trigger for simple bug fixes, single-domain tasks, or chores.
+triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专家评审, multi-agent, subagent, EPIC 拆解, PHASE review, 实战, 反思, BE 教训, A+B review, 5 扩展组, 5 视角, 决策疲劳, KALLAX Onramp, 3 阶段治理, 跟"反讽" 闭环, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合, EPIC-056-A]
 filePath: /Users/chenchen/.claude/skills/kallax/SKILL.md
 ---
 
@@ -21,23 +21,44 @@ filePath: /Users/chenchen/.claude/skills/kallax/SKILL.md
 | `/kallax-init` | 初始化 session 身份 | 新 session 启动时 |
 | `/kallax 初始化为新的<role>` | 同上，自然语言版 | 首次接入团队 |
 
-## Expert Panel (专家面板)
+## Expert Panel (专家面板, v2.0.3 EPIC-056-A 3 阶段治理)
 
 ```
 /kallax-panel [topic]
 ```
 
-启动 5 人核心专家组进行评审:
-- 🏗️ Architect - 架构师
+启动 4 default + 5 extended 专家组进行评审 (跟 v1.2.4 5 扩展组 联合):
+
+**4 default 专家** (Architect 退出, 合并入 Phase 1 Conductor):
 - 💻 Backend - 后端工程师
 - 🎨 Frontend - 前端工程师
 - 🖌️ UX - UX 研究员
 - 📋 Product - 产品经理
 
-### 执行流程
-1. **Phase 1**: Architect 先行 (全局扫描)
-2. **Phase 2**: 4 专家并行工作
-3. **Phase 3**: Conductor 汇总决策
+**5 extended 扩展** (跟 v1.2.4 5 扩展组 一致, 0 增 0 删):
+- 🛡️ security-tool-bypass (Rule 29 治根因 1)
+- ⚙️ process-engineering (Rule 30 治根因 2)
+- 🔍 auditor (Rule 31 治根因 3)
+- 📜 compliance (Rule 32 治根因 4)
+- 🚦 decision-gate (Rule 33 治根因 5)
+
+### 3 阶段执行流程 (跟 EPIC-056-A 联合, 跟 EPIC-055-B 拍板分级 联动)
+
+1. **Phase 1 — Conductor 全局扫描** (原 Architect + Conductor 合并, 治 A4 协调开销)
+   - Conductor 直接出全局扫描报告 (架构/边界/选型/重构 视角, 原 Architect 能力)
+   - 1 份报告, 省 0.4h/ticket, 跟"流程效果 > 流程表演" 联合
+2. **Phase 2 — 4 default + 5 extended 并行** (0 增 0 删, 9 专家 Promise.all 调度)
+   - 4 default (Backend/Frontend/UX/Product) + 5 extended (security-tool-bypass/process-engineering/auditor/compliance/decision-gate)
+   - 9 份专家报告, 0 协调开销 (per-subagent 独立 worktree)
+3. **Phase 3 — Master 仲裁 + 主公拍板** (跟 EPIC-055-B P0/P1/P2 联动)
+   - Master 收 9 份报告 → 合并去重 → 仲裁冲突 → 出汇总
+   - 主公按 055-B 拍板分级: P0 战略红线 (阻塞 + REQUEST-P0-*.md) / P1 流程升级 (备案 + RECORD-P1-*.md) / P2 操作 (放手 + p2-log-*.jsonl)
+   - Master 强验证 6 维度 (Rule 11 v2.1 联合)
+
+**净价值估算** (跟 EPIC-056-B 3 KPI 联动): 62.5% → 65%+ (跟"流程效果 > 流程表演" 一致)
+
+**协调脚本**: `scripts/audit/governance-3phase.sh` (6/6 TC PASS, Rule 9 X/Y 格式)
+**TDD 测试**: `tests/integration/governance-3phase-test.sh`
 
 ## 单专家召唤
 
