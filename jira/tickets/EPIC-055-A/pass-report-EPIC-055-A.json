@@ -1,8 +1,19 @@
 {
   "ticket_id": "EPIC-055-A",
   "performer_id": "performer-EPIC-055-A",
-  "commit_sha": "106293adb3d197cd4a01011f702d846117d8d442",
+  "commit_sha": "4a1efb4c3331dd76aef0f7fab454e5028b404bcf",
   "branch": "feature/EPIC-055-A-claude-glossary-dedup",
+  "commits": [
+    {
+      "sha": "106293adb3d197cd4a01011f702d846117d8d442",
+      "message": "EPIC-055-A: CLAUDE.md + KALLAX-GLOSSARY.md 去重 — 单一 SoT"
+    },
+    {
+      "sha": "4a1efb4c3331dd76aef0f7fab454e5028b404bcf",
+      "message": "EPIC-055-A: LESSONS-LEARNED + pass-report (6/6 PASS)"
+    }
+  ],
+  "pushed_to_remote": true,
   "worktree": "/Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.kallax/worktrees/performer-EPIC-055-A",
   "files_created": [
     "jira/tickets/EPIC-055-A/IMPLEMENTATION-PLAN.md",
