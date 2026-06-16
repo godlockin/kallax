@@ -5,6 +5,71 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.5] - 2026-06-17
+
+### Changed
+
+#### v2.0.4 14 卡闭环后 Master 5 清理 实际执行 (跟"翻篇&精进" + "诚实修正" 联合)
+
+主公 2026-06-16 explicit 拍板"全闭环 (push + 5 清理 + PHASE-009 review)" → Master 在 v2.0.4 merge 后执行 5 清理动作:
+
+**1. EPIC-054-A worktree 4→1 统一** (治 H5):
+- `scripts/worktree/unify-roots.sh` 实际执行: 75 → 72 worktree (3 失败: 2 destination exists + 1 git worktree move fail)
+- 手动清理 orphan dir (.claude/worktrees/kallax-refactor-complete) + git worktree prune
+- ROOT_BUCKETS=1, Outside single-root: 0
+- `.claude/worktrees/` + `.worktrees/` + `performer-EPIC-034/` 嵌套 → `.kallax/worktrees/` 单一根
+
+**2. EPIC-054-B instance LRU + 7d TTL** (治 A7):
+- `scripts/instance/cleanup.sh --apply` 实际执行: 86 → 39 instance (cleaned 47)
+- 跟 Resource Management 硬要求一致, 95% 僵尸清理
+
+**3. EPIC-054-C 空 EPIC 目录归档** (治 A6):
+- `scripts/epic/cleanup-empty.sh` 实际执行: 6 empty EPIC (EPIC-042~047) → `jira/epics/_archived/`
+- `jira/epics/epic_index.json` 修复: 从 1 EPIC (严重过期) → 4 done + 1 archived
+
+**4. EPIC-054-D Rule 合并 实际执行** (主公 explicit 拍板 APPROVED, 治 A1):
+- 候选 A (Rule 30 + 31 → Rule 30 "独立见证机制"): -1
+- 候选 B (Rule 32 撤销, 反讽治根): -1
+- 候选 C (Rule 33 合并入 Rule 13 扩展): 净 0 (扩展不增 Rule)
+- **24 → 22 active Rule** (-2), 净价值 62.5% → 64.0% (+1.5%)
+- ⚠️ **honest mark** (跟"诚实修正" 联合): proposal 写 -3 / +3.0%, 实际 -2 / +1.5%, 候选 C 净减为 0
+
+**5. EPIC-053-D + 056-B 仪表盘 真跑** (治 H1/H6 + P3):
+- `dispatch-dashboard.sh`: 1/1 (100.0%) +41.7% vs baseline 58.3%
+- `process-metrics.sh dashboard`: 3 KPI 跑通 (数据有限, WARN ticket 字段缺失 跟后续 ticket 修)
+
+#### Rule 32 撤销 反讽治根 (跟"反讽" 闭环, 跟 EPIC-054-D 联合)
+
+- Rule 32 (软约束升级阈值) 本身是 Rule, 反讽地加剧 Rule 通胀
+- 撤销避免 Rule 治 Rule 通胀 → Rule 数 +1 → 治根动作本身加剧问题
+- Rule 32 内容已合到 Rule 5 DRY (Single Source of Truth) + Rule 19 (5 类标签 SOP 包含诚实修正)
+
+### Added
+
+#### PHASE-009 Review (14 卡闭环沉淀)
+
+- `confluence/decisions/PHASE-009-REVIEW-2026-06-17.md`: 14 卡闭环 (v2.0.4) + 5 清理 (v2.0.5), 净价值 +4.5%, Rule -2 净减, 跟 12 主题教训 (KPI 治根 + 治理升级 + 文档 SoT + 工具自检) 联合
+- `docs/PHASE-INDEX.md` 同步更新: 加 PHASE-009-REVIEW-2026-06-17 索引行
+
+### Fixed
+
+#### Worktree 路径 git hook ALLOWED_PATTERNS 跟 jira/ 路径矛盾 (跟 EPIC-054-A 联动)
+
+- `.git/hooks/pre-commit` 当前 ALLOWED_PATTERNS 不含 `^jira/`, 历史 commit `b079baa/542e0f9/c3f20a2` (主公亲自 commit) 跟 Master 角色 (`--no-verify` bypass) 联合
+- 跟 14 问题分析 EPIC-054-A worktree 统一 后续 ticket 联动, 待 ALLOWED_PATTERNS 加 `^jira/` (jira 跟 docs 同类, 属 Master 可直接 commit 范围)
+- 本 v2.0.5 不修 hook (避免本 release 范围扩大), 跟 EPIC-054-A 后续 ticket 联合
+
+### Known Limitations
+
+#### 后续跨 PHASE 评估 (跟"独立" 拍板 联合)
+
+- 7 个 untracked files (docs/superpowers/{plans,specs}/2026-06-1[4-6]-*.md): 跟 14 卡无关, 可选 commit 或 ignore
+- 19 个 stale worktree (feature/EPIC-0*): 跟 EPIC-054-A worktree 统一 联合
+- PHASE-010 跨 PHASE review 评估: 跨 EPIC-053/054/055/056 沉淀
+- EPIC-053-D 仪表盘 web dashboard 真上线 (跟 origin 联动): 需要 server 部署
+
+---
+
 ## [2.0.4] - 2026-06-16
 
 ### Changed
