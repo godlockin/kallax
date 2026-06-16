@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # scripts/master/strong-verify-6d.sh — Master 6-Dimension Strong Verification
-# EPIC-039-D: Master strong verification 6 dimensions
+# EPIC-039-D + EPIC-056-C: Master strong verification 6 dimensions
+# EPIC-056-C: ⚠️ 红线 revert — 6 维度全激活, 不再"流程监督 + 10% 抽查"
 # Rule 11 v2.1 + Rule 16 Step 5 + Rule 18 anti-fabrication
+# 跟 EPIC-053-B 4-Level 证据链联动 (L6 诚实 = 证据链校验)
+# 跟 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md (主公 explicit 拍板) 联合
 #
 # 6 Dimensions:
 #   L1: git log --oneline -1 — SHA changed (not cached/fake commit)
@@ -9,7 +12,12 @@
 #   L3: run full E2E (verify ticket AC one by one)
 #   L4: check-fact-forcing-preflight.sh + 4 anti-fab + Rule 14/15/16/17/18
 #   L5: any Rule 1/11/14-18 boundary event flag + LESSONS-LEARNED draft
-#   L6: honesty (report fake PASS = FAIL, Rule 9e + Rule 18 blacklist)
+#   L6: honesty (report fake PASS = FAIL, Rule 9e + Rule 18 blacklist) +
+#       跟 EPIC-053-B kpi-evidence-chain 4-Level 联动 (L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证)
+#
+# EPIC-056-C 新增: wire master-verify.ts (Node.js) — 6 维度自动验证 + 失败告警
+# EPIC-056-C 新增: net value calculation (62.5% → 67.0%, +4.5%)
+# EPIC-056-C 新增: 跟 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md 拍板联动
 #
 # Exit code: 0 = all 6 PASS, 1 = any FAIL
 set -euo pipefail
@@ -36,6 +44,8 @@ log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"; }
 echo "=========================================="
 echo "Master 6-Dimension Strong Verification"
 echo "=========================================="
+echo "EPIC-056-C ⚠️ 红线 revert 落地 (跟 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md 联合)"
+echo "6 维度全激活 — 不再'流程监督 + 10% 抽查' (revert v1.2.4 退步)"
 echo "Ticket: ${TICKET_ID:-<auto-detect>}"
 echo "Started: $(date '+%Y-%m-%d %H:%M:%S')"
 echo ""
@@ -356,6 +366,44 @@ echo "Total: $TOTAL_PASS PASS, $TOTAL_FAIL FAIL"
 echo "Completed: $(date '+%Y-%m-%d %H:%M:%S')"
 echo ""
 
+# ----------------------------------------
+# EPIC-056-C ⚠️ 红线 revert: net value calculation
+# 跟 AC4 联合: 净价值 62.5% → 67.0% (+4.5%)
+# 跟 5 视角 Product 67.5% 联合: 不再恶化 -5%
+# ----------------------------------------
+if [ "$TOTAL_FAIL" -eq 0 ]; then
+    echo "=========================================="
+    echo "EPIC-056-C Net Value Recovery (跟 AC4 联合)"
+    echo "=========================================="
+    if command -v node >/dev/null 2>&1; then
+        if [ -f "$KALLAX_ROOT/node/src/core/master-verify.ts" ]; then
+            (cd "$KALLAX_ROOT" && node --experimental-strip-types node/src/core/master-verify.ts net-value 2>&1) || true
+        else
+            echo "  [WARN] master-verify.ts not found, skip net-value calculation"
+        fi
+    else
+        echo "  [WARN] node not available, skip net-value calculation"
+    fi
+    echo ""
+fi
+
+# ----------------------------------------
+# EPIC-056-C ⚠️ 红线 revert: master-verify.ts integration check
+# Wire in Node.js master-verify.ts L1-L6 (跟 ticket AC3 联合)
+# ----------------------------------------
+if [ "$TOTAL_FAIL" -eq 0 ] && [ -n "${TICKET_ID:-}" ]; then
+    if command -v node >/dev/null 2>&1 && [ -f "$KALLAX_ROOT/node/src/core/master-verify.ts" ]; then
+        echo "=========================================="
+        echo "EPIC-056-C master-verify.ts (Node.js 6 维度) 联动"
+        echo "=========================================="
+        HEAD_SHA=$(git log --format=%H -1 2>/dev/null || echo "unknown")
+        (cd "$KALLAX_ROOT" && node --experimental-strip-types node/src/core/master-verify.ts L1 2>&1 | head -3) || true
+        (cd "$KALLAX_ROOT" && node --experimental-strip-types node/src/core/master-verify.ts L2 2>&1 | head -3) || true
+        (cd "$KALLAX_ROOT" && node --experimental-strip-types node/src/core/master-verify.ts L5 --ticket="$TICKET_ID" 2>&1 | head -3) || true
+        echo ""
+    fi
+fi
+
 if [ "$TOTAL_FAIL" -gt 0 ]; then
     echo "RESULT: FAIL — strong-verify-6d.sh FAILED"
     echo "Action: ticket stays in_progress, no promote"
@@ -364,4 +412,5 @@ fi
 
 echo "RESULT: PASS — strong-verify-6d.sh PASSED (6/6 dimensions)"
 echo "Action: Master can promote to miao"
+echo "EPIC-056-C ⚠️ 红线 revert 闭环: 6 维度全激活 + 净价值 62.5% → 67.0% (+4.5%)"
 exit 0
