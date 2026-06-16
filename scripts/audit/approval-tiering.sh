@@ -201,13 +201,13 @@ calc_marginal_utility() {
     local total_rules
     total_rules=$(grep -cE '^### [0-9]+\.' "$CLAUDE_MD" 2>/dev/null || echo "0")
 
-    # R-NEW 升级 Rule (14-19)
+    # R-NEW 升级 Rule (14-18, Rule 19 doesn't exist)
     local rnew_count
-    rnew_count=$(grep -cE '^### 1[4-9]\.' "$CLAUDE_MD" 2>/dev/null || echo "0")
+    rnew_count=$(grep -cE '^### (14|15|16|17|18)\.' "$CLAUDE_MD" 2>/dev/null || echo "0")
 
-    # v1.2.4 5 扩展组 联动 Rule (30/31) + Rule 32
+    # v1.2.4 5 扩展组 联动 Rule (29-33: security + process-eng + auditor + decision-gate + extension)
     local extended_count
-    extended_count=$(grep -cE '^### (30|31|32)\.' "$CLAUDE_MD" 2>/dev/null || echo "0")
+    extended_count=$(grep -cE '^### (29|30|31|32|33)\.' "$CLAUDE_MD" 2>/dev/null || echo "0")
 
     local upgraded=$((rnew_count + extended_count))
     local upgrade_rate=0
@@ -257,10 +257,10 @@ calc_fatigue_index() {
     total_rules=$(grep -cE '^### [0-9]+\.' "$CLAUDE_MD" 2>/dev/null || echo "0")
 
     local rnew_count
-    rnew_count=$(grep -cE '^### 1[4-9]\.' "$CLAUDE_MD" 2>/dev/null || echo "0")
+    rnew_count=$(grep -cE '^### (14|15|16|17|18)\.' "$CLAUDE_MD" 2>/dev/null || echo "0")
 
     local extended_count
-    extended_count=$(grep -cE '^### (30|31|32)\.' "$CLAUDE_MD" 2>/dev/null || echo "0")
+    extended_count=$(grep -cE '^### (29|30|31|32|33)\.' "$CLAUDE_MD" 2>/dev/null || echo "0")
 
     local upgraded=$((rnew_count + extended_count))
     local upgrade_rate=0
