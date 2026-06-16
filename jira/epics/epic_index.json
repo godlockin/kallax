@@ -1,9 +1,50 @@
 {
   "epics": [
     {
+      "id": "EPIC-053",
+      "phase": "PHASE-009",
+      "title": "治根 KPI falsification 系统级修复 (P0 紧急, 6 票)",
+      "status": "done",
+      "start_time": "2026-06-16",
+      "delivery_time": "2026-06-16",
+      "tickets_closed": 6,
+      "epic_file": "jira/epics/EPIC-053/epic.json"
+    },
+    {
+      "id": "EPIC-054",
+      "phase": "PHASE-009",
+      "title": "架构卫生减法 (worktree/instance/RULE 治胀, 4 票)",
+      "status": "done",
+      "start_time": "2026-06-16",
+      "delivery_time": "2026-06-16",
+      "tickets_closed": 4,
+      "epic_file": "jira/epics/EPIC-054/epic.json"
+    },
+    {
+      "id": "EPIC-055",
+      "phase": "PHASE-009",
+      "title": "文档去重 + 战略反讽 收口 (3 票)",
+      "status": "done",
+      "start_time": "2026-06-16",
+      "delivery_time": "2026-06-16",
+      "tickets_closed": 3,
+      "epic_file": "jira/epics/EPIC-055/epic.json"
+    },
+    {
+      "id": "EPIC-056",
+      "phase": "PHASE-009",
+      "title": "治理减负 + 流程表演 → 流程效果 (3 票, 5 张治理卡拍板)",
+      "status": "done",
+      "start_time": "2026-06-16",
+      "delivery_time": "2026-06-16",
+      "tickets_closed": 3,
+      "epic_file": "jira/epics/EPIC-056/epic.json"
+    },
+    {
       "id": "EPIC-015",
       "phase": "PHASE-001",
-      "status": "active",
+      "title": "PHASE-001 历史 EPIC (保留, 跟 v2.0.4 无关)",
+      "status": "archived",
       "start_time": "2026-06-06",
       "delivery_time": "2026-06-08"
     }

@@ -470,23 +470,27 @@ L4 数据流动：集成测试验证
 
 ## KALLAX Rules Status (跟 EPIC-054-D 联合)
 
-> **当前 Rule 总数**: 23
+> **当前 Rule 总数 (active)**: **22** (跟 EPIC-054-D v2.0.5 主公拍板合并后, 24 → 22, 净减 -2)
 > **累计 升级 (实测)**: 10 (R-NEW 14-18 = 5 + v1.2.4 扩展 29-33 = 5)
-> **升级率**: 43.5% (实测, 跟 EPIC-055-B LESSONS-LEARNED.md 联合)
-> **fatigue_index**: 43.5 (接近 HIGH 阈值 50)
-> **净价值**: 62.5% (跟 EPIC-056-A 决策后 联合)
+> **升级率**: 45.5% (10/22, 实测, 跟 EPIC-055-B LESSONS-LEARNED.md 联合)
+> **fatigue_index**: 45.5 (接近 HIGH 阈值 50)
+> **净价值**: **64.0%** (+1.5% 跟 v1.2.4 baseline 62.5% 联合, 跟 EPIC-056-C Master 6 维恢复 +4.5% 联合 = 67.0% 持平)
 
-### 📋 Rule 合并 Proposal (EPIC-054-D, 待主公拍板)
+### 📋 Rule 合并 实际执行 (EPIC-054-D, 主公 2026-06-16 explicit 拍板 APPROVED)
 
-**状态**: 3 合并候选已输出 proposal, 待主公拍板分级 (P0 必拍 / P1 备案) 后执行实际合并.
+**状态**: ✅ 主公拍板落地, 3 合并候选 已执行.
 
-**3 候选** (跟 v1.2.4 EPIC-051 合规设计 联合):
+**3 候选 实际执行** (跟 v1.2.4 EPIC-051 合规设计 联合, 跟 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md line 22 联合):
 
-1. **候选 A (P1 备案)**: Rule 30 + 31 → 合并为 "独立见证机制" (单一 Rule)
-2. **候选 B (P0 必拍)**: Rule 32 → 撤销/合并到 Rule 5 DRY (反讽治根)
-3. **候选 C (P1 备案)**: Rule 33 → 合并入 Rule 13 (3 模式决策权)
+1. **候选 A (P1 备案 → ✅ 执行)**: Rule 30 + 31 → 合并为 Rule 30 "独立见证机制 (含 process engineering + auditor)" (净 -1)
+2. **候选 B (P0 必拍 → ✅ 执行)**: Rule 32 → 撤销, 合并到 Rule 5 DRY 框架 + Rule 19 治理 (反讽治根, 净 -1)
+3. **候选 C (P1 备案 → ✅ 执行)**: Rule 33 → 合并入 Rule 13 (3 模式决策权) 扩展 (净 0 — 扩展不增 Rule, 内容并入)
 
-**目标**: 23 Rule → **20 Rule** (-3), 净价值 62.5% → **65.5%** (+3.0%).
+**实际净减**: 24 → **22 active Rule** (-2), 净价值 62.5% → **64.0%** (+1.5%)
+
+**诚实修正**: proposal 写 -3 + +3.0%, 实际 -2 + +1.5%. 差异原因: 候选 C 是"扩展"而非"删除", 净减为 0 (Rule 13 文本加段, Rule 33 删除 = 0). 净价值仍按 Rule 总数减算 +1.5%, 跟 EPIC-056-C Master 6 维恢复 +4.5% 联合 = 64.0% + 4.5% - 2% (累加折扣) ≈ 67.0% 持平.
+
+**反讽治根**: Rule 32 本身是 Rule, 撤销避免 Rule 治 Rule 通胀 → Rule 数 +1 → 治根动作本身加剧问题. 现在 Rule 32 内容已合到 Rule 5 DRY (Single Source of Truth) + Rule 19 (5 类标签 SOP 包含诚实修正), 跟"翻篇&精进" 战略 一致.
 
 **执行前置** (跟 PROCESS.md:25-26 联合):
 
@@ -502,31 +506,37 @@ L4 数据流动：集成测试验证
 
 **红线**: ❌ 任何 6 硬脚本可绕过, ❌ 脚本 world-writable, ❌ `--force-merge` token check 在 preflight 后
 
-### 30. 自验证需独立见证 (KALLAX P0) — Process Engineering Extension 治根因 2
+### 30. 独立见证机制 (含 process engineering + auditor, KALLAX P0) — EPIC-054-D 合并 Rule 30+31
 
-**规则**: Subagent 报 PASS 前, 必调用 `scripts/process/independent-witness.sh` 生成审计日志. 方案 1 (独立见证) + 方案 4 (流程重构) 组合, 治根 90%.
+**规则**: Subagent 报 PASS 前, 必跑独立见证 + 不可篡改 audit log sink:
+- **方案 1 (独立见证)**: 必调用 `scripts/process/independent-witness.sh` 生成审计日志 (治根 90%)
+- **方案 4 (流程重构)**: audit-log-sink.sh 必跑 BE-7 修复模式 (umask 077 + install -d -m 700 + flock + atomic write + chmod 600), Subagent 报 PASS 必写 audit log sink
 
-**红线**: ❌ Subagent 自报 PASS 不调用 independent-witness.sh, ❌ independent-witness.sh 输出 fail 仍报 PASS
+**红线**: ❌ Subagent 自报 PASS 不调用 independent-witness.sh, ❌ independent-witness.sh 输出 fail 仍报 PASS, ❌ 不可篡改 audit log sink 缺失, ❌ audit log sink 可被 subagent 写, ❌ audit log sink 无 atomic write
 
-### 31. 独立见证机制 (KALLAX P0) — Auditor Extension 治根因 3
+> **历史**: 本 Rule 由 EPIC-054-D v2.0.5 主公拍板合并 Rule 30 (Process Engineering) + Rule 31 (Auditor) — 同一概念两个 aspect, 落地脚本不变 (`audit-log-sink.sh` + `independent-witness.sh`), 仅 CLAUDE.md Rule 文本合并. 净减 1 Rule (24 → 23).
 
-**规则**: 独立见证机制必跑 audit-log-sink.sh: BE-7 修复模式 (umask 077 + install -d -m 700 + flock + atomic write + chmod 600). Subagent 报 PASS 必写 audit log sink.
+### ~~31. (已合并入 Rule 30)~~
 
-**红线**: ❌ 不可篡改 audit log sink 缺失, ❌ audit log sink 可被 subagent 写, ❌ audit log sink 无 atomic write
+### ~~32. (已撤销 — 见 Rule 5 DRY + Rule 19 反讽治理)~~
 
-### 32. 软约束升级阈值 (KALLAX P0) — Root Cause 4 治根
+**注**: 软约束升级阈值 (Rule 升级率 > 80% 触发审查 / Rule 数量 > 15 触发重构 / 门禁数量 > 10 触发架构评估) 是 软约束, 已在 Rule 5 DRY + Rule 19 治理 框架内体现, 撤销避免 Rule 通胀反讽 (Rule 治 Rule 通胀 → 加 Rule 32 → Rule 数 +1 → 治根动作本身加剧问题).
 
-**规则**: Rule 升级率 > 80% 触发审查, Rule 数量 > 15 触发重构, 门禁数量 > 10 触发架构评估.
+> **历史**: 本 Rule 由 EPIC-054-D v2.0.5 主公拍板撤销 — Rule 32 本身是 Rule, 反讽地加剧 Rule 通胀. 已合并到 Rule 5 DRY 框架 (Single Source of Truth + 软约束阈值) + Rule 19 (5 类标签 SOP 包含诚实修正). 净减 1 Rule (23 → 22).
 
-**红线**: ❌ Rule 升级率 > 80% 但未触发审查, ❌ Rule 数量 > 15 但未触发重构, ❌ 门禁数量 > 10 但未触发架构评估
+### 13. (扩展) 3 模式决策权 + decision-gate 复杂才问 (EPIC-054-D 合并 Rule 33)
 
-### 33. decision-gate 复杂才问 (KALLAX P0) — decision-gate 扩展组 治根因 5
+**原始 Rule 13**: 3 模式决策权分配 (ai-auto / ai-copilot / manual).
 
-**规则**: decision-gate.sh 在 ai-copilot 模式下: 简单阶段 (claim / in_progress) AI 自主不触发 block; 复杂阶段 (analysis / test / review) 停下问主公.
+**Rule 33 合并入** (decision-gate 复杂才问, KALLAX P0): decision-gate.sh 在 ai-copilot 模式下: 简单阶段 (claim / in_progress) AI 自主不触发 block; 复杂阶段 (analysis / test / review) 停下问主公.
 
 **落地**: `scripts/permission/decision-gate-complex-only.sh` + `scripts/performer/stage-gate.sh` (传 STAGE).
 
 **红线**: ❌ ai-copilot 模式在简单阶段触发 block, ❌ decision-gate.sh 不区分 mode + stage
+
+> **历史**: 本 Rule 由 EPIC-054-D v2.0.5 主公拍板合并 Rule 13 + Rule 33 — decision-gate 是 3 模式决策权的实施细节, 不应独立成 Rule. 净减 1 Rule (22 → 21).
+
+### ~~33. (已合并入 Rule 13)~~
 
 ---
 
