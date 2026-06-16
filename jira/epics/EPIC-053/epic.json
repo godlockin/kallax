@@ -51,6 +51,20 @@
       "assignee": "performer-EPIC-053",
       "status": "pending",
       "blocked_by": "EPIC-053-C"
+    },
+    {
+      "id": "EPIC-053-E",
+      "title": "B 组 5 extended 逆袭发现 #1: 新 preflight wiring gap (新 l3-l4-consistency 0 命中 ROOT-level preflight + ticket-gate 链, 治 BE-5 反讽, P0 critical)",
+      "assignee": "performer-EPIC-053",
+      "status": "pending",
+      "blocked_by": "EPIC-053-A"
+    },
+    {
+      "id": "EPIC-053-F",
+      "title": "B 组 5 extended 逆袭发现 #2+3: check-scope-creep.sh glob bug fix + tests/integration/l3-l4-consistency-test.sh 命名误导 (重命名 truth-table, 跟 EPIC-053-C 联动, P1)",
+      "assignee": "performer-EPIC-053",
+      "status": "pending",
+      "blocked_by": "EPIC-053-A"
     }
   ]
 }
