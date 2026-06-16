@@ -1,0 +1,56 @@
+{
+  "id": "EPIC-054",
+  "phase": "PHASE-009",
+  "title": "架构卫生减法 (worktree/instance/release/RULE 治胀, 跟 H5/A6/A7/A1 闭环)",
+  "scope": "1. Master 强验证 2026-06-16 跟 H5 (worktree 4 套根目录) + A1 (Rule 通胀 18→23) + A6 (空 EPIC 目录 6 个) + A7 (88 instance 僵尸) 联合 explicit 派单\n2. 跟 8 release 13 天 (v1.2.3→v2.0.2) 维护债爆炸 闭环, 跟 50+ worktree + 88 instance dir + 6 空 EPIC dir 减法\n3. 跟'翻篇&精进' 战略 联合, 跟'流程逻辑 > 扩充配置' 反讽 (实际一直在扩)\n4. 跟 Rule 32 (软约束升级阈值) 落地, 跟 Rule 5 DRY 联合\n5. 4 票拆卡: worktree 根目录统一 + instance TTL+LRU + 空 EPIC 清理+状态机 + Rule 合并/撤销扫描",
+  "start_time": "2026-06-16",
+  "delivery_time": "2026-07-07",
+  "status": "active",
+  "baseline": {
+    "source": "Master 强验证 2026-06-16 (跟主公 14 问题分析联合)",
+    "current_state": "50+ worktree 跨 4 套根目录 (.claude/ .kallax/ .worktrees/ /performer-EPIC-XXX/) + 88 instance dir 95% 僵尸 + 6 空 EPIC 目录 (EPIC-042~047) + 23 Rule 累计 9 升级",
+    "gap": "KALLAX 缺 worktree 根目录统一策略 + instance 生命周期管理 + EPIC 状态机 + Rule 合并/撤销机制"
+  },
+  "target": {
+    "worktree_unified_root": "4 套根目录 → 1 套 (默认 .kallax/worktrees/), 跟 git worktree list 一致",
+    "instance_ttl_lru": "instance 目录 LRU + 7 天 TTL + 心跳检测自动清理, 跟 Resource Management 硬要求一致",
+    "epic_state_machine": "空 EPIC 目录清理 + 6 状态机 (planning→active→blocked→done→archived→closed), 跟 ticket-schema.md 状态机对齐",
+    "rule_merge_scan": "Rule 合并/撤销定期扫描 (跟 Rule 32 软约束升级阈值联动), 23 Rule → 20 Rule 目标 (减 3)"
+  },
+  "decisions": {
+    "priority": 2,
+    "rationale": "主公 2026-06-16 拍'建卡修复' 联合 P1 架构卫生, 跟'翻篇&精进' 战略联合",
+    "phase": "PHASE-009 架构卫生减法",
+    "explicit_p1": "worktree 统一 (H5) + instance TTL (A7) + EPIC 状态机 (A6) + Rule 合并 (A1) 都是 P1 重要, 1 月内闭环"
+  },
+  "tickets": [
+    {
+      "id": "EPIC-054-A",
+      "title": "Worktree 根目录统一 (4 套 → 1 套, 跟 git worktree list 一致, 治 H5)",
+      "assignee": "performer-EPIC-054",
+      "status": "pending",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-054-B",
+      "title": "instance 目录 LRU + 7 天 TTL 自动清理 (跟 Resource Management 硬要求一致, 治 A7)",
+      "assignee": "performer-EPIC-054",
+      "status": "pending",
+      "blocked_by": "EPIC-054-A"
+    },
+    {
+      "id": "EPIC-054-C",
+      "title": "空 EPIC 目录清理 + 6 状态机 (planning→active→blocked→done→archived→closed, 治 A6)",
+      "assignee": "performer-EPIC-054",
+      "status": "pending",
+      "blocked_by": "EPIC-054-B"
+    },
+    {
+      "id": "EPIC-054-D",
+      "title": "Rule 合并/撤销定期扫描 (跟 Rule 32 联动, 23 Rule → 20 Rule 目标, 治 A1)",
+      "assignee": "performer-EPIC-054",
+      "status": "pending",
+      "blocked_by": "EPIC-054-C"
+    }
+  ]
+}

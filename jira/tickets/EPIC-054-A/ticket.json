@@ -1,0 +1,35 @@
+{
+  "id": "EPIC-054-A",
+  "epicId": "EPIC-054",
+  "phaseId": "PHASE-009",
+  "title": "Worktree 根目录统一 (4 套 → 1 套, 跟 git worktree list 一致, 治 H5)",
+  "type": "refactor",
+  "priority": "P1",
+  "status": "ready",
+  "created_by": "master_main (主公 2026-06-16 拍'建卡修复', 14 问题 H5 explicit 派单)",
+  "created_at": "2026-06-16T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-054-A/",
+      "scripts/worktree/unify-roots.sh",
+      ".gitignore",
+      "scripts/detect-stale-worktrees.sh",
+      "tests/integration/worktree-unify-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "4 套根目录 → 1 套 (默认 .kallax/worktrees/), 跟 git worktree list 输出 1:1 一致",
+    "scripts/worktree/unify-roots.sh 实现 — 自动迁移 50+ worktree, 改 .git/worktrees/ 内部指针 + worktree/.git 文件",
+    ".gitignore 加 .claude/worktrees/, .worktrees/, /performer-EPIC-*/ 忽略 (新 worktree 不再创建到这)",
+    "scripts/detect-stale-worktrees.sh 升级 — 改 1 套根目录扫描",
+    "tests/integration/worktree-unify-test.sh 6/6 PASS (4 套根目录 mock + 50+ worktree 迁移 + 1 套根目录验证 + git worktree list 一致性)",
+    "git worktree list 输出跨 1 套根目录, 不再有 .claude/, .worktrees/, /performer-EPIC-* 散落",
+    "Rule 9 KPI 精确 X/Y 格式 — 6/6 PASS = 100.0%"
+  ],
+  "estimated_hours": 8,
+  "status_set_by": "master_main (2026-06-16 14 问题分析 H5 explicit 派单)"
+}

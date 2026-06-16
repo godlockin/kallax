@@ -1,0 +1,56 @@
+{
+  "id": "EPIC-053",
+  "phase": "PHASE-009",
+  "title": "治根 KPI falsification 系统级修复 (跟 H1/H2/H3 闭环, 跟 BE-9/BE-10 治根)",
+  "scope": "1. Master 强验证 2026-06-16 跟主公'分析优缺点隐患' explicit 派单联合, 跟 PROJECT-STATUS-2026-06-13.md line 43 12 KPI falsification 反复 闭环\n2. 3 致命 H 治根: H1 Performer 派单成功率 58.3% (4 治根 Step 1-4) + H2 L3 vs L4 自相矛盾 (BE-9 治根) + H3 review.sh/check-kpi-precision.sh 工具自检漏洞 (BE-10 模式)\n3. 跟 4 BE 边界事件闭环: BE-1 Conductor 越界 + BE-5 Performer-EPIC-036/037 假 PASS + BE-9 L3L4 矛盾 + BE-10 review.sh 拒 FAIL bug\n4. 跟 23 Rule Rule 30 (自验证需独立见证) + Rule 31 (独立见证机制) 联动, 跟 5 扩展组 (security/process-engineering/auditor/compliance/decision-gate) 集成\n5. 跟 CHANGELOG.md:84-87 v1.2.4 9 Security Review Issues + v1.3.2 security fix release 闭环\n6. 跟'反讽' 联合 — 跟 5 扩展组'症状级'治根 反讽, 跟 12 KPI falsification 反复 反讽, 跟'诚实修正' 联合",
+  "start_time": "2026-06-16",
+  "delivery_time": "2026-06-30",
+  "status": "active",
+  "baseline": {
+    "source": "Master 强验证 2026-06-16 (跟主公 14 问题分析 explicit 派单联合)",
+    "current_state": "12 KPI falsification 反复 + 58.3% 派单真 PASS + L3L4 自相矛盾 + review.sh 自己有 bug 拒 FAIL + 5 扩展组加完后 Master 强验证降到 0 维度",
+    "gap": "KALLAX 缺 KPI 证据链 git-anchor + 工具自检体系 + 派单成功率仪表盘 + L3L4 一致性检查"
+  },
+  "target": {
+    "l3_l4_consistency": "BE-9 治根 — L3 集成测试通过 = L4 verify 自动通过, 不许矛盾",
+    "kpi_evidence_chain": "4-Level 证据链 = git anchor (commit hash) + test stdout + 5 扩展组 pass + 独立见证签名, 缺一不算 PASS",
+    "tool_self_check": "review.sh / check-kpi-precision.sh 自检机制 (跟 bash 5.x patterns 兼容, BE-10 模式治根)",
+    "dispatch_dashboard": "Performer 派单成功率从 58.3% → 95%+, 实时仪表盘 (跟 Rule 16 联动)"
+  },
+  "decisions": {
+    "priority": 1,
+    "rationale": "主公 2026-06-16 拍'建卡修复' explicit 派单, 跟 14 问题分析联合, 跟 H1/H2/H3 P0 致命 联合",
+    "phase": "PHASE-009 治根 KPI falsification 系统级",
+    "explicit_p0": "L3L4 矛盾 (H2) + KPI 证据链 (H1) + 工具自检 (H3) 都是 P0 致命, 必须 2 周内闭环"
+  },
+  "tickets": [
+    {
+      "id": "EPIC-053-A",
+      "title": "L3 集成测试 vs L4 verify 一致性检查 (BE-9 治根, 跟 Rule 8 联动)",
+      "assignee": "performer-EPIC-053",
+      "status": "pending",
+      "blocked_by": null
+    },
+    {
+      "id": "EPIC-053-B",
+      "title": "KPI falsification 系统级治根 — 4-Level 证据链 (git-anchor + test stdout + 5 扩展组 pass + 独立见证签名)",
+      "assignee": "performer-EPIC-053",
+      "status": "pending",
+      "blocked_by": "EPIC-053-A"
+    },
+    {
+      "id": "EPIC-053-C",
+      "title": "review.sh / check-kpi-precision.sh 工具自检 (BE-10 模式治根, bash 5.x 兼容 patterns)",
+      "assignee": "performer-EPIC-053",
+      "status": "pending",
+      "blocked_by": "EPIC-053-B"
+    },
+    {
+      "id": "EPIC-053-D",
+      "title": "Performer 派单成功率仪表盘 (58.3% → 95%+, 跟 Rule 16 联动, 跟 H1/H6 治根)",
+      "assignee": "performer-EPIC-053",
+      "status": "pending",
+      "blocked_by": "EPIC-053-C"
+    }
+  ]
+}

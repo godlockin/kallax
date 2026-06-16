@@ -1,0 +1,35 @@
+{
+  "id": "EPIC-054-B",
+  "epicId": "EPIC-054",
+  "phaseId": "PHASE-009",
+  "title": "instance 目录 LRU + 7 天 TTL 自动清理 (跟 Resource Management 硬要求一致, 治 A7)",
+  "type": "feature",
+  "priority": "P1",
+  "status": "pending",
+  "created_by": "master_main (主公 2026-06-16 拍'建卡修复', 14 问题 A7 explicit 派单)",
+  "created_at": "2026-06-16T00:00:00Z",
+  "blocked_by": "EPIC-054-A",
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-054-B/",
+      "scripts/instance/cleanup.sh",
+      "node/src/core/instance-registry.ts",
+      "scripts/hooks/instance-ttl.sh",
+      "tests/integration/instance-ttl-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "88 instance 目录 → 95% 清理后只剩活跃 conductor/master 目录",
+    "scripts/instance/cleanup.sh 实现 — LRU + 7 天 TTL 自动清理, 跟 Resource Management 硬要求一致",
+    "node/src/core/instance-registry.ts 升级 — instance 注册时检查 last_heartbeat, 超 7 天自动 unregister",
+    "scripts/hooks/instance-ttl.sh hook — 每次 session 启动时跑 TTL 清理",
+    "tests/integration/instance-ttl-test.sh 5/5 PASS (88 mock instance + LRU 排序 + 7 天 TTL 边界 + 活跃 instance 保留 + 清理日志)",
+    "A7 治根 — 88 instance 95% 僵尸, 跟 LRU cache 硬要求一致",
+    "Rule 9 KPI 精确 X/Y 格式 — 5/5 PASS = 100.0%"
+  ],
+  "estimated_hours": 6,
+  "status_set_by": "master_main (2026-06-16 14 问题分析 A7 explicit 派单)"
+}

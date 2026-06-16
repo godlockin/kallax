@@ -1,0 +1,33 @@
+{
+  "id": "EPIC-053-A",
+  "epicId": "EPIC-053",
+  "phaseId": "PHASE-009",
+  "title": "L3 集成测试 vs L4 verify 一致性检查 (BE-9 治根, 跟 Rule 8 联动)",
+  "type": "bug",
+  "priority": "P0",
+  "status": "ready",
+  "created_by": "master_main (主公 2026-06-16 拍'建卡修复', 14 问题 H2 explicit 派单)",
+  "created_at": "2026-06-16T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-053-A/",
+      "scripts/verify/l3-l4-consistency.sh",
+      "tests/integration/l3-l4-consistency-test.sh",
+      "scripts/verify/check-fact-forcing-preflight.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/verify/l3-l4-consistency.sh 实现 — L3 集成测试通过 = L4 verify 自动通过, 不许矛盾",
+    "tests/integration/l3-l4-consistency-test.sh 4/4 PASS (L3 pass + L4 fail = ERROR, L3 fail + L4 pass = ERROR, L3 pass + L4 pass = OK, L3 fail + L4 fail = OK)",
+    "BE-9 (L3L4 矛盾, 防御体系自检漏洞) 治根闭环",
+    "Rule 8 (4-Level Fact-Forcing) 强约束 — L3 L4 不许矛盾",
+    "跟 check-fact-forcing-preflight.sh 联动, 把 L3L4 一致性检查加到 preflight",
+    "Rule 9 KPI 精确 X/Y 格式 — 4/4 PASS = 100.0% (跟 EPIC-041-B 一致)"
+  ],
+  "estimated_hours": 6,
+  "status_set_by": "master_main (2026-06-16 14 问题分析 H2 explicit 派单)"
+}

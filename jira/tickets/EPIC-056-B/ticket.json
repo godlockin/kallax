@@ -1,0 +1,35 @@
+{
+  "id": "EPIC-056-B",
+  "epicId": "EPIC-056",
+  "phaseId": "PHASE-009",
+  "title": "流程表演 vs 流程效果度量 (KPI: 派单成功率/周期/越界率, 治 P3, ⚠️ 需主公拍板)",
+  "type": "feature",
+  "priority": "P2",
+  "status": "pending",
+  "created_by": "master_main (主公 2026-06-16 拍'建卡修复', 14 问题 P3 explicit 派单, ⚠️ 需主公拍板)",
+  "created_at": "2026-06-16T00:00:00Z",
+  "blocked_by": "EPIC-056-A",
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-056-B/",
+      "node/src/core/process-metrics.ts",
+      "scripts/dashboard/process-metrics.sh",
+      "docs/process/metrics-kpi.md",
+      "tests/integration/process-metrics-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "node/src/core/process-metrics.ts 实现 — 3 KPI: 派单成功率 / 平均周期 / 越界率 (跟 Rule 9 KPI 精确 X/Y 格式一致)",
+    "scripts/dashboard/process-metrics.sh CLI 仪表盘 — 输出 3 KPI + 历史趋势",
+    "docs/process/metrics-kpi.md — 3 KPI 定义 + 目标值 + 度量方法 + 跟 BE 关联",
+    "P3 治根 — 15 步流程表演化 闭环, 跟 Subagent 流程 联合",
+    "tests/integration/process-metrics-test.sh 6/6 PASS (3 KPI 计算 + 历史趋势 + BE 关联 + 目标值校验 + 异常告警 + 仪表盘输出)",
+    "Rule 9 KPI 精确 X/Y 格式 — 6/6 PASS = 100.0%",
+    "⚠️ 治理升级, Master 不能自己升级红线, 需主公拍板后才执行 — 跟 EPIC-055-B 拍板分级联动"
+  ],
+  "estimated_hours": 6,
+  "status_set_by": "master_main (2026-06-16 14 问题分析 P3 explicit 派单, ⚠️ 需主公拍板)"
+}
