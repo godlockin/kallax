@@ -431,6 +431,41 @@ L4 数据流动：集成测试验证
 
 **执行**: Master 强验证 6 维度命中任一 → subagent 报 FAIL + ticket 状态自动同步 + 留 LESSONS-LEARNED 草稿.
 
+### 19. 5 类标签 SOP (KALLAX P1) — EPIC-055-C, 治 A2 咒语化 + A3 笔误
+
+**教训**: 历史项目 50+ 文档含"反讽" 咒语化引用 (无证据链 装饰引用), 跟"诚实修正" 战略 矛盾. 主公 14 问题分析 派单 EPIC-055-C explicit 治根.
+
+**规则**: 5 类标签 (反讽/诚实修正/独立/翻篇/流程逻辑) 引用必须带**证据链 3 件套**:
+
+1. **证据**: `file_path:line_number` OR `commit_hash` (可追溯, 不可无源装饰)
+2. **反驳/支持案例**: 具体 case (e.g. EPIC-053-B H1 治根, v1.2.4 5 扩展组 100% 假 PASS)
+3. **实际影响**: 实际 可观察 效果 (e.g. 拍板成本↓40%, 假 PASS 率↓ 50%→10%)
+
+**SOP 文档**: [`docs/process/tag-sop.md`](docs/process/tag-sop.md)
+**扫描工具**: [`scripts/audit/tag-audit.sh`](scripts/audit/tag-audit.sh) — 5 函数 (scan_tags / validate_evidence_chain / detect_cursed_references / detect_typos / check_sop_compliance)
+**TDD 测试**: [`tests/integration/tag-sop-test.sh`](tests/integration/tag-sop-test.sh) — 5/5 PASS (100.0%)
+
+**实测算**:
+- 反讽 引用总数 (.md): **350** (KALLAX-GLOSSARY.md 62 / superpowers/specs 54 / CHANGELOG.md 36 装饰重灾区)
+- 诚实修正 引用总数: **179**
+- 独立 引用总数: **329**
+- 翻篇 引用总数: **55**
+- 流程逻辑 引用总数: **143**
+- 笔误"主公拍 explicit 拍 explicit": **17** 处 (PHASE-REVIEW.md:11, 33 典型)
+- SOP 自身: 0 咒语化 (100.0% 合规)
+
+**跟 Rule 5 DRY 联动**: 标签引用去重, 跟"经验沉淀强制化" (`CLAUDE.md:121-147`) 联合.
+**跟 EPIC-055-B (主公拍板分级 P0/P1/P2) 联合**: 5 类标签 SOP 本身 = P1 备案, 跟"独立" 拍板 联合.
+**跟"诚实修正" + "翻篇&精进" 战略 一致**: 治 A2 咒语化 闭环, 治 A3 笔误 闭环.
+
+**红线**:
+- ❌ 5 类标签 引用无证据链 3 件套
+- ❌ 任何"跟 X 闭环"/"跟 X 联合"/"跟 X 战略 一致" 装饰引用 (无 file:line)
+- ❌ SOP 自身 咒语化 (不双标)
+- ❌ 跳过 `scripts/audit/tag-audit.sh` 扫描
+
+**来源**: EPIC-055-C (主公 14 问题分析 A2/A3 explicit 派单, 2026-06-16) + KALLAX-GLOSSARY.md §1.1-1.5 + Rule 5 DRY + "诚实修正" 战略
+
 ---
 
 ## KALLAX Rules Status (跟 EPIC-054-D 联合)
