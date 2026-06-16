@@ -748,3 +748,35 @@ L4 数据流动：集成测试验证
 
 **来源**: decision-gate 扩展组 治根因 5 + UX 视角 §1.5 + 主公 2026-06-13 "不要再犯了" explicit 约束
 
+---
+
+## KALLAX Rules Status (跟 EPIC-054-D 联合)
+
+> **当前 Rule 总数**: 23
+> **累计 升级 (实测)**: 10 (R-NEW 14-18 = 5 + v1.2.4 扩展 29-33 = 5)
+> **升级率**: 43.5% (实测, 跟 EPIC-055-B LESSONS-LEARNED.md 联合)
+> **fatigue_index**: 43.5 (接近 HIGH 阈值 50)
+> **净价值**: 62.5% (跟 EPIC-056-A 决策后 联合)
+
+### 📋 Rule 合并 Proposal (EPIC-054-D, 待主公拍板)
+
+**状态**: 3 合并候选已输出 proposal, 待主公拍板分级 (P0 必拍 / P1 备案) 后执行实际合并.
+
+**3 候选** (跟 v1.2.4 EPIC-051 合规设计 联合):
+
+1. **候选 A (P1 备案)**: Rule 30 + 31 → 合并为 "独立见证机制" (单一 Rule)
+2. **候选 B (P0 必拍)**: Rule 32 → 撤销/合并到 Rule 5 DRY (反讽治根)
+3. **候选 C (P1 备案)**: Rule 33 → 合并入 Rule 13 (3 模式决策权)
+
+**目标**: 23 Rule → **20 Rule** (-3), 净价值 62.5% → **65.5%** (+3.0%).
+
+**执行前置** (跟 PROCESS.md:25-26 联合):
+
+- ✅ 本 ticket 只输出 proposal, 不实际合并 Rule
+- ❌ 实际合并需主公拍板 (候选 B P0 必拍, 候选 A/C P1 备案)
+- 后续 ticket (EPIC-054-D-merge 或 EPIC-054-E) 主公拍板后执行实际合并
+
+**详细 proposal**: [`docs/process/rule-merge-proposal.md`](docs/process/rule-merge-proposal.md)
+**联动 ticket**: EPIC-055-B (主公拍板分级, 已 merged `2b4771c`)
+**决策文档**: [`confluence/decisions/5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md`](confluence/decisions/5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md)
+
