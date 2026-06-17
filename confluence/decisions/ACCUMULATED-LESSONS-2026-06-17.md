@@ -1,14 +1,15 @@
-# ACCUMULATED-LESSONS-2026-06-17 (v2.0.5 升级版)
+# ACCUMULATED-LESSONS-2026-06-17 (v2.0.6 升级版)
 
-> **累计 9 release + 13 BE + 4 EPIC × 14 卡 + 6 痛点 + 22 active Rule + 17 门禁 + 5 视角 + 4 共同根因 + 5 战略 + 5 治理卡**
+> **累计 10 release + 13 BE + 5 EPIC × 18 卡 + 6 痛点 + 22 active Rule + 17 门禁 + 5 视角 + 4 共同根因 + 5 战略 + 5 治理卡 + 4 工具**
 > **跟主公"流程逻辑 > 扩充配置" + "诚实修正" + "反讽" + "翻篇&精进" + "独立" 5 大战略 联合**
-> **跟 v2.0.3 baseline (ACCUMULATED-LESSONS-2026-06-13) 联合 → 升级 → 合并 → 整理 → 总结**
+> **跟 v2.0.3 baseline (ACCUMULATED-LESSONS-2026-06-13) + v2.0.5 (ACCUMULATED-LESSONS-2026-06-17 初版) 联合 → 升级 → 合并 → 整理 → 总结**
 
 **Date**: 2026-06-17
 **Author**: master_main
 **Reviewers**: 主公 (战略审批) + Conductor + Performer
-**Status**: ✅ COMPLETE — 14 卡 PHASE-009 闭环 + v2.0.4 + v2.0.5 落地
-**Version**: v2.0.5 (从 v2.0.3 ACCUMULATED-LESSONS 升级, +4 天跨度 6/13 → 6/17)
+**Status**: ✅ COMPLETE — 14 卡 PHASE-009 闭环 + v2.0.4 + v2.0.5 + EPIC-057 4 ticket 闭环 + v2.0.6 落地
+**Version**: v2.0.6 (从 v2.0.5 升级, +1 天跨度 6/17 → 6/17)
+**Updates**: 跟 v2.0.5 升级版对比: +1 release (v2.0.6) + +1 EPIC (EPIC-057) + +4 ticket + +4 工具 (opencode/Codex/Gemini 闭环) + +1 战略经验 (串行派单治 silent output 复发 BE-9)
 
 ---
 
@@ -34,11 +35,34 @@
 
 ### 净价值 跟踪 (跟 v1.2.4 baseline 退步对比反转)
 
-| 阶段 | Rule | 阶段 | 步骤 | 文档 | 净价值 | 跟"反讽" 联合 |
-|---|---|---|---|---|---|---|
-| v1.2.4 baseline | 23 | 5 | 15 | 68533 | **62.5%** (-5% 恶化) | 反讽 |
-| **v2.0.4** | 23 | **3** | **10** | **34001** (-51.5%) | **67.0%** (+4.5%) | **反讽 闭环** |
-| **v2.0.5** | **22** (-2) | 3 | 10 | 34001 | 64.0% (+1.5%) → 联合 **67.0% 持平** | **诚实修正** (proposal -3 → 实际 -2) |
+| 阶段 | Rule | 阶段 | 步骤 | 文档 | 净价值 | 工具 | 跟"反讽" 联合 |
+|---|---|---|---|---|---|---|---|
+| v1.2.4 baseline | 23 | 5 | 15 | 68533 | **62.5%** (-5% 恶化) | 1 (Claude) | 反讽 |
+| **v2.0.4** | 23 | **3** | **10** | **34001** (-51.5%) | **67.0%** (+4.5%) | 1 | **反讽 闭环** |
+| **v2.0.5** | **22** (-2) | 3 | 10 | 34001 | 64.0% (+1.5%) → 联合 **67.0% 持平** | 1 | **诚实修正** (proposal -3 → 实际 -2) |
+| **v2.0.6** | 22 | 3 | 10 | 34001 + INSTALL-MULTI-TOOL.md 222 | 67.0% 持平 | **4 (Claude/opencode/Codex/Gemini)** | **反讽 闭环** (v2.0.2 '跨平台 fix release' 反讽 → v2.0.6 治根) |
+
+### EPIC-057 4 ticket 闭环 (主公 B + D explicit 拍板, 串行派单, 治 BE-9 silent output 复发)
+
+- **EPIC-057-A** install.sh `--target=auto` + 4 工具 skills/commands (6/6 PASS, commit `a7d2b27`+`fae6f2f`, merge `d048b53`)
+- **EPIC-057-B** onramp.sh tool detection + dispatch (6/6 PASS + sibling regression, commit `c8bfb2a`+`12a428d`+`ba668a6`, merge `8209c4d`)
+- **EPIC-057-C** INSTALL-MULTI-TOOL.md + README + CHANGELOG [2.0.6] (5/5 PASS, commit `7cfbc50`+`88a857e`, merge `d1e729f`)
+- **EPIC-057-D** integration tests multi-tool (18/18 PASS = 8+6+4, commit `eac6def`+`1c151e6`+`0ff0b37`, merge `36b75d7`)
+
+**hybrid flag-controlled install** (主公 '需要用户选择安装哪个工具/还是全支持' explicit 联合):
+- `--target=auto` 默认: auto-detect $HOME/.<tool>/ + which CLI (claude > opencode > codex > gemini 优先级)
+- `--target=all`: 强制全装 4 工具
+- `--target=claude|opencode|codex|gemini`: 单工具 explicit
+- `--target=a,b`: 多工具逗号
+- `--interactive`: 弹 prompt
+
+**4 工具 skills/commands dir 路径映射** (实测 in install.sh):
+| Tool | Skills dir | Commands dir | Settings | CLI invocation |
+|---|---|---|---|---|
+| Claude Code | `~/.claude/skills/kallax/` | `~/.claude/commands/` | `settings.json` | `claude --print` (v2.1.153) |
+| opencode | `~/.opencode/skills/kallax/` | `~/.opencode/command/` (singular!) | `config.json` | `opencode run` (v1.17.7) |
+| Codex | `~/.codex/skills/kallax/` | `~/.codex/prompts/` | `config.toml` | `codex exec` (fallback, binary missing) |
+| Gemini | `~/.gemini/skills/kallax/` | `~/.gemini/commands/` | `config/settings.json` | `gemini [query..]` (v0.22.2) |
 
 ### 13 BE 累计 (跟 v2.0.3 11 BE 升级)
 
@@ -47,6 +71,7 @@
 | BE-1~BE-10 | v2.0.3 baseline (11 边界事件) | EPIC-039 + EPIC-040 + EPIC-041 闭环 |
 | **BE-12** ⚠️ | EPIC-053-A B 组 review 逆袭: 新 preflight 0 命中生产路径 (BE-5 反讽) | EPIC-053-E (5 调用点 wiring) |
 | **BE-13** ⚠️ | EPIC-053-A B 组 review 逆袭: check-scope-creep.sh glob bug | EPIC-053-F (P1) |
+| **BE-14** ⚠️ | EPIC-057 派单: 4 subagent silent output 复发 (BE-9 反讽 模式) | EPIC-057 串行派单 (主公 D 拍板, 1 ticket 1 subagent, 治 BE-9 复发) |
 
 ---
 
@@ -398,33 +423,69 @@
 
 ---
 
-## 12. 给下 PHASE (PHASE-010) 战略建议 (跟"翻篇&精进" 一致)
+## 12. 给下 PHASE (PHASE-010/011) 战略建议 (跟"翻篇&精进" 一致)
 
 ### 12.1 治根 闭环
 
 - ✅ 14 卡 PHASE-009 闭环 + 5 清理执行 = 0 待办 EPIC ticket
-- ⚠️ **遗留**: Rule 22 仍 > 15 阈值, 进一步合并需 PHASE-010 review
+- ✅ EPIC-057 4 ticket 串行闭环 (v2.0.6 release, 4 工具 multi-tool)
+- ⚠️ **遗留**: Rule 22 仍 > 15 阈值, 进一步合并需 PHASE-011 review
 - ⚠️ **遗留**: pre-commit hook ALLOWED_PATTERNS 不含 `^jira/` (历史 workaround 是 `--no-verify`)
+- ⚠️ **遗留**: 69 remote feature branches 仍含 DB in history (Option A 保留, 待 PHASE-011 review)
 
 ### 12.2 跨 PHASE review 升级
 
-- PHASE-009 → PHASE-010: 跨 14 卡 + 5 治理卡 + 5 清理 沉淀
-- ACCUMULATED-LESSONS-2026-06-13 → ACCUMULATED-LESSONS-2026-06-17 (本升级版)
+- PHASE-009 → PHASE-010 (本升级版): 跨 14 卡 + 5 治理卡 + 5 清理 + EPIC-057 4 ticket 沉淀
+- ACCUMULATED-LESSONS-2026-06-13 → ACCUMULATED-LESSONS-2026-06-17 v2.0.5 → v2.0.6 (本升级)
 - 跟"反哺框架" 战略 一致
 
-### 12.3 0 增命令 + 0 增 Rule 持续
+### 12.3 0 增命令 + 0 增 Rule 持续 (v2.0.6 验证)
 
-- 跟 v2.0.3 战略一致 (跟 Rule 32 联合, 现在 Rule 32 撤销)
+- 跟 v2.0.3 战略一致 (跟 Rule 32 联合, Rule 32 已撤销)
+- v2.0.6 EPIC-057 加 4 ticket + 4 工具 paths mapping, **0 新增 Rule**, **0 新增 expert** (跟 v1.2.4 5 扩展组 模式 一致)
 - 净价值 67.0% 持续保持
 
-### 12.4 ⚠️ 红线 revert 文档化
+### 12.4 ⚠️ 红线 revert 文档化 (v2.0.5 + v2.0.6)
 
-- EPIC-056-C 是 ⚠️ 红线 revert, 主公 explicit 拍板, 不暗箱操作
+- EPIC-056-C (v2.0.5): ⚠️ 红线 revert Master 6 维, 主公 explicit 拍板, 不暗箱操作
+- EPIC-057 串行派单 (v2.0.6): ⚠️ BE-9 silent output 复发 治根, 主公 D 拍板 (1 ticket 1 subagent), 不再 4 并行 silent
 - ACCUMULATED-LESSONS 升级版 记录 此次 revert 完整流程 (供下 PHASE 参考)
+
+### 12.5 EPIC-057 串行派单教训 (跟"独立" 拍 explicit 约束 联合)
+
+- **教训**: 4 subagent 并行 → silent output 复发 BE-9 反讽. 1 ticket 1 subagent 串行 → 100% PASS deliver.
+- **跟"独立" 拍 explicit 约束 联合**: 主公 D explicit 派单 (跟 PROCESS.md:25-26 Master 不自助升级红线 联合).
+- **跨 ticket 依赖 (057-B 用 057-A paths, 057-C 用 057-A+B paths, 057-D 用全部)** 不能并行, 串行是 hard requirement.
+- **0 hybrid flag-controlled** (主公 '需要用户选择安装哪个工具/还是全支持' 联合): `--target=auto` 默认 = 全支持, explicit = 用户选择.
 
 ---
 
 ## 13. 累计文件清单 (跟 v2.0.3 联合)
+
+### v2.0.3 ACCUMULATED-LESSONS (历史保留)
+
+- `confluence/decisions/ACCUMULATED-LESSONS-2026-06-13.md` (429 行, v2.0.3 baseline)
+
+### v2.0.5 ACCUMULATED-LESSONS 初版 (v2.0.6 升级前)
+
+- `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md` (470 行, v2.0.5 升级版初版, 本升级后保留)
+
+### v2.0.6 ACCUMULATED-LESSONS 升级版 (本升级, 跟 PHASE-010 联合)
+
+- `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md` (本文件, v2.0.6 升级, +EPIC-057 section + 13 BE + 4 工具)
+- `confluence/decisions/PHASE-010-REVIEW-2026-06-17.md` (260 行, v2.0.6 4 ticket 闭环 review)
+- `confluence/decisions/14-ISSUES-INTAKE-2026-06-16.md` (14 卡 intake)
+- `confluence/decisions/5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md` (5 治理卡 拍板决策)
+- `docs/guides/INSTALL-MULTI-TOOL.md` (222 行, EPIC-057-C 新建, v2.0.6 4 工具 install guide)
+- `docs/PHASE-INDEX.md` (同步更新: 加 PHASE-010 + ACCUMULATED-2026-06-17)
+
+### PHASE-INDEX.md 累计 (10 PHASE review)
+
+- PHASE-005 ~ PHASE-008 (v2.0.3 baseline)
+- PHASE-009 (v2.0.5 release)
+- **PHASE-010** (v2.0.6 release, 本 review)
+- ACCUMULATED-LESSONS-2026-06-13 (v2.0.3)
+- ACCUMULATED-LESSONS-2026-06-17 (v2.0.5 初版 + v2.0.6 升级)
 
 ### v2.0.3 ACCUMULATED-LESSONS (历史保留)
 
@@ -460,11 +521,21 @@
 | 2026-06-17 07:30 | 5 清理执行 | master_main | H5/A7/A6/A1 治根 + 仪表盘真跑 |
 | 2026-06-17 08:00 | v2.0.5 release | master_main | Rule 合并 实际执行 |
 | 2026-06-17 08:30 | PHASE-009 review | master_main | 沉淀 |
-| **2026-06-17 09:00** | **ACCUMULATED-LESSONS 升级** | **master_main** | **本文档** |
+| 2026-06-17 09:00 | ACCUMULATED-LESSONS v2.0.5 升级 | master_main | 470 行 + 13 BE + 5 治理卡 |
+| 2026-06-17 10:00 | 主公 'B' explicit 拍板 | master_main | EPIC-057 multi-tool skills support |
+| 2026-06-17 10:30 | EPIC-057 建卡 | master_main | 4 ticket.json + epic.json (commit `b2722e4`) |
+| 2026-06-17 11:00 | 057-A install.sh 串行 | Performer (1 subagent) | 6/6 PASS, merge `d048b53` |
+| 2026-06-17 11:30 | 057-B onramp 串行 | Performer (1 subagent) | 6/6 PASS + sibling, merge `8209c4d` |
+| 2026-06-17 12:00 | 057-C docs 串行 (复用 partial) | Performer (1 subagent) | 5/5 PASS, merge `d1e729f` |
+| 2026-06-17 12:30 | 057-D tests 串行 | Performer (1 subagent) | 18/18 PASS, merge `36b75d7` |
+| 2026-06-17 13:00 | v2.0.6 release | master_main | 4 工具 multi-tool, push origin (commit `7db6107`) |
+| 2026-06-17 13:30 | Todo 1+2 cleanup | master_main | `.gitignore` + PHASE-INDEX (commit `2f13db6` + `d9d0c92`) |
+| 2026-06-17 14:00 | PHASE-010 review | master_main | 260 行 沉淀 (commit `9056927`) |
+| 2026-06-17 14:30 | **ACCUMULATED-LESSONS v2.0.6 升级** | **master_main** | **本文档** (跨期 todo 闭环) |
 
 ---
 
-**跟 v2.0.3 ACCUMULATED-LESSONS-2026-06-13 联合 → 升级 → 合并 → 整理 → 总结**
+**跟 v2.0.3 ACCUMULATED-LESSONS-2026-06-13 + v2.0.5 ACCUMULATED-LESSONS-2026-06-17 (v2.0.5 初版) 联合 → 升级 → 合并 → 整理 → 总结**
 **跟"流程逻辑 > 扩充配置" + "诚实修正" + "反讽" + "翻篇&精进" + "独立" 5 大战略 一致**
-**跟 v2.0.4 + v2.0.5 14 卡闭环 + 5 清理执行 联合**
-**跟"反哺框架" 战略 一致** (跨 PHASE 累计沉淀, 0 增命令 0 增 Rule)
+**跟 v2.0.4 + v2.0.5 14 卡闭环 + 5 清理执行 + EPIC-057 4 ticket 闭环 + v2.0.6 4 工具 multi-tool 联合**
+**跟"反哺框架" 战略 一致** (跨 PHASE 累计 10 review 沉淀, 0 增命令 0 增 Rule)
