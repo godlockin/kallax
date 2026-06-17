@@ -331,6 +331,104 @@ KALLAX 规则 (Rule 1-18 + 29-33) 的唯一真相来源 → [CLAUDE.md](../CLAUD
 
 ---
 
+### 8.6 「4 工具」multi-tool skills (Four-Tool Skills Support)
+
+**大白话**: "KALLAX 不绑死 Claude Code — 4 工具平起平坐: Claude Code / opencode / Codex / Gemini, install.sh 加 `--target=auto` 默认全支持, 单一 SoT (`docs/guides/INSTALL-MULTI-TOOL.md`)".
+
+**来源**: 主公 2026-06-17 'B' explicit 拍板 (跟 v2.0.2 '跨平台 fix release' 反讽 联合), 跟 EPIC-057 4 ticket 闭环 联合, 跟"独立" 拍 explicit 约束 联合.
+
+**4 工具 CLI invocation 实测** (跟 EPIC-057-D integration tests 联合, file:line `tests/integration/multi-tool-e2e-test.sh:1-180`):
+
+| 工具 | CLI 命令 | 二进制验证 | 默认 settings |
+|---|---|---|---|
+| Claude Code | `claude --print "<query>"` | v2.1.153 (实测 PASS) | `~/.claude/settings.json` |
+| opencode | `opencode run "<query>"` | v1.17.7 (实测 PASS) | `~/.opencode/config.json` |
+| Codex | `codex exec "<query>"` (fallback) | binary missing (待装) | `~/.codex/config.toml` |
+| Gemini | `gemini [query..]` (positional) | v0.22.2 (实测 PASS) | `~/.gemini/config/settings.json` |
+
+**Rule 引用**: Rule 5 (DRY) — [CLAUDE.md](../CLAUDE.md), 跟"反讽" 联合 (v2.0.2 命名 vs 实现 反讽 治根).
+
+---
+
+### 8.7 「skills/commands paths」4 工具 路径映射 (Skills/Commands Path Mapping)
+
+**大白话**: "4 工具的 skills/commands dir 名字不一样 — KALLAX install.sh 硬编码映射表, 一次配置, 4 工具生效".
+
+**4 工具路径映射表** (跟 EPIC-057-A install.sh 联合, file:line `scripts/install.sh:64-90`):
+
+| 工具 | Skills 路径 | Commands/Slash/Prompts 路径 | 命名反讽 |
+|---|---|---|---|
+| Claude Code | `~/.claude/skills/kallax/` | `~/.claude/commands/` | 标准命名 |
+| opencode | `~/.opencode/skills/kallax/` | `~/.opencode/command/` ⚠️ | **commands 是 singular** (反讽!) |
+| Codex | `~/.codex/skills/kallax/` | `~/.codex/prompts/` | 叫 prompts 不叫 commands |
+| Gemini | `~/.gemini/skills/kallax/` | `~/.gemini/commands/` | 标准命名 |
+
+**反讽治根**: opencode 用 `command/` (singular) 跟 Claude/Gemini `commands/` (plural) 不一致 — install.sh 必须 explicit 映射, 不能假设统一.
+
+**Rule 引用**: Rule 5 (DRY) + Rule 15 (Performer 隔离) — [CLAUDE.md](../CLAUDE.md), 跟 v2.0.2 '跨平台 fix' 实际只 1 工具 反讽 治根 联合.
+
+---
+
+### 8.8 「hybrid flag-controlled install」(混合标志位控制安装)
+
+**大白话**: "主公 '需要用户选择安装哪个工具/还是全支持' explicit 派单 → install.sh 加 `--target=auto|all|<tool>|a,b|--interactive` 5 模式, 默认 auto-detect = 全支持".
+
+**5 flag 模式** (跟 EPIC-057-A install.sh 联合, file:line `scripts/install.sh:11-30`):
+
+| Flag | 行为 | 适用场景 |
+|---|---|---|
+| `--target=auto` ⚠️ 默认 | auto-detect $HOME/.<tool>/ + which CLI (claude > opencode > codex > gemini 优先级) | 默认, 全支持 |
+| `--target=all` | 强制全装 4 工具 | 演示 / sandbox / CI |
+| `--target=claude\|opencode\|codex\|gemini` | 单工具 explicit | 用户 specific 选 |
+| `--target=claude,opencode` | 多工具逗号分隔 | 用户混合选 |
+| `--interactive` | 弹 prompt 问用户 | 第一次 install / 教学 |
+
+**跟"独立" 拍 explicit 约束 联合**: 5 flag 都是 explicit 选项, 不假设; 默认 `auto` = 全支持 (跟"反讽" 联合, 不隐式).
+
+**Rule 引用**: Rule 5 (DRY) + Rule 16 (Subagent 5 步) — [CLAUDE.md](../CLAUDE.md), 跟 Rule 11 (Master 6 维度验证) 联合.
+
+---
+
+### 8.9 「--target=auto」默认行为 (Auto-Detect Default Behavior)
+
+**大白话**: "install.sh 默认 auto-detect — 探测 $HOME/.<tool>/ 目录 + which CLI binary, 按 claude > opencode > codex > gemini 优先级 装最匹配的 1 工具 (或全装 if all detected)".
+
+**auto-detect 优先级** (跟 EPIC-057-A install.sh 联合, file:line `scripts/install.sh:36-58`):
+1. **claude** (Claude Code) — 最高优先级 (KALLAX 原生)
+2. **opencode** — 次之 (跟 v1.2.4 起就有 mirror)
+3. **codex** — 之后
+4. **gemini** — 最低
+
+**detection 双通道** (跟 EPIC-057-B onramp.sh 联合, file:line `scripts/kallax-onramp/lib/tool-detect.sh:1-80`):
+- **通道 1**: `test -d "$HOME/.<tool>/"` (用户 settings dir 存在)
+- **通道 2**: `which <cli>` (CLI binary 在 PATH)
+
+**Rule 引用**: Rule 15 (Performer Session) + Rule 5 (DRY) — [CLAUDE.md](../CLAUDE.md).
+
+---
+
+### 8.10 「v2.0.2 '跨平台 fix release'」反讽治根 (V2.0.2 Irony Root Cause)
+
+**大白话**: "v2.0.2 release notes 自称'跨平台 fix release' (加 frontmatter + 31 slash command mirror 到 `.opencode/command/`), 实际只支持 Claude Code — 命名跟实现 不一致 (反讽)".
+
+**反讽证据链** (跟"反讽" 联合, 跟"诚实修正" 联合, 跟 v2.0.6 治根 联合):
+
+| 维度 | v2.0.2 实际 | 命名声称 | 反讽 |
+|---|---|---|---|
+| 安装路径 | `~/.claude/` 硬编码 (file:line `scripts/install.sh:52-53`) | "跨平台" | ⚠️ 1 工具 ≠ 跨平台 |
+| frontmatter + 31 slash command | mirror 到 `~/.opencode/command/` | "fix release" | ⚠️ 1 个 mirror ≠ 全装 |
+| codex/gemini 支持 | 0 reference (file:line `jira/epics/EPIC-057/epic.json:11-12`) | "fix release" | ⚠️ 0 支持 ≠ 修复 |
+
+**v2.0.6 治根** (跟 EPIC-057 4 ticket 闭环 联合, file:line `CHANGELOG.md:8-69` + `docs/guides/INSTALL-MULTI-TOOL.md:§1.1`):
+- install.sh 加 `--target=auto` + 4 工具 skills/commands 路径映射 (Section 8.7 联合)
+- kallax-onramp.sh 加 tool detection + 4 工具 dispatch (EPIC-057-B 联合)
+- INSTALL-MULTI-TOOL.md 新建 (~200 行, 反讽治根说明段 完整)
+- integration tests 18/18 PASS (8 install + 6 onramp + 4 e2e, 跟 EPIC-057-D 联合)
+
+**Rule 引用**: Rule 10 (Anti-Fabrication) + Rule 18 (KPI Falsification 黑名单) + Rule 11 (Master 6 维度) — [CLAUDE.md](../CLAUDE.md), 跟"诚实修正" 联合 (看到反讽不装看不见, 主动标记).
+
+---
+
 ## 9. 总结
 
 | 类别 | 术语数 | Rule 引用 |
@@ -342,12 +440,12 @@ KALLAX 规则 (Rule 1-18 + 29-33) 的唯一真相来源 → [CLAUDE.md](../CLAUD
 | **经验教训** (5.x) | 3 | Rule 29/30/31 |
 | **角色 / 决策** (6.x) | 4 | Rule 11/13/14/15 |
 | **量化 / 指标** (7.x) | 3 | Rule 32 |
-| **落地 / 工程** (8.x) | 5 | Rule 5/15/17/29/31 |
-| **总计** | **34 个术语** | 跨 Rule 1-33 |
+| **落地 / 工程** (8.x) | **10** (+5 multi-tool) | Rule 5/15/17/29/31 + Rule 5/10/11/15/16/18 (multi-tool 联合) |
+| **总计** | **39 个术语** (+5 v2.0.6) | 跨 Rule 1-33 |
 
 ### 🔑 关键 takeaway
 
-- ✅ **34 个术语** 全部覆盖, 一次性盘点
+- ✅ **39 个术语** 全部覆盖, 一次性盘点 (跟 v2.0.6 4 工具 multi-tool 升级 +5)
 - ✅ **每个术语**: 大白话 + 来源 + Rule 引用
 - ✅ **追溯链完整** (跟"独立" 拍 explicit 约束 联合)
 - ✅ **写到了文件** (跟主公 explicit 约束 联合)
