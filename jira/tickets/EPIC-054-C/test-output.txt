@@ -1,0 +1,30 @@
+==========================================
+EPIC-054-C — Epic State Machine Tests (8/8)
+6 states: planning→active→blocked→done→archived→closed
+==========================================
+
+  [PASS] TC1: 6 空 EPIC 目录 mock 检测 (--dry-run 报告 6 个 + 正常目录排除) [9/9 sub-checks]
+  [PASS] TC2: 状态机初始化 (6 状态定义 + epic create 默认 planning) [8/8 sub-checks]
+  [PASS] TC3: planning → active (合法转换 + status 子命令 + validate 函数) [3/3 sub-checks]
+  [PASS] TC4: active → blocked → active (阻塞循环 + unblock 恢复) [2/2 sub-checks]
+  [PASS] TC5: active → done (完成转换 + 校验逻辑) [2/2 sub-checks]
+  [PASS] TC6: done → archived (归档转换 + cleanup 归档路径) [2/2 sub-checks]
+  [PASS] TC7: archived → closed (终止状态 + 不可再转声明) [2/2 sub-checks]
+  [PASS] TC8: 跳状态拒绝 (cleanup 0 空报告 + epic-cmd 拒绝 + 文档禁止声明 + 非法转换列表) [4/4 sub-checks]
+
+==========================================
+Summary: 8/8 PASS (100.0%)
+==========================================
+
+Per-TC sub-checks:
+  TC1: 9/9 sub-checks
+  TC2: 8/8 sub-checks
+  TC3: 3/3 sub-checks
+  TC4: 2/2 sub-checks
+  TC5: 2/2 sub-checks
+  TC6: 2/2 sub-checks
+  TC7: 2/2 sub-checks
+  TC8: 4/4 sub-checks
+
+STATUS: ALL PASS (8/8 = 100.0%)
+EPIC-054-C 6 状态机 + 空目录清理机制 完整, A6 治根 闭环 (实际清理由 Master 后执行)

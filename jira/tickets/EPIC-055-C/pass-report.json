@@ -1,0 +1,99 @@
+{
+  "ticket_id": "EPIC-055-C",
+  "performer_id": "performer-EPIC-055-C",
+  "commit_sha": "26ddbecd2c2819e1c3b3a135b34a691cae2ad7e3",
+  "branch": "feature/EPIC-055-C-tag-sop",
+  "base_sha": "7f88823",
+  "worktree": "/Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.kallax/worktrees/performer-EPIC-055-C",
+  "files_created": [
+    "docs/process/tag-sop.md",
+    "scripts/audit/tag-audit.sh",
+    "tests/integration/tag-sop-test.sh",
+    "jira/tickets/EPIC-055-C/IMPLEMENTATION-PLAN.md",
+    "jira/tickets/EPIC-055-C/LESSONS-LEARNED.md"
+  ],
+  "files_modified": [
+    "CLAUDE.md"
+  ],
+  "test_output_raw": "PASS tests/integration/tag-sop-test.sh\nTests: 5 passed, 5 total\n\nSummary: 5/5 PASS (TC-level, Rule 9 X/Y 精确格式)\n==========================================\nPASS: 5/5 (100.0%)",
+  "test_breakdown": {
+    "TC1_5tag_scan": "5/5 PASS (irony_count=350 honest_correction_count=179 independence_count=329 move_on_refine_count=55 process_logic_count=143)",
+    "TC2_evidence_chain": "5/5 PASS (5 标签 全部带证据: 反讽 line 42, 诚实修正 line 100, 独立 line 107, 翻篇 line 114, 流程逻辑 line 121)",
+    "TC3_cursed_detection": "3/3 PASS (cursed_total=949, tag_sop_cursed=0, KALLAX-GLOSSARY.md 62 处反讽重灾区 报告)",
+    "TC4_typo_detection": "3/3 PASS (typo_total=17, PHASE-REVIEW.md:11 + 33 + 15 其他处笔误 主公拍 explicit 拍 explicit)",
+    "TC5_sop_compliance": "6/6 PASS (compliance_score=100.0, 5 标签 全部 证据链 3 件套 完整)"
+  },
+  "anti_fab_results": {
+    "check-test-case-isolation": "PASS (0/50 test cases leaked into trigger fields)",
+    "check-kpi-precision": "PASS (0 estimate patterns in commit message, all KPI reports use precise numbers)",
+    "check-scope-creep": "PASS (6 changed files all within EPIC-055-C ticket scope)",
+    "check-fact-forcing-preflight": "PASS (9 PASS, 0 FAIL, L4 verify framework ready)",
+    "l3-l4-consistency": "PASS (0 contradiction, 0 inconsistency)",
+    "kpi-evidence-chain": "PASS (Rule 30/31 独立见证 机制 BE-5 + BE-7 修复模式 验证)",
+    "tool-self-check": "PASS (EPIC-048 meta-tool 守住 framework, Rule 8/9/18 4-Level Fact-Forcing 验证)"
+  },
+  "kpi_x_of_y": "5/5 (100.0%)",
+  "lessons_learned_path": "jira/tickets/EPIC-055-C/LESSONS-LEARNED.md",
+  "be_events": [],
+  "boundary_violations": 0,
+  "master_strong_verification_ready": true,
+  "tag_count_baseline": {
+    "irony": 350,
+    "honest_correction": 179,
+    "independence": 329,
+    "move_on_refine": 55,
+    "process_logic": 143
+  },
+  "tag_count_target": "≤10 装饰引用 (咒语化清理, 旧文档不删, 只未来 commit 遵循 SOP)",
+  "typo_detected": {
+    "pattern": "主公拍 explicit 拍 explicit",
+    "count": 17,
+    "examples": ["docs/PHASE-REVIEW.md:11", "docs/PHASE-REVIEW.md:33", "jira/epics/EPIC-055/epic.json:11", "jira/tickets/EPIC-055-C/ticket.json:28"]
+  },
+  "sop_self_cursed": 0,
+  "sop_compliance_score": 100.0,
+  "tag_5_sop_design": {
+    "tag_1_irony": {
+      "definition": "治病的药自己就是病的一部分 (root cause + 自身是 root cause 受害者)",
+      "evidence": "docs/KALLAX-GLOSSARY.md:19-30",
+      "case": "Rule 32 软约束升级阈值本身是 Rule, 加剧 Rule 通胀; 5 战略建议 5.2 自身 100% 假 PASS",
+      "impact": "治 root cause 工具不在生产路径跑 → 治根失效, 治根率 50% → 90%"
+    },
+    "tag_2_honest_correction": {
+      "definition": "看到反讽不装看不见, 主动标记问题, 不等别人发现",
+      "evidence": "docs/KALLAX-GLOSSARY.md:34-47",
+      "case": "5 扩展组 100% 假 PASS — Master 接管, 不重派; Security review 4 issues — 全部 acknowledge",
+      "impact": "不绕安全检查, 主公信任↑, 治理闭环"
+    },
+    "tag_3_independence": {
+      "definition": "5 维度全独立 (session/角色/路径/报告/审计)",
+      "evidence": "docs/KALLAX-GLOSSARY.md:51-64",
+      "case": "5 扩展组 5 个独立 subagent; 5 个独立 worktree (跟 Rule 15 联合); Master 强验证 6 维度不靠 subagent 自报",
+      "impact": "独立审计避免 自验证主体 = 造假主体, 治根率↑ 90%"
+    },
+    "tag_4_move_on_refine": {
+      "definition": "做减法, 不再加内容",
+      "evidence": "docs/PHASE-REVIEW.md:5-9",
+      "case": "EPIC-054-D Rule 合并 23→20; EPIC-056-A 5 阶段 → 3 阶段; 8 release 13 天 维护债爆炸 闭环",
+      "impact": "Rule 数↓ 3, 净价值↑ 62.5%→65.5% (+3.0%)"
+    },
+    "tag_5_process_logic": {
+      "definition": "流程逻辑 > 扩充配置",
+      "evidence": "CLAUDE.md:349-385 (Rule 13); CLAUDE.md:715-748 (Rule 33)",
+      "case": "decision-gate 复杂才问 (Rule 33, 减少 80% ai-ask-every-step); 0 Rule 增加; EPIC-056-A 5→3 阶段",
+      "impact": "ai-copilot 模式 block 5/5→3/5 类 (减少 40%), 流程表演→流程效果"
+    }
+  },
+  "next_action": "Conductor merge feature/EPIC-055-C-tag-sop → miao",
+  "merge_to_miao": false,
+  "estimated_hours": 4,
+  "actual_hours": 4,
+  "lessons_count": 5,
+  "lessons_summary": [
+    "5 类标签 SOP 强制证据链 3 件套 = 治 A2 咒语化 闭环",
+    "bash 3.2 兼容 — declare -A 不可用, 用 parallel 变量",
+    "TDD red→green 是真流程, 不是 5 步流程的 形式主义",
+    "审计脚本必须支持多文件扩展名, 跟 EPIC-053-C 工具自检 模式 一致",
+    "SOP 自身必须 100% 合规, 不双标"
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "ticket_id": "EPIC-054-C",
+  "performer_id": "performer-EPIC-054-C",
+  "commit_sha": "862fc0564e29a83a2cf785bd2d8b227973191f68",
+  "branch": "feature/EPIC-054-C-epic-state-machine",
+  "files_created": [
+    "scripts/epic/cleanup-empty.sh",
+    "jira/schemas/epic-state-machine.md",
+    "tests/integration/epic-state-machine-test.sh",
+    "jira/tickets/EPIC-054-C/IMPLEMENTATION-PLAN.md",
+    "jira/tickets/EPIC-054-C/LESSONS-LEARNED.md",
+    "jira/tickets/EPIC-054-C/test-output.txt"
+  ],
+  "files_modified": [
+    "node/src/commands/epic-cmd.ts"
+  ],
+  "test_output_raw": "PASS tests/integration/epic-state-machine-test.sh\nTests: 8 passed, 8 total\nSub-checks: 32/32 passed (9+8+3+2+2+2+2+4)\nFinal: STATUS: ALL PASS (8/8 = 100.0%)",
+  "anti_fab_results": {
+    "check-test-case-isolation": "PASS — mktemp -d scratch + trap 'rm -rf' EXIT 自动清理, 8 case 互不干扰",
+    "check-kpi-precision": "PASS — Rule 9 X/Y 精确格式: 8/8 (100.0%), 32 sub-checks 全过",
+    "check-scope-creep": "PASS — file_scope 6 文件全在 includes, 0 越界 (未动 EPIC-042~047 空目录 + epic_index.json + EPIC-053/055/056)",
+    "check-fact-forcing-preflight": "PASS — 8/8 测试输出即 evidence chain, L1-L4 4-Level 验证完整",
+    "l3-l4-consistency": "PASS — L3 集成测试 8/8 PASS, L4 verify = test stdout 32 sub-checks (无矛盾, 跟 Rule 9 联动)",
+    "kpi-evidence-chain": "PASS — test-output.txt 保存为 jira/tickets/EPIC-054-C/test-output.txt, git anchor = 862fc05",
+    "tool-self-check": "PASS — cleanup-empty.sh 独立 dry-run 验证 6 空目录检测, epic-cmd.ts TypeScript 0 errors (其他文件 pre-existing 错误不在本 ticket scope)"
+  },
+  "kpi_x_of_y": "8/8 (100.0%)",
+  "lessons_learned_path": "jira/tickets/EPIC-054-C/LESSONS-LEARNED.md",
+  "implementation_plan_path": "jira/tickets/EPIC-054-C/IMPLEMENTATION-PLAN.md",
+  "test_output_path": "jira/tickets/EPIC-054-C/test-output.txt",
+  "be_events": [],
+  "boundary_violations": 0,
+  "master_strong_verification_ready": true,
+  "epic_count_baseline_empty": 6,
+  "epic_count_target_after_cleanup": 0,
+  "next_action": "Conductor merge feature/EPIC-054-C-epic-state-machine → miao, Master 后执行 cleanup-empty.sh",
+  "state_machine_design": {
+    "states": ["planning", "active", "blocked", "done", "archived", "closed"],
+    "valid_transitions": [
+      "planning → active",
+      "active → blocked",
+      "blocked → active (unblock)",
+      "active → done",
+      "done → archived",
+      "done → active (reopen)",
+      "archived → closed",
+      "archived → done (restore)"
+    ],
+    "forbidden_jumps": [
+      "planning → done (no work done)",
+      "planning → blocked",
+      "active → archived (must go through done)",
+      "blocked → done (must unblock first)",
+      "closed → * (terminal)"
+    ],
+    "alignment_with_ticket_schema": "EPIC 状态机是 ticket 状态机的上一级抽象, planning ≈ backlog+analysis+ready+gate_review, active ≈ in_progress+test+pr_review, done = done, archived+closed 是 EPIC 特有"
+  }
+}
