@@ -1,0 +1,30 @@
+==========================================
+Docs Link Check (EPIC-057-C) — Integration Tests (5/5)
+INSTALL-MULTI-TOOL.md + README + CHANGELOG → 4 工具 multi-tool docs
+跟 EPIC-057-A/B 契约 一致 + v2.0.2 反讽治根
+==========================================
+
+  [PASS] TC1: INSTALL-MULTI-TOOL.md 4 工具 8 paths 完整 (跟 EPIC-057-A AC #3-4 契约 一致) [5/5 sub-checks: 8/8 paths + 4 工具 name]
+  [PASS] TC1: INSTALL-MULTI-TOOL.md 4 工具 8 paths 完整 (跟 EPIC-057-A AC #3-4 契约 一致)
+  [PASS] TC2: README.md 安装段 提到 4 工具 + --target=auto (跟 AC #2 一致) [3/3 sub-checks: 4 工具 + --target=auto + 目录结构 mirror 标注]
+  [PASS] TC2: README.md 安装段 提到 4 工具 + --target=auto (跟 AC #2 一致)
+  [PASS] TC3: CHANGELOG.md [2.0.6] 提到 multi-tool + 反讽治根 (跟 AC #3+5 联合) [5/5 sub-checks: entry 存在 + Multi-tool + v2.0.2 反讽 + auto-detect + 顺序]
+  [PASS] TC3: CHANGELOG.md [2.0.6] 提到 multi-tool + 反讽治根 (跟 AC #3+5 联合)
+  [PASS] TC4: 5 标签 SOP 应用 — INSTALL-MULTI-TOOL.md 每条标签引用带证据链 3 件套 (跟 EPIC-055-C 联动) [3/3 sub-checks: 3 标签 + file:line 证据 + tag-sop.md 引用]
+  [PASS] TC4: 5 标签 SOP 应用 — INSTALL-MULTI-TOOL.md 每条标签引用带证据链 3 件套 (跟 EPIC-055-C 联动)
+  [PASS] TC5: 一致性 (跟 v2.0.2 反讽 + v2.0.5 PHASE-009 历史 一致) [4/4 sub-checks: v2.0.2 ref + v2.0.2 entry + v2.0.5 ref + EPIC-057-A/B ref]
+  [PASS] TC5: 一致性 (跟 v2.0.2 反讽 + v2.0.5 PHASE-009 历史 一致)
+
+==========================================
+Summary: 5/5 PASS (100.0%)
+==========================================
+
+Per-TC sub-checks:
+  TC1: 5/5 sub-checks
+  TC2: 3/3 sub-checks
+  TC3: 5/5 sub-checks
+  TC4: 3/3 sub-checks
+  TC5: 4/4 sub-checks
+
+STATUS: ALL PASS (5/5 = 100.0%)
+EPIC-057-C docs 闭环: INSTALL-MULTI-TOOL.md + README + CHANGELOG 4 工具 + v2.0.2 反讽治根
