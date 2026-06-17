@@ -5,6 +5,34 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1] - 2026-06-17
+
+### Fixed
+
+#### .md wrappers 生成 治主公"Unknown command: /kallax-ask" 治根 (跟"诚实修正" 联合)
+
+跟主公 2026-06-17 explicit 反馈 联合 (Claude Code 跑 /kallax-ask 报"Unknown command" → fallback 到 SKILL.md skill → 治根, 跟 v2.0.9 / v2.0.10 / v2.0.11 改 description 表面 联合):
+
+- **26 .md wrappers** 新建 (project + user-level 同步): 每个 .sh 命令配对一个 .md 文件, .md 格式:
+  ```markdown
+  ---
+  description: /kallax-ask — Ask a question to the expert panel.
+  ---
+
+  !bash "$(dirname "$0")/kallax-ask.sh" $ARGUMENTS
+  ```
+  .md 是 Claude Code slash command registry 优先发现格式 (跟 heartbeat-conductor.md / heartbeat-performer.md 一致模式), .sh 保留作为实现层
+- **install.sh 加 .md wrapper 自动生成** (v2.1.1 联合): install_commands_for_tool 检测 ext=sh 工具时, 自动生成 .md wrapper 调用 .sh, 治"install 之后 Claude Code 还报 Unknown" 根因
+- **修 install.sh 末尾 local 关键字错误** (final loop): main() 末尾 loop 用 local 在非 function 上下文报错, 改为直接赋值
+
+### Notes
+- 0 增命令 (跟 v2.0.9 + v2.0.10 + v2.0.11 + v2.1.0 0 增 联合, 跟"翻篇&精进" 战略 一致)
+- 0 增 Rule (跟 v2.0.5 Rule 合并 24→22 联合)
+- 0 重写主逻辑 (26 .sh + _kallax_common.sh 0 改, 仅加 .md wrappers 跟 install.sh 自动生成)
+- 跟 v2.1.0 8 工具 wizard 联合 (install.sh 自动生成 .md wrappers 跨 8 工具)
+- 跟"诚实修正" 联合 (主公反馈治根, 不只改 description 表面 — 加 .md wrappers 触发 Claude Code slash command registry)
+- 跟"独立" 拍 explicit 约束 联合 (主公 explicit 反馈 Unknown command 触发, 跟 PROCESS.md:25-26 联合)
+
 ## [2.1.0] - 2026-06-17
 
 ### Added

@@ -504,6 +504,32 @@ install_commands_for_tool() {
     cp "$f" "$dst/"
   done
 
+  # v2.1.1: Also generate .md wrappers for .sh commands.
+  # Claude Code's slash command registry prefers .md files in some
+  # versions. The .md wrapper invokes the .sh via !bash directive.
+  # Only for tools that store commands as .sh (claude, gemini).
+  if [ "$ext" = "sh" ]; then
+    local md_count=0
+    for f in "$dst"/kallax-*.sh; do
+      [ -f "$f" ] || continue
+      local name desc md_target
+      name=$(basename "$f" .sh)
+      desc=$(/usr/bin/awk 'NR==2' "$f" | sed 's/^# //')
+      md_target="$dst/${name}.md"
+      cat > "$md_target" <<EOF
+---
+description: ${desc}
+---
+
+!bash "\$(dirname "\$0")/${name}.sh" \$ARGUMENTS
+EOF
+      md_count=$((md_count + 1))
+    done
+    if [ "$md_count" -gt 0 ]; then
+      ok "[$tool] .md wrappers generated: $md_count files (Claude Code 2.1+ compatibility)"
+    fi
+  fi
+
   ok "[$tool] commands → $dst ($count files, ext=.$ext)"
 
   if [ "$count" -gt 0 ]; then
@@ -513,6 +539,8 @@ install_commands_for_tool() {
       [ -f "$f" ] || continue
       local name
       name=$(basename "$f" ."$ext")
+      # Skip the .md wrappers in the listing (they're aliases for the .sh)
+      if [ -f "$f" ] && [[ "$f" == *.md ]] && [ -f "${f%.md}.sh" ]; then continue; fi
       echo "    /$name"
     done
   fi
@@ -818,7 +846,6 @@ stamp_version
 echo ""
 echo "Done. KALLAX skills + slash commands available across:"
 for tool in "${TARGET_TOOLS[@]}"; do
-  local idx support
   idx=$(tool_index "$tool")
   support="${TOOL_SUPPORT[$idx]}"
   if [ "$support" = "full" ]; then
