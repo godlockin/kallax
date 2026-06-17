@@ -10,6 +10,9 @@
 .kallax/state/
 .kallax/*.db
 .kallax/inbox/*.processed
+# Same paths under node/ (跟 EPIC-053-A l3-l4-consistency.sh 落地一致, 跟 EPIC-053-B 联动)
+**/.kallax/data/
+**/.kallax/*.db
 
 # ============================================================
 # Worktrees
@@ -135,10 +138,11 @@ ONRAMP-testproj-*.md
 ONRAMP-.-*.md
 
 # ============================================================
-# Performer runtime artifacts (pass-report + test-output, 跟"翻篇&精进" 一致)
-# EPIC-053/054/055/056 Performer subagent 跑过的 .json + .txt, 跑过即丢, 不入库
+# Performer runtime artifacts (跟"翻篇&精进" + "迭代证据" 联合)
+# - DB 文件: 历史删掉不占空间 (filter-repo 已执行), .kallax/*.db 仍 ignore
+# - ticket pass-report/test-output: 保留作为迭代证据 (主公 2026-06-17 explicit 派单)
+# - test_result*.json: 暂 ignore (Performer 临时中间产物, 不作为迭代证据)
+# - *.tmp: 临时文件 ignore
 # ============================================================
-jira/tickets/**/pass-report*.json
-jira/tickets/**/test-output*.txt
 jira/tickets/**/test_result*.json
 jira/tickets/**/*.tmp
