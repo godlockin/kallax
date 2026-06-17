@@ -5,6 +5,50 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-06-17
+
+### Added
+
+#### 10 工具 multi-tool + --symlink single source 模式 (跟主公"把kallax安装到能让本地 claude code、trae、antigravity、opencode 正常调用, 最好使用一份skills/命令文件支持所有的引用" 联合)
+
+跟主公 2026-06-17 explicit 派单 联合 (4 工具 + single source, v2.1.1 8 工具 → v2.2.0 10 工具 + symlink 模式):
+
+- **2 新工具** trae + antigravity (跟主公 explicit "claude code、trae、antigravity、opencode" 联合):
+  - **Trae** (ByteDance AI IDE) — `~/.trae/skills/kallax/` + `~/.trae/commands/`
+  - **Antigravity** (Google AI IDE) — `~/.antigravity/skills/kallax/` + `~/.antigravity/commands/`
+- **--symlink flag** (新, v2.2.0): single source 模式
+  - canonical 源: `~/.local/share/kallax/` (skills + commands)
+  - 4 工具 user-level 路径 symlink → canonical
+  - 跟"翻篇&精进" 联合: 更新 1 次, 4 工具同时获更新 (省 disk + 一致性)
+- **CANONICAL_DIR** 常量: `~/.local/share/kallax/`, KALLAX_SHARE_DIR env 可覆盖
+- **install_canonical_skills + install_canonical_commands** 函数: 把源 cp 到 canonical, 然后 symlink 工具 path → canonical
+- **verify_install 修** find -L 跟随 symlinks (之前 v2.1.0 显示 "(0 files)", 治根)
+- **.trae/ + .antigravity/** 源目录 symlinks: `.trae/skills` → `../.claude/skills/kallax` + `.trae/commands` → `../.claude/commands` (跟 v2.1.0 cursor/windsurf 一致模式, 4 工具源共享)
+
+### 4 工具 symlink 闭环 (跟"诚实修正" 联合, 治主公"用一份skills/命令文件" 显式需求)
+
+\`\`\`
+[canonical] skills → /Users/chenchen/.local/share/kallax/skills/kallax
+[claude]     skills → /Users/chenchen/.claude/skills/kallax (symlink → canonical)
+[trae]       skills → /Users/chenchen/.trae/skills/kallax (symlink → canonical)
+[antigravity] skills → /Users/chenchen/.antigravity/skills/kallax (symlink → canonical)
+[opencode]   skills → /Users/chenchen/.opencode/skills/kallax (symlink → canonical)
+
+[canonical] commands → /Users/chenchen/.local/share/kallax/commands (56 files)
+[claude]     commands → /Users/chenchen/.claude/commands (symlink)
+[trae]       commands → /Users/chenchen/.trae/commands (symlink)
+[antigravity] commands → /Users/chenchen/.antigravity/commands (symlink)
+[opencode]   commands → /Users/chenchen/.opencode/command (symlink, singular!)
+\`\`\`
+
+### Notes
+- 0 增命令 (跟 v2.0.9 / v2.0.10 / v2.0.11 / v2.1.0 / v2.1.1 0 增 联合)
+- 0 增 Rule (跟 v2.0.5 Rule 合并 24→22 联合)
+- 0 重写主逻辑 (跟"翻篇&精进" 联合, install.sh 加 symlink 模式, 不破坏 copy 模式)
+- 跟 v2.1.0 wizard + v2.1.1 .md wrappers 联合 (8 工具 → 10 工具 + symlink)
+- 跟"诚实修正" 联合 (主公"用一份文件" 显式需求 → 治根, 不模糊处理)
+- 跟"独立" 拍 explicit 约束 联合 (主公 explicit 4 工具 + single source 派单, 跟 PROCESS.md:25-26 联合)
+
 ## [2.1.1] - 2026-06-17
 
 ### Fixed

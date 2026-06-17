@@ -25,9 +25,10 @@
 #   curl -fsSL <raw-url>/scripts/install.sh | bash
 set -euo pipefail
 
-VERSION="2.1.0-wizard-8tool"
+VERSION="2.2.0-symlink-10tool"
 INSTALL_MODE="install"  # install | upgrade
 TARGET_MODE="auto"      # auto | all | specific-list
+INSTALL_METHOD="copy"   # copy | symlink (v2.2.0)
 INTERACTIVE=false
 WIZARD=false
 DRY_RUN=false
@@ -58,12 +59,15 @@ BIN_DIR="${HOME}/.local/bin"
 
 # ── Tool registry (bash 3.2 compat: parallel arrays + index lookup) ──────
 # Order matters: prefer primary tools first, fall back to niche.
-# 8 tools: claude / opencode / codex / gemini / cursor / windsurf / aider / continue.
+# 10 tools: claude / trae / antigravity / opencode / codex / gemini / cursor /
+#           windsurf / aider / continue.
 # Support levels: "full" (skills + commands) or "config" (config files only).
-TOOL_NAME=(claude opencode codex gemini cursor windsurf aider continue)
-TOOL_BINARY=(claude opencode codex gemini cursor windsurf aider "continue-cli")
+TOOL_NAME=(claude trae antigravity opencode codex gemini cursor windsurf aider continue)
+TOOL_BINARY=(claude trae antigravity opencode codex gemini cursor windsurf aider "continue-cli")
 TOOL_BASE_DIR=(
   "${HOME}/.claude"
+  "${HOME}/.trae"
+  "${HOME}/.antigravity"
   "${HOME}/.opencode"
   "${HOME}/.codex"
   "${HOME}/.gemini"
@@ -74,48 +78,66 @@ TOOL_BASE_DIR=(
 )
 TOOL_SKILLS_DIR=(
   "${HOME}/.claude/skills/kallax"
+  "${HOME}/.trae/skills/kallax"
+  "${HOME}/.antigravity/skills/kallax"
   "${HOME}/.opencode/skills/kallax"
   "${HOME}/.codex/skills/kallax"
   "${HOME}/.gemini/skills/kallax"
   "${HOME}/.cursor/skills/kallax"
-  "${HOME}/.codeium/windsurf/skills/kallax"
+  "${HOME}/.codeium/wendsurf/skills/kallax"
   "${HOME}/.aider/skills/kallax"
   "${HOME}/.continue/skills/kallax"
 )
 TOOL_COMMANDS_DIR=(
   "${HOME}/.claude/commands"
+  "${HOME}/.trae/commands"
+  "${HOME}/.antigravity/commands"
   "${HOME}/.opencode/command"            # singular!
   "${HOME}/.codex/prompts"
   "${HOME}/.gemini/commands"
   "${HOME}/.cursor/commands"
-  "${HOME}/.codeium/windsurf/commands"
+  "${HOME}/.codeium/wendsurf/commands"
   ""                                       # aider: no slash commands
   ""                                       # continue: no slash commands
 )
 TOOL_COMMANDS_SRC=(
   "$PROJECT_ROOT/.claude/commands"
+  "$PROJECT_ROOT/.trae/commands"
+  "$PROJECT_ROOT/.antigravity/commands"
   "$PROJECT_ROOT/.opencode/command"
   "$PROJECT_ROOT/.codex/prompts"
   "$PROJECT_ROOT/.gemini/commands"
   "$PROJECT_ROOT/.cursor/commands"
-  "$PROJECT_ROOT/.codeium/windsurf/commands"
+  "$PROJECT_ROOT/.codeium/wendsurf/commands"
   ""                                       # aider: no slash commands
   ""                                       # continue: no slash commands
 )
-TOOL_COMMANDS_EXT=(sh md md sh md md "" "")
+TOOL_COMMANDS_EXT=(sh md md md md sh md md "" "")
 TOOL_SETTINGS_FILE=(
   "${HOME}/.claude/settings.json"
+  "${HOME}/.trae/settings.json"
+  "${HOME}/.antigravity/settings.json"
   "${HOME}/.opencode/config.json"
   "${HOME}/.codex/config.toml"
   "${HOME}/.gemini/config/settings.json"
   "${HOME}/.cursor/settings.json"
-  "${HOME}/.codeium/windsurf/settings.json"
+  "${HOME}/.codeium/wendsurf/settings.json"
   "${HOME}/.aider.conf.yml"
   "${HOME}/.continue/config.json"
 )
 # Support level: "full" (skills + commands) or "config" (config files only).
 # Niche tools (aider/continue) don't have slash command APIs.
-TOOL_SUPPORT=(full full full full full full config config)
+# 10 tools: claude / trae / antigravity / opencode / codex / gemini / cursor /
+#           windsurf / aider / continue. First 8 = full, last 2 = config.
+TOOL_SUPPORT=(full full full full full full full full config config)
+
+# ── Single source of truth (v2.2.0) ───────────────────────────────────────
+# When --symlink is passed, install.sh creates a canonical source dir at
+# ~/.local/share/kallax/ and symlinks each tool's user-level path to it.
+# This way 4+ tools share ONE source — update once, all tools get it.
+CANONICAL_DIR="${KALLAX_SHARE_DIR:-$HOME/.local/share/kallax}"
+CANONICAL_SKILLS="$CANONICAL_DIR/skills/kallax"
+CANONICAL_COMMANDS="$CANONICAL_DIR/commands"
 
 # Lookup helper: print index for tool name (or -1)
 tool_index() {
@@ -138,11 +160,13 @@ KALLAX Install/Upgrade v${VERSION}
 
 Usage: $0 [flags]
 
-Target selection (EPIC-057-A, hybrid flag-controlled, 8 tools):
-  --target=auto          Auto-detect 8 tools via \$HOME/.<tool>/ or which <tool>
+Target selection (EPIC-057-A, hybrid flag-controlled, 10 tools):
+  --target=auto          Auto-detect 10 tools via \$HOME/.<tool>/ or which <tool>
                          (DEFAULT — equivalent to no flag in v2.0.5)
-  --target=all           Force install all 8 tools (ignore detection)
+  --target=all           Force install all 10 tools (ignore detection)
   --target=claude        Install for Claude Code only
+  --target=trae          Install for Trae (ByteDance AI IDE) only
+  --target=antigravity   Install for Antigravity (Google AI IDE) only
   --target=opencode      Install for opencode only
   --target=codex         Install for Codex only
   --target=gemini        Install for Gemini only
@@ -151,6 +175,15 @@ Target selection (EPIC-057-A, hybrid flag-controlled, 8 tools):
   --target=aider         Install for Aider only (config only, no slash cmds)
   --target=continue      Install for Continue only (config only)
   --target=a,b,c         Install for multiple tools (comma-separated)
+
+Install method (v2.2.0):
+  --symlink              Single source mode: install to canonical
+                         ~/.local/share/kallax/ and symlink each tool's
+                         path to it. Update once, all tools get the change.
+                         Recommended for 4+ tools (claude + trae + antigravity
+                         + opencode) — saves disk + ensures consistency.
+  --copy                 Copy mode (DEFAULT for v2.0.x compat) — each tool
+                         gets its own copy of the files.
 
 Wizard / Interactive:
   --wizard               Run full step-by-step wizard (5 steps):
@@ -177,8 +210,15 @@ Installs to:
   Windsurf:     skills=~/.codeium/windsurf/skills/kallax/     commands=~/.codeium/windsurf/commands/      (full)
   Aider:        skills=~/.aider/skills/kallax/                commands=N/A  (no slash command API)        (config)
   Continue:     skills=~/.continue/skills/kallax/             commands=N/A  (VS Code extension)            (config)
+  Trae:         skills=~/.trae/skills/kallax/                 commands=~/.trae/commands/                  (full, new v2.2.0)
+  Antigravity:  skills=~/.antigravity/skills/kallax/          commands=~/.antigravity/commands/           (full, new v2.2.0)
 
 CLI: ~/.local/bin/kallax (shared across all tools)
+
+Single source mode (v2.2.0):
+  --symlink                Install to ~/.local/share/kallax/ (canonical) and
+                           symlink each tool's path to it. Update once,
+                           all tools get the change.
 
 Re-run anytime to upgrade to latest from project source.
 EOF
@@ -191,6 +231,8 @@ parse_args() {
       --skip-skills)      SKIP_SKILLS=true; shift ;;
       --skip-commands)    SKIP_COMMANDS=true; shift ;;
       --upgrade)          INSTALL_MODE="upgrade"; shift ;;
+      --symlink)          INSTALL_METHOD="symlink"; shift ;;
+      --copy)             INSTALL_METHOD="copy"; shift ;;
       --wizard)           WIZARD=true; shift ;;
       --interactive)      WIZARD=true; shift ;;  # alias for v2.0.x compat
       --dry-run)          DRY_RUN=true; shift ;;
@@ -445,6 +487,17 @@ install_skills_for_tool() {
     return 0
   fi
 
+  # Symlink mode (v2.2.0): install to canonical, then symlink tool's path
+  if [ "$INSTALL_METHOD" = "symlink" ]; then
+    install_canonical_skills "$src"
+    rm -rf "$dst"
+    mkdir -p "$(dirname "$dst")"
+    ln -sfn "$CANONICAL_SKILLS" "$dst"
+    ok "[$tool] skills → $dst (symlink → $CANONICAL_SKILLS)"
+    return 0
+  fi
+
+  # Default copy mode (v2.0.x compat)
   rm -rf "$dst"
   mkdir -p "$(dirname "$dst")"
   cp -r "$src" "$dst"
@@ -462,6 +515,66 @@ install_skills_for_tool() {
   fi
 }
 
+# Install skills to canonical source (single source of truth for symlink mode)
+install_canonical_skills() {
+  local src="$1"
+  if [ -L "$CANONICAL_SKILLS" ]; then
+    rm -f "$CANONICAL_SKILLS"
+  fi
+  rm -rf "$CANONICAL_SKILLS"
+  mkdir -p "$(dirname "$CANONICAL_SKILLS")"
+  cp -r "$src" "$CANONICAL_SKILLS"
+  ok "[canonical] skills → $CANONICAL_SKILLS"
+}
+
+# Install commands to canonical source (single source of truth for symlink mode)
+install_canonical_commands() {
+  local src="$1"
+  if [ -L "$CANONICAL_COMMANDS" ]; then
+    rm -f "$CANONICAL_COMMANDS"
+  fi
+  rm -rf "$CANONICAL_COMMANDS"
+  mkdir -p "$CANONICAL_COMMANDS"
+
+  local count=0
+  for f in "$src"/kallax-*; do
+    [ -f "$f" ] || continue
+    cp "$f" "$CANONICAL_COMMANDS/"
+    count=$((count + 1))
+  done
+
+  # Shared library
+  if [ -f "$src/_kallax_common.sh" ]; then
+    cp "$src/_kallax_common.sh" "$CANONICAL_COMMANDS/"
+  fi
+
+  # Heartbeat prompts (for full-support tools)
+  for f in "$src"/heartbeat-*; do
+    [ -f "$f" ] || continue
+    cp "$f" "$CANONICAL_COMMANDS/"
+  done
+
+  # v2.1.1: .md wrappers for .sh commands (Claude Code 2.1+ compat)
+  local md_count=0
+  for f in "$CANONICAL_COMMANDS"/kallax-*.sh; do
+    [ -f "$f" ] || continue
+    local name desc md_target
+    name=$(basename "$f" .sh)
+    desc=$(/usr/bin/awk 'NR==2' "$f" | sed 's/^# //')
+    md_target="$CANONICAL_COMMANDS/${name}.md"
+    cat > "$md_target" <<EOF
+---
+description: ${desc}
+---
+
+!bash "\$(dirname "\$0")/${name}.sh" \$ARGUMENTS
+EOF
+    md_count=$((md_count + 1))
+  done
+
+  ok "[canonical] commands → $CANONICAL_COMMANDS ($count .sh + $md_count .md wrappers)"
+}
+
 install_commands_for_tool() {
   local tool="$1"
   local i dst ext src
@@ -473,6 +586,16 @@ install_commands_for_tool() {
   # Skip tools without slash command API (aider/continue: config only)
   if [ -z "$dst" ] || [ -z "$ext" ]; then
     dim "  [$tool] no slash command API — skipping commands install (config only)"
+    return 0
+  fi
+
+  # Symlink mode (v2.2.0): install to canonical, then symlink tool's path
+  if [ "$INSTALL_METHOD" = "symlink" ]; then
+    install_canonical_commands "$src"
+    rm -rf "$dst"
+    mkdir -p "$(dirname "$dst")"
+    ln -sfn "$CANONICAL_COMMANDS" "$dst"
+    ok "[$tool] commands → $dst (symlink → $CANONICAL_COMMANDS)"
     return 0
   fi
 
@@ -727,7 +850,8 @@ verify_install() {
 
     if [ -d "$skills" ] && [ -f "$skills/SKILL.md" ]; then
       local n
-      n=$(find "$skills" -type f 2>/dev/null | wc -l | tr -d ' ')
+      # Use -L to follow symlinks (v2.2.0 symlink mode)
+      n=$(find -L "$skills" -type f 2>/dev/null | wc -l | tr -d ' ')
       ok "[$tool] skills: $skills ($n files)"
     else
       warn "[$tool] skills: not installed"
