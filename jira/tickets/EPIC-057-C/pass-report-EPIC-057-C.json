@@ -1,0 +1,194 @@
+{
+  "ticket_id": "EPIC-057-C",
+  "epic_id": "EPIC-057",
+  "phase_id": "PHASE-009",
+  "type": "docs",
+  "priority": "P2",
+  "estimated_hours": 2,
+  "branch": "feature/EPIC-057-C-multi-tool-docs",
+  "worktree": "/Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.kallax/worktrees/performer-EPIC-057-C",
+  "base_sha": "8209c4d",
+  "date": "2026-06-17",
+  "author": "performer-EPIC-057-C",
+  "status": "PASS",
+  "rule_9_kpi": {
+    "format": "X/Y exact",
+    "pass": 5,
+    "total": 5,
+    "percentage": "100.0%",
+    "test_file": "tests/integration/docs-link-check-test.sh"
+  },
+  "test_cases": {
+    "TC1": {
+      "name": "INSTALL-MULTI-TOOL.md 4 工具 8 paths 完整 (跟 EPIC-057-A AC #3-4 契约 一致)",
+      "sub_checks": "5/5 (8/8 paths + 4 工具 name)",
+      "status": "PASS"
+    },
+    "TC2": {
+      "name": "README.md 安装段 提到 4 工具 + --target=auto (跟 AC #2 一致)",
+      "sub_checks": "3/3 (4 工具 + --target=auto + 目录结构 mirror 标注)",
+      "status": "PASS"
+    },
+    "TC3": {
+      "name": "CHANGELOG.md [2.0.6] 提到 multi-tool + 反讽治根 (跟 AC #3+5 联合)",
+      "sub_checks": "5/5 (entry 存在 + Multi-tool + v2.0.2 反讽 + auto-detect + 顺序)",
+      "status": "PASS"
+    },
+    "TC4": {
+      "name": "5 标签 SOP 应用 — INSTALL-MULTI-TOOL.md 每条标签引用带证据链 3 件套 (跟 EPIC-055-C 联动)",
+      "sub_checks": "3/3 (3 标签 + file:line 证据 + tag-sop.md 引用)",
+      "status": "PASS"
+    },
+    "TC5": {
+      "name": "一致性 (跟 v2.0.2 反讽 + v2.0.5 PHASE-009 历史 一致)",
+      "sub_checks": "4/4 (v2.0.2 ref + v2.0.2 entry + v2.0.5 ref + EPIC-057-A/B ref)",
+      "status": "PASS"
+    }
+  },
+  "test_output_evidence": "jira/tickets/EPIC-057-C/test-output.log (raw stdout from `bash tests/integration/docs-link-check-test.sh`)",
+  "raw_test_summary_line": "Summary: 5/5 PASS (100.0%) | STATUS: ALL PASS (5/5 = 100.0%) | EXIT=0",
+  "files_changed": {
+    "untracked_to_commit": [
+      "docs/guides/INSTALL-MULTI-TOOL.md",
+      "tests/integration/docs-link-check-test.sh",
+      "jira/tickets/EPIC-057-C/IMPLEMENTATION-PLAN.md",
+      "jira/tickets/EPIC-057-C/LESSONS-LEARNED.md",
+      "jira/tickets/EPIC-057-C/pass-report.json",
+      "jira/tickets/EPIC-057-C/test-output.log"
+    ],
+    "modified": [
+      "CHANGELOG.md (加 [2.0.6] entry, 跟 Keep a Changelog 格式, 在 [2.0.5] 之前)",
+      "README.md (安装段 + 目录结构段 4 工具标注)"
+    ]
+  },
+  "cross_ticket_consistency_verified": {
+    "EPIC-057-A_install_sh_paths": {
+      "claude_skills": "~/.claude/skills/kallax/",
+      "opencode_skills": "~/.opencode/skills/kallax/",
+      "codex_skills": "~/.codex/skills/kallax/",
+      "gemini_skills": "~/.gemini/skills/kallax/",
+      "claude_commands": "~/.claude/commands/",
+      "opencode_commands": "~/.opencode/command/ (singular)",
+      "codex_commands": "~/.codex/prompts/",
+      "gemini_commands": "~/.gemini/commands/",
+      "source": "scripts/install.sh:50-73 (TOOL_SKILLS_DIR/TOOL_COMMANDS_DIR/TOOL_SETTINGS_FILE arrays)"
+    },
+    "EPIC-057-B_onramp_tool_detect": {
+      "priority": "claude > opencode > codex > gemini",
+      "detection_method": "$PATH which + $HOME/.<tool>/ dir (AND, 跟 install.sh OR 不同, 因 onramp 要 RUN tool)",
+      "json_output_format": "{tool, binary, version, skills_dir, commands_dir}",
+      "source": "scripts/kallax-onramp/lib/tool-detect.sh:21-81"
+    },
+    "INSTALL-MULTI-TOOL_md_paths_match": true,
+    "README_md_4_tools_match": true,
+    "CHANGELOG_2_0_6_entry_match": true
+  },
+  "acceptance_criteria": {
+    "AC1": {
+      "name": "INSTALL-MULTI-TOOL.md (跟 docs/PROCESS.md 风格 一致, 跟 5 治理卡 联动) — 4 工具 install guide + auto-detect 行为 + --target flag 文档 + 路径映射表 + 故障排查",
+      "status": "PASS",
+      "evidence": "docs/guides/INSTALL-MULTI-TOOL.md 222 行, 5 章节 (概述/安装/路径/故障/升级), 跟 EPIC-057-A + 057-B 契约 一致, TC1 PASS"
+    },
+    "AC2": {
+      "name": "README.md 改: '安装' 段 加 4 工具支持标注, '目录结构' 段 标注 .opencode/command/ 是 opencode mirror",
+      "status": "PASS",
+      "evidence": "README.md 安装段 (line 104-138) + 目录结构段 (line 215-240) 改, TC2 PASS"
+    },
+    "AC3": {
+      "name": "CHANGELOG.md 加 [2.0.6] entry: 'Multi-tool install support (Claude Code / opencode / Codex / Gemini, --target=auto 默认检测, 治 v2.0.2 跨平台 fix 反讽)'",
+      "status": "PASS",
+      "evidence": "CHANGELOG.md line 8-51, 跟 Keep a Changelog 格式, 在 [2.0.5] 之前, TC3 PASS"
+    },
+    "AC4": {
+      "name": "5 标签 SOP 应用: 每条引用带 证据链 3 件套 (跟 EPIC-055-C 联动)",
+      "status": "PASS",
+      "evidence": "INSTALL-MULTI-TOOL.md + CHANGELOG.md [2.0.6] entry 每条 跟\"<tag>\" 联合 引用带 证据+反驳/支持+影响, TC4 PASS"
+    },
+    "AC5": {
+      "name": "跟'诚实修正' 联合: 明确标注 'v2.0.2 release 命名是跨平台, 实际只 Claude Code (历史 gap), v2.0.6 治根'",
+      "status": "PASS",
+      "evidence": "INSTALL-MULTI-TOOL.md §1.1 + CHANGELOG.md [2.0.6] 'Fixed' 段, TC3 + TC5 PASS"
+    },
+    "AC6": {
+      "name": "跟'翻篇&精进' 联合: 文档做减法, 不再加内容, 只更新现有章节",
+      "status": "PASS",
+      "evidence": "README 增量改 2 段 (不重写), INSTALL-MULTI-TOOL.md 5 章节精简 (跟 PROCESS.md 风格 一致), 跟"翻篇&精进" 战略 一致"
+    },
+    "AC7": {
+      "name": "tests/integration/docs-link-check-test.sh 5/5 PASS (外链完整性 + 4 工具 path 路径正确 + 文档一致性)",
+      "status": "PASS",
+      "evidence": "TC1-TC5 5/5 PASS, raw test output: jira/tickets/EPIC-057-C/test-output.log"
+    },
+    "AC8": {
+      "name": "Rule 9 KPI 精确 X/Y 格式 — 5/5 PASS = 100.0%",
+      "status": "PASS",
+      "evidence": "Summary: 5/5 PASS (100.0%) | STATUS: ALL PASS (5/5 = 100.0%)"
+    }
+  },
+  "test_bug_fixes_during_tdd": [
+    {
+      "bug": "BSD grep \\s 不工作 (macOS 默认 grep)",
+      "location": "tests/integration/docs-link-check-test.sh:153,160,167,174,181,182",
+      "fix": "改用 ^## \\[2\\.0\\.6\\] 不带 \\s* 前缀",
+      "lesson_ref": "LESSONS-LEARNED.md L1"
+    },
+    {
+      "bug": "set -u + 未初始化 placeholder var TC4_PASS_NOTE → 静默 exit 0",
+      "location": "tests/integration/docs-link-check-test.sh:246 (删除)",
+      "fix": "删未用的 placeholder var",
+      "lesson_ref": "LESSONS-LEARNED.md L2"
+    },
+    {
+      "bug": "Tree 风格分行的目录结构 — 测试找 .opencode/command/ 字符串 fail",
+      "location": "tests/integration/docs-link-check-test.sh:134-140",
+      "fix": "改成跨行 grep .opencode + command/ + mirror 组合",
+      "lesson_ref": "LESSONS-LEARNED.md L3"
+    },
+    {
+      "bug": "README 目录结构段 sed 截取范围 191-215 太早, 没含新加的 .opencode/ 行",
+      "location": "tests/integration/docs-link-check-test.sh:134 (sed -n '191,240p')",
+      "fix": "改范围到 191-240 覆盖新加的 .claude/ + .opencode/ 行 (v2.0.6 在 215+ 加的)",
+      "lesson_ref": "LESSONS-LEARNED.md L3"
+    }
+  ],
+  "file_scope_strict_compliance": {
+    "file_scope_includes": [
+      "jira/tickets/EPIC-057-C/ (本目录所有 files)",
+      "docs/guides/INSTALL-MULTI-TOOL.md (新建)",
+      "README.md (改, 在 file_scope includes 隐含 — 跟 ticket.json file_scope 联合)",
+      "CHANGELOG.md (改, 跟 ticket.json implicit 联合, 跟 057-A + 057-B 模式 一致)"
+    ],
+    "file_scope_excludes": [
+      "scripts/install.sh (跟 057-A 边界, 不动)",
+      "scripts/kallax-onramp.sh + lib/* (跟 057-B 边界, 不动)",
+      "tests/integration/install-* + onramp-* (跟 057-D 边界, 不动)",
+      "tests/integration/docs-link-check-test.sh (本 ticket 创建, 在 file_scope implicit 联合 — AC #7 明确要求)"
+    ]
+  },
+  "anti_patterns_avoided": [
+    "❌ background 模式 (主公拍 D 显式 1 ticket 1 subagent 串行)",
+    "❌ 越界 file_scope (跟 057-A/B/D 边界, 本 ticket 严守 docs 类型)",
+    "❌ 文档膨胀 (跟'翻篇&精进' 联合, README 增量改 2 段, INSTALL-MULTI-TOOL 222 行 跟 PROCESS.md 风格 一致)",
+    "❌ 简化 5/5 PASS (raw test output 存 jira/tickets/EPIC-057-C/test-output.log)",
+    "❌ merge to miao (Performer 硬红线, Rule 1, Conductor 联合)",
+    "❌ 自审 (Conductor 4-Level 联合)",
+    "❌ silent output (主公拍 D 后第 1 次重试, 不能再 silent, 本次显式报 raw output + commit SHA)"
+  ],
+  "strategic_alignment": {
+    "反讽_闭环": "v2.0.2 '跨平台 fix release' 命名 vs scripts/install.sh:52-53 baseline gap 联合, v2.0.6 治根",
+    "诚实修正_联合": "明确标注 v2.0.2 gap, 不模糊处理, 跟 KALLAX-GLOSSARY.md §1.2 联合",
+    "翻篇_精进_战略_一致": "文档做减法, README 增量改 2 段, INSTALL-MULTI-TOOL 5 章节精简",
+    "EPIC_055_C_5_标签_SOP_联动": "每条 跟\"<tag>\" 联合 引用带 证据+反驳/支持+影响",
+    "EPIC_057_A_契约_联合": "INSTALL-MULTI-TOOL.md §3 路径映射表 跟 install.sh:50-73 TOOL_* 数组 byte-for-byte 一致",
+    "EPIC_057_B_契约_联合": "auto-detect 优先级 claude > opencode > codex > gemini 跟 tool-detect.sh:21-40 一致"
+  },
+  "commit_strategy": "1 commit: docs(EPIC-057-C): INSTALL-MULTI-TOOL.md + README + CHANGELOG [2.0.6] 4 工具 multi-tool guide (5/5 PASS, 跟 057-A/B 契约 一致, 治 v2.0.2 跨平台 fix 反讽)",
+  "handoff_to_conductor": {
+    "branch": "feature/EPIC-057-C-multi-tool-docs",
+    "ready_for_review": true,
+    "rule_1_never_merge_to_main": "Conductor reviews + merges (Performer 硬红线)",
+    "evidence_chain": "jira/tickets/EPIC-057-C/pass-report.json + test-output.log + LESSONS-LEARNED.md + IMPLEMENTATION-PLAN.md (4 件套, 跟 EPIC-057-A + 057-B 模式 一致)"
+  },
+  "created_by": "performer-EPIC-057-C",
+  "status_set_by": "performer-EPIC-057-C (跟主公 2026-06-17 'B' explicit 拍板 联合)"
+}
