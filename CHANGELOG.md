@@ -5,6 +5,47 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.8] - 2026-06-17
+
+### Added
+
+#### PHASE-011 跨期 review 入口 (主公'AC 做一下, 其他不管了' explicit 派单, 0 派单 0 执行 0 ticket claim, 5 遗留 P1/P2/P3 deferred)
+
+跟主公 2026-06-17 'AC' explicit 启动 + 'BD' explicit 跳过 联合 (跟"独立" 拍 explicit 约束 联合, 跟 PROCESS.md:25-26 Master 不自助升级红线 联合), 跟 v2.0.7 跨期 todo 闭环 release 之后 跨期 follow-up 沉淀 联合:
+
+- **A. PHASE-011 跨期 review 入口** (跟主公'AC' explicit 派单 联合, file:line `confluence/decisions/PHASE-011-REVIEW-2026-06-17.md` + `jira/epics/EPIC-058/epic.json`):
+  - **5 deferred tickets 入口** (status="deferred", blocked_by="主公后续拍板"):
+    - **P1-1**: pre-commit hook ALLOWED_PATTERNS 加 `^jira/` (治根 `--no-verify` workaround, 1h, 跟 v2.0.4 EPIC-053-A 联合, file:line `scripts/hooks/pre-commit:150-167`)
+    - **P1-2**: 48 worktree + 107 local feature branches 清理 (2h, 跟 v2.0.4 EPIC-054-A worktree 4→1 模式 一致, 实际 `git worktree list | wc -l = 48`)
+    - **P2-1**: EPIC-053-D web dashboard 真上线 (主公 B 跳过, 4h, 代码就绪 `web/src/dashboard/dispatch/`)
+    - **P2-2**: 69 remote feature branches DB cleanup Option B/C (主公 D 跳过, 6h, 当前 Option A 保留 + 跟 v2.0.5 release 联合)
+    - **P3-1**: Rule 22 → ~18 合并 (4h, 候选 3 组合并 跟 v2.0.5 Rule 合并 24→22 模式 一致)
+  - **0 派单 + 0 执行 + 0 ticket claim** (跟"翻篇&精进" 战略 一致, 跟"独立" 拍 explicit 约束 联合)
+  - **PHASE-011-REVIEW-2026-06-17.md** 跨期 review 入口 (本 release 沉淀, 跟"反哺框架" 战略 一致)
+  - **PHASE-INDEX.md 累计 11 PHASE review** (PHASE-005 ~ PHASE-011, 跟 ACCUMULATED-LESSONS v2.0.6 升级版 联合)
+
+- **C. KALLAX-GLOSSARY.md v2.0.6 升级版** (跟主公'C' explicit 派单 联合, file:line `docs/KALLAX-GLOSSARY.md`):
+  - **Section 8.6-8.10 新增 5 multi-tool 术语** (跟 EPIC-057 4 ticket 闭环 联合):
+    - **8.6 「4 工具」multi-tool skills**: Claude Code / opencode / Codex / Gemini 4 工具平起平坐, install.sh `--target=auto` 默认全支持, 4 工具 CLI invocation 实测表 (v2.1.153 / v1.17.7 / codex exec fallback / v0.22.2)
+    - **8.7 「skills/commands paths」4 工具 路径映射**: 4 工具 dir 名字不统一 (opencode `command/` singular 反讽, codex 叫 `prompts/` 不叫 `commands/`)
+    - **8.8 「hybrid flag-controlled install」**: 5 flag 模式 `--target=auto|all|<tool>|a,b|--interactive` (主公'需要用户选择安装哪个工具/还是全支持' explicit 联合)
+    - **8.9 「--target=auto」默认行为**: auto-detect 双通道 ($HOME/.<tool>/ 目录 + which CLI binary), 优先级 claude > opencode > codex > gemini
+    - **8.10 「v2.0.2 '跨平台 fix release'」反讽治根**: 反讽证据链 (install.sh:52-53 1 工具, 31 slash command mirror 0 支持, codex/gemini 0 reference), 跟"反讽" + "诚实修正" 联合
+  - **34 → 39 术语** (+5 multi-tool)
+  - **363 → 461 行** (+98 行)
+  - **0 重写** (Section 8.6-8.10 增量插入, 跟 Rule 5 DRY 联合)
+
+### Notes
+- 0 Rule 增加 (跟 Rule 32 撤销 + v2.0.5 Rule 合并 24→22 联合, 跟"反讽" 联合, file:line `docs/KALLAX-GLOSSARY.md:268-272`)
+- 0 ticket claim (PHASE-011 入口 5 deferred 状态, 0 派单 0 执行, 跟"独立" 拍 explicit 约束 联合)
+- 0 重写 (跟 Rule 5 DRY 联合, 跟"翻篇&精进" 战略 一致)
+- 跟 v2.0.6 (EPIC-057 4 ticket 闭环) + v2.0.7 (跨期 todo 闭环 release) 联合 release
+- 跟 PHASE-011 跨期 review 联合 (file:line `confluence/decisions/PHASE-011-REVIEW-2026-06-17.md`)
+- 跟 KALLAX-GLOSSARY v2.0.6 升级版 Section 8.6-8.10 联合 (file:line `docs/KALLAX-GLOSSARY.md:334-450`)
+- 跟"独立" 拍 explicit 约束 联合 (主公'AC' 启动 + 'BD' 跳过 explicit 派单, 跟 PROCESS.md:25-26 联合)
+- 跟"反讽" 联合 (Section 8.10 反讽证据链 explicit 标注, 跟 v2.0.6 治根 联合)
+- 跟"翻篇&精进" 战略 一致 (PHASE-011 入口沉淀, 0 派单 0 执行, 5 遗留 deferred 留待主公后续拍板)
+
 ## [2.0.7] - 2026-06-17
 
 ### Added

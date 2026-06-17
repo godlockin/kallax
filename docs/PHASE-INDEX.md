@@ -9,7 +9,7 @@ KALLAX 文档 Single Source of Truth (SoT) — 修订前查 SoT 边界, 避免�
 | SoT 文件 | 内容 | 适用场景 |
 |---|---|---|
 | [CLAUDE.md](../CLAUDE.md) | **Rule SoT** — 规则/红线/必读 (Rule 1-18 + 29-33) | 改 Rule / 加红线 / 必读章节 |
-| [KALLAX-GLOSSARY.md](KALLAX-GLOSSARY.md) | **术语 SoT** — 黑话/概念/术语 (34 个) | 改术语定义 / 加新黑话 |
+| [KALLAX-GLOSSARY.md](KALLAX-GLOSSARY.md) | **术语 SoT** — 黑话/概念/术语 (39 个, 跟 v2.0.6 升级 +5 multi-tool) | 改术语定义 / 加新黑话 |
 | [PHASE-INDEX.md](PHASE-INDEX.md) | **PHASE 文档索引** (本文档) | 引用 PHASE review / 决策文档 |
 
 **修订规则**:
@@ -35,7 +35,8 @@ KALLAX 文档 Single Source of Truth (SoT) — 修订前查 SoT 边界, 避免�
 | PHASE-008-REVIEW-2026-06-13 | confluence/decisions/ | 14 BE + 5 release + 38 worktree 累计 | 跟"反讽" 联合 |
 | **PHASE-009-REVIEW-2026-06-17** | confluence/decisions/ | **14 卡闭环 (v2.0.4) + 5 清理 (v2.0.5), 净价值 +4.5%, Rule -2 净减** | 跟"反讽" 联合 + 跟"翻篇&精进" 战略 一致 |
 | **PHASE-010-REVIEW-2026-06-17** | confluence/decisions/ | **v2.0.6 EPIC-057 4 ticket 闭环 (4 工具 multi-tool skills), 治 v2.0.2 跨平台 fix 反讽, 18/18 PASS** | 跟主公'B'+'D' explicit 拍板 联合 + 跟"独立" 拍 explicit 约束 联合 |
-| **ACCUMULATED-LESSONS-2026-06-17** | confluence/decisions/ | **跨 PHASE 累计 v2.0.5 升级版 (470 行), 9 release + 13 BE + 14 卡 + 5 治理卡 + 5 战略** | 跟 v2.0.3 ACCUMULATED-LESSONS 升级 + 跟"反哺框架" 战略 一致 |
+| **PHASE-011-REVIEW-2026-06-17** | confluence/decisions/ | **跨期 review 入口 (5 遗留 P1/P2/P3 deferred, 0 派单 0 执行 0 ticket claim, 跟主公'AC' explicit 启动 + 'BD' explicit 跳过 联合)** | 跟主公'AC 做一下, 其他不管了' explicit 派单 联合 + 跟 KALLAX-GLOSSARY v2.0.6 升级版 Section 8.6-8.10 联合 + 跟"独立" 拍 explicit 约束 联合 + 跟"翻篇&精进" 战略 一致 |
+| **ACCUMULATED-LESSONS-2026-06-17** | confluence/decisions/ | **跨 PHASE 累计 v2.0.6 升级版 (531 行), 10 release + 13 BE + 18 卡 (14+4) + 5 治理卡 + 5 战略 + 4 工具 + 14 术语** | 跟 v2.0.3 + v2.0.5 ACCUMULATED-LESSONS 累计升级 + 跟"反哺框架" 战略 一致 |
 | ACCUMULATED-LESSONS-2026-06-13 | confluence/decisions/ | 429 行 + 5 视角 + 4 共同根因 + 5 战略建议 | 跟"反讽" 联合 |
 | PROJECT-STATUS-AND-LESSONS-2026-06-12 | confluence/decisions/ | 跟之前模式 一致 | 跟"反讽" 联合 |
 | PROJECT-STATUS-AND-LESSONS-2026-06-13 | confluence/decisions/ | 跟之前模式 一致 | 跟"反讽" 联合 |
@@ -48,7 +49,7 @@ KALLAX 文档 Single Source of Truth (SoT) — 修订前查 SoT 边界, 避免�
 
 ## 跟"反讽" 闭环 (跟"反哺框架" 战略 一致, 跟"翻篇&精进" 战略 一致)
 
-- ✅ 8 release 累计 + 14 BE + 15 门禁 + 23 Rule + 5 扩展组 → 沉淀到 PHASE-INDEX.md
+- ✅ 10 release 累计 (v1.0.0 → v2.0.7) + 14 BE + 17 门禁 + 22 Rule (合并 24→22) + 5 扩展组 + 4 工具 (Claude/opencode/Codex/Gemini) + 39 术语 (Section 8.6-8.10 multi-tool) → 沉淀到 PHASE-INDEX.md + KALLAX-GLOSSARY.md + ACCUMULATED-LESSONS-2026-06-17.md
 - ✅ 0 增 Rule (跟 Rule 32 联合, 跟"流程逻辑" 战略 一致)
 - ✅ 0 重写 (跟 Rule 5 DRY 联合, 跟"反讽" 联合)
 - ✅ 走对策 A+B+C 落地 (跟"反讽" 联合, 跟"独立" 拍 explicit 约束 联合)

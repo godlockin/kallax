@@ -531,11 +531,17 @@
 | 2026-06-17 13:00 | v2.0.6 release | master_main | 4 工具 multi-tool, push origin (commit `7db6107`) |
 | 2026-06-17 13:30 | Todo 1+2 cleanup | master_main | `.gitignore` + PHASE-INDEX (commit `2f13db6` + `d9d0c92`) |
 | 2026-06-17 14:00 | PHASE-010 review | master_main | 260 行 沉淀 (commit `9056927`) |
-| 2026-06-17 14:30 | **ACCUMULATED-LESSONS v2.0.6 升级** | **master_main** | **本文档** (跨期 todo 闭环) |
+| 2026-06-17 14:30 | ACCUMULATED-LESSONS v2.0.6 升级 | master_main | 470→531 行 (commit `290e97e`) |
+| 2026-06-17 15:00 | v2.0.7 bump | master_main | 跨期 todo 闭环 release (commit `e46bb59`) |
+| 2026-06-17 15:30 | push 5 commit batch | master_main | origin miao 同步 (0/0) |
+| 2026-06-17 16:00 | 主公'AC' explicit 派单 | master_main | 'AC 做一下, 其他不管了' |
+| 2026-06-17 16:30 | KALLAX-GLOSSARY v2.0.6 升级 | master_main | Section 8.6-8.10 (commit `ee537e3`) |
+| 2026-06-17 17:00 | PHASE-011 跨期 review 入口 | master_main | EPIC-058 5 deferred + PHASE-011-REVIEW doc |
+| **2026-06-17 17:30** | **v2.0.8 bump** | **master_main** | **PHASE-011 入口 + KALLAX-GLOSSARY v2.0.6 升级版 release 命名** |
 
 ---
 
-**跟 v2.0.3 ACCUMULATED-LESSONS-2026-06-13 + v2.0.5 ACCUMULATED-LESSONS-2026-06-17 (v2.0.5 初版) 联合 → 升级 → 合并 → 整理 → 总结**
+**跟 v2.0.3 ACCUMULATED-LESSONS-2026-06-13 + v2.0.5 ACCUMULATED-LESSONS-2026-06-17 (v2.0.5 初版) + v2.0.6 ACCUMULATED-LESSONS-2026-06-17 (v2.0.6 升级) 联合 → 升级 → 合并 → 整理 → 总结**
 **跟"流程逻辑 > 扩充配置" + "诚实修正" + "反讽" + "翻篇&精进" + "独立" 5 大战略 一致**
-**跟 v2.0.4 + v2.0.5 14 卡闭环 + 5 清理执行 + EPIC-057 4 ticket 闭环 + v2.0.6 4 工具 multi-tool 联合**
-**跟"反哺框架" 战略 一致** (跨 PHASE 累计 10 review 沉淀, 0 增命令 0 增 Rule)
+**跟 v2.0.4 + v2.0.5 14 卡闭环 + 5 清理执行 + EPIC-057 4 ticket 闭环 + v2.0.6 4 工具 multi-tool + v2.0.7 跨期 todo 闭环 + v2.0.8 PHASE-011 入口 + KALLAX-GLOSSARY 升级 联合**
+**跟"反哺框架" 战略 一致** (跨 PHASE 累计 11 review 沉淀, 0 增命令 0 增 Rule)

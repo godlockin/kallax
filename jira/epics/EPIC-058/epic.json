@@ -1,0 +1,64 @@
+{
+  "id": "EPIC-058",
+  "phase": "PHASE-011",
+  "title": "PHASE-011 跨期 review 入口 (5 遗留 P1/P2/P3 deferred tickets, 跟 v2.0.6 release + 主公'B'+'D' explicit 跳过 联合)",
+  "scope": "1. 主公 2026-06-17 explicit 拍 A: 启动 PHASE-011 跨期 review 入口, 跟主公'B'+'D' explicit 跳过 联合 (web dashboard 部署 + 69 remote DB cleanup 跳过, 留待后续拍板)\n2. PHASE-011-REVIEW-2026-06-17.md 跨期 review doc (5 遗留 P1/P2/P3 入口, 0 执行, 0 派单, 0 ticket claim)\n3. 5 遗留 deferred tickets: P1-1 jira/ pre-commit 治根 + P1-2 worktree/branch 清理 + P2-1 web dashboard 部署 (主公 B 跳过) + P2-2 69 remote DB cleanup (主公 D 跳过) + P3-1 Rule 22 进一步合并\n4. 跟 KALLAX-GLOSSARY v2.0.6 升级版 联合 (Section 8.6-8.10 4 工具 multi-tool 术语)\n5. 跟'翻篇&精进' 战略 一致 (入口沉淀, 0 增 ticket 0 增 Rule 0 重写, 跟'反讽' 联合)\n6. 跟 v2.0.6 EPIC-057 4 ticket 闭环 + v2.0.7 跨期 todo 闭环 release 联合",
+  "start_time": "2026-06-17",
+  "delivery_time": "2026-06-18",
+  "status": "active",
+  "baseline": {
+    "source": "主公 2026-06-17 'AC 做一下, 其他不管了' explicit 派单 (跟 PROCESS.md:25-26 联合)",
+    "current_state": "v2.0.7 release 之后, 5 遗留 P1/P2/P3 deferred: pre-commit hook ALLOWED_PATTERNS 不含 ^jira/ (--no-verify workaround), 48 worktree + 107 local feature branches stale, EPIC-053-D web dashboard 代码就绪未部署, 69 remote feature branches 仍含 DB in history, Rule 22 仍 > 15 阈值",
+    "gap": "PHASE-011 跨期 review 入口: 5 遗留 deferred tickets 明确状态 + 后续拍板 P1/P2/P3 优先级 + 跨期 review 沉淀 联合"
+  },
+  "target": {
+    "phase_011_review_doc": "PHASE-011-REVIEW-2026-06-17.md 跨期 review 入口 (0 执行, 0 派单, 仅沉淀 5 遗留 + 跨期 KPI + 后续拍板建议)",
+    "deferred_tickets": "5 deferred tickets 入口 (status=deferred, blocked_by=主公后续拍板, 0 排期, 0 派单)",
+    "kallax_glossary_alignment": "跟 KALLAX-GLOSSARY v2.0.6 升级版 Section 8.6-8.10 联合, 4 工具 multi-tool 术语 SoT",
+    "phase_index_update": "PHASE-INDEX.md 加 PHASE-011 entry + ACCUMULATED-LESSONS-2026-06-17 v2.0.7 entry (跨期 todo 闭环 + 5 遗留 入口)"
+  },
+  "decisions": {
+    "priority": 1,
+    "rationale": "主公 2026-06-17 拍 A explicit (启动 PHASE-011 跨期 review 入口, 跟'独立' 拍板 explicit 联合), 跟'翻篇&精进' 战略 一致 (0 派单 0 执行 0 重写, 仅入口沉淀)",
+    "phase": "PHASE-011 跟 v2.0.6 + v2.0.7 联合 release (v2.0.8)",
+    "explicit_master_signoff": "主公 explicit 拍 A: 'AC 做一下, 其他不管了' (A=PHASE-011 启动, C=KALLAX-GLOSSARY 多工具术语, B=web dashboard 跳过, D=69 remote DB cleanup 跳过)",
+    "skip_explicit": "主公 explicit 拍 B+D 跳过: P2-1 EPIC-053-D web dashboard 部署 (B) + P2-2 69 remote feature branches DB cleanup Option B/C (D) 留待后续拍板"
+  },
+  "tickets": [
+    {
+      "id": "EPIC-058-A",
+      "title": "P1-1: pre-commit hook ALLOWED_PATTERNS 加 ^jira/ (治根 --no-verify workaround, 1h, backend, P1)",
+      "assignee": "deferred",
+      "status": "deferred",
+      "blocked_by": "主公后续拍板优先级 (P1 长期遗留, 跟 Rule 13 3 模式 decision-gate 联合)"
+    },
+    {
+      "id": "EPIC-058-B",
+      "title": "P1-2: 48 worktree + 107 local feature branches 清理 (stale 历史堆积, 2h, infra, P1)",
+      "assignee": "deferred",
+      "status": "deferred",
+      "blocked_by": "主公后续拍板 X (保留) / Y (清理, 跟 EPIC-054-A worktree 4→1 模式 一致)"
+    },
+    {
+      "id": "EPIC-058-C",
+      "title": "P2-1: EPIC-053-D web dashboard 真上线 (server 部署, 4h, backend, P2, 主公 B 跳过)",
+      "assignee": "deferred",
+      "status": "deferred",
+      "blocked_by": "主公 B 拍板 explicit 跳过 (2026-06-17 'AC 做一下, 其他不管了' 派单), 代码就绪 web/src/dashboard/dispatch/ 待部署"
+    },
+    {
+      "id": "EPIC-058-D",
+      "title": "P2-2: 69 remote feature branches DB cleanup Option B (filter-repo 改写 history, 6h, infra, P2, 主公 D 跳过)",
+      "assignee": "deferred",
+      "status": "deferred",
+      "blocked_by": "主公 D 拍板 explicit 跳过 (2026-06-17 'AC 做一下, 其他不管了' 派单), 跟 v2.0.5 Option A 保留 一致, Option B/C 高风险待主公拍板"
+    },
+    {
+      "id": "EPIC-058-E",
+      "title": "P3-1: Rule 22 进一步合并 22→? 阈值 (跟 Rule 5 DRY 联合, 4h, docs, P3)",
+      "assignee": "deferred",
+      "status": "deferred",
+      "blocked_by": "主公后续拍板 (PHASE-011 review 入口, 跟 v2.0.5 Rule 合并 24→22 模式 一致)"
+    }
+  ]
+}
