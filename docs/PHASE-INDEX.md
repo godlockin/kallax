@@ -34,6 +34,7 @@ KALLAX 文档 Single Source of Truth (SoT) — 修订前查 SoT 边界, 避免�
 | PHASE-007-REVIEW-2026-06-13 | confluence/decisions/ | 5 视角 Master 串场 + 8 票 done | 跟"反讽" 联合 |
 | PHASE-008-REVIEW-2026-06-13 | confluence/decisions/ | 14 BE + 5 release + 38 worktree 累计 | 跟"反讽" 联合 |
 | **PHASE-009-REVIEW-2026-06-17** | confluence/decisions/ | **14 卡闭环 (v2.0.4) + 5 清理 (v2.0.5), 净价值 +4.5%, Rule -2 净减** | 跟"反讽" 联合 + 跟"翻篇&精进" 战略 一致 |
+| **PHASE-010-REVIEW-2026-06-17** | confluence/decisions/ | **v2.0.6 EPIC-057 4 ticket 闭环 (4 工具 multi-tool skills), 治 v2.0.2 跨平台 fix 反讽, 18/18 PASS** | 跟主公'B'+'D' explicit 拍板 联合 + 跟"独立" 拍 explicit 约束 联合 |
 | **ACCUMULATED-LESSONS-2026-06-17** | confluence/decisions/ | **跨 PHASE 累计 v2.0.5 升级版 (470 行), 9 release + 13 BE + 14 卡 + 5 治理卡 + 5 战略** | 跟 v2.0.3 ACCUMULATED-LESSONS 升级 + 跟"反哺框架" 战略 一致 |
 | ACCUMULATED-LESSONS-2026-06-13 | confluence/decisions/ | 429 行 + 5 视角 + 4 共同根因 + 5 战略建议 | 跟"反讽" 联合 |
 | PROJECT-STATUS-AND-LESSONS-2026-06-12 | confluence/decisions/ | 跟之前模式 一致 | 跟"反讽" 联合 |
