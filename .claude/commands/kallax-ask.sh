@@ -16,7 +16,7 @@ USAGE:
   /kallax-ask "<question>"
 
 ARGS:
-  question          The question to route (optional, prompts if missing)
+  question          The question to route (optional, shows help if missing)
 
 DESCRIPTION:
   Keyword-routes a question to relevant experts based on detected
@@ -38,13 +38,34 @@ log_title "Ask Expert Panel"
 
 QUESTION="${1:-}"
 
+# No question provided -> show help (don't silently fail or prompt)
 if [ -z "$QUESTION" ]; then
-  read -r -p "  Your question: " QUESTION
-fi
+  echo ""
+  log_warn "No question provided. Showing help:"
+  echo ""
+  show_help <<'EOF'
+/kallax-ask — Ask a question to the expert panel
 
-if [ -z "$QUESTION" ]; then
-  log_error "No question provided"
-  exit 1
+USAGE:
+  /kallax-ask "<question>"
+
+ARGS:
+  question          The question to route (optional, shows help if missing)
+
+DESCRIPTION:
+  Keyword-routes a question to relevant experts based on detected
+  keywords (architect / backend / frontend / ux / product / security /
+  performance). Falls back to the core panel
+  (architect backend ux product) if no keyword matches. Prints a
+  per-expert /kallax-expert invocation suggestion for each match.
+
+EXAMPLES:
+  /kallax-ask "How should we structure the WebSocket reconnection logic?"
+
+RELATED:
+  /kallax-expert, /kallax-panel
+EOF
+  exit 0
 fi
 
 echo ""

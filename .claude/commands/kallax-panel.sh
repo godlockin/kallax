@@ -35,16 +35,37 @@ fi
 
 TOPIC="${1:-}"
 
+# No topic provided -> show help (don't silently fail or prompt)
+if [ -z "$TOPIC" ]; then
+  log_title "Expert Panel"
+  echo ""
+  log_warn "No topic provided. Showing help:"
+  echo ""
+  show_help <<'EOF'
+/kallax-panel — Launch full expert panel (5 experts + Conductor)
+
+USAGE:
+  /kallax-panel [TOPIC]
+
+ARGS:
+  TOPIC             The topic to review (optional, shows help if missing)
+
+DESCRIPTION:
+  Prints the 5-expert + Conductor panel member list and the 3-phase
+  execution flow (independent analysis, Conductor synthesis, Master
+  approval). Saves an expert_panel_<timestamp>.md template in
+  .kallax/inbox/.
+
+EXAMPLES:
+  /kallax-panel "Evaluate the hybrid flag-controlled install design"
+
+RELATED:
+  /kallax-expert, /kallax-ask, /kallax-office-hours
+EOF
+  exit 0
+fi
+
 log_title "Expert Panel"
-
-if [ -z "$TOPIC" ]; then
-  read -r -p "  Topic for expert panel review: " TOPIC
-fi
-
-if [ -z "$TOPIC" ]; then
-  log_error "No topic provided"
-  exit 1
-fi
 
 echo ""
 echo "  Topic: ${TOPIC}"

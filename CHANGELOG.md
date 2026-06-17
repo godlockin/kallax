@@ -5,6 +5,28 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.11] - 2026-06-17
+
+### Changed
+
+#### 4 关键命令 no-args → show_help + exit (治主公"Claude Code 跑 /kallax-ask 看不到说明", 治根行为层)
+
+跟主公 2026-06-17 explicit 反馈 联合 (v2.0.9 + v2.0.10 仍没治根 — 顶部 # 注释 Claude Code 只 parse 1 行, 主公跑 /kallax-ask 后看到 1 行 description + 脚本源码, 没 run help. 治根, 改 no-args 行为):
+
+- **/kallax-ask**: 无 question 传入 → 不再 prompt, 直接 show_help + exit 0 (像 git status --help)
+- **/kallax-panel**: 无 TOPIC 传入 → 不再 prompt, 直接 show_help + exit 0
+- **/kallax-expert**: 已有"无 role 列可用专家"行为 (保留, 改 frontmatter description + 顶部 # 注释更详细)
+- **/kallax-skill**: 已有"无 skill 列可用 skills"行为 (保留, 改 frontmatter description + 顶部 # 注释更详细)
+- **本地 sync**: cp -v 2 .sh 到 ~/.claude/commands/ (主公反馈本地没更新 → 治根)
+
+### Notes
+- 0 增命令 (跟 Rule 32 + "流程逻辑 > 扩充配置" 联合)
+- 0 增 Rule (跟 v2.0.5 Rule 合并 24→22 联合)
+- 0 重写主逻辑 (仅改 no-args 行为 fallback 路径)
+- 跟 v2.0.9 slash-commands.md + v2.0.10 multi-line # 注释 联合 (三层 fallback: 顶部 # 注释 / --help flag / no-args auto-help)
+- 跟"诚实修正" 联合 (主公反馈 → 治根行为层, 不只改 description 表面)
+- 跟"翻篇&精进" 战略 一致 (4 命令改 no-args fallback, 0 增命令 0 增 Rule)
+
 ## [2.0.10] - 2026-06-17
 
 ### Changed
