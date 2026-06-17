@@ -30,8 +30,11 @@ git_log_days=$(echo "${SCAN_DATA}" | jq -r '.git_log_days')
 smell_indicators=$(echo "${SCAN_DATA}" | jq -r '.smell_indicators')
 
 # ---- Step 2: Pre-assess + Recommend ----
+# EPIC-057-B: dispatch to detected tool (claude/opencode/codex/gemini).
+# Replaces hardcoded `claude --print` with tool-detect + dispatch.
+# Fallback (on detect fail or tool fail) = '{}'  (跟原 onramp 语义一致).
 echo "==> Step 2: Pre-assessing..." >&2
-PRE_ASSESS_JSON=$(claude --print "${SCAN_DATA}" 2>/dev/null || echo '{}')
+PRE_ASSESS_JSON=$(bash "${ONRAMP_LIB}/dispatch.sh" "${SCAN_DATA}")
 RECOMMEND_JSON=$(bash "${ONRAMP_LIB}/recommend.sh" "${SCAN_DATA}" "${PRE_ASSESS_JSON}")
 
 # ---- Step 3: Route (ask user) ----
