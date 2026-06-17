@@ -5,6 +5,32 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.7] - 2026-06-17
+
+### Added
+
+#### 跨期 todo 闭环 release (PHASE-010 review + ACCUMULATED-LESSONS v2.0.6 升级版 + .gitignore 治根)
+
+跟"翻篇&精进" 战略 一致 (跟"独立" 拍板 Todo 1+2+3+4 explicit 闭环 联合), 跟 v2.0.5 → v2.0.6 release 之后 跨期 follow-up 沉淀 联合:
+
+- **Todo 1: .gitignore 加 `**/.kallax/` patterns** (跟 EPIC-054-A worktree 统一 联合, file:line `.gitignore:1-3`):
+  - **证据**: commit `2f13db6` 加 `**/.kallax/data/` + `**/.kallax/*.db`, 治 root 嵌套 path 不被 gitignore match
+  - **反驳/支持**: 之前 `.kallax/` 在 root 匹配但 worktree nested (`.claude/worktrees/<name>/.kallax/`) 不 match, 治根
+  - **影响**: 4 worktree 统一 gitignored (不污染 git status), 跟 EPIC-054-A worktree 4→1 ROOT_BUCKETS=1 联合
+- **Todo 2: docs/PHASE-INDEX.md 加 PHASE-010 entry** (commit `d9d0c92`, file:line `docs/PHASE-INDEX.md`): 累计 10 PHASE review (PHASE-005 ~ PHASE-008 baseline + PHASE-009 v2.0.5 + **PHASE-010 v2.0.6**)
+- **Todo 3: confluence/decisions/PHASE-010-REVIEW-2026-06-17.md** (commit `9056927`, 260 行): v2.0.6 EPIC-057 4 ticket 闭环 跨期 review, 4 工具 multi-tool skills support, 18/18 PASS (6+6+5+18/18 分阶段验证), 治 v2.0.2 跨平台 fix 反讽 闭环
+- **Todo 4: confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md v2.0.6 升级版** (commit `290e97e`, 470 → 531 行): 5 处增量更新 (Title + KPI table + BE-14 ⚠️ 新增 + Section 12.5 串行派单教训 + Section 13+14 文件清单 + 状态变更历史), 跟 v2.0.3 baseline (429 行) → v2.0.5 升级 (470 行) → v2.0.6 升级 (531 行) 累计沉淀
+- **Todo 5: bump version 2.0.6 → 2.0.7** (本 entry): package.json 同步, 跨期 todo 闭环 release 命名
+
+### Notes
+- 0 Rule 增加 (跟 Rule 32 撤销 + v2.0.5 Rule 合并 24→22 联合, 跟"反讽" 联合, file:line `docs/KALLAX-GLOSSARY.md:268-272`)
+- 0 重写 (跟 Rule 5 DRY 联合, 跟"翻篇&精进" 战略 一致)
+- 0 ticket 增加 (跟 EPIC-057 4 ticket 闭环 联合, 跟"反哺框架" 战略 一致)
+- 跟 v2.0.6 (EPIC-057 4 ticket 闭环 + 4 工具 multi-tool) 联合 release (file:line `CHANGELOG.md:8-69`)
+- 跟 PHASE-010 跨期 review 联合 (file:line `confluence/decisions/PHASE-010-REVIEW-2026-06-17.md`)
+- 跟 ACCUMULATED-LESSONS-2026-06-17 v2.0.6 升级版 联合 (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md`)
+- 跟"独立" 拍 explicit 约束 联合 (主公 Todo 1+2+3+4 explicit 派单, 跟 PROCESS.md:25-26 Master 不自助升级红线 联合)
+
 ## [2.0.6] - 2026-06-17
 
 ### Added
