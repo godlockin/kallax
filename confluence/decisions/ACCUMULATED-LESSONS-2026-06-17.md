@@ -1,15 +1,15 @@
-# ACCUMULATED-LESSONS-2026-06-17 (v2.0.6 升级版)
+# ACCUMULATED-LESSONS-2026-06-17 (v2.3.0 升级版)
 
-> **累计 10 release + 13 BE + 5 EPIC × 18 卡 + 6 痛点 + 22 active Rule + 17 门禁 + 5 视角 + 4 共同根因 + 5 战略 + 5 治理卡 + 4 工具**
+> **累计 12 release + 14 BE + 5 EPIC × 18 卡 + 6 痛点 + 22 active Rule + 17 门禁 + 5 视角 + 4 共同根因 + 5 战略 + 5 治理卡 + 10 工具 + 54 术语**
 > **跟主公"流程逻辑 > 扩充配置" + "诚实修正" + "反讽" + "翻篇&精进" + "独立" 5 大战略 联合**
-> **跟 v2.0.3 baseline (ACCUMULATED-LESSONS-2026-06-13) + v2.0.5 (ACCUMULATED-LESSONS-2026-06-17 初版) 联合 → 升级 → 合并 → 整理 → 总结**
+> **跟 v2.0.3 baseline + v2.0.5 (初版) + v2.0.6 (v2.0.6 升级版) + v2.3.0 (本升级) 联合 → 跨 release 累计沉淀**
 
-**Date**: 2026-06-17
+**Date**: 2026-06-18
 **Author**: master_main
 **Reviewers**: 主公 (战略审批) + Conductor + Performer
-**Status**: ✅ COMPLETE — 14 卡 PHASE-009 闭环 + v2.0.4 + v2.0.5 + EPIC-057 4 ticket 闭环 + v2.0.6 落地
-**Version**: v2.0.6 (从 v2.0.5 升级, +1 天跨度 6/17 → 6/17)
-**Updates**: 跟 v2.0.5 升级版对比: +1 release (v2.0.6) + +1 EPIC (EPIC-057) + +4 ticket + +4 工具 (opencode/Codex/Gemini 闭环) + +1 战略经验 (串行派单治 silent output 复发 BE-9)
+**Status**: ✅ COMPLETE — 14 卡 PHASE-009 闭环 + v2.0.4 + v2.0.5 + EPIC-057 4 ticket 闭环 + v2.0.6 + v2.0.7/0.8/0.9/1.0/1.1 跨期 todo 闭环 + v2.1.0 wizard + v2.1.1 .md wrappers + v2.2.0 single source 模式 + v2.3.0 PHASE-012 跨期 review 落地
+**Version**: v2.3.0 (从 v2.0.6 升级, +1 day 跨度 6/17 → 6/18, 跨 5 release 累计)
+**Updates**: 跟 v2.0.6 升级版对比: +6 release (v2.0.7/0.8/0.9/1.0/1.1/1.1/1.1/2.0.0/2.0.1/2.0.2/2.0.3/2.0.4/2.0.5/2.0.6/2.0.7/2.0.8/2.0.9/2.1.0/2.1.1/2.2.0/2.3.0) + +12 术语 (8.14-8.18 + 9.1-9.4 + 10.1-10.3) + +5 deferred tickets 整合 (P1-1 closed + 4 deferred) + +3 PHASE review (PHASE-010/011/012)
 
 ---
 
@@ -532,6 +532,26 @@
 | 2026-06-17 13:30 | Todo 1+2 cleanup | master_main | `.gitignore` + PHASE-INDEX (commit `2f13db6` + `d9d0c92`) |
 | 2026-06-17 14:00 | PHASE-010 review | master_main | 260 行 沉淀 (commit `9056927`) |
 | 2026-06-17 14:30 | ACCUMULATED-LESSONS v2.0.6 升级 | master_main | 470→531 行 (commit `290e97e`) |
+| 2026-06-17 15:00 | v2.0.7 bump | master_main | 跨期 todo 闭环 release (commit `e46bb59`) |
+| 2026-06-17 15:30 | push 5 commit batch | master_main | origin miao 同步 (0/0) |
+| 2026-06-17 16:00 | 主公'AC' explicit 派单 | master_main | 'AC 做一下, 其他不管了' |
+| 2026-06-17 16:30 | KALLAX-GLOSSARY v2.0.6 升级 | master_main | Section 8.6-8.10 (commit `ee537e3`) |
+| 2026-06-17 17:00 | PHASE-011 跨期 review 入口 | master_main | EPIC-058 5 deferred + PHASE-011-REVIEW doc |
+| 2026-06-17 17:30 | v2.0.8 bump | master_main | PHASE-011 入口 + KALLAX-GLOSSARY v2.0.6 升级版 release 命名 (commit `2c00c56`) |
+| 2026-06-17 18:00 | 主公"kallax 很多命令, 但是这些命令都没有说明" 反馈 | master_main | slash commands doc 反馈, 触发 v2.0.9 |
+| 2026-06-17 18:30 | v2.0.9 release | master_main | 26 .sh 改造 + --help + slash-commands.md (commit `589adf4`) |
+| 2026-06-17 19:00 | 主公 "Claude Code 跑 /kallax-ask 看不到说明" 反馈 | master_main | 治根行为层, 触发 v2.0.10/0.11 |
+| 2026-06-17 19:30 | v2.0.10 release | master_main | 26 .sh 顶部 # 注释 multi-line + SKILL.md 升级 (commit `63fd5c5`) |
+| 2026-06-17 20:00 | v2.0.11 release | master_main | no-args → show_help 治根行为层 (commit `38be3bc`) |
+| 2026-06-17 20:30 | 主公"是不是要引导式安装以支持不同的工具" 反馈 | master_main | 触发 v2.1.0 wizard 5-step |
+| 2026-06-17 21:00 | v2.1.0 release | master_main | 8 工具 multi-tool + Wizard 5-step + Dry-run (commit `9e93a4f`) |
+| 2026-06-17 21:30 | 主公 "Unknown command: /kallax-ask" 反馈 | master_main | 治根, 触发 v2.1.1 .md wrappers |
+| 2026-06-17 22:00 | v2.1.1 release | master_main | 26 .md wrappers 治根 (commit `0ded58f`) |
+| 2026-06-17 22:30 | 主公"用一份skills/命令文件支持所有的引用" 派单 | master_main | 触发 v2.2.0 4 工具 single source 模式 |
+| 2026-06-17 23:00 | v2.2.0 release | master_main | 10 工具 + --symlink single source 模式 (commit `c3cc6d9`) |
+| 2026-06-17 23:30 | v2.2.0 docs 整理 | master_main | INSTALL-MULTI-TOOL + KALLAX-GLOSSARY 升级 (commit `2c7faab`) |
+| 2026-06-17 24:00 | 主公 4 问 → D 拍 | master_main | PHASE-012 + GLOSSARY 扩 + pre-commit 治根 联合 (A+B+C 大闭环) |
+| 2026-06-18 00:30 | **v2.3.0 release** | **master_main** | **PHASE-012 跨期 review + GLOSSARY 扩 +12 术语 42→54 + pre-commit ALLOWED_PATTERNS 加 `^jira/` 治根 5 commit workaround (P1-1 EPIC-058 闭环, 4 deferred 留待)** |
 | 2026-06-17 15:00 | v2.0.7 bump | master_main | 跨期 todo 闭环 release (commit `e46bb59`) |
 | 2026-06-17 15:30 | push 5 commit batch | master_main | origin miao 同步 (0/0) |
 | 2026-06-17 16:00 | 主公'AC' explicit 派单 | master_main | 'AC 做一下, 其他不管了' |

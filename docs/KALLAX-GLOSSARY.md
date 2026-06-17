@@ -503,7 +503,203 @@ KALLAX 规则 (Rule 1-18 + 29-33) 的唯一真相来源 → [CLAUDE.md](../CLAUD
 
 ---
 
-## 9. 总结
+### 8.14 「hybrid flag-controlled install」(混合标志位控制安装)
+
+**大白话**: "install.sh 5 flag 模式 `--target=auto|all|<tool>|a,b|--interactive` — 默认 auto-detect = 全支持, explicit = 用户选择, 跟 v2.0.6 EPIC-057-A 联合 (file:line `jira/tickets/EPIC-057-A/ticket.json:23-31`)".
+
+**5 flag 模式** (跟 v2.0.6 hybrid flag-controlled 联合):
+- `--target=auto` ⚠️ 默认: auto-detect $HOME/.<tool>/ + which CLI (claude > opencode > codex > gemini 优先级)
+- `--target=all`: 强制全装 4 工具
+- `--target=claude|opencode|codex|gemini`: 单工具 explicit
+- `--target=a,b,c`: 多工具逗号分隔
+- `--interactive`: 弹 prompt 问用户 (跟 v2.0.6 联合, v2.1.0 wizard 模式 替代)
+
+**Rule 引用**: Rule 5 (DRY) + Rule 16 (Subagent 5 步) + Rule 11 (Master 6 维度) — [CLAUDE.md](../CLAUDE.md), 跟"独立" 拍 explicit 约束 联合.
+
+---
+
+### 8.15 「wizard 5-step」引导安装 (Guided Wizard Installation)
+
+**大白话**: "install.sh `--wizard` 5-step 引导: detect → select → path → diff → confirm, 每步有合理默认, 直接按 Enter 接受 (跟 v2.1.0 EPIC-057 + 主公'D' 拍板 联合)".
+
+**5 step 流程** (跟"诚实修正" 联合, 治 install 黑盒):
+1. **Step 1/5** — Tool detection (8 工具 ✓/✗ 状态)
+2. **Step 2/5** — Select targets (detected / all / custom)
+3. **Step 3/5** — Install paths (默认 accept)
+4. **Step 4/5** — Upgrade diff preview (旧版 → 新版)
+5. **Step 5/5** — Dry-run preview + final confirm (Y 接受)
+
+**Rule 引用**: Rule 9 (X/Y 格式) + Rule 6 (经验沉淀) — [CLAUDE.md](../CLAUDE.md), 跟"翻篇&精进" 战略 一致.
+
+---
+
+### 8.16 「dry-run mode」模拟运行 (Dry-Run Simulation Mode)
+
+**大白话**: "install.sh `--dry-run` 模拟运行, 不实际安装, 退出前打印 'Dry-run complete. No files were installed.' — 适合 CI/automation 试运行 + wizard 流程测试 (跟 v2.1.0 主公'D' 拍板 联合)".
+
+**用法** (跟 v2.1.0 install.sh:147-148 联合):
+- `--dry-run` 默认 TARGET_MODE=auto 检测
+- `--dry-run --target=claude` 显式单工具
+- `--dry-run --wizard` 完整 5-step 模拟 (stdin 喂默认 接受)
+- `--dry-run --symlink` 4 工具 single source 模拟 (v2.2.0 联合)
+
+**Rule 引用**: Rule 11 (Master 6 维度) + Rule 18 (KPI Falsification 黑名单) — [CLAUDE.md](../CLAUDE.md), 跟"诚实修正" 联合 (不假装安装, 主动让用户确认).
+
+---
+
+### 8.17 「`.md wrappers`」Claude Code 2.1+ 兼容 (.md Wrappers for Slash Command Registry)
+
+**大白话**: "Claude Code 2.1+ slash command registry 优先发现 `.md` 格式 (跟 `heartbeat-conductor.md` 验证 一致), 26 .sh 命令各配对一个 `.md` wrapper, .md 格式 frontmatter description + `!bash` directive 调用 .sh".
+
+**.md 格式** (跟 v2.1.1 fix 联合, file:line `.claude/commands/kallax-ask.md:1-8`):
+```markdown
+---
+description: /kallax-ask — Ask a question to the expert panel.
+---
+
+!bash "$(dirname "$0")/kallax-ask.sh" $ARGUMENTS
+```
+
+**根因** (跟"诚实修正" 联合, 治 v2.1.0 之前 'Unknown command' 治根):
+- v2.0.9 / v2.0.10 / v2.0.11 只改 .sh 顶部 # 注释, 改 description 表面 没用
+- Claude Code 2.1+ 优先 .md 格式, .sh 不在 registry
+- 治根: 加 .md wrappers → Claude Code 优先 parse → slash command 注册成功
+
+**Rule 引用**: Rule 10 (Anti-Fabrication) + Rule 18 (KPI Falsification 黑名单) — [CLAUDE.md](../CLAUDE.md), 跟"反讽" 联合 (v2.0.2 命名"跨平台" 实际 "Claude Code only" 反讽, v2.1.1 治根).
+
+---
+
+### 8.18 「canonical symlink」Single Source 模式 (Single Source Symlink Mode)
+
+**大白话**: "KALLAX canonical 源在 `~/.local/share/kallax/`, 4+ 工具 user-level 路径都 symlink 引用 — 改 1 次, 4 工具立即生效 (跟 v2.2.0 主公 explicit 派单 联合, file:line `scripts/install.sh:139-141`)".
+
+**原理图** (跟 KALLAX-GLOSSARY §8.11-8.12 trae/antigravity + §8.13 single source 联合):
+```
+~/.local/share/kallax/                (canonical, 1 份源, real)
+├── skills/kallax/                     (14 files)
+└── commands/                          (56 files)
+
+        ↓ symlinks ↓
+
+~/.claude/{skills/kallax,commands}         ─┐
+~/.trae/{skills/kallax,commands}            │  4+ 工具
+~/.antigravity/{skills/kallax,commands}     │  共享 1 份源
+~/.opencode/{skills/kallax,command}         ─┘
+```
+
+**Rule 引用**: Rule 5 (DRY) + Rule 16 (Subagent 5 步) + Rule 32 (软约束升级阈值) — [CLAUDE.md](../CLAUDE.md), 跟"翻篇&精进" 战略 一致.
+
+---
+
+## 9. 治理术语 (Governance — 跨 release 复用策略 + 验证 流程)
+
+---
+
+### 9.1 「rebase vs cherry-pick」策略 (Rebase vs Cherry-Pick Strategy)
+
+**大白话**: "跨期 commit 复用时, rebase 适合线性历史 (跟 v2.0.5 Rule 合并 模式 一致), cherry-pick 适合选择性复用 (跟 v2.0.6 EPIC-057 跨 PR 复用 模式 一致, file:line `docs/KALLAX-GLOSSARY.md:30-36`)".
+
+**2 策略对比**:
+- **rebase** (线性历史): `git rebase testing`, 把当前分支 commits 重放到目标分支 tip, 适合 1 PR 内 fix, 历史干净
+- **cherry-pick** (选择性): `git cherry-pick <sha>`, 选择 1 个或几个 commit 复用, 适合跨 PR 复用 (跟"翻篇&精进" 联合)
+
+**Rule 引用**: Rule 6 (经验沉淀) + Rule 16 (Subagent 5 步) — [CLAUDE.md](../CLAUDE.md), 跟"翻篇&精进" 战略 一致.
+
+---
+
+### 9.2 「Saga 5-step」Pipeline (Saga Five-Step Pipeline)
+
+**大白话**: "`tests → lint → verify → commit → PR` 5 步, 跟 EPIC-022-B + v2.0.6 EPIC-057-D 联合, 跟'诚实修正' 联合 (任一步失败 halt, 开发者 fix 重新)".
+
+**5 步** (跟 v2.0.6 /kallax-submit-pr 联合):
+1. `npm test` (或 language-equivalent) — unit tests
+2. `npm run lint` (或 equivalent) — lint check
+3. `bash scripts/verify/check-test-case-isolation.sh` — anti-fab
+4. `git add -A && git commit` — structured message
+5. `gh pr create --base testing` — PR opens for Conductor review
+
+**Rule 引用**: Rule 9 (X/Y 格式) + Rule 16 (Subagent 5 步) + Rule 11 (Master 强验证) — [CLAUDE.md](../CLAUDE.md).
+
+---
+
+### 9.3 「Master 6 维度验证」(Master Six-Dimension Verification)
+
+**大白话**: "Master 强验证 6 维度, 跟 v1.2.4 联合, 跟 Rule 11 (Master 写代码禁令) 联合 — L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实".
+
+**6 维度** (跟 KALLAX-GLOSSARY §1.2 诚实修正 + §1.1 反讽 联合):
+- **L1 git log**: 看 commit history
+- **L2 git show**: 看具体 commit diff
+- **L3 跑测试**: 验证代码 work
+- **L4 preflight**: 验证 anti-fab 工具通过
+- **L5 边界**: 验证 file scope / worktree 隔离
+- **L6 诚实**: 验证 raw test output, 不接受 "should work"
+
+**Rule 引用**: Rule 11 (Master 写代码禁令) + Rule 18 (KPI Falsification 黑名单) — [CLAUDE.md](../CLAUDE.md), 跟"诚实修正" 战略 一致 (L6 命名 = reality).
+
+---
+
+### 9.4 「4-Level Fact-Forcing」(Four-Level Fact-Forcing Verification)
+
+**大白话**: "Conductor review PR 时 4-Level 检查: L1 existence (files in diff) / L2 substance (no TODO) / L3 wiring (no @ts-ignore/:any) / L4 data flow (CI green), 跟 v2.0.6 EPIC-057-D review 联合, 跟 H1 KPI falsification 治根 联合".
+
+**4 级别** (跟 /kallax-verify-pr 联合, file:line `.claude/commands/kallax-verify-pr.sh:1-50`):
+- **L1 existence**: files exist in git diff (no phantom references)
+- **L2 substance**: real logic, no stubs (no `TODO` in critical paths)
+- **L3 wiring**: correct imports/exports, type compatibility
+- **L4 data flow**: integration tests pass, E2E coverage
+
+**Rule 引用**: Rule 10 (Anti-Fabrication) + Rule 11 (Master 6 维度) — [CLAUDE.md](../CLAUDE.md), 跟"诚实修正" 战略 一致.
+
+---
+
+## 10. 度量术语 (Metrics — 净价值 + 阈值 + ROI)
+
+---
+
+### 10.1 「净价值」(Net Value)
+
+**大白话**: "净价值 = 100% - (Rule/Step/Doc 占比), v1.2.4 62.5% (-5% 恶化) → v2.0.4 67.0% (+4.5%) 反讽闭环 → v2.0.5 67.0% 持平 (诚实修正, proposal -3 → 实际 -2) → v2.1.0/v2.1.1/v2.2.0 67.0% 持平".
+
+**净价值跟踪** (跟 v1.2.4 baseline 反讽 联合):
+- 净价值 = 100% - (Rule/阶段/步骤/文档 占比)
+- 净价值 ↑ = 项目越"干净", 越"流程效果 > 流程表演"
+- 净价值 持平 = 0 增命令 / 0 增 Rule / 0 重写主逻辑 (跟"翻篇&精进" 联合)
+
+**Rule 引用**: Rule 11 (Master 强验证) + Rule 18 (KPI Falsification 黑名单) — [CLAUDE.md](../CLAUDE.md), 跟"反讽" 联合.
+
+---
+
+### 10.2 「worktree 隔离 ROI」(Worktree Isolation ROI)
+
+**大白话**: "worktree 数量 75 → 4 (-94.7%), 跟 v2.0.4 EPIC-054-A ROOT_BUCKETS=1 联合, 治 H5 跨 worktree 文件 scope 冲突".
+
+**ROI 数据** (跟 v2.0.4 EPIC-054-A ticket 联合):
+- 75 worktree → 4 worktree (跟 ROOT_BUCKETS=1 联合)
+- 节省 71 worktree (-94.7%)
+- 节省 0.4h/ticket (Performer 启动时间, 跟 v2.0.4 联合)
+- 节省 100% 跨 worktree 冲突 (跟 Rule 5 DRY 联合)
+
+**Rule 引用**: Rule 15 (Performer Session 自动加载) + Rule 5 (DRY) — [CLAUDE.md](../CLAUDE.md), 跟"翻篇&精进" 战略 一致.
+
+---
+
+### 10.3 「Rule 阈值 15」(Rule Threshold 15)
+
+**大白话**: "Rule 32 软约束升级阈值 — Rule 数量 ≤ 15 是'治理完成'信号, 跟 v2.0.5 Rule 合并 24→22 联合, 跟 Rule 32 撤销 联合, 跟 v2.0.6 0 增 Rule 闭环".
+
+**阈值跟踪** (跟"反讽" 联合):
+- v1.2.4: 23 Rule (baseline)
+- v2.0.4: 23 Rule (0 增)
+- v2.0.5: 22 Rule (-1, 合并)
+- v2.0.10: Rule 32 撤销 (0 增)
+- 目标: ≤ 15 Rule (跟 v2.0.5 Rule 合并 24→22 模式 一致, 候选合并 3 组 治根)
+- **现状**: 22 Rule (> 15 阈值, 差 7, 待 PHASE-012 review)
+
+**Rule 引用**: Rule 32 (软约束升级阈值) + Rule 5 (DRY) — [CLAUDE.md](../CLAUDE.md), 跟"翻篇&精进" 战略 一致.
+
+---
+
+## 11. 总结
 
 | 类别 | 术语数 | Rule 引用 |
 |---|---|---|
@@ -514,12 +710,14 @@ KALLAX 规则 (Rule 1-18 + 29-33) 的唯一真相来源 → [CLAUDE.md](../CLAUD
 | **经验教训** (5.x) | 3 | Rule 29/30/31 |
 | **角色 / 决策** (6.x) | 4 | Rule 11/13/14/15 |
 | **量化 / 指标** (7.x) | 3 | Rule 32 |
-| **落地 / 工程** (8.x) | **13** (+3 v2.2.0 trae/antigravity/symlink) | Rule 5/15/17/29/31 + Rule 5/10/11/15/16/18 (multi-tool 联合) |
-| **总计** | **42 个术语** (+3 v2.2.0) | 跨 Rule 1-33 |
+| **落地 / 工程** (8.x) | **18** (+5 v2.3.0 hybrid/wizard/dry-run/.md/canonical) | Rule 5/15/17/29/31 + Rule 5/10/11/15/16/18 (multi-tool 联合) |
+| **治理** (9.x 新) | **4** (rebase/Saga/Master 6 维/4-Level) | Rule 6/9/10/11/16/18 |
+| **度量** (10.x 新) | **3** (净价值/ROI/阈值 15) | Rule 5/11/15/18/32 |
+| **总计** | **54 个术语** (+12 v2.3.0) | 跨 Rule 1-33 |
 
 ### 🔑 关键 takeaway
 
-- ✅ **42 个术语** 全部覆盖, 一次性盘点 (跟 v2.0.6 +5 + v2.2.0 +3 multi-tool/single-source)
+- ✅ **54 个术语** 全部覆盖, 一次性盘点 (跟 v2.0.6 +5 + v2.2.0 +3 + v2.3.0 +12)
 - ✅ **每个术语**: 大白话 + 来源 + Rule 引用
 - ✅ **追溯链完整** (跟"独立" 拍 explicit 约束 联合)
 - ✅ **写到了文件** (跟主公 explicit 约束 联合)

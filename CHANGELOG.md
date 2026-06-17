@@ -5,6 +5,39 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2026-06-18
+
+### Added
+
+#### PHASE-012 跨期 review 入口 (跟主公 4 问 → D 拍 A+B+C 一起, 大闭环 联合)
+
+跟主公 2026-06-17 'D' explicit 派单 联合 (PHASE-012 启动 + KALLAX-GLOSSARY 扩 +12 术语 + pre-commit 治根, 5 步大闭环 A+B+C 一起):
+
+- **A. PHASE-012 跨期 review 入口** (跟 PHASE-011 5 治理卡 模式 联合, file:line `confluence/decisions/PHASE-012-REVIEW-2026-06-17.md`):
+  - 创建 `PHASE-012-REVIEW-2026-06-17.md` (跨期 review doc, 5 deferred 状态整合)
+  - 整合 EPIC-058 5 deferred tickets: P1-1 → **CLOSED** (本 release), P1-2/P2-1/P2-2/P3-1 → DEFERRED (主公后续 拍 explicit)
+  - 更新 `docs/PHASE-INDEX.md` (加 PHASE-012 entry, 跟 v2.0.10 PHASE-INDEX 模式 一致)
+  - 更新 `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md` (Section 14 状态历史加 v2.0.7 → v2.3.0 共 7 release entries, 567 行)
+- **B. KALLAX-GLOSSARY 扩 +12 术语** (跟"反哺框架" 战略 一致, file:line `docs/KALLAX-GLOSSARY.md`):
+  - **8.x 落地/工程** (+5): 8.14 hybrid flag-controlled install / 8.15 wizard 5-step / 8.16 dry-run mode / 8.17 .md wrappers / 8.18 canonical symlink
+  - **9.x 治理** (新章节, +4): 9.1 rebase vs cherry-pick / 9.2 Saga 5-step / 9.3 Master 6 维度验证 / 9.4 4-Level Fact-Forcing
+  - **10.x 度量** (新章节, +3): 10.1 净价值 (Net Value) / 10.2 worktree 隔离 ROI / 10.3 Rule 阈值 15
+  - **42 → 54 术语** (+28.6%), 533 → 733 行 (+200)
+- **C. pre-commit ALLOWED_PATTERNS 加 `^jira/` 治根** (跟"诚实修正" 联合, file:line `scripts/hooks/pre-commit:155`):
+  - **根因**: 5 commit `--no-verify` workaround 反复 (Todo 1-5 commits), 治根 ALLOWED_PATTERNS 包含 `^jira/`
+  - **治根后**: jira/ 改动直接通过 pre-commit (无需 `--no-verify`) → 0 workaround → 0 风险 → 0 信任损失
+  - **anti-fab 保护保留**: pre-commit 仍检查 3 anti-fab tools (L1 existence / L2 substance / L3 wiring)
+  - **本地同步**: `cp` 到 `~/.claude/hooks/pre-commit`
+
+### Notes
+- 0 增命令 (跟 v2.0.9 / v2.0.10 / v2.0.11 / v2.1.0 / v2.1.1 / v2.2.0 / v2.3.0 0 增 联合)
+- 0 增 Rule (跟 v2.0.5 Rule 合并 24→22 联合)
+- 0 重写主逻辑 (跟"翻篇&精进" 战略 一致, 1 line pre-commit diff + 0 GLOSSARY 重写 + 0 PHASE-INDEX 重写)
+- 跟 v2.2.0 10 工具 single source 模式 联合 (PHASE-012 入口 跨期 review 整合 5 deferred)
+- 跟 KALLAX-GLOSSARY v2.0.6 升级版 + v2.2.0 +3 联合, 跨 release 累计沉淀 12 术语 (反哺框架 战略)
+- 跟"诚实修正" 联合 (pre-commit 治根 `--no-verify` workaround 反讽, 跟 KALLAX-GLOSSARY §1.1 联合)
+- 跟"独立" 拍板 explicit 联合 (主公 4 问 → D 拍 A+B+C 一起, 跟 PROCESS.md:25-26 联合)
+
 ## [2.2.0] - 2026-06-17
 
 ### Added
