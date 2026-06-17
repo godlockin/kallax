@@ -5,6 +5,39 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2026-06-18
+
+### Added
+
+#### PHASE-014 跨期 review 入口 (5 deferred → 3 closed + 2 留待) + KALLAX-GLOSSARY §11.x 6 反思 术语 (跟主公 2026-06-18 'A+B' explicit 派单 联合)
+
+跟主公 2026-06-18 'A+B' explicit 拍板 联合 (启动 PHASE-014 + KALLAX-GLOSSARY 11.x 扩), 跟"诚实修正" + "反讽" + "独立" + "翻篇&精进" + "反哺框架" 5 战略 联合, 跟 PHASE-013-REFLECTION 联合, 跟 PROCESS.md:25-26 联合:
+
+- **PHASE-014 跨期 review 入口** (跟 PHASE-011/012/013 模式 一致, file:line `confluence/decisions/PHASE-014-REVIEW-2026-06-18.md`):
+  - 创建 `PHASE-014-REVIEW-2026-06-18.md` (跨期 review doc, 5 deferred 状态 闭环)
+  - 5 deferred 状态 累计: ✅ P1-1 (v2.3.0 closed) + ✅ P1-2 (v2.4.0 closed, 保留) + ⏸️ P2-1 (主公 B 跳过, 留待) + ⏸️ P2-2 (主公 D 跳过, Option A 保留) + ✅ P3-1 (v2.4.1 closed → revert)
+  - 14 release 累计 (v1.0.0 → v2.4.1), 0 增命令, 22 Rule 稳定 (跟 v2.3.0 持平)
+- **KALLAX-GLOSSARY §11.x 6 反思 术语** (54 → 60, +6, 跟"反讽" + "诚实修正" 联合, 跟 PHASE-013-REFLECTION 联合, 治根 §10.3 阈值 15 迷信):
+  - **11.1** 「Rule 数 ≠ 治理完成」 (跟 §10.3 联合, 治理完成信号 是 净价值 持平 + 0 增命令 + 0 增 Rule, 治根 阈值 15 迷信)
+  - **11.2** 「反讽 闭环」 (跟 §1.1 联合, "Rule 治 Rule 通胀" 跟"v2.4.0 4 合并" 是 同样 反讽 模式, 需 治根)
+  - **11.3** 「0 实际变化 假动作」 (跟 §1.2 诚实修正 联合, "0 增命令 跟 净价值 持平" 是 0 实际变化, 需 诚实修正)
+  - **11.4** 「Master 自闭环 边界」 (跟 PROCESS.md:25-26 联合, Master 跟"独立" 拍板 explicit 联合 边界 重新审视)
+  - **11.5** 「revert 跟反思 区别」 (跟 §1.2 联合, revert 是 技术 行动, 反思 是 战略 行动, 闭环)
+  - **11.6** 「P2-1 P2-2 留待」 (跟 §1.4 独立 联合, EPIC-058 5 deferred 状态更新 跟"独立" 拍 explicit 联合)
+
+### Notes
+- 0 增命令 (跟 v2.0.9 / v2.0.10 / v2.0.11 / v2.1.0 / v2.1.1 / v2.2.0 / v2.3.0 / v2.4.0 / v2.4.1 0 增 联合)
+- 0 增 Rule (v2.4.1 还原 跟 v2.3.0 一致, 跟 KALLAX-GLOSSARY §11.1 Rule 数 ≠ 治理完成 联合)
+- 0 重写主逻辑 (跟"翻篇&精进" 战略 一致, §11.x 反思 术语 纯 文档, 落地脚本 不变)
+- 跟 PHASE-013-REFLECTION 联合 (v2.4.0 4 Rule 合并 反思, 跟"诚实修正" 联合, 治根 "0 实际改变 假动作")
+- 跟 v2.4.0 worktree 清理 联合 (P1-2 closed, 47 worktree + 123 branches 删除, 5.5M disk freed, 0 争议, 主公 Y 派单 保留)
+- 跟 EPIC-058 5 deferred 整合 联合 (P1-1/P1-2/P3-1 closed, P2-1/P2-2 留待)
+- 跟"反讽" 联合 (§11.1 Rule 数 ≠ 治理完成 + §11.2 反讽 闭环, 治根 §10.3 阈值 15 迷信)
+- 跟"诚实修正" 联合 (§11.3 0 实际变化 假动作 + §11.5 revert 跟反思 区别, 跟 v2.4.0 4 合并 反思 联合)
+- 跟"独立" 拍 explicit 联合 (§11.4 Master 自闭环 边界 + §11.6 P2-1 P2-2 留待, 跟 PROCESS.md:25-26 联合)
+- 跟"翻篇&精进" 战略 一致 (0 增 + 反思 + 整理, 0 实际变化 跟 v2.3.0 持平)
+- 跟"反哺框架" 战略 一致 (跨 release 累计沉淀, 14 release 累计 0 增命令 0 增 Rule, 跟 KALLAX-GLOSSARY §1.1 §1.2 §10.3 §11.x 联合)
+
 ## [2.4.1] - 2026-06-18
 
 ### Reverted

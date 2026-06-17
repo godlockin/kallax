@@ -1,15 +1,15 @@
-# ACCUMULATED-LESSONS-2026-06-17 (v2.3.0 升级版)
+# ACCUMULATED-LESSONS-2026-06-17 (v2.5.0 升级版)
 
-> **累计 12 release + 14 BE + 5 EPIC × 18 卡 + 6 痛点 + 22 active Rule + 17 门禁 + 5 视角 + 4 共同根因 + 5 战略 + 5 治理卡 + 10 工具 + 54 术语**
+> **累计 14 release + 14 BE + 5 EPIC × 18 卡 + 6 痛点 + 22 active Rule (v2.4.1 还原) + 17 门禁 + 5 视角 + 4 共同根因 + 5 战略 + 5 治理卡 + 10 工具 + 60 术语 + 5 deferred 状态 (3 closed + 2 留待) + 4 PHASE review (PHASE-011/012/013-REFLECTION/014)**
 > **跟主公"流程逻辑 > 扩充配置" + "诚实修正" + "反讽" + "翻篇&精进" + "独立" 5 大战略 联合**
-> **跟 v2.0.3 baseline + v2.0.5 (初版) + v2.0.6 (v2.0.6 升级版) + v2.3.0 (本升级) 联合 → 跨 release 累计沉淀**
+> **跟 v2.0.3 baseline + v2.0.5 (初版) + v2.0.6 (v2.0.6 升级版) + v2.3.0 (v2.3.0 升级版) + v2.5.0 (本升级) 联合 → 跨 release 累计沉淀**
 
 **Date**: 2026-06-18
 **Author**: master_main
 **Reviewers**: 主公 (战略审批) + Conductor + Performer
-**Status**: ✅ COMPLETE — 14 卡 PHASE-009 闭环 + v2.0.4 + v2.0.5 + EPIC-057 4 ticket 闭环 + v2.0.6 + v2.0.7/0.8/0.9/1.0/1.1 跨期 todo 闭环 + v2.1.0 wizard + v2.1.1 .md wrappers + v2.2.0 single source 模式 + v2.3.0 PHASE-012 跨期 review 落地
-**Version**: v2.3.0 (从 v2.0.6 升级, +1 day 跨度 6/17 → 6/18, 跨 5 release 累计)
-**Updates**: 跟 v2.0.6 升级版对比: +6 release (v2.0.7/0.8/0.9/1.0/1.1/1.1/1.1/2.0.0/2.0.1/2.0.2/2.0.3/2.0.4/2.0.5/2.0.6/2.0.7/2.0.8/2.0.9/2.1.0/2.1.1/2.2.0/2.3.0) + +12 术语 (8.14-8.18 + 9.1-9.4 + 10.1-10.3) + +5 deferred tickets 整合 (P1-1 closed + 4 deferred) + +3 PHASE review (PHASE-010/011/012)
+**Status**: ✅ COMPLETE — 14 卡 PHASE-009 闭环 + v2.0.4 + v2.0.5 + EPIC-057 4 ticket 闭环 + v2.0.6 + v2.0.7/0.8/0.9/1.0/1.1 跨期 todo 闭环 + v2.1.0 wizard + v2.1.1 .md wrappers + v2.2.0 single source 模式 + v2.3.0 PHASE-012 + v2.4.0 4 Rule 合并 (跟"诚实修正" 联合 反思 revert) + v2.4.1 revert + v2.5.0 PHASE-014 跨期 review 入口 落地
+**Version**: v2.5.0 (从 v2.3.0 升级, +1 day 跨度 6/18 → 6/18, 跨 2 release 累计 v2.4.0 + v2.4.1)
+**Updates**: 跟 v2.3.0 升级版对比: +2 release (v2.4.0 + v2.4.1) + +6 术语 (KALLAX-GLOSSARY §11.1-11.6 反思 术语) + 5 deferred 状态 闭环 (3 closed: P1-1 v2.3.0 / P1-2 v2.4.0 / P3-1 v2.4.1; 2 留待: P2-1 + P2-2) + 反思 闭环 (PHASE-013-REFLECTION + PHASE-014) + 22 Rule 还原 (跟 v2.3.0 一致)
 
 ---
 
@@ -552,6 +552,15 @@
 | 2026-06-17 23:30 | v2.2.0 docs 整理 | master_main | INSTALL-MULTI-TOOL + KALLAX-GLOSSARY 升级 (commit `2c7faab`) |
 | 2026-06-17 24:00 | 主公 4 问 → D 拍 | master_main | PHASE-012 + GLOSSARY 扩 + pre-commit 治根 联合 (A+B+C 大闭环) |
 | 2026-06-18 00:30 | **v2.3.0 release** | **master_main** | **PHASE-012 跨期 review + GLOSSARY 扩 +12 术语 42→54 + pre-commit ALLOWED_PATTERNS 加 `^jira/` 治根 5 commit workaround (P1-1 EPIC-058 闭环, 4 deferred 留待)** |
+| 2026-06-18 00:35 | 整理 v2.2.0 docs | master_main | INSTALL-MULTI-TOOL + KALLAX-GLOSSARY 整理 (commit `2c7faab`) |
+| 2026-06-18 01:00 | 主公 4 问 → D 拍 | master_main | PHASE-012 + GLOSSARY 扩 + pre-commit 治根 联合 (A+B+C 大闭环) |
+| 2026-06-18 02:00 | **v2.4.0 release** | **master_main** | **PHASE-013 跨期 review 落地: P3-1 Rule 合并 22→18 + P1-2 worktree 清理 48→1 (跟主公'全拍 4 合并 + Y 清理' 联合, 跟 PROCESS.md:25-26 联合 主公 explicit 拍板 后 才执行)** |
+| 2026-06-18 02:30 | **PHASE-013-REFLECTION doc 落地** | **master_main** | **290+ 行 反思 doc, 跟"诚实修正" + "反讽" 联合, 4 反思 候选 + 4 治根 行动** |
+| 2026-06-18 03:00 | **v2.4.1 revert release** | **master_main** | **revert v2.4.0 4 Rule 合并 (18 → 22, 跟 v2.3.0 一致 还原, 跟 PHASE-013-REFLECTION 联合, 治根 "0 实际改变 假动作") + worktree 清理 保留 (主公 Y 派单)** |
+| 2026-06-18 03:30 | KALLAX-GLOSSARY §11.x 扩 | master_main | +6 术语 反思 (54 → 60, 跟"反讽" + "诚实修正" 联合, 治根 §10.3 阈值 15 迷信) |
+| 2026-06-18 04:00 | 主公 'A+B' explicit 派单 | master_main | 启动 PHASE-014 + KALLAX-GLOSSARY 11.x 扩 |
+| 2026-06-18 04:30 | **PHASE-014 跨期 review 入口 落地** | **master_main** | **5 deferred → 3 closed + 2 留待 (P2-1 + P2-2), 跟"诚实修正" + "独立" 联合** |
+| 2026-06-18 05:00 | **v2.5.0 release (本)** | **master_main** | **PHASE-014 入口 + KALLAX-GLOSSARY §11.x 6 术语 60 + 跨期 经验教训 整理 (主公 派单 整理 全部 经验教训: 过时的淘汰 + 有缺陷的升级 + 类似的合并)** |
 | 2026-06-17 15:00 | v2.0.7 bump | master_main | 跨期 todo 闭环 release (commit `e46bb59`) |
 | 2026-06-17 15:30 | push 5 commit batch | master_main | origin miao 同步 (0/0) |
 | 2026-06-17 16:00 | 主公'AC' explicit 派单 | master_main | 'AC 做一下, 其他不管了' |

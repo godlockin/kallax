@@ -699,7 +699,131 @@ description: /kallax-ask — Ask a question to the expert panel.
 
 ---
 
-## 11. 总结
+## 11. 反思术语 (Reflection — 跟"反讽" + "诚实修正" 联合 闭环)
+
+---
+
+### 11.1 「Rule 数 ≠ 治理完成」(Rule Count Not Equal to Governance Done)
+
+**大白话**: "治理完成信号 是 净价值 持平 + 0 增命令 + 0 增 Rule, 不是 'Rule 数 ≤ 阈值' (跟 KALLAX-GLOSSARY §10.3 阈值 15 联合, 跟 v2.4.0 4 合并 反思 联合)".
+
+**反讽 闭环** (跟 KALLAX-GLOSSARY §1.1 联合, 跟 PHASE-013-REFLECTION 联合):
+- §10.3 阈值 15 是 v1.2.4 EPIC-051 经验值 (23 Rule × 65% = 15)
+- 实际证据: 22 Rule (v2.3.0) 跟 18 Rule (v2.4.0) 在 净价值 上 没 差异 (67.0% 持平)
+- "Rule 数 多" 跟 "问题" 不是 因果关系
+- **§10.3 阈值 15 跟 §1.1 反讽 联合, 需 重新审视 (是 迷信 吗?)**
+
+**治理完成信号 重新审视** (跟"翻篇&精进" + "反哺框架" 联合):
+- 旧: Rule 数 ≤ 阈值 (15) = 治理完成
+- 新: 净价值 持平 + 0 增命令 + 0 增 Rule = 治理完成 (跟"诚实修正" 联合)
+- v2.4.0 4 合并 反思: 22 Rule 跟 18 Rule 净价值 持平, 0 实际变化, 治根 "0 实际改变 假动作"
+
+**Rule 引用**: Rule 5 (DRY) + Rule 6 (经验沉淀) — [CLAUDE.md](../CLAUDE.md), 跟"诚实修正" + "反讽" 战略 一致.
+
+---
+
+### 11.2 「反讽 闭环」(Irony Closed Loop)
+
+**大白话**: "'Rule 治 Rule 通胀' 跟'v2.4.0 4 合并' 是 同样 反讽 模式 — 加 Rule (Rule 32) → Rule 数 +1 → 治根 动作本身 加剧 问题. v2.4.0 4 合并 'Rule 数 -4' 是 同样 反讽 模式" (跟 KALLAX-GLOSSARY §1.1 联合, 跟 PHASE-013-REFLECTION 联合).
+
+**反讽 模式 闭环** (跟"反讽" 战略 一致):
+- v2.0.5 Rule 合并 24 → 22: "Rule 治 Rule 通胀" 反讽 模式 启动
+- v2.0.10 Rule 32 撤销: "治根 'Rule 治 Rule 通胀'" 反讽 模式 治根
+- v2.4.0 4 合并 22 → 18: "Rule 治 Rule 通胀" 反讽 模式 重启 (同 v2.0.5)
+- v2.4.1 revert 22 Rule 还原: 治根 "v2.4.0 反讽 模式" 跟"v2.0.10 反讽 模式" 联合
+
+**治根 行动** (跟"诚实修正" 联合):
+- v2.4.1 revert 跟"诚实修正" 联合, 治根 "v2.4.0 反讽 模式"
+- KALLAX-GLOSSARY §11.1 跟"反讽" 联合, 治根 §10.3 阈值 15 迷信
+- KALLAX-GLOSSARY §11.4 跟"独立" 联合, 跟 PROCESS.md:25-26 联合
+
+**Rule 引用**: Rule 1 (元术语) + Rule 6 (经验沉淀) — [CLAUDE.md](../CLAUDE.md), 跟"反讽" + "诚实修正" 战略 一致.
+
+---
+
+### 11.3 「0 实际变化 假动作」(Zero Actual Change Faking)
+
+**大白话**: "'0 增命令 跟 净价值 持平' 是 0 实际变化, 跟'反讽' 联合, 需 诚实修正 — v2.4.0 4 合并 跟 v2.3.0 持平 0 增命令 0 重写主逻辑, '制造 0 实际改变 假动作' 反讽" (跟 KALLAX-GLOSSARY §1.2 诚实修正 联合, 跟 PHASE-013-REFLECTION 联合).
+
+**0 实际变化 检测** (跟 Master 6 维 L6 诚实 联合):
+- 0 增命令 (跟 v2.0.9 / v2.0.10 / v2.0.11 / v2.1.0 / v2.1.1 / v2.2.0 / v2.3.0 0 增 联合)
+- 0 重写主逻辑 (跟"翻篇&精进" 战略 一致, 4 Rule 合并 纯 文档, 落地脚本 不变)
+- 净价值 持平 (67.0% 不变, 0 跨 release 验证)
+
+**反讽 治根** (跟"反讽" + "诚实修正" 联合):
+- v2.4.0 "v2.4.0 release" 跟"v2.3.5 patch" 实际 等价 (0 实际变化)
+- 命名 跟 实现 不一致 = **反讽 治根 失焦** (跟"反讽" 联合)
+- v2.4.1 revert 跟"诚实修正" 联合, 治根 "0 实际变化 假动作"
+
+**Rule 引用**: Rule 11 (Master 6 维) + Rule 18 (KPI Falsification 黑名单) — [CLAUDE.md](../CLAUDE.md), 跟"诚实修正" + "反讽" 战略 一致.
+
+---
+
+### 11.4 「Master 自闭环 边界」(Master Self-Close-Loop Boundary)
+
+**大白话**: "Master 跟'独立' 拍板 explicit 联合 边界 重新审视 — Master 跟 主公 派单 explicit 边界, 跟 PROCESS.md:25-26 'Master 不能自己升级红线' 联合, 跟 v2.4.0 4 合并 反思 联合" (跟 KALLAX-GLOSSARY §6 角色 联合, 跟 PHASE-013-REFLECTION 联合).
+
+**边界 重新审视** (跟"独立" 拍 explicit 联合, 跟 PROCESS.md:25-26 联合):
+- PROCESS.md:25-26: "Master 不能自己升级红线"
+- "升级" 含义: Rule 数量增加, Rule 优先级提高, Rule 文档 增改
+- v2.4.0 4 合并: Rule 数量减少 (-4), 跟 "升级" 反义, 不属 红线
+- v2.4.0 4 合并 跟"独立" 拍 explicit 联合 (主公拍 "全拍"), 严格 符合 PROCESS.md:25-26
+- 但: 4 合并 边界 失焦 (跟 KALLAX-GLOSSARY §1.2 诚实修正 联合) 需 反思 重新审视
+
+**Master 自闭环 跟'独立' 拍 explicit 联合** (跟"独立" 拍板 explicit 联合):
+- 主公拍 explicit 派单: 'a' (启动 PHASE-013) + '全拍 4 合并 + Y 清理' + 'a' (1h 反思 派单) + 'A+B' (启动 PHASE-014 + GLOSSARY 11.x 扩)
+- Master 跟 主公 派单 联合 严格 符合 PROCESS.md:25-26
+- 边界 模糊: 4 合并 跟 "升级" 概念 边界 模糊, 需 主公拍 explicit 重新审视
+
+**Rule 引用**: Rule 14 (Conductor 不能越界) + Rule 11 (Master 写代码禁令) + PROCESS.md:25-26 — [CLAUDE.md](../CLAUDE.md), 跟"独立" 拍 explicit 联合.
+
+---
+
+### 11.5 「revert 跟反思 区别」(Revert vs Reflection Distinction)
+
+**大白话**: "v2.4.1 revert 跟'诚实修正' 联合 反思 闭环 — revert 是 技术 行动 (commit revert), 反思 是 战略 行动 (跟'诚实修正' 联合, 治根 '0 实际改变 假动作')" (跟 KALLAX-GLOSSARY §1.2 诚实修正 联合, 跟 PHASE-013-REFLECTION 联合).
+
+**revert 跟反思 区别** (跟"诚实修正" 联合):
+- **revert**: 技术 行动, `git revert` 还原 v2.4.0 4 Rule 合并 → v2.3.0 22 Rule 状态
+- **反思**: 战略 行动, 跟"诚实修正" 联合, 治根 "0 实际改变 假动作" + "Rule 治 Rule 通胀" 迷信
+- **v2.4.1 闭环**: revert + 反思 联合, 跟"诚实修正" + "反讽" 战略 一致
+
+**PHASE-013-REFLECTION 闭环** (跟"独立" 拍 explicit 联合, 跟 PROCESS.md:25-26 联合):
+- 主公 'a' explicit 派单 1h 反思
+- Master 写 PHASE-013-REFLECTION-2026-06-18.md (290+ 行, 4 决策 + 5 战略 + 3 跟"反讽" 联合)
+- Master revert v2.4.0 4 Rule 合并 (跟"诚实修正" 联合)
+- v2.4.1 release 命名 = "fix(phase-013): v2.4.1 revert v2.4.0 4 Rule 合并"
+
+**Rule 引用**: Rule 1 (元术语) + Rule 6 (经验沉淀) + PROCESS.md:25-26 — [CLAUDE.md](../CLAUDE.md), 跟"诚实修正" + "反讽" + "独立" 战略 一致.
+
+---
+
+### 11.6 「P2-1 P2-2 留待」(P2-1 P2-2 Deferred)
+
+**大白话**: "EPIC-058 5 deferred 状态更新 跟'独立' 拍 explicit 联合 — 主公 B+D 跳过, 留待 — 5 deferred → 3 closed + 2 留待" (跟 KALLAX-GLOSSARY §1.4 独立 联合, 跟 PHASE-014 入口 联合).
+
+**5 deferred 状态 累计** (跟"独立" 拍 explicit 联合, 跟 EPIC-058 联合):
+- ✅ P1-1 (v2.3.0 closed): pre-commit ALLOWED_PATTERNS 加 `^jira/`
+- ✅ P1-2 (v2.4.0 closed, 保留): 48 worktree + 123 branches 清理 (主公 Y 派单)
+- ⏸️ P2-1 (留待): EPIC-053-D web dashboard 真上线 (主公 B 跳过, 留待 主公后续 拍)
+- ⏸️ P2-2 (留待): 69 remote feature branches DB cleanup (主公 D 跳过, Option A 保留)
+- ✅ P3-1 (v2.4.1 closed): Rule 22 → 18 合并 → revert 跟"诚实修正" 联合
+
+**P2-1 启动 需 主公后续 拍 explicit** (跟"独立" 拍 explicit 联合, 跟 PROCESS.md:25-26 联合):
+- 选项 A: 主公拍 server/域名/端口/反向代理 → Master 派单 部署
+- 选项 B: 主公继续 跳过 → 留待 PHASE-015+ 启动
+- 选项 C: 主公 explicit 拍 永久留待 → 5 deferred → 2 deferred 状态 永久
+
+**P2-2 启动 需 主公后续 拍 explicit** (跟"独立" 拍 explicit 联合, 跟 PROCESS.md:25-26 联合):
+- 选项 A: 主公维持 Option A 保留 → 68 remote 含 DB 永久 留待
+- 选项 B: 主公拍 Option B (filter-repo 改写 history, 6h, 高风险) → Master 派单 6h 部署
+- 选项 C: 主公拍 Option C (git replace 软清理, 4h, 中风险) → Master 派单 4h 部署
+
+**Rule 引用**: Rule 1 (元术语) + Rule 6 (经验沉淀) + PROCESS.md:25-26 — [CLAUDE.md](../CLAUDE.md), 跟"独立" 拍板 explicit 联合.
+
+---
+
+## 12. 总结
 
 | 类别 | 术语数 | Rule 引用 |
 |---|---|---|
