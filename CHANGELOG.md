@@ -5,6 +5,36 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2026-06-18
+
+### Changed
+
+#### PHASE-013 跨期 review 落地 (P3-1 Rule 合并 + P1-2 worktree 清理, 跟主公 2026-06-17 'a' + '全拍 4 合并 + Y 清理' 联合)
+
+跟主公 2026-06-17 'a' 拍板 (启动 PHASE-013) + '全拍' explicit 派单 (4 候选 Rule 合并 + Y 清理) 联合, 跟 PROCESS.md:25-26 "Master 不能自己升级红线" 联合 (主公 explicit 拍板 后 才执行):
+
+- **P3-1 Rule 合并 4 候选** (22 → 18, 净减 -4, 跟 v2.0.5 Rule 合并 24→22 模式 一致):
+  - **A. Rule 7 + Rule 8** → 合并为 Rule 7 "PHASE 闭环 review + ticket close 闭环 (含 L4 脚本前置)" (P0 必拍, ✅ 执行)
+  - **B. Rule 11 + Rule 12** → 合并为 Rule 11 "Master 质量保证 (含 写代码禁令 + audit 强制)" (P0 必拍, ✅ 执行)
+  - **C. Rule 14 + Rule 15** → 合并为 Rule 14 "R-NEW 边界 (含 Conductor 不越界 + Performer 自动加载)" (P0 必拍, ✅ 执行)
+  - **D. Rule 16 + Rule 17** → 合并为 Rule 16 "5 步强制流程 (含 Subagent + 文件并发)" (P0 必拍, ✅ 执行)
+- **P1-2 worktree 清理** (Y 方案, 跟主公全拍 explicit 联合):
+  - 47 stale worktrees 删除 (`git worktree remove --force` + `git worktree prune`)
+  - 123 stale local branches 删除 (60+ 安全 `-d` + 30+ force `-D` + 1 `update-ref -d`)
+  - 5.6M disk freed → 8.0K (.kallax/worktrees 缩小 99.9%)
+  - 48 → 1 worktree, 124 → 1 branch (just `miao`)
+
+### Notes
+- 0 增命令 (跟 v2.0.9 / v2.0.10 / v2.0.11 / v2.1.0 / v2.1.1 / v2.2.0 / v2.2.0 / v2.3.0 0 增 联合)
+- 净增 -4 Rule (22 → 18, 跟 Rule 32 阈值 15 仍差 3, 触发新一轮审查)
+- 净增 -123 branches (1 miao + 47 stale worktrees 全删)
+- 0 重写主逻辑 (跟"翻篇&精进" 战略 一致, 4 Rule 合并纯文档合并, 不改落地脚本)
+- 跟 v2.3.0 PHASE-012 入口 5 deferred 整合 联合 (P1-1 closed, P1-2 + P3-1 done, P2-1/P2-2 留待)
+- 跟 KALLAX-GLOSSARY v2.3.0 升级版 (54 术语) 联合, 跟 Rule 10.3 Rule 阈值 15 联合
+- 跟"诚实修正" 联合 (Master 4 Rule 合并 explicit 拍板, 跟 PROCESS.md:25-26 联合, 不自助升级红线)
+- 跟"独立" 拍 explicit 联合 (主公 'a' + '全拍' explicit 派单)
+- 跟"反讽" 联合 (Rule 合并 命名 = reality, worktree 清理 命名 = reality, 净价值 67.0% 持平)
+
 ## [2.3.0] - 2026-06-18
 
 ### Added

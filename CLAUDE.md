@@ -145,33 +145,27 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 - ❌ 经验教训放在 commit message (会被淹没)
 - ❌ EPIC 最后 commit 不带 LESSONS-LEARNED 草稿
 
-### 7. PHASE 闭环 review (KALLAX P0) — 经验升级
+### 7. PHASE 闭环 review + ticket close 闭环 (KALLAX P0) — 经验升级 + L4 脚本前置 (v2.4.0 合并 Rule 7+8)
 
-**教训**: 经验教训只沉淀不升级 = 单点案例, 不形成组织能力.
+**教训**: 经验教训只沉淀不升级 = 单点案例, 不形成组织能力. EPIC-021 D review P1 CRITICAL — 5 角色 L4 引用 `verify-*.sh` 脚本不存在, ticket close 前必须存在.
 
 **触发**: 每完成 3-5 个 EPIC, 或阶段目标达成 (master 决定), 触发 PHASE 闭环 review.
 
-**流程**:
-
+**PHASE 闭环 review 流程** (4 阶段):
 1. **Phase 1 (Architect)**: 全局扫描本 phase 所有 EPIC 的 LESSONS-LEARNED.md, 分类: 量化/流程/技术/治理
 2. **Phase 2 (5 专家并行)**: Backend/Frontend/UX/Product/Security 各自找漏洞/纠错/合并
-3. **Phase 3 (Master 仲裁 + 升级)**:
-   - 查漏补缺, 纠错, 归纳合并, 升级到 CLAUDE.md / confluence/architecture/
+3. **Phase 3 (Master 仲裁 + 升级)**: 查漏补缺, 纠错, 归纳合并, 升级到 CLAUDE.md / confluence/architecture/
 4. **Phase 4 (主公审批)**: 升级项需主公决策
+
+**L4 脚本 ticket close 前置** (跟 v2.4.0 EPIC-058 P3-1 联合):
+- **规则**: 所有 ticket close 前, 对应的 L4 bash 脚本必须存在 (可以是 stub, 但必须存在并可执行)
+- **落地检查**: `check-fact-forcing-preflight.sh` 加 `L4_script_exists` check, 引用不存在脚本的 ticket 拒绝 close
 
 **产出物**: `confluence/decisions/PHASE-XXX-REVIEW-XXX.md` + CLAUDE.md 修订 + confluence/architecture/
 
-**禁止**: ❌ 经验教训只 review 不升级, ❌ 升级到 CLAUDE.md 没经过主公审批
+**禁止**: ❌ 经验教训只 review 不升级, ❌ 升级到 CLAUDE.md 没经过主公审批, ❌ L4 bash 命令引用不存在脚本, ❌ ticket close 前 L4 脚本缺失
 
-### 8. L4 脚本必须存在 (KALLAX P0) — ticket close 前置条件
-
-**教训**: EPIC-021 D review P1 CRITICAL — 5 角色 L4 引用 `verify-*.sh` 脚本不存在.
-
-**规则**: 所有 ticket close 前, 对应的 L4 bash 脚本必须存在 (可以是 stub, 但必须存在并可执行).
-
-**落地检查**: `check-fact-forcing-preflight.sh` 加 `L4_script_exists` check, 引用不存在脚本的 ticket 拒绝 close.
-
-**红线**: ❌ L4 bash 命令引用不存在脚本, ❌ ticket close 前 L4 脚本缺失
+### ~~8. (已合并入 Rule 7 — PHASE 闭环 review + ticket close 闭环)~~
 
 ### 9. 4-Level Fact-Forcing 强制 (KALLAX P0) — task:complete 前置
 
@@ -205,9 +199,9 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 **红线**: ❌ 跳过 3 anti-fab 工具, ❌ pre-commit hook 改 Bypass, ❌ 估数/verbatim/scope creep 任一造假
 
-### 11. Master 写代码禁令 (KALLAX P0) — 主公原话硬红线
+### 11. Master 质量保证 (KALLAX P0) — 写代码禁令 + audit 强制 (v2.4.0 合并 Rule 11+12)
 
-**教训**: 主公 2026-06-09 原话: "除了极端情况, master 不许写代码". 之前 Rule 11 写得过宽, 收回.
+**教训**: 主公 2026-06-09 原话: "除了极端情况, master 不许写代码". 之前 Rule 11 写得过宽, 收回. Master 自审 + 强制 audit 是质量保证 双闭环.
 
 **规则**: **Master 默认禁止写代码** (含 commit / edit / write), 不分场景. 唯一例外是"极端情况", 且必须**主公明确指令**.
 
@@ -228,12 +222,9 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 **bypass 条件** (Performer design 阶段专用): `KALLAX_BYPASS_SCOPE_CHECK=1` 短路 scope 检查 (Master 自修不受 bypass)
 
-**红线**:
-- ❌ 任何场景下 Master 默认禁写代码
-- ❌ 不因 "Performer 失败" / "Performer 慢" / "Master 觉得简单" 接管
-- ❌ 不接管 > 1 个 Performer 任务 / session
-- ❌ 不创建新 feature 分支 / 改 miao production / 跨 worktree
-- ❌ 不 commit 缺 "Master corrective" 标识
+**质量 audit 强制 (v2.4.0 联合)**:
+- expert > 50 时必跑 `scripts/expert-quality-audit.py` 5 维度 (Schema/Tier-Domain/M1/Trigger/Domain)
+- 触发: 飞轮"迭代"阶段转换, Merge 前置, Index 变更
 
 **v2.1 Master Performer report 强验证 checklist**:
 - **L1**: `git log --oneline -1` 看 SHA 真变
@@ -241,11 +232,17 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 - **L3**: 跑全量 E2E
 - **L4**: 跑 `scripts/verify/check-commit-amend-verify.sh` 4 PASS
 
-### 12. 质量 ensure 强制 (KALLAX P1) — expert > 50 必跑 audit
+**红线**:
+- ❌ 任何场景下 Master 默认禁写代码
+- ❌ 不因 "Performer 失败" / "Performer 慢" / "Master 觉得简单" 接管
+- ❌ 不接管 > 1 个 Performer 任务 / session
+- ❌ 不创建新 feature 分支 / 改 miao production / 跨 worktree
+- ❌ 不 commit 缺 "Master corrective" 标识
+- ❌ expert > 50 但未跑 audit 就 merge
+- ❌ M1 填估数 ("~60%"/"约 80%"/"PARTIAL")
+- ❌ Trigger 字段直接复制 test case 文本
 
-**规则**: expert > 50 时必跑 `scripts/expert-quality-audit.py` 5 维度 (Schema/Tier-Domain/M1/Trigger/Domain). 触发: 飞轮"迭代"阶段转换, Merge 前置, Index 变更.
-
-**红线**: ❌ expert > 50 但未跑 audit 就 merge, ❌ M1 填估数 ("~60%"/"约 80%"/"PARTIAL"), ❌ Trigger 字段直接复制 test case 文本
+### ~~12. (已合并入 Rule 11 — Master 质量保证)~~
 
 ### 13. 3 模式决策权分配 (KALLAX P0) — 主公原话 2026-06-09
 
@@ -368,60 +365,61 @@ L4 数据流动：集成测试验证
 
 ## 角色 Session 边界 (主公 2026-06-12 拍, R-NEW 升级红线)
 
-### 14. Conductor 不能越界 Performer 实施 (KALLAX P0) — R-NEW 升级红线
+### 14. R-NEW 边界 (KALLAX P0) — Conductor 不越界 + Performer 自动加载 (v2.4.0 合并 Rule 14+15)
 
 **教训**: 主公 2026-06-12 拍 "每个角色, 无论 Conductor 还是 Performer 都是独立存在的 session/subagent".
 
-**红线 (硬, 不可 override 日常)**:
+**Conductor 不能越界 Performer 实施** (v2.4.0 联合):
 - ❌ Conductor session Edit/Write/Commit 代码 (含 ticket 实施, 测试脚本, binary 改, Rust 源码)
 - ❌ Conductor session 跑 Performer 工作流 (写 test + 写实施 + 4 anti-fab + push)
 - ❌ Conductor spawn Performer session 后越界接 Performer 实施
 - ❌ Conductor 改 binary/Rust 源码
 - ❌ Conductor 改 .md (除 CLAUDE.md 跟 confluence/decisions/ 边界文件)
+- 唯一豁免: 跟 Rule 11 联动 (Token 限撞墙 / miao 已损坏 / ≥ 3 Performer API error / 主公 explicit 拍)
 
-**唯一豁免**: 跟 Rule 11 联动 (Token 限撞墙 / miao 已损坏 / ≥ 3 Performer API error / 主公 explicit 拍)
-
-### 15. Performer Session 自动加载 (KALLAX P0) — R-NEW 升级红线
-
-**规则**: Performer 角色必须独立 session/subagent, 初始化时根据当前 ticket 加载 CLAUDE.md + ROLE-RULES + ticket.json 上下文. 启用 `bash .kallax/hooks/session_start.sh --role performer` 自动 claim ticket + 建 worktree.
-
-**🚨 行为准则第一条 (主公 2026-06-13 拍)**: 领卡之后第一时间建 worktree, 跟主分支和其他分支隔离.
+**Performer Session 自动加载** (v2.4.0 联合):
+- 规则: Performer 角色必须独立 session/subagent, 初始化时根据当前 ticket 加载 CLAUDE.md + ROLE-RULES + ticket.json 上下文. 启用 `bash .kallax/hooks/session_start.sh --role performer` 自动 claim ticket + 建 worktree
+- 🚨 行为准则第一条 (主公 2026-06-13 拍): 领卡之后第一时间建 worktree, 跟主分支和其他分支隔离
 
 **红线**:
+- ❌ Conductor 越界 (跟 Conductor 不能越界 联合)
 - ❌ Performer session 跳过 worktree 直接写 miao 主 checkout
 - ❌ Performer session 在主 checkout 写文件 (即使 worktree 已有)
 - ❌ Performer session 跳 worktree 写 miao
 - ❌ Performer session 跳 session_start.sh 直接跑 (无 CLAUDE.md + ROLE-RULES + ticket 上下文)
 
-### 16. Subagent 5 步强制流程 (KALLAX P0) — Phase 7 R-NEW 升级红线
+### ~~15. (已合并入 Rule 14 — R-NEW 边界)~~
 
-**教训**: 10 KPI falsification 实证 (Performer-EPIC-036/037 第 9/10 次). 50% 概率假 PASS 模式 (4 subagent: 2 真 + 2 假).
+### 16. 5 步强制流程 (KALLAX P0) — Subagent + 文件并发 (v2.4.0 合并 Rule 16+17)
 
-**规则**: Subagent (Conductor + Performer + Auditor) 完工必触发 5 步强制流程, 缺任一 → ticket 状态保持 in_progress + Conductor 不 merge + Master 不 promote.
+**教训**: 10 KPI falsification 实证 (Performer-EPIC-036/037 第 9/10 次). 50% 概率假 PASS 模式 (4 subagent: 2 真 + 2 假). 主公 2026-06-12 拍 "还有个痛点是相互影响, 同时修改/编辑文件/文件夹引起工作文件的丢失/修改".
 
-**5 步强制流程**:
+**Subagent 5 步** (v2.4.0 联合):
+- 规则: Subagent (Conductor + Performer + Auditor) 完工必触发 5 步强制流程, 缺任一 → ticket 状态保持 in_progress + Conductor 不 merge + Master 不 promote
 
+**Subagent 5 步强制流程**:
 1. **Step 1**: `scripts/conductor/ticket-status-sync.sh` 自动同步 ticket.json
 2. **Step 2**: 3 anti-fab (`check-test-case-isolation.sh` + `check-kpi-precision.sh` + `check-scope-creep.sh`)
 3. **Step 3**: `check-fact-forcing-preflight.sh` 5 工具 (L1/L2/L3/L4/L4_script_exists)
 4. **Step 4**: `scripts/conductor/review.sh` 5 验证
 5. **Step 5**: `scripts/master/strong-verify-6d.sh` 6 维度 (L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实)
 
-**红线**: ❌ 跳过 Step 1-5 任一
-
-### 17. 文件并发竞争 5 步强制流程 (KALLAX P0) — Phase 7 R-NEW 升级红线
-
-**教训**: 主公 2026-06-12 拍 "还有个痛点是相互影响, 同时修改/编辑文件/文件夹引起工作文件的丢失/修改".
-
-**5 步强制流程**:
-
+**文件并发竞争 5 步** (v2.4.0 联合):
 1. **Step 1**: `scripts/io/file-lock.sh` (flock + git index.lock 同模式)
 2. **Step 2**: `scripts/io/atomic-write.sh` (临时文件 + atomic mv)
 3. **Step 3**: `scripts/io/conflict-detect.sh` (git diff 比对)
 4. **Step 4**: `scripts/conductor/outbox-isolation.sh` (subagent 各 own outbox)
 5. **Step 5**: `scripts/master/worktree-state-sync.sh` (Performer commit 必 push)
 
-**红线**: ❌ 跳过文件级锁, ❌ 写半截文件, ❌ 跳过冲突检测, ❌ 写 outbox 路径冲突, ❌ worktree 状态不同步
+**红线**:
+- ❌ 跳过 Subagent Step 1-5 任一
+- ❌ 跳过文件级锁
+- ❌ 写半截文件
+- ❌ 跳过冲突检测
+- ❌ 写 outbox 路径冲突
+- ❌ worktree 状态不同步
+
+### ~~17. (已合并入 Rule 16 — 5 步强制流程)~~
 
 ### 18. KPI Falsification 反模式黑名单 (KALLAX P0) — Phase 7 R-NEW 升级红线
 
@@ -468,36 +466,48 @@ L4 数据流动：集成测试验证
 
 ---
 
-## KALLAX Rules Status (跟 EPIC-054-D 联合)
+## KALLAX Rules Status (跟 EPIC-054-D + EPIC-058 P3-1 联合)
 
-> **当前 Rule 总数 (active)**: **22** (跟 EPIC-054-D v2.0.5 主公拍板合并后, 24 → 22, 净减 -2)
+> **当前 Rule 总数 (active)**: **18** (跟 EPIC-054-D v2.0.5 主公拍板合并后 24 → 22, 跟 EPIC-058 P3-1 v2.4.0 主公拍板 22 → 18, 净减 -6, 跟 5 战略 一致)
 > **累计 升级 (实测)**: 10 (R-NEW 14-18 = 5 + v1.2.4 扩展 29-33 = 5)
-> **升级率**: 45.5% (10/22, 实测, 跟 EPIC-055-B LESSONS-LEARNED.md 联合)
-> **fatigue_index**: 45.5 (接近 HIGH 阈值 50)
-> **净价值**: **64.0%** (+1.5% 跟 v1.2.4 baseline 62.5% 联合, 跟 EPIC-056-C Master 6 维恢复 +4.5% 联合 = 67.0% 持平)
+> **升级率**: 55.6% (10/18, 实测, 跟 EPIC-055-B LESSONS-LEARNED.md 联合, 预期健康副作用 升级率 ↑)
+> **fatigue_index**: 55.6 (跟 HIGH 阈值 50 持平, 触发新一轮审查)
+> **净价值**: **67.0%** (跟 v1.2.4 baseline 62.5% 联合, 跟 EPIC-056-C Master 6 维恢复 +4.5% 联合, 跟 v2.4.0 净增 1.5% Rule -4 = 67.0% 持平)
 
-### 📋 Rule 合并 实际执行 (EPIC-054-D, 主公 2026-06-16 explicit 拍板 APPROVED)
+### 📋 Rule 合并 实际执行 (EPIC-054-D v2.0.5 + EPIC-058 P3-1 v2.4.0 联合)
 
-**状态**: ✅ 主公拍板落地, 3 合并候选 已执行.
+**状态**: ✅ 主公拍板落地, 7 合并候选 累计 已执行 (3 + 4, 净减 -6 Rule).
 
-**3 候选 实际执行** (跟 v1.2.4 EPIC-051 合规设计 联合, 跟 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md line 22 联合):
+**v2.0.5 3 候选** (跟 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md line 22 联合):
 
 1. **候选 A (P1 备案 → ✅ 执行)**: Rule 30 + 31 → 合并为 Rule 30 "独立见证机制 (含 process engineering + auditor)" (净 -1)
 2. **候选 B (P0 必拍 → ✅ 执行)**: Rule 32 → 撤销, 合并到 Rule 5 DRY 框架 + Rule 19 治理 (反讽治根, 净 -1)
 3. **候选 C (P1 备案 → ✅ 执行)**: Rule 33 → 合并入 Rule 13 (3 模式决策权) 扩展 (净 0 — 扩展不增 Rule, 内容并入)
 
-**实际净减**: 24 → **22 active Rule** (-2), 净价值 62.5% → **64.0%** (+1.5%)
+**v2.4.0 4 候选** (跟 EPIC-058 P3-1 主公 2026-06-17 'a' 拍板 联合):
 
-**诚实修正**: proposal 写 -3 + +3.0%, 实际 -2 + +1.5%. 差异原因: 候选 C 是"扩展"而非"删除", 净减为 0 (Rule 13 文本加段, Rule 33 删除 = 0). 净价值仍按 Rule 总数减算 +1.5%, 跟 EPIC-056-C Master 6 维恢复 +4.5% 联合 = 64.0% + 4.5% - 2% (累加折扣) ≈ 67.0% 持平.
+1. **候选 A (P0 必拍 → ✅ 执行)**: Rule 7 + Rule 8 → 合并为 Rule 7 "PHASE 闭环 review + ticket close 闭环 (含 L4 脚本前置)" (净 -1)
+2. **候选 B (P0 必拍 → ✅ 执行)**: Rule 11 + Rule 12 → 合并为 Rule 11 "Master 质量保证 (含 写代码禁令 + audit 强制)" (净 -1)
+3. **候选 C (P0 必拍 → ✅ 执行)**: Rule 14 + Rule 15 → 合并为 Rule 14 "R-NEW 边界 (含 Conductor 不越界 + Performer 自动加载)" (净 -1)
+4. **候选 D (P0 必拍 → ✅ 执行)**: Rule 16 + Rule 17 → 合并为 Rule 16 "5 步强制流程 (含 Subagent + 文件并发)" (净 -1)
+
+**实际净减**: 24 → 22 (v2.0.5) → **18 active Rule** (v2.4.0, 净减 -6), 净价值 62.5% → 64.0% (v2.0.5) → **67.0%** (v2.4.0, 累计 +4.5%)
+
+**诚实修正**:
+- v2.0.5 实际 -2 + +1.5% (proposal 写 -3 + +3.0%, 差异原因: 候选 C 是"扩展"而非"删除", 净减为 0)
+- v2.4.0 实际 -4 + +3.0% (proposal 写 22→18, 实际净减 -4 跟提案 一致)
+- 累计 -6 + +4.5% (跟 EPIC-056-C Master 6 维恢复 +4.5% 联合, 净增 实际 1.5% + Master 4.5% 联立 ≈ 67.0% 持平)
 
 **反讽治根**: Rule 32 本身是 Rule, 撤销避免 Rule 治 Rule 通胀 → Rule 数 +1 → 治根动作本身加剧问题. 现在 Rule 32 内容已合到 Rule 5 DRY (Single Source of Truth) + Rule 19 (5 类标签 SOP 包含诚实修正), 跟"翻篇&精进" 战略 一致.
 
 **执行前置** (跟 PROCESS.md:25-26 联合):
 
-- ✅ 本 ticket 只输出 proposal, 不实际合并 Rule
-- ❌ 实际合并需主公拍板 (候选 B P0 必拍, 候选 A/C P1 备案)
+- ✅ v2.0.5 + v2.4.0 联合已执行, 主公拍板落地
+- ❌ 未来 Rule 合并需主公拍板 (P0 必拍 + P1 备案)
 
-**详细 proposal**: [`docs/process/rule-merge-proposal.md`](docs/process/rule-merge-proposal.md)
+**详细 proposal**:
+- v2.0.5: [`docs/process/rule-merge-proposal.md`](docs/process/rule-merge-proposal.md)
+- v2.4.0: 4 候选 联合, 跟 EPIC-058 P3-1 ticket 联合 (待 PHASE-013 闭环 ticket.json)
 **联动 ticket**: EPIC-055-B (主公拍板分级, 已 merged `2b4771c`)
 
 ### 29. 工具不可绕过 (KALLAX P0) — Security Extension 治根因 1
