@@ -1,117 +1,187 @@
-# KALLAX 多工具安装指南 (v2.0.6 — 4 工具 Skills/Commands 部署)
+# KALLAX 多工具安装指南 (v2.1.0 — 8 工具 Skills/Commands 部署 + Wizard)
 
-> **跟主公 2026-06-17 'B' explicit 拍板 联合, 跟 v2.0.2 '跨平台 fix release' 反讽 闭环, 跟"诚实修正" 联合, 跟"翻篇&精进" 战略 一致.**
+> **跟主公 2026-06-17 'D' explicit 拍板 联合, 跟 v2.0.6 4 工具 → v2.1.0 8 工具 升级, 跟"反讽" 联合, 跟"诚实修正" 联合, 跟"翻篇&精进" 战略 一致.**
 > **跟 EPIC-057-A (install.sh 实现, file:line `jira/tickets/EPIC-057-A/ticket.json:23-31`) 契约 一致, 跟 EPIC-057-B (onramp.sh tool detection, file:line `jira/tickets/EPIC-057-B/ticket.json:24-32`) 契约 一致.**
 
 ## 1. 概述
 
-KALLAX v2.0.6 起, install.sh 支持 **4 工具** 统一安装:
+KALLAX v2.1.0 起, install.sh 支持 **8 工具** 统一安装 (4 full + 2 full + 2 config):
 
-| 工具 | 角色 | 实测 |
-|---|---|---|
-| Claude Code | Conductor / Performer 默认 (v1.0.0 起) | `~/.claude/` (dir 已存在) |
-| opencode | 跨平台 (per v2.0.2 slash command mirror) | `/Users/chenchen/.opencode/bin/opencode` (v1.17.7) |
-| Codex | 跨平台 | `~/.codex/skills/` (目录存在, binary 需安装) |
-| Gemini | 跨平台 | `/usr/local/bin/gemini` (v0.22.2) |
+| # | 工具 | 角色 | 实测 | 支持度 |
+|---|---|---|---|---|
+| 1 | Claude Code | Conductor / Performer 默认 (v1.0.0 起) | `~/.claude/` (dir 已存在) | full |
+| 2 | opencode | 跨平台 (per v2.0.2 slash command mirror) | `/Users/chenchen/.opencode/bin/opencode` (v1.17.7) | full |
+| 3 | Codex | 跨平台 | `~/.codex/skills/` (目录存在, binary 需安装) | full |
+| 4 | Gemini | 跨平台 | `/usr/local/bin/gemini` (v0.22.2) | full |
+| 5 | **Cursor** (新) | AI editor (VS Code fork) | `~/.cursor/` (plans/plugins/projects) | full |
+| 6 | **Windsurf** (新) | AI editor (Codeium) | `~/.codeium/windsurf/` (待装) | full |
+| 7 | **Aider** (新) | CLI pair programming | `~/.aider.conf.yml` (待装) | config |
+| 8 | **Continue** (新) | VS Code AI extension | `~/.continue/config.json` (待装) | config |
 
-### 1.1 反讽治根 — v2.0.2 → v2.0.6 闭环
+**Support levels**:
+- `full` — skills + slash commands 都装 (跟现有 4 工具 一致)
+- `config` — skills 路径 reference 写进 config 文件 (因 aider/continue 没有 slash command API)
+
+### 1.1 反讽治根 — v2.0.2 → v2.0.6 → v2.1.0 渐进闭环
 
 跟"反讽" 联合:
-- **证据**: `CHANGELOG.md:647-661` (v2.0.2 release notes 自称"跨平台 fix release")
-- **反驳/支持**: `scripts/install.sh:52-53` (v1.0.0 hardcoded `~/.claude/`, 只支持 Claude Code); `jira/epics/EPIC-057/epic.json:11-12` (baseline gap: "opencode 30 文件但 install.sh 没装, codex/gemini 0 reference")
-- **影响**: v2.0.2 release 命名"跨平台"实际"单平台" — 命名跟实现不一致 (跟 KALLAX-GLOSSARY.md §1.1 反讽定义 联合, file:line `docs/KALLAX-GLOSSARY.md:30-36`); v2.0.6 install.sh 加 `--target=auto` 检测 + 4 工具 skills/commands 路径映射, 治根
-
-跟"诚实修正" 联合:
-- **证据**: 本文档 §1.1 (反讽闭环说明) + CHANGELOG.md `[2.0.6]` entry (标注"治 v2.0.2 跨平台 fix 反讽")
-- **反驳/支持**: 看到反讽不装看不见 — 文档明确标注 v2.0.2 gap, 不模糊处理
-- **影响**: 主公信任↑, 治理闭环 (跟 KALLAX-GLOSSARY.md §1.2 诚实修正定义 联合, file:line `docs/KALLAX-GLOSSARY.md:40-47`)
+- **证据 (v2.0.2)**: `CHANGELOG.md:647-661` (release notes 自称"跨平台 fix release", 实际只 Claude Code)
+- **证据 (v2.0.6)**: install.sh 加 `--target=auto` 检测 + 4 工具 skills/commands 路径映射 (opencode 30 文件 mirror)
+- **证据 (v2.1.0)**: install.sh 加 4 工具 (cursor/windsurf/aider/continue) + 完整 wizard (5 step) + UI 改进
+- **影响**: 命名跟实现 一致 (跟 KALLAX-GLOSSARY.md §1.1 反讽定义 联合, file:line `docs/KALLAX-GLOSSARY.md:30-36`)
+- **诚实修正**: 文档明确标注 v2.0.2 gap + v2.0.6 治根 + v2.1.0 扩 4 工具, 不模糊处理
 
 ### 1.2 auto-detect 默认行为
 
 `--target=auto` 是 **默认** 行为:
-- 检测顺序: `claude > opencode > codex > gemini` (跟 EPIC-057-B AC #3 联合, file:line `jira/tickets/EPIC-057-B/ticket.json:27`)
-- 检测触发: `which <tool>` CLI 存在 OR `$HOME/.<tool>/` 目录存在 (任一即可, 跟 EPIC-057-A AC #5 联合, file:line `jira/tickets/EPIC-057-A/ticket.json:26`)
-- 默认只装检测到的 1 个工具 (Claude Code 优先)
+- 检测顺序: `claude > opencode > codex > gemini > cursor > windsurf > aider > continue`
+- 检测触发: `which <tool>` CLI 存在 OR `$HOME/.<tool>/` 目录存在 (任一即可)
+- 默认只装检测到的工具 (按 priority 顺序)
+
+### 1.3 Wizard 5-step 流程 (v2.1.0 新)
+
+`--wizard` (alias `--interactive`) 启动 step-by-step 安装:
+
+1. **Step 1/5** — Tool detection: 列出 8 工具 + ✓/✗ 检测状态
+2. **Step 2/5** — Select targets: detected / all 8 / custom (3 选项)
+3. **Step 3/5** — Install paths: 列出每个工具的 skills/commands/settings 路径 + 默认接受
+4. **Step 4/5** — Upgrade diff: 旧版本号 → 新版本号 预览 (如有)
+5. **Step 5/5** — Dry-run preview + final confirm: 列出要装的内容, 默认 Y 接受
+
+每步都有合理默认 — 直接按 Enter 接受。
 
 ---
 
 ## 2. 安装
 
-### 2.1 默认安装 (auto-detect, 1 工具)
+### 2.1 默认安装 (auto-detect, 检测到的工具)
 
 ```bash
 # 克隆仓库
 git clone https://github.com/your-org/kallax.git
 cd kallax
 
-# 默认 --target=auto 检测 → 装到检测到的工具 (Claude Code 优先)
+# 默认 --target=auto 检测 → 装到检测到的工具 (按 priority 顺序)
 ./scripts/install.sh
 ```
 
-**输出预期**: 检测到 Claude Code → 装 `~/.claude/skills/kallax/` + `~/.claude/commands/`.
+**输出预期**: 检测到 Claude Code + opencode → 装 `~/.claude/skills/kallax/` + `~/.opencode/skills/kallax/` + 各自 commands dir.
 
-### 2.2 显式单工具安装
+### 2.2 显式单工具安装 (8 工具可选)
 
 ```bash
-# 显式装 Claude Code
+# Full support tools
 ./scripts/install.sh --target=claude
-
-# 显式装 opencode
 ./scripts/install.sh --target=opencode
-
-# 显式装 Codex
 ./scripts/install.sh --target=codex
-
-# 显式装 Gemini
 ./scripts/install.sh --target=gemini
+./scripts/install.sh --target=cursor      # 新 (v2.1.0)
+./scripts/install.sh --target=windsurf    # 新 (v2.1.0)
+
+# Config-only tools
+./scripts/install.sh --target=aider       # 新 (v2.1.0, config only)
+./scripts/install.sh --target=continue    # 新 (v2.1.0, config only)
 ```
 
 ### 2.3 多工具安装 (逗号分隔)
 
 ```bash
-# 装 Claude Code + opencode (2 工具)
-./scripts/install.sh --target=claude,opencode
+# 装 Claude Code + opencode + cursor (3 工具, 混合 full support)
+./scripts/install.sh --target=claude,opencode,cursor
 
-# 装 Codex + Gemini (2 工具)
-./scripts/install.sh --target=codex,gemini
+# 装 Codex + Gemini + Windsurf (3 工具, 混合 full support)
+./scripts/install.sh --target=codex,gemini,windsurf
+
+# 装全部 8 工具
+./scripts/install.sh --target=claude,opencode,codex,gemini,cursor,windsurf,aider,continue
 ```
 
 ### 2.4 强制全工具安装
 
 ```bash
-# --target=all 强制全装 (不管 detection 失败, 4 工具都装)
+# --target=all 强制全装 8 工具 (不管 detection 失败)
 ./scripts/install.sh --target=all
 ```
 
-### 2.5 Interactive 模式 (跟"诚实修正" 联合)
+### 2.5 Wizard 模式 (5-step step-by-step, 跟"诚实修正" 联合)
 
 ```bash
-# --interactive 进入 prompt, 让用户选择 4 工具
+# --wizard 进入 5-step step-by-step installer (推荐初次使用)
+./scripts/install.sh --wizard
+
+# --interactive 是 --wizard 的 alias (v2.0.x compat)
 ./scripts/install.sh --interactive
 ```
 
+**5 步流程**:
+```
+═══ Step 1/5 — Tool Detection ═══
+  ✓ claude
+  ✓ opencode
+  ✗ codex
+  ✗ gemini
+  ✓ cursor
+  ...
+
+═══ Step 2/5 — Select Target Tools ═══
+  [1] Install for detected tools only (recommended)
+  [2] Install for all 8 tools (force)
+  [3] Custom selection (comma-separated: e.g. claude,cursor)
+  Choose [1/2/3] (default: 1): _
+
+═══ Step 3/5 — Install Paths ═══
+  Default install paths: [列出]
+  Accept defaults? [Y/n]: _
+
+═══ Step 4/5 — Upgrade Diff Preview ═══
+  claude: v2.0.6 → v2.1.0
+  opencode: fresh install → v2.1.0
+  ...
+
+═══ Step 5/5 — Dry-Run Preview + Confirm ═══
+  Will install: claude, opencode, cursor
+  Proceed with install? [Y/n]: _
+```
+
+### 2.6 Dry-run 模式 (新, v2.1.0)
+
+```bash
+# --dry-run 模拟运行, 不实际安装 (跟"诚实修正" 联合)
+./scripts/install.sh --dry-run
+```
+
+输出: 完整 dry-run 流程, 退出前打印 "Dry-run complete. No files were installed." — 适合:
+- 测试 wizard 流程
+- 验证检测逻辑
+- CI/automation 试运行
+
 跟"诚实修正" 联合:
-- **证据**: 本文档 §2.5 (interactive prompt 兜底)
-- **反驳/支持**: 检测失败 fallback — 不假装成功, 主动问用户
+- **证据**: 本文档 §2.5 (wizard prompt 兜底) + §2.6 (dry-run)
+- **反驳/支持**: 不假装安装, 主动让用户确认
 - **影响**: 避免"4 工具都检测失败但 install.sh 报 PASS" (跟 BE-15 假 PASS 模式 联合, file:line `docs/KALLAX-GLOSSARY.md:198-201`)
 
 ---
 
-## 3. 4 工具路径映射表
+## 3. 8 工具路径映射表
 
 跟 EPIC-057-A AC #3-4 契约 一致 (file:line `jira/tickets/EPIC-057-A/ticket.json:23-26`):
 
-| 工具 | Skills dir | Commands dir | Settings |
-|---|---|---|---|
-| Claude Code | `~/.claude/skills/kallax/` | `~/.claude/commands/` | `~/.claude/settings.json` |
-| opencode | `~/.opencode/skills/kallax/` | `~/.opencode/command/` (singular) | `~/.opencode/config.json` |
-| Codex | `~/.codex/skills/kallax/` | `~/.codex/prompts/` (slash commands) | `~/.codex/config.toml` |
-| Gemini | `~/.gemini/skills/kallax/` | `~/.gemini/commands/` | `~/.gemini/config/settings.json` |
+| # | 工具 | Skills dir | Commands dir | Settings | 支持 |
+|---|---|---|---|---|---|
+| 1 | Claude Code | `~/.claude/skills/kallax/` | `~/.claude/commands/` | `~/.claude/settings.json` | full |
+| 2 | opencode | `~/.opencode/skills/kallax/` | `~/.opencode/command/` (singular) | `~/.opencode/config.json` | full |
+| 3 | Codex | `~/.codex/skills/kallax/` | `~/.codex/prompts/` (slash commands) | `~/.codex/config.toml` | full |
+| 4 | Gemini | `~/.gemini/skills/kallax/` | `~/.gemini/commands/` | `~/.gemini/config/settings.json` | full |
+| 5 | Cursor | `~/.cursor/skills/kallax/` | `~/.cursor/commands/` | `~/.cursor/settings.json` | full |
+| 6 | Windsurf | `~/.codeium/windsurf/skills/kallax/` | `~/.codeium/windsurf/commands/` | `~/.codeium/windsurf/settings.json` | full |
+| 7 | Aider | `~/.aider/skills/kallax/` | N/A (no slash command API) | `~/.aider.conf.yml` | config |
+| 8 | Continue | `~/.continue/skills/kallax/` | N/A (VS Code extension) | `~/.continue/config.json` | config |
 
 **注意**:
-- opencode commands dir 是 **singular** `~/.opencode/command/` (不是 `commands/`), 跟 v2.0.2 release 30 文件 mirror 路径 一致 (`ls .opencode/command/` 验证)
+- opencode commands dir 是 **singular** `~/.opencode/command/` (不是 `commands/`) — 跟 KALLAX-GLOSSARY.md §8.7 联合
 - Codex commands dir 是 `~/.codex/prompts/` (slash commands) — Codex 把"command" 概念叫"prompt"
-- Gemini commands dir 跟 Claude Code 一致 (`~/.gemini/commands/`), 但 skills dir 跟其他工具不同 (`~/.gemini/skills/kallax/`)
+- Aider + Continue: 没有 slash command API, install.sh 写 `~/.aider.conf.yml` / `~/.continue/config.json` stub 指向 skills dir
+- Source dir (本仓库): `.cursor/` 和 `.codeium/windsurf/` 是 `.claude/` 的 symlinks (避免重复, 4 工具源共享)
 
 ### 3.1 路径存在性校验
 

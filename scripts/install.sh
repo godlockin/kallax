@@ -1,17 +1,22 @@
 #!/usr/bin/env bash
-# KALLAX Install/Upgrade — make /kallax-* available in Claude Code / opencode /
-# Codex / Gemini. EPIC-057-A: --target=auto|all|<tool>|a,b  multi-tool support.
+# KALLAX Install/Upgrade — make /kallax-* available in 8 AI tools:
+#   Claude Code / opencode / Codex / Gemini / Cursor / Windsurf / Aider / Continue.
+# v2.1.0: 8-tool support (added cursor, windsurf, aider, continue).
+# v2.1.0: full wizard with detection → select → path → diff → dry-run → confirm.
 #
-# Fresh install (auto-detect 4 tools):
+# Fresh install (auto-detect 8 tools):
 #   ./scripts/install.sh
 #   ./scripts/install.sh --target=auto
 # Explicit tool(s):
 #   ./scripts/install.sh --target=claude
 #   ./scripts/install.sh --target=opencode,codex
-# Force install all 4 (ignore detection):
+# Force install all 8 (ignore detection):
 #   ./scripts/install.sh --target=all
-# Interactive prompt:
-#   ./scripts/install.sh --interactive
+# Interactive wizard (step-by-step):
+#   ./scripts/install.sh --wizard
+#   ./scripts/install.sh --interactive  (alias)
+# Dry-run (show what would happen, install nothing):
+#   ./scripts/install.sh --dry-run
 # Legacy (Claude Code only):
 #   ./scripts/install.sh --skip-cli --skip-skills --skip-commands
 # Upgrade:
@@ -20,17 +25,31 @@
 #   curl -fsSL <raw-url>/scripts/install.sh | bash
 set -euo pipefail
 
-VERSION="2.0.6-multi-tool"
+VERSION="2.1.0-wizard-8tool"
 INSTALL_MODE="install"  # install | upgrade
 TARGET_MODE="auto"      # auto | all | specific-list
 INTERACTIVE=false
+WIZARD=false
+DRY_RUN=false
 SKIP_CLI=false; SKIP_SKILLS=false; SKIP_COMMANDS=false
 
-RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; BOLD='\033[1m'; DIM='\033[2m'; NC='\033[0m'
 log()  { echo -e "${BLUE}[INFO]${NC} $1"; }
 ok()   { echo -e "${GREEN}[OK]${NC} $1"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 err()  { echo -e "${RED}[ERR]${NC} $1" >&2; }
+hdr()  { echo -e "\n${BOLD}${BLUE}═══ $* ═══${NC}"; }
+dim()  { echo -e "${DIM}$*${NC}"; }
+
+# Render a single check: ✓ (detected), ✗ (not detected), or skip per-tool
+check_mark() {
+  local detected="$1" tool="$2"
+  if [ "$detected" = "true" ]; then
+    echo -e "  ${GREEN}✓${NC} ${BOLD}${tool}${NC}"
+  else
+    echo -e "  ${DIM}✗${NC} ${tool}"
+  fi
+}
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
@@ -38,40 +57,65 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 BIN_DIR="${HOME}/.local/bin"
 
 # ── Tool registry (bash 3.2 compat: parallel arrays + index lookup) ──────
-# Order is fixed: claude → opencode → codex → gemini.
-TOOL_NAME=(claude opencode codex gemini)
-TOOL_BINARY=(claude opencode codex gemini)
+# Order matters: prefer primary tools first, fall back to niche.
+# 8 tools: claude / opencode / codex / gemini / cursor / windsurf / aider / continue.
+# Support levels: "full" (skills + commands) or "config" (config files only).
+TOOL_NAME=(claude opencode codex gemini cursor windsurf aider continue)
+TOOL_BINARY=(claude opencode codex gemini cursor windsurf aider "continue-cli")
 TOOL_BASE_DIR=(
   "${HOME}/.claude"
   "${HOME}/.opencode"
   "${HOME}/.codex"
   "${HOME}/.gemini"
+  "${HOME}/.cursor"
+  "${HOME}/.codeium/windsurf"
+  "${HOME}/.aider"
+  "${HOME}/.continue"
 )
 TOOL_SKILLS_DIR=(
   "${HOME}/.claude/skills/kallax"
   "${HOME}/.opencode/skills/kallax"
   "${HOME}/.codex/skills/kallax"
   "${HOME}/.gemini/skills/kallax"
+  "${HOME}/.cursor/skills/kallax"
+  "${HOME}/.codeium/windsurf/skills/kallax"
+  "${HOME}/.aider/skills/kallax"
+  "${HOME}/.continue/skills/kallax"
 )
 TOOL_COMMANDS_DIR=(
   "${HOME}/.claude/commands"
-  "${HOME}/.opencode/command"      # singular!
+  "${HOME}/.opencode/command"            # singular!
   "${HOME}/.codex/prompts"
   "${HOME}/.gemini/commands"
+  "${HOME}/.cursor/commands"
+  "${HOME}/.codeium/windsurf/commands"
+  ""                                       # aider: no slash commands
+  ""                                       # continue: no slash commands
 )
 TOOL_COMMANDS_SRC=(
   "$PROJECT_ROOT/.claude/commands"
   "$PROJECT_ROOT/.opencode/command"
   "$PROJECT_ROOT/.codex/prompts"
   "$PROJECT_ROOT/.gemini/commands"
+  "$PROJECT_ROOT/.cursor/commands"
+  "$PROJECT_ROOT/.codeium/windsurf/commands"
+  ""                                       # aider: no slash commands
+  ""                                       # continue: no slash commands
 )
-TOOL_COMMANDS_EXT=(sh md md sh)
+TOOL_COMMANDS_EXT=(sh md md sh md md "" "")
 TOOL_SETTINGS_FILE=(
   "${HOME}/.claude/settings.json"
   "${HOME}/.opencode/config.json"
   "${HOME}/.codex/config.toml"
   "${HOME}/.gemini/config/settings.json"
+  "${HOME}/.cursor/settings.json"
+  "${HOME}/.codeium/windsurf/settings.json"
+  "${HOME}/.aider.conf.yml"
+  "${HOME}/.continue/config.json"
 )
+# Support level: "full" (skills + commands) or "config" (config files only).
+# Niche tools (aider/continue) don't have slash command APIs.
+TOOL_SUPPORT=(full full full full full full config config)
 
 # Lookup helper: print index for tool name (or -1)
 tool_index() {
@@ -82,7 +126,7 @@ tool_index() {
   echo -1
 }
 
-# Populated by detect_tools() / parse_target_flag()
+# Populated by detect_tools() / parse_target_flag() / wizard()
 DETECTED_TOOLS=()
 TARGET_TOOLS=()
 
@@ -94,16 +138,25 @@ KALLAX Install/Upgrade v${VERSION}
 
 Usage: $0 [flags]
 
-Target selection (EPIC-057-A, hybrid flag-controlled):
-  --target=auto          Auto-detect 4 tools via \$HOME/.<tool>/ or which <tool>
+Target selection (EPIC-057-A, hybrid flag-controlled, 8 tools):
+  --target=auto          Auto-detect 8 tools via \$HOME/.<tool>/ or which <tool>
                          (DEFAULT — equivalent to no flag in v2.0.5)
-  --target=all           Force install all 4 tools (ignore detection)
+  --target=all           Force install all 8 tools (ignore detection)
   --target=claude        Install for Claude Code only
   --target=opencode      Install for opencode only
   --target=codex         Install for Codex only
   --target=gemini        Install for Gemini only
+  --target=cursor        Install for Cursor only
+  --target=windsurf      Install for Windsurf only
+  --target=aider         Install for Aider only (config only, no slash cmds)
+  --target=continue      Install for Continue only (config only)
   --target=a,b,c         Install for multiple tools (comma-separated)
-  --interactive          Prompt user with detected tools list
+
+Wizard / Interactive:
+  --wizard               Run full step-by-step wizard (5 steps):
+                         detect → select → path → diff → dry-run → confirm
+  --interactive          Alias for --wizard (v2.0.x compat)
+  --dry-run              Show what would be installed, install nothing
 
 Legacy (v2.0.5 compat):
   --skip-cli             Skip CLI binary
@@ -116,10 +169,14 @@ Other:
   -h, --help             Show this help
 
 Installs to:
-  Claude Code:  skills=~/.claude/skills/kallax/  commands=~/.claude/commands/  settings=~/.claude/settings.json
-  opencode:     skills=~/.opencode/skills/kallax/  commands=~/.opencode/command/  settings=~/.opencode/config.json
-  Codex:        skills=~/.codex/skills/kallax/  commands=~/.codex/prompts/  settings=~/.codex/config.toml
-  Gemini:       skills=~/.gemini/skills/kallax/  commands=~/.gemini/commands/  settings=~/.gemini/config/settings.json
+  Claude Code:  skills=~/.claude/skills/kallax/                commands=~/.claude/commands/                 (full)
+  opencode:     skills=~/.opencode/skills/kallax/             commands=~/.opencode/command/  (singular!)  (full)
+  Codex:        skills=~/.codex/skills/kallax/                commands=~/.codex/prompts/                  (full)
+  Gemini:       skills=~/.gemini/skills/kallax/               commands=~/.gemini/commands/                (full)
+  Cursor:       skills=~/.cursor/skills/kallax/               commands=~/.cursor/commands/                (full)
+  Windsurf:     skills=~/.codeium/windsurf/skills/kallax/     commands=~/.codeium/windsurf/commands/      (full)
+  Aider:        skills=~/.aider/skills/kallax/                commands=N/A  (no slash command API)        (config)
+  Continue:     skills=~/.continue/skills/kallax/             commands=N/A  (VS Code extension)            (config)
 
 CLI: ~/.local/bin/kallax (shared across all tools)
 
@@ -134,7 +191,9 @@ parse_args() {
       --skip-skills)      SKIP_SKILLS=true; shift ;;
       --skip-commands)    SKIP_COMMANDS=true; shift ;;
       --upgrade)          INSTALL_MODE="upgrade"; shift ;;
-      --interactive)      INTERACTIVE=true; shift ;;
+      --wizard)           WIZARD=true; shift ;;
+      --interactive)      WIZARD=true; shift ;;  # alias for v2.0.x compat
+      --dry-run)          DRY_RUN=true; shift ;;
       --target=auto)      TARGET_MODE="auto"; shift ;;
       --target=all)       TARGET_MODE="all"; shift ;;
       --target=*)
@@ -148,7 +207,7 @@ parse_args() {
           p="$(echo "$p" | tr -d ' ' | tr '[:upper:]' '[:lower:]')"
           [[ -z "$p" ]] && continue
           if [ "$(tool_index "$p")" = "-1" ]; then
-            err "Unknown tool: $p (valid: claude, opencode, codex, gemini, all)"
+            err "Unknown tool: $p (valid: ${TOOL_NAME[*]})"
             exit 1
           fi
           TARGET_TOOLS+=("$p")
@@ -179,38 +238,136 @@ detect_tools() {
 }
 
 prompt_interactive() {
+  # v2.0.x compat — delegate to wizard()
+  wizard
+}
+
+# ── Wizard (5-step interactive installer, v2.1.0) ───────────────────────
+#
+# Flow:
+#   Step 1/5  Tool detection summary
+#   Step 2/5  Select target tools (detected / all / custom)
+#   Step 3/5  Install paths confirmation
+#   Step 4/5  Upgrade diff preview (if upgrading)
+#   Step 5/5  Dry-run preview + final confirm
+#
+# All prompts have sensible defaults — just press Enter to accept.
+wizard() {
+  hdr "Step 1/5 — Tool Detection"
   echo ""
-  echo "Detected KALLAX-compatible tools:"
+  local i tool
+  for i in "${!TOOL_NAME[@]}"; do
+    tool="${TOOL_NAME[$i]}"
+    if printf '%s\n' "${DETECTED_TOOLS[@]}" | grep -qx "$tool"; then
+      check_mark true "$tool"
+    else
+      check_mark false "$tool"
+    fi
+  done
+  echo ""
   if [ ${#DETECTED_TOOLS[@]} -eq 0 ]; then
-    echo "  (none — your \$HOME has no .claude/.opencode/.codex/.gemini dirs"
-    echo "   and no claude/opencode/codex/gemini binaries in PATH)"
+    warn "No tools detected. Will use --target=all path."
   else
-    local t
-    for t in "${DETECTED_TOOLS[@]}"; do echo "  - $t"; done
+    ok "Detected ${#DETECTED_TOOLS[@]} of 8: ${DETECTED_TOOLS[*]}"
   fi
+
+  hdr "Step 2/5 — Select Target Tools"
   echo ""
-  echo "All 4 tools available: claude, opencode, codex, gemini"
+  echo "  [1] Install for detected tools only (recommended)"
+  echo "  [2] Install for all 8 tools (force)"
+  echo "  [3] Custom selection (comma-separated: e.g. claude,cursor)"
   echo ""
-  local choice
-  read -r -p "Install for which? [auto/all/claude,opencode,.../gemini] (default: auto): " choice
-  choice="${choice:-auto}"
-  case "$choice" in
-    auto|"") TARGET_MODE="auto" ;;
-    all)     TARGET_MODE="all" ;;
-    *)
+  local mode_choice
+  read -r -p "  Choose [1/2/3] (default: 1): " mode_choice
+  mode_choice="${mode_choice:-1}"
+  case "$mode_choice" in
+    1) TARGET_MODE="auto" ;;
+    2) TARGET_MODE="all" ;;
+    3)
       TARGET_MODE="specific"
       TARGET_TOOLS=()
+      local choice
+      read -r -p "  Tool list (comma-separated): " choice
       IFS=',' read -ra _parts <<< "$choice"
       local p
       for p in "${_parts[@]}"; do
         p="$(echo "$p" | tr -d ' ' | tr '[:upper:]' '[:lower:]')"
         [[ -z "$p" ]] && continue
         if [ "$(tool_index "$p")" = "-1" ]; then
-          err "Unknown tool: $p"; exit 1
+          err "Unknown tool: $p (valid: ${TOOL_NAME[*]})"
+          exit 1
         fi
         TARGET_TOOLS+=("$p")
       done
+      [[ ${#TARGET_TOOLS[@]} -eq 0 ]] && { err "Empty tool list"; exit 1; }
       ;;
+    *) err "Invalid choice: $mode_choice"; exit 1 ;;
+  esac
+
+  hdr "Step 3/5 — Install Paths"
+  echo ""
+  echo "  Default install paths:"
+  echo ""
+  local t idx support
+  for t in "${TARGET_TOOLS[@]}"; do
+    idx=$(tool_index "$t")
+    support="${TOOL_SUPPORT[$idx]}"
+    echo "    ${BOLD}${t}${NC} (${support}):"
+    echo "      skills    → ${TOOL_SKILLS_DIR[$idx]}"
+    if [ -n "${TOOL_COMMANDS_DIR[$idx]}" ]; then
+      echo "      commands  → ${TOOL_COMMANDS_DIR[$idx]} (ext=.${TOOL_COMMANDS_EXT[$idx]})"
+    else
+      echo "      commands  → ${DIM}N/A (config only)${NC}"
+    fi
+    echo "      settings  → ${TOOL_SETTINGS_FILE[$idx]}"
+    echo ""
+  done
+  echo "  CLI wrapper: ${BIN_DIR}/kallax"
+  echo ""
+  local path_choice
+  read -r -p "  Accept defaults? [Y/n]: " path_choice
+  path_choice="${path_choice:-Y}"
+  case "$path_choice" in
+    [Yy]*) : ;;
+    [Nn]*) warn "Custom paths not yet supported — using defaults";;
+    *) err "Invalid choice: $path_choice"; exit 1 ;;
+  esac
+
+  hdr "Step 4/5 — Upgrade Diff Preview"
+  echo ""
+  local tool idx skills_dir prev_ver new_files
+  for tool in "${TARGET_TOOLS[@]}"; do
+    idx=$(tool_index "$tool")
+    skills_dir="${TOOL_SKILLS_DIR[$idx]}"
+    if [ -f "$skills_dir/.version" ]; then
+      prev_ver=$(cat "$skills_dir/.version")
+      echo "  ${BOLD}${tool}${NC}: v${prev_ver} → v${VERSION}"
+      INSTALL_MODE="upgrade"
+    else
+      echo "  ${BOLD}${tool}${NC}: fresh install → v${VERSION}"
+    fi
+  done
+  echo ""
+
+  hdr "Step 5/5 — Dry-Run Preview + Confirm"
+  echo ""
+  echo "  ${BOLD}Will install:${NC}"
+  for tool in "${TARGET_TOOLS[@]}"; do
+    idx=$(tool_index "$tool")
+    support="${TOOL_SUPPORT[$idx]}"
+    echo "    ${GREEN}✓${NC} ${tool} (${support})"
+  done
+  echo ""
+  echo "  ${BOLD}Source files (from this repo):${NC}"
+  echo "    skills:   $(find "$PROJECT_ROOT/.claude/skills/kallax" -type f 2>/dev/null | wc -l | tr -d ' ') files"
+  echo "    commands: $(find "$PROJECT_ROOT/.claude/commands" -type f -name 'kallax-*' 2>/dev/null | wc -l | tr -d ' ') files (+ _kallax_common.sh)"
+  echo ""
+  local confirm
+  read -r -p "  Proceed with install? [Y/n]: " confirm
+  confirm="${confirm:-Y}"
+  case "$confirm" in
+    [Yy]*) : ;;
+    *) echo "Aborted."; exit 0 ;;
   esac
 }
 
@@ -250,13 +407,17 @@ resolve_targets() {
     err ""
     err "Detected nothing via \$HOME/.<tool>/ + which <tool>."
     err "Options:"
-    err "  --target=all         Force install all 4 tools (creates dirs)"
+    err "  --target=all         Force install all 8 tools (creates dirs)"
     err "  --target=claude      Force install Claude Code only"
     err "  --target=opencode    Force install opencode only"
     err "  --target=codex       Force install Codex only"
     err "  --target=gemini      Force install Gemini only"
+    err "  --target=cursor      Force install Cursor only"
+    err "  --target=windsurf    Force install Windsurf only"
+    err "  --target=aider       Force install Aider only"
+    err "  --target=continue    Force install Continue only"
     err ""
-    err "After install, run 'claude / opencode / codex / gemini' to use slash commands."
+    err "After install, run the tool to use slash commands."
     exit 1
   fi
 }
@@ -309,6 +470,12 @@ install_commands_for_tool() {
   ext="${TOOL_COMMANDS_EXT[$i]}"
   src="${TOOL_COMMANDS_SRC[$i]}"
 
+  # Skip tools without slash command API (aider/continue: config only)
+  if [ -z "$dst" ] || [ -z "$ext" ]; then
+    dim "  [$tool] no slash command API — skipping commands install (config only)"
+    return 0
+  fi
+
   # Fallback chain: tool-native → .claude → template/.claude
   if [ ! -d "$src" ]; then src="$PROJECT_ROOT/.claude/commands"; fi
   if [ ! -d "$src" ]; then src="$PROJECT_ROOT/template/.claude/commands"; fi
@@ -351,12 +518,45 @@ install_commands_for_tool() {
   fi
 }
 
+# For tools that don't have slash commands (aider/continue), install a config
+# file that points to the skills/ directory so the tool can find them.
+install_config_for_tool() {
+  local tool="$1"
+  local i dst support
+  i=$(tool_index "$tool")
+  dst="${TOOL_SETTINGS_FILE[$i]}"
+  support="${TOOL_SUPPORT[$i]}"
+
+  if [ "$support" != "config" ]; then return 0; fi
+
+  # Generic config: write a stub config file with reference to skills dir
+  mkdir -p "$(dirname "$dst")"
+  if [ ! -f "$dst" ]; then
+    cat > "$dst" <<EOF
+# KALLAX skill reference (auto-generated by install.sh v${VERSION})
+# This tool does not have a native slash command API.
+# To use KALLAX skills, point your tool to: ${TOOL_SKILLS_DIR[$i]}
+
+kallax:
+  skills_dir: "${TOOL_SKILLS_DIR[$i]}"
+  version: "${VERSION}"
+EOF
+    ok "[$tool] config → $dst (stub, points to skills dir)"
+  else
+    dim "  [$tool] config already exists at $dst — leaving alone"
+  fi
+}
+
 install_for_tool() {
   local tool="$1"
+  local i support
+  i=$(tool_index "$tool")
+  support="${TOOL_SUPPORT[$i]}"
   echo ""
-  log "── Installing for: $tool ──"
+  log "── Installing for: $tool (${support}) ──"
   if ! $SKIP_SKILLS;   then install_skills_for_tool "$tool"; fi
   if ! $SKIP_COMMANDS; then install_commands_for_tool "$tool"; fi
+  install_config_for_tool "$tool"
 }
 
 # ── CLI wrapper (shared across tools) ────────────────────────────────────
@@ -564,9 +764,10 @@ check_upgrade() {
 
 parse_args "$@"
 detect_tools
-if $INTERACTIVE; then prompt_interactive; fi
+if $WIZARD; then wizard; fi
 resolve_targets
 
+# Show summary banner
 echo ""
 echo "========================================"
 if [ "$INSTALL_MODE" = "upgrade" ]; then
@@ -577,8 +778,21 @@ fi
 echo "  Target mode: ${TARGET_MODE}"
 echo "  Tools:       ${TARGET_TOOLS[*]}"
 echo "  CLI:         ${BIN_DIR}/kallax"
+if $DRY_RUN; then
+  echo "  Mode:        ${YELLOW}DRY-RUN (no changes)${NC}"
+fi
 echo "========================================"
 echo ""
+
+# If dry-run, exit before any actual install
+if $DRY_RUN; then
+  ok "Dry-run complete. No files were installed."
+  echo ""
+  echo "  To actually install, run without --dry-run:"
+  echo "    $0 --target=auto"
+  echo "    $0 --wizard"
+  exit 0
+fi
 
 check_upgrade
 
@@ -602,7 +816,16 @@ verify_install
 stamp_version
 
 echo ""
-echo "Done. /kallax-* commands available across:"
-for tool in "${TARGET_TOOLS[@]}"; do echo "  - $tool"; done
+echo "Done. KALLAX skills + slash commands available across:"
+for tool in "${TARGET_TOOLS[@]}"; do
+  local idx support
+  idx=$(tool_index "$tool")
+  support="${TOOL_SUPPORT[$idx]}"
+  if [ "$support" = "full" ]; then
+    echo "  - $tool (full: skills + slash commands)"
+  else
+    echo "  - $tool (config only — points to skills dir)"
+  fi
+done
 echo ""
 echo "Upgrade hint: re-run this script anytime to upgrade."

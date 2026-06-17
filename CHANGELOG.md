@@ -5,6 +5,47 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-06-17
+
+### Added
+
+#### 8 工具 multi-tool + Wizard 5-step + Dry-run (跟主公'是不是要引导式安装以支持不同的工具' explicit 派单 联合)
+
+跟主公 2026-06-17 'D' explicit 拍板 联合 (完整 wizard + 多工具 + UI, v2.0.6 4 工具 → v2.1.0 8 工具):
+
+- **4 新工具** (跟主公 D 拍"8 工具" 联合, v2.0.6 4 工具 → v2.1.0 8 工具):
+  - **Cursor** (full support) — `~/.cursor/skills/kallax/` + `~/.cursor/commands/`
+  - **Windsurf** (full support) — `~/.codeium/windsurf/skills/kallax/` + `~/.codeium/windsurf/commands/`
+  - **Aider** (config only) — `~/.aider/skills/kallax/` + `~/.aider.conf.yml` (no slash command API)
+  - **Continue** (config only) — `~/.continue/skills/kallax/` + `~/.continue/config.json` (VS Code extension)
+- **完整 Wizard** 5-step step-by-step (新, v2.1.0):
+  - Step 1/5 — Tool detection (8 工具 ✓/✗ 列表)
+  - Step 2/5 — Select targets (detected / all 8 / custom)
+  - Step 3/5 — Install paths (默认 accept)
+  - Step 4/5 — Upgrade diff preview (旧版 → 新版)
+  - Step 5/5 — Dry-run preview + final confirm
+- **--dry-run 模式** (新, v2.1.0): 模拟安装, 退出前打印 "Dry-run complete. No files were installed." — 适合 CI/automation 试运行
+- **UI 改进** (新, v2.1.0):
+  - 段头 `═══` 标识
+  - 颜色: GREEN (✓/OK) / YELLOW (WARN) / RED (ERR) / BLUE (INFO) / DIM (✗/N/A)
+  - 工具状态: ✓ detected / ✗ not detected (DIM)
+  - Banner 显示 target mode / tools / CLI / dry-run 状态
+
+### Source dirs (v2.1.0 新)
+- **`.cursor/`** symlinks to `.claude/` (skills/kallax + commands) — 避免重复
+- **`.codeium/windsurf/`** symlinks to `.claude/` (skills/kallax + commands) — 避免重复
+- **`.aider/skills/kallax/`** (real dir, README.md + config templates) — aider 专用
+- **`.continue/skills/kallax/`** (real dir, README.md + config templates) — continue 专用
+
+### Notes
+- 0 增 Rule (跟 v2.0.5 Rule 合并 24→22 + v2.0.10 Rule 32 撤销 联合)
+- 0 增 ticket claim (跟 v2.0.8 PHASE-011 入口 0 派单 0 执行 联合)
+- 0 重写主逻辑 (跟 v2.0.9 / v2.0.10 / v2.0.11 0 重写 联合, 跟"翻篇&精进" 战略 一致)
+- 跟 INSTALL-MULTI-TOOL.md v2.1.0 升级版 联合 (8 工具 + wizard + dry-run)
+- 跟 KALLAX-GLOSSARY v2.0.6 升级版 Section 8.6-8.10 联合 (4 工具 multi-tool 术语) + 待 v2.1.x 扩 Section 8.11-8.13 (cursor/windsurf/aider/continue 4 工具术语)
+- 跟"独立" 拍 explicit 约束 联合 (主公 D explicit 拍 8 工具 联合, 跟 PROCESS.md:25-26 联合)
+- 跟"诚实修正" 联合 (v2.0.2 反讽治根渐进: v2.0.6 4 工具 → v2.1.0 8 工具 + dry-run 模式)
+
 ## [2.0.11] - 2026-06-17
 
 ### Changed
