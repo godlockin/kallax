@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "ask": [],
+    "auto": [
+      "Bash:.claude/commands/*.sh"
+    ],
+    "deny": []
+  },
+  "_mock": "Claude Code settings fixture (EPIC-057-D tests)",
+  "_tool": "claude",
+  "_path": "~/.claude/settings.json"
+}

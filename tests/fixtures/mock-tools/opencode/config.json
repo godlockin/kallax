@@ -1,0 +1,10 @@
+{
+  "_mock": "opencode config fixture (EPIC-057-D tests)",
+  "_tool": "opencode",
+  "_path": "~/.opencode/config.json",
+  "permissions": {
+    "auto": [
+      "Bash:.opencode/command/*.sh"
+    ]
+  }
+}

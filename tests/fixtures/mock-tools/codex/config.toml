@@ -1,0 +1,6 @@
+# Codex config mock fixture (EPIC-057-D tests)
+_mock = "codex"
+_path = "~/.codex/config.toml"
+
+[permissions]
+auto = ["Bash:.codex/prompts/*.sh"]

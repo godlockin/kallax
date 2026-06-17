@@ -1,0 +1,10 @@
+{
+  "_mock": "Gemini config/settings.json fixture (EPIC-057-D tests)",
+  "_tool": "gemini",
+  "_path": "~/.gemini/config/settings.json",
+  "permissions": {
+    "auto": [
+      "Bash:.gemini/commands/*.sh"
+    ]
+  }
+}
