@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-init — Initialize KALLAX in a new or existing project
+# /kallax-init — Initialize KALLAX in a new or existing project.
+# Creates the .kallax/, confluence/, jira/, and template/ directories
+# and writes default config.yml + IDENTITY.md files. Idempotent — safe
+# to re-run. Use this to onboard KALLAX into a fresh project. Run
+# `/kallax-init --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

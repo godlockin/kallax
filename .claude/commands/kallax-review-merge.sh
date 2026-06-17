@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-review-merge — Combined review + merge workflow
+# /kallax-review-merge — Combined review + merge workflow.
+# Sequentially sources verify-pr -> review-pr -> merge sub-scripts.
+# Aborts on any step failure. Use this for a one-shot
+# verify -> review -> merge pipeline. Conductor only. Run
+# `/kallax-review-merge --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

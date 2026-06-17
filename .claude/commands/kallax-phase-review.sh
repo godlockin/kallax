@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-phase-review — Phase-based project review
+# /kallax-phase-review — Phase-based project review.
+# Shows completed tasks and open PR counts for the given phase, then
+# prints a 5-point review checklist (scope drift / KPI falsification /
+# anti-patterns / test coverage / process adherence). Use this when
+# you reach a milestone. Run `/kallax-phase-review --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-help — Show all available KALLAX commands and resources
+# /kallax-help — Show all available KALLAX commands and resources.
+# Prints a grouped cheat-sheet of all 26 slash commands and 12 CLI
+# commands plus resource paths. For detailed per-command reference
+# with args / examples / outputs see docs/reference/slash-commands.md
+# or run `/kallax-<cmd> --help`. Run `/kallax-help --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

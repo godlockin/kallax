@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-check-progress — Check team progress and milestone status
+# /kallax-check-progress — Check team progress and milestone status.
+# Counts tasks by status (total / completed / in-progress / failed) and
+# computes the overall completion percentage. Renders an ASCII progress
+# bar and lists milestones at risk. Use this for a milestone snapshot.
+# Run `/kallax-check-progress --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

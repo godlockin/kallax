@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-start — Start KALLAX in current project
-# Detects or sets role, initializes state, registers instance.
+# /kallax-start — Start KALLAX in current project.
+# Detects or sets the active role (master / conductor / performer),
+# writes instance_config.yml, and registers the agent via the
+# /api/agents/register endpoint. Use this at the beginning of every
+# session. Run `/kallax-start --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

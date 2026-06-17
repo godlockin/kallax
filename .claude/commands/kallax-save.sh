@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-save — Save current session state for later resumption
+# /kallax-save — Save current session state for later resumption.
+# Snapshots the active role, branch, working-tree status, recent
+# commits, and current task (if any) into sessions/<timestamp>.json
+# under .kallax/. Use this at end of a session. Run
+# `/kallax-save --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

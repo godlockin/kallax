@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-panel — Launch full expert panel (5 experts + Conductor)
+# /kallax-panel — Launch full expert panel (5 experts + Conductor).
+# Prints the 5-expert + Conductor panel member list and the 3-phase
+# execution flow (independent analysis, Conductor synthesis, Master
+# approval). Use this for a multi-perspective review on an EPIC or
+# architecture decision. Run `/kallax-panel --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-# /kallax-list — List all available experts, skills, and resources
+# /kallax-list — List all available experts, skills, and resources.
+# Prints a categorized tree of 5 core experts, 5+ extended experts,
+# and 16+ skills. Use this to discover what is available before
+# summoning an expert or invoking a skill. Run `/kallax-list --help`.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

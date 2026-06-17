@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-board — Show interactive ticket board
+# /kallax-board — Show interactive ticket board.
+# Lists P0 / P1 / in-progress / in-review (open PRs) / recently
+# completed tickets in kanban-style groups with the total count.
+# Use this for a quick visual overview of current work. Run
+# `/kallax-board --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-# /kallax-review-pr — Review a pull request (Conductor only)
-# 4-Level Gate Review: preflight → architecture → security → performance
+# /kallax-review-pr — Review a pull request (Conductor only).
+# Runs the 4-Level Gate Review: preflight (file scope) -> architecture
+# (CLAUDE.md Rule compliance) -> security (secrets / authz) ->
+# performance (N+1 / premature optimization). Then prompts the
+# Conductor to choose approve / comment / request changes / reject.
+# Use this when reviewing a Performer's PR. Run `/kallax-review-pr --help`.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

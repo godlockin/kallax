@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-skill — Execute a specific skill
+# /kallax-skill — Execute a specific skill.
+# Locates the skill markdown under .claude/skills/* and prints the
+# execution context. The skill content is then loaded and ready to
+# apply to the target. Use this to invoke a specific capability
+# (e.g. tdd, security-review). Run `/kallax-skill --help`.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

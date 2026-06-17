@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-mode — Switch between operation modes
+# /kallax-mode — Switch between operation modes.
+# Writes instance_config.yml with the chosen role and standalone flag.
+# Three modes: conductor (orchestrates), performer (claims + ships),
+# standalone (solo). Use this to switch between modes mid-session.
+# Run `/kallax-mode --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

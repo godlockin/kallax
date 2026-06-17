@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-submit-pr — Complete task and submit PR for review
-# Runs Saga 5-step: tests → lint → verify → commit → PR
+# /kallax-submit-pr — Complete task and submit PR for review.
+# Runs the Saga 5-step pipeline: tests -> lint -> verify -> commit ->
+# PR. Then calls `kallax task complete`. Use this when you finished
+# a task and want to land it for review. Run `/kallax-submit-pr --help`
+# for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

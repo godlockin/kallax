@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-merge — Merge an approved PR
+# /kallax-merge — Merge an approved PR.
+# Performs 3 pre-merge safety checks via the gh CLI: CI status green,
+# >= 1 Conductor approval, no merge conflicts with main. If all pass,
+# squash-merges the PR. Conductor only. Use this when a PR is approved
+# and you're ready to land it. Run `/kallax-merge --help`.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

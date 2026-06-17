@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-ask — Ask a question to the expert panel
+# /kallax-ask — Ask a question to the expert panel.
+# Auto-routes a question to relevant experts (architect / backend /
+# frontend / ux / product / security / performance) based on detected
+# keywords. Use this when you want a single question answered by the
+# most relevant expert. Run `/kallax-ask --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

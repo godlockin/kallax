@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-resume — Resume from a saved session
+# /kallax-resume — Resume from a saved session.
+# Lists all saved session JSONs in .kallax/sessions/ and prompts the
+# user to pick one. Restores the role, branch, and active task from
+# the latest (or chosen) session. Use this when picking up work from
+# a previous session. Run `/kallax-resume --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

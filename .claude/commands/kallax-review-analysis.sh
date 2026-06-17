@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-review-analysis — Review codebase analysis results
+# /kallax-review-analysis — Review codebase analysis results.
+# Shows the top-10 most-changed files, test-to-source ratio, knowledge
+# base size, and a list of code-health warnings. Use this for a
+# code-knowledge health audit. Run `/kallax-review-analysis --help`
+# for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

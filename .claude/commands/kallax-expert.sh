@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-expert — Summon a specific expert for analysis
+# /kallax-expert — Summon a specific expert for analysis.
+# Loads an expert profile (core: architect / backend / frontend / ux /
+# product; extended: auditor / compliance / decision-gate / process /
+# security) and prints the analysis context. Use this for deep
+# analysis from one specific role. Run `/kallax-expert --help`.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

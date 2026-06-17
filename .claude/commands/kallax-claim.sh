@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-# /kallax-claim — Claim an available task (auto-creates worktree)
+# /kallax-claim — Claim an available task (auto-creates worktree).
+# Atomically claims a task via the kallax CLI or API and creates an
+# isolated worktree for development. Use this when you are a Performer
+# ready to start a new ticket. Run `/kallax-claim --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

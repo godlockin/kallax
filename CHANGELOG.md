@@ -5,6 +5,34 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.10] - 2026-06-17
+
+### Changed
+
+#### Slash commands 顶部 # 注释 multi-line 升级 (治主公"现在输入 /kallax-ask 还是没有说明", Claude Code parse 顶部多行)
+
+跟主公 2026-06-17 explicit 反馈 联合 (v2.0.9 --help 已加, 但 Claude Code 输入 /kallax-ask 时 弹出的 description 仍 1-line 短, 治根):
+
+- **26 .sh 顶部 # 注释 1-line → 4-5-line** (跟 _kallax_common.sh 联合): 每条 改 1-line → 4-5-line 详细 description, 含 "是什么/怎么用/--help pointer", Claude Code parse 多行 comment 作为 description. 例如:
+  ```
+  # /kallax-ask — Ask a question to the expert panel.
+  # Auto-routes a question to relevant experts (architect / backend /
+  # frontend / ux / product / security / performance) based on detected
+  # keywords. Use this when you want a single question answered by the
+  # most relevant expert. Run `/kallax-ask --help` for full reference.
+  ```
+- **.claude/skills/kallax/SKILL.md** description 字段 升级: 5 命令 → 26 命令 (Claude Code skill auto-trigger 检测更广, `/kallax-claim` / `/kallax-merge` 等之前未触发), 加 slash-commands.md 文档指针 + 每命令 --help 提示
+- **本地 sync**: 27 文件 (26 .sh + _kallax_common.sh) + SKILL.md 复制到 `~/.claude/commands/` + `~/.claude/skills/kallax/`, 治主公反馈"本地 skills 没更新" 根因 (之前只改 repo 源, 本地 install 旧版)
+
+### Notes
+- 0 增命令 (跟 Rule 32 + "流程逻辑 > 扩充配置" 联合)
+- 0 增 Rule (跟 v2.0.5 Rule 合并 24→22 联合)
+- 0 重写 (26 .sh 仅顶部 # 注释 1-line → 4-5-line, 主逻辑不动)
+- 跟 v2.0.9 slash-commands.md + --help flag 联合 (中央 doc + per-cmd --help + 顶部 multi-line description 三层 fallback)
+- 跟"诚实修正" 联合 (主公"输入 /kallax-ask 没说明" 反馈 → 治根 不模糊处理)
+- 跟"翻篇&精进" 战略 一致 (仅改 description 长度, 0 增命令 0 增 Rule 0 重写主逻辑)
+- 跟"独立" 拍 explicit 约束 联合 (主公 explicit 反馈 触发, 跟 PROCESS.md:25-26 联合)
+
 ## [2.0.9] - 2026-06-17
 
 ### Added

@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-role — View or change agent role
+# /kallax-role — View or change agent role.
+# Reads the current role from instance_config.yml. With no argument,
+# prints the current role and the list of available roles. With an
+# argument, writes the new role and confirms. Use this to check or
+# switch the active role. Run `/kallax-role --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

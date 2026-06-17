@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-instances — List active Conductor/Performer instances
+# /kallax-instances — List active Conductor/Performer instances.
+# Lists registered agents via `kallax team:status` or the /api/agents
+# endpoint. Prints the active instance list plus a lifecycle diagram
+# and the heartbeat / stale thresholds. Use this to see who is currently
+# running. Run `/kallax-instances --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

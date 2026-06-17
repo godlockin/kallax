@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-office-hours — Requirements analysis (6 questions method)
-# Helps clarify ambiguous requirements before development starts
+# /kallax-office-hours — Requirements analysis (6 questions method).
+# Prints the 6 YC-style forcing questions (demand reality, status quo,
+# desperate specificity, narrowest wedge, observation, future-fit) and
+# saves a fillable requirements_<timestamp>.md template. Use this to
+# clarify a fuzzy or ambiguous project. Run `/kallax-office-hours --help`.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

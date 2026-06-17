@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-verify-pr — Verify PR output before merge (4-Level Fact-Forcing)
+# /kallax-verify-pr — Verify PR output before merge (4-Level Fact-Forcing).
+# Runs L1 existence (files in diff) -> L2 substance (no TODO in critical
+# paths) -> L3 wiring (no @ts-ignore or :any escapes) -> L4 data flow
+# (CI green). Use this to confirm a PR passes the fact check before
+# merging. Run `/kallax-verify-pr --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

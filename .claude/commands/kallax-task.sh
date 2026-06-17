@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-task — Quick task management shortcut
+# /kallax-task — Quick task management shortcut.
+# Wraps the `kallax task <action>` CLI subcommand for in-tool
+# convenience. Default action is "status" which shows the active
+# task on the current branch. Use this for quick task ops.
+# Run `/kallax-task --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

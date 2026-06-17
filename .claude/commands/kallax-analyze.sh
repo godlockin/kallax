@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-# /kallax-analyze — Analyze project structure and dependencies
+# /kallax-analyze — Analyze project structure and dependencies.
+# Scans the project for file-type counts, git statistics, dependency
+# info, and top-level directory layout. Use this for a quick
+# code-health overview. Run `/kallax-analyze --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"

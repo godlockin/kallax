@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# /kallax-status — Show current system and task status
+# /kallax-status — Show current system and task status.
+# Prints the active role, project root, branch, and queries the
+# /health and /stats endpoints. Then prints a role-specific checklist
+# (Conductor 5-Q heartbeat or Performer claim / submit cycle). Use this
+# for a quick state snapshot. Run `/kallax-status --help` for full reference.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
