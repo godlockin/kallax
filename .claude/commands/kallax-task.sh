@@ -4,6 +4,34 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-task — Quick task management shortcut
+
+USAGE:
+  /kallax-task [action] [TASK_ID]
+
+ARGS:
+  action            One of: claim, complete, status, list (default: status)
+  TASK_ID           Optional ticket id (required for claim / complete).
+
+DESCRIPTION:
+  Wraps the kallax task <action> CLI subcommand for in-tool
+  convenience. Default action is "status" which shows the active
+  task on the current branch.
+
+EXAMPLES:
+  /kallax-task
+  /kallax-task list
+  /kallax-task claim TICKET-123
+  /kallax-task complete TICKET-123
+
+RELATED:
+  /kallax-claim, /kallax-submit-pr
+EOF
+  exit 0
+fi
+
 ACTION="${1:-status}"
 TASK_ID="${2:-}"
 

@@ -4,6 +4,31 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-merge — Merge an approved PR
+
+USAGE:
+  /kallax-merge [PR_NUMBER]
+
+ARGS:
+  PR_NUMBER         PR number to merge (lists open PRs if missing).
+
+DESCRIPTION:
+  Performs 3 pre-merge safety checks via the gh CLI: CI status green,
+  >= 1 Conductor approval, no merge conflicts with main. If all pass,
+  squash-merges the PR. Otherwise prints the failing check and aborts.
+
+EXAMPLES:
+  /kallax-merge
+  /kallax-merge 123
+
+RELATED:
+  /kallax-review-pr, /kallax-verify-pr
+EOF
+  exit 0
+fi
+
 log_title "Merge PR"
 
 require_git_repo

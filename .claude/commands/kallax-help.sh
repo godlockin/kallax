@@ -4,6 +4,30 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-help — Show all available KALLAX commands and resources
+
+USAGE:
+  /kallax-help
+
+DESCRIPTION:
+  Prints a grouped cheat-sheet of all 26 slash commands and 12 CLI
+  commands plus resource paths. For detailed per-command reference with
+  args, examples, and outputs, see:
+    docs/reference/slash-commands.md  (slash commands)
+    docs/reference/cli-reference.md   (CLI commands)
+  Or run: /kallax-<cmd> --help
+
+EXAMPLES:
+  /kallax-help
+
+RELATED:
+  /kallax-list, /kallax-start
+EOF
+  exit 0
+fi
+
 log_title "KALLAX Help"
 
 echo ""

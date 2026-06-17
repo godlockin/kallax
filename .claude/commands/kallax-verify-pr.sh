@@ -4,6 +4,32 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-verify-pr — Verify PR output before merge (4-Level Fact-Forcing)
+
+USAGE:
+  /kallax-verify-pr [PR_NUMBER]
+
+ARGS:
+  PR_NUMBER         PR number to verify (prompts if missing).
+
+DESCRIPTION:
+  Runs the 4-Level Fact-Forcing checks: L1 existence (files in diff) ->
+  L2 substance (no TODO in critical paths) -> L3 wiring (no @ts-ignore
+  or :any escapes) -> L4 data flow (CI green). Prints pass/warn per
+  level and a final verdict.
+
+EXAMPLES:
+  /kallax-verify-pr
+  /kallax-verify-pr 123
+
+RELATED:
+  /kallax-review-pr, /kallax-merge
+EOF
+  exit 0
+fi
+
 log_title "Verify PR"
 
 require_git_repo

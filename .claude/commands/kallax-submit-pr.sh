@@ -5,6 +5,32 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-submit-pr — Complete task and submit PR (Saga 5-step)
+
+USAGE:
+  /kallax-submit-pr [TASK_ID]
+
+ARGS:
+  TASK_ID           Optional ticket id. Auto-detected from the current
+                    branch name kallax/<id> when omitted.
+
+DESCRIPTION:
+  Runs the Saga 5-step pipeline: tests -> lint -> verify -> commit ->
+  PR. Then calls `kallax task complete` to mark the ticket done. If
+  any step fails the script halts so the developer can fix and re-run.
+
+EXAMPLES:
+  /kallax-submit-pr
+  /kallax-submit-pr TICKET-EPIC-053-A
+
+RELATED:
+  /kallax-claim, /kallax-verify-pr
+EOF
+  exit 0
+fi
+
 log_title "Submit PR"
 
 require_git_repo

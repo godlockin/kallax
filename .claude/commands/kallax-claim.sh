@@ -4,6 +4,32 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-claim — Claim an available task (auto-creates worktree)
+
+USAGE:
+  /kallax-claim [TASK_ID]
+
+ARGS:
+  TASK_ID           Optional ticket id. If omitted, prompts or auto-claims
+                    the first pending ticket in the ready queue.
+
+DESCRIPTION:
+  Atomically claims a task via the kallax CLI or API and creates an
+  isolated worktree for development. Prints the claimed task id and
+  the next-step commands.
+
+EXAMPLES:
+  /kallax-claim
+  /kallax-claim TICKET-EPIC-053-A
+
+RELATED:
+  /kallax-submit-pr, /kallax-task
+EOF
+  exit 0
+fi
+
 log_title "Claim Task"
 
 require_git_repo

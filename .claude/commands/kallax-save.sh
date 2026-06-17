@@ -4,6 +4,28 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-save — Save current session state for later resumption
+
+USAGE:
+  /kallax-save
+
+DESCRIPTION:
+  Snapshots the active role, branch, working-tree status, recent
+  commits, and current task (if any) into
+  sessions/<timestamp>.json under .kallax/. Optionally commits
+  uncommitted changes first.
+
+EXAMPLES:
+  /kallax-save
+
+RELATED:
+  /kallax-resume, /kallax-status
+EOF
+  exit 0
+fi
+
 log_title "Save Session"
 
 require_git_repo

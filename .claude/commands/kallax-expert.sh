@@ -4,6 +4,35 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-expert — Summon a specific expert for analysis
+
+USAGE:
+  /kallax-expert <role> [context]
+
+ARGS:
+  role              Expert role name (required). Core: architect / backend
+                    / frontend / ux / product. Extended: auditor /
+                    compliance / decision-gate / process-engineering /
+                    security.
+  context           Optional question or context to feed the expert.
+
+DESCRIPTION:
+  Locates the expert profile file under .claude/skills/kallax/default/
+  or .claude/skills/kallax/extended/ and prints the analysis context
+  plus a prompt to feed the user-specific details.
+
+EXAMPLES:
+  /kallax-expert backend
+  /kallax-expert security "Should we use JWT or session cookies for auth?"
+
+RELATED:
+  /kallax-ask, /kallax-panel, /kallax-list
+EOF
+  exit 0
+fi
+
 EXPERT="${1:-}"
 CONTEXT="${2:-}"
 

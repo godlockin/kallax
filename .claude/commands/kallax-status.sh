@@ -4,6 +4,27 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-status — Show current system and task status
+
+USAGE:
+  /kallax-status
+
+DESCRIPTION:
+  Prints the active role, project root, branch, and queries the /health
+  and /stats endpoints. Then prints a role-specific checklist (Conductor
+  5-Q heartbeat or Performer claim / submit cycle).
+
+EXAMPLES:
+  /kallax-status
+
+RELATED:
+  /kallax-board, /kallax-instances, /kallax-check-progress
+EOF
+  exit 0
+fi
+
 log_title "KALLAX Status"
 
 require_git_repo

@@ -4,6 +4,33 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-skill — Execute a specific skill
+
+USAGE:
+  /kallax-skill <skill-name> [target]
+
+ARGS:
+  skill-name        Skill identifier (required). Examples: tdd,
+                    security-review, kallax-init.
+  target            Optional file or path the skill should target.
+
+DESCRIPTION:
+  Locates the skill markdown under .claude/skills/* and prints the
+  execution context. The skill content is then loaded and ready to
+  apply to the target.
+
+EXAMPLES:
+  /kallax-skill tdd
+  /kallax-skill security-review src/api/auth.ts
+
+RELATED:
+  /kallax-expert, /kallax-list
+EOF
+  exit 0
+fi
+
 SKILL="${1:-}"
 TARGET="${2:-}"
 

@@ -4,6 +4,31 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-review-merge — Combined review + merge workflow
+
+USAGE:
+  /kallax-review-merge [PR_NUMBER]
+
+ARGS:
+  PR_NUMBER         PR number (prompts if missing).
+
+DESCRIPTION:
+  Sequentially sources verify-pr -> review-pr -> merge sub-scripts.
+  Aborts on any step failure. Use this when you want a one-shot
+  verify -> review -> merge pipeline without manual orchestration.
+
+EXAMPLES:
+  /kallax-review-merge
+  /kallax-review-merge 123
+
+RELATED:
+  /kallax-verify-pr, /kallax-review-pr, /kallax-merge
+EOF
+  exit 0
+fi
+
 log_title "Review & Merge"
 
 require_git_repo

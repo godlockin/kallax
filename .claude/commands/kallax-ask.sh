@@ -4,6 +4,32 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-ask — Ask a question to the expert panel
+
+USAGE:
+  /kallax-ask "<question>"
+
+ARGS:
+  question          The question to route (optional, prompts if missing)
+
+DESCRIPTION:
+  Keyword-routes a question to relevant experts based on detected
+  keywords (architect / backend / frontend / ux / product / security /
+  performance). Falls back to the core panel
+  (architect backend ux product) if no keyword matches. Prints a
+  per-expert /kallax-expert invocation suggestion for each match.
+
+EXAMPLES:
+  /kallax-ask "How should we structure the WebSocket reconnection logic?"
+
+RELATED:
+  /kallax-expert, /kallax-panel
+EOF
+  exit 0
+fi
+
 log_title "Ask Expert Panel"
 
 QUESTION="${1:-}"

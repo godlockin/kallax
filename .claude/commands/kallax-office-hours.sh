@@ -5,6 +5,32 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-office-hours — Requirements analysis (6 questions method)
+
+USAGE:
+  /kallax-office-hours [TOPIC]
+
+ARGS:
+  TOPIC             The fuzzy idea or ambiguous project (optional,
+                    prompts if missing).
+
+DESCRIPTION:
+  Prints the 6 YC-style forcing questions (demand reality, status quo,
+  desperate specificity, narrowest wedge, observation, future-fit) and
+  saves a fillable requirements_<timestamp>.md template in
+  .kallax/inbox/.
+
+EXAMPLES:
+  /kallax-office-hours "New EPIC: cross-team metrics dashboard"
+
+RELATED:
+  /kallax-panel, /kallax-analyze
+EOF
+  exit 0
+fi
+
 log_title "Office Hours — Requirements Analysis"
 
 TOPIC="${1:-}"

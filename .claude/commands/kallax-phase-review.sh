@@ -4,6 +4,33 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-phase-review — Phase-based project review
+
+USAGE:
+  /kallax-phase-review [PHASE]
+
+ARGS:
+  PHASE             Phase id to review (default: all). Example:
+                    PHASE-011.
+
+DESCRIPTION:
+  Shows completed tasks and open PR counts for the given phase, then
+  prints a 5-point review checklist (scope drift / KPI falsification /
+  anti-patterns / test coverage / process adherence). Saves a
+  phase_review_<timestamp>.md template in .kallax/inbox/.
+
+EXAMPLES:
+  /kallax-phase-review
+  /kallax-phase-review PHASE-011
+
+RELATED:
+  /kallax-check-progress, /kallax-review-pr
+EOF
+  exit 0
+fi
+
 log_title "Phase Review"
 
 PHASE="${1:-all}"

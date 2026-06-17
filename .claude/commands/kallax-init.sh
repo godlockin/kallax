@@ -4,6 +4,27 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-init — Initialize KALLAX in a new or existing project
+
+USAGE:
+  /kallax-init
+
+DESCRIPTION:
+  Creates the .kallax/, confluence/, jira/, and template/ directories
+  and writes default config.yml + IDENTITY.md files. Idempotent — safe
+  to re-run; existing files are not overwritten without confirmation.
+
+EXAMPLES:
+  /kallax-init
+
+RELATED:
+  /kallax-start, /kallax-role
+EOF
+  exit 0
+fi
+
 log_title "Initialize KALLAX"
 
 require_git_repo

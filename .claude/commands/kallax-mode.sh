@@ -4,6 +4,31 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-mode — Switch between operation modes
+
+USAGE:
+  /kallax-mode [conductor|performer|standalone]
+
+ARGS:
+  mode              New mode. conductor / performer / standalone
+                    (prompts if missing).
+
+DESCRIPTION:
+  Writes instance_config.yml with the chosen role and standalone flag.
+  Prints a summary of the responsibilities that come with the new mode.
+
+EXAMPLES:
+  /kallax-mode
+  /kallax-mode conductor
+
+RELATED:
+  /kallax-role, /kallax-start
+EOF
+  exit 0
+fi
+
 log_title "Mode Selection"
 
 MODE="${1:-}"

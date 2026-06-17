@@ -4,6 +4,31 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-panel — Launch full expert panel (5 experts + Conductor)
+
+USAGE:
+  /kallax-panel [TOPIC]
+
+ARGS:
+  TOPIC             The topic to review (optional, prompts if missing)
+
+DESCRIPTION:
+  Prints the 5-expert + Conductor panel member list and the 3-phase
+  execution flow (independent analysis, Conductor synthesis, Master
+  approval). Saves an expert_panel_<timestamp>.md template in
+  .kallax/inbox/.
+
+EXAMPLES:
+  /kallax-panel "Evaluate the hybrid flag-controlled install design"
+
+RELATED:
+  /kallax-expert, /kallax-ask, /kallax-office-hours
+EOF
+  exit 0
+fi
+
 TOPIC="${1:-}"
 
 log_title "Expert Panel"

@@ -167,3 +167,45 @@ print_table_header() { printf "${BOLD}%-40s %-10s %-10s %s${NC}\n" "$@"; }
 print_table_row() { printf "%-40s %-10s %-10s %s\n" "$@"; }
 print_separator() { printf '=%.0s' $(seq 1 80); echo; }
 print_divider() { printf -- '-%.0s' $(seq 1 80); echo; }
+
+# ── Help system ──────────────────────────────────────────────────────────
+
+# show_help — read help text from stdin and print with consistent formatting.
+# Usage in a command (place AFTER `source` and BEFORE main logic):
+#
+#   if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+#     show_help <<'EOF'
+#     <command> — <one-line description>
+#
+#     USAGE:
+#       /<command> [args]
+#
+#     ARGS:
+#       <arg>              <description>
+#
+#     DESCRIPTION:
+#       <2-3 line description>
+#
+#     EXAMPLES:
+#       /<command> <example>
+#
+#     RELATED:
+#       /<related-cmd>
+#     EOF
+#     exit 0
+#   fi
+#
+# Section headers (USAGE:, ARGS:, DESCRIPTION:, EXAMPLES:, RELATED:) are
+# printed in bold blue. Body lines are indented by 2 spaces. Blank lines
+# stay blank.
+show_help() {
+  while IFS= read -r line; do
+    if [[ -z "$line" ]]; then
+      echo ""
+    elif [[ "$line" =~ ^(USAGE|ARGS|DESCRIPTION|EXAMPLES|RELATED): ]]; then
+      echo -e "${BOLD}${BLUE}${line}${NC}"
+    else
+      echo "  $line"
+    fi
+  done
+}

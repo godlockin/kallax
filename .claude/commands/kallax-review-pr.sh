@@ -5,6 +5,34 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-review-pr — Review a pull request (4-Level Gate Review)
+
+USAGE:
+  /kallax-review-pr [PR_NUMBER] [BASE_BRANCH]
+
+ARGS:
+  PR_NUMBER         PR number to review (prompts if missing).
+  BASE_BRANCH       Target branch (default: main).
+
+DESCRIPTION:
+  Runs the 4-Level Gate Review: preflight (file scope) -> architecture
+  (CLAUDE.md Rule compliance) -> security (secrets / authz) ->
+  performance (N+1 / premature optimization). Then prompts the
+  Conductor to choose approve / comment / request changes / reject
+  and submits the review via the gh CLI.
+
+EXAMPLES:
+  /kallax-review-pr 123
+  /kallax-review-pr 123 testing
+
+RELATED:
+  /kallax-verify-pr, /kallax-merge
+EOF
+  exit 0
+fi
+
 log_title "Review PR"
 
 require_git_repo

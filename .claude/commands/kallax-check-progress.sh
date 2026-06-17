@@ -4,6 +4,27 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-check-progress — Check team progress and milestone status
+
+USAGE:
+  /kallax-check-progress
+
+DESCRIPTION:
+  Counts tasks by status (total / completed / in-progress / failed) and
+  computes the overall completion percentage. Renders an ASCII progress
+  bar and lists milestones at risk.
+
+EXAMPLES:
+  /kallax-check-progress
+
+RELATED:
+  /kallax-board, /kallax-instances
+EOF
+  exit 0
+fi
+
 log_title "Progress Check"
 
 require_git_repo

@@ -4,6 +4,27 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-resume — Resume from a saved session
+
+USAGE:
+  /kallax-resume
+
+DESCRIPTION:
+  Lists all saved session JSONs in .kallax/sessions/ and prompts the
+  user to pick one. Restores the role, branch, and active task from
+  the latest (or chosen) session.
+
+EXAMPLES:
+  /kallax-resume
+
+RELATED:
+  /kallax-save, /kallax-start
+EOF
+  exit 0
+fi
+
 log_title "Resume Session"
 
 require_git_repo

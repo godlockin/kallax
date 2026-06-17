@@ -5,6 +5,31 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-start — Start KALLAX in current project
+
+USAGE:
+  /kallax-start [role]
+
+ARGS:
+  role              master | conductor | performer (prompts if missing)
+
+DESCRIPTION:
+  Validates the requested role, writes instance_config.yml, and registers
+  the agent via /api/agents/register. Prints the instance ID and the
+  next-step commands appropriate to the selected role.
+
+EXAMPLES:
+  /kallax-start
+  /kallax-start conductor
+
+RELATED:
+  /kallax-init, /kallax-role, /kallax-mode, /kallax-status
+EOF
+  exit 0
+fi
+
 log_title "KALLAX Startup"
 
 require_git_repo

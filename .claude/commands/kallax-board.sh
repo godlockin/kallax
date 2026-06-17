@@ -4,6 +4,27 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-board — Show interactive ticket board
+
+USAGE:
+  /kallax-board
+
+DESCRIPTION:
+  Lists P0 / P1 / in-progress / in-review (open PRs) / recently
+  completed tickets in kanban-style groups. Prints total ticket count
+  and the next command hints for the active role.
+
+EXAMPLES:
+  /kallax-board
+
+RELATED:
+  /kallax-check-progress, /kallax-status
+EOF
+  exit 0
+fi
+
 log_title "Ticket Board"
 
 require_git_repo

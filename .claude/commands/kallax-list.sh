@@ -4,6 +4,27 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-list — List all available experts, skills, and resources
+
+USAGE:
+  /kallax-list
+
+DESCRIPTION:
+  Prints a categorized tree of 5 core experts, 5+ extended experts,
+  and 16+ skills. Use this to discover what is available before
+  summoning an expert or invoking a skill.
+
+EXAMPLES:
+  /kallax-list
+
+RELATED:
+  /kallax-help, /kallax-expert
+EOF
+  exit 0
+fi
+
 log_title "Available Resources"
 
 echo ""

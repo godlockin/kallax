@@ -5,6 +5,27 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.9] - 2026-06-17
+
+### Added
+
+#### Slash commands documentation + --help flag (跟主公"kallax 很多命令, 但是这些命令都没有说明" 联合, 跟'诚实修正' 联合)
+
+跟主公 2026-06-17 explicit 派单 联合 (跟 v2.0.8 PHASE-011 入口之后 跨期 follow-up 沉淀 联合, 跟'独立' 拍板 explicit 联合), 跟"流程逻辑 > 扩充配置" 战略 一致:
+
+- **docs/reference/slash-commands.md** 新建 (652 行, 跟 cli-reference.md 平行): 26 slash 命令 详细 reference, 6 章节 (Quick/Performer/Conductor/Analysis/Configuration/Workflow), 每条含 9 字段 (syntax/args/what/output/when/example/role/related/source), 3 附录 (--help/跨工具兼容/相关文档)
+- **_kallax_common.sh** 加 `show_help()` 函数 (42 行): 读 stdin + 格式化输出 (USAGE/ARGS/DESCRIPTION/EXAMPLES/RELATED 段头加粗蓝, body 行 2 空格缩进, 空行保留)
+- **26 .sh 文件 加 --help/-h flag** (跟 _kallax_common.sh 联合, 一致格式): 每个命令 21-29 行 heredoc, 覆盖所有 26 slash 命令 (analyze/ask/board/check-progress/claim/expert/help/init/instances/list/merge/mode/office-hours/panel/phase-review/resume/review-analysis/review-merge/review-pr/role/save/skill/start/status/submit-pr/task/verify-pr)
+
+### Notes
+- 0 增命令 (跟 Rule 32 + "流程逻辑 > 扩充配置" 联合)
+- 0 增 Rule (跟 v2.0.5 Rule 合并 24→22 联合)
+- 0 重写 (26 .sh 仅插入 --help 检查, 不改动主逻辑)
+- 跟 KALLAX-GLOSSARY v2.0.6 升级版 Section 8.6-8.10 联合 (跨 4 工具 slash commands 一致)
+- 跟 INSTALL-MULTI-TOOL.md §1.1 反讽治根段 联合 (slash commands 4 工具 mirror 路径)
+- 跟"诚实修正" 联合 (主公发现 26 命令无说明 → 显式补全, 不模糊处理)
+- 跟"翻篇&精进" 战略 一致 (文档补全不引入新功能, 仅添 --help + 中央 doc)
+
 ## [2.0.8] - 2026-06-17
 
 ### Added

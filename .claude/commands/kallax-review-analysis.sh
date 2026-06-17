@@ -4,6 +4,27 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-review-analysis — Review codebase analysis results
+
+USAGE:
+  /kallax-review-analysis
+
+DESCRIPTION:
+  Shows the top-10 most-changed files, test-to-source ratio, knowledge
+  base size, and a list of code-health warnings. Use this for a
+  code-knowledge health audit.
+
+EXAMPLES:
+  /kallax-review-analysis
+
+RELATED:
+  /kallax-analyze, /kallax-phase-review
+EOF
+  exit 0
+fi
+
 log_title "Review Analysis"
 
 require_git_repo

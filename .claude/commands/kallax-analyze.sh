@@ -4,6 +4,31 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-analyze — Analyze project structure and dependencies
+
+USAGE:
+  /kallax-analyze [TARGET]
+
+ARGS:
+  TARGET            Path to analyze (default: .)
+
+DESCRIPTION:
+  Scans the project for file-type counts, git statistics, dependency
+  info, and top-level directory layout. Prints a summary plus the
+  path to the saved analysis artifact under .kallax/.
+
+EXAMPLES:
+  /kallax-analyze
+  /kallax-analyze ./src
+
+RELATED:
+  /kallax-review-analysis, /kallax-status
+EOF
+  exit 0
+fi
+
 log_title "Project Analysis"
 
 require_git_repo

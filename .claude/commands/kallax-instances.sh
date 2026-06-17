@@ -4,6 +4,27 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_kallax_common.sh"
 
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  show_help <<'EOF'
+/kallax-instances — List active Conductor/Performer instances
+
+USAGE:
+  /kallax-instances
+
+DESCRIPTION:
+  Lists registered agents via `kallax team:status` or the /api/agents
+  endpoint. Prints the active instance list plus a lifecycle diagram
+  and the heartbeat / stale thresholds.
+
+EXAMPLES:
+  /kallax-instances
+
+RELATED:
+  /kallax-status, /kallax-check-progress
+EOF
+  exit 0
+fi
+
 log_title "Active Instances"
 
 require_git_repo
