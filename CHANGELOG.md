@@ -5,6 +5,37 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2026-06-18
+
+### Changed
+
+#### 经验教训 整理 release (回顾 全部 经验教训: 过时的淘汰 + 有缺陷的升级 + 类似的合并, 跟主公 2026-06-18 派单 联合)
+
+跟主公 2026-06-18 '整理最近一段时间 经验教训, 回顾 全部 经验教训 过时的淘汰 / 有缺陷的升级 / 类似的合并' 派单 联合 (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:208-247` §3 主题 13 NEW, `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:281-296` §4 5 战略 升级, `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:298-323` §5 5 治理卡 + 5 deferred tickets 闭环, `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:325-348` §6 14 → 18 卡 升级, `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:350-373` §7 Master 清理 累计, `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:375-396` §8 13 → 16 BE 升级, `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:398-419` §9 16 → 26 升级 累计, `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:421-441` §10 5 → 14 release 演化, `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:443-450` §11 5 视角 跨期 升级, `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:452-485` §12 PHASE-010/011 → PHASE-015+ 战略建议, `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:487-516` §13 累计文件清单 跨期 8 release 升级), 跟"诚实修正" + "反讽" + "翻篇&精进" + "反哺框架" 4 战略 联合, 跟 KALLAX-GLOSSARY §11.x 联合, 跟 PHASE-013-REFLECTION + PHASE-014 联合:
+
+- **§3 主题 13 (NEW, 跟 v2.4.0 PHASE-013-REFLECTION 联合)**: 6 反思 lessons (13.1 "Rule 数越少越好" 是 假命题 / 13.2 阈值 15 是 迷信 / 13.3 v2.4.0 4 合并 净价值 持平 / 13.4 4 组合并 边界 失焦 / 13.5 v2.4.1 revert 闭环 / 13.6 5 deferred tickets 状态)
+- **§4 5 战略 升级** (跟 v2.4.0 反思 + PHASE-014 联合): 4.4 "反讽" 闭环 加 v2.4.0 反思 + 4.5 "独立" 拍 explicit 加 5 deferred 状态 闭环
+- **§5 5 治理卡 + 5 deferred tickets 闭环** (跟 PHASE-014 联合, 跟"独立" 拍 explicit 联合): 5.1 5 治理卡 (v2.0.4 + v2.0.5) + 5.2 5 deferred tickets 状态 (3 closed P1-1 v2.3.0 / P1-2 v2.4.0 / P3-1 v2.4.1 + 2 留待 P2-1 / P2-2)
+- **§6 14 → 18 卡 升级** (跟 v2.0.6 release 联合): 加 EPIC-057 (4 ticket)
+- **§7 Master 清理 累计** (跨 v2.0.5 → v2.4.1): 7.1 5 清理 + 7.2 P1-2 worktree 清理 (48 worktree + 123 branches, 5.5M disk freed) + 7.3 v2.4.1 Rule 合并 revert (跟"诚实修正" 联合)
+- **§8 13 → 16 BE 升级** (跨 v2.0.6 → v2.4.1 8 release 累计): BE-14 (1 ticket 1 subagent 串行 v2.0.6) + BE-15 (26 .md wrappers v2.1.1) + BE-16 (v2.4.1 revert v2.4.1)
+- **§9 16 → 26 升级路径 累计** (跨 v2.0.6 → v2.5.0 8 release): v2.0.6 (4 升级) + v2.0.9 → v2.3.0 (4 升级) + v2.4.0 → v2.5.0 (2 反思 升级)
+- **§10 5 阶段 → 14 release 演化** (跨 v2.0.6 → v2.5.0 8 release 净价值 67.0% 持平, 跟"翻篇&精进" 战略 一致): 14 release 累计 净价值 67.0% 持平 = 0 实际变化, 跟 KALLAX-GLOSSARY §11.3 "0 实际变化 假动作" 联合
+- **§11 5 视角 跨期 升级** (跨 v2.0.6 → v2.5.0 8 release 演化): Architect 22 Rule + 4-Level 证据链 + 10 工具 + 26 .md wrappers + 60 术语 / Security + pre-commit + 8 工具 + BE-16 / Backend + 串行 + 26 .sh + 26 .md wrappers + 10 工具 E2E / Product 67.0% 持平 8 release / UX + 5 deferred + 8 工具 wizard 5-step + --symlink + --dry-run
+- **§12 PHASE-010/011 → PHASE-015+ 战略建议** (跨 14 release 累计): 12.1 治根 闭环 + 12.2 PHASE-005 → PHASE-014 (10 PHASE review 累计) + 12.3 0 增命令 0 增 Rule 持续 + 12.4 红线 revert 文档化 (v2.0.5 + v2.0.6 + v2.4.1) + 12.5 EPIC-057 串行派单教训 + 12.6 v2.4.0 反思 闭环 (5 教训) + 12.7 PHASE-014+ 战略建议
+- **§13 累计文件清单 跨期 8 release 升级** (跟 v2.0.7 → v2.4.1 联合): PHASE-011/012/013-REFLECTION/014 + KALLAX-GLOSSARY.md 60 术语 + slash-commands.md 651 行 + INSTALL-MULTI-TOOL.md 376 行 + 26 .sh + 26 .md wrappers + 4 工具 symlinks + pre-commit (1 line diff) + install.sh (10 工具 hybrid flag) + EPIC-058 5 deferred + EPIC-053-D web dashboard 代码就绪
+
+### Notes
+- 0 Rule 增加 (跟 Rule 32 软约束升级阈值 联合, 跟"反讽" 联合, file:line `docs/KALLAX-GLOSSARY.md:268-272`)
+- 0 重写 (跟 Rule 5 DRY 联合, 跟"翻篇&精进" 战略 一致)
+- 0 增 命令 (跟 v1.3.0 Onramp 1 入口 拍 explicit 撤销, 改为 2 独立命令 /kallax-init + /kallax-takeover, 跟"反讽" 联合)
+- 0 增 ticket 0 增 EPIC (跟 EPIC-058 5 deferred 留待 一致, 跟"翻篇&精进" 战略 一致)
+- 14 release 累计 持平 (v1.0.0 → v2.6.0, 跟 v1.2.4 baseline 62.5% → 67.0% (+4.5%) 持平, 跟"反讽" 闭环)
+- 跟 ACCUMULATED-LESSONS-2026-06-17.md v2.5.0 → v2.6.0 升级 联合 (1 文件 +218/-68)
+- 跟"诚实修正" + "反讽" + "翻篇&精进" + "反哺框架" 4 战略 联合
+- 跟 KALLAX-GLOSSARY §11.x 6 反思 术语 联合 (file:line `docs/KALLAX-GLOSSARY.md`)
+- 跟 PHASE-013-REFLECTION-2026-06-18.md + PHASE-014-REVIEW-2026-06-18.md 联合 (file:line `confluence/decisions/`)
+
 ## [2.5.0] - 2026-06-18
 
 ### Added

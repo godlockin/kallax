@@ -245,6 +245,19 @@
 - 主题 11: 工具 bypass 治根 (`KALLAX_BYPASS_*` env var 移除 + token 验证)
 - 主题 12: 跨 PHASE 累计 (ACCUMULATED-LESSONS 升级, 跟"反哺框架" 战略 一致)
 
+### 主题 13 (v2.5.0 新增, 跟 v2.4.0 PHASE-013-REFLECTION 联合)
+
+**v2.4.0 反思 lessons** (跟"诚实修正" + "反讽" 联合, 跟 KALLAX-GLOSSARY §11.x 联合):
+
+- **13.1 "Rule 数越少越好" 是 假命题** (跟 §1.1 反讽 联合): 22 Rule (v2.3.0) 没 任何 问题, 4 合并 是 "制造 0 实际改变 假动作" — KALLAX-GLOSSARY §11.1
+- **13.2 阈值 15 是 迷信** (跟 §10.3 联合): v1.2.4 EPIC-051 经验值, 没 任何 跟 实际 项目 状态 联合 的 实证 — KALLAX-GLOSSARY §11.1
+- **13.3 v2.4.0 4 合并 净价值 持平** (跟 §1.2 诚实修正 联合, 0 假 PASS 校验): 0 增命令 + 0 重写主逻辑 + 净价值 67.0% 持平 = 0 实际变化 — KALLAX-GLOSSARY §11.3
+- **13.4 4 组合并 边界 失焦** (跟 §1.2 诚实修正 联合): 跨 release 经验 跟 单 ticket 时间维度 失焦, P0 红线 跟 P1 软规则 优先级 失区分 — 跟 KALLAX-GLOSSARY §11.4 Master 自闭环 边界 联合
+- **13.5 v2.4.1 revert 闭环** (跟"诚实修正" 联合, 跟 PROCESS.md:25-26 联合): revert 是 技术 行动, 反思 是 战略 行动, 闭环 — KALLAX-GLOSSARY §11.5
+- **13.6 5 deferred tickets 状态更新** (跟 EPIC-058 联合, 跟"独立" 拍 explicit 联合): 3 closed (P1-1 v2.3.0 / P1-2 v2.4.0 / P3-1 v2.4.1) + 2 留待 (P2-1 / P2-2) — KALLAX-GLOSSARY §11.6
+
+**v2.4.0 反思 闭环 净价值**: 22 Rule 跟 v2.3.0 持平 (0 实际变化, 跟"翻篇&精进" 战略 一致), 净价值 67.0% 持平, 5 deferred → 3 closed + 2 留待.
+
 ---
 
 ## 4. 5 战略 升级 (跟 v2.0.3 联合)
@@ -275,24 +288,37 @@
 - Rule 合并 -3 → -2 honest mark (候选 C 净减 0)
 - 净价值 +3.0% → +1.5% honest mark (跟 v2.0.3 "净价值 67.5% 边际递减" 联合)
 
-### 4.4 "反讽" 闭环 (升级 ✅)
+### 4.4 "反讽" 闭环 (升级 ✅, 跟 v2.4.0 反思 联合)
 
 **v2.0.5 实证**:
 - ✅ 5 治理卡 = 治 5 假 PASS 根因 (security/process-engineering/auditor/compliance/decision-gate)
 - ✅ Rule 32 撤销反讽治根
 - ✅ Master 6 维恢复 (v1.2.4 退步对比反转)
-- ✅ 净价值反转 (-5% → +4.5%)
+- ✅ 净价值 反转 (-5% → +4.5%)
 
-### 4.5 "独立" 拍 explicit 约束 (升级 ✅)
+**v2.4.0 反思 实证** (跟 KALLAX-GLOSSARY §11.x 联合, 跟 PHASE-013-REFLECTION 联合):
+- ✅ "Rule 治 Rule 通胀" 迷信 反讽 闭环 (跟 v2.0.5 Rule 32 撤销 同样 反讽 模式) — §11.2
+- ✅ 4 合并 22→18 反思 闭环 (跟 v2.0.5 24→22 模式 同样 反讽 模式) — §11.1
+- ✅ 阈值 15 迷信 治根 (跟 §10.3 联合, 跟"反讽" 战略 联合) — §11.1
+
+### 4.5 "独立" 拍 explicit 约束 (升级 ✅, 跟 PHASE-014 联合)
 
 **v2.0.5 实证**:
 - ✅ 5 治理卡主公拍板 (跟 PROCESS.md:25-26 联合, Master 不自助升级红线)
 - ✅ ⚠️ 红线 revert (EPIC-056-C 跟 v1.2.4 主公拍板对话, 不暗箱操作)
 - ✅ ACCUMULATED-LESSONS 跨 PHASE 累计沉淀
 
+**v2.5.0 实证** (跟 PHASE-014 联合, 跟"独立" 拍 explicit 联合):
+- ✅ 5 deferred tickets 状态 闭环 (P1-1 v2.3.0 closed / P1-2 v2.4.0 closed 保留 / P3-1 v2.4.1 closed revert / P2-1 + P2-2 留待)
+- ✅ KALLAX-GLOSSARY §11.4 Master 自闭环 边界 重新审视 (跟 PROCESS.md:25-26 联合)
+- ✅ KALLAX-GLOSSARY §11.5 revert 跟反思 区别 闭环 (revert 技术 / 反思 战略)
+- ✅ v2.4.1 跟 v2.4.0 闭环 (跟"诚实修正" 联合, 治根 "0 实际变化 假动作" 反讽 模式)
+
 ---
 
-## 5. 5 治理卡 实际落地 (跟主公拍板 联合)
+## 5. 5 治理卡 + 5 deferred tickets 闭环 (跟 PHASE-014 联合, 跟"独立" 拍 explicit 联合)
+
+### 5.1 5 治理卡 实际落地 (v2.0.4 + v2.0.5 累计, 跟主公拍板 联合)
 
 | # | Ticket | 拍板 → 落地 | 净价值 / 治根 |
 |---|---|---|---|
@@ -304,9 +330,26 @@
 
 **5/5 拍板 + 5/5 落地** (跟 v2.0.3 "5 release 软约束 → 5 R-NEW 升级" 模式 升级)
 
+### 5.2 5 deferred tickets 状态 闭环 (v2.5.0 跨期 review, 跟 PHASE-014 + EPIC-058 联合, 跟 KALLAX-GLOSSARY §11.6 联合)
+
+| # | Ticket | 来源 | 状态 | 落地 | 治根 |
+|---|---|---|---|---|---|
+| 1 | **P1-1** | PHASE-011 cross-review | ✅ closed (v2.3.0) | pre-commit ALLOWED_PATTERNS 加 `^jira/` (1 line diff) | `--no-verify` workaround 反复 治根 |
+| 2 | **P1-2** | PHASE-011 cross-review | ✅ closed (v2.4.0, 保留) | 48 worktree + 123 branches 清理, 5.5M disk freed | worktree 累积 治根 |
+| 3 | **P2-1** | PHASE-011 cross-review | ⏸️ 留待 (主公 B 跳过) | EPIC-053-D web dashboard 代码就绪 `web/src/dashboard/dispatch/` | web 真上线 (server/域名/端口/反向代理) 留待 |
+| 4 | **P2-2** | PHASE-011 cross-review | ⏸️ 留待 (主公 D 跳过) | 69 remote feature branches Option A 保留 | DB cleanup Option B/C 留待 |
+| 5 | **P3-1** | PHASE-011 cross-review | ✅ closed (v2.4.1, revert) | v2.4.0 4 合并 revert, 22 Rule 跟 v2.3.0 持平 | "0 实际变化 假动作" 治根 |
+
+**3/5 closed (P1-1 v2.3.0 + P1-2 v2.4.0 + P3-1 v2.4.1) + 2/5 留待 (P2-1 + P2-2)**
+
+**闭环验证** (跟"独立" 拍 explicit 联合, 跟 PROCESS.md:25-26 联合):
+- P1-1/P1-2 跟 "翻篇&精进" 战略 一致 (治根 + 减负)
+- P3-1 跟 "诚实修正" 战略 一致 (v2.4.0 反思 闭环)
+- P2-1/P2-2 跟 "独立" 拍 explicit 一致 (主公 B+D 跳过 explicit)
+
 ---
 
-## 6. 14 卡闭环 累计 (跟 v2.0.3 8 票 升级)
+## 6. 18 卡闭环 累计 (跟 v2.0.3 8 票 + v2.0.6 14 卡 升级)
 
 ### EPIC-053 (KPI falsification 系统级治根, 6/6)
 
@@ -336,9 +379,18 @@
 - 056-B 流程效果度量
 - 056-C ⚠️ Master 6 维恢复 (红线 revert)
 
+### EPIC-057 (Hybrid flag multi-tool 闭环, 4/4, v2.0.6 release)
+
+- 057-A install-multi-tool 4 工具 paths mapping (8/8 PASS, v2.0.6 release)
+- 057-B onramp-tool-detect 6 工具 detection (6/6 PASS, v2.0.6 release)
+- 057-C docs-link-check 5 docs (5/5 PASS, v2.0.6 release, INSTALL-MULTI-TOOL.md 222 行)
+- 057-D multi-tool E2E 4 工具闭环 (4/4 PASS, v2.0.6 release, 跟"独立" 1 ticket 1 subagent 串行 联合)
+
 ---
 
-## 7. Master 5 清理 实际执行 (v2.0.5 落地)
+## 7. Master 清理 累计 (v2.0.5 5 清理 + v2.4.0 P1-2 worktree 清理, 跟 v2.4.0 反思 联合)
+
+### 7.1 Master 5 清理 (v2.0.5 落地, 跟 5 治理卡 联合)
 
 | # | 动作 | 工具 | Before → After | 治根 |
 |---|---|---|---|---|
@@ -348,11 +400,31 @@
 | 4 | Rule 合并 实际执行 | `CLAUDE.md` edit | 24 → 22 active Rule | A1 |
 | 5 | 仪表盘真跑 | `dispatch-dashboard.sh` + `process-metrics.sh` | 跑通 + 1/1 100% | H1/H6 |
 
+### 7.2 Master P1-2 worktree 清理 (v2.4.0 落地, 跟 v2.4.0 反思 联合)
+
+| # | 动作 | 工具 | Before → After | 治根 |
+|---|---|---|---|---|
+| 6 | 48 worktree 清理 | `git worktree prune` + manual | 48 → 1 活跃 (`.kallax/worktrees/miao` 保留) | worktree 累积 |
+| 7 | 123 branches 清理 | `git branch -D` + filter | 123 → 0 stale (miao HEAD 保留) | 旧 EPIC ticket branches |
+
+**48 worktree + 123 branches 清理 = 5.5M disk freed** (v2.4.0, 主公 Y 派单, 0 争议, 跟 KALLAX-GLOSSARY §11.5 联合)
+
+### 7.3 v2.4.1 Rule 合并 revert (跟"诚实修正" + "反讽" 联合, 跟 PHASE-013-REFLECTION 联合)
+
+| # | 动作 | 工具 | Before → After | 治根 |
+|---|---|---|---|---|
+| 8 | Rule 22→18 合并 revert | `CLAUDE.md` edit | 18 → 22 active Rule (跟 v2.3.0 持平) | "0 实际变化 假动作" 反讽 治根 |
+
+**闭环验证** (跟"诚实修正" 战略 一致, 跟 PROCESS.md:25-26 联合):
+- 5 清理 v2.0.5 治根 跟 v2.0.4 14 卡 闭环 联合
+- P1-2 worktree 清理 v2.4.0 治根 跟 v2.4.0 主公 Y 派单 联合
+- Rule 合并 revert v2.4.1 治根 跟 v2.4.0 PHASE-013-REFLECTION 联合, 0 假 PASS 校验
+
 ---
 
-## 8. 13 BE 累计 (跟 v2.0.3 11 BE 升级)
+## 8. 16 BE 累计 (跟 v2.0.3 11 BE + v2.0.6 13 BE 升级, 跟 v2.0.6 → v2.4.1 8 release 跨期 联合)
 
-| BE | 来源 | 治根 ticket | v2.0.3 → v2.0.5 |
+| BE | 来源 | 治根 ticket | v2.0.3 → v2.4.1 |
 |---|---|---|---|
 | BE-1 | Conductor 越界 | EPIC-039-C | ✅ closed |
 | BE-2 ~ BE-5 | 历史 4 subagent 越界 | EPIC-040 + EPIC-041 | ✅ closed |
@@ -364,14 +436,22 @@
 | BE-11 | 主 checkout 缺 3 文件 | EPIC-039 merge 闭环 | ✅ closed |
 | **BE-12** ⚠️ | 新 preflight 0 命中生产路径 (B 组逆袭 #1) | **EPIC-053-E** (5 调用点 wiring) | ✅ closed |
 | **BE-13** ⚠️ | check-scope-creep.sh glob bug (B 组逆袭 #2) | **EPIC-053-F** (P1) | ✅ closed |
+| **BE-14** ⚠️ | 4 subagent 并行 silent output 复发 | **EPIC-057-D** (1 ticket 1 subagent 串行) | ✅ closed (v2.0.6) |
+| **BE-15** ⚠️ | Claude Code 'Unknown command: /kallax-ask' | **26 .md wrappers** (v2.1.1) | ✅ closed (v2.1.1) |
+| **BE-16** ⚠️ | "0 实际变化 假动作" (4 Rule 合并 跟"翻篇&精进" 失焦) | **v2.4.1 revert** (跟 PHASE-013-REFLECTION 联合) | ✅ closed (v2.4.1) |
 
-**13/13 BE 闭环** (跟 v2.0.3 11/11 升级)
+**16/16 BE 闭环** (跟 v2.0.3 11/11 + v2.0.6 13/13 升级)
+
+**BE-14 → BE-16 模式 lessons** (跟"反讽" 战略 一致):
+- BE-14: 串行 派单 治根 4 并行 silent output 复发, 跟 PROCESS.md:25-26 联合
+- BE-15: Claude Code 2.1+ 优先 .md 格式 治根 "Unknown command" 4 工具 不一致
+- BE-16: v2.4.0 4 合并 反讽 → v2.4.1 revert 闭环, 治根 "Rule 数越少越好" 假命题 (跟 KALLAX-GLOSSARY §11.1 联合)
 
 ---
 
-## 9. 升级路径 累计 (跟 v2.0.3 升级闭环)
+## 9. 升级路径 累计 (跟 v2.0.3 9 升级 + v2.0.5 16 升级 升级, 跨 v2.0.6 → v2.4.1 8 release 累计)
 
-### v2.0.3 → v2.0.5 升级
+### v2.0.3 → v2.0.5 升级 (16 项)
 
 | 升级 | 来源 | 落地 |
 |---|---|---|
@@ -392,63 +472,106 @@
 | ✅ **⚠️ Master 6 维恢复** | **EPIC-056-C (红线 revert)** | v2.0.4 |
 | ✅ **Rule 32 撤销 反讽治根** | EPIC-054-D 候选 B | v2.0.5 |
 
-**16 项升级** 累计 (跟 v2.0.3 9 升级升级)
+### v2.0.6 → v2.4.1 跨期 升级 (8 release, 8 项)
+
+| 升级 | 来源 | 落地 |
+|---|---|---|
+| ✅ Hybrid flag-controlled install 4 工具 (--target=auto) | EPIC-057-A 8/8 PASS | v2.0.6 |
+| ✅ Onramp tool detect 6 工具 detection | EPIC-057-B 6/6 PASS | v2.0.6 |
+| ✅ Multi-tool E2E 4 工具 闭环 (1 ticket 1 subagent 串行) | EPIC-057-D 4/4 PASS | v2.0.6 |
+| ✅ 26 .sh 改造 + --help + slash-commands.md (651 行) | 跨期 todo 闭环 (v2.0.9) | v2.0.9 |
+| ✅ 8 工具 wizard 5-step + dry-run 模式 | 8 工具 default (v2.1.0) | v2.1.0 |
+| ✅ 26 .md wrappers (Claude Code 2.1+ 优先 .md 格式) | BE-15 治根 "Unknown command" (v2.1.1) | v2.1.1 |
+| ✅ 10 工具 + --symlink single source 模式 | canonical `~/.local/share/kallax/` (v2.2.0) | v2.2.0 |
+| ✅ pre-commit ALLOWED_PATTERNS 加 `^jira/` (1 line diff) | BE-14 --no-verify workaround 治根 (v2.3.0) | v2.3.0 |
+
+### v2.4.0 → v2.5.0 反思 升级 (3 release, 2 项)
+
+| 升级 | 来源 | 落地 |
+|---|---|---|
+| ✅ 48 worktree + 123 branches 清理 (5.5M disk freed) | P1-2 主公 Y 派单 (v2.4.0) | v2.4.0 |
+| ✅ Rule 22→18 合并 → revert (跟"诚实修正" 联合) | PHASE-013-REFLECTION (v2.4.1) | v2.4.1 |
+| ✅ KALLAX-GLOSSARY §11.x 6 反思 术语 (54→60) | PHASE-014 跨期 review 入口 (v2.5.0) | v2.5.0 |
+
+**26 项升级** 累计 (跟 v2.0.3 9 升级 + v2.0.5 16 升级 + v2.0.6→v2.4.1 8 升级 + v2.4.0→v2.5.0 2 反思 升级 升级)
 
 ---
 
-## 10. 净价值 反转 闭环 (跟 v1.2.4 baseline 对比)
+## 10. 净价值 反转 闭环 (跟 v1.2.4 baseline 对比, 跨 14 release 累计)
 
-### 5 阶段演化
+### 14 release 演化 (v1.0.0 → v2.5.0)
 
-| 阶段 | 净价值 | 跟 v1.2.4 对比 | 跟"反讽" 联合 |
+| 阶段 | 净价值 | 跟 v1.2.4 对比 | 跟"反讽" / "诚实修正" 联合 |
 |---|---|---|---|
+| **v1.0.0** (baseline) | 60.0% | -2.5% | baseline |
 | **v1.2.4** | 62.5% (-5% 恶化) | baseline | 反讽 |
 | v2.0.3 ACCUMULATED-LESSONS | 67.5% (5 视角 Product) | +5% | 反讽闭环 |
 | v2.0.4 (14 卡闭环) | 67.0% (+4.5%) | +4.5% | 反讽闭环 |
-| **v2.0.5** (5 清理 + Rule 合并) | 64.0% (+1.5%) → 联合 **67.0% 持平** | +4.5% 持平 | **诚实修正** (-3 → -2) |
+| v2.0.5 (5 清理 + Rule 合并 24→22) | 67.0% 持平 | +4.5% 持平 | **诚实修正** (-3 → -2) |
+| v2.0.6 (EPIC-057 4 ticket multi-tool) | 67.0% 持平 | +4.5% 持平 | **翻篇&精进** (0 增命令 0 增 Rule) |
+| v2.0.7 (跨期 todo 闭环 5 commit batch) | 67.0% 持平 | +4.5% 持平 | **翻篇&精进** |
+| v2.0.8 (PHASE-011 跨期 review 入口) | 67.0% 持平 | +4.5% 持平 | **翻篇&精进** |
+| v2.0.9 (26 .sh 改造 + --help + slash-commands.md 651 行) | 67.0% 持平 | +4.5% 持平 | **翻篇&精进** |
+| v2.1.0 (8 工具 wizard 5-step + dry-run) | 67.0% 持平 | +4.5% 持平 | **翻篇&精进** |
+| v2.1.1 (26 .md wrappers 治根 BE-15) | 67.0% 持平 | +4.5% 持平 | **翻篇&精进** |
+| v2.2.0 (10 工具 + --symlink single source) | 67.0% 持平 | +4.5% 持平 | **翻篇&精进** |
+| v2.3.0 (PHASE-012 跨期 review + GLOSSARY 扩 +12 + pre-commit 治根) | 67.0% 持平 | +4.5% 持平 | **翻篇&精进** |
+| v2.4.0 (PHASE-013 4 合并 + 48 worktree 清理) | 67.0% 持平 | +4.5% 持平 | **翻篇&精进** (假命题, BE-16) |
+| **v2.4.1** (4 合并 revert 跟"诚实修正" 联合) | 67.0% 持平 | +4.5% 持平 | **诚实修正** (跟 PHASE-013-REFLECTION 联合) |
+| **v2.5.0** (PHASE-014 入口 + GLOSSARY 11.x 6 反思) | 67.0% 持平 | +4.5% 持平 | **反讽** (跟 KALLAX-GLOSSARY §11.x 联合) |
 
-**反转验证**: 62.5% → 67.0% (+4.5%, 跟 v1.2.4 baseline 对比), 跟"反讽" 闭环
+**反转验证** (跟"反讽" 闭环, 跟"诚实修正" 联合, 跟"翻篇&精进" 战略 一致):
+- 62.5% (v1.2.4) → 67.0% (v2.0.4 闭环) → 67.0% (v2.0.5 持平) → 67.0% (v2.0.6 → v2.5.0 8 release 持平)
+- 8 release 累计 净价值 67.0% 持平 = 0 实际变化 (跟"翻篇&精进" 战略 一致)
+- 跟 KALLAX-GLOSSARY §11.3 "0 实际变化 假动作" 联合, v2.4.0 4 合并 = 0 实际变化 治根 闭环
+- 跟"诚实修正" 联合: v2.0.5 净价值 -3 → -2 honest mark, v2.4.0 4 合并 → v2.4.1 revert honest mark 闭环
 
 ---
 
-## 11. 5 视角 跟 v2.0.3 ACCUMULATED-LESSONS 对比 矩阵
+## 11. 5 视角 跟 v2.0.3 ACCUMULATED-LESSONS 对比 矩阵 (跨 14 release 累计)
 
-| 视角 | v2.0.3 baseline | v2.0.5 升级 | 净影响 |
-|---|---|---|---|
-| 🏗️ Architect | 18 Rule + 15 门禁循环论证 | 22 Rule + 17 门禁 + 4-Level 证据链 + Rule 32 撤销 | **净价值反转** |
-| 🛡️ Security | 71.4% BE 工具可绕过 | 3 层防护 + tool-self-check + BE-10 真根因 | **元级闭环** |
-| 💻 Backend | 71.4% BE / 12 KPI falsification | 4-Level 证据链 + A+B review + 6 票闭环 | **治根闭环** |
-| 📋 Product | 67.5% 净价值 (5 视角) | 67.0% 持平 (跟 5 视角 联合) | **诚实修正** |
-| 🖌️ UX | 决策疲劳 | P0/P1/P2 分级 + 3 KPI 仪表盘 | **疲劳治本** |
+| 视角 | v2.0.3 baseline | v2.0.5 升级 | v2.0.6 → v2.5.0 跨期 升级 | 净影响 |
+|---|---|---|---|---|
+| 🏗️ Architect | 18 Rule + 15 门禁循环论证 | 22 Rule + 17 门禁 + 4-Level 证据链 + Rule 32 撤销 | 22 Rule (v2.4.1 还原) + 4-Level 证据链 + 10 工具 + 26 .md wrappers + 26 .sh + single source + GLOSSARY 60 术语 | **净价值反转 + 跨期 持平** |
+| 🛡️ Security | 71.4% BE 工具可绕过 | 3 层防护 + tool-self-check + BE-10 真根因 | + pre-commit ALLOWED_PATTERNS `^jira/` (BE-14 治根) + 8 工具 multi-tool 治理 + BE-16 闭环 | **元级闭环 + 跨期 治根** |
+| 💻 Backend | 71.4% BE / 12 KPI falsification | 4-Level 证据链 + A+B review + 6 票闭环 | + 1 ticket 1 subagent 串行 (BE-14 治根) + 26 .sh + 26 .md wrappers + 10 工具 E2E | **治根闭环 + 跨期 串行** |
+| 📋 Product | 67.5% 净价值 (5 视角) | 67.0% 持平 (跟 5 视角 联合) | 67.0% 持平 8 release (跟"翻篇&精进" 一致) | **诚实修正 + 跨期 持平** |
+| 🖌️ UX | 决策疲劳 | P0/P1/P2 分级 + 3 KPI 仪表盘 | + 5 deferred tickets 闭环 (3 closed + 2 留待) + 8 工具 wizard 5-step + --symlink single source + --dry-run | **疲劳治本 + 跨期 用户体验 升级** |
 
 ---
 
-## 12. 给下 PHASE (PHASE-010/011) 战略建议 (跟"翻篇&精进" 一致)
+## 12. 给下 PHASE (PHASE-015+) 战略建议 (跟"翻篇&精进" + "诚实修正" + "反讽" + "反哺框架" 联合)
 
-### 12.1 治根 闭环
+### 12.1 治根 闭环 (跨 14 release 累计, 跟"翻篇&精进" 战略 一致)
 
-- ✅ 14 卡 PHASE-009 闭环 + 5 清理执行 = 0 待办 EPIC ticket
+- ✅ 18 卡 (5 EPIC: 053 + 054 + 055 + 056 + 057) 闭环 + 5 清理执行 = 0 待办 EPIC ticket
 - ✅ EPIC-057 4 ticket 串行闭环 (v2.0.6 release, 4 工具 multi-tool)
-- ⚠️ **遗留**: Rule 22 仍 > 15 阈值, 进一步合并需 PHASE-011 review
-- ⚠️ **遗留**: pre-commit hook ALLOWED_PATTERNS 不含 `^jira/` (历史 workaround 是 `--no-verify`)
-- ⚠️ **遗留**: 69 remote feature branches 仍含 DB in history (Option A 保留, 待 PHASE-011 review)
+- ✅ pre-commit ALLOWED_PATTERNS 含 `^jira/` (v2.3.0, 1 line diff, BE-14 治根)
+- ✅ 5 deferred tickets: 3 closed (P1-1 v2.3.0 / P1-2 v2.4.0 / P3-1 v2.4.1) + 2 留待 (P2-1 / P2-2)
 
-### 12.2 跨 PHASE review 升级
+### 12.2 跨 PHASE review 升级 (PHASE-005 → PHASE-014, 10 PHASE review 累计)
 
-- PHASE-009 → PHASE-010 (本升级版): 跨 14 卡 + 5 治理卡 + 5 清理 + EPIC-057 4 ticket 沉淀
-- ACCUMULATED-LESSONS-2026-06-13 → ACCUMULATED-LESSONS-2026-06-17 v2.0.5 → v2.0.6 (本升级)
+- PHASE-009 → PHASE-010 (v2.0.5 → v2.0.6): 跨 14 卡 + 5 治理卡 + 5 清理 + EPIC-057 4 ticket 沉淀
+- PHASE-010 → PHASE-011 (v2.0.6 → v2.0.8): 跨期 review 入口, 5 deferred tickets 整合
+- PHASE-011 → PHASE-012 (v2.0.8 → v2.3.0): 跨期 review 5 步大闭环, 26 升级 累计
+- PHASE-012 → PHASE-013 (v2.3.0 → v2.4.0): 4 Rule 合并反思 + 48 worktree 清理
+- **PHASE-013-REFLECTION** (v2.4.1): v2.4.0 4 合并 反思 290+ 行, 4 决策 + 4 治根
+- **PHASE-014** (v2.5.0): 5 deferred → 3 closed + 2 留待, 跨期 review 入口
+- ACCUMULATED-LESSONS-2026-06-13 → ACCUMULATED-LESSONS-2026-06-17 v2.0.5 → v2.0.6 → v2.5.0 (本升级)
 - 跟"反哺框架" 战略 一致
 
-### 12.3 0 增命令 + 0 增 Rule 持续 (v2.0.6 验证)
+### 12.3 0 增命令 + 0 增 Rule 持续 (v2.0.6 → v2.5.0 8 release 验证)
 
 - 跟 v2.0.3 战略一致 (跟 Rule 32 联合, Rule 32 已撤销)
 - v2.0.6 EPIC-057 加 4 ticket + 4 工具 paths mapping, **0 新增 Rule**, **0 新增 expert** (跟 v1.2.4 5 扩展组 模式 一致)
-- 净价值 67.0% 持续保持
+- v2.0.7 → v2.5.0 8 release 累计 0 增命令 0 增 Rule 持平 (跟"翻篇&精进" 战略 一致)
+- 净价值 67.0% 持续保持 (8 release 累计 持平)
 
-### 12.4 ⚠️ 红线 revert 文档化 (v2.0.5 + v2.0.6)
+### 12.4 ⚠️ 红线 revert 文档化 (v2.0.5 + v2.0.6 + v2.4.1 累计, 跟"诚实修正" 联合)
 
 - EPIC-056-C (v2.0.5): ⚠️ 红线 revert Master 6 维, 主公 explicit 拍板, 不暗箱操作
 - EPIC-057 串行派单 (v2.0.6): ⚠️ BE-9 silent output 复发 治根, 主公 D 拍板 (1 ticket 1 subagent), 不再 4 并行 silent
+- **v2.4.1 Rule 合并 revert**: ⚠️ v2.4.0 4 合并 反讽 → revert 跟"诚实修正" 联合, 治根 "0 实际变化 假动作" (跟 PHASE-013-REFLECTION 联合, 跟 KALLAX-GLOSSARY §11.5 联合)
 - ACCUMULATED-LESSONS 升级版 记录 此次 revert 完整流程 (供下 PHASE 参考)
 
 ### 12.5 EPIC-057 串行派单教训 (跟"独立" 拍 explicit 约束 联合)
@@ -458,34 +581,26 @@
 - **跨 ticket 依赖 (057-B 用 057-A paths, 057-C 用 057-A+B paths, 057-D 用全部)** 不能并行, 串行是 hard requirement.
 - **0 hybrid flag-controlled** (主公 '需要用户选择安装哪个工具/还是全支持' 联合): `--target=auto` 默认 = 全支持, explicit = 用户选择.
 
+### 12.6 v2.4.0 反思 闭环 (跟"诚实修正" + "反讽" 联合, 跟 KALLAX-GLOSSARY §11.x 联合)
+
+- **教训 1**: "Rule 数越少越好" 是 假命题 (跟 KALLAX-GLOSSARY §11.1 联合, 治根 "Rule 治 Rule 通胀" 迷信)
+- **教训 2**: 阈值 15 是 迷信 (跟 KALLAX-GLOSSARY §10.3 联合, 治根 v1.2.4 EPIC-051 经验值 迷信)
+- **教训 3**: 4 组合并 边界 失焦 (跟 KALLAX-GLOSSARY §11.4 联合, 跨 release 经验 跟 单 ticket 时间维度 失焦, P0 红线 跟 P1 软规则 优先级 失区分)
+- **教训 4**: revert 跟反思 区别 (跟 KALLAX-GLOSSARY §11.5 联合, revert 是 技术 行动, 反思 是 战略 行动)
+- **教训 5**: 5 deferred tickets 状态 (跟 KALLAX-GLOSSARY §11.6 联合, 3 closed + 2 留待)
+- **闭环验证**: v2.4.0 4 合并 → v2.4.1 revert 跟"诚实修正" 联合, 净价值 67.0% 持平, 0 增命令 0 增 Rule (跟"翻篇&精进" 一致)
+
+### 12.7 PHASE-014+ 战略建议 (跟"翻篇&精进" + "反讽" + "诚实修正" + "反哺框架" 联合)
+
+- **PHASE-015+ 启动 条件**: 主公 explicit 派单 (跟"独立" 拍 explicit 联合, 跟 PROCESS.md:25-26 联合)
+- **0 增命令 0 增 Rule 持续**: 14 release 累计 验证 模式, 未来 release 继续 持平
+- **GLOSSARY 持续 扩**: 60 术语 跟 KALLAX-GLOSSARY §12.x 后续 章节 联合 (跟"反讽" + "诚实修正" 联合, 治根 §10.3 阈值 15 迷信 后续)
+- **ACCUMULATED-LESSONS 跨 release 累计**: 跟"反哺框架" 战略 一致, 跨期 沉淀
+- **5 deferred 留待 处理**: P2-1 (web dashboard 真上线) + P2-2 (69 remote DB cleanup Option B/C) 长期, 主公 explicit 派单 闭环
+
 ---
 
-## 13. 累计文件清单 (跟 v2.0.3 联合)
-
-### v2.0.3 ACCUMULATED-LESSONS (历史保留)
-
-- `confluence/decisions/ACCUMULATED-LESSONS-2026-06-13.md` (429 行, v2.0.3 baseline)
-
-### v2.0.5 ACCUMULATED-LESSONS 初版 (v2.0.6 升级前)
-
-- `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md` (470 行, v2.0.5 升级版初版, 本升级后保留)
-
-### v2.0.6 ACCUMULATED-LESSONS 升级版 (本升级, 跟 PHASE-010 联合)
-
-- `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md` (本文件, v2.0.6 升级, +EPIC-057 section + 13 BE + 4 工具)
-- `confluence/decisions/PHASE-010-REVIEW-2026-06-17.md` (260 行, v2.0.6 4 ticket 闭环 review)
-- `confluence/decisions/14-ISSUES-INTAKE-2026-06-16.md` (14 卡 intake)
-- `confluence/decisions/5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md` (5 治理卡 拍板决策)
-- `docs/guides/INSTALL-MULTI-TOOL.md` (222 行, EPIC-057-C 新建, v2.0.6 4 工具 install guide)
-- `docs/PHASE-INDEX.md` (同步更新: 加 PHASE-010 + ACCUMULATED-2026-06-17)
-
-### PHASE-INDEX.md 累计 (10 PHASE review)
-
-- PHASE-005 ~ PHASE-008 (v2.0.3 baseline)
-- PHASE-009 (v2.0.5 release)
-- **PHASE-010** (v2.0.6 release, 本 review)
-- ACCUMULATED-LESSONS-2026-06-13 (v2.0.3)
-- ACCUMULATED-LESSONS-2026-06-17 (v2.0.5 初版 + v2.0.6 升级)
+## 13. 累计文件清单 (跟 v2.0.3 联合, 跨 14 release 累计)
 
 ### v2.0.3 ACCUMULATED-LESSONS (历史保留)
 
@@ -493,18 +608,53 @@
 - `confluence/decisions/PROJECT-STATUS-AND-LESSONS-2026-06-13.md` (288 行, 跟 v2.0.3 联合)
 - `confluence/decisions/PHASE-005~008-REVIEW-*.md` (5 PHASE review)
 
-### v2.0.5 ACCUMULATED-LESSONS (本升级版)
+### v2.0.5 ACCUMULATED-LESSONS 初版 (历史保留)
 
-- `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md` (本文档, v2.0.5 升级版)
+- `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md` (v2.0.5 升级版初版)
 - `confluence/decisions/PHASE-009-REVIEW-2026-06-17.md` (246 行, 14 卡闭环沉淀)
 - `confluence/decisions/14-ISSUES-INTAKE-2026-06-16.md` (14 卡 intake)
 - `confluence/decisions/5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md` (5 治理卡 拍板决策)
-- `docs/PHASE-INDEX.md` (同步更新: 加 PHASE-009-REVIEW-2026-06-17)
+- `docs/PHASE-INDEX.md` (v2.0.5 升级: 加 PHASE-009-REVIEW-2026-06-17)
 
-### PHASE-INDEX.md 累计 (9 PHASE review)
+### v2.0.6 ACCUMULATED-LESSONS 升级版 (历史保留)
+
+- `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md` (v2.0.6 升级, +EPIC-057 section + 13 BE + 4 工具)
+- `confluence/decisions/PHASE-010-REVIEW-2026-06-17.md` (260 行, v2.0.6 4 ticket 闭环 review)
+- `docs/guides/INSTALL-MULTI-TOOL.md` (222 行, EPIC-057-C 新建, v2.0.6 4 工具 install guide)
+- `docs/PHASE-INDEX.md` (v2.0.6 升级: 加 PHASE-010 + ACCUMULATED-2026-06-17)
+
+### v2.0.7 → v2.4.1 跨期 8 release 文件清单 (本升级, 跟 PHASE-011/012/013 联合)
+
+- `confluence/decisions/PHASE-011-REVIEW-2026-06-17.md` (跨期 review 入口, 5 deferred tickets 整合)
+- `confluence/decisions/PHASE-012-REVIEW-2026-06-17.md` (v2.2.0 → v2.3.0 跨期 review 5 步大闭环, 26 升级 累计)
+- `confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md` (v2.4.0 反思 290+ 行, 4 决策 + 4 治根, 跟 KALLAX-GLOSSARY §11.x 联合)
+- `confluence/decisions/PHASE-014-REVIEW-2026-06-18.md` (5 deferred → 3 closed + 2 留待, 跨期 review 入口)
+- `docs/KALLAX-GLOSSARY.md` (60 术语, v2.3.0 + v2.5.0 升级版, 733 行, §11.x 6 反思 术语)
+- `docs/reference/slash-commands.md` (651 行, v2.0.9 26 命令 详细 reference)
+- `docs/guides/INSTALL-MULTI-TOOL.md` (376 行, v2.2.0 升级, 10 工具 + single source 模式)
+- `docs/PHASE-INDEX.md` (v2.0.7 → v2.5.0 升级: 加 PHASE-011/012/013/013-REFLECTION/014 entry, 10 PHASE review 累计)
+- `.claude/commands/_kallax_common.sh` (show_help 函数 v2.1.1, 治根 BE-15)
+- `.claude/commands/kallax-{26 个}.{sh,md}` (26 .sh + 26 .md wrappers, 治根 BE-15)
+- `.trae/{skills,commands}` + `.antigravity/{skills,commands}` (symlinks to .claude/, v2.2.0)
+- `.cursor/{skills,commands}` + `.codeium/windsurf/{skills,commands}` (symlinks to .claude/, v2.1.0)
+- `.aider/skills/kallax/README.md` + `.continue/skills/kallax/README.md` (config templates v2.1.0)
+- `scripts/hooks/pre-commit` (ALLOWED_PATTERNS 加 `^jira/`, v2.3.0, 1 line diff, 治根 BE-14)
+- `scripts/install.sh` (10 工具 `--target=auto` hybrid flag + `--symlink` single source + `--wizard` 5-step + `--dry-run`, v2.2.0 升级)
+- `jira/epics/EPIC-058/epic.json` (5 deferred tickets)
+- `web/src/dashboard/dispatch/` (EPIC-053-D 代码就绪, 待 P2-1 server 部署)
+
+### PHASE-INDEX.md 累计 (10 PHASE review 累计, 跟 v2.5.0 升级 联合)
 
 - PHASE-005 ~ PHASE-008 (v2.0.3 baseline)
-- **PHASE-009-REVIEW-2026-06-17** (v2.0.5 升级)
+- PHASE-009 (v2.0.5 release)
+- PHASE-010 (v2.0.6 release)
+- **PHASE-011** (v2.0.8 release, 跨期 review 入口)
+- **PHASE-012** (v2.3.0 release, 跨期 review 5 步大闭环)
+- **PHASE-013** (v2.4.0 release, 4 合并 + 48 worktree 清理)
+- **PHASE-013-REFLECTION** (v2.4.1 release, v2.4.0 反思 290+ 行)
+- **PHASE-014** (v2.5.0 release, 5 deferred → 3 closed + 2 留待, 跨期 review 入口)
+- ACCUMULATED-LESSONS-2026-06-13 (v2.0.3 baseline)
+- ACCUMULATED-LESSONS-2026-06-17 (v2.0.5 初版 + v2.0.6 升级 + v2.5.0 升级 [本升级])
 
 ---
 
