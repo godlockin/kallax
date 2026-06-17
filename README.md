@@ -101,17 +101,33 @@ KALLAX 基于多 Agent 协作的最佳实践：
 
 ## 快速开始
 
-### 安装
+### 安装 (v2.0.6 — 4 工具支持: Claude Code / opencode / Codex / Gemini)
 
 ```bash
 # 克隆仓库
 git clone https://github.com/your-org/kallax.git
 cd kallax
 
-# 运行安装脚本（自动检测 Rust/Node 版本）
-./scripts/quick-setup.sh
+# 默认 --target=auto 检测 (Claude Code 优先, 跟 EPIC-057-B AC #3 一致)
+./scripts/install.sh
 
-# 或手动安装
+# 显式单工具
+./scripts/install.sh --target=claude
+./scripts/install.sh --target=opencode
+./scripts/install.sh --target=codex
+./scripts/install.sh --target=gemini
+
+# 多工具 (逗号分隔)
+./scripts/install.sh --target=claude,opencode
+
+# 强制全装 (4 工具)
+./scripts/install.sh --target=all
+
+# 详细 4 工具 install guide + 路径映射表 + 故障排查
+# 见 docs/guides/INSTALL-MULTI-TOOL.md (跟 EPIC-057-A/B 契约 一致, 治 v2.0.2 跨平台 fix 反讽)
+
+# 或手动安装 (Rust + Node.js)
+./scripts/quick-setup.sh
 npm install
 cd rust && cargo build --release
 ```
@@ -205,11 +221,25 @@ kallax/
 │       ├── core/            # 消息队列、缓存
 │       ├── api/             # HTTP/WebSocket
 │       └── skills/          # Skills 系统
+├── .claude/                 # Claude Code 工具目录 (跟 EPIC-057-A AC #3 一致)
+│   ├── commands/            # Claude Code slash commands (30 文件)
+│   └── skills/kallax/       # Claude Code skills (89 文件)
+├── .opencode/               # opencode 工具目录 (跟 EPIC-057-A AC #3 一致, v2.0.2 mirror)
+│   └── command/             # opencode slash commands mirror (singular, 30 文件, 跟 .claude/commands/ 一致)
 ├── confluence/              # 知识库仓库
 ├── jira/                    # 任务管理仓库
 ├── docs/                    # 架构文档
+│   ├── guides/
+│   │   ├── INSTALL-MULTI-TOOL.md  # 4 工具 install guide (v2.0.6 新增)
+│   │   ├── quick-start.md
+│   │   └── ...
+│   ├── PROCESS.md           # 流程文档
+│   ├── STRUCTURE.md         # 结构文档
+│   └── KALLAX-GLOSSARY.md   # 术语 SoT
 ├── template/                # 外部项目模板
 ├── scripts/                 # 运维脚本
+│   ├── install.sh           # 4 工具 install (v2.0.6 --target=auto|all|specific)
+│   └── kallax-onramp.sh     # 项目分析入口 (v2.0.6 tool detection)
 └── .kallax/                 # 系统数据目录
 ```
 

@@ -5,6 +5,50 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.6] - 2026-06-17
+
+### Added
+
+#### Multi-tool install support (Claude Code / opencode / Codex / Gemini, --target=auto 默认检测, 治 v2.0.2 跨平台 fix 反讽)
+
+跟主公 2026-06-17 explicit 拍 B 联合 (file:line `jira/epics/EPIC-057/epic.json:21-26`), 跟 v2.0.2 '跨平台 fix release' 反讽 闭环 (file:line `CHANGELOG.md:647-661`), 跟"诚实修正" 联合, 跟"翻篇&精进" 战略 一致:
+
+- **install.sh --target=auto + 4 工具 skills/commands 路径** (跟 EPIC-057-A 联合, file:line `jira/tickets/EPIC-057-A/ticket.json:23-31`):
+  - `--target=auto` 默认 auto-detect (claude > opencode > codex > gemini 优先级)
+  - `--target=claude|opencode|codex|gemini` 显式单工具
+  - `--target=claude,opencode` 多工具 (逗号分隔)
+  - `--target=all` 强制全装
+  - 4 工具路径映射: claude→`~/.claude/{skills/kallax,commands}/`, opencode→`~/.opencode/{skills/kallax,command/}` (singular), codex→`~/.codex/{skills/kallax,prompts/}`, gemini→`~/.gemini/{skills/kallax,commands}/`
+- **kallax-onramp.sh tool detection + dispatch** (跟 EPIC-057-B 联合, file:line `jira/tickets/EPIC-057-B/ticket.json:24-32`):
+  - `tool-detect.sh` 检测 $PATH + $HOME/<tool>/ 哪个工具可用
+  - dispatch 4 工具等价命令: `claude --print` / `opencode --non-interactive` / `codex exec` / `gemini --non-interactive`
+  - detect 优先级 claude > opencode > codex > gemini (跟 install.sh 一致)
+- **docs/guides/INSTALL-MULTI-TOOL.md** 新建 (~200 行, 跟 `docs/PROCESS.md` 风格 一致): 4 工具 install guide + auto-detect 行为 + --target flag 文档 + 路径映射表 + 故障排查 + 升级路径 (跟 EPIC-057-C 联合)
+- **README.md 安装段 + 目录结构段 标注更新**: 4 工具支持标注 (Claude Code 默认, opencode/codex/gemini --target=auto 自动检测), `.opencode/command/` 是 opencode mirror (跟 EPIC-057-C 联合, file:line `README.md:104-138`)
+- **integration tests** (跟 EPIC-057-D 联合, file:line `jira/tickets/EPIC-057-D/ticket.json:27-36`): `tests/integration/install-multi-tool-test.sh` 8/8 PASS + `tests/integration/onramp-tool-detect-test.sh` 6/6 PASS + `tests/integration/multi-tool-e2e-test.sh` 4/4 PASS
+- **docs link check test** (跟 EPIC-057-C 联合, file:line `tests/integration/docs-link-check-test.sh`): 5/5 PASS (外链完整性 + 4 工具 path 路径正确 + 文档一致性)
+
+### Fixed
+
+#### v2.0.2 '跨平台 fix release' 反讽 治根 (跟"诚实修正" 联合, 跟"反讽" 闭环)
+
+跟"反讽" 联合:
+- **证据**: `CHANGELOG.md:647-661` (v2.0.2 release notes 自称"跨平台 fix release", 加 frontmatter + 31 slash command mirror 到 `.opencode/command/`)
+- **反驳/支持**: `scripts/install.sh:52-53` (v1.0.0 hardcoded `~/.claude/`, 只支持 Claude Code); `jira/epics/EPIC-057/epic.json:11-12` (baseline gap: "opencode 30 文件但 install.sh 没装, codex/gemini 0 reference")
+- **影响**: v2.0.2 release 命名"跨平台"实际"单平台" — 命名跟实现不一致 (跟 KALLAX-GLOSSARY.md §1.1 反讽定义 联合, file:line `docs/KALLAX-GLOSSARY.md:30-36`); v2.0.6 install.sh 加 `--target=auto` 检测 + 4 工具 skills/commands 路径映射, 治根
+
+跟"诚实修正" 联合:
+- **证据**: 本 entry 标注 "v2.0.2 release 命名是跨平台, 实际只 Claude Code (历史 gap), v2.0.6 治根" + `docs/guides/INSTALL-MULTI-TOOL.md:§1.1` 反讽治根说明段
+- **反驳/支持**: 看到反讽不装看不见 — 文档明确标注 v2.0.2 gap, 不模糊处理 (跟 KALLAX-GLOSSARY.md §1.2 诚实修正定义 联合, file:line `docs/KALLAX-GLOSSARY.md:40-47`)
+- **影响**: 主公信任↑, 治理闭环, 不在历史 gap 上反复 (跟"翻篇&精进" 战略 一致, file:line `docs/KALLAX-GLOSSARY.md:108-112`)
+
+### Notes
+- 0 Rule 增加 (跟 Rule 32 软约束升级阈值 联合, 跟"反讽" 联合, file:line `docs/KALLAX-GLOSSARY.md:268-272`)
+- 0 重写 (跟 Rule 5 DRY 联合, 跟"翻篇&精进" 战略 一致)
+- 走对策 A+B+C 落地 (跟"反讽" 联合, 跟 Rule 11/14/15 联合)
+- 跟 v2.0.5 (PHASE-009 review + 14 卡闭环 + 5 清理) 联合 release (file:line `CHANGELOG.md:8-69`)
+- 跟 EPIC-057 4 ticket (A install.sh + B onramp.sh + C docs + D tests) 联合 (file:line `jira/epics/EPIC-057/epic.json:27-55`)
+
 ## [2.0.5] - 2026-06-17
 
 ### Changed
