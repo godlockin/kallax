@@ -5,7 +5,33 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.4.0] - 2026-06-18
+## [2.4.1] - 2026-06-18
+
+### Reverted
+
+#### PHASE-013-REFLECTION 落地: revert v2.4.0 4 Rule 合并 (跟"诚实修正" + "反讽" 联合, 跟主公 2026-06-18 'a' 反思 explicit 派单 联合)
+
+跟主公 2026-06-18 'a' explicit 拍板 联合 (1h 反思, 跟"诚实修正" 联合), 跟 PROCESS.md:25-26 "Master 不能自己升级红线" 联合 (主公 explicit 拍板 后 才执行), 跟 KALLAX-GLOSSARY §1.1 §1.2 §10.3 联合:
+
+- **v2.4.0 4 Rule 合并 revert** (18 → 22, 跟 v2.3.0 一致):
+  - **Rule 7 + Rule 8 还原**: Rule 7 (PHASE 闭环 review) + Rule 8 (L4 脚本必须存在) 还原 跟 v2.3.0 一致, 边界清晰 (跨 release 经验 跟 单 ticket close L4 脚本 时间维度 分离)
+  - **Rule 11 + Rule 12 还原**: Rule 11 (Master 写代码禁令 P0 红线) + Rule 12 (质量 ensure 强制 P1 软规则) 还原 跟 v2.3.0 一致, 优先级清晰 (P0 红线 跟 P1 软规则 分离)
+  - **Rule 14 + Rule 15 还原**: Rule 14 (Conductor 不越界) + Rule 15 (Performer 自动加载) 还原 跟 v2.3.0 一致, 角色边界清晰 (Conductor 跟 Performer 独立 Rule)
+  - **Rule 16 + Rule 17 还原**: Rule 16 (Subagent 5 步 ticket 级别) + Rule 17 (文件并发 5 步 文件级别) 还原 跟 v2.3.0 一致, "5 步" 明确指向
+- **PHASE-013-REFLECTION 落地**: 写 `confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md` 反思 doc, 跟"诚实修正" + "反讽" 战略 联合, 治根 "0 实际改变 假动作" + "Rule 治 Rule 通胀" 迷信
+
+### Notes
+- 0 增命令 (跟 v2.0.9 / v2.0.10 / v2.0.11 / v2.1.0 / v2.1.1 / v2.2.0 / v2.3.0 / v2.4.0 0 增 联合)
+- 净增 +4 Rule (v2.4.0 18 → v2.4.1 22, 跟 v2.3.0 一致 还原)
+- 0 重写主逻辑 (跟"翻篇&精进" 战略 一致, 4 Rule 还原 纯 文档, 落地脚本 不变)
+- v2.4.0 worktree 清理 保留 (主公 拍 Y 清理, 47 worktree + 123 branches 删除, 5.5M disk freed, 0 争议)
+- 跟"诚实修正" 联合 (v2.4.0 4 合并 反思, 治根 "0 实际改变 假动作", 跟"独立" 拍 explicit 联合, 主公 反问 触发 1h 反思)
+- 跟"反讽" 联合 (v2.4.0 4 合并 "Rule 数 减少 净价值 提升" 反讽 闭环, 实际 "制造 0 实际改变 假动作" 反讽 治根)
+- 跟"独立" 拍 explicit 联合 (主公 'a' explicit 派单 1h 反思, 跟 PROCESS.md:25-26 联合, 跟 Master 自闭环 边界 重新审视)
+- 跟"翻篇&精进" 战略 一致 (0 增 + 反思 revert, 0 实际变化 跟 v2.3.0 持平, 净价值 67.0% 持平)
+- 跟"反哺框架" 战略 一致 (跨 release 累计沉淀, 13 release 累计 0 增命令 0 增 Rule, 跟 KALLAX-GLOSSARY §10.3 阈值 15 重新审视 联合)
+
+## [2.4.0] - 2026-06-18 (superseded by v2.4.1)
 
 ### Changed
 
