@@ -1,0 +1,34 @@
+{
+  "id": "EPIC-057-C",
+  "epicId": "EPIC-057",
+  "phaseId": "PHASE-009",
+  "title": "INSTALL-MULTI-TOOL.md + README multi-tool guide (4 工具 install 文档)",
+  "type": "docs",
+  "priority": "P2",
+  "status": "ready",
+  "created_by": "master_main (主公 2026-06-17 拍 B, multi-tool docs)",
+  "created_at": "2026-06-17T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-057-C/",
+      "docs/guides/INSTALL-MULTI-TOOL.md",
+      "README.md"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "docs/guides/INSTALL-MULTI-TOOL.md (跟 docs/PROCESS.md / 5 治理卡 联动) — 4 工具 install guide + auto-detect 行为 + --target flag 文档 + 路径映射表 + 故障排查",
+    "README.md 改: '安装' 段 加 4 工具支持标注 (Claude Code 默认, opencode/codex/gemini --target=auto 自动检测), '目录结构' 段 标注 .opencode/command/ 是 opencode mirror",
+    "CHANGELOG.md 加 [2.0.6] entry: 'Multi-tool install support (Claude Code / opencode / Codex / Gemini, --target=auto 默认检测, 治 v2.0.2 跨平台 fix 反讽)'",
+    "5 标签 SOP 应用: 每条引用带 证据链 3 件套 (跟 EPIC-055-C 联动)",
+    "跟'诚实修正' 联合: 明确标注 'v2.0.2 release 命名是跨平台, 实际只 Claude Code (历史 gap), v2.0.6 治根'",
+    "跟'翻篇&精进' 联合: 文档做减法, 不再加内容, 只更新现有章节",
+    "tests/integration/docs-link-check-test.sh 5/5 PASS (外链完整性 + 4 工具 path 路径正确 + 文档一致性)",
+    "Rule 9 KPI 精确 X/Y 格式 — 5/5 PASS = 100.0%"
+  ],
+  "estimated_hours": 2,
+  "status_set_by": "master_main (主公 B explicit)"
+}

@@ -1,0 +1,39 @@
+{
+  "id": "EPIC-057-D",
+  "epicId": "EPIC-057",
+  "phaseId": "PHASE-009",
+  "title": "integration tests multi-tool install + onramp (4 工具 mock + boundary + auto-detect)",
+  "type": "test",
+  "priority": "P1",
+  "status": "ready",
+  "created_by": "master_main (主公 2026-06-17 拍 B, multi-tool tests)",
+  "created_at": "2026-06-17T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-057-D/",
+      "tests/integration/install-multi-tool-test.sh",
+      "tests/integration/onramp-tool-detect-test.sh",
+      "tests/integration/multi-tool-e2e-test.sh",
+      "tests/fixtures/mock-tools/claude/",
+      "tests/fixtures/mock-tools/opencode/",
+      "tests/fixtures/mock-tools/codex/",
+      "tests/fixtures/mock-tools/gemini/"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "tests/integration/install-multi-tool-test.sh 8/8 PASS: --target=auto (4 工具 mock 存在) / --target=all (强制全装) / --target=claude (单工具) / --target=opencode,codex (多工具) / --target=nonexistent (boundary error) / fallback (no $HOME/.claude etc) / 版本检查 (SKILL.md loadable) / permissions configured",
+    "tests/integration/onramp-tool-detect-test.sh 6/6 PASS: claude detected / opencode detected / codex detected / gemini detected / multi-tool priority / no-tool fallback",
+    "tests/integration/multi-tool-e2e-test.sh 4/4 PASS: install → onramp → all 4 工具 works end-to-end (mock $HOME)",
+    "tests/fixtures/mock-tools/{claude,opencode,codex,gemini}/ 目录结构 mock 完整 (skills/, commands/ 或对应, settings 文件)",
+    "mock 环境变量 KALLAX_TEST_HOME 覆盖 $HOME (跟 EPIC-053-A l3-l4-consistency 环境隔离 联动)",
+    "Rule 9 KPI 精确 X/Y 格式 — 8/8 + 6/6 + 4/4 = 18/18 PASS = 100.0%",
+    "boundary case: --target=claude 但 ~/.claude 不存在 → 警告 + 退出 1 (不假装成功)",
+    "boundary case: 4 工具都检测失败 → 警告 + exit 1 + suggestion 'install claude'"
+  ],
+  "estimated_hours": 3,
+  "status_set_by": "master_main (主公 B explicit)"
+}

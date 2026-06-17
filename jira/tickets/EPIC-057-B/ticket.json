@@ -1,0 +1,35 @@
+{
+  "id": "EPIC-057-B",
+  "epicId": "EPIC-057",
+  "phaseId": "PHASE-009",
+  "title": "kallax-onramp.sh tool detection + dispatch (claude/opencode/codex/gemini --print 等价)",
+  "type": "feature",
+  "priority": "P1",
+  "status": "ready",
+  "created_by": "master_main (主公 2026-06-17 拍 B, onramp tool detection)",
+  "created_at": "2026-06-17T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-057-B/",
+      "scripts/kallax-onramp.sh",
+      "scripts/kallax-onramp/lib/tool-detect.sh",
+      "scripts/kallax-onramp/lib/dispatch.sh",
+      "tests/integration/onramp-tool-detect-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/kallax-onramp/lib/tool-detect.sh 实现 — 检测 $PATH + $HOME/<tool>/ 哪个工具可用 (跟 EPIC-057-A install.sh auto-detect 一致)",
+    "scripts/kallax-onramp.sh Step 2 pre-assess 改成 tool-detect 调度 — claude → claude --print, opencode → opencode --non-interactive (或等价), codex → codex exec (或 echo 缺 binary), gemini → gemini --non-interactive (或等价)",
+    "tool-detect 优先级: claude > opencode > codex > gemini (Claude Code 优先, 跟 install.sh 一致)",
+    "detect 失败 fallback: echo 'No AI CLI tool detected' + 退出 1 (跟 onramp 当前 fallback 一致)",
+    "detect 成功 输出: {tool: 'claude', binary: '/usr/local/bin/claude', version: '1.x.x', skills_dir: '~/.claude/skills/kallax/', commands_dir: '~/.claude/commands/'} 格式 JSON",
+    "tests/integration/onramp-tool-detect-test.sh 6/6 PASS (4 工具 mock + 优先级 + fallback + binary 缺失)",
+    "Rule 9 KPI 精确 X/Y 格式 — 6/6 PASS = 100.0%"
+  ],
+  "estimated_hours": 4,
+  "status_set_by": "master_main (主公 B explicit)"
+}
