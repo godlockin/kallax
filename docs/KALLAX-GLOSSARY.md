@@ -429,6 +429,80 @@ KALLAX 规则 (Rule 1-18 + 29-33) 的唯一真相来源 → [CLAUDE.md](../CLAUD
 
 ---
 
+### 8.11 「Trae」ByteDance AI IDE (Trae Skills Support)
+
+**大白话**: "Trae 是 ByteDance 推出的 AI IDE (类似 VS Code + AI 集成), 用 `~/.trae/skills/kallax/` (skill bundle 格式) + `~/.trae/commands/` (slash commands 格式) 双路径".
+
+**特点** (跟 KALLAX-GLOSSARY §8.6 multi-tool 联合):
+- Skill bundle 格式: `~/.trae/skills/<name>/SKILL.md` (跟 trae builtin_skills 模式 一致, file:line `~/.trae/builtin_skills/TRAE-generate-mini-app/SKILL.md:1-15`)
+- Slash commands: `~/.trae/commands/kallax-*.sh` (跟 Claude Code 一致 模式)
+
+**v2.2.0 install** (跟主公"claude code、trae、antigravity、opencode 正常调用" 派单 联合, file:line `scripts/install.sh:69-92`):
+- `--target=trae` 显式装 / `--target=all` 全装
+- `--symlink` single source 模式: `~/.trae/skills/kallax` + `~/.trae/commands` 都是 symlink → `~/.local/share/kallax/`
+
+**Rule 引用**: Rule 5 (DRY) + Rule 15 (Performer 隔离) — [CLAUDE.md](../CLAUDE.md), 跟"翻篇&精进" 战略 一致.
+
+---
+
+### 8.12 「Antigravity」Google AI IDE (Antigravity Skills Support)
+
+**大白话**: "Antigravity 是 Google 推出的 AI IDE, 用 `~/.antigravity/skills/kallax/` + `~/.antigravity/commands/` 双路径 (跟 Trae 模式 一致, 跟 Claude Code 也兼容)".
+
+**特点** (跟 Trae 类似, 跟 KALLAX-GLOSSARY §8.6 multi-tool 联合):
+- Skill bundle 格式: `~/.antigravity/skills/<name>/SKILL.md` (跟 antigravity builtin skills 模式 一致, file:line `~/.antigravity/skills/test-driven-development/SKILL.md:1-7`)
+- Slash commands: `~/.antigravity/commands/kallax-*.sh`
+
+**v2.2.0 install** (跟 Trae 同步, 跟主公"claude code、trae、antigravity、opencode 正常调用" 派单 联合, file:line `scripts/install.sh:69-92`):
+- `--target=antigravity` 显式装
+- `--symlink` single source 模式: `~/.antigravity/skills/kallax` + `~/.antigravity/commands` 都是 symlink → `~/.local/share/kallax/`
+
+**Rule 引用**: Rule 5 (DRY) + Rule 15 (Performer 隔离) — [CLAUDE.md](../CLAUDE.md), 跟"翻篇&精进" 战略 一致.
+
+---
+
+### 8.13 「Single Source」Symlink 模式 (Single Source Symlink Mode)
+
+**大白话**: "KALLAX canonical 源在 `~/.local/share/kallax/`, 4+ 工具 user-level 路径都 symlink 引用 — 改 1 次, 4 工具立即生效".
+
+**原理图** (跟主公"用一份skills/命令文件支持所有的引用" 显式需求 联合, file:line `docs/guides/INSTALL-MULTI-TOOL.md:§4.1`):
+```
+~/.local/share/kallax/                (canonical, 1 份源, real)
+├── skills/kallax/                     (14 files)
+└── commands/                          (56 files: 27 .sh + 27 .md + lib + heartbeat)
+
+        ↓ symlinks ↓
+
+~/.claude/{skills/kallax,commands}         ─┐
+~/.trae/{skills/kallax,commands}            │
+~/.antigravity/{skills/kallax,commands}     │  4+ 工具
+~/.opencode/{skills/kallax,command}         │  共享 1 份源
+... (10 工具 user-level paths)             ─┘
+```
+
+**优势** (跟"翻篇&精进" 联合):
+- ✅ **一份文件** — 4 工具共享 1 份源, 不重复
+- ✅ **更新一次, 4 工具同时获更新** — 改 canonical, 4 工具立即生效
+- ✅ **省 disk** — 4 工具不再 4 份副本, 1 份源 (canonical ~30KB 共享)
+- ✅ **一致性** — 4 工具版本永远一致 (symlink 强制, 不可能漂移)
+- ✅ **copy 模式保留** — `--copy` 跟 v2.1.x 兼容, 不破坏现有 install
+
+**用法** (跟 v2.2.0 install.sh 联合, file:line `scripts/install.sh:181-186`):
+```bash
+# 4 工具 single source 模式 (跟主公派单 一致, 推荐)
+./scripts/install.sh --symlink --target=claude,trae,antigravity,opencode
+
+# 10 工具 single source 模式
+./scripts/install.sh --symlink --target=all
+
+# 默认 copy 模式 (跟 v2.1.x 兼容)
+./scripts/install.sh --target=claude
+```
+
+**Rule 引用**: Rule 5 (DRY) + Rule 16 (Subagent 5 步) + Rule 32 (软约束升级阈值) — [CLAUDE.md](../CLAUDE.md), 跟"翻篇&精进" + "诚实修正" 战略 一致.
+
+---
+
 ## 9. 总结
 
 | 类别 | 术语数 | Rule 引用 |
@@ -440,12 +514,12 @@ KALLAX 规则 (Rule 1-18 + 29-33) 的唯一真相来源 → [CLAUDE.md](../CLAUD
 | **经验教训** (5.x) | 3 | Rule 29/30/31 |
 | **角色 / 决策** (6.x) | 4 | Rule 11/13/14/15 |
 | **量化 / 指标** (7.x) | 3 | Rule 32 |
-| **落地 / 工程** (8.x) | **10** (+5 multi-tool) | Rule 5/15/17/29/31 + Rule 5/10/11/15/16/18 (multi-tool 联合) |
-| **总计** | **39 个术语** (+5 v2.0.6) | 跨 Rule 1-33 |
+| **落地 / 工程** (8.x) | **13** (+3 v2.2.0 trae/antigravity/symlink) | Rule 5/15/17/29/31 + Rule 5/10/11/15/16/18 (multi-tool 联合) |
+| **总计** | **42 个术语** (+3 v2.2.0) | 跨 Rule 1-33 |
 
 ### 🔑 关键 takeaway
 
-- ✅ **39 个术语** 全部覆盖, 一次性盘点 (跟 v2.0.6 4 工具 multi-tool 升级 +5)
+- ✅ **42 个术语** 全部覆盖, 一次性盘点 (跟 v2.0.6 +5 + v2.2.0 +3 multi-tool/single-source)
 - ✅ **每个术语**: 大白话 + 来源 + Rule 引用
 - ✅ **追溯链完整** (跟"独立" 拍 explicit 约束 联合)
 - ✅ **写到了文件** (跟主公 explicit 约束 联合)
