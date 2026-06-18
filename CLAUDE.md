@@ -468,6 +468,34 @@ L4 数据流动：集成测试验证
 
 ---
 
+## 9 Hard Rules 模式 (跟 eket MASTER-RULES.md §6 联合, 借方法论 不借代码, EPIC-059-A v2.7.0)
+
+> **22 Rule → 9 类别 group 索引 (file:line 1:1 映射, 0 删 Rule)**
+> **跟 PHASE-013-REFLECTION-2026-06-18.md 联合, 治根 "Rule 数 通胀" 迷信**
+> **跟 KALLAX-GLOSSARY §11.1 "Rule 数 ≠ 治理完成" 联合, 跟"翻篇&精进" 战略 一致**
+> **详细**: [docs/process/9-hard-rules.md](docs/process/9-hard-rules.md)
+> **检查**: `bash scripts/check-9-hard-rules.sh --self-test` + `bash tests/integration/check-9-hard-rules-test.sh`
+
+### 22 Rule → 9 类别 group 索引 表
+
+| 类别 | 主题 | Rule (file:line 1:1) | 联合 |
+|------|------|----------------------|------|
+| **1. 隔离与并行 (Isolation)** | worktree / file-lock / session 隔离 | Rule 1 ([CLAUDE.md:50](CLAUDE.md#L50)) + Rule 15 ([CLAUDE.md:384](CLAUDE.md#L384)) + Rule 17 ([CLAUDE.md:412](CLAUDE.md#L412)) | Rule 1 并行隔离强制化 |
+| **2. 错误处理与验证 (Error & Verify)** | Result 类型 / 产出真实性 / 4-Level / KPI 黑名单 | Rule 2 ([CLAUDE.md:64](CLAUDE.md#L64)) + Rule 3 ([CLAUDE.md:80](CLAUDE.md#L80)) + Rule 9 ([CLAUDE.md:176](CLAUDE.md#L176)) + Rule 18 ([CLAUDE.md:426](CLAUDE.md#L426)) | Rule 9 4-Level Fact-Forcing |
+| **3. 资源与质量 (Resource & Quality)** | TTL 缓存 / expert audit | Rule 4 ([CLAUDE.md:92](CLAUDE.md#L92)) + Rule 12 ([CLAUDE.md:244](CLAUDE.md#L244)) | Rule 4 资源管理规范化 |
+| **4. 类型与安全 (Type & Security)** | 严格类型 / 工具 bypass / 独立见证 | Rule 5 ([CLAUDE.md:106](CLAUDE.md#L106)) + Rule 29 ([CLAUDE.md:520](CLAUDE.md#L520)) + Rule 30 ([CLAUDE.md:526](CLAUDE.md#L526)) | Rule 5 类型安全强制化 |
+| **5. 经验沉淀 (Lessons Accumulation)** | 4 件套 / PHASE 闭环 / Anti-Fab | Rule 6 ([CLAUDE.md:122](CLAUDE.md#L122)) + Rule 7 ([CLAUDE.md:148](CLAUDE.md#L148)) + Rule 10 ([CLAUDE.md:194](CLAUDE.md#L194)) | Rule 6 经验沉淀强制化 |
+| **6. 角色边界 (Role Boundary)** | Master 禁写 / Conductor 禁越界 | Rule 11 ([CLAUDE.md:208](CLAUDE.md#L208)) + Rule 14 ([CLAUDE.md:371](CLAUDE.md#L371)) | Rule 11 Master 写代码禁令 |
+| **7. 决策与模式 (Decision & Mode)** | 3 模式 + decision-gate | Rule 13 ([CLAUDE.md:250](CLAUDE.md#L250), 扩展 [CLAUDE.md:544](CLAUDE.md#L544)) | Rule 13 3 模式决策权 |
+| **8. 流程与脚本 (Process & Script)** | L4 脚本 / Subagent 5 步 | Rule 8 ([CLAUDE.md:166](CLAUDE.md#L166)) + Rule 16 ([CLAUDE.md:396](CLAUDE.md#L396)) | Rule 8 L4 脚本必须存在 |
+| **9. 标签与治理 (Tag & Governance)** | 5 类标签 SOP | Rule 19 ([CLAUDE.md:434](CLAUDE.md#L434)) | Rule 19 5 类标签 SOP |
+
+**KPI**: 22 Rule → 9 类别 group = **22/22 = 100.0%** 落地 (跟"翻篇&精进" 一致), **0 增 Rule** (跟 v2.4.1 还原 联合, 跟"诚实修正" + "反讽" 战略 一致).
+
+**详细**: 9 Hard Rules 详细 解释 + 反例 + 正例 + 撤销方法 见 [docs/process/9-hard-rules.md](docs/process/9-hard-rules.md).
+
+---
+
 ## KALLAX Rules Status (跟 EPIC-054-D + PHASE-013-REFLECTION 联合, v2.4.1 还原 跟 v2.3.0 一致)
 
 > **当前 Rule 总数 (active)**: **22** (跟 v2.3.0 一致, 跟 v2.4.0 4 合并 反思 revert 联合, 跟 PHASE-013-REFLECTION 联合 治根 "0 实际改变 假动作")

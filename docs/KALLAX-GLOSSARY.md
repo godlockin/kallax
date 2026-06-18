@@ -720,6 +720,26 @@ description: /kallax-ask — Ask a question to the expert panel.
 
 **Rule 引用**: Rule 5 (DRY) + Rule 6 (经验沉淀) — [CLAUDE.md](../CLAUDE.md), 跟"诚实修正" + "反讽" 战略 一致.
 
+#### 闭环段: 跟 "9 Hard Rules 简化" 联合 (EPIC-059-A v2.7.0, 2026-06-18)
+
+**§11.1 闭环** (跟 EPIC-059-A + v2.4.1 revert + PHASE-013-REFLECTION 联合, 跟 §11.1 上文 "§10.3 阈值 15 迷信" 联合 闭环):
+
+- **9 Hard Rules 简化 = 模式 (Pattern), 不 = Rule 数 -13**: 22 Rule 仍 落地 (file:line 1:1 映射), 9 Hard Rules 是 group 索引 (索引表, 不删 Rule)
+- **跟 v2.4.0 4 合并 反思 联合**: 22 Rule 跟 18 Rule 净价值 持平 67.0%, 0 实际变化, 治根 "0 实际改变 假动作" 反讽. v2.4.1 revert 跟 v2.3.0 一致 22 Rule 还原, 跟"诚实修正" 联合
+- **跟 v2.4.1 revert 联合**: 0 落地脚本 变化, 0 净价值 损失, 跟"翻篇&精进" 战略 一致. 9 Hard Rules 简化 跟 v2.4.1 revert 是 同 一 战略 (0 增 Rule + 净价值 持平)
+- **跟 PHASE-013-REFLECTION 联合**: 主公 2026-06-18 'a' explicit 派单 1h 反思, 治根 "v2.4.0 反讽 模式" 跟 "v2.0.10 反讽 模式" 联合. EPIC-059-A 闭环 v2.4.1 revert, 治根 "Rule 数 通胀" 迷信
+- **§11.1 阈值 15 迷信 闭环**: "Rule 数 ≤ 阈值 15" 是 迷信, 9 Hard Rules 简化 不靠 Rule 数 -13, 靠 模式 (Pattern) + 索引 (Index), 跟"诚实修正" 战略 一致
+
+**KPI 闭环** (跟 §11.1 "0 增 Rule" 联合):
+- 22 Rule → 9 类别 group = **22/22 = 100.0%** 落地 (跟"翻篇&精进" 战略 一致)
+- **0 增 Rule** (跟 v2.4.1 还原 联合, 跟"诚实修正" + "反讽" 战略 一致)
+- **0 重写** (跟 Rule 5 DRY 联合)
+- **借方法论 不借代码** (不复制 eket 9 Hard Rules 全文, 提取 模式 + 命名, 适配 KALLAX 22 Rule 现状)
+
+**Rule 引用**: Rule 5 (DRY) + Rule 6 (经验沉淀) + Rule 19 (5 类标签 SOP) — [CLAUDE.md](../CLAUDE.md), 跟"诚实修正" + "反讽" + "翻篇&精进" 战略 一致.
+
+**详细**: [docs/process/9-hard-rules.md](../process/9-hard-rules.md) + [CLAUDE.md](../CLAUDE.md) "9 Hard Rules 模式" 章节.
+
 ---
 
 ### 11.2 「反讽 闭环」(Irony Closed Loop)
