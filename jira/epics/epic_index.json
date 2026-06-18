@@ -47,6 +47,28 @@
       "status": "archived",
       "start_time": "2026-06-06",
       "delivery_time": "2026-06-08"
+    },
+    {
+      "id": "EPIC-058",
+      "phase": "PHASE-011",
+      "title": "PHASE-011 跨期 review 入口 (5 遗留 P1/P2/P3 deferred tickets, 跟 v2.0.6 release + 主公 B+D explicit 跳过 联合)",
+      "status": "active",
+      "start_time": "2026-06-17",
+      "delivery_time": "2026-06-18",
+      "tickets_closed": 0,
+      "tickets_deferred": 5,
+      "epic_file": "jira/epics/EPIC-058/epic.json"
+    },
+    {
+      "id": "EPIC-059",
+      "phase": "PHASE-015",
+      "title": "EKET 借鉴 Phase 1 (8 项, 跟 v2.6.0 经验教训 整理 release + 主公 2026-06-18 '需要都建卡并行处理' explicit 派单 联合)",
+      "status": "active",
+      "start_time": "2026-06-18",
+      "delivery_time": "2026-06-19",
+      "tickets_closed": 0,
+      "tickets_ready": 8,
+      "epic_file": "jira/epics/EPIC-059/epic.json"
     }
   ]
 }

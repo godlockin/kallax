@@ -1,0 +1,37 @@
+{
+  "id": "EPIC-059-H",
+  "epicId": "EPIC-059",
+  "phaseId": "PHASE-015",
+  "title": "多级记忆分层 L0-L4 (会话缓存 → 项目经验 → 全局知识库, 跟 confluence/decisions/ 单层 升级)",
+  "type": "feature",
+  "priority": "P2",
+  "status": "ready",
+  "created_by": "master_main (主公 2026-06-18 '同意建议, 需要都建卡并行处理' explicit 派单, 跟 v2.6.0 经验教训 整理 release 联合)",
+  "created_at": "2026-06-18T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-059-H/",
+      "confluence/memory/",
+      "docs/KALLAX-GLOSSARY.md",
+      ".claude/skills/kallax/SKILL.md"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "confluence/memory/ 加 L0-L4 分层架构 (跟 eket confluence/memory/ + ~/.claude/knowledge/core/patterns/knowledge-system.md 联合, file:line confluence/memory/ 已存在 升级): L0 会话缓存 (.kallax/state/) / L1 项目经验 (confluence/decisions/) / L2 项目知识 (confluence/memory/lessons/) / L3 全局模式 (confluence/memory/patterns/) / L4 全局知识库 (confluence/memory/research/)",
+    "docs/KALLAX-GLOSSARY.md §12.2 加 L0-L4 术语 (跟 eket 记忆分层 联合, 5 层 定义 + 5 触发条件 + 5 升级路径)",
+    ".claude/skills/kallax/SKILL.md 加 L0-L4 触发 段 (跟 26 命令 SKILL 模式 一致, 5 触发: 1. 任务完成 → L0 → L1 / 2. EPIC 完成 → L1 → L2 / 3. 跨 release 累计 → L2 → L3 / 4. PHASE review → L3 → L4 / 5. 借鉴外部项目 → L4 沉淀)",
+    "scripts/memory-promote.sh 新建 (L0 → L1 → L2 → L3 → L4 升级 自动化, 跟 26 .sh wrapper 模式 一致, file:line scripts/memory-promote.sh)",
+    "tests/integration/memory-l0-l4-test.sh 5/5 PASS (mock 5 触发, 验证 5 升级路径)",
+    "跟 confluence/decisions/ 单层 升级 (file:line confluence/decisions/ 已存在 26 文件, 升级 L1 项目经验, 跟 ACCUMULATED-LESSONS-2026-06-17 v2.6.0 升级版 联合)",
+    "跟 '反哺框架' 战略 一致 (跟 KALLAX-GLOSSARY 60 术语 联合, 跟 14 release 累计 联合, L0-L4 分层 = 反哺框架 标准化)",
+    "跟 '翻篇&精进' 战略 一致 (跟 14 release 累计 净价值 67.0% 持平 联合, 0 增命令 0 增 Rule 持平, L0-L4 跨 release 累计 入口)",
+    "跟 ~/.claude/knowledge/core/patterns/knowledge-system.md L0-L4 分层架构 联合 (跟 '借方法论 不借代码' 联合, file:line ~/.claude/knowledge/core/patterns/knowledge-system.md)",
+    "Rule 9 KPI 精确 X/Y 格式 — memory-promote.sh 1/1 + GLOSSARY §12.2 1/1 + SKILL.md 段 1/1 + test 5/5 PASS = 100.0%"
+  ],
+  "estimated_hours": 4,
+  "status_set_by": "master_main (主公 explicit 派单 '需要都建卡并行处理', 跟 v2.6.0 经验教训 整理 release 联合)"
+}

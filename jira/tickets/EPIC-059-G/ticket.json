@@ -1,0 +1,36 @@
+{
+  "id": "EPIC-059-G",
+  "epicId": "EPIC-059",
+  "phaseId": "PHASE-015",
+  "title": "文档卫生 (每 10 轮) + 新建前先想 (跟 KALLAX-GLOSSARY 反哺框架 联合, 治根 '文档碎片化 假动作')",
+  "type": "feature",
+  "priority": "P2",
+  "status": "ready",
+  "created_by": "master_main (主公 2026-06-18 '同意建议, 需要都建卡并行处理' explicit 派单, 跟 v2.6.0 经验教训 整理 release 联合)",
+  "created_at": "2026-06-18T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-059-G/",
+      "docs/PHASE-INDEX.md",
+      "CLAUDE.md",
+      "scripts/"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "docs/PHASE-INDEX.md 加 文档卫生 触发 段 (跟 eket template/docs/MASTER-RULES.md §6 联合): 每 10 轮 / 每 EPIC 完成 / 每 Sprint 完成 → 检查 1. 未追踪 md / 2. 僵尸 ticket / 3. 积压 review / 4. 重复文档 / 5. 过期 Rule",
+    "CLAUDE.md 加 '新建前先想' Rule (跟 eket template/docs/MASTER-RULES.md §6 'Master Hard Rule 7 新建前先想' 联合): 是否有同类文档可更新? / 是否有同类 ticket 可扩展? / 是否有同类 Rule 可引用? → 必须先回答 3 问 再新建",
+    "scripts/check-doc-hygiene.sh 新建 (5 项 检查自动化, 跟 26 .sh wrapper 模式 一致, file:line scripts/check-doc-hygiene.sh)",
+    "tests/integration/doc-hygiene-test.sh 5/5 PASS (mock 5 触发 场景, 验证 5 项 检查 准确性)",
+    "跟 KALLAX-GLOSSARY 反哺框架 联合 (file:line docs/KALLAX-GLOSSARY.md, '反哺框架' 战略 一致, 文档卫生 = 反哺框架 入口)",
+    "跟 v2.4.0+v2.4.1 反思 联合 (治根 '0 实际变化 假动作' 反讽, 跟 PHASE-013-REFLECTION-2026-06-18 联合, file:line confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md)",
+    "跟 '反讽' 闭环 (跟 v2.4.0 4 Rule 合并 失焦 联合, file:line confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md, 文档卫生 治根 '文档碎片化 假动作')",
+    "跟 '翻篇&精进' 战略 一致 (跟 14 release 累计 联合, 0 增命令 0 增 Rule 持平, 文档卫生 触发 = 跨 release 累计 入口)",
+    "Rule 9 KPI 精确 X/Y 格式 — check-doc-hygiene.sh 1/1 + PHASE-INDEX 段 1/1 + CLAUDE.md Rule 1/1 + test 5/5 PASS = 100.0%"
+  ],
+  "estimated_hours": 2,
+  "status_set_by": "master_main (主公 explicit 派单 '需要都建卡并行处理', 跟 v2.6.0 经验教训 整理 release 联合)"
+}

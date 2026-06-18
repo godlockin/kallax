@@ -1,0 +1,36 @@
+{
+  "id": "EPIC-059-B",
+  "epicId": "EPIC-059",
+  "phaseId": "PHASE-015",
+  "title": "Rule of 500 (净变更>500 → 必须 codemod 或 Approved-Large-PR-By)",
+  "type": "feature",
+  "priority": "P2",
+  "status": "ready",
+  "created_by": "master_main (主公 2026-06-18 '同意建议, 需要都建卡并行处理' explicit 派单, 跟 v2.6.0 经验教训 整理 release 联合)",
+  "created_at": "2026-06-18T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-059-B/",
+      "scripts/check-pr-size.sh",
+      "tests/integration/",
+      ".git/hooks/"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "scripts/check-pr-size.sh 加 净变更 500 行阈值检查 (跟 eket template/docs/MASTER-RULES.md §6 联合, file:line scripts/check-pr-size.sh 已存在 升级)",
+    "净变更>500 → 必须 codemod 或 Approved-Large-PR-By (跟 eket 模式 一致, 注释里加 'Approved-Large-PR-By: <主公 explicit 拍板者>')",
+    "净变更 500-1000 → 警告 + 必须 codemod 注释, 净变更>1000 → 拒绝 (跟 EPIC-059-C PR ~100 行 联合, 3 档分级)",
+    ".git/hooks/pre-commit 加 Rule of 500 检查 (跟 Rule 13 3 模式 decision-gate 联合, file:line .git/hooks/pre-commit 已存在 升级)",
+    "tests/integration/check-rule-of-500-test.sh 5/5 PASS (mock 净变更 100/500/1000/2000, 验证 4 档行为 跟预 期一致)",
+    "跟 CLAUDE.md Rule of 500 联合 (file:line CLAUDE.md:282-322, 跟 EPIC-059-A 9 Hard Rules 联合, Rule 8 落地)",
+    "跟 '翻篇&精进' 战略 一致 (跟 v2.4.0+v2.4.1 8 release 累计 跟单 ticket 跨 release 失焦 联合, 治根 '0 实际变化 假动作' 反讽)",
+    "跟 '反讽' 联合 (命名 '500 行上限' 实际 跟 'PR ~100 行上限' 互为 互补, 不是 重复, 跟 KALLAX-GLOSSARY §1.1 反讽定义 联合)",
+    "Rule 9 KPI 精确 X/Y 格式 — check-pr-size.sh 升级 1/1 完成, pre-commit 升级 1/1 完成, integration test 5/5 PASS = 100.0%"
+  ],
+  "estimated_hours": 2,
+  "status_set_by": "master_main (主公 explicit 派单 '需要都建卡并行处理', 跟 v2.6.0 经验教训 整理 release 联合)"
+}

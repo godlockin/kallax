@@ -1,0 +1,36 @@
+{
+  "id": "EPIC-059-F",
+  "epicId": "EPIC-059",
+  "phaseId": "PHASE-015",
+  "title": "派遣 Checklist 11 项 (防卡死/SSH Push/Timeout/文件读取限制/进度上报格式/run_in_background/错误处理, 跟 1 ticket 1 subagent 串行 联合)",
+  "type": "feature",
+  "priority": "P2",
+  "status": "ready",
+  "created_by": "master_main (主公 2026-06-18 '同意建议, 需要都建卡并行处理' explicit 派单, 跟 v2.6.0 经验教训 整理 release 联合)",
+  "created_at": "2026-06-18T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-059-F/",
+      ".claude/skills/kallax/SKILL.md",
+      "AGENTS.md",
+      "confluence/decisions/"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    ".claude/skills/kallax/SKILL.md 加 派遣 Checklist 11 项 段 (跟 eket template/docs/MASTER-RULES.md §11 联合): 1. 防卡死规则 / 2. SSH Push (禁 HTTPS) / 3. Timeout 120000ms / 4. 文件读取限制 (最多连续 5 个) / 5. 进度上报格式 [N/M] done: xxx / 6. run_in_background / 7. 错误处理 (429/auth/conflict 停止) / 8. worktree 隔离 / 9. 1 ticket 1 subagent 串行 (跟 BE-14 联合) / 10. 心跳 5 问 (跟 PROCESS.md:25-26 联合) / 11. PASS 报告含 raw test output (治 H1 KPI falsification 反复)",
+    "AGENTS.md 加 派遣 Checklist 11 项 段 (跟 CLAUDE.md 互为 互补, file:line AGENTS.md 升级, 跟 v2.2.0 single source symlink 模式 一致)",
+    "confluence/decisions/ 加 dispatch-checklist.md 文档 (11 项 详细解释 + 11 反例 + 11 正例, 跟 KALLAX 实际 ticket 案例 联合)",
+    "跟 1 ticket 1 subagent 串行 联合 (file:line confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md §8 BE-14, 治根 4 subagent 并行 silent output 复发, file:line v2.0.6 release)",
+    "跟 心跳 5 问 联合 (file:line PROCESS.md:25-26, 跟 Q1-Q5 心跳协议 联合, file:line AGENTS.md)",
+    "跟 '翻篇&精进' 战略 一致 (11 项 标准化, 跨 release 累计, 0 增命令 0 增 Rule 持平, 跟 14 release 累计 联合)",
+    "跟 KALLAX-GLOSSARY §10.x 联合 (Fact-Forcing 派发 模式 标准化, file:line docs/KALLAX-GLOSSARY.md)",
+    "跟 EPIC-059-D Fact-Forcing 联合 (file:line EPIC-059-D, 派遣 Checklist 第 11 项 = PASS 报告含 raw test output, 跟 Fact-Forcing 联合)",
+    "Rule 9 KPI 精确 X/Y 格式 — SKILL.md 段 1/1 + AGENTS.md 段 1/1 + dispatch-checklist.md 1/1 = 100% 落地, 0 增 Rule"
+  ],
+  "estimated_hours": 3,
+  "status_set_by": "master_main (主公 explicit 派单 '需要都建卡并行处理', 跟 v2.6.0 经验教训 整理 release 联合)"
+}

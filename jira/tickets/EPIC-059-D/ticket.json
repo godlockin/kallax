@@ -1,0 +1,37 @@
+{
+  "id": "EPIC-059-D",
+  "epicId": "EPIC-059",
+  "phaseId": "PHASE-015",
+  "title": "Fact-Forcing 原则 (跟 Master 6 维 L6 诚实 联合, 治根 '不问确定吗, 要求具体证据')",
+  "type": "feature",
+  "priority": "P2",
+  "status": "ready",
+  "created_by": "master_main (主公 2026-06-18 '同意建议, 需要都建卡并行处理' explicit 派单, 跟 v2.6.0 经验教训 整理 release 联合)",
+  "created_at": "2026-06-18T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-059-D/",
+      "docs/KALLAX-GLOSSARY.md",
+      "docs/process/",
+      "confluence/decisions/"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "docs/KALLAX-GLOSSARY.md §12.1 加 Fact-Forcing 术语 (跟 eket template/docs/MASTER-RULES.md §2 联合, file:line docs/KALLAX-GLOSSARY.md 新增 §12.1 章节)",
+    "Fact-Forcing 3 原则: 不问 '确定吗' (AI 总是回答是) / 要求具体证据 (file:line / 命令输出 / 代码位置) / 无证据的断言视为无效",
+    "docs/process/ 加 fact-forcing.md 文档 (3 原则 详细解释 + 7 反例 + 7 正例 + 验证方法)",
+    "跟 Master 6 维 L6 诚实 联合 (file:line CLAUDE.md Rule 14, file:line confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md, 闭环 '0 假 PASS' 校验)",
+    "跟 '诚实修正' 战略 一致 (跟 v2.0.5 + v2.0.6 + v2.4.1 红线 revert 文档化 联合, file:line confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md §7)",
+    "跟 '反讽' 闭环 (跟 v2.4.0 4 Rule 合并 '净价值 提升' 实际 '0 实际变化' 反讽 联合, file:line confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md, Fact-Forcing 治根 '自我安慰性 命名')",
+    "confluence/decisions/ 加 fact-forcing-examples.md (5 正例 + 5 反例, 跟 KALLAX 实际 release 案例 联合)",
+    "跟 KALLAX-GLOSSARY §1.1 反讽 + §1.2 诚实修正 联合 (跟 5 战略 联合)",
+    "跟 BE-15 假 PASS 模式 一致 (file:line confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md §8 BE-15, 治根 'Unknown command: /kallax-ask' 26 .md wrappers)",
+    "Rule 9 KPI 精确 X/Y 格式 — GLOSSARY §12.1 加 1/1 + fact-forcing.md 1/1 + examples 1/1 = 100% 落地, 0 增 Rule"
+  ],
+  "estimated_hours": 3,
+  "status_set_by": "master_main (主公 explicit 派单 '需要都建卡并行处理', 跟 v2.6.0 经验教训 整理 release 联合)"
+}
