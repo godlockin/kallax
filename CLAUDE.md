@@ -163,15 +163,30 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 **禁止**: ❌ 经验教训只 review 不升级, ❌ 升级到 CLAUDE.md 没经过主公审批
 
-### 8. L4 脚本必须存在 (KALLAX P0) — ticket close 前置条件 (v2.4.1 还原 跟 v2.3.0 一致)
+### 8. Rule of 500 (KALLAX P1) — 跟 eket MASTER-RULES.md §6 Rule 8 联合 (EPIC-059-B v2.7.0)
 
-**教训**: EPIC-021 D review P1 CRITICAL — 5 角色 L4 引用 `verify-*.sh` 脚本不存在.
+**教训**: 一次 PR 净变更 > 500 行 = 0 实际变化 假动作 + Rule 数 通胀 迷信. 跟 v2.4.0+v2.4.1 8 release 累计 跟单 ticket 跨 release 失焦 联合.
 
-**规则**: 所有 ticket close 前, 对应的 L4 bash 脚本必须存在 (可以是 stub, 但必须存在并可执行).
+**规则**: 单次 PR 净变更 ≤ 500 行 (跟 eket 阈值 一致). 4 档分级:
 
-**落地检查**: `check-fact-forcing-preflight.sh` 加 `L4_script_exists` check, 引用不存在脚本的 ticket 拒绝 close.
+| 档位 | 范围 | 行为 |
+|------|------|------|
+| silent | ≤ 100 | PASS (跟 EPIC-059-C PR ~100 行 联合) |
+| acceptable | 100-500 | PASS (跟 eket Rule 9 阈值 一致) |
+| codemod_hint | 500-1000 | FAIL + 提示 codemod 或 `Approved-Large-PR-By: <主公 explicit 拍板者>` |
+| reject | 1000+ | FAIL + 拒绝 commit + 推荐 EPIC 拆分 |
 
-**红线**: ❌ L4 bash 命令引用不存在脚本, ❌ ticket close 前 L4 脚本缺失
+**落地检查**: `bash scripts/check-pr-size.sh --check-rule-of-500` + `.git/hooks/pre-commit` Check 3.
+
+**跟 9 Hard Rules 模式 联合**: Rule 8 升级为 "Rule of 500" (跟 EPIC-059-A 22 Rule → 9 类别 group 索引 联合, 0 删 Rule, 0 增 Rule, Rule 8 file:line 1:1 映射).
+
+**跟 Rule 13 decision-gate 联合**: 3 模式 decision-gate (coder/reviewer/owner) → 500-1000 档 owner 可豁免 (注释 `Approved-Large-PR-By: <name>`).
+
+**红线**: ❌ 净变更 > 1000 行 无豁免 强行 commit, ❌ 跳过 `--check-rule-of-500` 直接 commit
+
+**来源**: EPIC-059-B (主公 2026-06-18 '同意建议, 需要都建卡并行处理' explicit 派单, 跟 v2.6.0 经验教训 整理 release 联合) + eket template/docs/MASTER-RULES.md §6 Rule 8/9 + KALLAX-GLOSSARY §1.1 反讽
+
+---
 
 ### 9. 4-Level Fact-Forcing 强制 (KALLAX P0) — task:complete 前置
 
@@ -487,7 +502,7 @@ L4 数据流动：集成测试验证
 | **5. 经验沉淀 (Lessons Accumulation)** | 4 件套 / PHASE 闭环 / Anti-Fab | Rule 6 ([CLAUDE.md:122](CLAUDE.md#L122)) + Rule 7 ([CLAUDE.md:148](CLAUDE.md#L148)) + Rule 10 ([CLAUDE.md:194](CLAUDE.md#L194)) | Rule 6 经验沉淀强制化 |
 | **6. 角色边界 (Role Boundary)** | Master 禁写 / Conductor 禁越界 | Rule 11 ([CLAUDE.md:208](CLAUDE.md#L208)) + Rule 14 ([CLAUDE.md:371](CLAUDE.md#L371)) | Rule 11 Master 写代码禁令 |
 | **7. 决策与模式 (Decision & Mode)** | 3 模式 + decision-gate | Rule 13 ([CLAUDE.md:250](CLAUDE.md#L250), 扩展 [CLAUDE.md:544](CLAUDE.md#L544)) | Rule 13 3 模式决策权 |
-| **8. 流程与脚本 (Process & Script)** | L4 脚本 / Subagent 5 步 | Rule 8 ([CLAUDE.md:166](CLAUDE.md#L166)) + Rule 16 ([CLAUDE.md:396](CLAUDE.md#L396)) | Rule 8 L4 脚本必须存在 |
+| **8. 流程与脚本 (Process & Script)** | PR 尺寸 (Rule of 500) / Subagent 5 步 | Rule 8 ([CLAUDE.md:166](CLAUDE.md#L166)) + Rule 16 ([CLAUDE.md:411](CLAUDE.md#L411)) | Rule 8 Rule of 500 (EPIC-059-B 升级) |
 | **9. 标签与治理 (Tag & Governance)** | 5 类标签 SOP | Rule 19 ([CLAUDE.md:434](CLAUDE.md#L434)) | Rule 19 5 类标签 SOP |
 
 **KPI**: 22 Rule → 9 类别 group = **22/22 = 100.0%** 落地 (跟"翻篇&精进" 一致), **0 增 Rule** (跟 v2.4.1 还原 联合, 跟"诚实修正" + "反讽" 战略 一致).

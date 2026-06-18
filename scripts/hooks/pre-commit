@@ -146,6 +146,36 @@ if [ -z "$STAGED_FILES" ]; then
   exit 0
 fi
 
+# ── Check 2.5: Rule of 500 (EPIC-059-B, 跟 eket MASTER-RULES.md §6 Rule 8 联合) ──
+# 借方法论 不借代码 (跟 EPIC-059-A 9 Hard Rules 模式 一致)
+# 跟 Rule 13 3 模式 decision-gate 联合: codemod 或 Approved-Large-PR-By: <主公>
+PR_SIZE_CHECK="${KALLAX_ROOT}/scripts/check-pr-size.sh"
+if [ -x "$PR_SIZE_CHECK" ]; then
+  STAGED_DIFF_STATS=$(git diff --cached --stat 2>/dev/null || true)
+  if [ -n "$STAGED_DIFF_STATS" ]; then
+    STAGED_INSERTIONS=$(echo "${STAGED_DIFF_STATS}" | tail -1 | grep -oE '[0-9]+ insertion' | grep -oE '[0-9]+' || echo "0")
+    STAGED_DELETIONS=$(echo "${STAGED_DIFF_STATS}" | tail -1 | grep -oE '[0-9]+ deletion' | grep -oE '[0-9]+' || echo "0")
+    NET_CHANGE=$(( ${STAGED_INSERTIONS:-0} + ${STAGED_DELETIONS:-0} ))
+    if ! bash "$PR_SIZE_CHECK" --check-rule-of-500 --lines "$NET_CHANGE" >/dev/null 2>&1; then
+      echo "╔══════════════════════════════════════════════════════════════╗"
+      echo "║  BLOCKED: Rule of 500 触发 (EPIC-059-B)                     ║"
+      echo "║                                                            ║"
+      echo "║  净变更 ${NET_CHANGE} 行 触发 4 档分级:                      ║"
+      echo "║    500-1000 → 必须 codemod 或 Approved-Large-PR-By         ║"
+      echo "║    1000+    → 拒绝 commit, 推荐 EPIC 拆分                  ║"
+      echo "║                                                            ║"
+      echo "║  跟 eket MASTER-RULES.md §6 Rule 8 联合                    ║"
+      echo "║  跟 Rule 13 3 模式 decision-gate 联合                       ║"
+      echo "║                                                            ║"
+      echo "║  解法: bash scripts/check-pr-size.sh --lines ${NET_CHANGE}  ║"
+      echo "║        查看完整提示, 拆分 PR 或申请豁免                      ║"
+      echo "╚══════════════════════════════════════════════════════════════╝"
+      bash "$PR_SIZE_CHECK" --check-rule-of-500 --lines "$NET_CHANGE" || true
+      exit 1
+    fi
+  fi
+fi
+
 # Allowed: docs, config, CI, analysis artifacts, jira tickets/epics
 # v2.3.0: added ^jira/ to fix --no-verify workaround (P1-1 EPIC-058 deferred ticket)
 ALLOWED_PATTERNS=(
