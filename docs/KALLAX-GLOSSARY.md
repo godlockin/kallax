@@ -843,7 +843,162 @@ description: /kallax-ask — Ask a question to the expert panel.
 
 ---
 
-## 12. 总结
+## 12. Fact-Forcing 原则 (跟 eket MASTER-RULES.md §2 联合, 跟 Master 6 维 L6 诚实 联合, 跟"反讽" + "诚实修正" 战略 联合)
+
+> **借方法论 不借代码** (跟 EPIC-059-A 9-hard-rules.md §1 联合) — 借 eket `template/docs/MASTER-RULES.md` §2 Fact-Forcing 模式, 适配 KALLAX 实际 release 案例 (BE-9/BE-14/BE-15/BE-16 + v2.0.2/v2.0.5/v2.0.6/v2.4.0/v2.4.1).
+> **跟 KALLAX-GLOSSARY §11.3 "0 实际变化 假动作" 联合** (file:line `docs/KALLAX-GLOSSARY.md:764-778`), 治根 "自我安慰性 命名".
+> **跟 KALLAX-GLOSSARY §1.1 反讽 + §1.2 诚实修正 + §9.3 Master 6 维 L6 诚实 联合** — Fact-Forcing 是 §1.2 诚实修正 的 工具化, 是 §11.3 0 实际变化 假动作 的 检测器.
+> **0 增 Rule** (跟 v2.4.1 还原 22 Rule 联合, 跟"翻篇&精进" 战略 一致), **0 重写** (跟 Rule 5 DRY 联合, 新章节 + 新文件).
+
+---
+
+### 12.1 三原则 (Three Principles)
+
+**大白话**: "AI 总是说'确定' — 真信号 在 具体 证据链, 不在 AI 自报. 不问'确定吗', 问'证据在哪'."
+
+**起源** (跟 eket MASTER-RULES.md §2 联合, 跟 KALLAX 实际 release 案例 联合):
+
+#### 原则 1: 不问 "确定吗" (AI 总是回答是)
+
+- **问题**: "你这个 fix 是不是 work?" / "这个 PR 能 merge 吗?" — AI 自报 100% 答 "确定", **0 信息量**
+- **反讽 诊断** (跟 KALLAX-GLOSSARY §1.1 联合): 问 AI 确定性 = "制造 0 信息交换 假动作", 跟 §11.3 "0 实际变化 假动作" 同一 模式
+- **治根**: 改问 "证据在哪" / "哪行代码" / "哪个命令输出" — 逼 AI 出 事实 而非 自我评估
+
+**KALLAX 实证** (跟 BE-15 "Unknown command: /kallax-ask" 联合):
+- AI 答 "v2.1.0 已修" ≠ 证据 → 实际 主公 反馈 "Unknown command: /kallax-ask" 仍存, 治根 在 v2.1.1 加 26 .md wrappers (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:440`, `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:484`)
+- **教训**: AI 自报确定性 ≠ reality, evidence chain 才是 reality
+
+#### 原则 2: 要求具体证据 (file:line / 命令输出 / 代码位置)
+
+- **证据 3 格式** (跟 Master 6 维 L6 诚实 联合, file:line `docs/KALLAX-GLOSSARY.md:625-637`):
+  - **file:line 引用** — `CLAUDE.md:295` 形式, 精确 到行
+  - **命令输出** — `git log --oneline -5` / `git show <sha>` 实际 stdout
+  - **代码位置** — `scripts/install.sh:139-141` 形式, 命名 + 行号
+- **不接受的"证据"** (跟 §1.2 诚实修正 联合): "should work" / "looks correct" / "基本上 OK" / 任何 模糊 形容词
+
+**KALLAX 实证** (跟 v2.0.5 honest mark 联合):
+- v2.0.5 Rule 合并 实际 -2 (proposal 写 -3), 净价值 实际 +1.5% (proposal 写 +3.0%) — **诚实标记** (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:288-289`, 跟 §1.2 联合)
+- **教训**: proposal ≠ reality, 落地 后 必须 用 真实 commit diff 重新 测量, 标注 difference
+
+#### 原则 3: 无证据的断言视为无效
+
+- **无效化 处理**: AI 说 "X 已修复" 但 缺 file:line → **视为未修复**, 不进入 merge queue
+- **闭环** (跟 KALLAX-GLOSSARY §1.5 闭环 联合): evidence = reality, 没 evidence = 没 reality
+- **跟 Master 6 维 L1-L4 联合** (file:line `docs/KALLAX-GLOSSARY.md:625-637`):
+  - L1 git log (commit 存在)
+  - L2 git show (diff 内容)
+  - L3 跑测试 (验证 work)
+  - L4 preflight (anti-fab 通过)
+  - L5 边界 (file scope 合规)
+  - **L6 诚实 (raw test output, 不接受 should work)**
+
+**KALLAX 实证** (跟 v2.4.1 revert 闭环 联合):
+- v2.4.0 4 Rule 合并 (commit `fd9d0d9`, file:line `CHANGELOG.md`) 命名 "Rule 数 减少 净价值 提升" → 实际 净价值 67.0% 持平, 0 跨 release 验证 → **断言 vs reality 失配**, v2.4.1 revert (commit `7f401f9`, file:line `CHANGELOG.md`)
+- **教训**: 命名 ≠ reality, 缺 evidence (跨 release 验证) → 视为无效, 走 revert
+
+**Rule 引用**: Rule 9 (X/Y 格式) + Rule 11 (Master 6 维度) + Rule 18 (KPI Falsification 黑名单) — [CLAUDE.md](../CLAUDE.md), 跟"诚实修正" + "反讽" 战略 一致, 跟 §11.3 联合.
+
+---
+
+### 12.2 五反例 (Five Anti-Patterns — 跟 KALLAX 实际 release 案例 联合)
+
+**大白话**: "AI 自报 跟 reality 不一致 = 反讽, 必须 治根."
+
+#### ❌ 反例 1: BE-9 "L3L4 矛盾" — review.sh 自报 PASS 实际 silent output
+
+- **模式**: "L4 verify 跑过 = 完成" — review.sh 自报 PASS, 实际 silent output, 4 subagent 并行 复发 (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:434`)
+- **违反 原则 1+2**: 接受 AI 自报 "verify PASS", 缺 raw test output
+- **治根** (跟 v2.0.4 EPIC-053-A truth-table 联合): truth-table 强制 raw stdout/stderr, 4-Level Fact-Forcing (file:line `docs/KALLAX-GLOSSARY.md:641-651`)
+- **跟 §11.3 联合**: "L4 verify PASS" 命名 ≠ reality (silent output) = "0 实际变化 假动作"
+
+#### ❌ 反例 2: BE-14 "4 subagent 并行 silent output 复发" — 派单 OK 实际 0 deliver
+
+- **模式**: EPIC-057 4 subagent 并行 派单, 自报 "派单 完成" — 实际 4 subagent 全 silent output, 0 deliver (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:439`)
+- **违反 原则 1+2+3**: 接受 AI 派单 自报, 缺 per-subagent stdout + deliverable file
+- **治根** (跟 v2.0.6 EPIC-057-D 联合, file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:74`): 1 ticket 1 subagent 串行, 强验证 per-subagent output
+- **跟 §11.3 联合**: "4 subagent 并行 = 4 倍速度" 命名 ≠ reality (silent output = 0 deliver) = "0 实际变化 假动作"
+
+#### ❌ 反例 3: BE-15 "Unknown command: /kallax-ask" — 表面修了 实际没治根
+
+- **模式**: v2.0.9/v2.0.10/v2.0.11 改 .sh 顶部 # 注释 description, 自报 "已修" — 主公 反馈 "Unknown command: /kallax-ask" 仍存 (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:440`, `docs/KALLAX-GLOSSARY.md:550-568`)
+- **违反 原则 1+2**: 接受 AI 自报 ".sh 已改", 缺 Claude Code 2.1+ slash command registry 实测
+- **治根** (跟 v2.1.1 联合): 加 26 .md wrappers, Claude Code 2.1+ 优先 .md 格式 (file:line `.claude/commands/kallax-ask.md:1-8`)
+- **跟 §11.3 联合**: "改 .sh = 修复" 命名 ≠ reality (Claude Code registry 优先 .md) = "0 实际变化 假动作"
+
+#### ❌ 反例 4: v2.0.2 '跨平台 fix release' 反讽 — 命名 跨平台 实际 只 Claude Code
+
+- **模式**: v2.0.2 release 命名 "跨平台 fix release", install.sh 实际 只支持 Claude Code (file:line `confluence/decisions/PHASE-010-REVIEW-2026-06-17.md:79`, `confluence/decisions/PHASE-010-REVIEW-2026-06-17.md:120-123`)
+- **违反 原则 2+3**: 接受 release 命名 自我评估, 缺 file:line 实证 (install.sh:52-53 1 工具, codex/gemini 0 reference)
+- **治根** (跟 v2.0.6 EPIC-057 联合): CHANGELOG [2.0.6] 明确标注 "v2.0.2 release 命名是跨平台, 实际只 Claude Code (历史 gap), v2.0.6 治根" (file:line `confluence/decisions/PHASE-010-REVIEW-2026-06-17.md:168`, `confluence/decisions/PHASE-010-REVIEW-2026-06-17.md:197`)
+- **跟 §11.3 联合**: release 命名 "跨平台" ≠ reality (1 工具 only) = "0 实际变化 假动作"
+
+#### ❌ 反例 5: v2.4.0 4 合并 "净价值 提升" 假动作 — 命名 净增 实际 持平
+
+- **模式**: v2.4.0 4 Rule 合并 (commit `fd9d0d9`), release 命名 "Rule 数 减少 净价值 提升", 实际 净价值 67.0% 持平 0 跨 release 验证 (file:line `confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md:39-42`, `docs/KALLAX-GLOSSARY.md:764-778`)
+- **违反 原则 1+2+3**: 接受 release 命名 "净价值 +4%", 缺 跨 release 验证 evidence (22 Rule 跟 18 Rule 净价值 持平, 0 假 PASS 校验)
+- **治根** (跟 v2.4.1 revert 联合, commit `7f401f9`): 跟"诚实修正" 联合, revert 4 合并 → 22 Rule 跟 v2.3.0 一致, 反思 doc PHASE-013-REFLECTION 落地 (file:line `confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md:282-285`)
+- **跟 §11.3 联合**: 命名 "净价值 +4%" ≠ reality (67.0% 持平) = "0 实际变化 假动作", v2.4.1 revert 闭环
+
+**Rule 引用**: Rule 10 (Anti-Fabrication) + Rule 18 (KPI Falsification 黑名单) — [CLAUDE.md](../CLAUDE.md), 跟 §1.1 反讽 + §11.3 0 实际变化 假动作 联合.
+
+---
+
+### 12.3 五正例 (Five Positive Examples — 跟 KALLAX 实际 release 案例 联合)
+
+**大白话**: "evidence chain 完整 + 闭环 verify + raw output = reality 闭环."
+
+#### ✅ 正例 1: v2.0.5 honest mark — Rule 合并 -3→-2 + 净价值 +3%→+1.5% 诚实标记
+
+- **模式**: v2.0.5 Rule 合并 落地 后, Performer 诚实标记 proposal 跟 实际 difference (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:288-289`)
+  - Rule 合并: proposal -3 → 实际 -2 (候选 C 是"扩展"而非"删除", 净减为 0)
+  - 净价值: proposal +3.0% → 实际 +1.5% (跟 v2.0.3 "净价值 67.5% 边际递减" 联合)
+- **符合 3 原则**:
+  - 原则 1: 不问"完成了吗", 改问"实际 净减/净增 多少"
+  - 原则 2: file:line 实证 (ACCUMULATED-LESSONS:288-289)
+  - 原则 3: 跟 §11.3 联合, 命名 (proposal) 跟 reality (实际) 失配 → 诚实标记, 不 模糊处理
+- **跟 §1.2 诚实修正 联合**: 主动 标记 proposal 跟 actual 差异, 不等别人发现
+
+#### ✅ 正例 2: v2.0.6 4 工具 multi-tool — install.sh `--target=auto` evidence chain 完整
+
+- **模式**: v2.0.6 EPIC-057 4 ticket 闭环, install.sh `--target=auto` 检测 Claude/opencode/Codex/Gemini 4 工具 (file:line `scripts/install.sh:69-92`, `scripts/install.sh:139-141`)
+- **符合 3 原则**:
+  - 原则 1: 不问"4 工具 支持 吗", 改问"auto-detect 实测 哪几 个"
+  - 原则 2: file:line `scripts/install.sh:69-92` (4 工具 detection) + `scripts/install.sh:139-141` (symlink 路径)
+  - 原则 3: 4 工具 验证 通过 (file:line `tests/integration/master-6d-recovery-test.sh:150` L4 preflight 跑过)
+- **跟 v2.0.2 反讽 治根 联合**: "跨平台" 命名 → v2.0.6 真正 4 工具, naming = reality
+
+#### ✅ 正例 3: v2.4.0 worktree 清理 — 48 worktree + 123 branches evidence 完整
+
+- **模式**: v2.4.0 P1-2 (commit `fd9d0d9`) worktree 清理, 48 worktree + 123 branches, 5.5M disk freed (file:line `confluence/decisions/PHASE-014-REVIEW-2026-06-18.md:39-43`)
+- **符合 3 原则**:
+  - 原则 1: 不问"清理 OK 吗", 改问"剩 几 个 worktree + 几 个 branches + 节省 几 M"
+  - 原则 2: `du -sh .claude/worktrees` 实测 5.5M + `git worktree list` 1 个 (跟 §1.2 honest mark 联合)
+  - 原则 3: 跟 v2.4.0 4 Rule 合并 0 实际变化 不同, worktree 清理 是 **实际 disk 节省**, naming = reality
+- **跟 §11.5 revert 跟反思 区别 联合**: worktree 清理 保留 (v2.4.1 没 revert), 跟 4 Rule 合并 反讽 不同
+
+#### ✅ 正例 4: v2.4.1 revert 闭环 — 4 合并 naming 跟 reality 失配 → revert
+
+- **模式**: v2.4.1 (commit `7f401f9`) revert v2.4.0 4 Rule 合并, 22 Rule 跟 v2.3.0 一致 (file:line `confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md:284`, `confluence/decisions/PHASE-014-REVIEW-2026-06-18.md:168`)
+- **符合 3 原则**:
+  - 原则 1: 不问"4 合并 OK 吗", 改问"净价值 跨 release 验证 实测 几 %"
+  - 原则 2: file:line `PHASE-013-REFLECTION-2026-06-18.md:39-42` (67.0% 持平) + `docs/KALLAX-GLOSSARY.md:116` (净价值 持平 表)
+  - 原则 3: 跨 release 验证 (v2.3.0 vs v2.4.0 vs v2.4.1) 缺 → 视为 无效, 走 revert
+- **跟 §11.5 revert 跟反思 区别 联合**: revert 技术 行动 + 反思 战略 行动 闭环, 跟"诚实修正" 联合
+
+#### ✅ 正例 5: 26 .md wrappers 闭环 — Claude Code 2.1+ 实测 → 治根 BE-15
+
+- **模式**: v2.1.1 加 26 .md wrappers, Claude Code 2.1+ 优先 .md 格式, 治根 BE-15 "Unknown command: /kallax-ask" (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:440`, `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:484`, `.claude/commands/kallax-ask.md:1-8`)
+- **符合 3 原则**:
+  - 原则 1: 不问"修了 吗", 改问"Claude Code 2.1+ slash command registry 实测 几 个 命令 OK"
+  - 原则 2: file:line `.claude/commands/kallax-ask.md:1-8` (frontmatter description + `!bash` directive) + `tests/integration/master-6d-recovery-test.sh:150` (L4 preflight)
+  - 原则 3: 主公 反馈 闭环 (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:698` "主公 Unknown command 反馈" → v2.1.1 .md wrappers)
+- **跟 §11.3 0 实际变化 假动作 治根 联合**: v2.0.9-v2.0.11 0 实际变化 (改 .sh 表面) → v2.1.1 治根 (加 .md wrappers, Claude Code registry 优先)
+
+**Rule 引用**: Rule 9 (X/Y 格式) + Rule 11 (Master 6 维度) + Rule 18 (KPI Falsification 黑名单) — [CLAUDE.md](../CLAUDE.md), 跟 §1.2 诚实修正 + §11.3 0 实际变化 假动作 联合.
+
+---
+
+## 13. 总结
 
 | 类别 | 术语数 | Rule 引用 |
 |---|---|---|
@@ -857,22 +1012,27 @@ description: /kallax-ask — Ask a question to the expert panel.
 | **落地 / 工程** (8.x) | **18** (+5 v2.3.0 hybrid/wizard/dry-run/.md/canonical) | Rule 5/15/17/29/31 + Rule 5/10/11/15/16/18 (multi-tool 联合) |
 | **治理** (9.x 新) | **4** (rebase/Saga/Master 6 维/4-Level) | Rule 6/9/10/11/16/18 |
 | **度量** (10.x 新) | **3** (净价值/ROI/阈值 15) | Rule 5/11/15/18/32 |
-| **总计** | **54 个术语** (+12 v2.3.0) | 跨 Rule 1-33 |
+| **反思** (11.x v2.5.0) | **6** (§11.1-§11.6) | Rule 1/6/11/14 + PROCESS.md:25-26 |
+| **Fact-Forcing** (12.x v2.7.0, EPIC-059-D) | **3** (§12.1 三原则 / §12.2 五反例 / §12.3 五正例) | Rule 9/10/11/18 |
+| **总计** | **63 个术语** (+9 v2.5.0 + v2.7.0) | 跨 Rule 1-33 |
 
 ### 🔑 关键 takeaway
 
-- ✅ **54 个术语** 全部覆盖, 一次性盘点 (跟 v2.0.6 +5 + v2.2.0 +3 + v2.3.0 +12)
+- ✅ **63 个术语** 全部覆盖, 一次性盘点 (跟 v2.0.6 +5 + v2.2.0 +3 + v2.3.0 +12 + v2.5.0 +6 + v2.7.0 +3)
 - ✅ **每个术语**: 大白话 + 来源 + Rule 引用
 - ✅ **追溯链完整** (跟"独立" 拍 explicit 约束 联合)
 - ✅ **写到了文件** (跟主公 explicit 约束 联合)
+- ✅ **Fact-Forcing 原则 落地** (§12, EPIC-059-D, 跟 eket MASTER-RULES.md §2 联合, 跟"反讽" + "诚实修正" 联合)
 
 ### 📚 SoT 边界 (跟 Rule 5 DRY 联合)
 
 - **CLAUDE.md** = Rule SoT (规则/红线/必读) — 修订 Rule 只改 CLAUDE.md
 - **KALLAX-GLOSSARY.md** = 术语 SoT (黑话/概念) — 修订术语只改本文件
 - **互链而非复制**: 本文件每个 Rule 引用链到 CLAUDE.md 对应 Rule, 避免定义复制
+- **docs/process/fact-forcing.md** = Fact-Forcing 详细 (跟 §12 联合, 3 原则 + 7 反例 + 7 正例 + 验证方法 + 撤销方法)
 
 ### 🎬 主公下一步
 
-- ✅ 词典已落地 `docs/KALLAX-GLOSSARY.md`
+- ✅ 词典已落地 `docs/KALLAX-GLOSSARY.md` (63 术语)
+- ✅ Fact-Forcing 原则 已落地 (§12 + docs/process/fact-forcing.md + confluence/decisions/fact-forcing-examples.md, EPIC-059-D)
 - 等主公 review / commit + push / 实战 Onramp 派 Wave 6
