@@ -3,20 +3,28 @@
 # 跟 eket template/docs/MASTER-RULES.md §6 Rule 8 (Rule of 500) + Rule 9 (PR ~100 行) 联合
 # 借方法论 不借代码 (跟 EPIC-059-A 9 Hard Rules 模式 一致)
 #
-# 4 档分级 (跟 eket 阈值 联合, 跟 EPIC-059-C PR ~100 行 联合):
+# Rule of 500 (净变更 粒度, EPIC-059-B):
 #   0-100      → PASS    (silent, ideal, 跟 EPIC-059-C 联合)
 #   100-500    → PASS    (acceptable, 跟 eket Rule 9 阈值 一致)
 #   500-1000   → FAIL    (需要 codemod 或 Approved-Large-PR-By: <主公 explicit 拍板者>)
 #   1000+      → FAIL    (拒绝 commit, 推荐 EPIC 拆分)
 #
+# PR ~100 行上限 (单 PR 粒度, EPIC-059-C, 跟 Rule of 500 互为 互补):
+#   0-100      → PASS    (silent, ideal)
+#   100-300    → WARN    (建议拆分)
+#   300-500    → WARN-STRONG (强警告, 提示 codemod / Approved-Large-PR-By)
+#   500+       → FAIL    (跟 Rule of 500 联合, >500 fail)
+#
 # Usage:
 #   scripts/check-pr-size.sh [--json] [BASE_BRANCH]
 #   scripts/check-pr-size.sh --check-rule-of-500 [--lines N]
+#   scripts/check-pr-size.sh --check-pr-100 [--lines N]
 #   scripts/check-pr-size.sh --self-test
 #
 # Flags:
 #   --json                 输出 JSON 格式
 #   --check-rule-of-500    启用 Rule of 500 4 档分级 (默认启用)
+#   --check-pr-100         启用 PR ~100 行 4 档分级 (默认启用, 跟 EPIC-059-C 联合)
 #   --lines N              mock 净变更 行数 (用于测试/CI)
 #   --self-test            跑 内置 fixture 自检
 set -euo pipefail
@@ -26,6 +34,11 @@ readonly RULE_OF_500_SILENT_PASS=100
 readonly RULE_OF_500_EKET_THRESHOLD=500
 readonly RULE_OF_500_CODEMOD_HINT=1000
 readonly RULE_OF_500_EPIC_SPLIT=1000
+
+# PR ~100 行阈值 (EPIC-059-C, 跟 eket MASTER-RULES.md §6 Rule 9 联合)
+readonly PR_100_SILENT_PASS=100
+readonly PR_100_WARN_THRESHOLD=300
+readonly PR_100_WARN_STRONG_THRESHOLD=500
 
 # ----------------------------------------
 # evaluate_rule_of_500 <net_change_lines>
@@ -96,6 +109,69 @@ evaluate_rule_of_500() {
 }
 
 # ----------------------------------------
+# evaluate_pr_100_lines <net_change_lines>
+#   EPIC-059-C — 跟 eket MASTER-RULES.md §6 Rule 9 联合, 跟 Rule of 500 互为 互补
+#   PR 100 行 是 单 PR 粒度 (严), Rule of 500 是 净变更 粒度 (松)
+#   Emits "status=PASS|WARN|WARN-STRONG|FAIL reason=<msg>" on stdout.
+#   Returns 0 on PASS/WARN, 1 on WARN-STRONG/FAIL.
+# ----------------------------------------
+evaluate_pr_100_lines() {
+    local lines="$1"
+
+    if [ "$lines" -le "$PR_100_SILENT_PASS" ]; then
+        echo "status=PASS reason=silent_pass tier=silent lines=${lines} threshold=${PR_100_SILENT_PASS}"
+        echo "  [PASS] PR ~100 行上限 — ${lines} 行 ≤ ${PR_100_SILENT_PASS} (silent, 跟 eket MASTER-RULES.md §6 Rule 9 联合)"
+        return 0
+    fi
+
+    if [ "$lines" -le "$PR_100_WARN_THRESHOLD" ]; then
+        echo "status=WARN reason=warn_split tier=warn lines=${lines} threshold=${PR_100_WARN_THRESHOLD}"
+        echo "  [WARN] PR ~100 行上限 — ${lines} 行 ≤ ${PR_100_WARN_THRESHOLD} (100-300 档, 建议拆分)"
+        echo ""
+        echo "  ╔══════════════════════════════════════════════════════════════╗"
+        echo "  ║  PR ~100 行触发 — 建议拆分 (跟 EPIC-059-C 联合)            ║"
+        echo "  ║                                                              ║"
+        echo "  ║  PR 行数 100-300 → 建议拆分到 ≤ 100 行/PR                  ║"
+        echo "  ║  跟 eket MASTER-RULES.md §6 Rule 9 阈值 联合                ║"
+        echo "  ║  跟 Rule 5 DRY 联合: 单 PR 粒度小 = 利于 review               ║"
+        echo "  ╚══════════════════════════════════════════════════════════════╝"
+        return 0
+    fi
+
+    if [ "$lines" -le "$PR_100_WARN_STRONG_THRESHOLD" ]; then
+        echo "status=WARN-STRONG reason=warn_strong_codemod tier=warn_strong lines=${lines} threshold=${PR_100_WARN_STRONG_THRESHOLD}"
+        echo "  [WARN-STRONG] PR ~100 行上限 — ${lines} 行 ≤ ${PR_100_WARN_STRONG_THRESHOLD} (300-500 档)"
+        echo ""
+        echo "  ╔══════════════════════════════════════════════════════════════╗"
+        echo "  ║  PR ~100 行触发 — 强警告 (跟 Rule 13 decision-gate 联合)    ║"
+        echo "  ║                                                              ║"
+        echo "  ║  PR 行数 300-500 → 强警告, 推荐 codemod 工具化              ║"
+        echo "  ║  或申请豁免:  Approved-Large-PR-By: <主公 explicit 拍板者>   ║"
+        echo "  ║                                                              ║"
+        echo "  ║  跟 EPIC-059-B Rule of 500 联合 (净变更 ≤ 500 仍 PASS)        ║"
+        echo "  ║  粒度 分离: PR 行数 严, 净变更 粒度 松 (互为 互补)            ║"
+        echo "  ╚══════════════════════════════════════════════════════════════╝"
+        return 1
+    fi
+
+    echo "status=FAIL reason=fail_rule_of_500 tier=fail lines=${lines} threshold=${PR_100_WARN_STRONG_THRESHOLD}"
+    echo "  [FAIL] PR ~100 行上限 — ${lines} 行 > ${PR_100_WARN_STRONG_THRESHOLD} (跟 EPIC-059-B Rule of 500 联合)"
+    echo ""
+    echo "  ╔══════════════════════════════════════════════════════════════╗"
+    echo "  ║  PR ~100 行触发 — FAIL (跟 EPIC-059-B Rule of 500 联合)     ║"
+    echo "  ║                                                              ║"
+    echo "  ║  PR 行数 > 500 → 必须 codemod, 或申请豁免                    ║"
+    echo "  ║  注释格式:  Approved-Large-PR-By: <主公 explicit 拍板者>     ║"
+    echo "  ║                                                              ║"
+    echo "  ║  跟 EPIC-059-B Rule of 500 联合: 净变更 > 500 也 FAIL         ║"
+    echo "  ║  跟 Rule 5 DRY 联合: 大批量改动 = 应有自动化工具             ║"
+    echo "  ║                                                              ║"
+    echo "  ║  解法: (a) 拆分 PR ≤ 100 行; (b) 申请豁免                    ║"
+    echo "  ╚══════════════════════════════════════════════════════════════╝"
+    return 1
+}
+
+# ----------------------------------------
 # Built-in self-test (保留 backward compat, 3 档 fixture)
 # ----------------------------------------
 self_test() {
@@ -137,7 +213,9 @@ self_test() {
 JSON_OUT=""
 BASE_BRANCH="main"
 CHECK_RULE_OF_500=1
+CHECK_PR_100=1
 MOCK_LINES=""
+MOCK_MODE=""
 ARGS=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -151,6 +229,12 @@ while [[ $# -gt 0 ]]; do
             ;;
         --check-rule-of-500)
             CHECK_RULE_OF_500=1
+            MOCK_MODE="rule_of_500"
+            shift
+            ;;
+        --check-pr-100)
+            CHECK_PR_100=1
+            MOCK_MODE="pr_100"
             shift
             ;;
         --lines)
@@ -170,20 +254,39 @@ done
 
 # Mock mode (用于测试): --lines N 强制用 N 作为净变更行数
 if [ -n "$MOCK_LINES" ]; then
-    echo "=== KALLAX PR Size Check — Rule of 500 (mock lines=$MOCK_LINES) ==="
-    echo ""
-    set +e
-    evaluate_rule_of_500 "$MOCK_LINES"
-    EXIT_CODE=$?
-    set -e
-    if [ "$JSON_OUT" = "--json" ]; then
-        STATUS=$([ "$EXIT_CODE" -eq 0 ] && echo "PASS" || echo "FAIL")
-        printf '{"status":"%s","lines":%d,"rule":"rule_of_500","thresholds":{"silent":%d,"eket":%d,"codemod_hint":%d,"epic_split":%d}}\n' \
-            "$STATUS" "$MOCK_LINES" \
-            "$RULE_OF_500_SILENT_PASS" "$RULE_OF_500_EKET_THRESHOLD" \
-            "$RULE_OF_500_CODEMOD_HINT" "$RULE_OF_500_EPIC_SPLIT"
-    fi
-    exit "$EXIT_CODE"
+    case "$MOCK_MODE" in
+        pr_100)
+            echo "=== KALLAX PR Size Check — PR ~100 行 (mock lines=$MOCK_LINES) ==="
+            echo ""
+            set +e
+            evaluate_pr_100_lines "$MOCK_LINES"
+            EXIT_CODE=$?
+            set -e
+            if [ "$JSON_OUT" = "--json" ]; then
+                STATUS=$([ "$EXIT_CODE" -eq 0 ] && echo "PASS" || echo "FAIL")
+                printf '{"status":"%s","lines":%d,"rule":"pr_100","thresholds":{"silent":%d,"warn":%d,"warn_strong":%d}}\n' \
+                    "$STATUS" "$MOCK_LINES" \
+                    "$PR_100_SILENT_PASS" "$PR_100_WARN_THRESHOLD" "$PR_100_WARN_STRONG_THRESHOLD"
+            fi
+            exit "$EXIT_CODE"
+            ;;
+        rule_of_500|*)
+            echo "=== KALLAX PR Size Check — Rule of 500 (mock lines=$MOCK_LINES) ==="
+            echo ""
+            set +e
+            evaluate_rule_of_500 "$MOCK_LINES"
+            EXIT_CODE=$?
+            set -e
+            if [ "$JSON_OUT" = "--json" ]; then
+                STATUS=$([ "$EXIT_CODE" -eq 0 ] && echo "PASS" || echo "FAIL")
+                printf '{"status":"%s","lines":%d,"rule":"rule_of_500","thresholds":{"silent":%d,"eket":%d,"codemod_hint":%d,"epic_split":%d}}\n' \
+                    "$STATUS" "$MOCK_LINES" \
+                    "$RULE_OF_500_SILENT_PASS" "$RULE_OF_500_EKET_THRESHOLD" \
+                    "$RULE_OF_500_CODEMOD_HINT" "$RULE_OF_500_EPIC_SPLIT"
+            fi
+            exit "$EXIT_CODE"
+            ;;
+    esac
 fi
 
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -196,6 +299,7 @@ MAX_DELETIONS=200
 echo "=== KALLAX PR Size Check ==="
 echo "  Base branch: ${BASE_BRANCH}"
 echo "  Rule of 500: enabled (跟 eket MASTER-RULES.md §6 联合)"
+echo "  PR ~100 行: enabled (跟 EPIC-059-C 联合, 跟 Rule of 500 互为 互补)"
 echo ""
 
 cd "$PROJECT_ROOT"
@@ -239,6 +343,19 @@ if [ "$CHECK_RULE_OF_500" -eq 1 ]; then
     RULE_EXIT=$?
     set -e
     if [ "$RULE_EXIT" -ne 0 ]; then
+        EXIT_CODE=1
+    fi
+fi
+
+# PR ~100 行 evaluation (单 PR 粒度, 跟 Rule of 500 互为 互补, EPIC-059-C)
+if [ "$CHECK_PR_100" -eq 1 ]; then
+    NET_CHANGE=$(( ${INSERTIONS:-0} + ${DELETIONS:-0} ))
+    echo ""
+    set +e
+    evaluate_pr_100_lines "$NET_CHANGE"
+    PR100_EXIT=$?
+    set -e
+    if [ "$PR100_EXIT" -ne 0 ]; then
         EXIT_CODE=1
     fi
 fi

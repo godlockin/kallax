@@ -1,22 +1,131 @@
-name: PR Size Check
+name: PR Size Check (Rule of 500 + PR ~100 行)
+
+# 跟 eket template/docs/MASTER-RULES.md §6 Rule 8 (Rule of 500) + Rule 9 (PR ~100 行) 联合
+# 跟 EPIC-059-B Rule of 500 + EPIC-059-C PR ~100 行 互为 互补
+# 借方法论 不借代码 (跟 EPIC-059-A 9 Hard Rules 模式 一致)
+#
+# PR ~100 行 (单 PR 粒度, EPIC-059-C):
+#   0-100    → silent PASS (理想)
+#   100-300  → warn (建议拆分)
+#   300-500  → warn-strong (强警告, 提示 codemod)
+#   500+     → fail (跟 Rule of 500 联合, 拒绝 commit)
+#
+# Rule of 500 (净变更 粒度, EPIC-059-B):
+#   0-100    → silent PASS
+#   100-500  → acceptable PASS
+#   500-1000 → fail (需 codemod 或 Approved-Large-PR-By)
+#   1000+    → fail (拒绝 commit, 推荐 EPIC 拆分)
+#
+# 使用 'gh pr view --json additions + deletions' 算 净变更 (跟 26 .sh wrapper install 模式 一致)
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
 jobs:
-  check-size:
+  pr-size-check:
+    name: PR Size Check (PR ~100 + Rule of 500)
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - name: Check PR size
-        env:
-          ADDITIONS: ${{ github.event.pull_request.additions }}
-          DELETIONS: ${{ github.event.pull_request.deletions }}
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install gh + jq
         run: |
-          TOTAL=$((ADDITIONS + DELETIONS))
-          if [ "$TOTAL" -gt 2000 ]; then
-            echo "::error::PR too large (${TOTAL} lines). Max 2000."
-            exit 1
-          elif [ "$TOTAL" -gt 1000 ]; then
-            echo "::warning::Large PR (${TOTAL} lines). Consider splitting."
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq jq > /dev/null
+
+      - name: Get PR stats via gh CLI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUM="${{ github.event.pull_request.number }}"
+          STATS=$(gh pr view "$PR_NUM" --json additions,deletions,changedFiles)
+          ADDITIONS=$(echo "$STATS" | jq -r '.additions')
+          DELETIONS=$(echo "$STATS" | jq -r '.deletions')
+          CHANGED_FILES=$(echo "$STATS" | jq -r '.changedFiles')
+          NET_CHANGE=$((ADDITIONS + DELETIONS))
+
+          echo "PR #$PR_NUM stats:"
+          echo "  Additions:      $ADDITIONS"
+          echo "  Deletions:      $DELETIONS"
+          echo "  Net change:     $NET_CHANGE"
+          echo "  Changed files:  $CHANGED_FILES"
+          echo ""
+
+          # ----------------------------------------
+          # PR ~100 行 (单 PR 粒度, EPIC-059-C)
+          # ----------------------------------------
+          PR_100_STATUS="PASS"
+          if [ "$NET_CHANGE" -le 100 ]; then
+            PR_100_TIER="silent"
+            PR_100_STATUS="PASS"
+            echo "✓ PR ~100 行 (silent): $NET_CHANGE 行 ≤ 100 (理想)"
+          elif [ "$NET_CHANGE" -le 300 ]; then
+            PR_100_TIER="warn"
+            PR_100_STATUS="WARN"
+            echo "::warning::PR ~100 行 (warn): $NET_CHANGE 行 ≤ 300 (100-300 档, 建议拆分)"
+          elif [ "$NET_CHANGE" -le 500 ]; then
+            PR_100_TIER="warn-strong"
+            PR_100_STATUS="WARN-STRONG"
+            echo "::warning::PR ~100 行 (warn-strong): $NET_CHANGE 行 ≤ 500 (300-500 档, 推荐 codemod 或申请豁免 Approved-Large-PR-By: <主公>)"
+          else
+            PR_100_TIER="fail"
+            PR_100_STATUS="FAIL"
+            echo "::error::PR ~100 行 (fail): $NET_CHANGE 行 > 500 (跟 EPIC-059-B Rule of 500 联合, 必须 codemod 或拆分 PR)"
           fi
-          echo "PR size check passed (+${ADDITIONS} -${DELETIONS})"
+          echo ""
+
+          # ----------------------------------------
+          # Rule of 500 (净变更 粒度, EPIC-059-B)
+          # ----------------------------------------
+          R500_STATUS="PASS"
+          if [ "$NET_CHANGE" -le 100 ]; then
+            R500_TIER="silent"
+            R500_STATUS="PASS"
+            echo "✓ Rule of 500 (silent): $NET_CHANGE 行 ≤ 100"
+          elif [ "$NET_CHANGE" -le 500 ]; then
+            R500_TIER="acceptable"
+            R500_STATUS="PASS"
+            echo "✓ Rule of 500 (acceptable): $NET_CHANGE 行 ≤ 500 (跟 eket Rule 9 阈值 一致)"
+          elif [ "$NET_CHANGE" -lt 1000 ]; then
+            R500_TIER="codemod_hint"
+            R500_STATUS="FAIL"
+            echo "::error::Rule of 500 (codemod_hint): $NET_CHANGE 行 < 1000 (500-999 档, 必须 codemod 或申请豁免 Approved-Large-PR-By: <主公>)"
+          else
+            R500_TIER="reject"
+            R500_STATUS="FAIL"
+            echo "::error::Rule of 500 (reject): $NET_CHANGE 行 ≥ 1000 (拒绝 commit, 推荐 EPIC 拆分)"
+          fi
+          echo ""
+
+          # ----------------------------------------
+          # Aggregate gate (跟 EPIC-059-C + EPIC-059-B 互为 互补)
+          # ----------------------------------------
+          echo "==========================================="
+          echo "PR Size Summary:"
+          echo "  PR ~100:  $PR_100_TIER ($PR_100_STATUS)"
+          echo "  Rule of 500: $R500_TIER ($R500_STATUS)"
+          echo "==========================================="
+
+          # Exit logic:
+          #   - PR ~100 FAIL (>500) → exit 1 (跟 Rule of 500 联合 fail)
+          #   - Rule of 500 FAIL (≥500) → exit 1
+          #   - PR ~100 WARN-STRONG (300-500) → exit 1 (跟 Rule 13 decision-gate 联合)
+          #   - PR ~100 WARN (100-300) → exit 0 (warn 不阻止)
+          if [ "$PR_100_STATUS" = "FAIL" ] || [ "$R500_STATUS" = "FAIL" ] || [ "$PR_100_STATUS" = "WARN-STRONG" ]; then
+            echo "❌ PR size check FAILED — see warnings/errors above"
+            exit 1
+          fi
+
+          echo "✓ PR size check PASSED (+$ADDITIONS -$DELETIONS net=$NET_CHANGE)"
+
+      - name: Verify local script agrees (可选, 跟 scripts/check-pr-size.sh 一致性)
+        run: |
+          # Sanity check: scripts/check-pr-size.sh 跟 GitHub Actions 阈值 一致
+          bash scripts/check-pr-size.sh --help 2>&1 | head -20 || true
+          bash scripts/check-pr-size.sh --check-pr-100 --lines 50 >/dev/null 2>&1 && echo "PR 50 PASS OK" || echo "PR 50 FAIL"
+          bash scripts/check-pr-size.sh --check-pr-100 --lines 600 >/dev/null 2>&1 && echo "PR 600 PASS (unexpected)" || echo "PR 600 FAIL OK"
+          bash scripts/check-pr-size.sh --check-rule-of-500 --lines 100 >/dev/null 2>&1 && echo "R500 100 PASS OK" || echo "R500 100 FAIL"
+          bash scripts/check-pr-size.sh --check-rule-of-500 --lines 600 >/dev/null 2>&1 && echo "R500 600 PASS (unexpected)" || echo "R500 600 FAIL OK"
