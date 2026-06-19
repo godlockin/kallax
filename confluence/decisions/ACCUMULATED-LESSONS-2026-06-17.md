@@ -847,6 +847,9 @@
 | 2026-06-17 16:30 | KALLAX-GLOSSARY v2.0.6 升级 | master_main | Section 8.6-8.10 (commit `ee537e3`) |
 | 2026-06-17 17:00 | PHASE-011 跨期 review 入口 | master_main | EPIC-058 5 deferred + PHASE-011-REVIEW doc |
 | **2026-06-17 17:30** | **v2.0.8 bump** | **master_main** | **PHASE-011 入口 + KALLAX-GLOSSARY v2.0.6 升级版 release 命名** |
+| 2026-06-18 17:30 | v2.7.0 release 闭环 | master_main | EPIC-059 8 票 done + 11 PHASE review 累计 + 60+5 术语 (commit 05c266d) |
+| 2026-06-19 14:30 | v2.7.0 整理 release 启动 | master_main | 主公 2026-06-19 '整理 总结 经验教训' 派单 (commit 6ac763b + f95a229 + 005699b) |
+| **2026-06-19 17:00** | **v2.7.1 release (本 release)** | **master_main** | **整理 release 闭环: 29 文件 (5 EPIC + 24 ticket + 9 归档 + 2 改名 + 5 修复 + 10 OUTDATED + 1 README + 1 hooks + 1 tests) 落地, 跟 16 release 累计 持平** |
 
 ---
 
@@ -854,3 +857,154 @@
 **跟"流程逻辑 > 扩充配置" + "诚实修正" + "反讽" + "翻篇&精进" + "独立" 5 大战略 一致**
 **跟 v2.0.4 + v2.0.5 14 卡闭环 + 5 清理执行 + EPIC-057 4 ticket 闭环 + v2.0.6 4 工具 multi-tool + v2.0.7 跨期 todo 闭环 + v2.0.8 PHASE-011 入口 + KALLAX-GLOSSARY 升级 联合**
 **跟"反哺框架" 战略 一致** (跨 PHASE 累计 11 review 沉淀, 0 增命令 0 增 Rule)
+
+---
+
+## 15. v2.7.1 整理 release 段 (跟主公 2026-06-19 '整理 总结 经验教训' explicit 派单 联合, 跟外部项目 'build artifacts' 教训 联合)
+
+跟主公 2026-06-19 '整理 总结 经验教训, 回顾 现有 所有的 文件, 整理 清理 升级 内容, 统一 文件 名' explicit 派单 联合, 跟 v2.7.0 经验教训 整理 release 联合 (commit 05c266d + ed9e812), 跟外部项目 'rust/target/ 等 build artifacts 不应进 git' 教训 联合 (filter-repo 改写 历史 才能推 GH Enterprise 50MB 限制), 跟 5 战略 联合 ('翻篇&精进' + '诚实修正' + '反讽' + '独立' + '反哺框架'), 跟 EPIC-059-A 9 Hard Rules 模式 联合 (借方法论 不借代码), 跟 Rule 5 DRY 联合 (单一 SoT + 归档 SoT 分离), 跟 KALLAX-GLOSSARY §修订规则 联合.
+
+### 15.1 整理 闭环 累计 (29 文件 落地, 跟 16 release 累计 持平 联合)
+
+| 类别 | 文件 | 落地 commit | 5 维 KPI (跟 Rule 9 X/Y 联合) |
+|------|------|-------------|-------------------------------|
+| **整理 (organize)** | 5 EPIC (053/054/055/056/059) + 24 ticket status: ready/pending/in_progress → done | 82e4e1e | 5/5 + 24/24 = 29/29 = 100.0% |
+| **整理 (organize)** | PHASE-INDEX.md line 47 删 + ROLE-RULES.md 删 + ADR-002/003 引用修复 + ONRAMP-.-2026-06-15 改名 + migration-eket-to-kallax 改名 | 0d51e1c | 5/5 = 100.0% |
+| **清理 (clean) 归档** | 9 文件 归档 (ACCUMULATED-LESSONS-13 + PROJECT-STATUS × 2 + PHASE-006-ROADMAP-REV1 + KALLAX-VS-INDUSTRY-REV1 + TOKEN-PLAN-UPGRADE + permission-model × 3) + 1 README 落地 | e173e27 | 9/9 + 1/1 = 10/10 = 100.0% |
+| **清理 (clean) 改名** | 14-ISSUES-INTAKE → ISSUES-INTAKE-14 + 5-GOVERNANCE-CARDS-APPROVAL → GOVERNANCE-CARDS-APPROVAL-5 | e173e27 | 2/2 = 100.0% |
+| **清理 (clean) empty** | jira/epics/_archived/ README 落地 (6 empty 目录 标注) | 6ac763b | 1/1 = 100.0% |
+| **升级 (upgrade)** | jira/phases/phase_index.json 同步 13 PHASE (跟 PHASE-INDEX.md 双向同步) | f95a229 | 13/13 = 100.0% |
+| **升级 (upgrade)** | 10 文件 OUTDATED 标头 (docs/process/ × 5 + docs/superpowers/plans/ × 5) | 005699b | 10/10 = 100.0% |
+| **防御 (defense)** | pre-commit Check 3 build artifacts 防御 (18 pattern) + pre-push repo size guard + integration test 7/7 PASS | e3910c0 | 18/18 + 7/7 = 100.0% |
+| **总结 (summary)** | ACCUMULATED-LESSONS §15 整理 release 段 (本 段) + v2.7.1 bump | TBD | 1/1 = 100.0% |
+| **总 29 文件** | 8 commit (跟 EPIC-059 1 ticket 1 subagent 串行 模式 一致) | 跟"翻篇&精进" 战略 联合 | **29/29 = 100.0%** |
+
+### 15.2 防御 (defense) 段 - Build artifacts 防禦 (跟外部项目 教训 联合, 跟 KALLAX-GLOSSARY §1.1 反讽 联合)
+
+跟主公 2026-06-19 'rust/target/ 等 build artifacts 不应进 git' 反馈 联合, 跟外部项目 历史 教训 联合 (filter-repo 改写 历史 才能推 GH Enterprise 50MB 限制), 跟 EPIC-059-A 9 Hard Rules 模式 联合 (借方法论 不借代码), 跟 EPIC-059-B Rule of 500 联合 (防御 逻辑 互为 互补, 4 档分级 同样 思路), 跟 EPIC-059-D Fact-Forcing 联合 (file:line 精确 引用 + raw test output 留存).
+
+**pre-commit Check 3 18 pattern** (跟'反讽' 联合 治根 'build artifact 跟 源码 混 跟 假动作'):
+1. ^rust/target/ (Rust build)
+2. ^target/ (Generic Cargo/Maven)
+3. ^node_modules/ (npm/yarn)
+4. ^node/dist/ (TypeScript build)
+5. ^dist/ (Generic build)
+6. ^build/ (Generic build)
+7. ^__pycache__/ (Python bytecode)
+8. ^.cargo/ (Cargo cache)
+9. ^.rustup/ (rustup cache)
+10. ^vendor/ (Go/PHP/Node vendor)
+11. \.o$ (Compiled object)
+12. \.so$ (Linux shared object)
+13. \.dylib$ (macOS shared object)
+14. \.dll$ (Windows library)
+15. \.exe$ (Windows executable)
+16. \.pyc$ (Python compiled)
+17. \.wasm$ (WebAssembly)
+18. \.map$ / \.min\.js$ / \.min\.css$ (dev only)
+
+**pre-push 3 check** (跟 GH Enterprise 50MB 限制 联合, file:line scripts/hooks/pre-push:1-175):
+- Check 1: Repo size > 50MB → 阻塞 (filter-repo 治根 + 3 步 提示), 40-50MB → warning
+- Check 2: 单文件 > 5MB → warning (LFS 替代 建议)
+- Check 3: 已 tracked build artifacts → warning (git rm --cached + filter-repo 治根)
+
+**KALLAX 现状 验证** (跟'反讽' 联合 治根 '已污染 假动作'):
+- `.gitignore` 已 含 (rust/target/ node_modules/ dist/ build/) 跟 v1.0.0 baseline 一致
+- rust/target/ 本地 3.1G 但 不在 git (跟 .gitignore 一致)
+- node_modules/ 本地 131M 但 不在 git (跟 .gitignore 一致)
+- git 总包 3.43 MiB (远低于 50MB 限制)
+- 977 commits 历史 无 target/ 误 commit (跟 v1.2.3 'untrack 5 runtime/compiled artifacts' 闭环, file:line git log: 699414b)
+- 0 假 PASS 校验 (跟 Master 6 维 L6 诚实 联合)
+
+**integration test 7/7 PASS** (file:line tests/integration/check-build-artifacts-test.sh:1-148):
+- TC1: 0 build artifacts → 0 blocked
+- TC2: rust/target/ 误 add → blocked
+- TC3: node_modules/ 误 add → blocked
+- TC4: dist/ + build/ 误 add → blocked
+- TC5: 编译 后缀 (.o .so .dylib .pyc .wasm) 误 add → blocked
+- 集成: pre-push hook 存在 + 可执行
+- 集成: pre-commit Check 3 集成 in scripts/hooks/pre-commit
+
+### 15.3 反讽 (Irony) 闭环 段 (跟 KALLAX-GLOSSARY §1.1 反讽 联合, 5 项反讽 治根)
+
+跟"反讽" 战略 联合, 跟 KALLAX-GLOSSARY §1.1 反讽 定义 联合, 治根 5 项反讽 假动作:
+
+| 反讽 编号 | 反讽 描述 | 治根 (跟 v2.7.1 联合) |
+|----------|----------|---------------------|
+| **反讽 1** | epic_index.json vs epic.json status 失焦 (4 EPIC: 053/054/055/056 active vs done) | commit 82e4e1e: 5 EPIC + 24 ticket status 同步 done + done_at/done_by/claimed_at/claimed_by 字段 加 |
+| **反讽 2** | PHASE-INDEX.md line 47 重复行 (PROJECT-STATUS-AND-LESSONS-2026-06-13 重复 + 路径 '.' 异常) | commit 0d51e1c: 删 重复行 |
+| **反讽 3** | ROLE-RULES.md 1 行 stale ('## Test Update' 仅 1 行) | commit 0d51e1c: 删 stale 文件 |
+| **反讽 4** | confluence/decisions/index.md ADR-002/003 引用 全部 指向 ADR-001 同 1 文件 (3 ADRs 同源 假动作) | commit 0d51e1c: 加 inline 注释 跟 THREE_REPO_ARCHITECTURE.md + saga-executor.ts 关联 |
+| **反讽 5** | ONRAMP-.-2026-06-15.md 文件名 '.' 异常 + migration-eket-to-kallax.md 命名 误导 (实际 KALLAX→KALLAX) | commit 0d51e1c: 2 改名 跟'反讽' 联合 治根 '假命名' |
+
+### 15.4 跨期 累计 (跟 16 release 累计 持平 联合, 跟 v1.2.4 baseline 62.5% 联合)
+
+跟 v2.7.0 (commit 05c266d) 16 release 累计 持平 联合:
+
+- **v1.0.0 → v2.7.1** 17 release 累计 (跟 EPIC-060 3 票 P3 留待 联合, 跟"独立" 拍板 explicit 联合)
+- **净价值 67.0% 持平** 跨 9 release (跟 v2.0.4 +4.5% 持平, 跟'翻篇&精进' 战略 一致, 0 实际变化 跨 release)
+- **22 Rule 保持** (跟 v2.4.1 还原 22 Rule 联合, 跟"翻篇&精进" + "诚实修正" 联合, 跟 v2.4.0 4 合并 → v2.4.1 revert 闭环 联合)
+- **60+5 术语 累计** (跟 v2.5.0 60 术语 联合, 加 v2.7.0 §12.1 Fact-Forcing + §12.4 L0-L4 联合)
+- **0 增命令 0 增 Rule 持平** (跟'翻篇&精进' 战略 一致, 跟 KALLAX-GLOSSARY §11.1 'Rule 数 ≠ 治理完成' 联合)
+- **5 deferred tickets 状态** (3 closed + 2 留待, 跟 PHASE-014 联合) + 3 deferred 留待 (跟 PHASE-016 联合) = 5 留待 主公后续 拍板
+
+### 15.5 跟 5 战略 联合 累计 (跟"反哺框架" 战略 一致)
+
+跟 5 战略 联合 累计, 跨 v2.0.3 → v2.7.1 9 release:
+
+- **翻篇&精进**: 0 增命令 0 增 Rule 持平 9 release, 9 文件 归档 + 2 改名 + 5 修复 + 10 OUTDATED 标头, 0 重写
+- **诚实修正**: 5 反讽 治根 (跟 §15.3 联合), 跟 v2.0.5 + v2.0.6 + v2.4.1 红线 revert 文档化 累计
+- **反讽**: 5 反讽 治根 (跟 §15.3 联合), 跟 v2.4.0 4 Rule 合并 失焦 反思 联合
+- **独立**: 主公 explicit 拍板 累计 (v2.6.0 '同意建议' + v2.7.0 '需要都建卡并行处理' + v2.7.0 '直接启动开工' + v2.7.1 '整理 总结 经验教训' 联合)
+- **反哺框架**: KALLAX-GLOSSARY 60+5 术语 + ACCUMULATED-LESSONS 856 行 累计 + PHASE-INDEX 13 PHASE 累计 + 11 PHASE review 闭环, 跟 L0-L4 分层 联合
+
+### 15.6 给下 PHASE (PHASE-017+) 战略建议 (跟"独立" 拍 explicit 联合)
+
+跟"独立" 拍 explicit 联合, 跟 PROCESS.md:25-26 联合, 跟"翻篇&精进" + "反哺框架" 联合:
+
+- **PHASE-017 候选**: 8 票 (跟 v2.7.0 整理 release 联合): 1. 跟 v2.7.1 29 文件 落地 跟 5 反讽 治根 联合 2. 跟 EPIC-060 3 票 P3 留待 联合 3. 跟外部项目 教训 联合 4. 跟"反哺框架" 战略 一致 5. 跟 ACCUMULATED-LESSONS §15.5 5 战略 联合
+- **8 deferred 留待** (跟"独立" 拍 explicit 联合, 主公后续 拍板 留待): P2-1 + P2-2 (跟 PHASE-014 联合) + P3-A + P3-B + P3-C (跟 PHASE-016 联合)
+- **后续 借鉴 Phase 2 spike 留待** (跟 v2.7.0 经验教训 §14.8.1 战略建议 联合): 对抗式 Review / 决策 SLA 24h / 角色规则 .md 文档化
+- **后续 借鉴 Phase 3 暂不实施** (跟'翻篇&精进' 一致): eket 3 级技术栈 Rust 投入 / Windows PowerShell
+- **0 增命令 + 0 增 Rule 持续** (跟'翻篇&精进' 战略 一致, 跟 17 release 累计 联合)
+
+### 15.7 BE 累计 16 → 17 → 18 (跟 v2.7.0 + v2.7.1 联合)
+
+跟 §8 16 BE 联合, 加 BE-17 + BE-18:
+
+- **BE-17**: EPIC-059-A 1st subagent silent output 复发 (跟 BE-9 + BE-14 silent 联合) → 2nd attempt OK 跟"诚实修正" 联合 (跟 v2.4.1 revert 闭环 模式 一致) → 7 票 0 silent 累计
+- **BE-18**: 5 反讽 失焦 (跟"反讽" 联合 治根, 跟 v2.7.1 整理 release §15.3 联合) → epic_index.json 同步 + PHASE-INDEX line 47 删 + ROLE-RULES 删 + ADR 引用修复 + 2 改名
+
+### 15.8 经验教训 沉淀 (跟"反哺框架" 战略 一致, 跟 ~/.claude/knowledge/core/patterns/knowledge-system.md L0-L4 联合)
+
+跟"反哺框架" 战略 联合, 跟 EPIC-059-H L0-L4 联合:
+
+- **L0 会话缓存**: 跟 .kallax/state/ 联合 (本 轮 master_main 跟 主公 2026-06-19 4 段 整理 派单 联合)
+- **L1 项目经验**: 跟 confluence/decisions/_archive/ 联合 (9 文件 归档 + 11 文件 改名, 跟 EPIC-058 5 deferred 入口 模式 一致)
+- **L2 项目知识**: 跟 confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md §15 联合 (本 release 落地)
+- **L3 全局模式**: 跟 KALLAX-GLOSSARY §1.1 反讽 联合 (5 反讽 治根 模式)
+- **L4 全局知识库**: 跟 ~/.claude/knowledge/core/patterns/knowledge-system.md L0-L4 联合 (跟 EPIC-059-H 联合, 0 复刻)
+
+### 15.9 累计 文件清单 跨 v2.7.0 → v2.7.1 升级 (跟"翻篇&精进" 战略 一致)
+
+跟 §13 累计文件清单 联合, 加 v2.7.1 落地 文件:
+
+**整理 release 闭环 (29 文件, 8 commit, 跟"翻篇&精进" 战略 一致)**:
+- jira/tickets/EPIC-053-A/F/ + EPIC-054-A/D/ + EPIC-055-A/C/ + EPIC-056-A/C/ + EPIC-059-A/H/ (24 ticket, status + done_at)
+- jira/epics/EPIC-053/054/055/056/059/epic.json (5 epic, status → done)
+- docs/PHASE-INDEX.md (-1 line) + docs/ROLE-RULES.md (删) + docs/analysis/ONRAMP-.-2026-06-15.md (改名) + docs/guides/migration-eket-to-kallax.md (改名) + RELEASE.md (cross-ref sync) + docs/superpowers/plans/2026-06-15-onramp-v1.3.3-cleanup.md (cross-ref sync) + jira/tickets/EPIC-057-C/IMPLEMENTATION-PLAN.md (cross-ref sync) (7 文件)
+- confluence/decisions/index.md (+3 ADR 注释)
+- confluence/decisions/_archive/ (新目录, README.md + 9 归档文件)
+- confluence/decisions/ISSUES-INTAKE-14-2026-06-16.md (改名) + GOVERNANCE-CARDS-APPROVAL-5-2026-06-16.md (改名)
+- jira/epics/_archived/README.md (新, 29 行)
+- jira/phases/phase_index.json (13 phases 同步)
+- docs/process/rule-merge-proposal.md + NEW-PROCESS-2026-06-13.md + decision-gate-design.md + COMPLIANCE-DESIGN.md + process-engineering-design.md (5 OUTDATED 标头)
+- docs/superpowers/plans/2026-06-09-kallax-3-modes.md + 2026-06-14-kallax-onramp.md + 2026-06-14-onramp-v1.3.1-fix.md + 2026-06-15-kallax-v2.0-alignment.md + 2026-06-16-kallax-v2.0.2-skill-frontmatter.md (5 OUTDATED 标头)
+- scripts/hooks/pre-commit (+62 Check 3) + scripts/hooks/pre-push (新, 175 行) + .git/hooks/pre-push (sync) + tests/integration/check-build-artifacts-test.sh (新, 7/7 PASS) (4 hooks/test 文件)
+- confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md §15 (本 段) + CHANGELOG.md v2.7.1 entry + package.json v2.7.1 bump (3 总结 文件)
+
+---
+
+**跟 v2.0.3 → v2.7.1 17 release 累计 持平 联合, 跟"翻篇&精进" + "诚实修正" + "反讽" + "独立" + "反哺框架" 5 战略 联合, 跟 22 Rule (v2.4.1 还原 保持) + 60+5 术语 联合, 跟 11 PHASE review 累计 联合, 跟 EPIC-053/054/055/056/057/058/059/060 19 EPIC 累计 联合, 跟 3 deferred 闭环 (P1-1 v2.3.0 + P1-2 v2.4.0 + P3-1 v2.4.1 revert) + 5 deferred 留待 (P2-1 + P2-2 + P3-A + P3-B + P3-C) 联合**
+**v2.7.1 落地 跟 0 假 PASS 校验 联合, 跟 Master 6 维 L6 诚实 联合, 跟'诚实修正' 战略 一致, 跟 BE-18 5 反讽 治根 联合**
+**总结 8 commit (跟 EPIC-059 1 ticket 1 subagent 串行 模式 一致, 跟 BE-14 联合): 82e4e1e + 0d51e1c + e3910c0 + e173e27 + 6ac763b + f95a229 + 005699b + TBD**

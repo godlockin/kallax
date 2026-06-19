@@ -5,6 +5,37 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.1] - 2026-06-19
+
+### Changed
+
+#### 整理 release 闭环 (跟主公 2026-06-19 '整理 总结 经验教训, 回顾 现有 所有的 文件, 整理 清理 升级 内容, 统一 文件 名' explicit 派单 联合, 跟外部项目 'build artifacts' 教训 联合, 29 文件 落地, 8 commit)
+
+跟主公 2026-06-19 派单 联合, 跟 v2.7.0 经验教训 整理 release 联合, 跟外部项目 'rust/target/ 等 build artifacts 不应进 git' 教训 联合, 跟 5 战略 联合 ('翻篇&精进' + '诚实修正' + '反讽' + '独立' + '反哺框架'), 跟 16 release 累计 持平 联合:
+
+- **整理 (organize)**: 5 EPIC (053/054/055/056/059) + 24 ticket status: ready/pending/in_progress → done + done_at/done_by/claimed_at/claimed_by 字段 加 (commit 82e4e1e)
+- **整理 (organize)**: 5 反讽 修复 — PHASE-INDEX.md line 47 删 + ROLE-RULES.md 删 + ADR-002/003 引用修复 + ONRAMP-.-2026-06-15 改名 + migration-eket-to-kallax 改名 (commit 0d51e1c)
+- **防御 (defense)**: pre-commit Check 3 build artifacts 防御 (18 pattern) + pre-push repo size guard (50MB 阻塞 + 40MB warning) + integration test 7/7 PASS (跟外部项目 教训 联合, commit e3910c0)
+- **清理 (clean) 归档**: 9 文件 归档 (ACCUMULATED-LESSONS-13 + PROJECT-STATUS × 2 + PHASE-006-ROADMAP-REV1 + KALLAX-VS-INDUSTRY-REV1 + TOKEN-PLAN-UPGRADE + permission-model × 3) + 1 README 落地 (commit e173e27)
+- **清理 (clean) 改名**: 14-ISSUES-INTAKE → ISSUES-INTAKE-14 + 5-GOVERNANCE-CARDS-APPROVAL → GOVERNANCE-CARDS-APPROVAL-5 (commit e173e27)
+- **清理 (clean) empty**: jira/epics/_archived/ README 落地 (6 empty 目录 标注, commit 6ac763b)
+- **升级 (upgrade)**: jira/phases/phase_index.json 同步 13 PHASE (跟 PHASE-INDEX.md 双向 同步, commit f95a229)
+- **升级 (upgrade)**: 10 文件 OUTDATED 标头 (docs/process/ × 5 + docs/superpowers/plans/ × 5, commit 005699b)
+- **总结 (summary)**: ACCUMULATED-LESSONS §15 整理 release 段 + v2.7.1 bump + CHANGELOG entry (本 段)
+
+### Notes
+- 0 Rule 增加 (跟 Rule 32 软约束升级阈值 联合, 跟 v2.4.1 还原 22 Rule 联合, 跟"翻篇&精进" 战略 一致)
+- 0 重写 (跟 Rule 5 DRY 联合, 29 文件 整理/清理/升级 0 重写主逻辑)
+- 0 增 命令 (跟 v1.3.0 Onramp 1 入口 拍 explicit 撤销, 改为 2 独立命令 /kallax-init + /kallax-takeover, 跟"反讽" 联合)
+- 0 增 ticket 0 增 EPIC 现行 (跟 EPIC-058 5 deferred 留待 一致, 跟"翻篇&精进" 战略 一致)
+- 17 release 累计 持平 (v1.0.0 → v2.7.1, 跟 v1.2.4 baseline 62.5% → 67.0% (+4.5%) 持平, 跟"反讽" 闭环)
+- 29 文件 落地 跟 5 反讽 治根 联合 (跟"诚实修正" 战略 一致, 跟 BE-18 联合)
+- 0 假 PASS 校验 (跟 Master 6 维 L6 诚实 联合, 跟 EPIC-059-D Fact-Forcing 联合)
+- 跟 ACCUMULATED-LESSONS-2026-06-17 v2.7.1 升级版 §15 联合 (file:line confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:853-1019)
+- 跟 KALLAX-GLOSSARY §1.1 反讽 + §1.2 诚实修正 + §修订规则 联合
+- 跟 PROCESS.md:25-26 独立 拍板 explicit 联合 (跟"独立" 战略 一致)
+- 跟 ~/.claude/knowledge/core/patterns/knowledge-system.md L0-L4 联合 (跟"反哺框架" 战略 一致, 跟 EPIC-059-H 联合)
+
 ## [2.7.0] - 2026-06-18
 
 ### Added
