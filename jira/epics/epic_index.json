@@ -63,11 +63,12 @@
       "id": "EPIC-059",
       "phase": "PHASE-015",
       "title": "EKET 借鉴 Phase 1 (8 项, 跟 v2.6.0 经验教训 整理 release + 主公 2026-06-18 '需要都建卡并行处理' explicit 派单 联合)",
-      "status": "active",
+      "status": "done",
       "start_time": "2026-06-18",
-      "delivery_time": "2026-06-19",
-      "tickets_closed": 0,
-      "tickets_ready": 8,
+      "delivery_time": "2026-06-18",
+      "tickets_closed": 8,
+      "tickets_ready": 0,
+      "tickets_done": 8,
       "epic_file": "jira/epics/EPIC-059/epic.json"
     }
   ]

@@ -5,6 +5,34 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.0] - 2026-06-18
+
+### Added
+
+#### EKET 借鉴 Phase 1 闭环 (EPIC-059 8 票 全 done, 跟 v2.6.0 经验教训 整理 release + 主公 2026-06-18 '需要都建卡并行处理' explicit 派单 联合, 跟 PHASE-015 联合, 1 ticket 1 subagent 串行 8 轮)
+
+跟主公 2026-06-18 '需要都建卡并行处理' explicit 派单 联合, 跟 v2.6.0 经验教训 整理 release 联合, 跟 ~/.claude/knowledge/core/methodologies/borrowing-from-external.md 5 维评分 决策矩阵 4-5 分直接建卡 联合, 跟 eket template/docs/MASTER-RULES.md 借方法论 不借代码 联合, 跟 v2.4.1 Rule 合并反思 联合 (治根 'Rule 数通胀' 迷信, 跟 KALLAX-GLOSSARY §11.1 联合), 跟 v2.4.0 反思 联合 (治根 '0 实际变化 假动作' 反讽, 跟 KALLAX-GLOSSARY §11.3 联合), 跟 BE-14 1 ticket 1 subagent 串行 联合 (治根 4 subagent silent output 复发), 跟'翻篇&精进' + '诚实修正' + '反讽' + '反哺框架' 4 战略 联合:
+
+- **EPIC-059-A: 9 Hard Rules 简化** (5/5 PASS, commit 7ca58a5, 4h, P2, backend): 22 Rule → 9 类别 group 索引 (file:line CLAUDE.md:471-497), 0 删 Rule, 0 增 Rule, 跟 eket MASTER-RULES.md §6 9 Hard Rules 模式 联合 (借方法论 不借代码)
+- **EPIC-059-B: Rule of 500** (16/6 PASS, commit fc1cbb4, 2h, P2, backend): 净变更 4 档分级 (silent/acceptable/codemod_hint/reject), Rule 8 升级 (file:line CLAUDE.md:166-187), 跟 eket MASTER-RULES.md §6 Rule 8 联合
+- **EPIC-059-C: PR ~100 行上限** (21/5 PASS, commit b1ad90c, 2h, P2, backend): PR 4 档分级 (silent/warn/warn-strong/fail), Rule 9 升级 (file:line CLAUDE.md:191-215), 跟 eket MASTER-RULES.md §6 Rule 9 联合, 跟 EPIC-059-B Rule 8 互为 互补 (粒度 分离)
+- **EPIC-059-D: Fact-Forcing 原则** (3 文件 落地, commit 0b394f5, 3h, P2, docs): §12.1 三原则 (file:line docs/KALLAX-GLOSSARY.md:846-1000) + docs/process/fact-forcing.md (428 行) + fact-forcing-examples.md (263 行, 5+5), 跟 eket MASTER-RULES.md §2 联合, 跟 Master 6 维 L6 诚实 联合
+- **EPIC-059-E: Post-Process 11 步骤** (23/5+ PASS, commit 5cc620f, 4h, P2, docs): PHASE-INDEX.md 段 (file:line:42-67) + SKILL.md 段 (file:line:160-202) + post-process.sh (548 行) + post-process-test.sh (331 行, 5/5 PASS), 跟 eket MASTER-RULES.md §10 联合, 跟 PHASE review 10 累计 联合
+- **EPIC-059-F: 派遣 Checklist 11 项** (3/3 100% 落地, commit 3f93c2d, 3h, P2, backend): SKILL.md 段 (file:line:204-239) + AGENTS.md 段 (file:line:126-159) + dispatch-checklist.md (631 行, 11 详细 + 11 反例 + 11 正例), 跟 eket MASTER-RULES.md §11 7 项 → 11 项 升级 联合 (借方法论 不借代码), 跟 BE-14 + EPIC-059-D Fact-Forcing + PROCESS.md:25-26 心跳 5 问 闭环
+- **EPIC-059-G: 文档卫生 (每 10 轮) + 新建前先想** (21/21 PASS, commit 3c0a11a, 2h, P2, docs): PHASE-INDEX.md 段 (file:line:87-128) + CLAUDE.md 9 Hard Rules Rule 6+7 映射 (file:line:516-580) + check-doc-hygiene.sh (524 行) + doc-hygiene-test.sh (340 行, 5/5 PASS), 跟 eket MASTER-RULES.md §6 联合, 跟 KALLAX-GLOSSARY 反哺框架 战略 联合
+- **EPIC-059-H: 多级记忆分层 L0-L4** (21/21 PASS, commit be7e5a9, 4h, P2, docs): LAYERS.md (185 行) + lessons/ + patterns/ + research/ 分层标记 + GLOSSARY §12.4 (5 层 + 5 触发 + 5 升级 + 5 反模式) + SKILL.md 段 (file:line:240-294) + memory-promote.sh (242 行) + memory-l0-l4-test.sh (258 行, 5/5 PASS), 跟 eket confluence/memory/ + ~/.claude/knowledge L0-L4 联合
+
+### Notes
+- 0 Rule 增加 (跟 Rule 32 软约束升级阈值 联合, 跟 v2.4.1 还原 22 Rule 联合, 跟"翻篇&精进" 战略 一致, file:line docs/KALLAX-GLOSSARY.md §11.1-11.6)
+- 0 重写 (跟 Rule 5 DRY 联合, 跟"翻篇&精进" 战略 一致)
+- 0 增 命令 (跟 v1.3.0 Onramp 1 入口 拍 explicit 撤销, 改为 2 独立命令 /kallax-init + /kallax-takeover, 跟"反讽" 联合)
+- 0 增 ticket 0 增 EPIC (跟 EPIC-058 5 deferred 留待 一致, 跟"翻篇&精进" 战略 一致)
+- 16 release 累计 持平 (v1.0.0 → v2.7.0, 跟 v1.2.4 baseline 62.5% → 67.0% (+4.5%) 持平, 跟"反讽" 闭环)
+- 8 票 1 ticket 1 subagent 串行 8 轮 (跟 BE-14 联合, 治根 4 subagent silent output 复发, 8 票 全部 1 subagent 派单, 0 silent output, 跟"诚实修正" 联合)
+- 跟 ACCUMULATED-LESSONS-2026-06-17 v2.6.0 升级版 联合 (1 文件 +218/-68), 跟"诚实修正" + "反讽" + "翻篇&精进" + "反哺框架" 4 战略 联合
+- 跟 KALLAX-GLOSSARY §11.1-11.6 6 反思 术语 联合 (file:line docs/KALLAX-GLOSSARY.md), §12.1 Fact-Forcing + §12.4 L0-L4 联合
+- 跟 PHASE-013-REFLECTION-2026-06-18.md + PHASE-014-REVIEW-2026-06-18.md 联合 (file:line confluence/decisions/)
+
 ## [2.6.0] - 2026-06-18
 
 ### Changed
