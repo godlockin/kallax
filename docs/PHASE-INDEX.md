@@ -51,6 +51,39 @@ KALLAX 文档 Single Source of Truth (SoT) — 修订前查 SoT 边界, 避免�
 | 2026-06-14-onramp-v1.3.1-fix.md | docs/superpowers/plans/ | 4-bug 修复 plan | 跟"反讽" 联合 |
 | 2026-06-15-onramp-v1.3.3-cleanup.md | docs/superpowers/plans/ | 4-task 清理 plan | 跟"反讽" 联合 |
 
+## Post-Process 11 步骤 (跟 eket MASTER-RULES.md §10 升级, 跟 EPIC-059-E 联合, 跟 PHASE review 14 累计 联合)
+
+> **跟 eket template/docs/MASTER-RULES.md §10 4 步骤 (回归验证/分支同步/经验沉淀/技术债登记) 升级, 跟 PHASE review 入口 标准化 联合**
+> **跟"翻篇&精进" 战略 一致 (跨 release 累计, 0 增命令 0 增 Rule 持平), 跟"反哺框架" 战略 一致 (PHASE-XXX-REVIEW 入口 标准化)**
+> **自动化**: `scripts/post-process.sh` (默认 dry-run, `--apply` 实际执行)
+> **TDD 测试**: `tests/integration/post-process-test.sh` (5/5 PASS)
+
+| # | 步骤 | 跟 eket §10 联合 | 跟 KALLAX 联合 | 触发条件 |
+|---|---|---|---|---|
+| 1 | **回归验证** (build/test/CI) | 回归验证 | Rule 17 CI 全绿, Rule 18 0 假 PASS | EPIC/Sprint 完成 |
+| 2 | **分支同步** (miao → origin) | 分支同步 | `scripts/sync-branches.sh`, Rule 32 0 增命令 | PR merged |
+| 3 | **经验沉淀** (lessons/lessons-learned) | 经验沉淀 | `confluence/decisions/ACCUMULATED-LESSONS-*.md`, 跟"反哺框架" 战略 | EPIC done |
+| 4 | **技术债登记** (TODO/workaround → jira backlog) | 技术债登记 | Rule 5 DRY, Rule 18 反模式黑名单 | EPIC done |
+| 5 | **GLOSSARY 更新** (新术语/新黑话) | 经验沉淀 (扩) | `docs/KALLAX-GLOSSARY.md`, 跟"反哺框架" 战略 一致 | EPIC done |
+| 6 | **PHASE-INDEX 更新** (本表) | 经验沉淀 (扩) | `docs/PHASE-INDEX.md`, 跨 PHASE 累计 | EPIC done |
+| 7 | **ACCUMULATED-LESSONS 更新** (跨期累计) | 经验沉淀 (扩) | `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md` | 跨 release |
+| 8 | **CHANGELOG 入口** (新 release 段落) | 经验沉淀 (扩) | `scripts/changelog-gen.sh`, 跟"翻篇&精进" 战略 | release 节点 |
+| 9 | **CLAUDE.md Rule 更新** (如需, 0 增默认) | 经验沉淀 (扩) | Rule 32 0 增命令, 跟 PHASE-013-REFLECTION 联合 (治根"Rule 数 通胀" 迷信) | Rule 改变 |
+| 10 | **pre-commit hook 测试** | 回归验证 (扩) | `.git/hooks/pre-commit`, `scripts/pre-commit-check.sh` | 任何 Rule 改 |
+| 11 | **跨期 review 入口** (PHASE-XXX-REVIEW) | 经验沉淀 (扩) | `confluence/decisions/PHASE-XXX-REVIEW-*.md`, PHASE-005 → PHASE-014 已 10 累计 | EPIC/Sprint 完成 |
+
+**跟 eket §10 4 步骤 → 11 步骤 升级映射**:
+- eket 回归验证 → KALLAX 1+10 (回归验证 + pre-commit hook 测试, 0 重写)
+- eket 分支同步 → KALLAX 2 (分支同步, 0 重写)
+- eket 经验沉淀 → KALLAX 3+5+6+7+8+9+11 (经验沉淀 扩 7 步, GLOSSARY/PHASE-INDEX/ACCUMULATED/CHANGELOG/CLAUDE.md/PHASE-REVIEW)
+- eket 技术债登记 → KALLAX 4 (技术债登记, 0 重写)
+
+**联动 ticket**: EPIC-059-E (跟主公 2026-06-18 '需要都建卡并行处理' explicit 派单 联合, 跟 v2.6.0 经验教训 整理 release 联合)
+**跟 EKET-BORROW-PROGRESS-2026-06-11.md 联合**: Post-Process 11 步骤 = EKET 借鉴 Phase 1 8 项之一 (跟 EKET-BORROW-PROGRESS 26 P0/P1/P2 联合)
+**跟 PHASE review 10 累计 联合**: 11 步骤 是 PHASE-005 → PHASE-014 review 入口 标准化 (跟"独立" 拍 explicit 约束 联合, 跨 session 可查 跨 release 可复用)
+
+---
+
 ## 跟"反讽" 闭环 (跟"反哺框架" 战略 一致, 跟"翻篇&精进" 战略 一致)
 
 - ✅ 14 release 累计 (v1.0.0 → v2.4.1) + 14 BE + 17 门禁 + 22 Rule (v2.4.1 还原 跟 v2.3.0 一致) + 5 扩展组 + 10 工具 (Claude/trae/antigravity/opencode/codex/gemini/cursor/windsurf/aider/continue) + 60 术语 (Section 8.6-8.18 + 9.1-9.4 + 10.1-10.3 + 11.1-11.6) → 沉淀到 PHASE-INDEX.md + KALLAX-GLOSSARY.md + ACCUMULATED-LESSONS-2026-06-17.md + PHASE-012-REVIEW-2026-06-17.md + PHASE-013-REFLECTION-2026-06-18.md + PHASE-014-REVIEW-2026-06-18.md

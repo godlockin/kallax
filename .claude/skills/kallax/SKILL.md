@@ -157,6 +157,50 @@ filePath: /Users/chenchen/.claude/skills/kallax/SKILL.md
 
 ---
 
+## Post-Process 11 步骤 (跟 eket MASTER-RULES.md §10 升级, EPIC-059-E)
+
+> **跟 eket template/docs/MASTER-RULES.md §10 4 步骤升级, 跟 PHASE review 入口 标准化 联合**
+> **自动化**: `scripts/post-process.sh` (默认 dry-run, `--apply` 实际执行)
+> **TDD 测试**: `tests/integration/post-process-test.sh` (5/5 PASS)
+> **详细定义**: `docs/PHASE-INDEX.md` Post-Process 11 步骤 段
+
+```
+# dry-run: 显示 11 步骤 状态 (不实际 修改)
+scripts/post-process.sh
+
+# 实际 执行 (默认 dry-run, --apply 标志)
+scripts/post-process.sh --apply
+
+# mock 测试: 模拟单步状态 (用于 CI / 集成测试)
+scripts/post-process.sh --check-step 5 --status PASS    # GLOSSARY 已更新
+scripts/post-process.sh --check-all --mock-scenario all-pass
+```
+
+**11 步骤** (跟 eket §10 4 步骤 升级映射):
+
+| # | 步骤 | 触发 |
+|---|---|---|
+| 1 | 回归验证 (build/test/CI) | EPIC/Sprint 完成 |
+| 2 | 分支同步 (miao → origin) | PR merged |
+| 3 | 经验沉淀 (lessons/lessons-learned) | EPIC done |
+| 4 | 技术债登记 (TODO/workaround → jira backlog) | EPIC done |
+| 5 | GLOSSARY 更新 | EPIC done |
+| 6 | PHASE-INDEX 更新 | EPIC done |
+| 7 | ACCUMULATED-LESSONS 更新 | 跨 release |
+| 8 | CHANGELOG 入口 | release 节点 |
+| 9 | CLAUDE.md Rule 更新 (如需) | Rule 改变 |
+| 10 | pre-commit hook 测试 | 任何 Rule 改 |
+| 11 | 跨期 review 入口 (PHASE-XXX-REVIEW) | EPIC/Sprint 完成 |
+
+**联动**:
+- 跟 `docs/PHASE-INDEX.md` Post-Process 11 步骤 段 联合 (file:line)
+- 跟 eket MASTER-RULES.md §10 4 步骤 → 11 步骤 升级 联合
+- 跟 PHASE-005 → PHASE-014 review 入口 标准化 联合
+- 跟 EKET-BORROW-PROGRESS-2026-06-11.md 26 P0/P1/P2 联合 (Post-Process 是 借鉴 8 项之一)
+- 跟"翻篇&精进" + "反哺框架" 战略 一致
+
+---
+
 **详细文档**: [SKILL-DETAIL.md](./SKILL-DETAIL.md)
 **使用指南**: [META-GUIDELINES.md](./META-GUIDELINES.md)
 
