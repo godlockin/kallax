@@ -21,7 +21,7 @@
     {
       "id": "EPIC-016-A",
       "assignee": "master_main",
-      "status": "done"
+      "status": "ready"
     },
     {
       "id": "EPIC-016-B",
@@ -64,7 +64,7 @@
     {
       "id": "EPIC-016-I",
       "assignee": "master_main",
-      "status": "done"
+      "status": "backlog"
     },
     {
       "id": "EPIC-016-J",

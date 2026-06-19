@@ -27,5 +27,6 @@
     "  - 监控告警 (CLOSEING 数量 > 30 报警)"
   ],
   "estimated_hours": 3,
-  "notes": "Phase 0.3 + 0.4 合并实施, EPIC-022 前实例环境干净"
+  "notes": "Phase 0.3 + 0.4 合并实施, EPIC-022 前实例环境干净",
+  "status": "ready"
 }

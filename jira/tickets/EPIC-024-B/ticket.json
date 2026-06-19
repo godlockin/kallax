@@ -22,5 +22,6 @@
     "包含: data table, decision (validate / expand), Sprint B 建议 (若需)"
   ],
   "estimated_hours": 2,
-  "notes": "8 专家共识 3/3 validate_first, 强 consensus Sprint A 是 decision gate, 不是建设"
+  "notes": "8 专家共识 3/3 validate_first, 强 consensus Sprint A 是 decision gate, 不是建设",
+  "status": "ready"
 }

@@ -28,28 +28,28 @@
       "id": "EPIC-054-A",
       "title": "Worktree 根目录统一 (4 套 → 1 套, 跟 git worktree list 一致, 治 H5)",
       "assignee": "performer-EPIC-054",
-      "status": "pending",
+      "status": "done",
       "blocked_by": null
     },
     {
       "id": "EPIC-054-B",
       "title": "instance 目录 LRU + 7 天 TTL 自动清理 (跟 Resource Management 硬要求一致, 治 A7)",
       "assignee": "performer-EPIC-054",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-054-A"
     },
     {
       "id": "EPIC-054-C",
       "title": "空 EPIC 目录清理 + 6 状态机 (planning→active→blocked→done→archived→closed, 治 A6)",
       "assignee": "performer-EPIC-054",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-054-B"
     },
     {
       "id": "EPIC-054-D",
       "title": "Rule 合并/撤销定期扫描 (跟 Rule 32 联动, 23 Rule → 20 Rule 目标, 治 A1)",
       "assignee": "performer-EPIC-054",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-054-C"
     }
   ]

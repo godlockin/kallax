@@ -28,7 +28,7 @@
       "id": "EPIC-035-A",
       "title": "ticket.json schema 加 worktree_role 字段 + Conductor 验证 (TDD)",
       "assignee": "performer-EPIC-035",
-      "status": "pending",
+      "status": "done",
       "blocked_by": null
     },
     {

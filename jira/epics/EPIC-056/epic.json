@@ -27,21 +27,21 @@
       "id": "EPIC-056-A",
       "title": "5 阶段治理 → 3 阶段 (Architect 并入 Conductor, 保留 4 专家并行 + 5 扩展, 治 A4, ⚠️ 需主公拍板)",
       "assignee": "performer-EPIC-056",
-      "status": "pending",
+      "status": "done",
       "blocked_by": null
     },
     {
       "id": "EPIC-056-B",
       "title": "流程表演 vs 流程效果度量 (KPI: 派单成功率/周期/越界率, 治 P3, ⚠️ 需主公拍板)",
       "assignee": "performer-EPIC-056",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-056-A"
     },
     {
       "id": "EPIC-056-C",
       "title": "Master 强验证 6 维度恢复 (revert v1.2.4 6→0 退步, 治 H4, ⚠️ 需主公拍板)",
       "assignee": "performer-EPIC-056",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-056-B"
     }
   ]

@@ -16,5 +16,6 @@
     "scripts/check-fact-forcing-preflight.sh 加 'LESSONS-LEARNED 存在性' 检查 (如 EPIC-XXX 已 done, 必须有 LESSONS-LEARNED.md)"
   ],
   "estimated_hours": 0.5,
-  "notes": "EPIC-021 LESSONS §8.3 UP-3, 教训: EPIC-021 实施完才补 LESSONS, 应该同 commit"
+  "notes": "EPIC-021 LESSONS §8.3 UP-3, 教训: EPIC-021 实施完才补 LESSONS, 应该同 commit",
+  "status": "ready"
 }

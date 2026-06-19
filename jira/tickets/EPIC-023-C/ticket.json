@@ -24,5 +24,6 @@
     "SKILL.md 加 `/kallax metrics:sprint` 命令说明"
   ],
   "estimated_hours": 5,
-  "notes": "Product 共识 P0 (北极星指标缺失), 复用 F ticket 基础设施, 4 指标覆盖 3 维度"
+  "notes": "Product 共识 P0 (北极星指标缺失), 复用 F ticket 基础设施, 4 指标覆盖 3 维度",
+  "status": "ready"
 }

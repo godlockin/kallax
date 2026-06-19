@@ -27,15 +27,82 @@
     "E_persona_scope": "先改 7 default expert, 90 extended 留 P2 用到时再完善"
   },
   "tickets": [
-    {"id": "EPIC-030-A", "title": "TrustScore 三层匹配 + 向量 cosine 算法骨架", "blocked_by": null, "est_days": 2.0, "borrowed_from": "Conductor §5.1"},
-    {"id": "EPIC-030-B", "title": "scoring_trace.jsonl 每日轮转", "blocked_by": ["EPIC-030-A"], "est_days": 0.5, "borrowed_from": "Conductor §5.1"},
-    {"id": "EPIC-030-C", "title": "waiting-for-expert 自动降级 + inbox 提示", "blocked_by": ["EPIC-030-A"], "est_days": 0.5, "borrowed_from": "Conductor §5.3"},
-    {"id": "EPIC-030-D", "title": "Hook Profile 三档 minimal/standard/strict", "blocked_by": null, "est_days": 0.5, "borrowed_from": "Performer §5.4"},
-    {"id": "EPIC-030-E", "title": "PR Size CI + self-test fixture 回归", "blocked_by": null, "est_days": 1.0, "borrowed_from": "Performer §5.5"},
-    {"id": "EPIC-030-F", "title": "system:doctor JSON 结构化输出", "blocked_by": null, "est_days": 0.5, "borrowed_from": "UX §5.2"},
-    {"id": "EPIC-030-G", "title": "AuditMiddleware audit_log 新 SQLite 表", "blocked_by": null, "est_days": 1.5, "borrowed_from": "Security §5.2"},
-    {"id": "EPIC-030-H", "title": "KALLAX 专属 persona 5 字段 (7 default)", "blocked_by": null, "est_days": 1.0, "borrowed_from": "EPIC-021 §3.1"},
-    {"id": "EPIC-030-I", "title": "Brief Inference 任务理解强制 (kallax task:claim)", "blocked_by": null, "est_days": 0.5, "borrowed_from": "Performer §5.1"}
+    {
+      "id": "EPIC-030-A",
+      "title": "TrustScore 三层匹配 + 向量 cosine 算法骨架",
+      "blocked_by": null,
+      "est_days": 2.0,
+      "borrowed_from": "Conductor §5.1",
+      "status": "ready"
+    },
+    {
+      "id": "EPIC-030-B",
+      "title": "scoring_trace.jsonl 每日轮转",
+      "blocked_by": [
+        "EPIC-030-A"
+      ],
+      "est_days": 0.5,
+      "borrowed_from": "Conductor §5.1",
+      "status": "ready"
+    },
+    {
+      "id": "EPIC-030-C",
+      "title": "waiting-for-expert 自动降级 + inbox 提示",
+      "blocked_by": [
+        "EPIC-030-A"
+      ],
+      "est_days": 0.5,
+      "borrowed_from": "Conductor §5.3",
+      "status": "ready"
+    },
+    {
+      "id": "EPIC-030-D",
+      "title": "Hook Profile 三档 minimal/standard/strict",
+      "blocked_by": null,
+      "est_days": 0.5,
+      "borrowed_from": "Performer §5.4",
+      "status": "ready"
+    },
+    {
+      "id": "EPIC-030-E",
+      "title": "PR Size CI + self-test fixture 回归",
+      "blocked_by": null,
+      "est_days": 1.0,
+      "borrowed_from": "Performer §5.5",
+      "status": "ready"
+    },
+    {
+      "id": "EPIC-030-F",
+      "title": "system:doctor JSON 结构化输出",
+      "blocked_by": null,
+      "est_days": 0.5,
+      "borrowed_from": "UX §5.2",
+      "status": "ready"
+    },
+    {
+      "id": "EPIC-030-G",
+      "title": "AuditMiddleware audit_log 新 SQLite 表",
+      "blocked_by": null,
+      "est_days": 1.5,
+      "borrowed_from": "Security §5.2",
+      "status": "ready"
+    },
+    {
+      "id": "EPIC-030-H",
+      "title": "KALLAX 专属 persona 5 字段 (7 default)",
+      "blocked_by": null,
+      "est_days": 1.0,
+      "borrowed_from": "EPIC-021 §3.1",
+      "status": "ready"
+    },
+    {
+      "id": "EPIC-030-I",
+      "title": "Brief Inference 任务理解强制 (kallax task:claim)",
+      "blocked_by": null,
+      "est_days": 0.5,
+      "borrowed_from": "Performer §5.1",
+      "status": "ready"
+    }
   ],
   "total_estimated_days": 8.0
 }

@@ -28,28 +28,28 @@
       "id": "EPIC-039-A",
       "title": "升 Token Plan 档 + ticket 状态自动同步机制 (跟 subagent 报告联动)",
       "assignee": "performer-EPIC-039",
-      "status": "pending",
+      "status": "done",
       "blocked_by": null
     },
     {
       "id": "EPIC-039-B",
       "title": "Conductor 真实 review 流程 (3 anti-fab + preflight + Master 6 维度)",
       "assignee": "performer-EPIC-039",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-039-A"
     },
     {
       "id": "EPIC-039-C",
       "title": "Conductor merge feature → testing 真实流程 (跳过 R-NEW PR)",
       "assignee": "performer-EPIC-039",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-039-B"
     },
     {
       "id": "EPIC-039-D",
       "title": "Master 6 维度强验证 checkpoint (L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实)",
       "assignee": "performer-EPIC-039",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-039-C"
     }
   ]

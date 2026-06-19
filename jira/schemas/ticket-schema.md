@@ -70,6 +70,11 @@ backlog → analysis → ready → gate_review → in_progress → test → pr_r
 | `pr_review` | PR 审核 | Conductor |
 | `done` | 完成 | - |
 | `blocked` | 阻塞 | - |
+| `pending` | 待定 (v2.7.4 新增, 跟主公 2026-06-19 explicit 派单 联合) | Conductor |
+| `deferred` | 推迟 (v2.7.4 新增, 跟 PROCESS.md:25-26 主公 后续 拍板 联合) | Conductor |
+| `failed` | 失败 (v2.7.4 新增, 跟 Rule 18 anti-fab 联合, 跟 Fact-Forcing 联合) | Conductor |
+
+**Note (v2.7.4 schema drift 治根)**: `pending` / `deferred` / `failed` 是 跟 v2.7.x EPIC 累计 出现 的 secondary 状态, 跟 v1.0 8-状态 流程 互补, 0 改 主流程. 跟 v2.7.1 9 归档 模式 一致, 跟 5 deferred ticket 模式 一致.
 
 ## File Scope 规则 (KALLAX 新增)
 

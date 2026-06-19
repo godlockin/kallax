@@ -15,7 +15,12 @@
   "target": {
     "zod_schema": true,
     "preamble_stages": 3,
-    "north_star_metrics": ["expert_activation_rate", "cross_epic_reuse_rate", "ab_hit_rate", "mis_dispatch_rate"],
+    "north_star_metrics": [
+      "expert_activation_rate",
+      "cross_epic_reuse_rate",
+      "ab_hit_rate",
+      "mis_dispatch_rate"
+    ],
     "integration_test_passes": true
   },
   "decisions": {
@@ -38,7 +43,9 @@
       "title": "3 阶段 Preamble + trigger 行融合 (SKILL.md 更新)",
       "assignee": "performer-EPIC-023-B",
       "status": "ready",
-      "blocked_by": ["EPIC-023-A"]
+      "blocked_by": [
+        "EPIC-023-A"
+      ]
     },
     {
       "id": "EPIC-023-C",

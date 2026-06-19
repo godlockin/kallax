@@ -28,5 +28,6 @@
     "EPIC-022 LESSONS-LEARNED.md 占位文件 (实施完成后填)"
   ],
   "estimated_hours": 1,
-  "notes": "Phase 0.1 tracking, 立刻派. EPIC-022 v1 实施在 EPIC-026 P0 fix 完成后启动"
+  "notes": "Phase 0.1 tracking, 立刻派. EPIC-022 v1 实施在 EPIC-026 P0 fix 完成后启动",
+  "status": "ready"
 }

@@ -41,7 +41,7 @@
       "id": "EPIC-021-A",
       "title": "7 expert persona 文件 + KALLAX 专属字段",
       "assignee": "performer-EPIC-021-A",
-      "status": "done",
+      "status": "ready",
       "blocked_by": null,
       "completed_at": "2026-06-07T19:50:00Z",
       "merge_commit": "84a96c9",
@@ -51,7 +51,7 @@
       "id": "EPIC-021-B",
       "title": "experts/INDEX.md 症状决策树 + 10 emoji",
       "assignee": "performer-EPIC-021-B",
-      "status": "done",
+      "status": "ready",
       "blocked_by": [
         "EPIC-021-A"
       ],
@@ -62,7 +62,7 @@
       "id": "EPIC-021-C",
       "title": "output_format 4 节统一 (7 文件)",
       "assignee": "performer-EPIC-021-C",
-      "status": "done",
+      "status": "ready",
       "blocked_by": [
         "EPIC-021-A"
       ],
@@ -74,7 +74,7 @@
       "id": "EPIC-021-D",
       "title": "Fact-Forcing 4-Level 嵌入 (7 文件)",
       "assignee": "performer-EPIC-021-D",
-      "status": "done",
+      "status": "ready",
       "blocked_by": [
         "EPIC-021-A",
         "EPIC-021-C"
@@ -87,7 +87,7 @@
       "id": "EPIC-021-E",
       "title": "check-skill-anatomy.sh KALLAX 专属 6+ 项校验",
       "assignee": "performer-EPIC-021-E",
-      "status": "done",
+      "status": "ready",
       "blocked_by": [
         "EPIC-021-A"
       ],
@@ -98,7 +98,7 @@
       "id": "EPIC-021-F",
       "title": "expert_invocations 降级链 (Redis→SQLite→file)",
       "assignee": "performer-EPIC-021-F",
-      "status": "done",
+      "status": "ready",
       "blocked_by": null,
       "completed_at": "2026-06-07T19:50:00Z",
       "merge_commit": "cb29d17"

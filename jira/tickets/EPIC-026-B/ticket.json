@@ -26,5 +26,6 @@
     "fail-closed 测试: 模拟 fd 指向 pipe, 验证 session_start 立即退出不 hang"
   ],
   "estimated_hours": 6,
-  "notes": "黑洞重演的最强防御. watchdog 监控 + fail-closed safety check 双保险"
+  "notes": "黑洞重演的最强防御. watchdog 监控 + fail-closed safety check 双保险",
+  "status": "ready"
 }

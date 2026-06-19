@@ -27,21 +27,21 @@
       "id": "EPIC-055-A",
       "title": "CLAUDE.md + KALLAX-GLOSSARY 去重 — 单一 SoT (跟 Rule 5 DRY 联动, 治 A5)",
       "assignee": "performer-EPIC-055",
-      "status": "pending",
+      "status": "done",
       "blocked_by": null
     },
     {
       "id": "EPIC-055-B",
       "title": "主公拍板分级 P0/P1/P2 (P2 备案即可, 治 P2 决策疲劳, ⚠️ 需主公拍板)",
       "assignee": "performer-EPIC-055",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-055-A"
     },
     {
       "id": "EPIC-055-C",
       "title": "'反讽/诚实修正/独立' 标签 SOP 化 (每条引用带证据链, 治 A2/A3)",
       "assignee": "performer-EPIC-055",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-055-B"
     }
   ]

@@ -39,7 +39,9 @@
       "title": "L1 match test 100+ 次 + EXPERT-EXTENSION-SPRINT-A-REPORT.md",
       "assignee": "performer-EPIC-024-B",
       "status": "ready",
-      "blocked_by": ["EPIC-024-A"]
+      "blocked_by": [
+        "EPIC-024-A"
+      ]
     }
   ]
 }

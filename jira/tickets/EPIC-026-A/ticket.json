@@ -24,5 +24,6 @@
     "rollback 路径明确 (每个 fix 单独 commit, 可单独 revert)"
   ],
   "estimated_hours": 8,
-  "notes": "P0 fixes 是 v1 全范围的前置, 估时 8h. 避免 session_start.sh 黑洞在 v1 实施期间复现"
+  "notes": "P0 fixes 是 v1 全范围的前置, 估时 8h. 避免 session_start.sh 黑洞在 v1 实施期间复现",
+  "status": "ready"
 }

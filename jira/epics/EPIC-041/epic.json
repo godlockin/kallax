@@ -29,28 +29,28 @@
       "id": "EPIC-041-A",
       "title": "痛点 6 调查: 5 Why + 5 候选思路 + 5 候选方法 + 强制限制流程 (Rule 17 草案)",
       "assignee": "master_main (调查卡, 跟 EPIC-040 模式一致)",
-      "status": "in_progress",
+      "status": "done",
       "blocked_by": null
     },
     {
       "id": "EPIC-041-B",
       "title": "文件级锁机制 (file-level lock, 跟 git index lock 同模式, 防止多 subagent 同时改同一文件)",
       "assignee": "performer-EPIC-041",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-041-A"
     },
     {
       "id": "EPIC-041-C",
       "title": "原子写机制 (atomic write, 写临时文件 + mv 原子替换, 防止写一半被覆盖)",
       "assignee": "performer-EPIC-041",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-041-B"
     },
     {
       "id": "EPIC-041-D",
       "title": "冲突检测机制 (conflict detect, 跟 EPIC-036 跨 worktree 联动 + git diff 比对 + 自动化冲突解决)",
       "assignee": "performer-EPIC-041",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-041-C"
     }
   ]

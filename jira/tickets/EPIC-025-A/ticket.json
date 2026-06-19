@@ -18,5 +18,6 @@
     "5 角色 L4 占位脚本: scripts/verify-{architecture,priority,ux-flow}.sh + scripts/verify-tickets-completed.sh (empty stub + 'echo not implemented')"
   ],
   "estimated_hours": 0.5,
-  "notes": "EPIC-021 LESSONS §8.3 UP-1, D review P1 触发, 估时极短 (5 个空脚本 + CLAUDE.md 修订)"
+  "notes": "EPIC-021 LESSONS §8.3 UP-1, D review P1 触发, 估时极短 (5 个空脚本 + CLAUDE.md 修订)",
+  "status": "ready"
 }

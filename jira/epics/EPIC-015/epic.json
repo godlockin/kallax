@@ -7,14 +7,50 @@
   "delivery_time": "2026-06-09",
   "status": "active",
   "tickets": [
-    {"id": "EPIC-015-A", "assignee": "performer-a", "status": "done"},
-    {"id": "EPIC-015-B", "assignee": "performer-b", "status": "done"},
-    {"id": "EPIC-015-C", "assignee": "performer-c", "status": "done"},
-    {"id": "EPIC-015-G", "assignee": "master_main", "status": "done"},
-    {"id": "EPIC-015-H", "assignee": "master_main", "status": "done"},
-    {"id": "EPIC-015-I", "assignee": "master_main", "status": "done"},
-    {"id": "EPIC-015-D", "assignee": null, "status": "backlog"},
-    {"id": "EPIC-015-E", "assignee": null, "status": "backlog"},
-    {"id": "EPIC-015-F", "assignee": null, "status": "backlog"}
+    {
+      "id": "EPIC-015-A",
+      "assignee": "performer-a",
+      "status": "done"
+    },
+    {
+      "id": "EPIC-015-B",
+      "assignee": "performer-b",
+      "status": "done"
+    },
+    {
+      "id": "EPIC-015-C",
+      "assignee": "performer-c",
+      "status": "done"
+    },
+    {
+      "id": "EPIC-015-G",
+      "assignee": "master_main",
+      "status": "backlog"
+    },
+    {
+      "id": "EPIC-015-H",
+      "assignee": "master_main",
+      "status": "backlog"
+    },
+    {
+      "id": "EPIC-015-I",
+      "assignee": "master_main",
+      "status": "backlog"
+    },
+    {
+      "id": "EPIC-015-D",
+      "assignee": null,
+      "status": "backlog"
+    },
+    {
+      "id": "EPIC-015-E",
+      "assignee": null,
+      "status": "backlog"
+    },
+    {
+      "id": "EPIC-015-F",
+      "assignee": null,
+      "status": "backlog"
+    }
   ]
 }

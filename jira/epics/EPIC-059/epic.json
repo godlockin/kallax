@@ -33,56 +33,56 @@
       "id": "EPIC-059-A",
       "title": "9 Hard Rules 简化 (跟 v2.4.1 Rule 合并反思 联合, 治根 'Rule 数通胀' 迷信, P2, 4h, backend)",
       "assignee": "performer-EPIC-059",
-      "status": "ready",
+      "status": "done",
       "blocked_by": null
     },
     {
       "id": "EPIC-059-B",
       "title": "Rule of 500 (净变更>500 → 必须 codemod 或 Approved-Large-PR-By, P2, 2h, backend)",
       "assignee": "performer-EPIC-059",
-      "status": "ready",
+      "status": "done",
       "blocked_by": null
     },
     {
       "id": "EPIC-059-C",
       "title": "PR ~100 行上限 (≤100 pass, 100-500 warn, >500 fail, P2, 2h, backend)",
       "assignee": "performer-EPIC-059",
-      "status": "ready",
+      "status": "done",
       "blocked_by": null
     },
     {
       "id": "EPIC-059-D",
       "title": "Fact-Forcing 原则 (跟 Master 6 维 L6 诚实 联合, 治根 '不问确定吗, 要求具体证据', P2, 3h, docs)",
       "assignee": "performer-EPIC-059",
-      "status": "ready",
+      "status": "done",
       "blocked_by": null
     },
     {
       "id": "EPIC-059-E",
       "title": "Post-Process 11 步骤 (回归验证/分支同步/经验沉淀/技术债登记, P2, 4h, docs)",
       "assignee": "performer-EPIC-059",
-      "status": "ready",
+      "status": "done",
       "blocked_by": null
     },
     {
       "id": "EPIC-059-F",
       "title": "派遣 Checklist 11 项 (防卡死/SSH Push/Timeout/文件读取限制/进度上报格式/run_in_background/错误处理, P2, 3h, backend)",
       "assignee": "performer-EPIC-059",
-      "status": "ready",
+      "status": "done",
       "blocked_by": null
     },
     {
       "id": "EPIC-059-G",
       "title": "文档卫生 (每 10 轮) + 新建前先想 (跟 KALLAX-GLOSSARY 反哺框架 联合, P2, 2h, docs)",
       "assignee": "performer-EPIC-059",
-      "status": "ready",
+      "status": "done",
       "blocked_by": null
     },
     {
       "id": "EPIC-059-H",
       "title": "多级记忆分层 L0-L4 (会话缓存 → 项目经验 → 全局知识库, P2, 4h, docs)",
       "assignee": "performer-EPIC-059",
-      "status": "ready",
+      "status": "done",
       "blocked_by": null
     }
   ]

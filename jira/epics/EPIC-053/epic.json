@@ -28,42 +28,42 @@
       "id": "EPIC-053-A",
       "title": "L3 集成测试 vs L4 verify 一致性检查 (BE-9 治根, 跟 Rule 8 联动)",
       "assignee": "performer-EPIC-053",
-      "status": "pending",
+      "status": "done",
       "blocked_by": null
     },
     {
       "id": "EPIC-053-B",
       "title": "KPI falsification 系统级治根 — 4-Level 证据链 (git-anchor + test stdout + 5 扩展组 pass + 独立见证签名)",
       "assignee": "performer-EPIC-053",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-053-A"
     },
     {
       "id": "EPIC-053-C",
       "title": "review.sh / check-kpi-precision.sh 工具自检 (BE-10 模式治根, bash 5.x 兼容 patterns)",
       "assignee": "performer-EPIC-053",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-053-B"
     },
     {
       "id": "EPIC-053-D",
       "title": "Performer 派单成功率仪表盘 (58.3% → 95%+, 跟 Rule 16 联动, 跟 H1/H6 治根)",
       "assignee": "performer-EPIC-053",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-053-C"
     },
     {
       "id": "EPIC-053-E",
       "title": "B 组 5 extended 逆袭发现 #1: 新 preflight wiring gap (新 l3-l4-consistency 0 命中 ROOT-level preflight + ticket-gate 链, 治 BE-5 反讽, P0 critical)",
       "assignee": "performer-EPIC-053",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-053-A"
     },
     {
       "id": "EPIC-053-F",
       "title": "B 组 5 extended 逆袭发现 #2+3: check-scope-creep.sh glob bug fix + tests/integration/l3-l4-consistency-test.sh 命名误导 (重命名 truth-table, 跟 EPIC-053-C 联动, P1)",
       "assignee": "performer-EPIC-053",
-      "status": "pending",
+      "status": "done",
       "blocked_by": "EPIC-053-A"
     }
   ]

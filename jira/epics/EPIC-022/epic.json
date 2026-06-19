@@ -44,7 +44,7 @@
       "id": "EPIC-022-A",
       "title": "3 Role Definition: auditor + readonly + role binding",
       "assignee": "performer-EPIC-022",
-      "status": "ready",
+      "status": "in_progress",
       "blocked_by": null,
       "estimate_days": 3
     },
@@ -53,7 +53,9 @@
       "title": "Pre-commit Hook + Conductor Scope Check",
       "assignee": "performer-EPIC-022",
       "status": "blocked",
-      "blocked_by": ["EPIC-022-A"],
+      "blocked_by": [
+        "EPIC-022-A"
+      ],
       "estimate_days": 3
     },
     {
@@ -61,7 +63,9 @@
       "title": "Workspace Switch + Read-Only Path",
       "assignee": "performer-EPIC-022",
       "status": "blocked",
-      "blocked_by": ["EPIC-022-A"],
+      "blocked_by": [
+        "EPIC-022-A"
+      ],
       "estimate_days": 4
     },
     {
@@ -69,7 +73,9 @@
       "title": "Role Transition (master/conductor/performer)",
       "assignee": "performer-EPIC-022",
       "status": "blocked",
-      "blocked_by": ["EPIC-022-A"],
+      "blocked_by": [
+        "EPIC-022-A"
+      ],
       "estimate_days": 3
     },
     {
@@ -77,7 +83,12 @@
       "title": "Integration Tests + 5-Expert A+B Review",
       "assignee": "performer-EPIC-022",
       "status": "blocked",
-      "blocked_by": ["EPIC-022-A", "EPIC-022-B", "EPIC-022-C", "EPIC-022-D"],
+      "blocked_by": [
+        "EPIC-022-A",
+        "EPIC-022-B",
+        "EPIC-022-C",
+        "EPIC-022-D"
+      ],
       "estimate_days": 5
     }
   ]
