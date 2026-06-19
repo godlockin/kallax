@@ -1,3 +1,10 @@
+> ⚠️ **OUTDATED** (跟 v2.7.0 整理 release 联合, 跟 主公 2026-06-19 '整理 总结 经验教训' 派单 联合)
+> **本 文档 是 历史 plan, 跟 当前 KALLAX 现状 失焦**
+> **跟'翻篇&精进' 战略 一致, 保留 跟 历史 兼容性, 0 增 Rule**
+> **现状 替代**: 跟 v2.7.0 16 release 累计 + 22 Rule (v2.4.1 还原) + 60+5 术语 联合
+> **最后 更新**: 2026-06-19 v2.7.0 整理 release
+
+
 # KALLAX 3 模式 (ai-auto / ai-copilot / manual) 实施计划
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
