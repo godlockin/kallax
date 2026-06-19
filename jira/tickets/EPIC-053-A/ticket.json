@@ -5,7 +5,7 @@
   "title": "L3 集成测试 vs L4 verify 一致性检查 (BE-9 治根, 跟 Rule 8 联动)",
   "type": "bug",
   "priority": "P0",
-  "status": "ready",
+  "status": "done",
   "created_by": "master_main (主公 2026-06-16 拍'建卡修复', 14 问题 H2 explicit 派单)",
   "created_at": "2026-06-16T00:00:00Z",
   "blocked_by": null,
@@ -29,5 +29,9 @@
     "Rule 9 KPI 精确 X/Y 格式 — 4/4 PASS = 100.0% (跟 EPIC-041-B 一致)"
   ],
   "estimated_hours": 6,
-  "status_set_by": "master_main (2026-06-16 14 问题分析 H2 explicit 派单)"
+  "status_set_by": "master_main (2026-06-16 14 问题分析 H2 explicit 派单)",
+  "claimed_at": "2026-06-16T01:00:00Z",
+  "claimed_by": "performer-EPIC-053",
+  "done_at": "2026-06-16T23:59:00Z",
+  "done_by": "performer-EPIC-053"
 }

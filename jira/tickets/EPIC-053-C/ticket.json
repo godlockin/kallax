@@ -5,7 +5,7 @@
   "title": "review.sh / check-kpi-precision.sh 工具自检 (BE-10 模式治根, bash 5.x 兼容 patterns)",
   "type": "bug",
   "priority": "P0",
-  "status": "pending",
+  "status": "done",
   "created_by": "master_main (主公 2026-06-16 拍'建卡修复', 14 问题 H3 explicit 派单)",
   "created_at": "2026-06-16T00:00:00Z",
   "blocked_by": "EPIC-053-B",
@@ -31,5 +31,9 @@
     "跟 EPIC-053-B 联动 — 证据链工具本身也是被检查对象, 形成元级闭环"
   ],
   "estimated_hours": 6,
-  "status_set_by": "master_main (2026-06-16 14 问题分析 H3 explicit 派单, BE-10 模式治根)"
+  "status_set_by": "master_main (2026-06-16 14 问题分析 H3 explicit 派单, BE-10 模式治根)",
+  "claimed_at": "2026-06-16T01:00:00Z",
+  "claimed_by": "performer-EPIC-053",
+  "done_at": "2026-06-16T23:59:00Z",
+  "done_by": "performer-EPIC-053"
 }

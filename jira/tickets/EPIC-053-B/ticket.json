@@ -5,7 +5,7 @@
   "title": "KPI falsification 系统级治根 — 4-Level 证据链 (git-anchor + test stdout + 5 扩展组 pass + 独立见证签名)",
   "type": "feature",
   "priority": "P0",
-  "status": "pending",
+  "status": "done",
   "created_by": "master_main (主公 2026-06-16 拍'建卡修复', 14 问题 H1 explicit 派单)",
   "created_at": "2026-06-16T00:00:00Z",
   "blocked_by": "EPIC-053-A",
@@ -30,5 +30,9 @@
     "Rule 9 KPI 精确 X/Y 格式 — 6/6 PASS = 100.0%"
   ],
   "estimated_hours": 12,
-  "status_set_by": "master_main (2026-06-16 14 问题分析 H1 explicit 派单, Performer 派单成功率 58.3% 治根)"
+  "status_set_by": "master_main (2026-06-16 14 问题分析 H1 explicit 派单, Performer 派单成功率 58.3% 治根)",
+  "claimed_at": "2026-06-16T01:00:00Z",
+  "claimed_by": "performer-EPIC-053",
+  "done_at": "2026-06-16T23:59:00Z",
+  "done_by": "performer-EPIC-053"
 }

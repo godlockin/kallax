@@ -5,7 +5,7 @@
   "title": "Worktree 根目录统一 (4 套 → 1 套, 跟 git worktree list 一致, 治 H5)",
   "type": "refactor",
   "priority": "P1",
-  "status": "ready",
+  "status": "done",
   "created_by": "master_main (主公 2026-06-16 拍'建卡修复', 14 问题 H5 explicit 派单)",
   "created_at": "2026-06-16T00:00:00Z",
   "blocked_by": null,
@@ -31,5 +31,9 @@
     "Rule 9 KPI 精确 X/Y 格式 — 6/6 PASS = 100.0%"
   ],
   "estimated_hours": 8,
-  "status_set_by": "master_main (2026-06-16 14 问题分析 H5 explicit 派单)"
+  "status_set_by": "master_main (2026-06-16 14 问题分析 H5 explicit 派单)",
+  "claimed_at": "2026-06-16T01:00:00Z",
+  "claimed_by": "performer-EPIC-054",
+  "done_at": "2026-06-16T23:59:00Z",
+  "done_by": "performer-EPIC-054"
 }

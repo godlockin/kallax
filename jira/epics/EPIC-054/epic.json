@@ -5,7 +5,7 @@
   "scope": "1. Master 强验证 2026-06-16 跟 H5 (worktree 4 套根目录) + A1 (Rule 通胀 18→23) + A6 (空 EPIC 目录 6 个) + A7 (88 instance 僵尸) 联合 explicit 派单\n2. 跟 8 release 13 天 (v1.2.3→v2.0.2) 维护债爆炸 闭环, 跟 50+ worktree + 88 instance dir + 6 空 EPIC dir 减法\n3. 跟'翻篇&精进' 战略 联合, 跟'流程逻辑 > 扩充配置' 反讽 (实际一直在扩)\n4. 跟 Rule 32 (软约束升级阈值) 落地, 跟 Rule 5 DRY 联合\n5. 4 票拆卡: worktree 根目录统一 + instance TTL+LRU + 空 EPIC 清理+状态机 + Rule 合并/撤销扫描",
   "start_time": "2026-06-16",
   "delivery_time": "2026-07-07",
-  "status": "active",
+  "status": "done",
   "baseline": {
     "source": "Master 强验证 2026-06-16 (跟主公 14 问题分析联合)",
     "current_state": "50+ worktree 跨 4 套根目录 (.claude/ .kallax/ .worktrees/ /performer-EPIC-XXX/) + 88 instance dir 95% 僵尸 + 6 空 EPIC 目录 (EPIC-042~047) + 23 Rule 累计 9 升级",

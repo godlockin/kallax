@@ -5,7 +5,7 @@
   "title": "主公拍板分级 P0/P1/P2 (P2 备案即可, 治 P2 决策疲劳, ⚠️ 需主公拍板)",
   "type": "feature",
   "priority": "P1",
-  "status": "pending",
+  "status": "done",
   "created_by": "master_main (主公 2026-06-16 拍'建卡修复', 14 问题 P2 explicit 派单, ⚠️ 需主公拍板)",
   "created_at": "2026-06-16T00:00:00Z",
   "blocked_by": "EPIC-055-A",
@@ -31,5 +31,9 @@
     "⚠️ 治理升级, Master 不能自己升级红线 (跟 PROCESS.md:25-26 联合), 需主公拍板后才执行 — 跟 EPIC-056-C 联动"
   ],
   "estimated_hours": 8,
-  "status_set_by": "master_main (2026-06-16 14 问题分析 P2 explicit 派单, ⚠️ 需主公拍板)"
+  "status_set_by": "master_main (2026-06-16 14 问题分析 P2 explicit 派单, ⚠️ 需主公拍板)",
+  "claimed_at": "2026-06-16T01:00:00Z",
+  "claimed_by": "performer-EPIC-055",
+  "done_at": "2026-06-16T23:59:00Z",
+  "done_by": "performer-EPIC-055"
 }

@@ -5,7 +5,7 @@
   "scope": "1. Master 强验证 2026-06-16 跟 A4 (5 default + 5 extended = 10 专家 治理爆炸) + P1 (流程逻辑 > 扩充配置 反讽) + P3 (15 步流程表演化) + H4 (Master 6→0 维度 退步) 联合 explicit 派单\n2. 跟'流程逻辑 > 扩充配置' 战略 联合, 跟 净价值 62.5% (-5% 恶化) 闭环\n3. ⚠️ 全部 3 票都是治理升级, Master 不能自己升级红线 (跟 PROCESS.md:25-26 联合), 全部需主公拍板后才执行\n4. EPIC-056-C 是 revert v1.2.4 主公拍板的'6→0 维度' 决策, 需主公拍 explicit 拍板 (跟'独立' 拍板 联合)\n5. 跟 Rule 11 v2.1 Master 强验证 联动, 跟 v1.2.4 5 扩展组 (security/process-engineering/auditor/compliance/decision-gate) 集成",
   "start_time": "2026-06-16",
   "delivery_time": "2026-07-21",
-  "status": "active",
+  "status": "done",
   "baseline": {
     "source": "Master 强验证 2026-06-16 (跟主公 14 问题分析联合)",
     "current_state": "1 票 5 阶段治理 (Architect→4 并行→Conductor→5 扩展→Master→主公) + Subagent 15 步流程表演 + 净价值 62.5% (跟 5 视角 Product 67.5% 联合 恶化 -5%) + Master 强验证 6→0 维度 (v1.2.4 退步)",

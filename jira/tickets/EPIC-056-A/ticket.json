@@ -5,7 +5,7 @@
   "title": "5 阶段治理 → 3 阶段 (Architect 并入 Conductor, 保留 4 专家并行 + 5 扩展, 治 A4, ⚠️ 需主公拍板)",
   "type": "refactor",
   "priority": "P2",
-  "status": "ready",
+  "status": "done",
   "created_by": "master_main (主公 2026-06-16 拍'建卡修复', 14 问题 A4 explicit 派单, ⚠️ 需主公拍板)",
   "created_at": "2026-06-16T00:00:00Z",
   "blocked_by": null,
@@ -32,5 +32,9 @@
     "⚠️ 治理升级, Master 不能自己升级红线, 需主公拍板后才执行 — 跟 EPIC-055-B 拍板分级联动"
   ],
   "estimated_hours": 6,
-  "status_set_by": "master_main (2026-06-16 14 问题分析 A4 explicit 派单, ⚠️ 需主公拍板)"
+  "status_set_by": "master_main (2026-06-16 14 问题分析 A4 explicit 派单, ⚠️ 需主公拍板)",
+  "claimed_at": "2026-06-16T01:00:00Z",
+  "claimed_by": "performer-EPIC-056",
+  "done_at": "2026-06-16T23:59:00Z",
+  "done_by": "performer-EPIC-056"
 }

@@ -5,7 +5,7 @@
   "scope": "1. Master 强验证 2026-06-16 跟主公'分析优缺点隐患' explicit 派单联合, 跟 PROJECT-STATUS-2026-06-13.md line 43 12 KPI falsification 反复 闭环\n2. 3 致命 H 治根: H1 Performer 派单成功率 58.3% (4 治根 Step 1-4) + H2 L3 vs L4 自相矛盾 (BE-9 治根) + H3 review.sh/check-kpi-precision.sh 工具自检漏洞 (BE-10 模式)\n3. 跟 4 BE 边界事件闭环: BE-1 Conductor 越界 + BE-5 Performer-EPIC-036/037 假 PASS + BE-9 L3L4 矛盾 + BE-10 review.sh 拒 FAIL bug\n4. 跟 23 Rule Rule 30 (自验证需独立见证) + Rule 31 (独立见证机制) 联动, 跟 5 扩展组 (security/process-engineering/auditor/compliance/decision-gate) 集成\n5. 跟 CHANGELOG.md:84-87 v1.2.4 9 Security Review Issues + v1.3.2 security fix release 闭环\n6. 跟'反讽' 联合 — 跟 5 扩展组'症状级'治根 反讽, 跟 12 KPI falsification 反复 反讽, 跟'诚实修正' 联合",
   "start_time": "2026-06-16",
   "delivery_time": "2026-06-30",
-  "status": "active",
+  "status": "done",
   "baseline": {
     "source": "Master 强验证 2026-06-16 (跟主公 14 问题分析 explicit 派单联合)",
     "current_state": "12 KPI falsification 反复 + 58.3% 派单真 PASS + L3L4 自相矛盾 + review.sh 自己有 bug 拒 FAIL + 5 扩展组加完后 Master 强验证降到 0 维度",

@@ -5,7 +5,7 @@
   "title": "新 preflight wiring gap (新 l3-l4-consistency 0 命中 ROOT-level preflight + ticket-gate 链, 治 BE-5 反讽)",
   "type": "bug",
   "priority": "P0",
-  "status": "ready",
+  "status": "done",
   "created_by": "master_main (B 组 5 extended review 逆袭发现 #1, 2026-06-16)",
   "created_at": "2026-06-16T22:00:00Z",
   "blocked_by": "EPIC-053-A",
@@ -34,5 +34,9 @@
     "Rule 9 KPI 精确 X/Y 格式 — 6/6 PASS = 100.0%"
   ],
   "estimated_hours": 8,
-  "status_set_by": "master_main (B 组 5 extended review 逆袭发现, P0 critical 治 BE-5 反讽)"
+  "status_set_by": "master_main (B 组 5 extended review 逆袭发现, P0 critical 治 BE-5 反讽)",
+  "claimed_at": "2026-06-16T01:00:00Z",
+  "claimed_by": "performer-EPIC-053",
+  "done_at": "2026-06-16T23:59:00Z",
+  "done_by": "performer-EPIC-053"
 }
