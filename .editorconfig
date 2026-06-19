@@ -1,0 +1,38 @@
+# KALLAX EditorConfig
+# https://editorconfig.org/
+# Multi-engine project: TypeScript (Node.js) + Rust + Bash + Markdown
+# v2.7.4 cleanup, 跟 4 团队 review 报告 CFG1 联合
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# Markdown: 保留 trailing whitespace (用于 line break)
+[*.md]
+trim_trailing_whitespace = false
+
+# TypeScript / JavaScript: 2 空格
+[*.{ts,tsx,js,jsx,mjs,cjs}]
+indent_size = 2
+
+# Rust / TOML: 4 空格
+[*.{rs,toml}]
+indent_size = 4
+
+# YAML / JSON: 2 空格
+[*.{yml,yaml,json}]
+indent_size = 2
+
+# Shell: 2 空格 (跟 CLAUDE.md 22 Rule 22 联合)
+[*.{sh,bash}]
+indent_size = 2
+
+# Makefile: 必须用 tab
+[Makefile]
+indent_style = tab

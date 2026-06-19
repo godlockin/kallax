@@ -1,6 +1,6 @@
 // KALLAX K6 Load Test
 // Performance testing for KALLAX API endpoints
-// Usage: k6 run k6/load-test.js
+// Usage: k6 run tests/load/k6/load-test.js
 
 import http from 'k6/http';
 import { check, sleep, group } from 'k6';

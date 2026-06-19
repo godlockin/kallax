@@ -1,0 +1,5 @@
+[toolchain]
+# KALLAX Rust toolchain (跟 CONTRIBUTING.md 联合, 跟 4 团队 review 报告 CFG4 联合)
+# v2.7.4 cleanup, 0 增 Rule 持平
+channel = "1.78.0"
+profile = "minimal"

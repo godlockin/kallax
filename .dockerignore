@@ -1,0 +1,83 @@
+# KALLAX .dockerignore
+# v2.7.4 cleanup, 跟 4 团队 review 报告 CFG2 联合 (防止 build artifacts + secrets 泄到 Docker image)
+# 防御 build artifacts (~3.1GB rust/target/ + ~131M node_modules/) 跟 git data 泄到 image
+
+# Git
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# Build artifacts
+rust/target/
+**/target/
+node_modules/
+**/node_modules/
+node/dist/
+**/dist/
+build/
+**/build/
+
+# Test artifacts
+coverage/
+.nyc_output/
+*.lcov
+test_result*.json
+*.test.log
+tests/fixtures/onramp-output-archive/
+
+# Runtime state
+.kallax/
+**/.kallax/
+**/*.db
+**/*.db.log
+**/*.db-journal
+
+# Documentation (sparse checkout, 不需要进 image)
+docs/
+confluence/
+jira/
+**/_archive/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test fixtures (not for production)
+tests/fixtures/
+k6/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.crt
+*.p12
+credentials.json
+secrets.yml
+secrets.yaml
+
+# KALLAX Onramp test artifacts
+ONRAMP-onramp-test-*.md
+ONRAMP-testproj-*.md
+ONRAMP-.-*.md
+
+# Workspace
+package-lock.json
+*.lock
