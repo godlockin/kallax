@@ -28,4 +28,4 @@ export * from './recommender/index.js';
 export * from './workflow/index.js';
 export * from './claim-queue.js';
 export * from './agent-farm.js';
-export * from './data-adapter.js';
+export * from './data-adapter/index.js';

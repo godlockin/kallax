@@ -105,7 +105,7 @@ export interface DatabaseStats {
 
 // ── Team Collaboration Types ─────────────────────────────────────────────────
 
-import type { Epic, Phase, ProjectTicket, TeamInstance, HeartbeatLog } from '../data-adapter.js';
+import type { Epic, Phase, ProjectTicket, TeamInstance, HeartbeatLog } from '../data-adapter/index.js';
 
 // ── Row Types ───────────────────────────────────────────────────────────────
 
