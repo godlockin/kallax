@@ -8,7 +8,7 @@ description = "CLI for KALLAX multi-agent orchestrator"
 
 [[bin]]
 name = "kallax"
-path = "src/main.rs"
+path = "src/main/cli.rs"
 
 [[bin]]
 name = "kallax-expert-match"
