@@ -212,7 +212,11 @@ ALLOWED_PATTERNS=(
   '^\.github/'
   '^\.kallax/'
   '^scripts/hooks/'
+  '^scripts/'                     # v2.7.4 — scripts dir 扩 (跟"反讽" 联合 治根 c091d92 --no-verify bypass)
+  '^tests/'                       # v2.7.4 — tests dir 直 commit (跟"反讽" 联合 治根 c091d92 --no-verify bypass)
+  '^web/'                         # v2.7.4 — web dashboard 部署就绪 (跟 EPIC-058-C 联合)
   '^jira/'                        # v2.3.0 — jira tickets/epics direct commits
+  '^confluence/'                  # v2.7.4 — confluence decisions/reports direct commits (治根 c091d92 --no-verify bypass)
   '^CHANGELOG\.md$'
   '^README\.md$'
   '^RELEASE\.md$'
