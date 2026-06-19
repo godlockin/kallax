@@ -84,6 +84,56 @@ KALLAX 文档 Single Source of Truth (SoT) — 修订前查 SoT 边界, 避免�
 
 ---
 
+## 文档卫生 触发 (跟 eket MASTER-RULES.md §6 Rule 6 联合, 跟 EPIC-059-G 联合, 跟 KALLAX-GLOSSARY 反哺框架 联合)
+
+> **跟 eket `template/docs/MASTER-RULES.md` §6 Master Hard Rule 6 文档卫生 模式 升级, 借方法论 不借代码**
+> **跟 PHASE-013-REFLECTION-2026-06-18 联合, 治根 "0 实际变化 假动作" + "文档碎片化" 反讽 (file:line `confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md`)**
+> **跟 v2.4.0+v2.4.1 反思 联合 (跟主公 2026-06-18 'a' 反思 explicit 派单 联合), 跟"翻篇&精进" 战略 一致**
+> **跟 KALLAX-GLOSSARY 反哺框架 战略 联合 (文档卫生 = 反哺框架 入口, 跨 release 累计沉淀)**
+> **自动化**: `scripts/check-doc-hygiene.sh` (5 项 检查 自动化, 跟 26 .sh wrapper 模式 一致)
+> **TDD 测试**: `tests/integration/doc-hygiene-test.sh` (5/5 PASS, mock 5 触发 场景)
+
+### 触发条件 (跟 eket §6 Rule 6 "每 10 轮" 模式 联合)
+
+| 触发 | 频率 | 跟 PHASE 联合 | 自动化 |
+|---|---|---|---|
+| **每 10 轮** (Conductor 心跳 Q5) | 频繁 | PHASE review 跨期 入口 | `scripts/check-doc-hygiene.sh` |
+| **每 EPIC 完成** | 中 | Post-Process 11 步骤 联合 | `scripts/check-doc-hygiene.sh` |
+| **每 Sprint 完成** | 稀 | PHASE-XXX-REVIEW 联合 | `scripts/check-doc-hygiene.sh` |
+
+### 5 项 检查 (跟 eket §6 Rule 6 升级, 0 增 Rule 持平)
+
+| # | 检查项 | 检查命令 | FAIL 行动 | 跟 KALLAX Rule 联合 |
+|---|---|---|---|---|
+| 1 | **未追踪 md** | `git ls-files --others --exclude-standard docs/ \| wc -l` | 评估 + git add 或 `.gitignore` | Rule 5 DRY (SoT) + Rule 20 tag-sop |
+| 2 | **僵尸 ticket** | `jira/tickets/*/ticket.json` status=in_progress 跟 claimed_at 间隔 > 7d | 标记 blocked 或 close 跟 LESSONS-LEARNED | Rule 6 经验沉淀强制化 + Rule 11 Anti-Fab |
+| 3 | **积压 review** | `outbox/review_requests/*.md` mtime > 3d 未处理 | 派单或 close review | Rule 17 文件并发竞争 5 步 |
+| 4 | **重复文档** | `grep -rnE "^##.*同类内容" docs/ confluence/ 2>/dev/null \| wc -l` (去重 < 阈值) | 合并到 SoT + 删除副本 | Rule 5 DRY (Single Source of Truth) |
+| 5 | **过期 Rule** | CLAUDE.md `### [0-9]+\. ` 跟 `docs/process/9-hard-rules.md` 一致性 (≥ 95%) | 同步 Rule 编号 + 撤销说明 | Rule 6 经验沉淀 + 9 Hard Rules 索引 |
+
+### 输出格式 (跟 Rule 9 KPI 精确 X/Y 联合)
+
+```
+5/5 PASS = 100.0% 文档卫生 (跟 eket §6 Rule 6 联合)
+4/5 PASS = 80.0% + 1 FAIL: 僵尸 ticket (3 个 > 7d 未推进)
+3/5 PASS = 60.0% + 2 FAIL: 重复文档 (2 个) + 过期 Rule (1 个)
+```
+
+### 跟 eket §6 Rule 6 → KALLAX 5 项 升级映射
+
+- eket "未追踪 md" → KALLAX 1 (未追踪 md)
+- eket "僵尸 ticket" → KALLAX 2 (僵尸 ticket, 含 status=in_progress + claimed_at > 7d 阈值)
+- eket "积压 review" → KALLAX 3 (积压 review, mtime > 3d 阈值)
+- eket "重复文档" → KALLAXX 4 (重复文档, 跟 Rule 5 DRY 联合)
+- eket "过期 Rule" → KALLAX 5 (过期 Rule, 跟 Rule 32 撤销 / Rule 9 类别 group 索引 联合)
+
+**联动 ticket**: EPIC-059-G (跟主公 2026-06-18 '需要都建卡并行处理' explicit 派单 联合, 跟 v2.6.0 经验教训 整理 release 联合)
+**跟 EKET-BORROW-PROGRESS-2026-06-11.md 联合**: 文档卫生 触发 = EKET 借鉴 Phase 1 8 项之一 (跟 26 P0/P1/P2 联合)
+**跟 v2.4.1 Rule 合并反思 联合**: 治根 "Rule 数 通胀" 迷信, 5 项 检查 0 增 Rule 持平 (跟"翻篇&精进" 一致)
+**跟 KALLAX-GLOSSARY 反哺框架 战略 联合**: 文档卫生 = 反哺框架 入口, 跨 release 累计沉淀
+
+---
+
 ## 跟"反讽" 闭环 (跟"反哺框架" 战略 一致, 跟"翻篇&精进" 战略 一致)
 
 - ✅ 14 release 累计 (v1.0.0 → v2.4.1) + 14 BE + 17 门禁 + 22 Rule (v2.4.1 还原 跟 v2.3.0 一致) + 5 扩展组 + 10 工具 (Claude/trae/antigravity/opencode/codex/gemini/cursor/windsurf/aider/continue) + 60 术语 (Section 8.6-8.18 + 9.1-9.4 + 10.1-10.3 + 11.1-11.6) → 沉淀到 PHASE-INDEX.md + KALLAX-GLOSSARY.md + ACCUMULATED-LESSONS-2026-06-17.md + PHASE-012-REVIEW-2026-06-17.md + PHASE-013-REFLECTION-2026-06-18.md + PHASE-014-REVIEW-2026-06-18.md

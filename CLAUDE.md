@@ -513,6 +513,53 @@ L4 数据流动：集成测试验证
 
 ---
 
+### 9 Hard Rules Rule 6+7 映射: 文档卫生 + 新建前先想 (KALLAX P1) — 跟 eket MASTER-RULES.md §6 联合 (EPIC-059-G v2.7.0)
+
+**教训**: v2.4.0 反思 "0 实际变化 假动作" + "文档碎片化" 反讽 → 治根需 "每 10 轮 文档卫生" + "新建前先想" 模式. 跟 v2.6.0 经验教训 整理 release 联合, 跟 KALLAX-GLOSSARY 反哺框架 战略 联合 (文档卫生 = 反哺框架 入口).
+
+**约束**:
+- ❌ **0 增 Rule** (跟"翻篇&精进" 战略 一致, 跟 v2.4.1 还原 22 Rule 联合) — 升级 现有 Rule 5/6/11/20 索引映射
+- ❌ **0 重写** (跟 Rule 5 DRY 联合)
+- ❌ **借方法论 不借代码** (不复制 eket 9 Hard Rules 全文, 跟 EPIC-059-A 模式 一致)
+- ✅ 22 Rule → 9 类别 group 索引 (file:line 1:1 映射, 跟 类别 5 行 升级 联合)
+
+#### 文档卫生 (每 10 轮) — 跟 eket §6 Master Hard Rule 6 联合
+
+**触发**: 每 10 轮 Conductor 心跳 Q5 / 每 EPIC 完成 / 每 Sprint 完成 (跟 `docs/PHASE-INDEX.md:87-128` 联合).
+
+**5 项 检查** (跟 `scripts/check-doc-hygiene.sh` 联合, X/Y PASS 格式):
+
+| # | 检查项 | FAIL 阈值 | 跟 KALLAX 现有 Rule 联合 |
+|---|---|---|---|
+| 1 | **未追踪 md** | `git ls-files --others --exclude-standard docs/ \| wc -l` > 阈值 | Rule 5 DRY (Single Source of Truth) + Rule 20 tag-sop |
+| 2 | **僵尸 ticket** | `jira/tickets/*/ticket.json` status=in_progress 跟 claimed_at 间隔 > 7d | Rule 6 经验沉淀强制化 + Rule 11 Anti-Fab |
+| 3 | **积压 review** | `outbox/review_requests/*.md` mtime > 3d 未处理 | Rule 17 文件并发竞争 5 步 |
+| 4 | **重复文档** | `docs/` + `confluence/` 内容重复 > 阈值 (grep 相似章节) | Rule 5 DRY (Single Source of Truth) |
+| 5 | **过期 Rule** | CLAUDE.md 跟 `docs/process/9-hard-rules.md` 一致性 < 95% | Rule 6 经验沉淀 + 9 Hard Rules 索引 |
+
+#### 新建前先想 — 跟 eket §6 Master Hard Rule 7 联合
+
+**触发**: 新建文件/章节/ticket/Rule 前, 必须先回答 **3 问**:
+
+| # | 3 问 | 检查命令 | 跟 KALLAX 现有 Rule 联合 |
+|---|---|---|---|
+| 1 | **是否有同类文档可更新?** | `grep -rn "<主题>" docs/ confluence/decisions/ 2>/dev/null` | Rule 5 DRY (SoT, 0 重复) |
+| 2 | **是否有同类 ticket 可扩展?** | `find jira/tickets -name "ticket.json" -exec grep -l "<主题>" {} \;` | Rule 5 DRY + Rule 6 经验沉淀强制化 |
+| 3 | **是否有同类 Rule 可引用?** | `grep -nE "^### [0-9]+\. " CLAUDE.md \| grep "<主题>"` | 9 Hard Rules 索引 (跟类别 5 升级 联合) |
+
+**红线**:
+- ❌ 3 问 任意 1 答 "有" 但 未 引用/扩展/更新, 直接新建 = FAIL + 触发 Rule 19 KPI 反模式
+- ❌ 跳过 3 问 直接新建 = 跟"借方法论 不借代码" 战略 矛盾 (跟 EPIC-059-A 联合)
+- ❌ 文档卫生 检查 FAIL 但 仍 commit 新建 (跟 Rule 11 Anti-Fab 联合)
+
+**落地检查**: `bash scripts/check-doc-hygiene.sh` + `bash tests/integration/doc-hygiene-test.sh` (5/5 PASS)
+
+**跟 KALLAX-GLOSSARY 反哺框架 战略 联合**: 文档卫生 + 新建前先想 = 反哺框架 入口 (跨 release 累计沉淀, 跟 v2.4.0+v2.4.1 反思 闭环)
+
+**来源**: EPIC-059-G (跟主公 2026-06-18 '需要都建卡并行处理' explicit 派单 联合, 跟 v2.6.0 经验教训 整理 release 联合) + eket `template/docs/MASTER-RULES.md` §6 Master Hard Rule 6+7 + KALLAX-GLOSSARY 反哺框架 + PHASE-013-REFLECTION-2026-06-18.md (治根 "文档碎片化" 反讽) + v2.4.0+v2.4.1 8 release 累计 (0 增 Rule 持平, 跟"翻篇&精进" 一致)
+
+---
+
 ## 9 Hard Rules 模式 (跟 eket MASTER-RULES.md §6 联合, 借方法论 不借代码, EPIC-059-A v2.7.0)
 
 > **22 Rule → 9 类别 group 索引 (file:line 1:1 映射, 0 删 Rule)**
@@ -529,7 +576,7 @@ L4 数据流动：集成测试验证
 | **2. 错误处理与验证 (Error & Verify)** | Result 类型 / 产出真实性 / 4-Level / KPI 黑名单 | Rule 2 ([CLAUDE.md:64](CLAUDE.md#L64)) + Rule 3 ([CLAUDE.md:80](CLAUDE.md#L80)) + Rule 10 ([CLAUDE.md:221](CLAUDE.md#L221)) + Rule 19 ([CLAUDE.md:471](CLAUDE.md#L471)) | Rule 10 4-Level Fact-Forcing |
 | **3. 资源与质量 (Resource & Quality)** | TTL 缓存 / expert audit | Rule 4 ([CLAUDE.md:92](CLAUDE.md#L92)) + Rule 13 ([CLAUDE.md:289](CLAUDE.md#L289)) | Rule 4 资源管理规范化 |
 | **4. 类型与安全 (Type & Security)** | 严格类型 / 工具 bypass / 独立见证 | Rule 5 ([CLAUDE.md:106](CLAUDE.md#L106)) + Rule 30 ([CLAUDE.md:593](CLAUDE.md#L593)) + Rule 31 ([CLAUDE.md:599](CLAUDE.md#L599)) | Rule 5 类型安全强制化 |
-| **5. 经验沉淀 (Lessons Accumulation)** | 4 件套 / PHASE 闭环 / Anti-Fab | Rule 6 ([CLAUDE.md:122](CLAUDE.md#L122)) + Rule 7 ([CLAUDE.md:148](CLAUDE.md#L148)) + Rule 11 ([CLAUDE.md:239](CLAUDE.md#L239)) | Rule 6 经验沉淀强制化 |
+| **5. 经验沉淀 (Lessons Accumulation)** | 4 件套 / PHASE 闭环 / Anti-Fab / 文档卫生 (每 10 轮) / 新建前先想 3 问 | Rule 6 ([CLAUDE.md:122](CLAUDE.md#L122)) + Rule 7 ([CLAUDE.md:148](CLAUDE.md#L148)) + Rule 11 ([CLAUDE.md:239](CLAUDE.md#L239)) + [9 Hard Rules Rule 6+7 映射](CLAUDE.md#9-hard-rules-rule-67-映射-文档卫生--新建前先想-kallax-p1--跟-eket-master-rules-md-联合-epic-059-g-v270) (EPIC-059-G v2.7.0) | Rule 6 经验沉淀强制化 + 9 Hard Rules Rule 6+7 升级 (跟 eket MASTER-RULES.md §6 联合) |
 | **6. 角色边界 (Role Boundary)** | Master 禁写 / Conductor 禁越界 | Rule 12 ([CLAUDE.md:253](CLAUDE.md#L253)) + Rule 15 ([CLAUDE.md:416](CLAUDE.md#L416)) | Rule 12 Master 写代码禁令 |
 | **7. 决策与模式 (Decision & Mode)** | 3 模式 + decision-gate | Rule 14 ([CLAUDE.md:295](CLAUDE.md#L295), 扩展 [CLAUDE.md:617](CLAUDE.md#L617)) | Rule 14 3 模式决策权 |
 | **8. 流程与脚本 (Process & Script)** | PR 尺寸 (Rule of 500 / PR ~100 行) / Subagent 5 步 | Rule 8 ([CLAUDE.md:166](CLAUDE.md#L166)) + Rule 9 ([CLAUDE.md:191](CLAUDE.md#L191)) + Rule 17 ([CLAUDE.md:441](CLAUDE.md#L441)) | Rule 8 Rule of 500 + Rule 9 PR ~100 行 (EPIC-059-B + EPIC-059-C 互为 互补) |
