@@ -653,12 +653,142 @@
 - **PHASE-013** (v2.4.0 release, 4 合并 + 48 worktree 清理)
 - **PHASE-013-REFLECTION** (v2.4.1 release, v2.4.0 反思 290+ 行)
 - **PHASE-014** (v2.5.0 release, 5 deferred → 3 closed + 2 留待, 跨期 review 入口)
+- **PHASE-015** (v2.7.0 release, EPIC-059 8 票 闭环, EKET 借鉴 Phase 1, 跟"借方法论 不借代码" 联合, 跟 v2.4.1 反思 + KALLAX-GLOSSARY §11.1-11.6 联合, 1 ticket 1 subagent 串行 8 轮, BE-17 silent 复发 跟"诚实修正" 联合)
 - ACCUMULATED-LESSONS-2026-06-13 (v2.0.3 baseline)
-- ACCUMULATED-LESSONS-2026-06-17 (v2.0.5 初版 + v2.0.6 升级 + v2.5.0 升级 [本升级])
+- ACCUMULATED-LESSONS-2026-06-17 (v2.0.5 初版 + v2.0.6 升级 + v2.5.0 升级 + **v2.7.0 升级 [本升级]**)
 
 ---
 
-## 14. 状态变更历史
+## 14. v2.7.0 升级 段 (PHASE-015 EKET 借鉴 Phase 1 闭环, EPIC-059 8 票 累计)
+
+跟 v2.7.0 release 联合 (commit `05c266d`), 跟 PHASE-015 review 联合 (file:line confluence/decisions/PHASE-015-EKET-BORROW-REVIEW-2026-06-18.md:1-252), 跟主公 2026-06-18 '需要都建卡并行处理' + '直接启动开工' 派单 联合, 跟 ~/.claude/knowledge/core/methodologies/borrowing-from-external.md 5 维评分 决策矩阵 4-5 分直接建卡 联合, 跟"借方法论 不借代码" 联合, 跟"翻篇&精进" + "诚实修正" + "反讽" + "反哺框架" 4 战略 联合.
+
+### 14.1 EPIC-059 8 票 闭环 累计 (跟 BE-14 1 ticket 1 subagent 串行 8 轮 联合)
+
+| 票 ID | 主题 | 4-Level 验证 | Commit | 联合 eket / 借鉴 来源 |
+|-------|------|--------------|--------|----------------------|
+| EPIC-059-A | 9 Hard Rules 简化 | 5/5 PASS | `7ca58a5` | eket MASTER-RULES.md §6 9 Hard Rules 模式 → 22 Rule → 9 类别 group 索引 |
+| EPIC-059-B | Rule of 500 | 16/6 PASS | `fc1cbb4` | eket MASTER-RULES.md §6 Rule 8 净变更 4 档分级 (silent/acceptable/codemod_hint/reject) |
+| EPIC-059-C | PR ~100 行上限 | 21/5 PASS | `b1ad90c` | eket MASTER-RULES.md §6 Rule 9 PR 4 档分级 (跟 B 互为 互补, 粒度 分离) |
+| EPIC-059-D | Fact-Forcing 原则 | 3 文件 + 21 assertions | `0b394f5` | eket MASTER-RULES.md §2 3 原则 + 7 反例 + 7 正例 + 5+5 + Master 6 维 L6 诚实 联合 |
+| EPIC-059-E | Post-Process 11 步骤 | 23/5+ PASS | `5cc620f` | eket MASTER-RULES.md §10 4 步骤 → 11 步骤 升级 (PHASE review 10 累计 联合) |
+| EPIC-059-F | 派遣 Checklist 11 项 | 3/3 落地 | `3f93c2d` | eket MASTER-RULES.md §11 7 项 → 11 项 升级 (BE-14 + EPIC-059-D + PROCESS.md:25-26 闭环) |
+| EPIC-059-G | 文档卫生 + 新建前先想 | 21/21 PASS | `3c0a11a` | eket MASTER-RULES.md §6 Rule 6+7 联合 + KALLAX-GLOSSARY 反哺框架 战略 |
+| EPIC-059-H | 多级记忆分层 L0-L4 | 21/21 PASS | `be7e5a9` | eket confluence/memory/ + ~/.claude/knowledge L0-L4 联合 |
+
+**8 票 累计 KPI**:
+- 8/8 done = 100.0% 闭环 (跟 EPIC-059 epic.json tickets 状态 联合)
+- 5+16+21+21+23+3+21+21 = **131 assertions** PASS (跟"诚实修正" 联合, raw test output 留存 8 commit message 跟 EPIC-059-D Fact-Forcing 联合)
+- 0 增 Rule (跟 v2.4.1 还原 22 Rule 联合, 跟 KALLAX-GLOSSARY §11.1 联合, 治根 "Rule 数通胀" 迷信)
+- 0 增命令 (跟 v1.3.0 Onramp 1 入口 撤销 模式 一致, 跟"反讽" 联合)
+- 0 重写 (跟 Rule 5 DRY 联合)
+
+### 14.2 BE 累计 16 → 17 (跟 BE-17 silent output 1st attempt 跟"诚实修正" 联合)
+
+跟 §8 16 BE 联合, 加 BE-17:
+- **BE-17**: EPIC-059-A 1st subagent silent output 复发 (跟 BE-9 4 subagent + BE-14 1 subagent silent 联合) → 2nd attempt OK 跟"诚实修正" 联合 (跟 v2.4.1 revert 闭环 模式 一致) → 后续 7 票 (B-H) 0 silent output 累计 (跟"翻篇&精进" 战略 一致)
+
+### 14.3 升级路径 累计 26 → 28 (跟 v2.0.6 → v2.4.1 8 release 累计 → v2.7.0 PHASE-015 联合)
+
+跟 §9 26 升级 联合, 加 v2.7.0 PHASE-015 2 反思 升级:
+- **升级 27**: v2.4.0 + v2.4.1 反思 联合 → EPIC-059-A 9 Hard Rules 简化 (跟 v2.4.1 revert 闭环 模式 一致, 22 Rule 保持, 0 增 Rule 治根 "Rule 数通胀" 迷信)
+- **升级 28**: PHASE-013-REFLECTION + PHASE-014 + PHASE-015 跨期 反思 链 → EPIC-059-D Fact-Forcing 原则 (跟 eket MASTER-RULES.md §2 联合, 跟 Master 6 维 L6 诚实 联合, 治根 "0 假 PASS" 反复)
+
+### 14.4 净价值 67.0% 持平 跨 8 release (跟"翻篇&精进" 战略 一致)
+
+跟 §10 14 release 演化 联合, 加 v2.6.0 + v2.7.0 → **16 release 累计** (v1.0.0 → v2.7.0):
+- 16 release 累计 净价值 67.0% 持平 = 0 实际变化 (跟 KALLAX-GLOSSARY §11.3 "0 实际变化 假动作" 联合)
+- 跟"诚实修正" 联合: v2.0.5 + v2.0.6 + v2.4.1 + EPIC-059-A 1st silent 跟 2nd attempt OK 累计 4 红线 revert/honest mark
+- 跟"反讽" 联合: 跟 v2.4.0 4 Rule 合并 "净价值 提升" 假动作 治根 闭环
+
+### 14.5 5 视角 跨 v2.5.0 → v2.7.0 升级 (跟"反哺框架" 战略 一致)
+
+跟 §11 5 视角 联合, 加 v2.5.0 → v2.7.0 跨期 升级:
+- **Architect 视角**: 22 Rule (v2.4.1 还原) + 4-Level 证据链 + 10 工具 + 26 .md wrappers + 60+5 术语 (加 §12.1 Fact-Forcing + §12.4 L0-L4)
+- **Security 视角**: + pre-commit ALLOWED_PATTERNS (file:line scripts/hooks/pre-commit 联合) + 8 工具 multi-tool 治理 + BE-17 silent 闭环 + Fact-Forcing 原则 标准化
+- **Backend 视角**: + 1 ticket 1 subagent 串行 (BE-14 联合) + 26 .sh + 26 .md wrappers + 10 工具 E2E + Rule of 500 + PR ~100 行上限 (跟 EPIC-059-B/C 联合)
+- **Product 视角**: 67.0% 持平 8 release (跟"翻篇&精进" 一致, 跟 v2.0.4 +4.5% 持平, 跟 16 release 累计 0 实际变化 联合)
+- **UX 视角**: + 5 deferred tickets 状态 (3 closed + 2 留待) + 8 工具 wizard 5-step + --symlink single source + --dry-run + 派遣 Checklist 11 项 (跟 EPIC-059-F 联合) + 文档卫生 (跟 EPIC-059-G 联合) + L0-L4 分层 (跟 EPIC-059-H 联合)
+
+### 14.6 14 release → 16 release 演化 累计 (跟"翻篇&精进" 战略 一致)
+
+跟 §10 5 阶段 → 14 release 演化 联合, 加 v2.6.0 + v2.7.0 → **16 release 累计**:
+- v2.6.0 经验教训 整理 release (跟 ACCUMULATED-LESSONS 11 sections 升级 联合, 跟"诚实修正" 联合)
+- v2.7.0 EKET 借鉴 Phase 1 闭环 release (跟 EPIC-059 8 票 联合, 跟"借方法论 不借代码" 联合, 跟 PHASE-015 联合)
+
+### 14.7 PHASE 累计 10 → 11 (跟 PHASE-015 联合, 跟"反哺框架" 战略 一致)
+
+跟 §12 PHASE 累计 联合, 加 PHASE-015:
+- **PHASE-015-EKET-BORROW-REVIEW-2026-06-18**: EKET 借鉴 Phase 1 闭环 (EPIC-059 8 票 全 done, 跟 v2.6.0 经验教训 整理 release 联合, 跟"借方法论 不借代码" 联合, 跟 PHASE-014 模式 一致, 1 ticket 1 subagent 串行 8 轮, BE-17 silent 复发 跟"诚实修正" 联合), 跟"翻篇&精进" + "诚实修正" + "反讽" + "反哺框架" 4 战略 联合
+
+### 14.8 给下 PHASE (PHASE-016+) 战略建议 (跟"独立" 拍 explicit 联合, 跟主公后续 拍板 留待 联合)
+
+跟 §12 战略建议 联合, 加 v2.7.0 升级 段:
+
+#### 14.8.1 P3 留待 3 项 (跟"独立" 拍板 explicit 联合, 跟 PROCESS.md:25-26 联合, 主公 explicit 拍板 留待)
+
+跟主公 2026-06-18 '同意建议' 派单 联合, 跟"独立" 拍板 explicit 联合 (跟 PROCESS.md:25-26 联合):
+
+- **P3-A 分布式 路线图** (ioredis Pub/Sub + litestream + 3 仓 sync + web dashboard 部署)
+  - 跟 ioredis optional (file:line node/package.json:28-29) 联合
+  - 跟 web/src/dashboard/dispatch/ 代码就绪 联合
+  - 跟 P2-1 web dashboard 部署 主公 B 跳过 联合
+  - 跟"反讽" 联合 治根 "单 master 假动作"
+- **P3-B Rust 投入 拍板** (KALLAX 5 crates 现状, 0 投入 验证 / 主用)
+  - 跟 rust/Cargo.toml:1-7 5 crates 联合 (kallax-core/engine/cli/server/context-mon)
+  - 跟"翻篇&精进" 一致, KALLAX 0 Rust 投入 现状
+- **P3-C 4 层 → 5 层 (分布式层) 拍板** (跟 eket 4 级降级 模式 一致, 跟"反讽" 联合)
+  - 跟 eket 架构 Level 0-3 模式 联合 (Shell → Rust → Node.js → Web)
+  - 跟 PROCESS.md:25-26 独立 拍板 联合
+
+#### 14.8.2 KALLAX-GLOSSARY 12.x 持续扩 (跟"反讽" + "诚实修正" + "反哺框架" 联合)
+
+- **§12.1 Fact-Forcing 原则** (已 落地 v2.7.0, 跟 eket MASTER-RULES.md §2 联合)
+- **§12.4 L0-L4 多级记忆分层** (已 落地 v2.7.0, 跟 eket confluence/memory/ + ~/.claude/knowledge L0-L4 联合)
+- **§13.x 后续扩** (跟"反哺框架" 战略 一致, 跨 PHASE-016+ 持续)
+
+#### 14.8.3 0 增命令 + 0 增 Rule 持续 (跟"翻篇&精进" 战略 一致, 跟 16 release 累计 联合)
+
+- 净价值 67.0% 持续保持 (跟 8 release 累计 持平 联合)
+- 0 假 PASS 0 模糊 0 反讽反复 (跟"诚实修正" 联合, 跟 Master 6 维 L6 诚实 联合)
+- 0 silent output 0 silent 复发 (跟"诚实修正" + "翻篇&精进" 联合, 跟 BE-14 + EPIC-059-A 1st 联合)
+
+### 14.9 累计文件清单 跨 v2.5.0 → v2.7.0 升级 (跟"翻篇&精进" 战略 一致)
+
+跟 §13 累计文件清单 联合, 加 v2.7.0 PHASE-015 EPIC-059 8 票 交付物 + 8 commit hash:
+- **PHASE-015 review doc** (file:line confluence/decisions/PHASE-015-EKET-BORROW-REVIEW-2026-06-18.md, 252 行)
+- **CLAUDE.md** +28 lines (file:line CLAUDE.md:471-497 9 Hard Rules 模式 章节)
+- **docs/KALLAX-GLOSSARY.md** +179 lines (file:line §12.1 + §11.1 闭环 + §12.4 + §13 升级)
+- **docs/process/9-hard-rules.md** (新, 226 行)
+- **docs/process/fact-forcing.md** (新, 428 行)
+- **scripts/check-9-hard-rules.sh** (新, 255 行)
+- **scripts/check-pr-size.sh** (+130 lines, Rule of 500 + PR ~100 行)
+- **scripts/hooks/pre-commit** (+30 lines, Rule of 500 集成)
+- **scripts/check-doc-hygiene.sh** (新, 524 行)
+- **scripts/post-process.sh** (新, 548 行)
+- **scripts/memory-promote.sh** (新, 242 行)
+- **tests/integration/check-9-hard-rules-test.sh** (新, 338 行)
+- **tests/integration/check-rule-of-500-test.sh** (新, 258 行)
+- **tests/integration/check-pr-100-test.sh** (新, 303 行)
+- **tests/integration/post-process-test.sh** (新, 331 行)
+- **tests/integration/doc-hygiene-test.sh** (新, 340 行)
+- **tests/integration/memory-l0-l4-test.sh** (新, 258 行)
+- **confluence/memory/LAYERS.md** (新, 185 行)
+- **confluence/decisions/fact-forcing-examples.md** (新, 263 行)
+- **confluence/decisions/dispatch-checklist.md** (新, 631 行)
+- **confluence/decisions/PHASE-015-EKET-BORROW-REVIEW-2026-06-18.md** (新, 252 行)
+- **.claude/skills/kallax/SKILL.md** +131 lines (派遣 Checklist 11 项 + Post-Process 11 步骤 + L0-L4 触发 段)
+- **AGENTS.md** +34 lines (派遣 Checklist 11 项 段)
+- **.github/workflows/pr-size-check.yml** (新, 145 行)
+- **CHANGELOG.md** (v2.7.0 entry added)
+- **package.json** (2.6.0 → 2.7.0)
+- **jira/epics/EPIC-059/epic.json** (89 行, master plan)
+- **jira/tickets/EPIC-059-A/H/ticket.json** (8 tickets, ~290 行 累计)
+- **jira/epics/epic_index.json** (EPIC-058 + EPIC-059 entry)
+
+---
+
+## 15. 状态变更历史
 
 | 时间 | 状态 | 操作者 | 备注 |
 |------|------|--------|------|
