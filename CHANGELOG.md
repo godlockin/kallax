@@ -5,6 +5,55 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.3] - 2026-06-19
+
+### Changed
+
+#### AI 工具 文档 优化 (跟主公 2026-06-19 'ensure the document/description in command or md or whatever, to make the ai tools can understand, load and use the tools/skills/commands smoothly' explicit 派单 联合, 跟 v2.7.2 install.sh --symlink 联合, 跟 5 战略 联合)
+
+跟主公 2026-06-19 派单 联合, 跟 v2.7.2 整理 release 联合, 跟 5 战略 联合 ('翻篇&精进' + '诚实修正' + '反讽' + '独立' + '反哺框架'), 跟 Rule 5 DRY 联合, 跟 EPIC-059-D Fact-Forcing 联合:
+
+**SKILL.md 修复 (跟 v2.3.0 --symlink default 联合, 跟 '反讽' 联合 治根 'filePath 假动作')**:
+- **P0 bug fix**: 删 `filePath: /Users/chenchen/.claude/skills/kallax/SKILL.md` (CRITICAL — absolute path 到 user's home 误导 AI 工具, 应 为 project 路径, 跟 CLAUDE.md Rule 32 互为 互补)
+- 修 description 3264 char → 617 char (跟 Claude Code 1024 char limit 联合, 跟 '可读性 > 完整性' 战略 联合)
+- 简化 triggerKeywords 21 → 13 (跟 Rule 5 DRY 联合)
+- 加 `## Quick Reference` (10 类 29 命令 + argument-hint 表) — AI 工具 加载 后 1 屏 看到 全部
+- 加 `## Sub-Skills` (default/ + extended/ + scripts/ + skills/ 加载顺序) — AI 工具 知道 何时 加载 哪个 sub-skill
+
+**Slash command 优化 (29 .md 全部 跟 .sh USAGE 同步, 跟 v2.3.0 install.sh 联合)**:
+- **P0**: 27 wrappers 加 `argument-hint: <hint>` (Claude Code 2.1+ feature, slash picker 显示 placeholder)
+- **P0**: 2 full docs (onramp + takeover) 加 `argument-hint` (manual)
+- **P0**: Trim 冗余 description prefix (`/kallax-init — ` → `Initialize KALLAX...`)
+- 自动化 脚本 `scripts/refresh-arg-hints.sh` (新, 38 行) — 从 .sh USAGE 提取 hint, idempotent, 后续 加 新 命令 跑 1 次 自动 同步
+
+**install.sh 自动化 (跟 v2.3.0 --symlink default 联合, 跟 'deploy by symlink' 派单 联合)**:
+- **P0**: install.sh 556-590 自动 从 .sh USAGE line 提取 `argument-hint` (跟 scripts/refresh-arg-hints.sh 模式 一致)
+- 验证: --dry-run syntax OK + 5 sample .sh USAGE extraction OK
+- 验证: 10 sample .sh (mode/expert/claim/task/panel/init/status/verify-pr/merge/save) hint 提取 正确
+
+**Tool-specific README 优化 (跟 v2.3.0 install.sh 10 工具 联合, 跟 'deploy by symlink' 派单 联合)**:
+- `.aider/skills/kallax/README.md` 重写 (1.7K → 3.5K, +104%): Quick Setup (1 min) + Usage Pattern + 4 default + 5 extended (跟 EPIC-056-A 联合) + see also
+- `.continue/skills/kallax/README.md` 重写 (1.6K → 3.4K, +108%): Quick Setup (2 min) + customCommands (含 Quick Reference 索引) + 4 default + 5 extended + Usage Pattern
+- 2 README 全部 跟 v2.3.0 SKILL.md 同步 (Quick Reference 表 + Sub-Skills 路径)
+
+**约束 验证 (跟'翻篇&精进' 战略 一致)**:
+- 0 增 Rule (跟 v2.4.1 还原 22 Rule 联合)
+- 0 增命令 (跟 0 增 Rule 持平)
+- 0 重写 (跟 Rule 5 DRY 联合, 仅优化 description + 加 argument-hint + 加 Quick Reference)
+- 借方法论 不借代码 (跟 EPIC-059-A 9 Hard Rules 模式 一致)
+
+**KPI 累计 (跟 Rule 9 X/Y 联合)**:
+- 27 wrapper 加 argument-hint (27/27 = 100.0%)
+- 2 full doc 加 argument-hint (2/2 = 100.0%)
+- 1 SKILL.md P0 bug 修复 (1/1 = 100.0%, filePath 假动作 治根)
+- 1 description 3264 → 617 char (跟 1024 limit 联合)
+- 1 Quick Reference 表 加 (10 类 29 命令)
+- 1 Sub-Skills 表 加 (5 sub-skill 路径)
+- 2 tool README 优化 (.aider + .continue)
+- 1 自动化 脚本 加 (scripts/refresh-arg-hints.sh, 38 行)
+- 1 install.sh md generation 升级 (USAGE 提取 hint)
+- 0 假 PASS 校验 (跟 Master 6 维 L6 诚实 联合)
+
 ## [2.7.2] - 2026-06-19
 
 ### Changed

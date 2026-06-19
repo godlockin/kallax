@@ -567,20 +567,39 @@ install_canonical_commands() {
   done
 
   # v2.1.1: .md wrappers for .sh commands (Claude Code 2.1+ compat)
+  # v2.3.0: Auto-extract argument-hint from USAGE: line in .sh file (跟 scripts/refresh-arg-hints.sh 模式 一致)
   local md_count=0
   for f in "$CANONICAL_COMMANDS"/kallax-*.sh; do
     [ -f "$f" ] || continue
-    local name desc md_target
+    local name desc usage_line args md_target
     name=$(basename "$f" .sh)
     desc=$(/usr/bin/awk 'NR==2' "$f" | sed 's/^# //')
+    # Extract args from USAGE: line: "/kallax-mode [conductor|...]" → "[conductor|...]"
+    # Skip files without USAGE: line (e.g., takeover.md is a full doc, not a wrapper)
+    usage_line=$(grep -A 1 '^USAGE:' "$f" 2>/dev/null | tail -1 | sed -E 's/^[[:space:]]+//' | sed -E "s|^/kallax-[a-z-]+[[:space:]]*||")
+    args=""
+    if [ -n "$usage_line" ] && [ "$usage_line" != "$(grep -A 1 '^USAGE:' "$f" 2>/dev/null | tail -1 | sed -E 's/^[[:space:]]+//')" ]; then
+      args="$usage_line"
+    fi
     md_target="$CANONICAL_COMMANDS/${name}.md"
-    cat > "$md_target" <<EOF
+    if [ -n "$args" ]; then
+      cat > "$md_target" <<EOF
+---
+description: ${desc}
+argument-hint: ${args}
+---
+
+!bash "\$(dirname "\$0")/${name}.sh" \$ARGUMENTS
+EOF
+    else
+      cat > "$md_target" <<EOF
 ---
 description: ${desc}
 ---
 
 !bash "\$(dirname "\$0")/${name}.sh" \$ARGUMENTS
 EOF
+    fi
     md_count=$((md_count + 1))
   done
 

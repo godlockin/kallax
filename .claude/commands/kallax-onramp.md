@@ -1,5 +1,6 @@
 ---
-description: 多层次项目分析器 (L1 简单 / L2 深入 / L3 完整审计 + 3 件套)
+description: Multi-level project analyzer (L1 simple / L2 deep / L3 full audit + 3-piece output).
+argument-hint: <project_path> <user_need>
 ---
 
 # /kallax-onramp

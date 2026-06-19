@@ -1,5 +1,6 @@
 ---
-description: 中途接手项目 (3 库状态扫 + 路由器主动给 2 推荐 + 3 件套输出)
+description: Mid-project takeover (3-repo state scan + router proposes 2 paths + 3-piece output).
+argument-hint: <project_path> <user_need>
 ---
 
 # /kallax-takeover

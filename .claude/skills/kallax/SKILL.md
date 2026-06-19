@@ -1,13 +1,75 @@
 ---
 name: kallax
-description: Use when user types any `/kallax-*` slash command (`/kallax-panel`, `/kallax-expert`, `/kallax-skill`, `/kallax-init`, `/kallax-takeover`, `/kallax-ask`, `/kallax-claim`, `/kallax-submit-pr`, `/kallax-review-pr`, `/kallax-merge`, `/kallax-status`, `/kallax-help`, `/kallax-board`, `/kallax-start`, `/kallax-role`, `/kallax-mode`, `/kallax-save`, `/kallax-resume`, `/kallax-list`, `/kallax-analyze`, `/kallax-office-hours`, `/kallax-phase-review`, `/kallax-verify-pr`, `/kallax-review-merge`, `/kallax-review-analysis`, `/kallax-task`), or mentions "expert panel", "architecture review", "kallax expert", "召唤专家", "专家评审", "kallax 多 agent", "subagent workflow", "EPIC 拆解", "PHASE review", "BE 教训", or invokes a multi-role expert review for a new EPIC, architectural decision, or major refactor. Spawns a 3-phase governance (v2.0.3 EPIC-056-A): Phase 1 Conductor 全局扫描 (Architect 合并) + Phase 2 4 default (Backend/Frontend/UX/Product) + 5 extended (security-tool-bypass + process-engineering + auditor + compliance + decision-gate) 并行 + Phase 3 Master 仲裁 + 主公拍板. Do NOT trigger for simple bug fixes, single-domain tasks, or chores. See `docs/reference/slash-commands.md` for the full 26-command reference; each command also supports `/kallax-<cmd> --help` for in-tool usage.
-triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专家评审, multi-agent, subagent, EPIC 拆解, PHASE review, 实战, 反思, BE 教训, A+B review, 5 扩展组, 5 视角, 决策疲劳, KALLAX Onramp, 3 阶段治理, 跟"反讽" 闭环, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合, EPIC-056-A]
-filePath: /Users/chenchen/.claude/skills/kallax/SKILL.md
+description: Use when user types any `/kallax-*` slash command or mentions "expert panel", "architecture review", "kallax expert", "召唤专家", "EPIC 拆解", "PHASE review", or invokes a multi-role expert review for a new EPIC, architectural decision, or major refactor. Spawns a 3-phase governance (EPIC-056-A): Phase 1 Conductor 全局扫描 (Architect 合并) + Phase 2 4 default (Backend/Frontend/UX/Product) + 5 extended (security-tool-bypass + process-engineering + auditor + compliance + decision-gate) 并行 + Phase 3 Master 仲裁 + 主公拍板. Do NOT trigger for simple bug fixes, single-domain tasks, or chores.
+triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专家评审, multi-agent, subagent, EPIC 拆解, PHASE review, BE 教训, 3 阶段治理, EPIC-056-A]
 ---
 
 # KALLAX Skills 命令索引
 
 > 快速查找所有 /kallax-* 斜杠命令
+
+## Quick Reference (10 类, 29 命令, 跟 v2.3.0 install.sh 联合)
+
+> **使用方式**: 命令直接打 (e.g. `/kallax-init`), AI 工具 加载 SKILL.md 后 自动 识别 触发 条件
+
+| 类别 | 命令 | 描述 | Argument hint |
+|------|------|------|---------------|
+| **Setup** | `/kallax-init` | 初始化 KALLAX in a new or existing project | (no args) |
+| **Setup** | `/kallax-start` | Start KALLAX in current project | `[role]` |
+| **Setup** | `/kallax-mode` | Switch between operation modes | `[conductor\|performer\|standalone]` |
+| **Setup** | `/kallax-role` | View or change agent role | `[conductor\|performer\|master]` |
+| **Status** | `/kallax-status` | Show current system and task status | (no args) |
+| **Status** | `/kallax-help` | Show all available KALLAX commands and resources | (no args) |
+| **Status** | `/kallax-board` | Show interactive ticket board | (no args) |
+| **Status** | `/kallax-list` | List all available experts, skills, and resources | (no args) |
+| **Status** | `/kallax-instances` | List active Conductor/Performer instances | (no args) |
+| **Status** | `/kallax-check-progress` | Check team progress and milestone status | (no args) |
+| **Status** | `/kallax-phase-review` | Phase-based project review | `[PHASE]` |
+| **Work** | `/kallax-task` | Quick task management shortcut | `[action] [TASK_ID]` |
+| **Work** | `/kallax-claim` | Claim an available task (auto-creates worktree) | `[TASK_ID]` |
+| **Work** | `/kallax-submit-pr` | Complete task and submit PR for review | `[TASK_ID]` |
+| **Work** | `/kallax-merge` | Merge an approved PR | `[PR_NUMBER]` |
+| **Work** | `/kallax-save` | Save current session state for later resumption | (no args) |
+| **Work** | `/kallax-resume` | Resume from a saved session | (no args) |
+| **Review** | `/kallax-verify-pr` | Verify PR output before merge (4-Level Fact-Forcing) | `[PR_NUMBER]` |
+| **Review** | `/kallax-review-pr` | Review a pull request (Conductor only) | `[PR_NUMBER] [BASE_BRANCH]` |
+| **Review** | `/kallax-review-merge` | Combined review + merge workflow | `[PR_NUMBER]` |
+| **Review** | `/kallax-review-analysis` | Review codebase analysis results | (no args) |
+| **Expert** | `/kallax-expert` | Summon a specific expert for analysis | `<role> [context]` |
+| **Expert** | `/kallax-panel` | Launch full expert panel (4 default + 5 extended + Conductor, v2.0.3 EPIC-056-A) | `[TOPIC]` |
+| **Expert** | `/kallax-ask` | Ask a question to the expert panel | `<question>` |
+| **Expert** | `/kallax-skill` | Execute a specific skill | `<skill-name> [target]` |
+| **Analysis** | `/kallax-analyze` | Analyze project structure and dependencies | `[TARGET]` |
+| **Analysis** | `/kallax-office-hours` | Requirements analysis (6 questions method) | `[TOPIC]` |
+| **Onboard** | `/kallax-onramp` | Multi-level project analyzer (L1/L2/L3 audit) | `<project_path> <user_need>` |
+| **Onboard** | `/kallax-takeover` | Mid-project takeover (3-repo scan + 3-piece output) | `<project_path> <user_need>` |
+
+**Full 26-command reference**: `docs/reference/slash-commands.md`  
+**Per-command help**: `/kallax-<cmd> --help` (in-tool)  
+**CLI commands**: `kallax --help` (Node.js runtime)  
+**Heartbeat prompts**: `heartbeat-conductor.md`, `heartbeat-performer.md` (auto-load on role assignment)
+
+## Sub-Skills (auto-loaded on demand)
+
+> **When to use**: User asks for expert review, specific domain analysis, or skill execution. The sub-skill files in `default/`, `extended/`, `scripts/`, `skills/` are loaded as additional context.
+
+| Sub-Skill | Path | When to load |
+|-----------|------|--------------|
+| **Main skill** | `SKILL.md` | Always loaded (this file) |
+| **Detail reference** | `SKILL-DETAIL.md` | Deep dive (daemon, zombie defense, Performer protocol) |
+| **4 default experts** | `default/{backend,frontend,ux,product}.md` | Domain-specific analysis (note: architect 跟 Conductor 合并, EPIC-056-A) |
+| **5 extended experts** | `extended/{security-tool-bypass,process-engineering-self-verify,auditor-independent-witness,compliance-rule-merge,decision-gate-complex-only}.md` | Cross-cutting concerns (Rule 29-33 治根因 1-5) |
+| **Init skill** | `skills/kallax-init.md` | On `/kallax-init` invocation |
+| **Hooks installer** | `scripts/install-hooks.sh` | Session start hook setup |
+
+**Loading order** (跟 EPIC-056-A 3 阶段治理 联合):
+1. `SKILL.md` (always)
+2. `SKILL-DETAIL.md` (on /kallax-expert or /kallax-panel invocation)
+3. `default/*.md` (per expert summoned via /kallax-expert <role>)
+4. `extended/*.md` (for security/compliance/audit/process concerns)
+5. `heartbeat-*.md` (on role assignment: Conductor or Performer)
+
+**Note**: `.sh` files in `scripts/` are NOT loaded as context — they're executables. The `default/` and `extended/` are markdown context files for the LLM.
 
 ## 核心命令
 
