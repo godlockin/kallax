@@ -33,6 +33,13 @@ node/dist/
 node/node_modules/
 node_modules/
 
+# opencode (跟 v2.7.1 整理 release 联合, 跟 Rule 5 DRY 联合: .opencode/command symlink 到 .claude/commands, 防御 build artifacts 跟 lock file 误 commit)
+.opencode/node_modules/
+.opencode/package.json
+.opencode/package-lock.json
+.opencode/bun.lock
+.opencode/.gitignore
+
 # ============================================================
 # IDE
 # ============================================================
