@@ -115,7 +115,7 @@ echo "─── Anti-Pattern 6: Files over 500 lines (Rule 8) ───"
 LARGE_FILES=$(find "$TARGET" \( -path "*/src/*" -o -path "*/node/src/*" -o -path "*/rust/*" \) \
   \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.rs" \) 2>/dev/null \
   | grep -v node_modules | grep -v "/target/" | grep -v ".test." \
-  | xargs wc -l 2>/dev/null | awk '$1 > 500 {print $0}' | head -5 || true)
+  | xargs wc -l 2>/dev/null | awk '$1 > 500 && $2 != "total" {print $0}' | head -5 || true)
 LARGE_COUNT=$(printf '%s' "$LARGE_FILES" | awk 'END{print NR+0; exit 0}' 2>/dev/null)
 LARGE_COUNT=${LARGE_COUNT:-0}
 if [ "$LARGE_COUNT" -gt 0 ]; then
