@@ -176,6 +176,34 @@ if [ -x "$PR_SIZE_CHECK" ]; then
   fi
 fi
 
+# ── Check 2.6: Anti-Pattern Check (v2.7.4, 跟主公 '不埋坑' 5 原则 联合) ──
+# 7 anti-patterns 硬性 校验, 治根 跟'反讽' 联合 反复 (跟 v2.7.4 整理 release 联合)
+# 跟 v2.7.1 9 hard rules 模式 一致, 跟 v2.7.4 B1-3 治根 累计 联合
+ANTI_PATTERNS_CHECK="${KALLAX_ROOT}/scripts/check-anti-patterns.sh"
+if [ -x "$ANTI_PATTERNS_CHECK" ]; then
+  if ! bash "$ANTI_PATTERNS_CHECK" >/dev/null 2>&1; then
+    echo "╔══════════════════════════════════════════════════════════════╗"
+    echo "║  WARN: Anti-Pattern Check 检测到 1+ errors (跟 v2.7.4 联合) ║"
+    echo "║                                                            ║"
+    echo "║  7 anti-patterns 硬性 校验:                                ║"
+    echo "║    1. 4+ level up imports                                  ║"
+    echo "║    2. legacy/ or deprecated/ dirs                          ║"
+    echo "║    3. TODO + exit 0 stubs                                  ║"
+    echo "║    4. Hardcoded /Users/ paths                              ║"
+    echo "║    5. console.log in src/ (Rule 7)                         ║"
+    echo "║    6. Files > 500 lines (Rule 8)                           ║"
+    echo "║    7. OUTDATED marker in non-archive                       ║"
+    echo "║                                                            ║"
+    echo "║  跟主公 2026-06-19 '不埋坑' 5 原则 联合                       ║"
+    echo "║                                                            ║"
+    echo "║  解法: bash scripts/check-anti-patterns.sh                  ║"
+    echo "║        查看完整提示, 修复 或 申请豁免                        ║"
+    echo "╚══════════════════════════════════════════════════════════════╝"
+    bash "$ANTI_PATTERNS_CHECK" || true
+    # WARN 模式: 不 阻塞 commit, 跟"翻篇&精进" 战略 一致, 跟 跟主公 拍板 explicit 联合
+  fi
+fi
+
 # Allowed: docs, config, CI, analysis artifacts, jira tickets/epics
 # v2.3.0: added ^jira/ to fix --no-verify workaround (P1-1 EPIC-058 deferred ticket)
 ALLOWED_PATTERNS=(
