@@ -2,15 +2,17 @@
 # KALLAX Install/Upgrade — make /kallax-* available in 8 AI tools:
 #   Claude Code / opencode / Codex / Gemini / Cursor / Windsurf / Aider / Continue.
 # v2.1.0: 8-tool support (added cursor, windsurf, aider, continue).
+# v2.2.0: 10-tool support (added trae, antigravity, codex, gemini).
+# v2.3.0: --symlink is the default install method (Single Source of Truth).
 # v2.1.0: full wizard with detection → select → path → diff → dry-run → confirm.
 #
-# Fresh install (auto-detect 8 tools):
+# Fresh install (auto-detect 10 tools):
 #   ./scripts/install.sh
 #   ./scripts/install.sh --target=auto
 # Explicit tool(s):
 #   ./scripts/install.sh --target=claude
 #   ./scripts/install.sh --target=opencode,codex
-# Force install all 8 (ignore detection):
+# Force install all 10 (ignore detection):
 #   ./scripts/install.sh --target=all
 # Interactive wizard (step-by-step):
 #   ./scripts/install.sh --wizard
@@ -25,10 +27,10 @@
 #   curl -fsSL <raw-url>/scripts/install.sh | bash
 set -euo pipefail
 
-VERSION="2.2.0-symlink-10tool"
+VERSION="2.3.0-symlink-default-10tool"
 INSTALL_MODE="install"  # install | upgrade
 TARGET_MODE="auto"      # auto | all | specific-list
-INSTALL_METHOD="copy"   # copy | symlink (v2.2.0)
+INSTALL_METHOD="symlink"   # symlink (DEFAULT v2.3.0) | copy (legacy)
 INTERACTIVE=false
 WIZARD=false
 DRY_RUN=false
@@ -84,7 +86,7 @@ TOOL_SKILLS_DIR=(
   "${HOME}/.codex/skills/kallax"
   "${HOME}/.gemini/skills/kallax"
   "${HOME}/.cursor/skills/kallax"
-  "${HOME}/.codeium/wendsurf/skills/kallax"
+  "${HOME}/.codeium/windsurf/skills/kallax"
   "${HOME}/.aider/skills/kallax"
   "${HOME}/.continue/skills/kallax"
 )
@@ -96,7 +98,7 @@ TOOL_COMMANDS_DIR=(
   "${HOME}/.codex/prompts"
   "${HOME}/.gemini/commands"
   "${HOME}/.cursor/commands"
-  "${HOME}/.codeium/wendsurf/commands"
+  "${HOME}/.codeium/windsurf/commands"
   ""                                       # aider: no slash commands
   ""                                       # continue: no slash commands
 )
@@ -108,7 +110,7 @@ TOOL_COMMANDS_SRC=(
   "$PROJECT_ROOT/.codex/prompts"
   "$PROJECT_ROOT/.gemini/commands"
   "$PROJECT_ROOT/.cursor/commands"
-  "$PROJECT_ROOT/.codeium/wendsurf/commands"
+  "$PROJECT_ROOT/.codeium/windsurf/commands"
   ""                                       # aider: no slash commands
   ""                                       # continue: no slash commands
 )
@@ -121,7 +123,7 @@ TOOL_SETTINGS_FILE=(
   "${HOME}/.codex/config.toml"
   "${HOME}/.gemini/config/settings.json"
   "${HOME}/.cursor/settings.json"
-  "${HOME}/.codeium/wendsurf/settings.json"
+  "${HOME}/.codeium/windsurf/settings.json"
   "${HOME}/.aider.conf.yml"
   "${HOME}/.continue/config.json"
 )
@@ -176,14 +178,16 @@ Target selection (EPIC-057-A, hybrid flag-controlled, 10 tools):
   --target=continue      Install for Continue only (config only)
   --target=a,b,c         Install for multiple tools (comma-separated)
 
-Install method (v2.2.0):
+Install method (v2.3.0 — --symlink is now DEFAULT):
   --symlink              Single source mode: install to canonical
                          ~/.local/share/kallax/ and symlink each tool's
                          path to it. Update once, all tools get the change.
-                         Recommended for 4+ tools (claude + trae + antigravity
-                         + opencode) — saves disk + ensures consistency.
-  --copy                 Copy mode (DEFAULT for v2.0.x compat) — each tool
-                         gets its own copy of the files.
+                         DEFAULT in v2.3.0+. Recommended for 4+ tools
+                         (claude + trae + antigravity + opencode) — saves
+                         disk + ensures consistency.
+  --copy                 Copy mode (LEGACY for v2.0.x compat) — each tool
+                         gets its own copy of the files. Use only if
+                         --symlink doesn't work in your environment.
 
 Wizard / Interactive:
   --wizard               Run full step-by-step wizard (5 steps):
@@ -215,12 +219,20 @@ Installs to:
 
 CLI: ~/.local/bin/kallax (shared across all tools)
 
-Single source mode (v2.2.0):
-  --symlink                Install to ~/.local/share/kallax/ (canonical) and
-                           symlink each tool's path to it. Update once,
-                           all tools get the change.
+Single source mode (v2.3.0 — DEFAULT):
+  Canonical:  ~/.local/share/kallax/   (skills + commands)
+  Per tool:   ~/.claude/skills/kallax  -> ~/.local/share/kallax/skills/kallax (symlink)
+              ~/.claude/commands       -> ~/.local/share/kallax/commands      (symlink)
+              ~/.trae/skills/kallax    -> ~/.local/share/kallax/skills/kallax (symlink)
+              ... (8 more tools, all symlinked to canonical)
+
+  Why symlink? Update once in ~/.local/share/kallax/, all 10 tools get it.
 
 Re-run anytime to upgrade to latest from project source.
+
+Migrating from --copy (v2.0.x/v2.1.x/v2.2.0) to --symlink (v2.3.0+):
+  ./scripts/install.sh --target=all   (auto-detects, no flags needed)
+  Old copies at ~/.claude/commands/ etc. are auto-replaced by symlinks.
 EOF
 }
 
@@ -310,13 +322,13 @@ wizard() {
   if [ ${#DETECTED_TOOLS[@]} -eq 0 ]; then
     warn "No tools detected. Will use --target=all path."
   else
-    ok "Detected ${#DETECTED_TOOLS[@]} of 8: ${DETECTED_TOOLS[*]}"
+    ok "Detected ${#DETECTED_TOOLS[@]} of 10: ${DETECTED_TOOLS[*]}"
   fi
 
   hdr "Step 2/5 — Select Target Tools"
   echo ""
   echo "  [1] Install for detected tools only (recommended)"
-  echo "  [2] Install for all 8 tools (force)"
+  echo "  [2] Install for all 10 tools (force)"
   echo "  [3] Custom selection (comma-separated: e.g. claude,cursor)"
   echo ""
   local mode_choice
@@ -449,7 +461,7 @@ resolve_targets() {
     err ""
     err "Detected nothing via \$HOME/.<tool>/ + which <tool>."
     err "Options:"
-    err "  --target=all         Force install all 8 tools (creates dirs)"
+    err "  --target=all         Force install all 10 tools (creates dirs)"
     err "  --target=claude      Force install Claude Code only"
     err "  --target=opencode    Force install opencode only"
     err "  --target=codex       Force install Codex only"

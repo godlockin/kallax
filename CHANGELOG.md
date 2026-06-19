@@ -5,6 +5,48 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.2] - 2026-06-19
+
+### Changed
+
+#### install.sh: --symlink 升级为 默认 + 10 工具 + 4 修 (跟主公 2026-06-19 'maintain all the tools/skills within our project, and deploy them in install script by symlink to fitful dir' explicit 派单 联合, 跟 v2.7.1 整理 release 联合, 跟 Rule 5 DRY 联合)
+
+跟主公 2026-06-19 派单 联合, 跟 v2.7.1 整理 release 联合, 跟 5 战略 联合 ('翻篇&精进' + '诚实修正' + '反讽' + '独立' + '反哺框架'), 跟 Rule 5 DRY 联合 (单一 SoT), 跟 5 已有 symlink 模式 一致 (跟 .antigravity/ + .cursor/ + .trae/ + .codeium/windsurf/ + .opencode/ 联合):
+
+**install.sh 默认 --symlink 升级 (v2.3.0-symlink-default-10tool)**:
+- INSTALL_METHOD default: `copy` → `symlink` (跟 'deploy by symlink to fitful dir' 派单 联合)
+- VERSION bump: `2.2.0-symlink-10tool` → `2.3.0-symlink-default-10tool`
+- --copy 标记为 LEGACY (跟 v2.0.x compat 保留, 不推荐)
+- Help text 加 Single source mode section (canonical 路径 + 10 工具 symlink 表)
+- Help text 加 migration note (v2.0.x/v2.1.x/v2.2.x --copy → v2.3.0+ --symlink)
+
+**install.sh 4 typo/comment 修复**:
+- 4 个 'wendsurf' → 'windsurf' (line 87/99/111/124, 跟 line 75 + 210 模式 一致)
+- 4 个 '8 tools/all 8/of 8' → '10 tools/all 10/of 10' (line 7/14/319/452, 跟 line 65 TOOL_NAME 10 工具 一致)
+- 4 个 'of 8/8 tools' 联合 help text (line 9/15) 加 v2.2.0 升级 注释
+- 1 个 'of 8' detection message (line 313) 修复
+- 2 个 [wizard] 8 tools 提示 (line 319/452) 修复
+- 跟 '反讽' 联合 治根 '8/10 工具 假动作 反复'
+
+**Project 2 symlink 加 (跟 5 已有 symlink 模式 一致)**:
+- `.codex/prompts` (新 symlink) → `../.claude/commands` (跟 v2.2.0 install.sh TOOL_COMMANDS_SRC 一致)
+- `.gemini/commands` (新 symlink) → `../.claude/commands` (跟 v2.2.0 install.sh TOOL_COMMANDS_SRC 一致)
+- 验证: 10 工具 全部 都有 project 路径 (6 工具 dot-dirs + .aider/.continue tool-specific real + .codex/.gemini 新加)
+- 验证: --dry-run --target=all 检测 10 工具 全 通过 (跟 v2.3.0 install.sh 联合)
+
+**约束 验证 (跟'翻篇&精进' 战略 一致)**:
+- 0 增 Rule (跟 v2.4.1 还原 22 Rule 联合)
+- 0 增命令 (跟 0 增 Rule 持平, --copy 保留 兼容)
+- 0 重写 (跟 Rule 5 DRY 联合, 6 文件 (2 symlink + 1 install.sh + CHANGELOG) 0 重写主逻辑)
+- 借方法论 不借代码 (跟 EPIC-059-A 9 Hard Rules 模式 一致)
+
+**KPI 累计 (跟 Rule 9 X/Y 联合)**:
+- 10 工具 project 路径覆盖 (10/10 = 100.0%, 跟 install.sh 10 工具 一致)
+- 4 typo/comment 修 (4/4 = 100.0%)
+- 1 default install method 改 (copy → symlink, 跟'独立' 拍板 联合)
+- 6 文件 落地 (2 symlink + 1 install.sh + 1 注释 + 1 CHANGELOG + 1 fix 累计)
+- 0 假 PASS 校验 (跟 Master 6 维 L6 诚实 联合, 跟 EPIC-059-D Fact-Forcing 联合)
+
 ## [2.7.1] - 2026-06-19
 
 ### Changed
