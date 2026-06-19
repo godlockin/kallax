@@ -44,7 +44,6 @@ KALLAX 文档 Single Source of Truth (SoT) — 修订前查 SoT 边界, 避免�
 | ACCUMULATED-LESSONS-2026-06-13 | confluence/decisions/ | 429 行 + 5 视角 + 4 共同根因 + 5 战略建议 | 跟"反讽" 联合 |
 | PROJECT-STATUS-AND-LESSONS-2026-06-12 | confluence/decisions/ | 跟之前模式 一致 | 跟"反讽" 联合 |
 | PROJECT-STATUS-AND-LESSONS-2026-06-13 | confluence/decisions/ | 跟之前模式 一致 | 跟"反讽" 联合 |
-| PROJECT-STATUS-AND-LESSONS-2026-06-13 | . | 跟之前模式 一致 | 跟"反讽" 联合 |
 | KALLAX-VS-INDUSTRY-REV2 | docs/ | 5+1 痛点 × 业内 4 框架 | 跟"反讽" 联合 |
 | KALLAX-GLOSSARY.md | docs/ | 34 术语 (跟"反讽" 联合, 跟"诚实修正" 联合) | ✅ |
 | 2026-06-14-kallax-onramp-design.md | docs/superpowers/specs/ | 391 行 KALLAX Onramp 完整 spec | 跟"反讽" 联合 |

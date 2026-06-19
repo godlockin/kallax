@@ -11,8 +11,8 @@
 > 长期生效的架构决策, 跨 EPIC 不变.
 
 - [ADR-001: Three-Tier Degradation (Redis → SQLite → Filesystem)](../docs/adr/ADR-001-degradation-strategy.md) — Accepted 2026-01
-- [ADR-002: Conductor-Performer over Master-Slaver](../docs/adr/ADR-001-degradation-strategy.md) — Accepted 2026-01
-- [ADR-003: Saga Compensation over Simple Rollback](../docs/adr/ADR-001-degradation-strategy.md) — Accepted 2026-01
+- **ADR-002: Conductor-Performer over Master-Slaver** (跟 v2.0.0 一致, file:line docs/architecture/THREE_REPO_ARCHITECTURE.md) — Accepted 2026-01 (跟 ADR-001 同源, 共享 文档)
+- **ADR-003: Saga Compensation over Simple Rollback** (跟 v2.0.0 一致, file:line node/src/core/saga-executor.ts) — Accepted 2026-01 (跟 ADR-001 同源, 共享 文档)
 
 ---
 

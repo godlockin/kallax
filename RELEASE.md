@@ -86,7 +86,7 @@ kallax init
 
 ## 从 EKET 迁移
 
-KALLAX 是 EKET (Elite Knowledge & Engineering Team) 的下一代。如果你在用 EKET，参考 `docs/guides/migration-eket-to-kallax.md`。
+KALLAX 是 EKET (Elite Knowledge & Engineering Team) 的下一代。如果你在用 EKET，参考 `docs/guides/migration-single-to-multi-agent.md`。
 
 核心改进：
 - **类型安全**: 零 `any`，零 `@ts-ignore` (vs EKET 46 处)
