@@ -201,6 +201,43 @@ scripts/post-process.sh --check-all --mock-scenario all-pass
 
 ---
 
+## 派遣 Checklist 11 项 (跟 eket MASTER-RULES.md §11 7 项 升级, EPIC-059-F)
+
+> **跟 eket `template/docs/MASTER-RULES.md` §11 "Agent 派遣 Checklist" 7 项 升级 (借方法论 不借代码), 跟 BE-14 1 ticket 1 subagent 串行 联合, 跟 `docs/PROCESS.md:25-26` 心跳 5 问 联合, 跟 EPIC-059-D Fact-Forcing 联合**
+> **11 项 = eket 7 项 + KALLAX 4 项升级 (worktree 隔离 + 1 ticket 1 subagent 串行 + 心跳 5 问 + PASS 报告含 raw test output)**
+> **详细**: `confluence/decisions/dispatch-checklist.md` (11 项 详细解释 + 11 反例 + 11 正例)
+> **联动 ticket**: EPIC-059-F (跟主公 2026-06-18 '需要都建卡并行处理' explicit 派单 联合, 跟 v2.6.0 经验教训 整理 release 联合)
+
+**11 项** (跟 eket §11 7 项 升级映射):
+
+| # | 项 | eket §11 联合 | KALLAX 升级 |
+|---|----|--------------|------------|
+| 1 | **防卡死规则** | eket §11-1 | KALLAX 0 增规则 (跟 Rule 5 DRY 联合) |
+| 2 | **SSH Push (禁 HTTPS)** | eket §11-2 | KALLAX 0 增规则 (跟 4 工具 symlink 模式 联合) |
+| 3 | **Timeout 120000ms** | eket §11-3 | KALLAX 0 增规则 (跟 Rule 9 联合) |
+| 4 | **文件读取限制 (最多连续 5 个)** | eket §11-4 | KALLAX 0 增规则 (跟 CLAUDE.md "碎文件合并" 联合) |
+| 5 | **进度上报格式 `[N/M] done: xxx`** | eket §11-5 | KALLAX 0 增规则 (跟 Q3 进度 review 联合) |
+| 6 | **run_in_background** | eket §11-6 | KALLAX 0 增规则 (跟后台任务治理 联合) |
+| 7 | **错误处理 (429/auth/conflict 停止)** | eket §11-7 | KALLAX 0 增规则 (跟 Rule 18 反模式黑名单 联合) |
+| 8 | **worktree 隔离** | — | **KALLAX 新增** (跟 EPIC-054-A worktree 4→1 联合) |
+| 9 | **1 ticket 1 subagent 串行** | — | **KALLAX 新增** (跟 BE-14 联合, file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:74` + `:439`) |
+| 10 | **心跳 5 问** | — | **KALLAX 新增** (跟 `docs/PROCESS.md:25-26` 联合, 跟 Q1-Q5 联合) |
+| 11 | **PASS 报告含 raw test output** | — | **KALLAX 新增** (跟 EPIC-059-D Fact-Forcing 联合, 治 H1 KPI falsification 反复) |
+
+**联动**:
+- 跟 eket `template/docs/MASTER-RULES.md` §11 7 项 → 11 项 升级 联合 (借方法论 不借代码, 7+4=11)
+- 跟 `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:74` BE-14 联合 (4 subagent 并行 silent output 复发 → 1 ticket 1 subagent 串行)
+- 跟 `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:439` BE-14 closed (v2.0.6) 联合
+- 跟 `docs/PROCESS.md:25-26` 心跳 5 问 Q1-Q5 联合 (Master 节点, 跟 Rule 11 联合)
+- 跟 EPIC-059-D Fact-Forcing 原则 联合 (file:line `confluence/decisions/fact-forcing-examples.md`, 治根 "0 假 PASS")
+- 跟 EPIC-057 串行派单 模式 联合 (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:579`, 100% PASS deliver)
+- 跟"翻篇&精进" 战略 一致 (0 增 Rule 0 增命令 持平)
+- 跟 v2.4.1 Rule 合并反思 联合 (治根 "0 实际变化 假动作" 反讽)
+- 跟"借方法论 不借代码" 联合 (eket 7 项 → KALLAX 11 项, 升级不复制)
+- Rule 9 KPI 精确 X/Y 格式 — SKILL.md 段 1/1 + AGENTS.md 段 1/1 + dispatch-checklist.md 1/1 = 3/3 100% 落地, 0 增 Rule
+
+---
+
 **详细文档**: [SKILL-DETAIL.md](./SKILL-DETAIL.md)
 **使用指南**: [META-GUIDELINES.md](./META-GUIDELINES.md)
 

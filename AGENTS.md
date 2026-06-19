@@ -123,6 +123,41 @@ progress_update, status_change → pubsub (broadcast)
 
 ---
 
+## 派遣 Checklist 11 项 (跟 eket MASTER-RULES.md §11 7 项 升级, EPIC-059-F)
+
+> **跟 CLAUDE.md 互为 互补 (跟 v2.2.0 single source symlink 模式 一致), 跟 eket `template/docs/MASTER-RULES.md` §11 7 项 升级 (借方法论 不借代码), 跟 BE-14 1 ticket 1 subagent 串行 联合, 跟 `docs/PROCESS.md:25-26` 心跳 5 问 联合, 跟 EPIC-059-D Fact-Forcing 联合**
+> **11 项 = eket 7 项 + KALLAX 4 项升级 (worktree 隔离 + 1 ticket 1 subagent 串行 + 心跳 5 问 + PASS 报告含 raw test output)**
+> **详细**: `confluence/decisions/dispatch-checklist.md` (11 项 详细解释 + 11 反例 + 11 正例)
+> **联动 ticket**: EPIC-059-F (跟主公 2026-06-18 '需要都建卡并行处理' explicit 派单 联合)
+
+**11 项** (跟 eket §11 7 项 升级映射, 跟 `.claude/skills/kallax/SKILL.md` 派遣 Checklist 11 项 段 互为 互补):
+
+| # | 项 | 来源 | 联动 |
+|---|----|------|------|
+| 1 | **防卡死规则** | eket §11-1 | Rule 5 DRY (0 增 Rule) |
+| 2 | **SSH Push (禁 HTTPS)** | eket §11-2 | 4 工具 symlink 模式 |
+| 3 | **Timeout 120000ms** | eket §11-3 | Rule 9 PR ~100 上限 |
+| 4 | **文件读取限制 (最多连续 5 个)** | eket §11-4 | CLAUDE.md "碎文件合并" |
+| 5 | **进度上报格式 `[N/M] done: xxx`** | eket §11-5 | Q3 进度 review |
+| 6 | **run_in_background** | eket §11-6 | 后台任务治理 |
+| 7 | **错误处理 (429/auth/conflict 停止)** | eket §11-7 | Rule 18 反模式黑名单 |
+| 8 | **worktree 隔离** | **KALLAX 新增** | EPIC-054-A worktree 4→1 统一 |
+| 9 | **1 ticket 1 subagent 串行** | **KALLAX 新增** | BE-14 治根 (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:74` + `:439`) |
+| 10 | **心跳 5 问** | **KALLAX 新增** | `docs/PROCESS.md:25-26` Q1-Q5 (跟 Rule 11 v2.1 联合) |
+| 11 | **PASS 报告含 raw test output** | **KALLAX 新增** | EPIC-059-D Fact-Forcing 联合 (治 H1 KPI falsification 反复, file:line `confluence/decisions/fact-forcing-examples.md`) |
+
+**联动**:
+- 跟 eket `template/docs/MASTER-RULES.md` §11 7 项 → 11 项 升级 联合 (借方法论 不借代码, 7+4=11)
+- 跟 CLAUDE.md 互为 互补 (跟 v2.2.0 single source symlink 模式 一致): 派遣 Checklist 11 项 在 AGENTS.md + `.claude/skills/kallax/SKILL.md` 双向落地, 0 重写
+- 跟 BE-14 联合: 4 subagent 并行 silent output 复发 → 1 ticket 1 subagent 串行 (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:74`)
+- 跟 EPIC-057 4 ticket 串行派单 模式 联合 (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:579`, 18/18 PASS, 100% deliver)
+- 跟 `docs/PROCESS.md:25-26` 心跳 5 问 Q1-Q5 联合: Q1 优先级 / Q2 Slaver 状态 / Q3 进度 / Q4 阻塞 / Q5 消息队列
+- 跟 EPIC-059-D Fact-Forcing 联合: PASS 报告含 raw test output 治根 "0 假 PASS" 反复
+- 跟"翻篇&精进" 战略 一致: 0 增 Rule 0 增命令 持平, 跟 v2.4.1 Rule 合并反思 联合
+- Rule 9 KPI 精确 X/Y 格式 — AGENTS.md 段 1/1 + SKILL.md 段 1/1 + dispatch-checklist.md 1/1 = 3/3 100% 落地, 0 增 Rule
+
+---
+
 ## Verification Protocol
 
 ### 4-Level Fact-Forcing
