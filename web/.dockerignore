@@ -1,0 +1,40 @@
+# KALLAX web/ .dockerignore — keep web image small (web/* only, no Rust/Node API)
+# EPIC-058-C — web dashboard deployment-ready
+
+# Git + IDE + OS
+.git/
+.gitignore
+.idea/
+.vscode/
+.DS_Store
+
+# Build artifacts (web/ has none currently, but future-proof)
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+
+# Documentation (don't ship docs into runtime image)
+docs/
+confluence/
+jira/
+**/_archive/
+
+# Tests + test fixtures
+tests/
+**/*.test.*
+**/*.spec.*
+
+# Logs
+*.log
+logs/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# KALLAX runtime state (maintained by API server, not web)
+.kallax/
+**/*.db
+**/*.db-journal
