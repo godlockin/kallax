@@ -478,11 +478,11 @@ resolve_targets() {
 
 # ── Per-tool install (DRY) ──────────────────────────────────────────────
 
-# Locate skill source: prefer .claude/skills/kallax, then template fallback
+# Locate skill source: prefer .claude/skills/kallax (v2.7.4 cleanup, 跟 template/ symlink 联合)
+# Note: template/.claude/skills/kallax/ is now a symlink to .claude/skills/kallax/ (跟 v2.7.4 整理 release 联合),
+# so we don't need a fallback chain. Just use .claude/ as canonical.
 find_skills_source() {
   local src="$PROJECT_ROOT/.claude/skills/kallax"
-  [ -d "$src" ] && { echo "$src"; return 0; }
-  src="$PROJECT_ROOT/template/.claude/skills/kallax"
   [ -d "$src" ] && { echo "$src"; return 0; }
   return 1
 }
@@ -630,9 +630,8 @@ install_commands_for_tool() {
     return 0
   fi
 
-  # Fallback chain: tool-native → .claude → template/.claude
+  # Fallback chain: tool-native → .claude (v2.7.4 cleanup, template/ now symlinks to .claude/)
   if [ ! -d "$src" ]; then src="$PROJECT_ROOT/.claude/commands"; fi
-  if [ ! -d "$src" ]; then src="$PROJECT_ROOT/template/.claude/commands"; fi
   if [ ! -d "$src" ]; then
     warn "[$tool] no commands source found, skipping"
     return 0
