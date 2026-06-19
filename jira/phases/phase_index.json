@@ -4,7 +4,92 @@
       "id": "PHASE-001",
       "status": "active",
       "start_time": "2026-06-06",
-      "delivery_time": "2026-06-08"
+      "delivery_time": "2026-06-08",
+      "title": "PHASE-001 历史 EPIC (跟 v2.0.4 无关, EPIC-015 联合)"
+    },
+    {
+      "id": "PHASE-005",
+      "status": "done",
+      "start_time": "2026-06-11",
+      "delivery_time": "2026-06-11",
+      "title": "PHASE-005 早期 review (跟 v1.3.0 联合, file:line confluence/decisions/PHASE-005-REVIEW-2026-06-11.md)"
+    },
+    {
+      "id": "PHASE-006",
+      "status": "done",
+      "start_time": "2026-06-11",
+      "delivery_time": "2026-06-13",
+      "title": "PHASE-006 6 痛点 + 18 Rule launch (file:line confluence/decisions/PHASE-006-LAUNCH-2026-06-11.md + PHASE-006-ROADMAP-2026-06-13-REV2.md)"
+    },
+    {
+      "id": "PHASE-007",
+      "status": "done",
+      "start_time": "2026-06-12",
+      "delivery_time": "2026-06-13",
+      "title": "PHASE-007 launch (file:line confluence/decisions/PHASE-007-LAUNCH-2026-06-12.md + PHASE-007-REVIEW-2026-06-13.md)"
+    },
+    {
+      "id": "PHASE-008",
+      "status": "done",
+      "start_time": "2026-06-13",
+      "delivery_time": "2026-06-13",
+      "title": "PHASE-008 review (file:line confluence/decisions/PHASE-008-REVIEW-2026-06-13.md)"
+    },
+    {
+      "id": "PHASE-009",
+      "status": "done",
+      "start_time": "2026-06-16",
+      "delivery_time": "2026-06-17",
+      "title": "PHASE-009 14 卡闭环 (v2.0.4) + 5 清理 (v2.0.5) (file:line confluence/decisions/PHASE-009-REVIEW-2026-06-17.md + EPIC-053/054/055/056)"
+    },
+    {
+      "id": "PHASE-010",
+      "status": "done",
+      "start_time": "2026-06-17",
+      "delivery_time": "2026-06-17",
+      "title": "PHASE-010 v2.0.6 EPIC-057 4 ticket 闭环 (4 工具 multi-tool, 18/18 PASS) (file:line confluence/decisions/PHASE-010-REVIEW-2026-06-17.md)"
+    },
+    {
+      "id": "PHASE-011",
+      "status": "done",
+      "start_time": "2026-06-17",
+      "delivery_time": "2026-06-17",
+      "title": "PHASE-011 跨期 review 入口 (5 deferred, 跟主公'AC' explicit 启动 + 'BD' explicit 跳过 联合) (file:line confluence/decisions/PHASE-011-REVIEW-2026-06-17.md)"
+    },
+    {
+      "id": "PHASE-012",
+      "status": "done",
+      "start_time": "2026-06-17",
+      "delivery_time": "2026-06-17",
+      "title": "PHASE-012 v2.2.0 → v2.3.0 跨期 review 5 步大闭环 (file:line confluence/decisions/PHASE-012-REVIEW-2026-06-17.md)"
+    },
+    {
+      "id": "PHASE-013",
+      "status": "done",
+      "start_time": "2026-06-18",
+      "delivery_time": "2026-06-18",
+      "title": "PHASE-013 v2.4.0 4 Rule 合并 反思 (跟'诚实修正' + '反讽' 联合, 跟主公 2026-06-18 'a' 反思 explicit 派单 联合) (file:line confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md)"
+    },
+    {
+      "id": "PHASE-014",
+      "status": "done",
+      "start_time": "2026-06-18",
+      "delivery_time": "2026-06-18",
+      "title": "PHASE-014 5 deferred → 3 closed + 2 留待 (跟'诚实修正' + '独立' 联合, 跟主公 2026-06-18 'A+B' explicit 派单 联合) (file:line confluence/decisions/PHASE-014-REVIEW-2026-06-18.md)"
+    },
+    {
+      "id": "PHASE-015",
+      "status": "done",
+      "start_time": "2026-06-18",
+      "delivery_time": "2026-06-18",
+      "title": "PHASE-015 EKET 借鉴 Phase 1 闭环 (EPIC-059 8 票, 跟主公 2026-06-18 '需要都建卡并行处理' + '直接启动开工' explicit 派单 联合, 1 ticket 1 subagent 串行 8 轮, BE-14 联合) (file:line confluence/decisions/PHASE-015-EKET-BORROW-REVIEW-2026-06-18.md)"
+    },
+    {
+      "id": "PHASE-016",
+      "status": "active",
+      "start_time": "2026-06-18",
+      "delivery_time": "2026-06-19",
+      "title": "PHASE-016 EPIC-060 3 票 P3 留待 入口 (跟主公 2026-06-18 '同意建议' explicit 派单 联合, 跟'独立' 拍板 explicit 联合, 跟 PROCESS.md:25-26 联合)"
     }
   ]
 }
