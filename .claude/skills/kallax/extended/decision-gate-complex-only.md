@@ -2,7 +2,7 @@
 name: decision-gate-complex-only
 description: KALLAX 扩展组专家 — 治 3 假 PASS 根因 5 (ai-copilot 名不副实). 跟 Rule 33 联合, 跟"决策疲劳" 联合.
 triggerKeywords: [decision-gate, complex-only, 复杂才问, ai-copilot, 治根因 5, EPIC-052, 决策疲劳, decision-gate 复杂阶段]
-filePath: /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/skills/kallax/extended/decision-gate-complex-only.md
+filePath: /path/to/kallax/.claude/skills/kallax/extended/decision-gate-complex-only.md
 ---
 
 # KALLAX Extended Expert — Decision Gate: 治根因 5 (ai-copilot 名不副实)

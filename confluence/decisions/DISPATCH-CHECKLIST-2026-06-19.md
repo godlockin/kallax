@@ -329,7 +329,7 @@
 
 ### ❌ 反例 8: 主 checkout 修改 → 污染 (跟 §1.8 worktree 隔离 联合)
 
-**模式**: Performer 在主 checkout `/Users/chenchen/working/sourcecode/tools/dev-tools/kallax/` 直接 edit, 0 worktree 隔离, 多 Performer 冲突.
+**模式**: Performer 在主 checkout `./` 直接 edit, 0 worktree 隔离, 多 Performer 冲突.
 
 **file:line 引用**:
 - `AGENTS.md:199-231` (Isolation Requirements: Worktree Enforcement + File Scope Declaration)

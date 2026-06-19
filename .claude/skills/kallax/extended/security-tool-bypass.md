@@ -2,7 +2,7 @@
 name: security-tool-bypass
 description: KALLAX 扩展组专家 — 治 3 假 PASS 根因 1 (工具可绕过 = 架构缺陷). 跟 Rule 29 联合, 跟 BE-7 修复模式 联合.
 triggerKeywords: [security, tool-bypass, 工具可绕过, 架构缺陷, 治根因 1, EPIC-048, 独立审计, file-lock 漏洞]
-filePath: /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/skills/kallax/extended/security-tool-bypass.md
+filePath: /path/to/kallax/.claude/skills/kallax/extended/security-tool-bypass.md
 ---
 
 # KALLAX Extended Expert — Security: 治根因 1 (工具可绕过 = 架构缺陷)

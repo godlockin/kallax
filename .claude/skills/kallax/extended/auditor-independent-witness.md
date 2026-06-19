@@ -2,7 +2,7 @@
 name: auditor-independent-witness
 description: KALLAX 扩展组专家 — 治 3 假 PASS 根因 3 (独立见证机制缺失). 跟 Rule 31 联合, 跟"瞒报 = P0" 联合.
 triggerKeywords: [auditor, independent-witness, 独立见证机制, audit-log-sink, 不可篡改, 治根因 3, EPIC-050, 瞒报 P0]
-filePath: /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/skills/kallax/extended/auditor-independent-witness.md
+filePath: /path/to/kallax/.claude/skills/kallax/extended/auditor-independent-witness.md
 ---
 
 # KALLAX Extended Expert — Auditor: 治根因 3 (独立见证机制缺失)

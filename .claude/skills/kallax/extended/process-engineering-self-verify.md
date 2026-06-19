@@ -2,7 +2,7 @@
 name: process-engineering-self-verify
 description: KALLAX 扩展组专家 — 治 3 假 PASS 根因 2 (自验证主体 = 造假主体). 跟 Rule 30 联合, 跟"激励扭曲" 联合.
 triggerKeywords: [process-engineering, self-verify, 自验证失效, 激励扭曲, 治根因 2, EPIC-049, 独立见证机制, independent-witness]
-filePath: /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/skills/kallax/extended/process-engineering-self-verify.md
+filePath: /path/to/kallax/.claude/skills/kallax/extended/process-engineering-self-verify.md
 ---
 
 # KALLAX Extended Expert — Process Engineering: 治根因 2 (自验证主体 = 造假主体)

@@ -256,16 +256,16 @@ cd kallax
 
 ```bash
 $ readlink ~/.claude/skills/kallax
-/Users/chenchen/.local/share/kallax/skills/kallax
+~/.local/share/kallax/skills/kallax
 
 $ readlink ~/.trae/commands
-/Users/chenchen/.local/share/kallax/commands
+~/.local/share/kallax/commands
 
 $ readlink ~/.antigravity/skills/kallax
-/Users/chenchen/.local/share/kallax/skills/kallax
+~/.local/share/kallax/skills/kallax
 
 $ readlink ~/.opencode/command
-/Users/chenchen/.local/share/kallax/commands
+~/.local/share/kallax/commands
 ```
 
 ### 3.1 路径存在性校验

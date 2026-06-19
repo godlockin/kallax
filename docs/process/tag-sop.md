@@ -27,7 +27,7 @@ A3 类问题: 笔误/重复 出现 2+ 次 (典型: PHASE-REVIEW.md:11, 33). 证�
 
 | 指标 | 值 | 来源 (file:line) |
 |---|---|---|
-| 反讽 引用总数 (.md) | **320** | `jira/tickets/EPIC-055-C/IMPLEMENTATION-PLAN.md:79` (实测 `rg "反讽" --type md /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.kallax/worktrees/performer-EPIC-055-C/ -c \| awk sum`) |
+| 反讽 引用总数 (.md) | **320** | `jira/tickets/EPIC-055-C/IMPLEMENTATION-PLAN.md:79` (实测 `rg "反讽" --type md .kallax/.kallax/worktrees/performer-EPIC-055-C/ -c \| awk sum`) |
 | 诚实修正 引用总数 | **158** | `jira/tickets/EPIC-055-C/IMPLEMENTATION-PLAN.md:80` |
 | 独立 引用总数 | **316** | `jira/tickets/EPIC-055-C/IMPLEMENTATION-PLAN.md:81` |
 | 翻篇 引用总数 | **41** | `jira/tickets/EPIC-055-C/IMPLEMENTATION-PLAN.md:82` |

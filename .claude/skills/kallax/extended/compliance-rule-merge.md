@@ -2,7 +2,7 @@
 name: compliance-rule-merge
 description: KALLAX 扩展组专家 — 治 3 假 PASS 根因 4 (14 Rule 升级率 100%). 跟 Rule 32 联合, 跟"循环论证" 联合.
 triggerKeywords: [compliance, rule-merge, 软约束升级阈值, 治根因 4, EPIC-051, 18 Rule 升级率 100%, 撤销冗余 Rule, 5 release 软约束]
-filePath: /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/skills/kallax/extended/compliance-rule-merge.md
+filePath: /path/to/kallax/.claude/skills/kallax/extended/compliance-rule-merge.md
 ---
 
 # KALLAX Extended Expert — Compliance: 治根因 4 (14 Rule 升级率 100%)
