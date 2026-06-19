@@ -12,7 +12,7 @@ path = "src/main.rs"
 
 [[bin]]
 name = "kallax-expert-match"
-path = "src/bin/kallax-expert-match.rs"
+path = "src/bin/kallax-expert-match/main.rs"
 
 [dependencies]
 kallax-core.workspace = true
