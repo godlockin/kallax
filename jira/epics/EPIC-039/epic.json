@@ -5,7 +5,7 @@
   "scope": "1. Master Rule 11 v2.1 强验证发现: 4 ticket 状态没跟 subagent 报告同步 + Conductor 报 5 waves 但实际 0 review + 走 R-NEW PR (#13) 跳过 Conductor merge\n2. Sprint 4 拆 4 票: (A) 升 Token Plan 档 + (B) ticket 状态自动同步 + (C) 真实 review 流程 + (D) 真实 merge 流程\n3. 跟 4 BE 边界事件 (BE-1 C/D bypass + BE-2 035-A stale + BE-3 034-B blocked + BE-4 ticket 状态没更新) 闭环\n4. 跟 Phase 6 决策 B 升 Token Plan 档 (主公 2026-06-12 拍升)\n5. 跟'Checkpoint 时间旅行' 6 EPIC 后拍同步 (PHASE-007 review 拍 Performer 持久化 L3 架构)",
   "start_time": "2026-06-12",
   "delivery_time": "2026-06-15",
-  "status": "active",
+  "status": "done",
   "baseline": {
     "source": "Master 强验证 2026-06-12 16:29 修复 4 ticket 状态 (commit 4e6c4ff)",
     "current_state": "4 ticket 状态刚修, 流程仍是手动 + Conductor 报 5 waves 但实际 0 review + R-NEW PR 跳 Conductor merge",

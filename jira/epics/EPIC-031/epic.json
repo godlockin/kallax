@@ -5,7 +5,7 @@
   "scope": "1. EPIC-031-A: Conductor 派发集成 — trust-score → ALGO_SUGGEST 默认 Accept, 60% AI 决策 (1.5d)\n2. EPIC-031-B: 一键 Approve CLI — kallax task:dispatch --algo-accept, 单键完成 40% 人工 (1d)\n3. EPIC-031-C: 派发决策审计 — veto / accept / override 记录到 scoring-YYYY-MM-DD.jsonl (0.5d)\n4. Hotfix: EPIC-030 push security review 3 issue (hook-profile FAIL-OPEN / waiting-for-expert path traversal / best-matching fixture fallback)\n5. Anti-fab: Rule 9d check-commit-amend-verify.sh (4 维度强验证, 防 Performer KPI falsification)",
   "start_time": "2026-06-11",
   "delivery_time": "2026-06-11",
-  "status": "completed",
+  "status": "done",
   "lessons_learned": "jira/epics/EPIC-031/LESSONS-LEARNED.md (17 子教训 + 3 amend 失败 + 6 跨 EPIC LESSONS)",
   "target": {
     "tickets_total": 3,

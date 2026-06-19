@@ -5,7 +5,7 @@
   "scope": "1. 主公 2026-06-12 拍'还有个痛点是相互影响, 同时修改/编辑文件/文件夹引起工作文件的(不正常/始料未及地)丢失/修改'\n2. 跟 5 痛点 (假装完成/上下文失忆/角色越界/资源覆盖/安全立体) 不同, 是第 6 痛点 = 并发文件竞争\n3. Master 强验证 6 维度调查 + 跟 EPIC-040 调查模式一致 (Master 协调不写代码, 跟 Rule 11 联动)\n4. 4 票拆卡: 痛点 6 调查 (挖根因) + 文件级锁 + 原子写 + 冲突检测 (跟 EPIC-036 跨 worktree 联动)\n5. 跟 EKET P2 #25 workspace isolation v2 + EPIC-022 治理 + EPIC-039 Sprint 4 修复对齐",
   "start_time": "2026-06-12",
   "delivery_time": "2026-06-15",
-  "status": "active",
+  "status": "done",
   "baseline": {
     "source": "Master 强验证 2026-06-12 16:37 (EPIC-040 调查落地后, 主公新痛点)",
     "current_state": "本 session 91 ticket + 20+ worktree 累积 + 5 subagent 跑 + Performer-EPIC-036 报'文件被删除' (实际 0 commit) + pre-commit 干扰 miao 写",
