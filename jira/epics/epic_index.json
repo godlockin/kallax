@@ -70,6 +70,17 @@
       "tickets_ready": 0,
       "tickets_done": 8,
       "epic_file": "jira/epics/EPIC-059/epic.json"
+    },
+    {
+      "id": "EPIC-060",
+      "phase": "PHASE-016",
+      "title": "架构 升级 P3 留待 (3 项: 分布式 / Rust 投入 / 4→5 层, 跟主公 2026-06-18 '同意建议' explicit 派单 联合, 跟 PROCESS.md:25-26 独立 拍板 联合)",
+      "status": "active",
+      "start_time": "2026-06-18",
+      "delivery_time": "2026-06-19",
+      "tickets_closed": 0,
+      "tickets_deferred": 3,
+      "epic_file": "jira/epics/EPIC-060/epic.json"
     }
   ]
 }

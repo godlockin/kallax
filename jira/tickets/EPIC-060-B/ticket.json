@@ -1,0 +1,41 @@
+{
+  "id": "EPIC-060-B",
+  "epicId": "EPIC-060",
+  "phaseId": "PHASE-016",
+  "title": "P3-B Rust 投入 拍板 (KALLAX 5 crates 现状, 0 投入 验证 / 主用, 跟'翻篇&精进' 一致)",
+  "type": "feature",
+  "priority": "P3",
+  "status": "deferred",
+  "created_by": "master_main (主公 2026-06-18 '同意建议' explicit 派单, 跟 v2.7.0 经验教训 整理 release 联合, 跟 PHASE-014 review 5 deferred 模式 一致)",
+  "created_at": "2026-06-18T00:00:00Z",
+  "blocked_by": "主公后续 explicit 拍板优先级 (跟'翻篇&精进' 战略 联合, 跟 KALLAX 5 crates 现状 联合, 跟 KALLAX 0 Rust 投入 验证 联合)",
+  "worktree_role": "infra",
+  "handoff_depth": "L3",
+  "file_scope": {
+    "includes": [
+      "jira/tickets/EPIC-060-B/",
+      "rust/Cargo.toml",
+      "rust/crates/kallax-core/",
+      "rust/crates/kallax-engine/",
+      "rust/crates/kallax-cli/",
+      "rust/crates/kallax-server/",
+      "rust/crates/context-mon/"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "现状 调研: KALLAX 5 crates 现状 (file:line rust/Cargo.toml:1-7): kallax-core / kallax-engine / kallax-cli / kallax-server / context-mon, 5 crates workspace, tokio/serde/thiserror/anyhow/tracing 依赖, 0 投入 验证 / 主用 现状",
+    "方案 1: Rust vs Node.js 性能 19× 验证 — 跟 eket README.md 联合 (跟 eket 性能 对比 联合, task:claim ~21ms vs ~400ms), 跟 KALLAX 5 crates 联合, 跟'反讽' 联合 治根 'Rust 已 落地 但 不用 假动作'",
+    "方案 2: 5 crates 落地 路径 — 5 crates 选 1 主用 (kallax-core 最基础 / kallax-engine 引擎 / kallax-cli CLI / kallax-server HTTP / context-mon 监控), 跟 Node.js 命令 互为 互补, 跟 EPIC-059 1 ticket 1 subagent 串行 联合",
+    "方案 3: 0 投入 治根 — 跟'翻篇&精进' 战略 一致, 跟 KALLAX 现状 0 Rust 验证 联合, 跟'反讽' 联合 治根 '5 crates 写 但 0 用 假动作' (跟 KALLAX-GLOSSARY §1.1 反讽 联合)",
+    "方案 4: Rust 主用 拍板 — 5 crates 选 1 主用 (跟方案 2 联合), 跟 eket 19× 性能 联合, 跟'翻篇&精进' 一致 (0 增命令 0 增 Rule 持平, 跟 16 release 累计 联合)",
+    "方案 5: Rust 退役 拍板 — 5 crates 退役 (跟 rust/Cargo.toml 移除 联合, 跟 eket 3 级 暂不实施 联合, 跟 v2.7.0 经验教训 整理 release §14.8.1 战略建议 联合)",
+    "跟 v2.7.0 经验教训 整理 release §14.8.1 战略建议 联合 (file:line confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:14.8.1)",
+    "跟 PHASE-014 review 5 deferred 模式 一致 (file:line confluence/decisions/PHASE-014-REVIEW-2026-06-18.md)",
+    "跟'翻篇&精进' 战略 一致 (跟 KALLAX 现状 0 Rust 投入 验证 联合, 跟'反讽' 联合 治根 '5 crates 已 写 但 不用' 假动作)",
+    "跟'独立' 拍 explicit 联合 (主公后续 拍板 留待, 跟 PROCESS.md:25-26 联合)",
+    "Rule 9 KPI 精确 X/Y 格式 — 5 方案 调研 1/1 + 1 方案 选 + spike 验证 1/1 = 100% 落地 (主公拍板后 启动)"
+  ],
+  "estimated_hours": 4,
+  "status_set_by": "master_main (主公 explicit 派单 '同意建议, 需要都建卡并行处理', 跟 v2.7.0 经验教训 整理 release 联合, 跟'翻篇&精进' 战略 联合 留待主公后续 拍板)"
+}
