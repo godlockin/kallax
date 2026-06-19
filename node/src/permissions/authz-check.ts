@@ -15,6 +15,7 @@ import { err, ok } from 'neverthrow';
 import type { KallaxResult } from '../types/index.js';
 import { KallaxError, KallaxErrorCode } from '../types/index.js';
 import { verifyScope } from './conductor-scope.js';
+import { logger } from '../utils/logger.js';
 
 export interface AuthzCheckOptions {
   action: string;
@@ -145,7 +146,13 @@ export function logAuthzResult(result: AuthzCheckResult): void {
     result: result.allowed ? 'ALLOWED' : 'DENIED',
   };
 
-  // In production, this would write to SQLite
-  // For now, console output for debugging
-  console.log(`[AUDIT] ${entry.result} role=${entry.role} action=${entry.action} actor=${entry.actor}`);
+  // Structured audit logging (跟 Rule 7 联合, 跟 v2.7.4 D3 联合, 跟 Master 6 维 L8 观测性 联合)
+  logger.info({
+    audit: true,
+    timestamp: entry.timestamp,
+    role: entry.role,
+    action: entry.action,
+    actor: entry.actor,
+    result: entry.result,
+  }, `[AUDIT] ${entry.result} role=${entry.role} action=${entry.action} actor=${entry.actor}`);
 }
