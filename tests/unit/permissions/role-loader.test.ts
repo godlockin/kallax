@@ -8,8 +8,8 @@
  * - 循环继承检测
  */
 
-import { RoleLoader } from '../../../../node/src/permissions-legacy/role-loader';
-import { DEFAULT_ROLES } from '../../../../node/src/permissions-legacy/permissions-schema';
+import { RoleLoader } from '../../src/permissions/role-loader';
+import { DEFAULT_ROLES } from '../../src/permissions/permissions-schema';
 
 describe('RoleLoader', () => {
   let loader: RoleLoader;
