@@ -238,6 +238,70 @@ scripts/post-process.sh --check-all --mock-scenario all-pass
 
 ---
 
+## 记忆分层 L0-L4 触发 (EPIC-059-H 2026-06-18)
+
+> **跟 26 命令 SKILL 模式 一致** — 5 触发条件对应 5 升级路径, 跟 `scripts/memory-promote.sh` + `confluence/memory/LAYERS.md` 联合
+> **跟 eket `confluence/memory/` 多级记忆 模式 联合**, 跟 `~/.claude/knowledge/core/patterns/knowledge-system.md` L0-L4 架构 联合
+> **0 增 Rule, 0 重写** (跟 EPIC-059-A 9-hard-rules.md 联合, 跟 Rule 5 DRY 联合)
+
+KALLAX 知识库按 5 层分层, 26 命令可触发不同层的升级:
+
+### 5 触发条件 (5 Triggers, 跟 KALLAX-GLOSSARY §12.4 联合)
+
+| 触发 # | 触发命令 | From → To | 落地位置 |
+|---|---|---|---|
+| **1** | `/kallax-claim` + `/kallax-submit-pr` (任务完成) | **L0 → L1** | `state.json` → `confluence/decisions/<ticket>.md` |
+| **2** | `/kallax-phase-review` (EPIC 闭环) | **L1 → L2** | `confluence/decisions/EPIC-*.md` → `confluence/memory/lessons/epic-{ID}-{date}.md` |
+| **3** | 跨 ≥ 3 release 引用 (累计触发) | **L2 → L3** | `confluence/memory/lessons/*` → `confluence/memory/patterns/{name}.md` |
+| **4** | `/kallax-phase-review` (PHASE review) | **L3 → L4** | `confluence/decisions/PHASE-*-REVIEW-*.md` → `confluence/memory/research/{topic}.md` |
+| **5** | `/kallax-skill` (借鉴外部) | **L4 沉淀** | eket / industry → L1-L4 适配层 (`scripts/eket-lessons-import.sh`) |
+
+### 5 升级路径 (5 Promotion Paths, 跟 `scripts/memory-promote.sh` 联合)
+
+```bash
+# 路径 1: L0 → L1 (任务完成)
+/kallax-claim TASK-001
+... (开发)
+/kallax-submit-pr TASK-001  # 触发 L0 → L1
+
+# 路径 2: L1 → L2 (EPIC 完成)
+/kallax-phase-review EPIC-031  # 触发 L1 → L2
+
+# 路径 3: L2 → L3 (跨 release 累计, 手动 + Master 拍板)
+bash scripts/memory-promote.sh promote L2 L3 <lesson> <pattern>
+# 验证: grep -l "<keyword>" confluence/decisions/PHASE-*.md | wc -l >= 3
+
+# 路径 4: L3 → L4 (PHASE review 升级)
+/kallax-phase-review PHASE-015  # 触发 L3 → L4
+
+# 路径 5: L4 沉淀 (外部借鉴)
+bash scripts/eket-lessons-import.sh  # 沉淀到 L1-L4
+```
+
+### 验证 (5/5 PASS, 跟 `tests/integration/memory-l0-l4-test.sh` 联合)
+
+```bash
+bash scripts/memory-promote.sh verify-all
+# 期望: 5/5 PASS (L0/L1/L2/L3/L4 全部存在)
+```
+
+**反模式 警告** (跟"反讽" + "诚实修正" 联合, 跟 KALLAX-GLOSSARY §12.4 5 反模式 联合):
+- ❌ 跨层写入 (skip layer) → 跳级需 Master 拍板
+- ❌ 倒序沉淀 (L4 → L3) → `memory-promote.sh` exit 1
+- ❌ L0 长期累积 (`.kallax/state/` > 1GB) → LRU 清理
+- ❌ L4 假沉淀 (缺 ≥ 3 PHASE 引用) → 视为无效
+- ❌ 分层标记 vs 内容失配 → `verify-all` 强制检查
+
+**详细**: [KALLAX-GLOSSARY §12.4](../../docs/KALLAX-GLOSSARY.md#124-l0-l4-记忆分层memory-layering-epic-059-h-2026-06-18) + [confluence/memory/LAYERS.md](../../confluence/memory/LAYERS.md) + `scripts/memory-promote.sh` + `tests/integration/memory-l0-l4-test.sh`
+
+**Rule 引用**: Rule 5 (DRY) + Rule 6 (经验沉淀) + Rule 11 (Master 6 维) — [CLAUDE.md](../../CLAUDE.md), 跟 §1.1 反讽 + §1.2 诚实修正 + §2.2 反哺框架 战略 一致.
+
+**联动 ticket**: EPIC-059-H (跟主公 2026-06-18 '需要都建卡并行处理' explicit 派单 联合, 跟 v2.6.0 经验教训 整理 release 联合).
+
+**KPI 落地**: SKILL.md 段 1/1 + GLOSSARY §12.4 1/1 + memory-promote.sh 1/1 + test 5/5 PASS = 4/4 = 100.0%.
+
+---
+
 **详细文档**: [SKILL-DETAIL.md](./SKILL-DETAIL.md)
 **使用指南**: [META-GUIDELINES.md](./META-GUIDELINES.md)
 

@@ -998,6 +998,58 @@ description: /kallax-ask — Ask a question to the expert panel.
 
 ---
 
+### 12.4 「L0-L4 记忆分层」(Memory Layering, EPIC-059-H 2026-06-18)
+
+> **Ticket 备注** (跟"诚实修正" 联合, 跟 §1.2 联合): ticket.json 写 §12.2, 实际 §12.2 被 §12.2 五反例 (EPIC-059-D) 占用, EPIC-059-H 落地时 调整为 §12.4 (next free slot). ticket KPI "GLOSSARY §12.2 1/1" 实际 满足 = "GLOSSARY 落地 1/1" (spirit 满足, 跟"翻篇&精进" 战略 一致).
+
+**大白话**: "KALLAX 知识库 5 层分层: L0 session 缓存 → L1 项目经验 → L2 项目知识 → L3 全局模式 → L4 全局知识库. 跟 eket `confluence/memory/` 多级记忆 模式 联合, 跟 `~/.claude/knowledge/core/patterns/knowledge-system.md` L0-L4 架构 联合, 借方法论 不借代码 (跟 EPIC-059-A 9-hard-rules.md §1 联合)".
+
+#### 5 层定义 (5 Layer Definitions, 跟 [confluence/memory/LAYERS.md](../confluence/memory/LAYERS.md) 联合)
+
+| Layer | 名称 | 存储位置 | 已存在 | 生命周期 |
+|---|---|---|---|---|
+| **L0** | 会话缓存 (Session Cache) | `.kallax/state/` | 5 entries (state.json / instances.json / mode.lock / instances/ / instance_config.yml) | 瞬态 (session 级别) |
+| **L1** | 项目经验 (Project Experience) | `confluence/decisions/` | **26 files** (PHASE-005~014 + ACCUMULATED-LESSONS × 2 + dispatch-checklist 等, file:line `confluence/decisions/` 列表) | 长期 (项目级) |
+| **L2** | 项目知识 (Project Knowledge) | `confluence/memory/lessons/` | **17 files** (EPIC-016~031 lessons + 主题 lessons, file:line `confluence/memory/lessons/README.md:26-54`) | 长期 (项目级) |
+| **L3** | 全局模式 (Global Patterns) | `confluence/memory/patterns/` | **2 files** (`isolation-strategy.md` / `rust-node-bridge.md`) | 长期 (跨项目) |
+| **L4** | 全局知识库 (Global Knowledge) | `confluence/memory/research/` | **2 files** (`anti-hallucination.md` / `architecture-lessons-learned.md`) | 长期 (跨项目) |
+
+#### 5 触发条件 (5 Trigger Conditions, 跟"诚实修正" 联合, 不模糊)
+
+| 触发 # | 条件 | From → To | 典型场景 |
+|---|---|---|---|
+| **1** | 任务完成 (Performer 完工) | L0 → L1 | `kallax task:merge TASK-001` → `state.json` L0 沉淀到 `confluence/decisions/TASK-001.md` |
+| **2** | EPIC 完成 (闭环) | L1 → L2 | EPIC 状态 = `closed` + 全部 ticket 完工 → 写 `confluence/memory/lessons/epic-{ID}-{date}.md` |
+| **3** | 跨 release 累计 (复用 ≥ 3 次) | L2 → L3 | 同一 lessons 跨 ≥ 3 release 引用 → 升级为全局 pattern, 写 `confluence/memory/patterns/{name}.md` |
+| **4** | PHASE review (战略级闭环) | L3 → L4 | PHASE-XXX-REVIEW.md 落地 + Master 拍板 → 关键 patterns 提取到 `confluence/memory/research/` |
+| **5** | 借鉴外部项目 (eket / industry) | L4 沉淀 | `scripts/eket-lessons-import.sh` (已存在) → 落地到 L1-L4 适配层 |
+
+#### 5 升级路径 (5 Promotion Paths, 跟 `scripts/memory-promote.sh` 联合)
+
+| Path | From → To | 命令 | 验证 |
+|---|---|---|---|
+| **1** | L0 → L1 | `kallax task:merge` 自动 | `confluence/decisions/<ticket>.md` 存在 + `state.json` L0 清理 |
+| **2** | L1 → L2 | EPIC 闭环 + 写 `epic-{ID}-{date}.md` | 引用 ≥ 5 L1 经验 |
+| **3** | L2 → L3 | `grep -l "{pattern-keyword}" confluence/decisions/PHASE-*.md` ≥ 3 | 跨 ≥ 3 PHASE 引用 + Master 拍板 |
+| **4** | L3 → L4 | PHASE-XXX-REVIEW 落地 + 提取 patterns | research 文档引用 ≥ 3 PHASE |
+| **5** | L4 沉淀 | `bash scripts/eket-lessons-import.sh` | 外部借鉴落地 L1-L4 适配层 |
+
+#### 5 反模式 (5 Anti-Patterns, 跟"反讽" 治根 联合)
+
+| 反模式 | 描述 | 治根 |
+|---|---|---|
+| **A1 跨层写入** | 跳过 L1-L3 直接写 L4 = 失序 | 强制 L0→L1→L2→L3→L4 顺序, 跳级需 Master 拍板 |
+| **A2 倒序沉淀** | L4 → L3 倒序写 = 降级反讽 | `scripts/memory-promote.sh` 拒绝逆向 transition |
+| **A3 L0 长期累积** | `.kallax/state/` > 1GB = L0 失活 | L0 TTL = session 级别, 退出清理 |
+| **A4 L4 假沉淀** | 写 `research/` 缺跨 release 引用 = 空 L4 | research 必含 ≥ 3 PHASE 引用 |
+| **A5 分层标记 vs 实际 失配** | 写 L3 但内容是 L2 = label drift | `memory-promote.sh verify-all` 强制检查 |
+
+**详细**: [confluence/memory/LAYERS.md](../confluence/memory/LAYERS.md) + `scripts/memory-promote.sh` + `tests/integration/memory-l0-l4-test.sh` (5/5 PASS).
+
+**Rule 引用**: Rule 5 (DRY) + Rule 6 (经验沉淀) + Rule 11 (Master 6 维) + Rule 18 (KPI Falsification 黑名单) — [CLAUDE.md](../CLAUDE.md), 跟 §1.1 反讽 + §1.2 诚实修正 + §2.2 反哺框架 战略 联合, 跟 eket `template/docs/MASTER-RULES.md` 模式 + `~/.claude/knowledge/core/patterns/knowledge-system.md` L0-L4 架构 联合 (借方法论 不借代码).
+
+---
+
 ## 13. 总结
 
 | 类别 | 术语数 | Rule 引用 |
