@@ -234,8 +234,8 @@ fn load_experts(expert_dir: &Path) -> Result<Vec<Expert>, ExpertMatchError> {
         }
 
         let expert = parse_expert_md(&path)?;
-        if expert.is_some() {
-            experts.push(expert.unwrap());
+        if let Some(e) = expert {
+            experts.push(e);
         }
     }
 

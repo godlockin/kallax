@@ -21,6 +21,12 @@ pub enum KallaxError {
         message: String,
     },
 
+    #[error("mutex lock poisoned during '{operation}': {message}")]
+    LockPoisoned {
+        operation: &'static str,
+        message: String,
+    },
+
     // ─────────────────────────────────────────────────────────────────────────
     // State machine errors
     // ─────────────────────────────────────────────────────────────────────────
@@ -162,6 +168,14 @@ impl KallaxError {
     /// Create a database error
     pub fn database(operation: &'static str, source: impl std::fmt::Display) -> Self {
         Self::Database {
+            operation,
+            message: source.to_string(),
+        }
+    }
+
+    /// Create a lock poisoned error (跟 v2.7.4 D6.6 联合, 跟 Rule 8 联合, 跟'不埋坑' 5 原则 联合)
+    pub fn lock_poisoned(operation: &'static str, source: impl std::fmt::Display) -> Self {
+        Self::LockPoisoned {
             operation,
             message: source.to_string(),
         }

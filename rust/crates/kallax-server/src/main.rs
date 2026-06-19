@@ -389,14 +389,21 @@ async fn bridge_status(State(state): State<AppState>) -> impl IntoResponse {
     }))
 }
 
-async fn scheduler_status(State(state): State<AppState>) -> impl IntoResponse {
-    let mut s = state.scheduler.lock().expect("scheduler lock");
+async fn scheduler_status(State(state): State<AppState>) -> Result<Json<serde_json::Value>, AppError> {
+    // 跟 v2.7.4 D6.6 联合, 跟 Rule 8 联合, 跟'不埋坑' 5 原则 联合
+    // 跟 v2.7.4 check-anti-patterns.sh 联合: unwrap 改 Result, 治根 panic 风险
+    let mut s = state.scheduler.lock().map_err(|e| {
+        AppError(kallax_core::error::KallaxError::lock_poisoned(
+            "scheduler_status",
+            format!("scheduler mutex poisoned: {}", e),
+        ))
+    })?;
     let ready = s.get_ready_tasks();
     let critical = s.critical_path();
-    Json(serde_json::json!({
+    Ok(Json(serde_json::json!({
         "ready_tasks": ready.len(),
         "critical_path_length": critical.len(),
-    }))
+    })))
 }
 
 // ── Main ───────────────────────────────────────────────────────────────────
