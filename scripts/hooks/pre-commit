@@ -198,6 +198,71 @@ ALLOWED_PATTERNS=(
   '^package-lock\.json$'
 )
 
+# ── Check 3: Build artifacts 防御 (跟 v2.7.0 整理 release + 外部项目 教训 联合) ──
+# 治根: rust/target/ + node_modules/ + dist/ + build/ 等 build artifacts 不应进 git
+#       一旦 commit 历史 需 filter-repo 改写 才能推 GH Enterprise (50MB 限制)
+# 跟"反讽" 联合 治根 "build 假动作" (build artifact 跟 源码 混 跟)
+# 跟"诚实修正" 联合 治根 ".gitignore 不够 需 hook 主动 防御"
+# 跟 v2.7.0 整理 release 联合 (跟主公 2026-06-19 '整理 总结 经验教训' 派单 联合)
+BLOCKED_ARTIFACT_PATTERNS=(
+  '^rust/target/'                # Rust build artifacts
+  '^target/'                     # Generic build artifacts (Cargo, Maven)
+  '^node_modules/'               # npm/yarn
+  '^node/dist/'                  # TypeScript build
+  '^dist/'                       # Generic build output
+  '^build/'                      # Generic build output
+  '^__pycache__/'                # Python bytecode cache
+  '^\.cargo/'                    # Cargo registry cache
+  '^\.rustup/'                   # rustup toolchain cache
+  '^vendor/'                     # Go/PHP/Node vendor
+  '\.o$'                         # Compiled object
+  '\.so$'                        # Shared object (Linux)
+  '\.dylib$'                     # Shared object (macOS)
+  '\.dll$'                       # Dynamic library (Windows)
+  '\.exe$'                       # Windows executable
+  '\.pyc$'                       # Python compiled
+  '\.wasm$'                      # WebAssembly
+  '\.map$'                       # Source map (dev only, not source)
+  '\.min\.js$'                   # Minified JS (dev only)
+  '\.min\.css$'                  # Minified CSS (dev only)
+)
+
+BLOCKED_ARTIFACTS=""
+while IFS= read -r file; do
+  blocked=false
+  for pattern in "${BLOCKED_ARTIFACT_PATTERNS[@]}"; do
+    if echo "$file" | grep -qE "$pattern"; then
+      blocked=true
+      break
+    fi
+  done
+  if [ "$blocked" = true ]; then
+    BLOCKED_ARTIFACTS="${BLOCKED_ARTIFACTS}  ${file}\n"
+  fi
+done <<< "$STAGED_FILES"
+
+if [ -n "$BLOCKED_ARTIFACTS" ]; then
+  echo "╔══════════════════════════════════════════════════════════════╗"
+  echo "║  BLOCKED: Build artifacts 检测 (Check 3, 跟 v2.7.0 整理 release 联合) ║"
+  echo "║                                                            ║"
+  echo "║  Build artifacts (rust/target/, node_modules/, dist/ 等) ║"
+  echo "║  不应进 git — 已 .gitignore 但需 hook 主动 防御            ║"
+  echo "║                                                            ║"
+  echo "║  检测到 build artifacts:                                   ║"
+  printf "%b" "$BLOCKED_ARTIFACTS"
+  echo "║                                                            ║"
+  echo "║  治根:                                                    ║"
+  echo "║    1. .gitignore 已 含 (rust/target/ node_modules/ dist/ build/) ║"
+  echo "║    2. 误 add: git reset HEAD <file> + .gitignore             ║"
+  echo "║    3. 误 commit: git rm --cached <file> + commit amend     ║"
+  echo "║    4. 已在 历史: filter-repo 改写 (GH Enterprise 50MB 限制)  ║"
+  echo "║                                                            ║"
+  echo "║  跟 v2.7.0 ACCUMULATED-LESSONS §15 整理 release 联合        ║"
+  echo "║  跟'反讽' 联合 治根 'build 假动作'                          ║"
+  echo "╚══════════════════════════════════════════════════════════════╝"
+  exit 1
+fi
+
 BLOCKED_FILES=""
 while IFS= read -r file; do
   allowed=false

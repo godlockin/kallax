@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+# KALLAX Git Hook — Pre-push repo size + large file guard.
+# Defense for: rust/target/, node_modules/, dist/ build artifacts
+# combined with pre-commit Check 3 (artifact pattern block).
+#
+# Context (跟 v2.7.0 整理 release 联合):
+# - GH Enterprise 单 commit / repo 50MB 限制
+# - rust/target/ 历史 commit 需 filter-repo 改写 才能推
+# - 跟"反讽" 联合 治根 "build 假动作" (build artifact 跟 源码 混 跟)
+# - 跟"诚实修正" 联合 (.gitignore + pre-commit 不够, 需 pre-push 主动 防御)
+# - 跟 EPIC-059-A 9 Hard Rules 模式 联合 (借方法论 不借代码)
+# - 跟 EPIC-059-D Fact-Forcing 联合 (file:line 精确 引用)
+#
+# Install: bash scripts/hooks/install.sh
+set -euo pipefail
+
+cleanup() {
+  echo "DEBUG: pre-push hook received SIGTERM" >&2
+  exit 130
+}
+trap cleanup SIGTERM
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# ── Check 1: Repo pack size < 50 MB (GH Enterprise 限制) ──
+# 跟 GH Enterprise 50MB 限制 联合 (跟 v2.7.0 整理 release §15 联合)
+PACK_SIZE_BYTES=$(git count-objects -v 2>/dev/null | awk '/^size-pack/ {print $2 * 1024}')
+PACK_SIZE_MB=$(awk "BEGIN {printf \"%.2f\", ${PACK_SIZE_BYTES:-0} / 1024 / 1024}")
+MAX_SIZE_MB=50
+WARN_SIZE_MB=40
+
+if awk "BEGIN {exit !(${PACK_SIZE_MB:-0} > ${MAX_SIZE_MB})}"; then
+  echo "╔══════════════════════════════════════════════════════════════╗"
+  echo "║  BLOCKED: Repo size ${PACK_SIZE_MB} MB > ${MAX_SIZE_MB} MB (GH Enterprise 限制) ║"
+  echo "║                                                            ║"
+  echo "║  Build artifacts (rust/target/, node_modules/, dist/) 累计 ║"
+  echo "║  触达 GH Enterprise 50MB 限制                                ║"
+  echo "║                                                            ║"
+  echo "║  治根 (按 严重度 选):                                ║"
+  echo "║    A. filter-repo 改写 历史 (治根, 高风险)                  ║"
+  echo "║       git filter-repo --path-glob 'rust/target/*' --invert-paths ║"
+  echo "║    B. git rm --cached + commit amend (新 commit 修)         ║"
+  echo "║    C. .gitignore 加 pattern + 删 tracked (预防)            ║"
+  echo "║                                                            ║"
+  echo "║  跟 v2.7.0 ACCUMULATED-LESSONS §15 整理 release 联合        ║"
+  echo "║  跟'反讽' 联合 治根 'build 假动作'                          ║"
+  echo "╚══════════════════════════════════════════════════════════════╝"
+  exit 1
+fi
+
+if awk "BEGIN {exit !(${PACK_SIZE_MB:-0} > ${WARN_SIZE_MB})}"; then
+  echo "╔══════════════════════════════════════════════════════════════╗"
+  echo "║  WARNING: Repo size ${PACK_SIZE_MB} MB 接近 ${MAX_SIZE_MB} MB (GH Enterprise 限制) ║"
+  echo "║                                                            ║"
+  echo "║  建议 在 触达 ${MAX_SIZE_MB}MB 前 清理 build artifacts:           ║"
+  echo "║    git gc --aggressive --prune=now                          ║"
+  echo "║    filter-repo 改写 历史 (治根)                              ║"
+  echo "╚══════════════════════════════════════════════════════════════╝"
+  # Warning only — not blocking
+fi
+
+# ── Check 2: Large files (单一 文件 > 5 MB) ──
+# 跟 GH Enterprise 50MB 限制 联合, 单文件 >5MB 是 危险 信号
+LARGE_FILE_THRESHOLD_MB=5
+LARGE_FILES=$(git ls-files | while read -r f; do
+  if [ -f "$f" ]; then
+    size=$(stat -f%z "$f" 2>/dev/null || stat -c%s "$f" 2>/dev/null || echo 0)
+    size_mb=$(awk "BEGIN {printf \"%.2f\", ${size:-0} / 1024 / 1024}")
+    if awk "BEGIN {exit !(${size_mb} > ${LARGE_FILE_THRESHOLD_MB})}"; then
+      echo "${size_mb}MB  ${f}"
+    fi
+  fi
+done | head -20)
+
+if [ -n "$LARGE_FILES" ]; then
+  echo "╔══════════════════════════════════════════════════════════════╗"
+  echo "║  WARNING: Large files (> ${LARGE_FILE_THRESHOLD_MB}MB) 检测 (跟 v2.7.0 整理 release 联合) ║"
+  echo "║                                                            ║"
+  echo "║  Large files 往往是 build artifacts 误 add:                  ║"
+  echo "${LARGE_FILES}"
+  echo "║                                                            ║"
+  echo "║  建议:                                                     ║"
+  echo "║    1. 确认 是 否 真的 应该 进 git                            ║"
+  echo "║    2. 否: git rm --cached <file> + .gitignore                ║"
+  echo "║    3. 是: 用 Git LFS 替代 (http://git-lfs.github.com)         ║"
+  echo "╚══════════════════════════════════════════════════════════════╝"
+  # Warning only — not blocking (some large files may be legitimate)
+fi
+
+# ── Check 3: Pre-commit Check 3 artifact pattern 验证 (defense in depth) ──
+# 防御深度: 跟 pre-commit Check 3 联合 (artifact pattern block)
+# 这里 只做 提醒, 不 阻塞 (已经 在 pre-commit 阻塞 一次)
+ARTIFACT_TRACKED=$(git ls-files | grep -E "^(rust/target/|node_modules/|node/dist/|dist/|build/|__pycache__/)" | head -10 || true)
+if [ -n "$ARTIFACT_TRACKED" ]; then
+  echo "╔══════════════════════════════════════════════════════════════╗"
+  echo "║  WARNING: Tracked build artifacts 检测 (跟 v2.7.0 整理 release 联合) ║"
+  echo "║                                                            ║"
+  echo "║  .gitignore 已 含 模式, 但 历史 仍 追踪:                    ║"
+  echo "${ARTIFACT_TRACKED}"
+  echo "║                                                            ║"
+  echo "║  建议:                                                     ║"
+  echo "║    git rm --cached <file> + commit amend (新 commit 修)    ║"
+  echo "║    或 filter-repo 改写 历史 (治根)                          ║"
+  echo "╚══════════════════════════════════════════════════════════════╝"
+  # Warning only — not blocking (historical pollution needs filter-repo)
+fi
+
+exit 0
