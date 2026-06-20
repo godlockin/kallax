@@ -4,22 +4,29 @@ version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
-description = "Node.js ↔ Rust FFI bridge via napi-rs (EPIC-060-B Phase 3 scaffold)"
-
-[lib]
-crate-type = ["cdylib", "rlib"]
+description = "KALLAX bridge — Rust ↔ Node.js napi-rs bindings (event bus primary)"
 
 [features]
-# `napi` feature gates the FFI exports. Disabled during `cargo test` so the
-# rlib builds without linking against Node.js symbols (which only exist at
-# runtime via `napi build` / `npm install` + dynamic loading).
-# Default ON so `cargo build` and `napi build --platform` produce the cdylib.
-default = ["napi"]
+# Default: pure Rust, 0 external deps, cargo check 0 errors.
+# Enable `napi` feature for Node.js native module exports (requires napi-rs toolchain).
+default = []
 napi = ["dep:napi", "dep:napi-derive"]
 
 [dependencies]
-napi = { workspace = true, optional = true }
-napi-derive = { workspace = true, optional = true }
-tracing.workspace = true
+kallax-core.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
 thiserror.workspace = true
-kallax-core = { workspace = true }
+tracing.workspace = true
+tracing-subscriber.workspace = true
+parking_lot.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+
+# Optional napi-rs bindings (only compiled with --features napi)
+napi = { version = "2.16", optional = true, default-features = false, features = ["napi4", "serde-json"] }
+napi-derive = { version = "2.16", optional = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
