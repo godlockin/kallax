@@ -103,9 +103,11 @@ const cache = new LRUCache<string, Data>({
 });
 ```
 
-### 5. 类型安全强制化 (KALLAX P1)
+### 5/8. 类型安全强制化 + Rule of 500 (KALLAX P1) — EPIC-058-E v2.7.5 master explicit A 拍板合并 Rule 5+8
 
-**教训**: 46 处 `any` 类型，清理后发现 3 个运行时错误
+> **合并理由**: 类型安全 + Rule of 500 都是"代码质量 强制化" 主题, 落地检查脚本不变 (`scripts/check-pr-size.sh --check-rule-of-500` + TypeScript strict mode), 仅 CLAUDE.md Rule 文本合并. 净减 1 Rule (22 → 21). 跟 v2.0.5 EPIC-051 24→22 合并 模式 一致, 跟 v2.4.0 反思 revert 教训 一致 (合并不 删落地脚本, 不 制造 "0 实际变化 假动作").
+
+**教训 (类型安全)**: 46 处 `any` 类型, 清理后发现 3 个运行时错误.
 
 ```typescript
 // ❌ 禁止
@@ -119,11 +121,34 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 }
 ```
 
-### 6. 经验沉淀强制化 (KALLAX P0) — EPIC 交付四件套
+**教训 (Rule of 500)**: 一次 PR 净变更 > 500 行 = 0 实际变化 假动作 + Rule 数 通胀 迷信. 跟 v2.4.0+v2.4.1 8 release 累计 跟单 ticket 跨 release 失焦 联合.
 
-**教训**: EPIC 完成后只 merge 不沉淀 = 知识黑洞, 下一个 EPIC 重复踩坑.
+**规则 (Rule of 500, 4 档分级)**:
 
-**红线**: 每个 EPIC 交付**必须**走完 4 步才能 close:
+| 档位 | 范围 | 行为 |
+|------|------|------|
+| silent | ≤ 100 | PASS (跟 EPIC-059-C PR ~100 行 联合) |
+| acceptable | 100-500 | PASS (跟 eket Rule 9 阈值 一致) |
+| codemod_hint | 500-1000 | FAIL + 提示 codemod 或 `Approved-Large-PR-By: <主公 explicit 拍板者>` |
+| reject | 1000+ | FAIL + 拒绝 commit + 推荐 EPIC 拆分 |
+
+**落地检查**: `bash scripts/check-pr-size.sh --check-rule-of-500` + `.git/hooks/pre-commit` Check 3 + TypeScript strict mode + `tsconfig.json` `strict: true`.
+
+**跟 9 Hard Rules 模式 联合**: Rule 5/8 升级 (跟 EPIC-059-A 22 Rule → 9 类别 group 索引 联合, 0 删 Rule, 0 增 Rule, Rule 5/8 file:line 1:1 映射).
+
+**跟 Rule 12 decision-gate 联合**: 3 模式 decision-gate (coder/reviewer/owner) → 500-1000 档 owner 可豁免 (注释 `Approved-Large-PR-By: <name>`).
+
+**红线**: ❌ 净变更 > 1000 行 无豁免 强行 commit, ❌ 跳过 `--check-rule-of-500` 直接 commit, ❌ TypeScript `any` / `@ts-ignore` 绕过 strict mode, ❌ PR 跟 strict type check 分离 (双 FAIL 必须, 互为 互补)
+
+**来源**: EPIC-058-E (主公 explicit A 拍板合并 Rule 5+8, 2026-06-19) + EPIC-059-B (主公 2026-06-18 '同意建议, 需要都建卡并行处理' explicit 派单 Rule of 500, 跟 v2.6.0 经验教训 整理 release 联合) + v2.0.5 EPIC-051 24→22 合并 模式 (借方法论 不借代码) + eket template/docs/MASTER-RULES.md §6 Rule 8 + KALLAX-GLOSSARY §1.1 反讽
+
+### 6/7. 经验沉淀强制化 + PHASE 闭环 review (KALLAX P0) — EPIC-058-E v2.7.5 master explicit A 拍板合并 Rule 6+7
+
+> **合并理由**: 经验沉淀 (EPIC 交付四件套) + PHASE 闭环 review (升级闭环) 都是"经验沉淀" 主题, 落地检查脚本不变 (`check-fact-forcing-preflight.sh` + `LESSONS-LEARNED.md` 草稿), 仅 CLAUDE.md Rule 文本合并. 净减 1 Rule (21 → 20). 跟 v2.0.5 EPIC-051 24→22 合并 模式 一致, 跟 v2.4.0 反思 revert 教训 一致 (合并不 删落地脚本, 不 制造 "0 实际变化 假动作").
+
+**教训**: EPIC 完成后只 merge 不沉淀 = 知识黑洞, 下一个 EPIC 重复踩坑. 经验教训只沉淀不升级 = 单点案例, 不形成组织能力. EPIC + PHASE 双层闭环 = 跨 release 累计 治理能力.
+
+**红线 (4 件套 EPIC 交付, 每个 EPIC close 前必走完)**:
 
 1. **A+B 2-Group 对抗 review**
    - A 组 (Forward): AC 合规 + 代码质量 + 集成
@@ -139,19 +164,9 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
    - master 审批时检查草稿是否存在且合规
    - master merge 前确认 lessons 已更新
 
-**禁止**:
-- ❌ A+B review 跳过, 直接 APPROVE
-- ❌ 文档只在 commit message 写
-- ❌ 经验教训放在 commit message (会被淹没)
-- ❌ EPIC 最后 commit 不带 LESSONS-LEARNED 草稿
+**PHASE 闭环 review 触发**: 每完成 3-5 个 EPIC, 或阶段目标达成 (master 决定), 触发 PHASE 闭环 review.
 
-### 7. PHASE 闭环 review (KALLAX P0) — 经验升级 (v2.4.1 还原 跟 v2.3.0 一致, 跟 PHASE-013-REFLECTION 联合 治根 "0 实际改变 假动作")
-
-**教训**: 经验教训只沉淀不升级 = 单点案例, 不形成组织能力.
-
-**触发**: 每完成 3-5 个 EPIC, 或阶段目标达成 (master 决定), 触发 PHASE 闭环 review.
-
-**流程**:
+**PHASE 流程**:
 
 1. **Phase 1 (Architect)**: 全局扫描本 phase 所有 EPIC 的 LESSONS-LEARNED.md, 分类: 量化/流程/技术/治理
 2. **Phase 2 (5 专家并行)**: Backend/Frontend/UX/Product/Security 各自找漏洞/纠错/合并
@@ -161,34 +176,20 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 **产出物**: `confluence/decisions/PHASE-XXX-REVIEW-XXX.md` + CLAUDE.md 修订 + confluence/architecture/
 
-**禁止**: ❌ 经验教训只 review 不升级, ❌ 升级到 CLAUDE.md 没经过主公审批
+**禁止**:
+- ❌ A+B review 跳过, 直接 APPROVE
+- ❌ 文档只在 commit message 写
+- ❌ 经验教训放在 commit message (会被淹没)
+- ❌ EPIC 最后 commit 不带 LESSONS-LEARNED 草稿
+- ❌ 经验教训只 review 不升级, 升级到 CLAUDE.md 没经过主公审批
 
-### 8. Rule of 500 (KALLAX P1) — 跟 eket MASTER-RULES.md §6 Rule 8 联合 (EPIC-059-B v2.7.0)
+**v2.4.1 还原 跟 v2.3.0 一致, 跟 PHASE-013-REFLECTION 联合 治根 "0 实际改变 假动作"**: 4 件套 + PHASE 双层闭环 = 跨 release 累计, 跟"翻篇&精进" 战略 一致.
 
-**教训**: 一次 PR 净变更 > 500 行 = 0 实际变化 假动作 + Rule 数 通胀 迷信. 跟 v2.4.0+v2.4.1 8 release 累计 跟单 ticket 跨 release 失焦 联合.
-
-**规则**: 单次 PR 净变更 ≤ 500 行 (跟 eket 阈值 一致). 4 档分级:
-
-| 档位 | 范围 | 行为 |
-|------|------|------|
-| silent | ≤ 100 | PASS (跟 EPIC-059-C PR ~100 行 联合) |
-| acceptable | 100-500 | PASS (跟 eket Rule 9 阈值 一致) |
-| codemod_hint | 500-1000 | FAIL + 提示 codemod 或 `Approved-Large-PR-By: <主公 explicit 拍板者>` |
-| reject | 1000+ | FAIL + 拒绝 commit + 推荐 EPIC 拆分 |
-
-**落地检查**: `bash scripts/check-pr-size.sh --check-rule-of-500` + `.git/hooks/pre-commit` Check 3.
-
-**跟 9 Hard Rules 模式 联合**: Rule 8 升级为 "Rule of 500" (跟 EPIC-059-A 22 Rule → 9 类别 group 索引 联合, 0 删 Rule, 0 增 Rule, Rule 8 file:line 1:1 映射).
-
-**跟 Rule 13 decision-gate 联合**: 3 模式 decision-gate (coder/reviewer/owner) → 500-1000 档 owner 可豁免 (注释 `Approved-Large-PR-By: <name>`).
-
-**红线**: ❌ 净变更 > 1000 行 无豁免 强行 commit, ❌ 跳过 `--check-rule-of-500` 直接 commit
-
-**来源**: EPIC-059-B (主公 2026-06-18 '同意建议, 需要都建卡并行处理' explicit 派单, 跟 v2.6.0 经验教训 整理 release 联合) + eket template/docs/MASTER-RULES.md §6 Rule 8/9 + KALLAX-GLOSSARY §1.1 反讽
+**来源**: EPIC-058-E (主公 explicit A 拍板合并 Rule 6+7, 2026-06-19) + v2.0.5 EPIC-051 24→22 合并 模式 (借方法论 不借代码) + PHASE-013-REFLECTION-2026-06-18.md (治根 "0 实际改变 假动作") + v2.4.0 反思 revert 教训 (合并不 删落地脚本)
 
 ---
 
-### 9. PR ~100 行上限 (KALLAX P1) — 跟 eket MASTER-RULES.md §6 Rule 9 联合 (EPIC-059-C v2.7.0)
+### 7. PR ~100 行上限 (KALLAX P1) — 跟 eket MASTER-RULES.md §6 Rule 9 联合 (EPIC-059-C v2.7.0)
 
 **教训**: 单 PR 行数过多 = review 成本指数增长 + 隐藏实际变化. 跟 v2.4.0+v2.4.1 8 release 累计 跟单 ticket 跨 release 失焦 联合. PR 100 行 是 单 PR 粒度 (严), Rule of 500 是 净变更 粒度 (松), 2 档 互为 互补.
 
@@ -210,7 +211,7 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 **跟 9 Hard Rules 模式 联合**: Rule 9 升级为 "PR ~100 行上限" (跟 EPIC-059-A 22 Rule → 9 类别 group 索引 联合, 0 删 Rule, 0 增 Rule, Rule 9 file:line 1:1 映射).
 
-**跟 Rule 13 decision-gate 联合**: 3 模式 decision-gate (coder/reviewer/owner) → warn-strong 档 owner 可豁免 (注释 `Approved-Large-PR-By: <name>`).
+**跟 Rule 12 decision-gate 联合**: 3 模式 decision-gate (coder/reviewer/owner) → warn-strong 档 owner 可豁免 (注释 `Approved-Large-PR-By: <name>`).
 
 **红线**: ❌ PR > 500 行 无豁免 强行 commit (跟 Rule of 500 联合 fail), ❌ 跳过 `--check-pr-100` 直接 commit, ❌ 混淆 PR 行数 vs 净变更 粒度 (双 FAIL 必须, 互为 互补)
 
@@ -218,7 +219,7 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 ---
 
-### 10. 4-Level Fact-Forcing 强制 (KALLAX P0) — task:complete 前置
+### 8. 4-Level Fact-Forcing 强制 (KALLAX P0) — task:complete 前置
 
 **教训**: 4-Level 是 documentation, 不是 enforcement. EPIC-024/028 KPI falsification 3 次强化此教训.
 
@@ -236,7 +237,7 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 **红线**: ❌ 跳过 preflight 直接 close ticket, ❌ preflight FAIL 但仍 close ticket, ❌ KPI 估数/verbatim/scope creep 任一绕过
 
-### 11. Anti-Fabrication 强制 (KALLAX P0) — 全 commit 前置
+### 9. Anti-Fabrication 强制 (KALLAX P0) — 全 commit 前置
 
 **规则**: 所有 commit 前必跑 3 anti-fab 工具, 集成在 pre-commit hook 强制执行:
 
@@ -250,7 +251,7 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 **红线**: ❌ 跳过 3 anti-fab 工具, ❌ pre-commit hook 改 Bypass, ❌ 估数/verbatim/scope creep 任一造假
 
-### 12. Master 写代码禁令 (KALLAX P0) — 主公原话硬红线 (v2.4.1 还原 跟 v2.3.0 一致, 跟 PHASE-013-REFLECTION 联合 治根 "边界失焦")
+### 10. Master 写代码禁令 (KALLAX P0) — 主公原话硬红线 (v2.4.1 还原 跟 v2.3.0 一致, 跟 PHASE-013-REFLECTION 联合 治根 "边界失焦")
 
 **教训**: 主公 2026-06-09 原话: "除了极端情况, master 不许写代码". 之前 Rule 11 写得过宽, 收回.
 
@@ -286,13 +287,13 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 - **L3**: 跑全量 E2E
 - **L4**: 跑 `scripts/verify/check-commit-amend-verify.sh` 4 PASS
 
-### 13. 质量 ensure 强制 (KALLAX P1) — expert > 50 必跑 audit (v2.4.1 还原 跟 v2.3.0 一致)
+### 11. 质量 ensure 强制 (KALLAX P1) — expert > 50 必跑 audit (v2.4.1 还原 跟 v2.3.0 一致)
 
 **规则**: expert > 50 时必跑 `scripts/expert-quality-audit.py` 5 维度 (Schema/Tier-Domain/M1/Trigger/Domain). 触发: 飞轮"迭代"阶段转换, Merge 前置, Index 变更.
 
 **红线**: ❌ expert > 50 但未跑 audit 就 merge, ❌ M1 填估数 ("~60%"/"约 80%"/"PARTIAL"), ❌ Trigger 字段直接复制 test case 文本
 
-### 14. 3 模式决策权分配 (KALLAX P0) — 主公原话 2026-06-09
+### 12. 3 模式决策权分配 (KALLAX P0) — 主公原话 2026-06-09
 
 **规则**: 3 模式 = `ai-auto` (AI 自主 + block/danger 停下问) / `ai-copilot` (默认, 简单自主 + 复杂协商) / `manual` (主公确认每阶段).
 
@@ -413,7 +414,7 @@ L4 数据流动：集成测试验证
 
 ## 角色 Session 边界 (主公 2026-06-12 拍, R-NEW 升级红线)
 
-### 15. Conductor 不能越界 Performer 实施 (KALLAX P0) — R-NEW 升级红线 (v2.4.1 还原 跟 v2.3.0 一致, 跟 PHASE-013-REFLECTION 联合 治根 "角色边界失焦")
+### 13. Conductor 不能越界 Performer 实施 (KALLAX P0) — R-NEW 升级红线 (v2.4.1 还原 跟 v2.3.0 一致, 跟 PHASE-013-REFLECTION 联合 治根 "角色边界失焦")
 
 **教训**: 主公 2026-06-12 拍 "每个角色, 无论 Conductor 还是 Performer 都是独立存在的 session/subagent".
 
@@ -426,7 +427,7 @@ L4 数据流动：集成测试验证
 
 **唯一豁免**: 跟 Rule 11 联动 (Token 限撞墙 / miao 已损坏 / ≥ 3 Performer API error / 主公 explicit 拍)
 
-### 16. Performer Session 自动加载 (KALLAX P0) — R-NEW 升级红线 (v2.4.1 还原 跟 v2.3.0 一致)
+### 14. Performer Session 自动加载 (KALLAX P0) — R-NEW 升级红线 (v2.4.1 还原 跟 v2.3.0 一致)
 
 **规则**: Performer 角色必须独立 session/subagent, 初始化时根据当前 ticket 加载 CLAUDE.md + ROLE-RULES + ticket.json 上下文. 启用 `bash .kallax/hooks/session_start.sh --role performer` 自动 claim ticket + 建 worktree.
 
@@ -438,7 +439,7 @@ L4 数据流动：集成测试验证
 - ❌ Performer session 跳 worktree 写 miao
 - ❌ Performer session 跳 session_start.sh 直接跑 (无 CLAUDE.md + ROLE-RULES + ticket 上下文)
 
-### 17. Subagent 5 步强制流程 (KALLAX P0) — Phase 7 R-NEW 升级红线 (v2.4.1 还原 跟 v2.3.0 一致, 跟 PHASE-013-REFLECTION 联合 治根 "5 步明确指向")
+### 15. Subagent 5 步强制流程 (KALLAX P0) — Phase 7 R-NEW 升级红线 (v2.4.1 还原 跟 v2.3.0 一致, 跟 PHASE-013-REFLECTION 联合 治根 "5 步明确指向")
 
 **教训**: 10 KPI falsification 实证 (Performer-EPIC-036/037 第 9/10 次). 50% 概率假 PASS 模式 (4 subagent: 2 真 + 2 假).
 
@@ -454,7 +455,7 @@ L4 数据流动：集成测试验证
 
 **红线**: ❌ 跳过 Step 1-5 任一
 
-### 18. 文件并发竞争 5 步强制流程 (KALLAX P0) — Phase 7 R-NEW 升级红线 (v2.4.1 还原 跟 v2.3.0 一致)
+### 16. 文件并发竞争 5 步强制流程 (KALLAX P0) — Phase 7 R-NEW 升级红线 (v2.4.1 还原 跟 v2.3.0 一致)
 
 **教训**: 主公 2026-06-12 拍 "还有个痛点是相互影响, 同时修改/编辑文件/文件夹引起工作文件的丢失/修改".
 
@@ -468,7 +469,7 @@ L4 数据流动：集成测试验证
 
 **红线**: ❌ 跳过文件级锁, ❌ 写半截文件, ❌ 跳过冲突检测, ❌ 写 outbox 路径冲突, ❌ worktree 状态不同步
 
-### 19. KPI Falsification 反模式黑名单 (KALLAX P0) — Phase 7 R-NEW 升级红线
+### 17. KPI Falsification 反模式黑名单 (KALLAX P0) — Phase 7 R-NEW 升级红线
 
 **规则**: Master 强验证 6 维度检测以下反模式, 命中任一 → subagent 报 FAIL.
 
@@ -476,7 +477,7 @@ L4 数据流动：集成测试验证
 
 **执行**: Master 强验证 6 维度命中任一 → subagent 报 FAIL + ticket 状态自动同步 + 留 LESSONS-LEARNED 草稿.
 
-### 20. 5 类标签 SOP (KALLAX P1) — EPIC-055-C, 治 A2 咒语化 + A3 笔误
+### 18. 5 类标签 SOP (KALLAX P1) — EPIC-055-C, 治 A2 咒语化 + A3 笔误
 
 **教训**: 历史项目 50+ 文档含"反讽" 咒语化引用 (无证据链 装饰引用), 跟"诚实修正" 战略 矛盾. 主公 14 问题分析 派单 EPIC-055-C explicit 治根.
 
@@ -562,43 +563,43 @@ L4 数据流动：集成测试验证
 
 ## 9 Hard Rules 模式 (跟 eket MASTER-RULES.md §6 联合, 借方法论 不借代码, EPIC-059-A v2.7.0)
 
-> **22 Rule → 9 类别 group 索引 (file:line 1:1 映射, 0 删 Rule)**
+> **20 Rule → 9 类别 group 索引 (file:line 1:1 映射, 0 删 Rule)**
 > **跟 PHASE-013-REFLECTION-2026-06-18.md 联合, 治根 "Rule 数 通胀" 迷信**
 > **跟 KALLAX-GLOSSARY §11.1 "Rule 数 ≠ 治理完成" 联合, 跟"翻篇&精进" 战略 一致**
 > **详细**: [docs/process/9-hard-rules.md](docs/process/9-hard-rules.md)
 > **检查**: `bash scripts/check-9-hard-rules.sh --self-test` + `bash tests/integration/check-9-hard-rules-test.sh`
 
-### 22 Rule → 9 类别 group 索引 表
+### 20 Rule → 9 类别 group 索引 表 (EPIC-058-E v2.7.5, master explicit A 拍板 22→20 合并 落地)
 
 | 类别 | 主题 | Rule (file:line 1:1) | 联合 |
 |------|------|----------------------|------|
-| **1. 隔离与并行 (Isolation)** | worktree / file-lock / session 隔离 | Rule 1 ([CLAUDE.md:50](CLAUDE.md#L50)) + Rule 16 ([CLAUDE.md:429](CLAUDE.md#L429)) + Rule 18 ([CLAUDE.md:457](CLAUDE.md#L457)) | Rule 1 并行隔离强制化 |
-| **2. 错误处理与验证 (Error & Verify)** | Result 类型 / 产出真实性 / 4-Level / KPI 黑名单 | Rule 2 ([CLAUDE.md:64](CLAUDE.md#L64)) + Rule 3 ([CLAUDE.md:80](CLAUDE.md#L80)) + Rule 10 ([CLAUDE.md:221](CLAUDE.md#L221)) + Rule 19 ([CLAUDE.md:471](CLAUDE.md#L471)) | Rule 10 4-Level Fact-Forcing |
-| **3. 资源与质量 (Resource & Quality)** | TTL 缓存 / expert audit | Rule 4 ([CLAUDE.md:92](CLAUDE.md#L92)) + Rule 13 ([CLAUDE.md:289](CLAUDE.md#L289)) | Rule 4 资源管理规范化 |
-| **4. 类型与安全 (Type & Security)** | 严格类型 / 工具 bypass / 独立见证 | Rule 5 ([CLAUDE.md:106](CLAUDE.md#L106)) + Rule 30 ([CLAUDE.md:593](CLAUDE.md#L593)) + Rule 31 ([CLAUDE.md:599](CLAUDE.md#L599)) | Rule 5 类型安全强制化 |
-| **5. 经验沉淀 (Lessons Accumulation)** | 4 件套 / PHASE 闭环 / Anti-Fab / 文档卫生 (每 10 轮) / 新建前先想 3 问 | Rule 6 ([CLAUDE.md:122](CLAUDE.md#L122)) + Rule 7 ([CLAUDE.md:148](CLAUDE.md#L148)) + Rule 11 ([CLAUDE.md:239](CLAUDE.md#L239)) + [9 Hard Rules Rule 6+7 映射](CLAUDE.md#9-hard-rules-rule-67-映射-文档卫生--新建前先想-kallax-p1--跟-eket-master-rules-md-联合-epic-059-g-v270) (EPIC-059-G v2.7.0) | Rule 6 经验沉淀强制化 + 9 Hard Rules Rule 6+7 升级 (跟 eket MASTER-RULES.md §6 联合) |
-| **6. 角色边界 (Role Boundary)** | Master 禁写 / Conductor 禁越界 | Rule 12 ([CLAUDE.md:253](CLAUDE.md#L253)) + Rule 15 ([CLAUDE.md:416](CLAUDE.md#L416)) | Rule 12 Master 写代码禁令 |
-| **7. 决策与模式 (Decision & Mode)** | 3 模式 + decision-gate | Rule 14 ([CLAUDE.md:295](CLAUDE.md#L295), 扩展 [CLAUDE.md:617](CLAUDE.md#L617)) | Rule 14 3 模式决策权 |
-| **8. 流程与脚本 (Process & Script)** | PR 尺寸 (Rule of 500 / PR ~100 行) / Subagent 5 步 | Rule 8 ([CLAUDE.md:166](CLAUDE.md#L166)) + Rule 9 ([CLAUDE.md:191](CLAUDE.md#L191)) + Rule 17 ([CLAUDE.md:441](CLAUDE.md#L441)) | Rule 8 Rule of 500 + Rule 9 PR ~100 行 (EPIC-059-B + EPIC-059-C 互为 互补) |
-| **9. 标签与治理 (Tag & Governance)** | 5 类标签 SOP | Rule 20 ([CLAUDE.md:479](CLAUDE.md#L479)) | Rule 20 5 类标签 SOP |
+| **1. 隔离与并行 (Isolation)** | worktree / file-lock / session 隔离 | Rule 1 ([CLAUDE.md:50](CLAUDE.md#L50)) + Rule 14 ([CLAUDE.md:430](CLAUDE.md#L430)) + Rule 16 ([CLAUDE.md:458](CLAUDE.md#L458)) | Rule 1 并行隔离强制化 |
+| **2. 错误处理与验证 (Error & Verify)** | Result 类型 / 产出真实性 / 4-Level / KPI 黑名单 | Rule 2 ([CLAUDE.md:64](CLAUDE.md#L64)) + Rule 3 ([CLAUDE.md:80](CLAUDE.md#L80)) + Rule 8 ([CLAUDE.md:222](CLAUDE.md#L222)) + Rule 17 ([CLAUDE.md:472](CLAUDE.md#L472)) | Rule 8 4-Level Fact-Forcing |
+| **3. 资源与质量 (Resource & Quality)** | TTL 缓存 / expert audit | Rule 4 ([CLAUDE.md:92](CLAUDE.md#L92)) + Rule 11 ([CLAUDE.md:290](CLAUDE.md#L290)) | Rule 4 资源管理规范化 |
+| **4. 类型与安全 (Type & Security)** | 严格类型 / Rule of 500 / 工具 bypass / 独立见证 | Rule 5/8 ([CLAUDE.md:106](CLAUDE.md#L106)) + Rule 30 ([CLAUDE.md:641](CLAUDE.md#L641)) + Rule 31 ([CLAUDE.md:647](CLAUDE.md#L647)) | Rule 5/8 类型安全 + Rule of 500 联合 (EPIC-058-E v2.7.5) |
+| **5. 经验沉淀 (Lessons Accumulation)** | 4 件套 + PHASE 闭环 + Anti-Fab / 文档卫生 (每 10 轮) / 新建前先想 3 问 | Rule 6/7 ([CLAUDE.md:145](CLAUDE.md#L145)) + Rule 9 ([CLAUDE.md:240](CLAUDE.md#L240)) + [9 Hard Rules Rule 6+7 映射](CLAUDE.md#9-hard-rules-rule-67-映射-文档卫生--新建前先想-kallax-p1--跟-eket-master-rules-md-联合-epic-059-g-v270) (EPIC-059-G v2.7.0) | Rule 6/7 经验沉淀 + PHASE 闭环 联合 (EPIC-058-E v2.7.5) + 9 Hard Rules Rule 6+7 升级 (跟 eket MASTER-RULES.md §6 联合) |
+| **6. 角色边界 (Role Boundary)** | Master 禁写 / Conductor 禁越界 | Rule 10 ([CLAUDE.md:254](CLAUDE.md#L254)) + Rule 13 ([CLAUDE.md:417](CLAUDE.md#L417)) | Rule 10 Master 写代码禁令 |
+| **7. 决策与模式 (Decision & Mode)** | 3 模式 + decision-gate | Rule 12 ([CLAUDE.md:296](CLAUDE.md#L296), 扩展 [CLAUDE.md:617](CLAUDE.md#L617)) | Rule 12 3 模式决策权 |
+| **8. 流程与脚本 (Process & Script)** | PR 尺寸 (Rule of 500 / PR ~100 行) / Subagent 5 步 | Rule 5/8 ([CLAUDE.md:106](CLAUDE.md#L106)) + Rule 7 ([CLAUDE.md:192](CLAUDE.md#L192)) + Rule 15 ([CLAUDE.md:442](CLAUDE.md#L442)) | Rule 5/8 Rule of 500 + Rule 7 PR ~100 行 (EPIC-059-B + EPIC-059-C 互为 互补, EPIC-058-E 合并 Rule 5/8 落地) |
+| **9. 标签与治理 (Tag & Governance)** | 5 类标签 SOP | Rule 18 ([CLAUDE.md:480](CLAUDE.md#L480)) | Rule 18 5 类标签 SOP |
 
-**KPI**: 22 Rule → 9 类别 group = **22/22 = 100.0%** 落地 (跟"翻篇&精进" 一致), **0 增 Rule** (跟 v2.4.1 还原 联合, 跟"诚实修正" + "反讽" 战略 一致, EPIC-059-C 升级 Rule 9 联合 Rule 8 互为 互补).
+**KPI**: 20 Rule → 9 类别 group = **20/20 = 100.0%** 落地 (跟"翻篇&精进" 一致, EPIC-058-E v2.7.5 master explicit A 拍板 22→20 合并), **0 增 Rule** (跟 v2.4.1 还原 联合, 跟"诚实修正" + "反讽" 战略 一致, EPIC-059-C 升级 Rule 9 联合 Rule 8 互为 互补, EPIC-058-E Rule 5+8 合并 + Rule 6+7 合并).
 
 **详细**: 9 Hard Rules 详细 解释 + 反例 + 正例 + 撤销方法 见 [docs/process/9-hard-rules.md](docs/process/9-hard-rules.md).
 
 ---
 
-## KALLAX Rules Status (跟 EPIC-054-D + PHASE-013-REFLECTION 联合, v2.4.1 还原 跟 v2.3.0 一致)
+## KALLAX Rules Status (跟 EPIC-054-D + EPIC-058-E + PHASE-013-REFLECTION 联合, v2.7.5 跟 v2.4.1 + EPIC-058-E 22→20 合并 落地)
 
-> **当前 Rule 总数 (active)**: **22** (跟 v2.3.0 一致, 跟 v2.4.0 4 合并 反思 revert 联合, 跟 PHASE-013-REFLECTION 联合 治根 "0 实际改变 假动作")
+> **当前 Rule 总数 (active)**: **20** (跟 v2.4.1 还原 一致 base 22 - EPIC-058-E 净减 2 = 20, 跟 v2.0.5 EPIC-051 24→22 合并 模式 一致, 跟 v2.4.0 4 合并 反思 revert 教训 一致 (合并不 删落地脚本, 不 制造 "0 实际改变 假动作"))
 > **累计 升级 (实测)**: 10 (R-NEW 14-18 = 5 + v1.2.4 扩展 29-33 = 5)
-> **升级率**: 45.5% (10/22, 实测, 跟 EPIC-055-B LESSONS-LEARNED.md 联合)
-> **fatigue_index**: 45.5 (接近 HIGH 阈值 50)
-> **净价值**: **67.0%** (跟 v1.2.4 baseline 62.5% 联合, 跟 EPIC-056-C Master 6 维恢复 +4.5% 联合)
+> **升级率**: 50.0% (10/20, 实测, 跟 EPIC-055-B LESSONS-LEARNED.md 联合, EPIC-058-E 合并后 升级率提升)
+> **fatigue_index**: 50.0 (HIGH 阈值 50 触及, 跟"反讽" 联合, 阈值 §10.3 需 重新审视)
+> **净价值**: **67.0%** (跟 v1.2.4 baseline 62.5% 联合, 跟 EPIC-056-C Master 6 维恢复 +4.5% 联合, EPIC-058-E 合并 净价值持平 0 实际变化)
 
-### 📋 Rule 合并 实际执行 (EPIC-054-D v2.0.5, v2.4.1 跟 v2.3.0 一致 22 Rule)
+### 📋 Rule 合并 实际执行 (EPIC-054-D v2.0.5 + EPIC-058-E v2.7.5, v2.4.1 跟 v2.3.0 一致 22 Rule + EPIC-058-E 22→20 合并)
 
-**状态**: ✅ v2.0.5 主公拍板落地, 3 合并候选 已执行 (净减 -2 Rule). v2.4.0 4 合并 (v2.4.1 反思 revert) 跟"诚实修正" 联合, 治根 "0 实际改变 假动作" + "Rule 治 Rule 通胀" 迷信.
+**状态**: ✅ v2.0.5 主公拍板落地, 3 合并候选 已执行 (净减 -2 Rule). ✅ v2.7.5 EPIC-058-E 主公 explicit A 拍板落地, 2 合并候选 已执行 (净减 -2 Rule, 22 → 20). v2.4.0 4 合并 (v2.4.1 反思 revert) 跟"诚实修正" 联合, 治根 "0 实际改变 假动作" + "Rule 治 Rule 通胀" 迷信. EPIC-058-E 合并 跟 v2.4.0 反思 revert 教训 一致 (合并不 删落地脚本).
 
 **v2.0.5 3 候选** (跟 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md line 22 联合):
 
@@ -606,18 +607,30 @@ L4 数据流动：集成测试验证
 2. **候选 B (P0 必拍 → ✅ 执行)**: Rule 32 → 撤销, 合并到 Rule 5 DRY 框架 + Rule 19 治理 (反讽治根, 净 -1)
 3. **候选 C (P1 备案 → ✅ 执行)**: Rule 33 → 合并入 Rule 13 (3 模式决策权) 扩展 (净 0 — 扩展不增 Rule, 内容并入)
 
+**EPIC-058-E v2.7.5 2 候选** (跟 master explicit A 拍板 联合, 跟 v2.0.5 EPIC-051 24→22 合并 模式 一致, 跟 PHASE-013-REFLECTION 合并教训 联合):
+
+1. **候选 1 (P2 → ✅ 执行, master explicit A)**: Rule 5 + Rule 8 → 合并为 Rule 5/8 "类型安全强制化 + Rule of 500" (净 -1, 跟"代码质量 强制化" 主题 联合)
+2. **候选 2 (P2 → ✅ 执行, master explicit A)**: Rule 6 + Rule 7 → 合并为 Rule 6/7 "经验沉淀强制化 + PHASE 闭环 review" (净 -1, 跟"经验沉淀" 主题 联合)
+
 **v2.4.0 4 合并 → v2.4.1 revert** (跟 PHASE-013-REFLECTION 联合, 跟主公 'a' explicit 派单 1h 反思 联合):
 - ❌ v2.4.0 4 合并 (Rule 7+8, 11+12, 14+15, 16+17) 跟"诚实修正" 联合 反思, 治根 "0 实际改变 假动作" + "Rule 治 Rule 通胀" 迷信
 - ✅ v2.4.1 revert 还原 跟 v2.3.0 一致 22 Rule, 0 落地脚本 变化, 0 净价值 损失
 
-**实际净减**: 24 → 22 (v2.0.5, 净减 -2), 净价值 62.5% → **64.0%** (v2.0.5). v2.4.0 4 合并 → v2.4.1 revert 闭环, 净价值 67.0% 持平.
+**EPIC-058-E 22→20 合并 (跟 v2.4.0 反思 revert 教训 一致, 不重蹈覆辙)**:
+- ✅ Rule 5 + Rule 8 合并 → Rule 5/8 (落地脚本 `scripts/check-pr-size.sh --check-rule-of-500` + TypeScript strict mode 不变, 仅 CLAUDE.md Rule 文本合并)
+- ✅ Rule 6 + Rule 7 合并 → Rule 6/7 (落地脚本 `check-fact-forcing-preflight.sh` + `LESSONS-LEARNED.md` 草稿 不变, 仅 CLAUDE.md Rule 文本合并)
+- ✅ 0 删落地脚本, 0 删 hardcoded reference, 0 删 ticket 实施 模式
+- ✅ 净价值 持平 (67.0%, 跟 v2.0.5 + v2.4.0 一致, 避免 "0 实际变化 假动作" 反讽)
+
+**实际净减**: 24 → 22 (v2.0.5, 净减 -2), 净价值 62.5% → **64.0%** (v2.0.5). v2.4.0 4 合并 → v2.4.1 revert 闭环, 净价值 67.0% 持平. EPIC-058-E v2.7.5 22 → 20 (净减 -2), 净价值 67.0% 持平 (不制造 "0 实际变化 假动作").
 
 **诚实修正**:
 - v2.0.5 实际 -2 + +1.5% (proposal 写 -3 + +3.0%, 差异原因: 候选 C 是"扩展"而非"删除", 净减为 0)
 - v2.4.0 反思 (跟 PHASE-013-REFLECTION 联合): 4 合并 命名 = "Rule 数 减少 净价值 提升", 实际 = 净价值 持平 0 实际变化 = "制造 0 实际改变 假动作" 反讽
 - v2.4.1 revert: 0 落地脚本 变化, 0 净价值 损失, 跟"翻篇&精进" 战略 一致
+- **EPIC-058-E v2.7.5**: 22 → 20 合并, 净价值 67.0% 持平, 0 删落地脚本, 跟"诚实修正" 联合, 治根 "0 实际变化 假动作" 反讽
 
-**反讽治根**: Rule 32 本身是 Rule, 撤销避免 Rule 治 Rule 通胀 → Rule 数 +1 → 治根动作本身加剧问题. v2.4.0 4 合并 跟 v2.0.10 Rule 32 撤销 是 同样 反讽 模式 ("Rule 治 Rule 通胀"), 跟"反讽" 联合, 需 治根. v2.4.1 revert 跟"诚实修正" 联合, 治根 反讽 模式.
+**反讽治根**: Rule 32 本身是 Rule, 撤销避免 Rule 治 Rule 通胀 → Rule 数 +1 → 治根动作本身加剧问题. v2.4.0 4 合并 跟 v2.0.10 Rule 32 撤销 是 同样 反讽 模式 ("Rule 治 Rule 通胀"), 跟"反讽" 联合, 需 治根. v2.4.1 revert 跟"诚实修正" 联合, 治根 反讽 模式. EPIC-058-E v2.7.5 合并 跟 v2.4.1 revert 教训 一致 (合并不 删落地脚本), 0 重蹈覆辙.
 
 **KALLAX-GLOSSARY §10.3 阈值 15 重新审视** (跟"反讽" 联合):
 - 阈值 15 是 v1.2.4 EPIC-051 经验值, 跟 v2.4.0 现状 不匹配
@@ -628,14 +641,15 @@ L4 数据流动：集成测试验证
 
 **执行前置** (跟 PROCESS.md:25-26 联合):
 
-- ✅ v2.0.5 + v2.4.1 联合已执行, 主公拍板落地
+- ✅ v2.0.5 + v2.4.1 + EPIC-058-E v2.7.5 联合已执行, 主公拍板落地
 - ✅ v2.4.0 4 合并 → v2.4.1 revert 跟"诚实修正" 联合, 反思 闭环
 - ❌ 未来 Rule 合并需主公拍板 (P0 必拍 + P1 备案)
 
 **详细 proposal**:
 - v2.0.5: [`docs/process/rule-merge-proposal.md`](docs/process/rule-merge-proposal.md)
 - v2.4.0 → v2.4.1 反思: [`confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md`](confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md)
-**联动 ticket**: EPIC-055-B (主公拍板分级, 已 merged `2b4771c`) + EPIC-058 (5 deferred tickets, P1-1 + P1-2 + P3-1 done)
+- EPIC-058-E v2.7.5: [`confluence/decisions/EPIC-058-E-IMPL-2026-06-19.md`](confluence/decisions/EPIC-058-E-IMPL-2026-06-19.md)
+**联动 ticket**: EPIC-055-B (主公拍板分级, 已 merged `2b4771c`) + EPIC-058 (5 deferred tickets, EPIC-058-A/B/C/D done, EPIC-058-E v2.7.5 合并 落地 20 Rule)
 
 ### 30. 工具不可绕过 (KALLAX P0) — Security Extension 治根因 1
 
