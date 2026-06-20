@@ -1,0 +1,26 @@
+{
+  "name": "kallax-bridge",
+  "version": "1.0.0",
+  "description": "KALLAX Node.js ↔ Rust FFI bridge via napi-rs (EPIC-060-B Phase 3 scaffold)",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "napi": {
+    "name": "kallax-bridge",
+    "triples": {
+      "defaults": true,
+      "additional": []
+    }
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "napi build --platform --release --strip",
+    "build:debug": "napi build --platform",
+    "test": "cargo test -p kallax-bridge"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^2.18.0"
+  }
+}
