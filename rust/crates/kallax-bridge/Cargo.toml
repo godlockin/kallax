@@ -4,25 +4,30 @@ version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
-description = "KALLAX Node.js ↔ Rust bridge — rusqlite-backed data adapter (EPIC-060-B Phase 3 sub-task 3)"
+description = "KALLAX napi-rs bridge for Node.js ↔ Rust 6-dimension master-verify (L1 Rust 主用, L2 Node.js 备, 跟 eket 4 级降级 模式 联合)"
 
 [lib]
-name = "kallax_bridge"
-path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]
 
-[[bin]]
-name = "kallax-data-adapter"
-path = "src/bin/data-adapter-cli.rs"
+[features]
+# napi-bindings feature 默认 启用 (cdylib 路径); examples/ cargo run 用 --no-default-features
+# 跑 纯 Rust logic (0 napi linkage, 0 node headers 必需, 跨 平台 跑).
+default = ["napi-bindings"]
+napi-bindings = ["dep:napi", "dep:napi-derive", "dep:napi-build"]
 
 [dependencies]
-kallax-core.workspace = true
-rusqlite.workspace = true
-r2d2.workspace = true
-r2d2_sqlite.workspace = true
-serde.workspace = true
-serde_json.workspace = true
-thiserror.workspace = true
-tracing.workspace = true
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+regex = { workspace = true }
+
+# napi-rs 2.16 (offline-cached, 跟 napi 2.16.17 + napi-derive 2.16.13 + napi-build 2.3.2 联合)
+napi = { version = "2.16", default-features = false, features = ["serde-json", "napi4"], optional = true }
+napi-derive = { version = "2.16", optional = true }
+
+[build-dependencies]
+napi-build = { version = "2.3", optional = true }
 
 [dev-dependencies]
-tempfile = "3.10"
+# 0 deps 必要 — 集成测试 在 tests/integration/ 跟 shell 联合
