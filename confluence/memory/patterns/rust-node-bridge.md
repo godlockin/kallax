@@ -34,4 +34,4 @@ Node SQLite writes, Rust reads via HTTP. No two-writer problem. Millisecond-scal
 ## References
 - [[degradation-strategy]]
 - [[framework]]
-- [[election-system]]
+- [[ELECTION-SYSTEM]]

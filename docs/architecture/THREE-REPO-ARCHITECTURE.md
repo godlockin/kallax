@@ -72,7 +72,7 @@ confluence/
 │
 ├── decisions/                   # 架构决策记录
 │   ├── ADR-001-rust-core.md     # 选择 Rust 作为核心
-│   ├── ADR-002-dag-scheduler.md # DAG 调度设计
+│   ├── ADR-002-dag-scheduler.md # DAG 调度设计 (跟 docs/architecture/DAG-SCHEDULER.md 联合)
 │   └── ADR-template.md          # ADR 模板
 │
 ├── runbooks/                    # 运维手册
