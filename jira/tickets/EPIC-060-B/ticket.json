@@ -15,11 +15,18 @@
     "includes": [
       "jira/tickets/EPIC-060-B/",
       "rust/Cargo.toml",
+      "rust/Cargo.lock",
       "rust/crates/kallax-core/",
       "rust/crates/kallax-engine/",
       "rust/crates/kallax-cli/",
       "rust/crates/kallax-server/",
-      "rust/crates/context-mon/"
+      "rust/crates/context-mon/",
+      "rust/crates/kallax-bench/",
+      "node/package.json",
+      "node/bench/",
+      "scripts/rust-bench.sh",
+      "scripts/node-bench.sh",
+      "confluence/decisions/EPIC-060-B-PHASE-1-BENCHMARK-2026-06-19.md"
     ],
     "excludes": []
   },

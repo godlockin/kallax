@@ -20,7 +20,11 @@
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "bench": "node bench/bench-json.js && node bench/bench-sqlite.js && node bench/bench-hash.js",
+    "bench:json": "node bench/bench-json.js",
+    "bench:sqlite": "node bench/bench-sqlite.js",
+    "bench:hash": "node bench/bench-hash.js"
   },
   "dependencies": {
     "better-sqlite3": "^11.0.0",

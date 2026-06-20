@@ -5,6 +5,7 @@ members = [
     "crates/kallax-cli",
     "crates/kallax-server",
     "crates/context-mon",
+    "crates/kallax-bench",
 ]
 resolver = "2"
 
