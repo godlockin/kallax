@@ -1265,6 +1265,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "kallax-bridge"
+version = "1.0.0"
+dependencies = [
+ "kallax-core",
+ "r2d2",
+ "r2d2_sqlite",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 1.0.69",
+ "tracing",
+]
+
+[[package]]
 name = "kallax-cli"
 version = "1.0.0"
 dependencies = [
