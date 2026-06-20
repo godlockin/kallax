@@ -6,6 +6,8 @@ members = [
     "crates/kallax-server",
     "crates/context-mon",
 ]
+default-members = ["crates/kallax-core"]
+# EPIC-060-B Phase 2: 主用 crate 拍板 (方案 B, 1 主用 4 备 渐进)
 resolver = "2"
 
 [workspace.package]
