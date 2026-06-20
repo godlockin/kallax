@@ -5,45 +5,43 @@
   "scope": "1. 主公 2026-06-18 '同意建议, 需要都建卡并行处理' explicit 派单 联合 (跟'独立' 拍板 explicit 联合, 跟 PROCESS.md:25-26 联合)\n2. 3 票 P3 留待: EPIC-060-A 分布式 路线图 + EPIC-060-B Rust 投入 拍板 + EPIC-060-C 4 层 → 5 层 拍板\n3. 跟 KALLAX 实际 架构 联合 (file:line rust/Cargo.toml:1-7 5 crates + node/package.json:21-29 better-sqlite3/ioredis + web/src/dashboard/dispatch/ 4 层)\n4. 跟 eket 4 级降级 模式 联合 (Shell → Rust → Node.js → Web)\n5. 跟 v2.0.7 / v2.4.0 主公 B+D 跳过 模式 联合 (P2-1 web dashboard + P2-2 69 remote DB cleanup 留待)\n6. 跟 PHASE-014 review 模式 一致 (5 deferred → 3 closed + 2 留待, 0 派单 0 执行 0 ticket claim, 仅 入口 沉淀)\n7. 跟'翻篇&精进' 战略 一致 (0 增命令 0 增 Rule 持平, 跟 16 release 累计 联合, 跟 KALLAX-GLOSSARY §11.3 联合)\n8. 跟'独立' 拍 explicit 联合 (跟 PROCESS.md:25-26 联合, 主公后续 拍板 留待)\n9. 跟 v2.7.0 经验教训 整理 release 联合 (commit 05c266d + ed9e812, 跟 PHASE-015 review 联合)\n10. 跟'反讽' 联合 治根 '单 master 假动作' (跟 KALLAX 自称'多 agent' 实际'单 master' 失焦 联合)",
   "start_time": "2026-06-18",
   "delivery_time": "2026-06-19",
-  "status": "active",
-  "baseline": {
-    "source": "主公 2026-06-18 '同意建议' explicit 派单 (跟 PROCESS.md:25-26 联合, 跟'独立' 拍 explicit 联合, 跟 PHASE-014 review 5 deferred 模式 一致)",
-    "current_state": "v2.7.0 release 之后, KALLAX 4 层 架构 (Shell 186 + Rust 5 crates + Node.js 146 .ts + Web dashboard 代码就绪) 已 落地 但 分布式 / Rust 主用 / 5 层 升级 3 项 留待, ioredis optional 但 未启用, web dashboard 代码就绪 未部署, KALLAX-GLOSSARY §11.4 边界失焦 联合, KALLAX 自称'多 agent' 实际'单 master 多 performer' 失焦",
-    "gap": "3 票 P3 留待: 入口 沉淀, 0 执行 0 派单 0 ticket claim, 仅 后续 主公 explicit 拍板 (跟'独立' 战略 联合, 跟 PROCESS.md:25-26 联合)"
-  },
-  "target": {
-    "epic_060_a_distributed": "EPIC-060-A: 分布式 路线图 (P3, 4h, infra, deferred, 主公后续 拍板): 1. ioredis Pub/Sub 启用 (file:line node/package.json:28-29 optional → 必装) + 2. litestream WAL 复制 (跟 better-sqlite3 联合) + 3. 3 仓 NFS/S3 sync (跟 confluence/jira/code 联合) + 4. web dashboard server 部署 (跟 P2-1 主公 B 跳过 联合) + 5. multi-master election (跟 master-election.ts 联合)",
-    "epic_060_b_rust_invest": "EPIC-060-B: Rust 投入 拍板 (P3, 4h, infra, deferred, 主公后续 拍板): 1. KALLAX 5 crates 现状 (file:line rust/Cargo.toml:1-7) 0 投入 验证 / 主用 拍板 + 2. Rust vs Node.js 性能 19× 验证 (跟 eket README.md 联合) + 3. 5 crates 落地 路径 (kallax-core / engine / cli / server / context-mon) + 4. 0 投入 治根 (跟'翻篇&精进' 一致, 跟 KALLAX 现状 0 Rust 验证 联合)",
-    "epic_060_c_4_to_5_layers": "EPIC-060-C: 4 层 → 5 层 (分布式层) 拍板 (P3, 4h, infra, deferred, 主公后续 拍板): 1. eket 4 级降级 模式 (Shell → Rust → Node.js → Web) 联合 + 2. KALLAX 4 层 现状 (跟 baseline 联合) + 3. 5 层 (4 + 分布式) 升级 路径 + 4. 4 vs 5 决策 拍板 留待 (跟 PROCESS.md:25-26 独立 拍板 联合)"
-  },
-  "decisions": {
-    "priority": 3,
-    "rationale": "主公 2026-06-18 '同意建议' explicit 派单 (3 票 P3 留待 入口 沉淀, 跟'独立' 拍 explicit 联合, 跟 PROCESS.md:25-26 联合, 跟 PHASE-014 review 5 deferred 模式 一致, 跟 v2.7.0 经验教训 整理 release §14.8 战略建议 联合)",
-    "phase": "PHASE-016 跟 v2.7.0 联合 (跨期 review 入口, 跟 PHASE-014 5 deferred 模式 一致)",
-    "explicit_master_signoff": "主公 explicit 派单 '同意建议, 需要都建卡并行处理' (3 票 P3 留待, 跟'独立' 拍 explicit 联合, 跟 PROCESS.md:25-26 联合, 主公后续 拍板 留待)",
-    "skip_explicit": "主公后续 拍板 留待: P3-A 分布式 路线图 / P3-B Rust 投入 拍板 / P3-C 4 → 5 层 拍板 (跟 PHASE-014 5 deferred 模式 一致, 0 派单 0 执行 0 ticket claim, 仅 入口 沉淀)"
+  "completion_time": "2026-06-19",
+  "status": "done",
+  "master_explicit_decision": "2026-06-19 跨主公 2026-06-18 '都拆卡做' explicit 派单: 3 票 决策 拍板 落地, 实施 留待 跨期 (跟 v2.0.6 EPIC-057 4 ticket 派单 模式 一致). 跟'独立' 战略 联合: 0 ai-auto 决策, 全部 master explicit 拍板 留待",
+  "kpi_累计": {
+    "commits_landed": 4,
+    "decision_docs_landed": 4,
+    "tests_pass": "N/A (决策 doc 0 实施)",
+    "rule_of_500_violations": 0,
+    "silent_output": 0,
+    "rule_added": 0,
+    "command_added": 0,
+    "ticket_added": 0
   },
   "tickets": [
     {
       "id": "EPIC-060-A",
-      "title": "P3-A 分布式 路线图 (ioredis Pub/Sub + litestream + 3 仓 sync + web dashboard 部署, 4h, infra, deferred, 主公后续 拍板)",
-      "assignee": "deferred",
-      "status": "deferred",
-      "blocked_by": "主公后续 explicit 拍板优先级 (跟'独立' 战略 联合, 跟 PROCESS.md:25-26 联合, 跟 KALLAX 自称'多 agent' 实际'单 master' 失焦 联合, 跟'反讽' 联合 治根 '单 master 假动作')"
+      "title": "P3-A: 分布式 路线图 (5 阶段累计 92h, P2)",
+      "status": "ready",
+      "completion_time": null,
+      "master_decision": "D: master explicit 拍板 启动 Phase X, 0 ai-auto 决策, 0 启动 (跟'独立' 战略 联合, 留待 master 后续 拍板 Phase X)",
+      "decision_doc": "confluence/decisions/EPIC-060-A-ROADMAP-2026-06-19.md"
     },
     {
       "id": "EPIC-060-B",
-      "title": "P3-B Rust 投入 拍板 (KALLAX 5 crates 现状, 0 投入 验证 / 主用, 4h, infra, deferred, 主公后续 拍板)",
-      "assignee": "deferred",
-      "status": "deferred",
-      "blocked_by": "主公后续 explicit 拍板优先级 (跟'翻篇&精进' 战略 联合, 跟 rust/Cargo.toml:1-7 5 crates 现状 联合, 跟 KALLAX 0 Rust 投入 验证 联合)"
+      "title": "P3-B: Rust 投入 拍板 (rust/Cargo.toml:1-7 5 crates 现状, 0 投入 验证 / 主用, 跟'反讽' 联合 治根 '5 crates 0 投入')",
+      "status": "ready",
+      "completion_time": null,
+      "master_decision": "C: 阶段 1-3 全面 投入 52h (3 实施 tickets 留待 跨期)",
+      "decision_doc": "confluence/decisions/EPIC-060-B-RUST-INVEST-2026-06-19.md"
     },
     {
       "id": "EPIC-060-C",
-      "title": "P3-C 4 层 → 5 层 (分布式层) 拍板 (跟 eket 4 级降级 模式 一致, 4h, infra, deferred, 主公后续 拍板)",
-      "assignee": "deferred",
-      "status": "deferred",
-      "blocked_by": "主公后续 explicit 拍板优先级 (跟'独立' 拍板 explicit 联合, 跟 PROCESS.md:25-26 联合, 跟 eket 4 级降级 模式 联合, 跟 KALLAX 4 层 现状 联合)"
+      "title": "P3-C: 4 层 → 5 层 (分布式层) 拍板 (跟 eket 4 级降级 模式 一致, 跟'独立' 拍板 explicit 联合, 跟 PROCESS.md:25-26 联合)",
+      "status": "ready",
+      "completion_time": null,
+      "master_decision": "C: 混合 模式 (4 层 + 分布式层 1 组件 启用, 4h P0 ioredis Pub/Sub, 1 实施 ticket 留待 跨期)",
+      "decision_doc": "confluence/decisions/EPIC-060-C-LAYERS-2026-06-19.md"
     }
   ]
 }
