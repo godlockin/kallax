@@ -6,9 +6,11 @@ members = [
     "crates/kallax-server",
     "crates/context-mon",
     "crates/kallax-bench",
+    "crates/kallax-bridge",
 ]
 default-members = ["crates/kallax-core"]
 # EPIC-060-B Phase 2: 主用 crate 拍板 (方案 B, 1 主用 4 备 渐进)
+# EPIC-060-B Phase 3: 加入 kallax-bridge (napi-rs Node.js ↔ Rust bridge scaffold)
 resolver = "2"
 
 [workspace.package]
@@ -64,6 +66,11 @@ sha2 = "0.10"
 # Internal crates
 kallax-core = { path = "crates/kallax-core" }
 kallax-engine = { path = "crates/kallax-engine" }
+kallax-bridge = { path = "crates/kallax-bridge" }
+
+# napi-rs (Node.js ↔ Rust FFI bridge, EPIC-060-B Phase 3)
+napi = "2.16"
+napi-derive = "2.16"
 
 [profile.release]
 lto = true
