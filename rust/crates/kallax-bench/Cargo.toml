@@ -1,0 +1,30 @@
+[package]
+name = "kallax-bench"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "EPIC-060-B Phase 1: Rust vs Node.js performance benchmarks (3 tasks: JSON, SQLite, SHA-256)"
+
+[[bench]]
+name = "bench_json"
+harness = false
+
+[[bench]]
+name = "bench_sqlite"
+harness = false
+
+[[bench]]
+name = "bench_hash"
+harness = false
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+rusqlite = { workspace = true }
+sha2 = { workspace = true }
+hex = "0.4"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+tempfile = "3.10"
