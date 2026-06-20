@@ -16,7 +16,7 @@
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                         PHASE-005 Review (2026-06-11)                        │
 │  ┌──────────────────────────────────────────────────────────────────────┐    │
-│  │  升级 3: 4 主题 → 1 综合主题 (cross-epic-kpi-falsification-evolution) │    │
+│  │  升级 3: 4 主题 → 1 综合主题 (cross-epic-kpi-falsification-evolution-2026-06-19) │    │
 │  └──────────────────────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────────────────────┘
                                       │
@@ -52,7 +52,7 @@
 | 主题 | EPIC | 关键事件 | 状态 |
 |---|---|---|---|
 | three-modes-decision-authority | EPIC-029 | 3 模式 (ai-auto/ai-copilot/manual) + stage-gate + decision-gate | ARCHIVED → 综合主题 |
-| security-hardening-iterations | EPIC-029/030 | 安全审查 3 轮叠加, 20 issue | ARCHIVED → 综合主题 |
+| security-hardening-iterations-2026-06-19 | EPIC-029/030 | 安全审查 3 轮叠加, 20 issue | ARCHIVED → 综合主题 |
 | token-plan-cap-incident | EPIC-029 | Token Plan Max 5h cap 9917k/9917k撞墙 | ARCHIVED → 综合主题 |
 | performer-kpi-falsification-pattern | EPIC-031 |3 Performer amend 连续失败, 4 次演化 | ARCHIVED → 综合主题 |
 
@@ -277,13 +277,13 @@ Performer report: "DONE, PASS"
 | 原主题 (ARCHIVED) | 综合主题章节 | 内容摘要 |
 |---|---|---|
 | three-modes-decision-authority.md | §1 + §5 | 3 模式借鉴 + 派发权让渡 = 算法 + 人工 |
-| security-hardening-iterations.md | §3 | 安全审查 3 轮叠加 (20 issue) |
+| security-hardening-iterations-2026-06-19.md | §3 | 安全审查 3 轮叠加 (20 issue) |
 | token-plan-cap-incident.md | §4 | Token Plan 限撞墙 + 容量 (Rule 11 v2 极端 #1) |
 | performer-kpi-falsification-pattern.md | §2 + §6 + §7 | KPI falsification 4 次演化 + 工具自验证 + Master 强验证 |
 
 ### 8.2 单一索引 (本文件)
 
-**入口**: `confluence/memory/lessons/cross-epic-kpi-falsification-evolution.md`
+**入口**: `confluence/memory/lessons/cross-epic-kpi-falsification-evolution-2026-06-19.md`
 
 **导航**:
 - §1: 跨主题关系图 (4 主题 + 5 EPIC + 1 PHASE)
@@ -301,7 +301,7 @@ Performer report: "DONE, PASS"
 ```markdown
 | File | 主题 | 关键事件 |
 |---|---|---|
-| `cross-epic-kpi-falsification-evolution.md` | KPI falsification 4 次演化 + 安全审查 3 轮 + Token Plan 撞墙 + 派发权让渡 | 综合 4 主题, 单一入口 |
+| `cross-epic-kpi-falsification-evolution-2026-06-19.md` | KPI falsification 4 次演化 + 安全审查 3 轮 + Token Plan 撞墙 + 派发权让渡 | 综合 4 主题, 单一入口 |
 ```
 
 ---

@@ -34,6 +34,6 @@ Background agents (`run_in_background: true`) had **100% hallucination rate** fo
 - Conductor must independently verify output
 
 ## Related
-- [[verification-matters]]
+- [[verification-matters-2026-06-19]]
 - [[slaver-worktree-code-loss]]
 - [[gate-review]]

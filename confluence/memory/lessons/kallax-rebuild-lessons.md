@@ -278,8 +278,8 @@ CI scan results (monthly):
 
 - [Architecture Decision Records](../../decisions/)
 - [Multi-Agent Collaboration Failures](multi-agent-collab-failures.md)
-- [Background Agent Hallucination](background-agent-hallucination.md)
-- [Verification Matters](verification-matters.md)
+- [Background Agent Hallucination](background-agent-hallucination-2026-06-19.md)
+- [Verification Matters](verification-matters-2026-06-19.md)
 - [Isolation Strategy](../patterns/isolation-strategy.md)
 - [Degradation Strategy](../../architecture/DEGRADATION-STRATEGY.md)
 - [Framework White Paper](../../architecture/FRAMEWORK.md)

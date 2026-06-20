@@ -1,7 +1,7 @@
 # token-plan-cap-incident.md
 
 > **状态**: ARCHIVED — 5 年后过期 (主公 2026-06-09 拍)
-> **原因**: 内容已整合到 `cross-epic-kpi-falsification-evolution.md` §4
+> **原因**: 内容已整合到 `cross-epic-kpi-falsification-evolution-2026-06-19.md` §4
 > **保留历史**: 不删除, 跟 EKET "5 年后过期" 标一致
 
 ---
@@ -17,7 +17,7 @@
 - 容量: 1 conductor + 2 performer
 - Rule 11 v2 极端情况 #1 定义
 
-**整合后**: `confluence/memory/lessons/cross-epic-kpi-falsification-evolution.md` §4
+**整合后**: `confluence/memory/lessons/cross-epic-kpi-falsification-evolution-2026-06-19.md` §4
 
 ---
 

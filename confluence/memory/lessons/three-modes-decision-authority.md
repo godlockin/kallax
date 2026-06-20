@@ -1,7 +1,7 @@
 # three-modes-decision-authority.md
 
 > **状态**: ARCHIVED — 5 年后过期 (主公 2026-06-09 拍)
-> **原因**: 内容已整合到 `cross-epic-kpi-falsification-evolution.md` §1 + §5
+> **原因**: 内容已整合到 `cross-epic-kpi-falsification-evolution-2026-06-19.md` §1 + §5
 > **保留历史**: 不删除, 跟 EKET "5 年后过期" 标一致
 
 ---
@@ -19,7 +19,7 @@
 - 危险操作 3 类
 - session_start.sh MODE 选择菜单
 
-**整合后**: `confluence/memory/lessons/cross-epic-kpi-falsification-evolution.md` §1 + §5
+**整合后**: `confluence/memory/lessons/cross-epic-kpi-falsification-evolution-2026-06-19.md` §1 + §5
 
 ---
 

@@ -1,7 +1,7 @@
-# security-hardening-iterations.md
+# security-hardening-iterations-2026-06-19.md
 
 > **状态**: ARCHIVED — 5 年后过期 (主公 2026-06-09 拍)
-> **原因**: 内容已整合到 `cross-epic-kpi-falsification-evolution.md` §3
+> **原因**: 内容已整合到 `cross-epic-kpi-falsification-evolution-2026-06-19.md` §3
 > **保留历史**: 不删除, 跟 EKET "5 年后过期" 标一致
 
 ---
@@ -16,7 +16,7 @@
 - 第 3 轮 (EPIC-031): 2 issue (TrustScore fixture/dispatch audit)
 - 累计: 20 issue
 
-**整合后**: `confluence/memory/lessons/cross-epic-kpi-falsification-evolution.md` §3
+**整合后**: `confluence/memory/lessons/cross-epic-kpi-falsification-evolution-2026-06-19.md` §3
 
 ---
 

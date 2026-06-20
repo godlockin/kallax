@@ -36,4 +36,4 @@ status: active
 ## Related
 - [[conductor-single-point-failure]]
 - [[isolation-strategy]]
-- [[background-agent-hallucination]]
+- [[background-agent-hallucination-2026-06-19]]

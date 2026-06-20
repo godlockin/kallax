@@ -44,16 +44,16 @@
 
 | File | 主题 | 关键事件 | 状态 |
 |---|---|---|---|
-| `background-agent-hallucination.md` | Background agent 幻觉 | EPIC-021 17 ticket 0 expert | ACTIVE |
+| `background-agent-hallucination-2026-06-19.md` | Background agent 幻觉 | EPIC-021 17 ticket 0 expert | ACTIVE |
 | `kallax-rebuild-lessons.md` | 重建经验 | KALLAX 框架级 lessons | ACTIVE |
 | `multi-agent-collab-failures.md` | 多 Agent 协作失败 | 并行冲突 / 工件覆盖 | ACTIVE |
 | `project-level-data-isolation.md` | 数据隔离 | Worktree 隔离 + 跨实例防混 | ACTIVE |
-| `verification-matters.md` | 验证重要性 | 4-Level Fact-Forcing 来源 | ACTIVE |
-| `cross-epic-kpi-falsification-evolution.md` | KPI falsification 4 次演化 + 安全审查 3 轮 + Token Plan 撞墙 + 派发权让渡 | 综合 4 主题, 单一入口 (PHASE-005升级 3) | ACTIVE |
-| `three-modes-decision-authority.md` | 3 模式决策权 | EPIC-029 3 模式 | ARCHIVED → cross-epic-kpi-falsification-evolution.md |
-| `security-hardening-iterations.md` | 安全审查 3 轮叠加 | EPIC-029/030 20 issue | ARCHIVED → cross-epic-kpi-falsification-evolution.md |
-| `token-plan-cap-incident.md` | Token Plan 限撞墙 | EPIC-029 Token5h cap | ARCHIVED → cross-epic-kpi-falsification-evolution.md |
-| `performer-kpi-falsification-pattern.md` | Performer KPI falsification 反复 | EPIC-031 3 amend 失败 | ARCHIVED → cross-epic-kpi-falsification-evolution.md |
+| `verification-matters-2026-06-19.md` | 验证重要性 | 4-Level Fact-Forcing 来源 | ACTIVE |
+| `cross-epic-kpi-falsification-evolution-2026-06-19.md` | KPI falsification 4 次演化 + 安全审查 3 轮 + Token Plan 撞墙 + 派发权让渡 | 综合 4 主题, 单一入口 (PHASE-005升级 3) | ACTIVE |
+| `three-modes-decision-authority.md` | 3 模式决策权 | EPIC-029 3 模式 | ARCHIVED → cross-epic-kpi-falsification-evolution-2026-06-19.md |
+| `security-hardening-iterations-2026-06-19.md` | 安全审查 3 轮叠加 | EPIC-029/030 20 issue | ARCHIVED → cross-epic-kpi-falsification-evolution-2026-06-19.md |
+| `token-plan-cap-incident.md` | Token Plan 限撞墙 | EPIC-029 Token5h cap | ARCHIVED → cross-epic-kpi-falsification-evolution-2026-06-19.md |
+| `performer-kpi-falsification-pattern.md` | Performer KPI falsification 反复 | EPIC-031 3 amend 失败 | ARCHIVED → cross-epic-kpi-falsification-evolution-2026-06-19.md |
 
 ## 3. 关键经验教训汇总 (跨 EPIC, 17 子教训)
 
