@@ -1,0 +1,49 @@
+{
+  "meta": {
+    "epic": "EPIC-060-B",
+    "phase": "3",
+    "subtask": "5-integration-benchmark",
+    "date": "2026-06-20T07:44:15Z",
+    "host": "Darwin 25.5.0 arm64",
+    "node_version": "v24.15.0",
+    "iterations_constants": {
+      "BENCHMARK_ITERATIONS_FAST": 1000,
+      "BENCHMARK_ITERATIONS_MEDIUM": 500,
+      "BENCHMARK_ITERATIONS_SLOW": 100,
+      "EVENT_PUB_SUB_COUNT": 500,
+      "SQLITE_QUERY_COUNT": 200,
+      "MASTER_VERIFY_INVOCATION_COUNT": 50,
+      "SQLITE_ROW_COUNT": 1000,
+      "HASH_INPUT_SIZE_BYTES": 4096
+    },
+    "benchmarks_total": 6,
+    "phase_1_baseline": 3,
+    "phase_3_bridges": 3
+  },
+  "benchmarks": [
+    { "id": 1, "rows": [
+      {"task":"json_serialize","size":"small","keyCount":10,"nIters":1000,"totalBytes":460000,"elapsedMs":0.606,"bytesPerSec":759232515,"opsPerSec":1650505},
+      {"task":"json_serialize","size":"medium","keyCount":50,"nIters":500,"totalBytes":790000,"elapsedMs":1.833,"bytesPerSec":431075643,"opsPerSec":272833},
+      {"task":"json_serialize","size":"large","keyCount":200,"nIters":100,"totalBytes":598000,"elapsedMs":1.059,"bytesPerSec":564950402,"opsPerSec":94473},
+      {"task":"json_deserialize","size":"small","keyCount":10,"nIters":1000,"totalBytes":460000,"elapsedMs":0.728,"bytesPerSec":631723217,"opsPerSec":1373311},
+      {"task":"json_deserialize","size":"medium","keyCount":50,"nIters":500,"totalBytes":790000,"elapsedMs":1.034,"bytesPerSec":763808251,"opsPerSec":483423},
+      {"task":"json_deserialize","size":"large","keyCount":200,"nIters":100,"totalBytes":598000,"elapsedMs":1.77,"bytesPerSec":337773721,"opsPerSec":56484}
+    ] },
+    { "id": 2, "rows": [
+      {"task":"sqlite_insert","size":"small","nRows":1000,"elapsedMs":3.237,"rowsPerSec":308960},
+      {"task":"sqlite_insert","size":"medium","nRows":2000,"elapsedMs":2.072,"rowsPerSec":965038},
+      {"task":"sqlite_insert","size":"large","nRows":5000,"elapsedMs":4.5,"rowsPerSec":1111029},
+      {"task":"sqlite_select_all","size":"small","nRows":1000,"selectedRows":1000,"elapsedMs":0.417,"rowsPerSec":2400482},
+      {"task":"sqlite_select_all","size":"medium","nRows":2000,"selectedRows":2000,"elapsedMs":0.776,"rowsPerSec":2575935},
+      {"task":"sqlite_select_all","size":"large","nRows":5000,"selectedRows":5000,"elapsedMs":2.237,"rowsPerSec":2234845}
+    ] },
+    { "id": 3, "rows": [
+      {"task":"sha256_hash","size":"small_1kb","payloadSize":1024,"nIters":2000,"totalBytes":2048000,"elapsedMs":2.602,"bytesPerSec":787162487,"opsPerSec":768713},
+      {"task":"sha256_hash","size":"medium_16kb","payloadSize":16384,"nIters":2000,"totalBytes":32768000,"elapsedMs":12.02,"bytesPerSec":2726019031,"opsPerSec":166383},
+      {"task":"sha256_hash","size":"large_64kb","payloadSize":65536,"nIters":2000,"totalBytes":131072000,"elapsedMs":43.778,"bytesPerSec":2993986740,"opsPerSec":45685}
+    ] },
+    { "id": 4, "result": {"bench":"event_bus_pub_sub","iterations":500,"delivered":1000,"totalMs":0.254,"perEventMs":0.0003,"opsPerSec":3935071,"contract":"JSON over Rust serde_json bridge"} },
+    { "id": 5, "result": {"bench":"data_adapter_query_execute","iterations":200,"totalRowsFetched":2000,"totalMs":3539.846,"perQueryMs":17.6992,"queriesPerSec":56,"contract":"SQLite file format (Rust rusqlite + Node better-sqlite3 shared)"} },
+    { "id": 6, "result": {"bench":"master_verify_verify_all","iterations":50,"totalBytes":17800,"bytesPerInvocation":356,"totalMs":0.138,"perInvocationMs":0.0028,"invocationsPerSec":362537,"contract":"6-dim verify_all JSON (Rust serde bridge)"} }
+  ]
+}
