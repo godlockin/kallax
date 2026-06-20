@@ -1,0 +1,32 @@
+[package]
+name = "kallax-bridge"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "KALLAX bridge — Rust ↔ Node.js napi-rs bindings (event bus primary)"
+
+[features]
+# Default: pure Rust, 0 external deps, cargo check 0 errors.
+# Enable `napi` feature for Node.js native module exports (requires napi-rs toolchain).
+default = []
+napi = ["dep:napi", "dep:napi-derive"]
+
+[dependencies]
+kallax-core.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+parking_lot.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+
+# Optional napi-rs bindings (only compiled with --features napi)
+napi = { version = "2.16", optional = true, default-features = false, features = ["napi4", "serde-json"] }
+napi-derive = { version = "2.16", optional = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
