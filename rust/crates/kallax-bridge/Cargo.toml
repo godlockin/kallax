@@ -4,7 +4,7 @@ version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
-description = "KALLAX napi-rs bridge for Node.js ↔ Rust 6-dimension master-verify (L1 Rust 主用, L2 Node.js 备, 跟 eket 4 级降级 模式 联合)"
+description = "KALLAX napi-rs bridge for Node.js ↔ Rust master-verify (L1 Rust 主用 + L2 Node.js 备, 跟 eket 4 级降级 模式 联合). Event-bus + data-adapter orphan modules DEFERRED (跨 release 留待 拍板)"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -16,6 +16,7 @@ default = ["napi-bindings"]
 napi-bindings = ["dep:napi", "dep:napi-derive", "dep:napi-build"]
 
 [dependencies]
+# Workspace shared deps (跟 v2.7.4 D4.4-D4.6 + D4.5 联合)
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
@@ -25,6 +26,16 @@ regex = { workspace = true }
 # napi-rs 2.16 (offline-cached, 跟 napi 2.16.17 + napi-derive 2.16.13 + napi-build 2.3.2 联合)
 napi = { version = "2.16", default-features = false, features = ["serde-json", "napi4"], optional = true }
 napi-derive = { version = "2.16", optional = true }
+
+# DEFERRED orphan modules deps (event_bus + data_adapter, 跨 release 留待 拍板)
+# chrono = { workspace = true }
+# parking_lot = { workspace = true }
+# tokio = { workspace = true }
+# uuid = { workspace = true }
+# tracing-subscriber = { workspace = true }
+# r2d2 = { workspace = true }
+# r2d2_sqlite = { workspace = true }
+# rusqlite = { workspace = true }
 
 [build-dependencies]
 napi-build = { version = "2.3", optional = true }
