@@ -23,16 +23,20 @@ thiserror = { workspace = true }
 tracing = { workspace = true }
 regex = { workspace = true }
 
+# Event bus bridge deps (EPIC-060-B 阶段 3 子任务 2 REBUILD, 跨 release 留待 → ACTIVE)
+# 跟"诚实修正" 战略 联合: 9dcca01 orphan fix commit 删了 5 deps, 现在 REBUILD 5 deps 加回
+# (chrono + parking_lot + tokio + uuid + tracing-subscriber)
+chrono = { workspace = true }
+parking_lot = { workspace = true }
+tokio = { workspace = true }
+uuid = { workspace = true }
+tracing-subscriber = { workspace = true }
+
 # napi-rs 2.16 (offline-cached, 跟 napi 2.16.17 + napi-derive 2.16.13 + napi-build 2.3.2 联合)
 napi = { version = "2.16", default-features = false, features = ["serde-json", "napi4"], optional = true }
 napi-derive = { version = "2.16", optional = true }
 
-# DEFERRED orphan modules deps (event_bus + data_adapter, 跨 release 留待 拍板)
-# chrono = { workspace = true }
-# parking_lot = { workspace = true }
-# tokio = { workspace = true }
-# uuid = { workspace = true }
-# tracing-subscriber = { workspace = true }
+# DEFERRED orphan modules deps (data_adapter 跨 release 留待 拍板, 跟"独立" 战略 联合)
 # r2d2 = { workspace = true }
 # r2d2_sqlite = { workspace = true }
 # rusqlite = { workspace = true }

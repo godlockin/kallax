@@ -1287,14 +1287,19 @@ dependencies = [
 name = "kallax-bridge"
 version = "1.0.0"
 dependencies = [
+ "chrono",
  "napi",
  "napi-build",
  "napi-derive",
+ "parking_lot",
  "regex",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
+ "tokio",
  "tracing",
+ "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]
