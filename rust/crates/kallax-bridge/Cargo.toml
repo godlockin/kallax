@@ -4,15 +4,22 @@ version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
-description = "KALLAX napi-rs bridge for Node.js ↔ Rust master-verify (L1 Rust 主用 + L2 Node.js 备, 跟 eket 4 级降级 模式 联合). Event-bus + data-adapter orphan modules DEFERRED (跨 release 留待 拍板)"
+description = "KALLAX napi-rs bridge for Node.js ↔ Rust master-verify (L1 Rust 主用 + L2 Node.js 备, 跟 eket 4 级降级 模式 联合) + data-adapter (rusqlite + r2d2 + serde, 跟 EPIC-060-B 阶段 3 子任务 3 联合)"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
+name = "kallax_bridge"
+
+[[bin]]
+name = "kallax-data-adapter"
+path = "src/bin/data-adapter-cli.rs"
 
 [features]
-# napi-bindings feature 默认 启用 (cdylib 路径); examples/ cargo run 用 --no-default-features
-# 跑 纯 Rust logic (0 napi linkage, 0 node headers 必需, 跨 平台 跑).
-default = ["napi-bindings"]
+# napi-bindings opt-in: 跟 EPIC-060-B 阶段 3 子任务 3 联合 (data-adapter CLI 不需要 napi,
+# 默认 关闭 napi 让 rlib 干净 bin 链接 0 Node.js symbol 必需).
+# 启用 napi: cargo build --features napi-bindings (cdylib Node.js binding 路径)
+# 子任务 4 master_verify: 用 napi-rs CLI 单独 build cdylib (napi build npm script).
+default = []
 napi-bindings = ["dep:napi", "dep:napi-derive", "dep:napi-build"]
 
 [dependencies]
@@ -27,15 +34,11 @@ regex = { workspace = true }
 napi = { version = "2.16", default-features = false, features = ["serde-json", "napi4"], optional = true }
 napi-derive = { version = "2.16", optional = true }
 
-# DEFERRED orphan modules deps (event_bus + data_adapter, 跨 release 留待 拍板)
-# chrono = { workspace = true }
-# parking_lot = { workspace = true }
-# tokio = { workspace = true }
-# uuid = { workspace = true }
-# tracing-subscriber = { workspace = true }
-# r2d2 = { workspace = true }
-# r2d2_sqlite = { workspace = true }
-# rusqlite = { workspace = true }
+# data-adapter bridge deps (EPIC-060-B 阶段 3 子任务 3 REBUILD, 跟"诚实修正" 战略 联合)
+# 跨 release 留待 → ACTIVE 状态 (master 2 票拍板, 跟"独立" 战略 联合)
+rusqlite = { workspace = true }
+r2d2 = { workspace = true }
+r2d2_sqlite = { workspace = true }
 
 [build-dependencies]
 napi-build = { version = "2.3", optional = true }
