@@ -31,6 +31,7 @@
 pub mod codec;
 pub mod data_adapter;
 pub mod error;
+pub mod event_bus;
 pub mod ipc;
 pub mod master_verify;
 
@@ -45,6 +46,12 @@ pub use error::{BridgeError, Result};
 
 // Codec (子任务 3 共享)
 pub use codec::{base64_decode, base64_encode, Base64DecodeError};
+
+// Event bus (子任务 2 ACTIVE, 本 commit REBUILD)
+pub use event_bus::{
+    build_envelope, generate_event_id, BridgeStats, EventBusCore, EventBusCoreError,
+    EventEnvelope, MessagePriority, Subscription,
+};
 
 // IPC (子任务 3 共享)
 pub use ipc::{IpcError, IpcKind, IpcRequest, IpcResponse};
