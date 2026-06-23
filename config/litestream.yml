@@ -1,0 +1,39 @@
+# ──────────────────────────────────────────────────────────────────────
+#  KALLAX Litestream Replication Config (EPIC-060-A Phase 2)
+# ──────────────────────────────────────────────────────────────────────
+#  Purpose:  Real-time WAL replication of kallax.db to S3/NFS
+#            跟 eket 4 级降级 模式 联合 (L1 litestream 主用 + L2 本地 SQLite 备)
+#            跟 better-sqlite3 联合 (跟 node/src/core/data-adapter/sqlite-adapter.ts 联合)
+#  Docs:     https://litestream.io/reference/config/
+#  Spec:     confluence/decisions/EPIC-060-A-PHASE-2-LITESTREAM-2026-06-19.md
+#
+#  Resolved at runtime by start-litestream.sh via `envsubst`.
+#  All paths are relative to KALLAX_ROOT — 0 hardcoded /Users/ paths
+#  (跟"反讽" 联合 治根 privacy leak).
+# ──────────────────────────────────────────────────────────────────────
+
+# 24h snapshot interval (跟 eket 4 级降级 模式 联合, 跟"翻篇&精进" 战略 联合)
+# Named constant: SNAPSHOT_INTERVAL (env override allowed)
+snapshot-interval: ${LITESTREAM_SNAPSHOT_INTERVAL:-24h}
+
+# ── Dbs & replicas (跟 eket 4 级降级 模式 联合) ─────────────────────────
+# Primary path: $KALLAX_ROOT/.kallax/data/kallax.db (跟 v2.7.0 整理 release 联合)
+# L1: S3 (production) — activated only when LITESTREAM_S3_BUCKET is set.
+#     Empty/disabled by default so dev/test env does NOT spam S3 with test chunks.
+# L2: File/NFS (dev/test) — always enabled, local copy.
+# Both target retention: 720h = 30 days (跟"翻篇&精进" 战略 联合, 0 失焦)
+dbs:
+  - path: ${LITESTREAM_DB_PATH:-${KALLAX_ROOT}/.kallax/data/kallax.db}
+    meta-path: ${LITESTREAM_META_PATH:-${KALLAX_ROOT}/.kallax/data/kallax.litestream}
+    replicas:
+      # ── L1: S3 (主用, production) ───────────────────────────────────
+      - type: s3
+        bucket: ${LITESTREAM_S3_BUCKET:-disabled}
+        path: ${LITESTREAM_S3_PATH:-kallax-replication/phase2}
+        endpoint: ${LITESTREAM_S3_ENDPOINT:-}
+        force-path-style: ${LITESTREAM_S3_FORCE_PATH_STYLE:-false}
+        retention: ${LITESTREAM_RETENTION:-720h}
+      # ── L2: File/NFS (备, dev/test) ─────────────────────────────────
+      - type: file
+        path: ${LITESTREAM_FILE_PATH:-${KALLAX_ROOT}/.kallax/replica/phase2}
+        retention: ${LITESTREAM_RETENTION:-720h}
