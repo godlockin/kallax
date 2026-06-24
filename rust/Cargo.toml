@@ -7,6 +7,7 @@ members = [
     "crates/context-mon",
     "crates/kallax-bench",
     "crates/kallax-bridge",
+    "crates/kallax-election",
 ]
 default-members = ["crates/kallax-core"]
 # EPIC-060-B Phase 2: 主用 crate 拍板 (方案 B, 1 主用 4 备 渐进)
