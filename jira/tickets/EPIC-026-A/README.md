@@ -27,3 +27,4 @@ P0 fixes 是 v1 全范围的前置, 估时 8h. 避免 session_start.sh 黑洞在
 | 时间 | 状态 | 操作者 | 备注 |
 |------|------|--------|------|
 | 2026-06-07 | ready | master_main | 创建 (主公 4 决策批准) |
+| 2026-06-25 | done | performer_EPIC-026-A | 6 P0 fixes + 6/6 integration test PASS (1 ticket 1 subagent 串行) |

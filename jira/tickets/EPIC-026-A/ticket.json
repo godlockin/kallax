@@ -7,7 +7,10 @@
     "includes": [
       ".kallax/hooks/session_start.sh",
       "scripts/heartbeat-daemon.sh",
-      "scripts/lib/daemon.sh"
+      "scripts/lib/daemon.sh",
+      "scripts/lib/expert-invocation-queue.sh",
+      "tests/integration/bash-hotpath-test.sh",
+      "jira/tickets/EPIC-026-A/"
     ],
     "excludes": []
   },
@@ -25,5 +28,5 @@
   ],
   "estimated_hours": 8,
   "notes": "P0 fixes 是 v1 全范围的前置, 估时 8h. 避免 session_start.sh 黑洞在 v1 实施期间复现",
-  "status": "ready"
+  "status": "done"
 }

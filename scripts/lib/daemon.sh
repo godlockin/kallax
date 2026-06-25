@@ -18,8 +18,10 @@ run_daemon() {
     return 1
   fi
 
-  # Three-part stdio isolation + setsid + disown
-  setsid "$script" "${args[@]}" </dev/null >/dev/null 2>&1 &
+  # EPIC-026-A Fix #5: stdbuf -oL -eL prevents output buffering that could block
+  # the daemon when fd 1/2 is a pipe to a log file or FIFO.
+  # Three-part stdio isolation + setsid + disown + line-buffering
+  stdbuf -oL -eL setsid "$script" "${args[@]}" </dev/null >/dev/null 2>&1 &
   local pid=$!
   disown "$pid" 2>/dev/null || true
 

@@ -261,6 +261,7 @@ STATE
 # ============================================================
 # EPIC-016-O: Stale heartbeat daemon cleanup — prevent accumulation
 # Run BEFORE daemon start (P1 fix from A review).
+# EPIC-026-A Fix #6: zombie daemon auto-cleanup before new daemon start.
 # Fixes applied (master review A+B):
 #   - macOS etime parse (B HIGH)
 #   - instance guard via cmdline (A P0 + B CRITICAL cross-instance)
@@ -464,7 +465,12 @@ if [[ -z "$MODE" ]] || [[ "$MODE" == "null" ]]; then
   echo "│ 3) manual      (每阶段主公确认)"
   echo "└──────────────────────────────────────────"
   echo -n "Select mode [1/2/3] (default 2): "
-  read -r MODE_CHOICE
+  # EPIC-026-A Fix #1: fd redirect — read with timeout to prevent blackhole hang
+  # when session_start.sh runs in non-interactive hook context (no controlling tty).
+  # If no input arrives in 2s, fall back to default ai-copilot (mode 2).
+  if ! read -r -t 2 MODE_CHOICE 2>/dev/null; then
+    MODE_CHOICE=""
+  fi
   case "$MODE_CHOICE" in
     1) MODE="ai-auto" ;;
     3) MODE="manual" ;;

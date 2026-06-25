@@ -64,6 +64,10 @@ while true; do
   fi
 
   # EPIC-021-F: expert_invocations tracking -- emit invocation on each heartbeat
+  # EPIC-026-A Fix #4: dual-write (state.json + queue).
+  # emit() internally calls write_state_invocations() for state.json,
+  # AND the degradation chain (redis/sqlite/file) for the queue.
+  # Queue is the upgrade path; disk persistence is the default.
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   QUEUE_LIB="${SCRIPT_DIR}/lib/expert-invocation-queue.sh"
   if [ -f "${QUEUE_LIB}" ]; then
