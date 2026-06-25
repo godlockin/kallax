@@ -7,7 +7,7 @@ review_group: A
 phase: 1
 rationalizations_count: 8
 version: 1.0.0
-last_reviewed: 2026-06-11
+last_reviewed: 2026-06-25
 tickets_served: [EPIC-030]
 trigger: 优先级,需求,价值,ROI,MVP,功能取舍,用户价值,商业价值,砍需求,范围,产品方向, roadmap,规划,优先级排序,要不要做,AB,test,技术债,版本,灰度,做不做,取舍,合同审查,知识产权,反垄断,劳动法,争议解决,法律合规,商业合同,合同管理,法务
 output_format: |
