@@ -8,7 +8,7 @@ triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专�
 
 > 快速查找所有 /kallax-* 斜杠命令
 
-## Quick Reference (10 类, 29 命令, 跟 v2.3.0 install.sh 联合)
+## Quick Reference (11 类, 30 命令, 跟 v2.3.0 install.sh 联合, EPIC-023-C 加 metrics)
 
 > **使用方式**: 命令直接打 (e.g. `/kallax-init`), AI 工具 加载 SKILL.md 后 自动 识别 触发 条件
 
@@ -41,6 +41,7 @@ triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专�
 | **Expert** | `/kallax-skill` | Execute a specific skill | `<skill-name> [target]` |
 | **Analysis** | `/kallax-analyze` | Analyze project structure and dependencies | `[TARGET]` |
 | **Analysis** | `/kallax-office-hours` | Requirements analysis (6 questions method) | `[TOPIC]` |
+| **Metrics** | `/kallax metrics:sprint` | 北极星指标 — 4 指标 (expert_activation / cross_epic_reuse / ab_hit / mis_dispatch) | `--epic EPIC-XXX` |
 | **Onboard** | `/kallax-onramp` | Multi-level project analyzer (L1/L2/L3 audit) | `<project_path> <user_need>` |
 | **Onboard** | `/kallax-takeover` | Mid-project takeover (3-repo scan + 3-piece output) | `<project_path> <user_need>` |
 
@@ -186,6 +187,72 @@ triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专�
 **Security**: `security-review`, `penetration-testing`
 
 **UX**: `user-research`, `usability-testing`
+
+## Metrics (北极星指标, EPIC-023-C)
+
+```
+/kallax metrics:sprint --epic EPIC-XXX [--format json|markdown|both] [--output PATH]
+```
+
+输出 **4 北极星指标**, master + conductor 共识 (跟 `confluence/research/eket-surpass-strategy-2026-06-07.md` 联合, 治 EKET "产品决策盲飞" 痛点):
+
+| # | Metric | 目标 | 数据源 |
+|---|--------|------|--------|
+| 1 | **expert_activation_rate** | ≥ 5 distinct experts / EPIC | `~/.kallax/queue/expert_invocations.jsonl` + SQLite (EPIC-021-F 队列) |
+| 2 | **cross_epic_reuse_rate** | ≥ 60% 跨 EPIC 文件复用 | `jira/tickets/EPIC-XXX-*/ticket.json` file_scope.includes |
+| 3 | **ab_hit_rate** (mismatch) | < 15% 2-Group review 推荐 vs 实际 | ticket.json `review.group_a/b` + `review.final_outcome` |
+| 4 | **mis_dispatch_rate** | < 10% Performer 错派率 | ticket.json `performer` 字段 + file_scope specialization 推断 |
+
+**复用基础设施**: 1 + 2 直接读 EPIC-021-F expert_invocations 队列 (Redis→SQLite→file 降级链). 3 + 4 需 ticket.json 填充 `review` + `performer` 字段 (EPIC-021-A 起逐步落地).
+
+### 4 指标含义 (跟 EKET 借鉴路径 联合, 跟 v2.4.1 "效果 > 表演" 联合)
+
+```
+expert_activation_rate
+  含义: 该 EPIC 触发了多少 distinct experts (≥5 视为覆盖充分)
+  计算: distinct(expert_id where ticket_id matches EPIC-XXX)
+  用途: 检测 EPIC 是否充分利用专家池 (避免单点依赖)
+
+cross_epic_reuse_rate
+  含义: 该 EPIC 的 file_scope 中, 多少已被其他 EPIC 覆盖 (复用而非新建)
+  计算: overlap(target_files, other_epics_files) / target_files
+  用途: 衡量知识/模块复用率 (目标 ≥60% 治"重复造轮子")
+
+ab_hit_rate (mismatch 视角)
+  含义: A+B 2-Group review 的推荐 (APPROVE/REJECT) 跟 final outcome (MERGED/REJECTED) 一致率
+  计算: mismatches / total_reviews (反向, mismatch < 15%)
+  用途: 衡量 review 准确率 (高 mismatch → reviewer 需重新对齐)
+
+mis_dispatch_rate
+  含义: ticket 未被派单 (performer 为空) 或 file_scope 跨 specialization (scope 冲突)
+  计算: mis_dispatched / total_tickets (目标 < 10%)
+  用途: 检测 Performer 分配错误 / scope 设计缺陷
+```
+
+### Exit codes (透明可验证, 跟 Performer Hard Rule 6 联合)
+
+```
+0 = 4 指标 全 PASS
+1 = 至少 1 指标 FAIL (或参数错误)
+2 = 全 NO_DATA (数据源缺失, 环境异常)
+```
+
+### 用例
+
+```bash
+# Slash 命令形式 (在 AI 工具中)
+# 等价: bash scripts/metrics/sprint-metrics.sh --epic EPIC-XXX [--format ...] [--output ...]
+/kallax metrics:sprint --epic EPIC-021
+/kallax metrics:sprint --epic EPIC-021 --format markdown
+/kallax metrics:sprint --epic EPIC-021 --format both --output .kallax/reports/sprint-EPIC-021
+
+# 或直接调底层脚本
+bash scripts/metrics/sprint-metrics.sh --epic EPIC-021
+```
+
+**底层脚本**: `scripts/metrics/sprint-metrics.sh` (CLI 入口) + `scripts/metrics/lib/metrics.sh` (4 metric 函数 + JSON/MD formatters)
+**集成测试**: `bash -n scripts/metrics/sprint-metrics.sh && bash -n scripts/metrics/lib/metrics.sh` (语法验证)
+**联动 ticket**: EPIC-023-C (跟 EPIC-021-F expert_invocations 队列复用, 跟 EKET-SURPASS-STRATEGY Layer 2 联合)
 
 ## 触发条件
 
