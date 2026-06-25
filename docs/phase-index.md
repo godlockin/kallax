@@ -2,6 +2,29 @@
 
 > **跟"反讽" 联合, 跟"反哺框架" 战略 一致, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合**
 
+## 🆕 新手 导引 (跟"反哺框架" 战略 联合, 跟 P1-2 联合 立刻 fix)
+
+**跟 4-ux.md F1 + 4-product.md F2 联合 0 隐藏 立刻 fix** (跟 /kallax-panel 2026-06-25 9 专家 panel 联合):
+
+### Quick Start (跟 v2.7.4 累计 release 联合, 跟 master 拍 "新手 1 小时入门" 联合)
+
+1. **Step 1: 读 CLAUDE.md** (跟 Rule SoT 联合) — 跟 v2.7.4 D1 拍板 A 22→20 联合, 实际 20 Rule 1:1 验证
+2. **Step 2: 读 KALLAX-GLOSSARY.md** (跟 术语 SoT 联合) — 60+5 术语 跨 release 累计, 0 简单 记录 0 复利 内容
+3. **Step 3: 读 PHASE-INDEX.md (本 doc)** — 11 PHASE 累计, 跟 18 release 累计 联合
+4. **Step 4: 读 PROCESS.md:25-26** (跟 心跳 5 问 联合) — Q1 优先级 / Q2 Slaver 状态 / Q3 进度 / Q4 阻塞 / Q5 队列
+5. **Step 5: 跨 release 累计 适用** (跟 v2.0.3 EPIC-056-A 3 阶段 治理 联合) — 任何 派单 / 治理 / 决策 跨 release 适用
+
+### 4 路径 入口 (跟 Option B 文档树 联合, 跟 master 拍 explicit 联合)
+
+| 路径 | 内容 | 跟 5 战略 联合 |
+|------|------|---------------|
+| **docs/** | 用户-facing 文档 (架构 + API + 指南 + 流程 + 参考) | "反哺框架" |
+| **confluence/decisions/** | 决策 docs (跟 jira/epics 联合, 跟 panel 9 专家 联合) | "独立" |
+| **jira/** | 项目管理 状态 (22 EPICs + 130 tickets + 11 PHASE) | "诚实修正" |
+| **scripts/** | 硬性 脚本 (跟 7 anti-patterns 校验 联合) | "翻篇&精进" |
+
+---
+
 ## 📖 SoT 索引 (跟 Rule 5 DRY 联合, 跟 EPIC-055-A 联动)
 
 KALLAX 文档 Single Source of Truth (SoT) — 修订前查 SoT 边界, 避免重复知识 (跟 A5 治根 联合):
