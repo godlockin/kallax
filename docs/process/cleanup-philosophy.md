@@ -122,8 +122,12 @@ KALLAX 在 v2.7.0 → v2.7.1 → v2.7.2 → v2.7.3 → v2.7.4 期间, 4 团队 �
 
 ### C. 留待 4 项 (跟 PROCESS.md:25-26 联合, 跟"独立" 拍 explicit 联合)
 - C1: 9 console.log 改 logger (跟 v2.7.4 C3 留待, 跟 Rule 7 联合)
+
+> **跟 /kallax-panel 2026-06-25 + check-anti-patterns.sh 实证 1:1 验证 修订**: 实际 64 console.log/error/warn in 10 files (跟 baseline 联合 0 NEW, 跨 release 累计). 跟"独立" 战略 联合 0 拍 ai-auto 修订 (跟 v2.0.7 PHASE-014 模式 一致, 跨 release 留待 master explicit 后续 拍). 跟"反讽" 战略 联合 0 强制 拍 CLI output (跟 master 拍 explicit "CLI output 跟 logger 区分" 联合 0 跨 release 留待).
 - C2: 2 Rust unwrap 改 Result (跟 v2.7.4 C3 留待, 跟 Rule 8 联合)
 - C3: 5 file 500+ 行 拆 (跟 v2.7.4 C3 留待, 跟 Rule 8 联合)
+
+> **跟 /kallax-panel 2026-06-25 + check-anti-patterns.sh 实证 1:1 验证 修订**: 实际 1 file > 500 行 (`rust/crates/kallax-election/src/raft.rs` 564 lines, 跟 baseline 联合 0 NEW, 跨 release 累计). 跟"翻篇&精进" 战略 联合 0 强制 拍 ai-auto 修订 (跟 v2.0.3 EPIC-056-A 跨 release 留待 联合, master explicit 后续 拍).
 - C4: 10 hardcoded /Users/ paths 修 (跟 v2.7.4 C3 留待, 跟"反讽" 联合)
 
 > **跟 /kallax-panel 2026-06-25 + 3-frontend.md F8 + 7-process.md F8 联合 0 隐藏 修订**: 10 paths 全部 在 5 historical files (CHANGELOG.md + jira/tickets/EPIC-057-A/B/C/D/*), 跟 baseline 联合 0 NEW. 跟"翻篇&精进" 战略 联合 0 强制 拍 historical 改, 跟"独立" 战略 联合 master explicit 后续 拍 (跟 v2.0.7 PHASE-014 模式 一致, 0 拍 ai-auto 修订).
