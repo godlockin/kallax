@@ -313,19 +313,72 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 **红线**: ❌ expert > 50 但未跑 audit 就 merge, ❌ M1 填估数 ("~60%"/"约 80%"/"PARTIAL"), ❌ Trigger 字段直接复制 test case 文本
 
-### 12. 3 模式决策权分配 (KALLAX P0) — 主公原话 2026-06-09
+### 12. 3 模式决策权分配 (KALLAX P0) — 主公原话 2026-06-09 (EPIC-029-I v2.7.0 升级 决策权矩阵)
 
 **规则**: 3 模式 = `ai-auto` (AI 自主 + block/danger 停下问) / `ai-copilot` (默认, 简单自主 + 复杂协商) / `manual` (主公确认每阶段).
 
-**生效范围**: Performer + Conductor (Master 不受控).
+**生效范围**: Performer + Conductor (Master 不受控, 跟 Rule 10/13 联动).
 
-**Block 决策 (5 类)**: `ambiguous_options` / `performer_failure` / `rule_exception` / `epic_critical` / `high_impact`
+**模式存储** (跟 EPIC-029-A state.json mode_lock 联合): 每个 session_start 选一次, 写入 `.kallax/state/state.json`:
+```json
+{ "role": "performer", "mode": "ai-copilot", "mode_set_at": "ISO8601", "mode_lock": true }
+```
+- `mode_lock` 防热切换: 同一 instance 同时只能持有 1 个 mode, 避免多 session 冲突
+- 热切换需 `/kallax-init --mode X` 重启 session (state.json file:line `state.json` schema EPIC-029-A)
 
-**危险操作 (3 类)**: `miao_modify` / `security_failing` / `data_destruction`
+**决策粒度矩阵 (3 模式 × 4 维度)**:
 
-**落地**: `scripts/performer/stage-gate.sh` + `scripts/permission/decision-gate.sh` + `scripts/permission/mode-set.sh`
+| 维度 | ai-auto | ai-copilot | manual |
+|---|---|---|---|
+| **Block 决策 (5 类)** | 停下问 | 停下问 | 停下问 |
+| **危险操作 (3 类)** | 停下问 | 停下问 | 停下问 |
+| **Performer 失败/超时** | 停下问 (重试/换人/接管) | 停下问 | 停下问 |
+| **Performer 5 阶段切换** | AI 自主 | 简单 AI 自主 / 复杂 协商 | 主公确认每阶段 |
 
-**红线**: ❌ 跳过 decision-gate.sh, ❌ 跳过 stage-gate.sh, ❌ 运行时热切换 mode
+**Block 决策 (5 类, 3 模式都触发)**:
+1. `block.ambiguous_options` — 多个选项无明显最优 (AC 模糊/选型争议/多种实现路径, TrustScore 无法选)
+2. `block.performer_failure` — Performer 失败/超时/3 次 retry (API error/30min 超时)
+3. `block.rule_exception` — 规则冲突/Exception 请求 (跟 Rule 1-12 冲突需主公拍)
+4. `block.epic_critical` — EPIC 交付关键节点 (PHASE review/Rule 升级/EPIC close)
+5. `block.high_impact` — 可能有重大影响/风险 (兜底类)
+
+**危险操作 (3 类, 3 模式都停下问)**:
+1. `danger.miao_modify` — 修改 miao 分支 (commit/push/merge)
+2. `danger.security_failing` — 安全相关 (pre-commit FAIL/anti-fab FAIL/4-Level FAIL/凭据变动)
+3. `danger.data_destruction` — rm -rf / reset --hard / push --force / worktree drop / db drop
+
+**Performer 5 阶段复杂度 (ai-copilot 默认行为)**:
+
+| 阶段 | ai-copilot 行为 | 复杂度 |
+|---|---|---|
+| `claim` | AI 决定是否 claim | 简单 (AI 自主) |
+| `analysis` | 停下协商 (技术方案/选型争议) | **复杂 (协商)** |
+| `in_progress` | AI 决策实现细节 | 简单 (AI 自主) |
+| `test` | 停下协商 (测试是否充分/PASS) | **复杂 (协商)** |
+| `review` | 停下协商 (PR 合并/修 feedback) | **复杂 (协商)** |
+
+**落地** (跟 PROCESS.md 3 模式 + 决策权 1:1 验证, 跟 `docs/process/9-hard-rules.md` 索引 1:1 验证):
+- `scripts/performer/stage-gate.sh` (传 STAGE, 5 阶段分流, EPIC-029-B)
+- `scripts/permission/decision-gate.sh` (block.5 + danger.3 检查, EPIC-029-C)
+- `scripts/permission/mode-set.sh` (mode 验证 + 写 state.json + mode_lock, EPIC-029-A)
+- `.kallax/hooks/session_start.sh` (MODE 选择菜单, EPIC-029-D)
+- `kallax-init.sh --mode X` (CLI 入口, EPIC-029-F)
+- pre-commit hook 串联 decision-gate.sh (跟 Rule 9/10 联动)
+
+**审计**: `.kallax/audit/decision-YYYY-MM-DD.jsonl` 每日轮转 (JSONL 格式, jq -n 构造), 记录 block/danger 命中 + 决策结果.
+
+**设计文档**: [`docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md`](docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md) §1-§10
+**实施计划**: [`docs/superpowers/plans/2026-06-09-kallax-3-modes.md`](docs/superpowers/plans/2026-06-09-kallax-3-modes.md)
+**1:1 验证**: `docs/process/9-hard-rules.md` 类别 7 决策与模式 + `docs/process.md` Subagent 完整流程 步骤 6-7
+**集成测试**: `tests/integration/3-modes-e2e.sh` 16 场景 (3 模式 × 4 维度, EPIC-029-H, 16/16 PASS)
+
+**红线** (4 条):
+- ❌ 跳过 decision-gate.sh 自行决定危险操作
+- ❌ 跳过 stage-gate.sh 在 5 阶段复杂步骤独断
+- ❌ 运行时热切换 mode (需 restart session, mode_lock 防绕过)
+- ❌ mode_lock 文件被绕过直接写 state.json (防 mode 状态多 session 改冲突)
+
+**扩展 (EPIC-054-D 合并 Rule 33)**: decision-gate.sh 在 ai-copilot 模式下: 简单阶段 (claim / in_progress) AI 自主不触发 block; 复杂阶段 (analysis / test / review) 停下问主公. 落地脚本: `scripts/permission/decision-gate-complex-only.sh` + `scripts/performer/stage-gate.sh` (传 STAGE). 红线: ❌ ai-copilot 模式在简单阶段触发 block, ❌ decision-gate.sh 不区分 mode + stage.
 
 ---
 
