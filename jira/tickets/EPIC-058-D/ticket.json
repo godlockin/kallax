@@ -1,0 +1,26 @@
+{
+  "id": "EPIC-058-D",
+  "epicId": "EPIC-058",
+  "phaseId": "PHASE-011",
+  "title": "P2-2: 69 remote feature branches DB cleanup Option B (filter-repo 改写 history, 跟主公 D 跳过 explicit 覆盖 联合)",
+  "type": "infra",
+  "priority": "P2",
+  "status": "done",
+  "created_by": "master_main",
+  "created_at": "2026-06-17T00:00:00Z",
+  "completion_time": "2026-06-19T00:00:00Z",
+  "file_scope": {
+    "includes": [
+      "scripts/db/cleanup-remote-branches.sh",
+      "tests/integration/remote-branches-cleanup-test.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "0 实际 filter-repo 改写 (跟'不埋坑' 5 原则 联合)",
+    "1 doc + 1 script + 1 test (5/5 PASS)",
+    "HEAD SHA 不变 landed (c77fba9 + bf3f277 + 0b69733)"
+  ],
+  "estimated_hours": 6,
+  "kpi": "0 实际 filter-repo 改写 (跟'不埋坑' 5 原则 联合) + 1 doc + 1 script + 1 test (5/5 PASS) + HEAD SHA 不变 landed (c77fba9 + bf3f277 + 0b69733), 跟主公 2026-06-17 D 跳过 explicit 覆盖 联合"
+}

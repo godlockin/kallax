@@ -1,0 +1,29 @@
+{
+  "id": "EPIC-058-B",
+  "epicId": "EPIC-058",
+  "phaseId": "PHASE-011",
+  "title": "P1-2: 48 worktree + 107 local feature branches 清理 (stale 历史堆积)",
+  "type": "infra",
+  "priority": "P1",
+  "status": "done",
+  "created_by": "master_main",
+  "created_at": "2026-06-17T00:00:00Z",
+  "completion_time": "2026-06-19T00:00:00Z",
+  "file_scope": {
+    "includes": [
+      "scripts/cleanup/remove-stale-worktrees.sh",
+      "scripts/cleanup/remove-stale-branches.sh",
+      ".claude/worktrees/**",
+      "confluence/decisions/EPIC-058-B-IMPL-2026-06-19.md"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "48 worktree 清理 (跟 v2.4.0 Y 派单 闭环 一致)",
+    "107 local feature branches 清理 (stale 历史堆积)",
+    "5.5M disk freed",
+    "1 复盘 doc landed (55744fc)"
+  ],
+  "estimated_hours": 2,
+  "kpi": "0 stale worktree + 0 stale branch (跟 v2.4.0 Y 派单 闭环 一致) + 1 复盘 doc landed (55744fc)"
+}

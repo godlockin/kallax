@@ -1,0 +1,27 @@
+{
+  "id": "EPIC-058-E",
+  "epicId": "EPIC-058",
+  "phaseId": "PHASE-011",
+  "title": "P3-1: Rule 22 进一步合并 22→20 阈值 (跟 Rule 5 DRY 联合, 跟 v2.7.4 D1 拍板 A 联合)",
+  "type": "docs",
+  "priority": "P3",
+  "status": "ready",
+  "created_by": "master_main",
+  "created_at": "2026-06-19T00:00:00Z",
+  "file_scope": {
+    "includes": [
+      "CLAUDE.md",
+      "docs/process/9-hard-rules.md",
+      "confluence/decisions/EPIC-058-E-IMPL-2026-06-19.md"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "Rule 22→20 合并 2 处 (4h 实施 ticket 留待 跨期)",
+    "跟 v2.7.4 D1 拍板 A 联合, master_explicit_decision 文档化",
+    "decision_doc: confluence/decisions/EPIC-058-E-DECISION-2026-06-19.md"
+  ],
+  "estimated_hours": 4,
+  "master_decision": "A: 22→20 合并 2 处 (4h 实施 ticket 留待 跨期)",
+  "decision_doc": "confluence/decisions/EPIC-058-E-DECISION-2026-06-19.md"
+}
