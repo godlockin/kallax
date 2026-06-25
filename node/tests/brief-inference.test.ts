@@ -34,7 +34,7 @@ import {
   BRIEF_INFERENCE_FIELD,
   type BriefInference,
   type TicketWithBrief,
-} from '../src/core/brief-inference.js';
+} from '../src/core/brief-inference/index.js';
 import { TrustScore, type ExpertProfile, type TicketProfile } from '../src/core/trust-score.js';
 
 // ============================================================================
