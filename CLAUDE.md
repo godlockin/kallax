@@ -158,8 +158,10 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
    - `jira/tickets/EPIC-XXX/README.md` 更新实施记录
    - `jira/epics/EPIC-XXX/epic.json` 更新 ticket 状态
 3. **经验教训草稿**
-   - EPIC 最后 commit 必包含 `jira/epics/EPIC-XXX/LESSONS-LEARNED.md` 草稿
+   - EPIC 最后 commit 必包含 `jira/epics/EPIC-XXX/LESSONS-LEARNED.md` 草稿 (master 终审后才 merge)
    - 包含: 量化指标, 关键事件时间线, 教训 (按类别), 评估, 下一步
+   - **模板** (跟 `confluence/templates/EPIC-LESSONS-LEARNED-TEMPLATE.md` v1 联合, 8 节结构, 跟 v1.2.4 EPIC-016 postmortem 模式 一致)
+   - **跨期累计**: 跟 `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md` (1012 行) 1:1 验证 (跨 release 累计 v2.0.3 → v2.7.1 沉淀, 跟 §1-§15 11 sections 联合)
 4. **LESSONS-LEARNED 终审**
    - master 审批时检查草稿是否存在且合规
    - master merge 前确认 lessons 已更新
@@ -185,7 +187,9 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 **v2.4.1 还原 跟 v2.3.0 一致, 跟 PHASE-013-REFLECTION 联合 治根 "0 实际改变 假动作"**: 4 件套 + PHASE 双层闭环 = 跨 release 累计, 跟"翻篇&精进" 战略 一致.
 
-**来源**: EPIC-058-E (主公 explicit A 拍板合并 Rule 6+7, 2026-06-19) + v2.0.5 EPIC-051 24→22 合并 模式 (借方法论 不借代码) + PHASE-013-REFLECTION-2026-06-18.md (治根 "0 实际改变 假动作") + v2.4.0 反思 revert 教训 (合并不 删落地脚本)
+**UP-3 (EPIC-025-C) 强化 (0 增 Rule 持平)**: 在 Rule 6/7 既有 4 件套 + LESSONS-LEARNED 草稿 (跟 "翻篇&精进" 战略 联合) 基础上, 显式加 模板 引用 (`confluence/templates/EPIC-LESSONS-LEARNED-TEMPLATE.md` v1) + 跨期累计 1:1 验证 引用 (`confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md` 1012 行, 跟 §1-§15 11 sections 联合). 净 Rule 数 不变 (跟 v2.4.0+v2.4.1 反思 联合, 治根 "Rule 治 Rule 通胀", 跟 "翻篇&精进" + "诚实修正" 2 战略 一致).
+
+**来源**: EPIC-058-E (主公 explicit A 拍板合并 Rule 6+7, 2026-06-19) + EPIC-025-C (UP-3 LESSONS-LEARNED 草稿强制, 显式 模板 + 跨期累计 1:1 验证 引用, 0 增 Rule 持平, 跟 v2.4.0 反思 联合) + v2.0.5 EPIC-051 24→22 合并 模式 (借方法论 不借代码) + PHASE-013-REFLECTION-2026-06-18.md (治根 "0 实际改变 假动作") + v2.4.0 反思 revert 教训 (合并不 删落地脚本)
 
 ---
 
