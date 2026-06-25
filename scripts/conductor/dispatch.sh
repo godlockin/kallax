@@ -1,11 +1,40 @@
 #!/bin/bash
 # conductor/dispatch.sh — Conductor 派发集成
 # 依赖: EPIC-030-A (best-matching-slaver.sh) + EPIC-030-B (scoring-trace.sh)
+#       EPIC-036-A (cross-worktree-dispatch.sh, --cross-worktree 选项, EPIC-036-B 联合)
 # 主公 2026-06-11 D2 决策: 派发权 60%→80% AI 渐进升级, 默认 80% AI + 20% 人工 override
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# --cross-worktree=<source_wt> 选项 (EPIC-036-B): 跨 worktree 派单时调用 cross-worktree-dispatch.sh
+# 必须从原 args 中剥离, 不污染位置参数
+CROSS_WORKTREE=""
+POSITIONAL_ARGS=()
+for arg in "$@"; do
+  case "$arg" in
+    --cross-worktree)
+      echo "ERROR: --cross-worktree requires =<source_wt> (e.g. --cross-worktree=EPIC-036-A)" >&2
+      exit 1
+      ;;
+    --cross-worktree=)
+      echo "ERROR: --cross-worktree= requires non-empty <source_wt>" >&2
+      exit 1
+      ;;
+    --cross-worktree=*)
+      CROSS_WORKTREE="${arg#*=}"
+      if [[ -z "$CROSS_WORKTREE" ]]; then
+        echo "ERROR: --cross-worktree= requires non-empty <source_wt>" >&2
+        exit 1
+      fi
+      ;;
+    *)
+      POSITIONAL_ARGS+=("$arg")
+      ;;
+  esac
+done
+set -- "${POSITIONAL_ARGS[@]}"
 
 # 读参数
 TICKET_ID="${1:-}"
@@ -19,8 +48,9 @@ AI_RATIO="${KALLAX_AI_DELEGATION_RATIO:-80}"
 
 # Use argument count to detect if args were provided (empty string is valid for expertise)
 if [[ $# -lt 2 ]]; then
-  echo "Usage: $0 <TICKET_ID> <REQUIRED_EXPERTISE> [accept|veto|override] [OVERRIDE_TO]" >&2
+  echo "Usage: $0 [--cross-worktree=<source_wt>] <TICKET_ID> <REQUIRED_EXPERTISE> [accept|veto|override] [OVERRIDE_TO]" >&2
   echo "       AI delegation ratio: KALLAX_AI_DELEGATION_RATIO=$AI_RATIO (60/80/90, default 80)" >&2
+  echo "       --cross-worktree=<source_wt>: route dispatch to source worktree (EPIC-036-B)" >&2
   exit 1
 fi
 
@@ -74,5 +104,22 @@ bash "${KALLAX_ROOT}/scripts/agent/scoring-trace.sh" append \
   '[1.0,0.0,0.0]' \
   "$DECISION" \
   >/dev/null 2>&1 || true
+
+# 跨 worktree 派单 (EPIC-036-B): --cross-worktree=<source_wt> 触发 cross-worktree-dispatch.sh
+# production 路径 = scripts/conductor/cross-worktree-dispatch.sh (EPIC-036-A 提供)
+# test 路径      = tests/fixtures/conductor/cross-worktree-dispatch.sh (KALLAX_TEST_FIXTURES=1)
+if [[ -n "$CROSS_WORKTREE" ]]; then
+  if [[ "${KALLAX_TEST_FIXTURES:-0}" == "1" ]]; then
+    CWT_SCRIPT="${KALLAX_ROOT}/tests/fixtures/conductor/cross-worktree-dispatch.sh"
+  else
+    CWT_SCRIPT="${KALLAX_ROOT}/scripts/conductor/cross-worktree-dispatch.sh"
+  fi
+  if [[ ! -f "$CWT_SCRIPT" ]]; then
+    echo "ERROR: --cross-worktree requires ${CWT_SCRIPT} (EPIC-036-A not yet integrated)" >&2
+    exit 1
+  fi
+  echo "CROSS_WORKTREE: source=$CROSS_WORKTREE ticket=$TICKET_ID final=$FINAL_ID"
+  bash "$CWT_SCRIPT" --source-wt="$CROSS_WORKTREE" --ticket-id="$TICKET_ID" --final-id="$FINAL_ID"
+fi
 
 echo "DISPATCH: ticket=$TICKET_ID algo_suggest=$ALGO_ID final=$FINAL_ID decision=$DECISION ai_ratio=${AI_RATIO}% reason=$REASON"

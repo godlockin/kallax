@@ -14,7 +14,8 @@
     "includes": [
       "jira/tickets/EPIC-036-B/",
       "scripts/conductor/dispatch.sh",
-      "tests/integration/dispatch-cross-worktree-e2e.sh"
+      "tests/integration/dispatch-cross-worktree-e2e.sh",
+      "tests/fixtures/conductor/cross-worktree-dispatch.sh"
     ],
     "excludes": []
   },
