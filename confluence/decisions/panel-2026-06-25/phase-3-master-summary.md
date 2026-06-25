@@ -21,7 +21,7 @@
 
 **立刻 治根** (跟"诚实修正" 战略 联合, 0 跨 release 留待):
 1. Phase 1 报告 line 11-14 baseline 修订: 543 → 424
-2. 9 专家 报告 跨 release 留待 用 424 baseline, 0 用 543
+2. 9 专家 报告 (跟 Phase 1 全局扫描 + Phase 3 仲裁 汇总 = 11 panel files) 跨 release 留待 用 424 baseline, 0 用 543
 3. 10 工具 baseline 修订: 10 → 7 (3 unverified)
 4. Master 验证 6 维度 L1-L6 联合 重新 baseline 校验
 
@@ -224,6 +224,8 @@
 | KPI | X/Y 格式 | 状态 |
 |-----|---------|------|
 | **K1 Phase 1 baseline 验证** | **0/4** (543/356.md/187.json/10 工具 全 错) | ❌ 0/4 跨 release 留待 修订 |
+
+> **跟 review-critical-2026-06-25.md §6 联合 0 隐藏**: K1 0/4 fail 跟 EPIC-059-D Fact-Forcing 红线 联合 跨 release 留待 治根. 跟"诚实修正" 战略 联合 0 隐藏, 跟"独立" 战略 联合 master explicit 后续 拍 1 commit 修订 (跟 v2.0.7 PHASE-014 模式 一致). 0 强制 拍 ai-auto 修订.
 | **K2 9 专家 报告 100% deliver** | **9/9** | ✅ 100% (跟 BE-9 联合 0 复发) |
 | **K3 0 hidden governance gap** | **30/30 items 文档化** | ✅ 100% (P0 10 + P1 10 + P2 10) |
 | **K4 0 ai-auto 拍板** | **0/90 items 强制 拍** | ✅ 0 强制 (跟"独立" 战略 联合 90 全部 master explicit 拍) |
