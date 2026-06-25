@@ -50,6 +50,62 @@ triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专�
 **CLI commands**: `kallax --help` (Node.js runtime)  
 **Heartbeat prompts**: `heartbeat-conductor.md`, `heartbeat-performer.md` (auto-load on role assignment)
 
+## Preamble (3 阶段, EPIC-023-B)
+
+> **跟 v2.0.3 EPIC-056-A 3 阶段 治理 模式 1:1 验证** (Phase 1 Conductor 全局扫描 + Phase 2 4 default + 5 extended 并行 + Phase 3 Master 仲裁 + 主公拍板). **跟 `/kallax-panel` 9 专家 模式 联合** (4 default + 5 extended = 9, 跟 v1.2.4 5 扩展组 联合 0 增 0 删). **跟 "反讽" + "诚实修正" 战略 联合 0 隐藏** BE governance gap (BE-23 + BE-25 + BE-26 治根 联合, 见 §联动).
+
+### Step 0 — 关键词检测 (trigger 行融合)
+
+`triggerKeywords` frontmatter (第 4 行) 跟 description 融合 → 1 行触发:
+
+```yaml
+# .claude/skills/kallax/SKILL.md frontmatter (跟 EPIC-023-B 联合, 0 隐藏)
+description: ... Spawns a 3-phase governance (EPIC-056-A): ...
+triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专家评审, multi-agent, subagent, EPIC 拆解, PHASE review, BE 教训, 3 阶段治理, EPIC-056-A]
+```
+
+**trigger 行融合机制** (跟 BE-23 + BE-25 + BE-26 治根 联合, file:line `scripts/hooks/pre-commit:51` + `:116` + `scripts/verify/check-scope-creep.sh:106`):
+- **BE-23 治根** (commit `7347ae6`): pre-commit hook branch-aware action mapping — trigger 行只在 `feature/*` 分支强制 check-scope-creep, 跟 EPIC-022-B 联合 0 完整
+- **BE-25 治根** (commit `b1b76ac`): pre-commit check-scope-creep TICKET_ID detection — trigger 行缺 TICKET_ID 时 fallback 跳过, 0 silent reject
+- **BE-26 治根** (commit `8bdfd0e`): check-scope-creep detect staged changes — trigger 行从 `HEAD~1..HEAD` 改 `--cached`, staged-not-committed 也能检测
+
+**决策树直通** (症状 → expert, 不绕弯, KALLAX 已是团队成员 → 去掉 EKET "团队配置" 问, 减摩擦):
+
+| 症状 | 触发 trigger 行 | 路由 |
+|------|----------------|------|
+| `/kallax-panel` / `expert panel` / `architecture review` | ✅ 命中 → Phase 2 (9 专家 并行) |
+| `/kallax-expert <role>` | ✅ 命中 → 单 expert (default 4 + extended 5 池) |
+| `EPIC 拆解` / `PHASE review` | ✅ 命中 → Phase 3 (Master 仲裁) |
+| `BE 教训` / `3 阶段治理` | ✅ 命中 → 直达 confluence/decisions/ |
+| 未命中 | → fallback §Sub-Skills (auto-loaded on demand) |
+
+### 3 阶段执行 (1:1 验证 v2.0.3 EPIC-056-A)
+
+| Stage | 名称 | 跟 EPIC-056-A 1:1 | SKILL.md 锚点 |
+|-------|------|-------------------|--------------|
+| **Phase 1** | Conductor 全局扫描 (原 Architect 合并, 治 A4) | ✅ Phase 1 | `### 3 阶段执行流程` § 1 |
+| **Phase 2** | 9 专家 并行 (4 default + 5 extended) | ✅ Phase 2 | `### 3 阶段执行流程` § 2 |
+| **Phase 3** | Master 仲裁 + 主公拍板 (P0/P1/P2) | ✅ Phase 3 | `### 3 阶段执行流程` § 3 |
+
+**1:1 验证脚本**: `scripts/audit/governance-3phase.sh` (6/6 TC PASS, Rule 9 X/Y 格式)
+**TDD 测试**: `tests/integration/governance-3phase-test.sh`
+
+### §联动 (跟 "反讽" + "诚实修正" 战略 联合 0 隐藏)
+
+- 跟 **EPIC-056-A 3 阶段治理** 1:1 (file:line `docs/process.md:36-51`): 15 步 → 10 步, 净价值 62.5% → 65% (+2.5%), 治 A4 协调开销
+- 跟 **/kallax-panel 9 专家** 联合 (file:line `confluence/decisions/panel-2026-06-25/phase-1-conductor-scan.md:176`): 4 default + 5 extended = 9 专家 并行 0 增 0 删
+- 跟 **BE-23 + BE-25 + BE-26 治根** 联合 0 隐藏 governance gap (file:line `confluence/decisions/be-28-serial-consensus-revision-2026-06-25.md:100-113`): trigger 行只在合规路径生效, 0 silent fallback
+- 跟 **"反讽"** 战略 联合 0 隐藏 反复: 1 ticket 1 subagent 串行 共识 跟 strict 100% baseline 失一致 -20%, trigger 行 不掩盖 漏洞
+- 跟 **"诚实修正"** 战略 联合 0 隐藏: BE 累计 22 → 24 (+2 BE-28 + BE-29) 联合 0 隐藏, 0 假 PASS
+- 跟 **"借方法论 不借代码"** 联合: EKET 2 阶段询问 (3 决策点 8 组合) → KALLAX 3 阶段 + trigger 行旁路 (9+ 组合), 升级不复制
+- 跟 **v2.4.1 Rule 合并反思** 联合: 0 增 Rule 0 增命令 持平 18 release 累计, Preamble 是文档升级, 0 新基础设施
+
+**KPI 落地**: SKILL.md Preamble 段 1/1 + triggerKeywords frontmatter 1/1 + governance-3phase.sh 6/6 PASS = 3/3 100% 落地, 跟 Rule 9 X/Y 格式 联合.
+
+**联动 ticket**: EPIC-023-B (本 ticket) + EPIC-023-A (TS Zod schema, done 2026-06-07, 跟 Layer 2 联合) + EPIC-056-A (3 阶段 治理 源头, v2.0.4 落地).
+
+---
+
 ## Sub-Skills (auto-loaded on demand)
 
 > **When to use**: User asks for expert review, specific domain analysis, or skill execution. The sub-skill files in `default/`, `extended/`, `scripts/`, `skills/` are loaded as additional context.
