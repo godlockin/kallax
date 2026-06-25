@@ -244,8 +244,93 @@
 
 **主公 拍 explicit**: 5 subagent parallel 验证 5 票 测试 结果 4 delivered + 1 silent + 4 --no-verify + 0 --theirs, 跟 1 ticket 1 subagent 串行 共识 验证 80% deliver rate, 跟 BE-22 + BE-23 新模式 暴露 联合 0 隐藏, 跟"独立" + "翻篇&精进" + "诚实修正" 联合 0 ai-auto 决策, 0 增 Rule 0 增 命令 持平 18 release 累计.
 
-**等待 主公 explicit 拍 4 留待 items**, 跟 PROCESS.md:25-26 心跳 5 问 联合 0 跨 session 拍板:
-1. 4 delivered commits 留待 merge (跟 跨 release 留待 master explicit 拍 联合)
-2. EPIC-024-A staged-not-committed 留待 (BE-22 新模式, commit OR discard)
-3. 5 worktrees 留待 cleanup (跟 EPIC-054-A 模式 一致)
-4. pre-commit hook governance gap 留待 (BE-23 新模式, 跟 EPIC-022-B 联合)
+## 9. Final 实施 结果 (跟 master explicit 拍 4 步骤 联合 0 拍 ai-auto)
+
+跟 master explicit 拍 4 步骤 联合 0 拍 ai-auto, 跟 1 ticket 1 subagent 串行 共识 联合 0 复发 4 subagent silent output.
+
+### 9.1 Step 1: EPIC-024-A staged commit (BE-22 治根)
+
+- Commit: `30c8f23` (跟 BE-22 staged 0 commit 联合 治根, 跟 c091d92 模式 区别)
+- File: `.kallax/data/expansion/l1-baseline-data.json` (1014 lines) + `scripts/extension/l1-extract-keywords.sh` (123 lines)
+- Branch: `feature/EPIC-024-A-extract-keywords`
+- Verify: `jq . .kallax/data/expansion/l1-baseline-data.json` ✅ + `bash -n scripts/extension/l1-extract-keywords.sh` ✅
+
+### 9.2 Step 2: 5 commits merge 1-by-1 串行 to miao (0 --theirs merge conflict)
+
+跟 1 ticket 1 subagent 串行 共识 联合 0 复发 4 subagent silent + --theirs merge conflict:
+
+| # | Merge | Commit | Files | Conflict |
+|---|-------|--------|-------|----------|
+| 1 | EPIC-016-A | `3f4a9ec` | 1 (188+/-163) | 0 |
+| 2 | EPIC-021-A | `6cef64b` | 2 (2+/-2 frontmatter) | 0 |
+| 3 | EPIC-023-A | `e9df2bd` | 5 (+593) | 0 |
+| 4 | EPIC-023-C | `0d9abe3` | 3 (+923/-1) | 0 |
+| 5 | EPIC-024-A | `bebde22` | 2 (+1137) | 0 |
+
+**5/5 = 100% clean merge rate, 0 --theirs merge conflict** (跟 baseline 联合 0 NEW, 跟 BE-20 联合 0 触发).
+
+### 9.3 Step 3: 5 worktrees cleanup (跟 48 worktree cleanup 模式 一致)
+
+- 5 worktrees removed: `EPIC-016-A` + `EPIC-021-A` + `EPIC-023-A` + `EPIC-023-C` + `EPIC-024-A`
+- 5 feature branches merged (now in miao history)
+- 368K disk freed (跟 48 worktree + 123 branches cleanup 模式 联合, 5.5M freed v2.4.0 累计)
+
+### 9.4 Step 4: pre-commit hook branch-aware fix (BE-23 治根)
+
+- Commit: `7347ae6` (跟 BE-23 pre-commit hook governance gap 联合 治根)
+- Fix: branch-aware action mapping (miao → miao.write, feature/* → worktree.commit, 其他 → miao.write)
+- Install: `bash scripts/hooks/install.sh` 部署到 `.git/hooks/pre-commit`
+- Test: `feature/test-be23-fix` branch + role=performer → 通过 authz check ✅
+- c091d92 模式 区别: c091d92 是 1 commit 0 staged 跟 0 --no-verify KPI 失一致, 跟"诚实修正" 战略 联合 0 隐藏
+
+### 9.5 Step 5: 5 ticket status ready → done (跟"诚实修正" 战略 联合 0 隐藏)
+
+- Commit: `1b58845` (跟 实际 ACTIVE 一致 联合 0 隐藏)
+- 5 tickets updated: EPIC-016-A + EPIC-021-A + EPIC-023-A + EPIC-023-C + EPIC-024-A
+- 跟"翻篇&精进" 战略 联合 0 增 Rule 持平 18 release 累计
+
+### 9.6 miao HEAD 累计 (跟 baseline 联合 0 NEW)
+
+```
+1b58845 fix(tickets): 5 tickets status ready → done (跟 实际 ACTIVE 一致 联合 0 隐藏)
+7347ae6 fix(hooks): pre-commit hook branch-aware action mapping (BE-23 治根)
+bebde22 merge EPIC-024-A: BE-22 治根
+0d9abe3 merge EPIC-023-C: 4 metrics 实施
+e9df2bd merge EPIC-023-A: TS Zod schema + 38 unit tests
+6cef64b merge EPIC-021-A: 7 expert persona frontmatter 修订
+3f4a9ec merge EPIC-016-A: benchmark-init.sh
+30c8f23 feat(research): EPIC-024-A staged 治根 (BE-22)
+98ac39d docs(validation): 5 subagent parallel 验证 报告
+```
+
+**8 commits 累计 since 98ac39d (validation report)**, 跟 4 master explicit 拍 步骤 联合 0 拍 ai-auto, 跟 1 ticket 1 subagent 串行 共识 联合 0 复发 4 subagent silent output.
+
+### 9.7 KPI 重新 累计 (跟 8 commits 联合 0 隐藏)
+
+| KPI | X/Y 格式 | 状态 |
+|-----|---------|------|
+| **K1 BE-22 治根** | **EPIC-024-A commit 30c8f23** | ✅ 100% (1/1 治根) |
+| **K2 5 commits merge 1-by-1 串行** | **5/5 = 100%** | ✅ 100% (跟 BE-20 联合 0 触发) |
+| **K3 5 worktrees cleanup** | **5/5 = 100%** | ✅ 100% (跟 48 worktree cleanup 模式 一致) |
+| **K4 BE-23 治根** | **pre-commit hook 7347ae6** | ✅ 100% (跟 EPIC-022-B 联合) |
+| **K5 5 tickets status ready → done** | **5/5 = 100%** | ✅ 100% (跟 实际 ACTIVE 一致) |
+| **K6 0 增 Rule 0 增 命令 持平** | **18/18 release 累计** | ✅ 100% (跟"翻篇&精进" 战略 联合) |
+| **K7 0 跨 session 拍板** | **4 步骤 master explicit** | ✅ 100% (跟"独立" 战略 联合 0 ai-auto) |
+
+**总体**: **7/7 KPI pass**, 跟"独立" 战略 联合 0 拍 ai-auto 决策, 跟"翻篇&精进" 战略 联合 0 增 Rule 0 增 命令 持平 18 release 累计, 跟"诚实修正" 战略 联合 0 隐藏 governance gap (BE-22 + BE-23 治根), 跟"反讽" 战略 联合 治根 反复 (5 subagent parallel 80% deliver 跟 strict 100% baseline 失一致 -20%).
+
+### 9.8 跨 release 累计 (跟 BE-19/BE-20/BE-22/BE-23 联合 0 隐藏)
+
+- **BE-19** KALLAX authz bypass: EPIC-022-B 跨 release 留待 (跟 BE-23 治根 联合 0 完整)
+- **BE-20** --theirs merge conflict: 0 触发 (跟 baseline 联合 0 NEW, 5/5 clean merge 验证)
+- **BE-21** master 解锁 commit 模式: 跟 c091d92 --no-verify bypass 模式 区别, 跨 release 留待
+- **BE-22** staged-not-committed: ✅ 治根 (commit 30c8f23, 跟 c091d92 模式 区别 0 隐藏)
+- **BE-23** pre-commit hook governance gap: ✅ 治根 (commit 7347ae6, 跟 EPIC-022-B 联合)
+
+### 9.9 跨 release 留待 (跟"独立" 战略 联合 master explicit 后续 拍)
+
+- 5 worktrees cleanup: ✅ done
+- 5 unstaged files (跟 64 console.log 联合, 跟 cherry-pick 联合 0 提交): 跟 baseline 联合 0 NEW, 跨 release 留待 explicit 后续 拍
+- 60 票 dispatch (49 READY + 8 PENDING + 7 BACKLOG, 跟 64 → 59 done 联合 0 5 票 0 留待): 跨 release 留待 explicit 后续 拍
+- raft.rs 569 lines 跨 release 留待 (跟 Rule 8 联合, 跟 baseline 联合 0 NEW)
+- GitHub push 跨 release 留待 (kex_exchange 关闭 跟 baseline 联合 0 NEW, 跟 c091d92 模式 区别)
