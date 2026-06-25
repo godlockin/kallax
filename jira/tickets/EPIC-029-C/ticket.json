@@ -22,7 +22,9 @@
     "L4 数据流动: decision-gate-test.sh 跑 PASS, 覆盖 ai-auto + danger.delete_data 场景"
   ],
   "estimated_hours": 2.0,
-  "blocked_by": ["EPIC-029-A"],
+  "blocked_by": [
+    "EPIC-029-A"
+  ],
   "borrowed_from_eket": "Conductor §5.3 waiting-for-expert + Security §4 审计",
   "related_design": "docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md §4-§5 + §8"
 }

@@ -5,7 +5,7 @@
   "title": "Fact-Forcing 4-Level 嵌入 (7 文件)",
   "type": "feature",
   "priority": "P0",
-  "status": "ready",
+  "status": "done",
   "created_by": "master_main",
   "created_at": "2026-06-07T17:00:00Z",
   "file_scope": {
@@ -21,7 +21,10 @@
     "excludes": [],
     "modification_section": "Verification 节 + 新增 Fact-Forcing Compliance 节"
   },
-  "dependencies": ["EPIC-021-A", "EPIC-021-C"],
+  "dependencies": [
+    "EPIC-021-A",
+    "EPIC-021-C"
+  ],
   "acceptance_criteria": [
     "7 文件的 `Verification` 节升级为 4-Level Fact-Forcing (L1 存在性 / L2 实质性 / L3 接线正确 / L4 数据流动)",
     "每级含 1 个具体 bash 命令 (e.g. L1: `git diff --name-only`, L2: `wc -c` diff 字节数, L3: `tsc --noEmit` / `cargo check`, L4: `npm test` / `cargo test`)",

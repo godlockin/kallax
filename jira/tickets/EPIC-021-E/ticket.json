@@ -5,7 +5,7 @@
   "title": "check-skill-anatomy.sh KALLAX 专属 6+ 项校验",
   "type": "feature",
   "priority": "P0",
-  "status": "ready",
+  "status": "done",
   "created_by": "master_main",
   "created_at": "2026-06-07T17:00:00Z",
   "file_scope": {
@@ -14,7 +14,9 @@
     ],
     "excludes": []
   },
-  "dependencies": ["EPIC-021-A"],
+  "dependencies": [
+    "EPIC-021-A"
+  ],
   "acceptance_criteria": [
     "scripts/check-skill-anatomy.sh 存在, 可执行权限 (chmod +x)",
     "支持 `check-skill-anatomy.sh <file.md>` 单文件校验",
