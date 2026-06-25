@@ -10,17 +10,16 @@
   "created_at": "2026-06-11T00:00:00+08:00",
   "file_scope": {
     "includes": [
-      "scripts/agent/trust-score.sh",
-      "scripts/agent/best-matching-slaver.sh",
-      "tests/integration/agent/trust-score-test.sh"
+      "node/src/core/trust-score.ts",
+      "node/tests/trust-score.test.ts"
     ],
     "excludes": []
   },
   "acceptance_criteria": [
-    "L1 存在性: scripts/agent/trust-score.sh + best-matching-slaver.sh + test 存在 + 可执行",
-    "L2 实质性: trust-score.sh 真实验证 3 因子 (success_rate_7d / uptime_30d / avg_latency_norm / error_rate), best-matching-slaver.sh 跑 3 层 (空 required_expertise → TrustScore / 向量 cosine ≥ 0.5 → 标签评分 fallback)",
-    "L3 接线正确: 跟 Conductor 现有派发逻辑兼容, 加 '算法建议 + 人工拍板' 出口 (3 模式 A1 经验, KALLAX 不让算法完全覆盖 Conductor 决策)",
-    "L4 数据流动: test 跑 PASS, 覆盖 3 层匹配 + TrustScore 计算 + 边界 case (无 slaver / 多 slaver / cosine < 0.5)"
+    "L1 存在性: node/src/core/trust-score.ts + node/tests/trust-score.test.ts 存在",
+    "L2 实质性: TrustScore class 真实验证 3 层 (L1 exact / L2 keyword_threshold / L3 vector_cosine), score 1.0 / 0.7 / cosine",
+    "L3 接线正确: 跟 Conductor §5.1 best_matching_slaver() 接口兼容, 加 '算法建议 + 人工拍板' 出口 (priority L1 > L2 > L3)",
+    "L4 数据流动: test 跑 PASS 26/26, 覆盖 3 层匹配 + TrustScore 计算 + 边界 case (无 keyword / cosine < 0.5 / multi-expert rank)"
   ],
   "estimated_days": 2.0,
   "blocked_by": null,
