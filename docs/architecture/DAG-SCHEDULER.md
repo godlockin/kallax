@@ -95,7 +95,7 @@ kallax dag status       # Show DAG execution status
 ## Related Files
 
 - `scripts/dag-run.sh` — DAG execution runner
-- `node/src/core/dag/` — DAG implementation
-- `node/src/core/dag/topological-sort.ts` — Kahn's algorithm
-- `node/src/core/dag/priority-queue.ts` — Binary heap
-- `node/src/core/dag/critical-path.ts` — Critical path
+- `node/src/core/dag-executor.ts` — DAG execution (跟 实际 flat 目录 一致, P0-8 fix)
+- `node/src/core/dag-generator.ts` — DAG generator
+- `node/src/core/dag-visualizer.ts` — DAG visualizer
+- `node/src/core/adaptive-scheduler.ts` — Adaptive scheduling

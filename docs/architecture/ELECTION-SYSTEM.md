@@ -100,8 +100,8 @@ Each tier attempt has a 5-second timeout. After all tiers fail, the instance wai
 
 ## Related Files
 
-- `node/src/core/election/` — Election implementation
-- `node/src/core/election/redis-lease.ts` — Tier 1
-- `node/src/core/election/sqlite-lease.ts` — Tier 2
-- `node/src/core/election/file-lease.ts` — Tier 3
+- `node/src/core/election-client.ts` — Election client (跟 实际 flat 目录 一致, P0-8 fix)
+- `node/src/core/master-election.ts` — Master election logic
+- `node/src/api/routes/election.ts` — Election HTTP API
+- `rust/crates/kallax-election/src/` — Rust raft-rs 0.6 (跟 EPIC-060-A Phase 5 联合)
 - `docs/architecture/DEGRADATION-STRATEGY.md` — Degradation overview

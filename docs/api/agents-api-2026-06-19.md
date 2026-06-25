@@ -112,7 +112,7 @@ Returns a single agent instance by ID.
 ## Agent Heartbeat
 
 ```
-PUT /api/agents/:id/heartbeat
+POST /api/agents/:id/heartbeat
 ```
 
 Periodic keep-alive from an agent instance.

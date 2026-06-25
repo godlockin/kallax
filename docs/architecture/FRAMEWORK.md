@@ -387,7 +387,7 @@ performers:
   - id: performer_backend_001
     specialty: backend
     capacity: 3
-    skills: [rust, postgres, redis]
+    skills: [rust, sqlite, redis]
 
 # 调度策略
 scheduling:

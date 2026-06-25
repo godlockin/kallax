@@ -2,6 +2,19 @@
 
 > 对齐愿景：让人机协作、AI Agent 协作像专业人类开发团队一样稳定高质量高效率地交付。
 
+## L 编号 对应表 (跟 P0-10 fix 联合, 跟 2-backend.md F1 联合, 跟 8-auditor.md 联合 0 隐藏)
+
+跟 /kallax-panel 9 专家 并行 联合 跨 共识 1 命名 共识, 跟 master 拍 "A 全部 立刻 治根" 联合, 跟"诚实修正" 战略 联合 0 隐藏 debt:
+
+| Level | EPIC-060-A 路线图 | DEGRADATION-STRATEGY | FRAMEWORK | 实际 含义 |
+|-------|-------------------|----------------------|-----------|----------|
+| **L0** | Shell (bottom) | Shell (bottom) | Shell (bottom) | 0 依赖 兜底 (Shell + cron) |
+| **L1** | Node.js | Rust | Rust | 高性能 核心 (8ms 启动) |
+| **L2** | Rust | Node.js | Node.js | 功能 丰富 层 (400ms 启动) |
+| **L3** | Web | Full Production (top) | Web (top) | Web dashboard + ioredis + 5 仓 sync |
+
+**注意**: DEGRADATION-STRATEGY + FRAMEWORK 跟 EPIC-060-A 路线图 L 编号 顺序 反向 (跟"反讽" 战略 联合, 跟 2-backend.md F1 联合). 跨 release 留待 拍 1 共识 重构 docs 顺序.
+
 ## 愿景回顾
 
 KALLAX 的核心价值：
