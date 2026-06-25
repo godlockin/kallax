@@ -2,7 +2,7 @@
 id: kallax.pm.001
 name: 🧭 PM
 tier: default
-worktree_role: master
+worktree_role: conductor
 review_group: A
 phase: 3
 rationalizations_count: 8

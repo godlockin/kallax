@@ -2,7 +2,7 @@
 id: kallax.security.001
 name: 🛡️ 安全
 tier: default
-worktree_role: auditor
+worktree_role: performer
 review_group: B
 phase: 2
 rationalizations_count: 8
