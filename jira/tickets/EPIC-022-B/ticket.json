@@ -4,6 +4,7 @@
   "title": "Pre-commit Hook + Conductor Scope Check",
   "status": "blocked",
   "estimate_days": 3,
+  "estimated_hours": 24,
   "blocked_by": ["EPIC-022-A"],
   "file_scope": [
     ".git/hooks/pre-commit",
