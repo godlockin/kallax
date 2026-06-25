@@ -10,16 +10,16 @@
   "created_at": "2026-06-11T00:00:00+08:00",
   "file_scope": {
     "includes": [
-      "scripts/agent/scoring-trace.sh",
-      "tests/integration/agent/scoring-trace-test.sh"
+      "node/src/core/scoring-trace.ts",
+      "node/tests/scoring-trace.test.ts"
     ],
     "excludes": []
   },
   "acceptance_criteria": [
-    "L1 存在性: scripts/agent/scoring-trace.sh + test 存在",
-    "L2 实质性: scoring-trace.sh 真实写 .kallax/audit/scoring-YYYY-MM-DD.jsonl, 每日轮转 (date 触发新 file), 记录 trust_score/factors 字段, append 模式",
-    "L3 接线正确: 跟 A 配合 (A 的 best-matching-slaver.sh 调用时记录), jq 合法",
-    "L4 数据流动: test 跑 PASS, 覆盖 1 写 + 1 读 + 跨日轮转 (修改 date)"
+    "L1 存在性: node/src/core/scoring-trace.ts + node/tests/scoring-trace.test.ts 存在",
+    "L2 实质性: scoring-trace.ts 真实写 .kallax/audit/scoring-YYYY-MM-DD.jsonl, 每日轮转 (date 触发新 file), 记录 trust_score/factors 字段, append 模式",
+    "L3 接线正确: 跟 EPIC-030-A TrustScore 1:1 (logFromTrustScore 接受 TrustScoreResult, 保留 matchedLayer/score/factors), unknown 类型守卫",
+    "L4 数据流动: test 跑 PASS 9/9, 覆盖 1 写 + 1 读 + 跨日轮转 (clock 注入) + 3 层 1:1 wiring"
   ],
   "estimated_days": 0.5,
   "blocked_by": ["EPIC-030-A"],
