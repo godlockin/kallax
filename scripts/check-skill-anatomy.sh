@@ -111,6 +111,13 @@ for file in "$@"; do
     errors+=("id invalid: $id (must match kallax.<role>.NNN)")
   fi
 
+  # 校验 11: tier 合法枚举 (default | extended)
+  tier=$(awk '/^tier:/{print $2}' "$file" | head -1)
+  case "$tier" in
+    default|extended) ;;
+    *) errors+=("tier invalid: $tier (must be default|extended)") ;;
+  esac
+
   # 报告
   if [ ${#errors[@]} -gt 0 ]; then
     FAIL_COUNT=$((FAIL_COUNT + 1))
