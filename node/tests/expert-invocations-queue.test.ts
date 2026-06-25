@@ -18,7 +18,7 @@ import {
   createExpertInvocationsQueue,
   L1_LATENCY_THRESHOLD_MS,
   type ExpertInvocation,
-} from '../src/core/expert-invocations-queue.js';
+} from '../src/core/expert-invocations-queue/index.js';
 
 // ─── Fake Redis client (DI per Hard Rule #7) ────────────────────────────────
 
