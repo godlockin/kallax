@@ -2,6 +2,8 @@
 
 > **3 模式 = ai-auto / ai-copilot / manual**
 > 主公 2026-06-09 拍板, 跟 EKET `interactive:start` 借鉴集成.
+> 落地在 `CLAUDE.md` **Rule 12** (`### 12. 3 模式决策权分配` KALLAX P0).
+> 注: 本文档早期版本跟 `EPIC-029-I/ticket.json` AC 误把 Rule 13 标为 3 模式, 实际 Rule 13 是 "Conductor 不能越界 Performer 实施", 现已修正.
 
 ## 1. 怎么选?
 
@@ -158,7 +160,7 @@ AI 写 ask file 到 `.kallax/inbox/`:
 
 ## 11. 关联文档
 
-- [CLAUDE.md Rule 13](../CLAUDE.md)
+- [CLAUDE.md Rule 12 (3 模式决策权分配)](../CLAUDE.md) — 实际是 Rule 12, 早期 doc/ticket 误标 Rule 13, EPIC-029-J v2 修正
 - [设计 spec](../superpowers/specs/2026-06-09-kallax-3-modes-design.md)
 - [实施 plan](../superpowers/plans/2026-06-09-kallax-3-modes.md)
 - [派发权升级 EPIC-033](../epics/EPIC-033/epic.json)
