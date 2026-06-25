@@ -1,0 +1,24 @@
+# /etc/cron.d/kallax-continuous-audit — EPIC-037-B
+# KALLAX continuous audit + KPI audit (semi-annual)
+# Schedule: 0 0 1 */6 *  →  1st of June and 1st of December at 00:00
+# (master_main 2026-06-12 拍 Top 4 开工, 半年前 review 自动跑)
+#
+# Deploy: sudo cp scripts/audit/cron-continuous-audit.cron /etc/cron.d/kallax-continuous-audit
+#         sudo chown root:root /etc/cron.d/kallax-continuous-audit
+#         sudo chmod 0644 /etc/cron.d/kallax-continuous-audit
+#
+# Owner: root:root | Mode: 0644 | Env: SHELL=/bin/bash, PATH=standard
+# 跟 EPIC-037-A 9-pass 联合 (continuous-audit.sh + kpi-audit.sh)
+# 跟 EPIC-037-B alert 机制 联合 (失败时自动写 .kallax/audit/alert-YYYY-MM-DD.jsonl)
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+KALLAX_ROOT=/Users/chenchen/working/sourcecode/tools/dev-tools/kallax
+MAILTO=root
+
+# ── Continuous audit (redaction 9-pass + Rule 8 L4) — semi-annual ──────
+# 0 0 1 */6 * = month divisible by 6 (June, December) day=1 hour=0 min=0
+0 0 1 */6 * root cd "$KALLAX_ROOT" && bash scripts/audit/continuous-audit.sh >> /var/log/kallax/continuous-audit.log 2>&1 || bash scripts/audit/alert.sh write continuous-audit error "continuous-audit.sh exited non-zero (cron)"
+
+# ── KPI audit (Rule 9a 估数检测) — semi-annual ──────────────────────────
+# 0 0 1 */6 * = month divisible by 6 (June, December) day=1 hour=0 min=0
+0 0 1 */6 * root cd "$KALLAX_ROOT" && bash scripts/audit/kpi-audit.sh >> /var/log/kallax/kpi-audit.log 2>&1 || bash scripts/audit/alert.sh write kpi-audit error "kpi-audit.sh exited non-zero (cron)"
