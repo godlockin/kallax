@@ -4,6 +4,8 @@
 > Role: 🚦 Master 仲裁 (跟 v2.0.3 EPIC-056-A Phase 3 联合)
 > Methodology: 9 专家 Phase 2 报告 → 跨 共识 合并 → 仲裁 冲突 → 出 P0/P1/P2 拍板 分级 (跟 EPIC-055-B 联合)
 
+> **跟 review-critical-2026-06-25.md §1 联合 0 隐藏**: 实际 22 IMPL docs (跟 master 拍 "22" 1:1 一致, 跟任务 自报 "23" 失一致 +1, 跟"反讽" 战略 联合 0 隐藏, 跟"诚实修正" 战略 联合 1:1 验证). 跟"独立" 战略 联合 0 拍 ai-auto 修订.
+
 ---
 
 ## 0. 紧急 事实 修正 (跟 EPIC-059-D Fact-Forcing 联合 0 隐藏)
