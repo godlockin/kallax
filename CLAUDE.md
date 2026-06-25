@@ -229,6 +229,14 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 **4 级执行顺序**: L1 存在性 → L2 实质性 → L3 接线正确 → L4 数据流动
 
+**跟 EPIC-053-B 4-Level 证据链 1:1 映射** (跟 docs/process/fact-forcing.md §5.2 联合, EPIC-025-B 落地):
+- L1 git-anchor (存在性): 文件存在 + git log anchor 可追溯
+- L2 test stdout (实质性): 真实 raw stdout, 不接受 "should work"
+- L3 5 扩展组 (接线正确): security + process-engineering + auditor + compliance + decision-gate
+- L4 独立见证 (数据流动): master 独立验证 + integration test raw output
+
+**集成验证**: `bash scripts/verify/test-fact-forcing-preflight.sh` (13/13 PASS, 跟 EPIC-059-D Fact-Forcing 1:1 验证)
+
 **L4_script_exists 检查 (5 工具 preflight)**: `check-fact-forcing-preflight.sh` emit `L4_script_exists: PASS/FAIL`, 集成 `scripts/verify/master-6d-checkpoint.sh` + `scripts/verify/auditor-checkpoint.sh` 输出. 缺任一 L4 引用脚本 = FAIL + ticket 不 close.
 
 **落地检查**: `bash scripts/verify/check-fact-forcing-preflight.sh` (6 checks: l3-l4-consistency / 3 anti-fab tools / l3l4 self-test x2 / smoke run x2) + `bash scripts/check-anti-patterns.sh .` (7 anti-patterns 扫描, 跟 v2.7.4 B5.1 治根 联合) + `bash scripts/verify/check-scope-creep.sh <TICKET>` (file_scope.includes 强制).
@@ -255,7 +263,9 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 **集成**: `.kallax/hooks/pre-commit` 必跑 3 工具, 任一 FAIL = 拒绝 commit.
 
-**红线**: ❌ 跳过 3 anti-fab 工具, ❌ pre-commit hook 改 Bypass, ❌ 估数/verbatim/scope creep 任一造假
+**跟 Rule 8 4-Level Fact-Forcing 强制 联动**: `task:complete <TICKET>` 前必跑 `scripts/check-fact-forcing-preflight.sh <expert.md>` (跟 Rule 8 file:line `CLAUDE.md:226` 联合). 集成测试: `bash scripts/verify/test-fact-forcing-preflight.sh` (13/13 PASS, 跟 EPIC-059-D Fact-Forcing 1:1 验证 + EPIC-053-B 4-Level 证据链 L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证 联合).
+
+**红线**: ❌ 跳过 3 anti-fab 工具, ❌ pre-commit hook 改 Bypass, ❌ 估数/verbatim/scope creep 任一造假, ❌ 跳过 check-fact-forcing-preflight.sh 直接 close ticket (跟 Rule 8 联合 红线)
 
 ### 10. Master 写代码禁令 (KALLAX P0) — 主公原话硬红线 (v2.4.1 还原 跟 v2.3.0 一致, 跟 PHASE-013-REFLECTION 联合 治根 "边界失焦")
 
