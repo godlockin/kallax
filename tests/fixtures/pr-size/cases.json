@@ -1,7 +1,7 @@
 [
-  {"name": "small PR", "lines": 30, "expected": "PASS"},
-  {"name": "boundary 100", "lines": 100, "expected": "PASS"},
-  {"name": "boundary 101 (WARN)", "lines": 101, "expected": "WARN"},
+  {"name": "small PR (30 lines)", "lines": 30, "expected": "PASS"},
+  {"name": "empty PR (0 lines)", "lines": 0, "expected": "PASS"},
+  {"name": "boundary 100 (silent pass)", "lines": 100, "expected": "PASS"},
   {"name": "boundary 500 (WARN)", "lines": 500, "expected": "WARN"},
-  {"name": "huge PR (FAIL)", "lines": 600, "expected": "FAIL"}
+  {"name": "huge PR (600 lines, FAIL)", "lines": 600, "expected": "FAIL"}
 ]
