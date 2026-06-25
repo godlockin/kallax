@@ -4,6 +4,7 @@
   "title": "Workspace Switch + Read-Only Path",
   "status": "blocked",
   "estimate_days": 4,
+  "estimated_hours": 32,
   "blocked_by": ["EPIC-022-A"],
   "file_scope": [
     "src/permissions/workspace-switcher.ts",

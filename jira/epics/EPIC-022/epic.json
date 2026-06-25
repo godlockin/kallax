@@ -1,6 +1,8 @@
 {
   "id": "EPIC-022",
   "phase": "PHASE-001",
+  "phase_status": "0.1-tracking",
+  "phase_0_1_added_by": "EPIC-027-A",
   "title": "PERMISSION-MODEL v1 — 3 Role Definition + Hard Enforcement + Role Transition",
   "scope": "A (3d): 3 role definition (auditor + readonly + role binding)\nB (3d): pre-commit hook + conductor scope check (blocked by A)\nC (4d): workspace switch + read-only path\nD (3d): role transition (master/conductor/performer)\nE (5d): integration tests + 5-expert A+B review (blocked by A+B+C+D)\nTotal: 18d",
   "start_time": "2026-06-07",
@@ -46,7 +48,8 @@
       "assignee": "performer-EPIC-022",
       "status": "in_progress",
       "blocked_by": null,
-      "estimate_days": 3
+      "estimate_days": 3,
+      "estimated_hours": 24
     },
     {
       "id": "EPIC-022-B",
@@ -56,7 +59,8 @@
       "blocked_by": [
         "EPIC-022-A"
       ],
-      "estimate_days": 3
+      "estimate_days": 3,
+      "estimated_hours": 24
     },
     {
       "id": "EPIC-022-C",
@@ -66,7 +70,8 @@
       "blocked_by": [
         "EPIC-022-A"
       ],
-      "estimate_days": 4
+      "estimate_days": 4,
+      "estimated_hours": 32
     },
     {
       "id": "EPIC-022-D",
@@ -76,7 +81,8 @@
       "blocked_by": [
         "EPIC-022-A"
       ],
-      "estimate_days": 3
+      "estimate_days": 3,
+      "estimated_hours": 24
     },
     {
       "id": "EPIC-022-E",
@@ -89,7 +95,8 @@
         "EPIC-022-C",
         "EPIC-022-D"
       ],
-      "estimate_days": 5
+      "estimate_days": 5,
+      "estimated_hours": 40
     }
   ]
 }

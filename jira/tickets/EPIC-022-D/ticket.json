@@ -4,6 +4,7 @@
   "title": "Role Transition (master/conductor/performer)",
   "status": "blocked",
   "estimate_days": 3,
+  "estimated_hours": 24,
   "blocked_by": ["EPIC-022-A"],
   "file_scope": [
     "src/permissions/role-transition.ts",
