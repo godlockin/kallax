@@ -5,7 +5,7 @@
   "title": "kallax-init.sh --mode CLI",
   "type": "feature",
   "priority": "P0",
-  "status": "ready",
+  "status": "done",
   "created_by": "master_main",
   "created_at": "2026-06-09T22:30:00+08:00",
   "file_scope": {
@@ -22,7 +22,9 @@
     "L4 数据流动: kallax-init-mode-test.sh 跑 PASS, 验证 init 脚本含 --mode"
   ],
   "estimated_hours": 1.0,
-  "blocked_by": ["EPIC-029-A"],
+  "blocked_by": [
+    "EPIC-029-A"
+  ],
   "borrowed_from_eket": "P1-3 interactive:start 多模式 CLI 入口",
   "related_design": "docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md §7 + §8"
 }
