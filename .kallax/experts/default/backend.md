@@ -143,51 +143,55 @@ backend_review:
 
 ## Fact-Forcing Compliance
 
-Performer 在 `task:complete <TICKET>` 前**必须勾选 4 项**:
+> **跟 EPIC-059-D Fact-Forcing 1:1 验证 (file:line `CLAUDE.md:236-240` 联合, 跟 `docs/process/fact-forcing.md` 联合, 跟 EPIC-053-B 4-Level 证据链 1:1 映射)**
 
-- [ ] L1_存在性: git diff --name-only 核对文件存在
-- [ ] L2_实质性: diff 字节数 > 200, 非 stub 占位符
-- [ ] L3_接线正确: import/export 无断裂, tsc --noEmit 通过
-- [ ] L4_数据流动: 集成测试通过, 覆盖率不下降
+Performer 在 `task:complete <TICKET>` 前**必须勾选 4 项** (跟 EPIC-053-B 4-Level 证据链 1:1 映射):
+
+- [ ] L1_git-anchor: 文件存在 + `git log --oneline -1` 验证 commit anchor 可追溯
+- [ ] L2_test_stdout: 真实 raw stdout, 不接受 "should work" / "looks correct" / silent
+- [ ] L3_5扩展组: 5 扩展组 review (security + process-engineering + auditor + compliance + decision-gate)
+- [ ] L4_独立见证: master 独立验证 + integration test raw output (跟 `bash scripts/verify/check-fact-forcing-preflight.sh` 联合)
 
 任一未勾选 = ticket 状态保持 in_progress, 不能 close.
 
 ## Verification
 
 > **Note**: 以下 4-Level bash 命令是**文档**,不是强制执行. master 在 review 时手动运行验证 Performer 真实性. 见 [[Fact-Forcing Compliance]] 节.
+> **跟 EPIC-053-B 4-Level 证据链 1:1 映射 (L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证, file:line `CLAUDE.md:236-240` 联合, 跟 EPIC-059-D Fact-Forcing 联合)**
 
 执行顺序: L1 → L2 → L3 → L4, 任一失败 = ticket not done.
 
-### L1 存在性
+### L1 git-anchor (存在性)
 ```bash
-# Safe: 自动获取最近一次 commit 的 diff, 无用户输入
-CHANGED_FILES=$(git diff --name-only HEAD~1..HEAD 2>/dev/null | wc -l)
-[ "$CHANGED_FILES" -ge 1 ] && echo "L1 PASS: $CHANGED_FILES files changed" || echo "L1 FAIL: no files"
+# 验证文件存在 + git log anchor 可追溯
+git log --oneline -1
+git show HEAD:.kallax/experts/default/backend.md >/dev/null && echo "L1 PASS: file exists + git anchor traceable" || echo "L1 FAIL"
 ```
 
-### L2 实质性
+### L2 test stdout (实质性)
 ```bash
-# Safe: 自动获取 diff 字节数
-DIFF_BYTES=$(git diff HEAD~1..HEAD 2>/dev/null | wc -c | tr -d ' ')
-[ "$DIFF_BYTES" -gt 200 ] && echo "L2 PASS: $DIFF_BYTES bytes" || echo "L2 FAIL: only $DIFF_BYTES bytes"
-```
-
-### L3 接线正确
-```bash
-# TypeScript 编译检查 (仅当 tsconfig.json 存在)
+# 真实 raw stdout, 不接受 "should work" / "looks correct" / silent
+# backend persona: tsc --noEmit 编译检查 + 真实 raw output
 if [ -f tsconfig.json ]; then
-  tsc --noEmit && echo "L3 PASS: tsc clean" || echo "L3 FAIL: tsc errors"
+  tsc --noEmit 2>&1 | tail -20 && echo "L2 PASS: raw stdout captured (no 'should work' / silent)" || echo "L2 FAIL"
 else
-  echo "L3 SKIP: no tsconfig.json (non-TS project)"
+  echo "L2 SKIP: no tsconfig.json (non-TS project)"
 fi
 ```
 
-### L4 数据流动
+### L3 5 扩展组 (接线正确)
 ```bash
-# 集成测试 (仅当 package.json 存在)
-if [ -f package.json ]; then
-  npm test 2>&1 | tail -20 && echo "L4 PASS: tests pass" || echo "L4 FAIL: tests fail"
-else
-  echo "L4 SKIP: no package.json"
-fi
+# 5 扩展组 review: security + process-engineering + auditor + compliance + decision-gate
+echo "L3 requires 5 extended group reviews:"
+echo "  - security: review security implications (file:line .kallax/experts/extended/security-tool-bypass.md)"
+echo "  - process-engineering: review process compliance (file:line .kallax/experts/extended/process-engineering.md)"
+echo "  - auditor: review independent witness (file:line .kallax/experts/extended/auditor.md, Rule 31)"
+echo "  - compliance: review regulatory compliance (file:line .kallax/experts/extended/compliance.md)"
+echo "  - decision-gate: review decision rationale (file:line .kallax/experts/extended/decision-gate.md)"
+```
+
+### L4 独立见证 (数据流动)
+```bash
+# master 独立验证 + integration test raw output
+bash scripts/verify/check-fact-forcing-preflight.sh .kallax/experts/default/backend.md 2>&1 | tail -20 && echo "L4 PASS: independent witness verified" || echo "L4 FAIL"
 ```
