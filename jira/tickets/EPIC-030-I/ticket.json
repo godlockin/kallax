@@ -10,8 +10,9 @@
   "created_at": "2026-06-11T00:00:00+08:00",
   "file_scope": {
     "includes": [
-      "scripts/task-claim-brief.sh",
-      "tests/integration/brief-inference-test.sh"
+      "node/src/core/brief-inference.ts",
+      "node/tests/brief-inference.test.ts",
+      "jira/tickets/EPIC-030-I/"
     ],
     "excludes": []
   },
