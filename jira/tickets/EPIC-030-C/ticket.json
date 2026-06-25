@@ -10,18 +10,20 @@
   "created_at": "2026-06-11T00:00:00+08:00",
   "file_scope": {
     "includes": [
-      "scripts/agent/waiting-for-expert.sh",
-      "tests/integration/agent/waiting-for-expert-test.sh"
+      "node/src/core/waiting-for-expert.ts",
+      "node/tests/waiting-for-expert.test.ts"
     ],
     "excludes": []
   },
   "acceptance_criteria": [
-    "L1 存在性: scripts/agent/waiting-for-expert.sh + test 存在",
-    "L2 实质性: waiting-for-expert.sh 真实写 .kallax/state/waiting-for-expert.json (retries++), 写 .kallax/inbox/need-expert-<TICKET>.md 提示, 下次 heartbeat 优先重试",
-    "L3 接线正确: 跟 A 配合 (A 匹配失败时调用), jq / bash 兼容",
-    "L4 数据流动: test 跑 PASS, 覆盖匹配失败触发 + 写 JSON + 写 inbox + 重试优先"
+    "L1 存在性: node/src/core/waiting-for-expert.ts + node/tests/waiting-for-expert.test.ts 存在",
+    "L2 实质性: WaitingForExpert class 真实写 .kallax/state/waiting-for-expert.json (retries++), 写 .kallax/inbox/waiting-<expert>.md 提示, 下次 heartbeat 优先重试 (retries DESC)",
+    "L3 接线正确: 跟 EPIC-030-A TrustScore 1:1 验证 (recordNoMatch 接受 TrustScoreResult[], pickBestResult 复用 bestScore/bestLayer), unknown 类型守卫",
+    "L4 数据流动: test 跑 PASS 8/8, 覆盖 recordNoMatch 触发 + 写 JSON + 写 inbox (sanitize 路径) + 重试优先 + clear 清除 + invalid input 验证"
   ],
   "estimated_days": 0.5,
-  "blocked_by": ["EPIC-030-A"],
+  "blocked_by": [
+    "EPIC-030-A"
+  ],
   "borrowed_from": "Conductor §5.3 waiting-for-expert.json + need-expert-*.md"
 }
