@@ -11,12 +11,12 @@
 
 **问题**: KALLAX 当前 **20 Rule** (跟 CLAUDE.md 实际 1-18 + 30-31 一致, v2.7.4 D1 拍板 A 22→20 跨 release 留待 4h 实施). Rule 数 多 跟 "治理完成" 不是 因果关系 — v2.4.0 4 合并 (22 → 18) 跟 v2.4.1 revert 实证 净价值 持平 67.0%, 0 实际变化, 治根 "0 实际改变 假动作" 反讽.
 
-**方法**: 借 eket `template/docs/MASTER-RULES.md` §6 模式 — 9 条 Hard Rules 简表 + 反例 + 撤销方法 — **不复制 eket 9 Hard Rules 全文**, 提取 模式 + 命名, 适配 KALLAX 22 Rule 现状 (Conductor/Performer + outbox-isolation + tag-sop + ...).
+**方法**: 借 eket `template/docs/MASTER-RULES.md` §6 模式 — 9 条 Hard Rules 简表 + 反例 + 撤销方法 — **不复制 eket 9 Hard Rules 全文**, 提取 模式 + 命名, 适配 KALLAX 20 Rule 现状 (Conductor/Performer + outbox-isolation + tag-sop + ...).
 
 **约束**:
 - 0 增 Rule (跟"翻篇&精进" 战略 一致, 跟 v2.4.1 还原 20 Rule 联合, 跟 v2.7.4 D1 拍板 A 22→20 联合)
 - 0 重写 (跟 Rule 5 DRY 联合)
-- 22 Rule → 9 类别 group 索引 (file:line 1:1 映射, 不删)
+- 20 Rule → 9 类别 group 索引 (file:line 1:1 映射, 不删)
 - 借方法论 不借代码 (不复制 eket 9 Hard Rules 全文)
 
 ---
@@ -184,7 +184,7 @@
 
 ## 4. 撤销方法 (跟 v2.4.1 revert 联合)
 
-**触发**: 9 Hard Rules 跟 KALLAX 22 Rule 不再 1:1 适配 (e.g. 22 Rule 升 25, 或净价值↓).
+**触发**: 9 Hard Rules 跟 KALLAX 20 Rule 不再 1:1 适配 (e.g. 20 Rule 升 25, 或净价值↓).
 
 **流程** (跟 Rule 6 经验沉淀强制 + Rule 11 Master 写代码禁令 联合):
 
@@ -203,8 +203,8 @@
 
 ## 5. KPI 精确 X/Y 格式 (Rule 9 强制)
 
-**22 Rule → 9 类别 group 整合 = 22/22 = 100.0%** (跟"翻篇&精进" 战略 一致)
-**0 增 Rule** (跟 v2.4.1 还原 22 Rule 联合, 跟"诚实修正" + "反讽" 战略 一致)
+**20 Rule → 9 类别 group 整合 = 20/20 = 100.0%** (跟"翻篇&精进" 战略 一致)
+**0 增 Rule** (跟 v2.4.1 还原 20 Rule 联合, 跟 v2.7.4 D1 拍板 A 22→20 联合, 跟"诚实修正" + "反讽" 战略 一致)
 
 **验证脚本**: `bash scripts/check-9-hard-rules.sh --self-test` + `bash tests/integration/check-9-hard-rules-test.sh` (5/5 PASS)
 
@@ -216,11 +216,11 @@
 
 **9 Hard Rules 简化 跟 §11.1 联合**:
 - 9 Hard Rules 是 模式 (Pattern), 不是 Rule 数 减 13 (22 → 9)
-- 22 Rule 仍 落地 (file:line 1:1 映射), 9 Hard Rules 是 group 索引 (索引表, 不删 Rule)
+- 20 Rule 仍 落地 (file:line 1:1 映射), 9 Hard Rules 是 group 索引 (索引表, 不删 Rule)
 - 跟 v2.4.0 4 合并 反思 联合, 治根 "0 实际改变 假动作" 反讽
 - 跟 PHASE-013-REFLECTION 联合, 跟"反讽" + "诚实修正" 战略 一致
 
-**闭环 KPI**: 22 Rule → 9 类别 group = 22/22 = 100.0% 落地, 0 增 Rule, 0 重写, 净价值 持平 67.0%
+**闭环 KPI**: 20 Rule → 9 类别 group = 20/20 = 100.0% 落地, 0 增 Rule, 0 重写, 净价值 持平 67.0%
 
 ---
 
