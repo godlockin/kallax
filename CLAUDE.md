@@ -221,11 +221,17 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 ### 8. 4-Level Fact-Forcing 强制 (KALLAX P0) — task:complete 前置
 
-**教训**: 4-Level 是 documentation, 不是 enforcement. EPIC-024/028 KPI falsification 3 次强化此教训.
+**教训**: 4-Level 是 documentation, 不是 enforcement. EPIC-024/028 KPI falsification 3 次强化此教训. EPIC-021 D review P1 实证 "L4 bash 命令引用不存在脚本 = 假完成" 反讽 → 升级 "L4 脚本必须存在" (UP-1, EPIC-025-A).
 
-**规则**: `task:complete <TICKET>` 前必须运行 `check-fact-forcing-preflight.sh <expert.md>`, 全部 L1/L2/L3/L4 通过才能 close ticket.
+**规则**: `task:complete <TICKET>` 前必须运行 `check-fact-forcing-preflight.sh <expert.md>`, 全部 L1/L2/L3/L4 通过才能 close ticket. **L4 脚本必须存在**: L4 引用的验证脚本 (`scripts/verify/*.sh` + L4 落地脚本) 必须在文件系统存在 + 可执行, 否则 `task:complete` 拒绝 close ticket.
+
+**L4 脚本存在性 强制 (UP-1, EPIC-025-A, 跟 PHASE-006 UP-1 + EPIC-021 D review P1 联合)**: 治根 "L4 bash 命令引用不存在脚本" 反讽. 跟 `docs/process/9-hard-rules.md` Rule 5 file:line 1:1 映射 (no contradiction, 跟 §2 表 行 32 + §3 Rule 5 反例 行 113 一致). 跟 "翻篇&精进" 战略 联合, 0 增 Rule 持平 (Rule 8 文本升级, 不新增 Rule).
 
 **4 级执行顺序**: L1 存在性 → L2 实质性 → L3 接线正确 → L4 数据流动
+
+**L4_script_exists 检查 (5 工具 preflight)**: `check-fact-forcing-preflight.sh` emit `L4_script_exists: PASS/FAIL`, 集成 `scripts/verify/master-6d-checkpoint.sh` + `scripts/verify/auditor-checkpoint.sh` 输出. 缺任一 L4 引用脚本 = FAIL + ticket 不 close.
+
+**落地检查**: `bash scripts/verify/check-fact-forcing-preflight.sh` (6 checks: l3-l4-consistency / 3 anti-fab tools / l3l4 self-test x2 / smoke run x2) + `bash scripts/check-anti-patterns.sh .` (7 anti-patterns 扫描, 跟 v2.7.4 B5.1 治根 联合) + `bash scripts/verify/check-scope-creep.sh <TICKET>` (file_scope.includes 强制).
 
 **Anti-Fabrication 子规则 (9a/9b/9c/9e/9f)**:
 
@@ -235,7 +241,7 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 - **9e [P0] Performer 工具调用自验证 = FAIL**: Edit 后未 grep 验证 / git commit 后未 log 验证 SHA 真变 / test 后未看 stdout 验证. 防御: Performer 工具调用后必自验证
 - **9f [P1] Tier-Domain 一致性 = FAIL**: default tier 必须用 {architect, backend, frontend, ux, product, security, pm} 中之一. 防御: `python3 scripts/expert-quality-audit.py --enforce-tier-domain`
 
-**红线**: ❌ 跳过 preflight 直接 close ticket, ❌ preflight FAIL 但仍 close ticket, ❌ KPI 估数/verbatim/scope creep 任一绕过
+**红线**: ❌ 跳过 preflight 直接 close ticket, ❌ preflight FAIL 但仍 close ticket, ❌ L4_script_exists FAIL 仍 close ticket (跟 L4 脚本必须存在 联合 红线), ❌ KPI 估数/verbatim/scope creep 任一绕过, ❌ L4 引用脚本缺失 但 不补占位 直接 commit (跟 EPIC-021 D review P1 实证 联合)
 
 ### 9. Anti-Fabrication 强制 (KALLAX P0) — 全 commit 前置
 
