@@ -2,7 +2,7 @@
 
 > 决策目标: 3 秒从症状定位到 expert.
 > 设计哲学: **用户语言优先** (不掺技术 jargon, 不引用排查工具, 不引用具体 SLO 数字).
-> 修复 (A+B review): 去掉 jargon / 移除"错比漏好" / 解决接口歧义 / 补 Data 行 / 消除 UX/PM 流程重叠 / 多维度兜底 / 预留标记.
+> 修复 (A+B review): 去掉 jargon / 移除"错比漏好" / 接口歧义分离 / 补 Data 行 / UX/PM 流程分离 / 多维度兜底 / 预留标记.
 
 ## How to Use This Index
 
@@ -45,10 +45,10 @@
 
 症状对不上 10 行中的任意一行? **四种处理**:
 
-1. **症状模糊** (匹配 1 行但不确定): 不要猜. 在 `tickets/<EPIC>/expert.yaml` 的 `assigned_expert` 字段标 `[待确认]`, 让 master 复核. master 看完后, 在 `expert.md` 文件加 `tickets_served` 记录
-2. **症状多维度** (匹配 2+ 行): 在多行后都标 `[并行]`, master 按维度分派. e.g. "接口慢 + 部署失败" = Backend + DevOps 并行评审
-3. **新症状** (10 行无任何匹配): 创建 `jira/tickets/EPIC-XXX/`, 在 `expert.yaml` 的 `assigned_expert` 字段标注新角色. master 会创建对应 persona 文件
-4. **预留角色** (用户想选 DevOps/Data/Test): 这些是治理预留, **暂不可选**. 走 master 仲裁, 或纳入 EPIC-023/024/025 后再启用
+1. **症状模糊** (匹配 1 行但不确定): 在 `tickets/<EPIC>/expert.yaml` 的 `assigned_expert` 字段标 `[待确认]`, 让 master 复核
+2. **症状多维度** (匹配 2+ 行): 在多行后都标 `[并行]`, master 按维度分派. e.g. "接口慢 + 部署失败" = Backend + DevOps
+3. **新症状** (10 行无任何匹配): 创建 `jira/tickets/EPIC-XXX/`, 在 `expert.yaml` 的 `assigned_expert` 字段标注新角色, master 创建对应 persona 文件
+4. **预留角色** (用户想选 DevOps/Data/Test): 这些是治理预留, **暂不可选**. 走 master 仲裁或 EPIC-023/024/025 启用
 
 ## 边界规则 (避免误派)
 
