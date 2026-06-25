@@ -5,7 +5,7 @@
   "title": "experts/INDEX.md 症状决策树 + 10 emoji",
   "type": "feature",
   "priority": "P0",
-  "status": "ready",
+  "status": "done",
   "created_by": "master_main",
   "created_at": "2026-06-07T17:00:00Z",
   "file_scope": {
@@ -14,7 +14,9 @@
     ],
     "excludes": []
   },
-  "dependencies": ["EPIC-021-A"],
+  "dependencies": [
+    "EPIC-021-A"
+  ],
   "acceptance_criteria": [
     ".kallax/experts/INDEX.md 存在, 含症状决策树表格",
     "表格列: 症状 / 角色 / 典型 Ticket / 2-Group 位置 / emoji",
