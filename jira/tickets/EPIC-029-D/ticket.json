@@ -5,7 +5,7 @@
   "title": "session_start.sh MODE 选择菜单",
   "type": "feature",
   "priority": "P0",
-  "status": "ready",
+  "status": "done",
   "created_by": "master_main",
   "created_at": "2026-06-09T22:30:00+08:00",
   "file_scope": {
@@ -22,7 +22,9 @@
     "L4 数据流动: session-start-test.sh 跑 PASS, 验证 session_start.sh 含 MODE + 3 mode 字符串"
   ],
   "estimated_hours": 1.5,
-  "blocked_by": ["EPIC-029-A"],
+  "blocked_by": [
+    "EPIC-029-A"
+  ],
   "borrowed_from_eket": "UX §5.1 interactive:start 多模式 (P1-3 EKET 借鉴)",
   "related_design": "docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md §7 + §8"
 }
