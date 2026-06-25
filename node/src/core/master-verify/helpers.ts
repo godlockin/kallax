@@ -5,6 +5,7 @@
 
 import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
+import { logger } from '../utils/logger.js';
 import { EXIT_FAIL } from './constants.js';
 
 const KPI_FAB_BLACKLIST_PATTERNS = [
@@ -31,7 +32,7 @@ export interface DimensionResult {
 // ============================================================================
 
 export function die(msg: string, code: number = EXIT_FAIL): never {
-  console.error(`ERROR: ${msg}`);
+  logger.error({}, `ERROR: ${msg}`);
   process.exit(code);
 }
 

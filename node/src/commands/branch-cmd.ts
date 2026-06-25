@@ -4,6 +4,7 @@
 import type { Command } from 'commander';
 import { execFileSync } from 'node:child_process';
 import * as path from 'node:path';
+import { logger } from '../utils/logger.js';
 
 const SCRIPTS_DIR = path.resolve(import.meta.dirname, '../../../scripts');
 
@@ -49,8 +50,8 @@ export function registerBranchCommands(program: Command): void {
     .description('Show branch pipeline status')
     .action(() => {
       execFileSync('git', ['branch', '-a'], { stdio: 'inherit' });
-      console.log('\nPipeline: feature/<name> → testing → miao');
-      console.log('  feature → testing:  Conductor merges (提测)');
-      console.log('  testing → miao:     Master approves PR (发版)');
+      logger.info({}, '\nPipeline: feature/<name> → testing → miao');
+      logger.info({}, '  feature → testing:  Conductor merges (提测)');
+      logger.info({}, '  testing → miao:     Master approves PR (发版)');
     });
 }

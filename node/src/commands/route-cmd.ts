@@ -3,6 +3,7 @@
  * Simple → direct, Complex → expert panel.
  */
 import type { Command } from 'commander';
+import { logger } from '../utils/logger.js';
 
 export function registerRouteCommands(program: Command): void {
   program
@@ -14,57 +15,57 @@ export function registerRouteCommands(program: Command): void {
       const result = routeTask(requirement);
 
       if (result.isErr()) {
-        console.error(`ERROR: ${result.error.message}`);
+        logger.error({}, `ERROR: ${result.error.message}`);
         process.exit(1);
       }
 
       const { decision, confidence } = result.value;
 
       if (opts.json) {
-        console.log(JSON.stringify({ decision, confidence, requirement }, null, 2));
+        logger.info({}, JSON.stringify({ decision, confidence, requirement }, null, 2));
         return;
       }
 
       const threshold = getComplexityThreshold();
 
-      console.log('');
-      console.log('╔══════════════════════════════════════════════════════╗');
-      console.log('║  KALLAX Task Router — Complexity Gate              ║');
-      console.log('╠══════════════════════════════════════════════════════╣');
-      console.log(`║  Requirement: ${requirement.slice(0, 40).padEnd(40)}║`);
-      console.log(`║  Complexity:  ${decision.complexity.score}/${threshold}+ (threshold)                    ║`);
-      console.log(`║  Strategy:    ${decision.strategy.padEnd(40)}║`);
-      console.log(`║  Confidence:  ${Math.round(confidence * 100)}%                                 ║`);
-      console.log('╠══════════════════════════════════════════════════════╣');
+      logger.info({}, '');
+      logger.info({}, '╔══════════════════════════════════════════════════════╗');
+      logger.info({}, '║  KALLAX Task Router — Complexity Gate              ║');
+      logger.info({}, '╠══════════════════════════════════════════════════════╣');
+      logger.info({}, `║  Requirement: ${requirement.slice(0, 40).padEnd(40)}║`);
+      logger.info({}, `║  Complexity:  ${decision.complexity.score}/${threshold}+ (threshold)                    ║`);
+      logger.info({}, `║  Strategy:    ${decision.strategy.padEnd(40)}║`);
+      logger.info({}, `║  Confidence:  ${Math.round(confidence * 100)}%                                 ║`);
+      logger.info({}, '╠══════════════════════════════════════════════════════╣');
 
       if (decision.strategy === 'direct') {
-        console.log(`║  Mode:        ${decision.complexity.mode.padEnd(40)}║`);
-        console.log(`║  Subtasks:    ${String(decision.decomposition.subtasks.length).padEnd(40)}║`);
-        console.log(`║  Performer:   ${(decision.suggestedPerformer.capabilities.join('+') || 'general').padEnd(40)}║`);
-        console.log('╠══════════════════════════════════════════════════════╣');
-        console.log('║  Next:                                               ║');
-        console.log('║  1. kallax ticket:create "<title>"                  ║');
-        console.log('║  2. /kallax-expert <role>                           ║');
-        console.log('║  3. Start working                                   ║');
+        logger.info({}, `║  Mode:        ${decision.complexity.mode.padEnd(40)}║`);
+        logger.info({}, `║  Subtasks:    ${String(decision.decomposition.subtasks.length).padEnd(40)}║`);
+        logger.info({}, `║  Performer:   ${(decision.suggestedPerformer.capabilities.join('+') || 'general').padEnd(40)}║`);
+        logger.info({}, '╠══════════════════════════════════════════════════════╣');
+        logger.info({}, '║  Next:                                               ║');
+        logger.info({}, '║  1. kallax ticket:create "<title>"                  ║');
+        logger.info({}, '║  2. /kallax-expert <role>                           ║');
+        logger.info({}, '║  3. Start working                                   ║');
       } else {
-        console.log(`║  Panel:                                              ║`);
+        logger.info({}, `║  Panel:                                              ║`);
         for (const role of decision.panel.required) {
-          console.log(`║    • ${role.padEnd(46)}║`);
+          logger.info({}, `║    • ${role.padEnd(46)}║`);
         }
         if (decision.panel.optional.length > 0) {
-          console.log(`║  Optional:                                           ║`);
+          logger.info({}, `║  Optional:                                           ║`);
           for (const role of decision.panel.optional.slice(0, 3)) {
-            console.log(`║    • ${role.padEnd(46)}║`);
+            logger.info({}, `║    • ${role.padEnd(46)}║`);
           }
         }
-        console.log(`║  Rounds:     ${String(decision.estimatedRounds).padEnd(40)}║`);
-        console.log('╠══════════════════════════════════════════════════════╣');
-        console.log('║  Next:                                               ║');
-        console.log('║  1. /kallax-panel "analyze requirement"              ║');
-        console.log('║  2. Expert panel analyzes → discusses → produces plan║');
-        console.log('║  3. Execute according to plan                        ║');
+        logger.info({}, `║  Rounds:     ${String(decision.estimatedRounds).padEnd(40)}║`);
+        logger.info({}, '╠══════════════════════════════════════════════════════╣');
+        logger.info({}, '║  Next:                                               ║');
+        logger.info({}, '║  1. /kallax-panel "analyze requirement"              ║');
+        logger.info({}, '║  2. Expert panel analyzes → discusses → produces plan║');
+        logger.info({}, '║  3. Execute according to plan                        ║');
       }
-      console.log('╚══════════════════════════════════════════════════════╝');
-      console.log('');
+      logger.info({}, '╚══════════════════════════════════════════════════════╝');
+      logger.info({}, '');
     });
 }
