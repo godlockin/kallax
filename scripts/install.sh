@@ -887,12 +887,19 @@ verify_install() {
       warn "[$tool] skills: not installed"
     fi
 
-    local cmd_count
-    cmd_count=$(ls "$cmds"/kallax-* 2>/dev/null | wc -l | tr -d ' ')
-    if [ "$cmd_count" -gt 0 ]; then
-      ok "[$tool] commands: $cmd_count slash cmds in $cmds"
+    # Skip tools without slash command API (aider/continue: config only).
+    # Without this guard, `ls "" /kallax-*` would fail under `set -euo pipefail`
+    # and abort the verify phase (BE-25 联合: 0 隐藏 silent crash).
+    if [ -z "$cmds" ]; then
+      dim "  [$tool] no slash command API (config only — verified above)"
     else
-      warn "[$tool] commands: not installed"
+      local cmd_count
+      cmd_count=$(ls "$cmds"/kallax-* 2>/dev/null | wc -l | tr -d ' ')
+      if [ "$cmd_count" -gt 0 ]; then
+        ok "[$tool] commands: $cmd_count slash cmds in $cmds"
+      else
+        warn "[$tool] commands: not installed"
+      fi
     fi
   done
 
