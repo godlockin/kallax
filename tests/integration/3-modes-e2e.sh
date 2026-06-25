@@ -366,11 +366,11 @@ if [[ $TOTAL -lt $EXPECTED_MIN ]]; then
 fi
 
 if [[ $FAIL -gt 0 ]]; then
-  echo "FAILED: e2e-3modes-4dim-test.sh ($FAIL failures)"
+  echo "FAILED: 3-modes-e2e.sh ($FAIL failures)"
   exit 1
 fi
 
-echo "PASS: e2e-3modes-4dim-test.sh ($TOTAL cases, 3 modes × 4 dimensions, 100% PASS)"
+echo "PASS: 3-modes-e2e.sh ($TOTAL cases, 3 modes × 4 dimensions, 100% PASS)"
 echo "  - ai-auto:    4 scenarios PASS"
 echo "  - ai-copilot: 6 scenarios PASS"
 echo "  - manual:     6 scenarios PASS"
