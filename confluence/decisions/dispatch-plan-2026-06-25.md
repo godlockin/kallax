@@ -1,4 +1,6 @@
-# 60 票 Dispatch Plan (跟 KALLAX 派遣 §11 11 项 联合, 跟 master 拍 "A 60 票 dispatch plan 拍 explicit" 联合)
+# 64 票 Dispatch Plan (跟 KALLAX 派遣 §11 11 项 联合, 跟 master 拍 "A 60 票 dispatch plan 拍 explicit" 联合)
+
+> **跟 review-critical-2026-06-25.md §4 联合 0 隐藏**: master 拍 "60 票" 跟 实际 64 票 (49 READY + 8 PENDING + 7 BACKLOG) 失一致 +4, 跟"诚实修正" 战略 联合 0 隐藏, 跟"独立" 战略 联合 master explicit 后续 拍. 跟 v2.0.7 PHASE-014 模式 一致.
 
 > Date: 2026-06-25 | Phase: 5 战略 + 5 原则 联合
 > Methodology: 跟 v2.0.3 EPIC-056-A 3 阶段 治理 模式 一致, 跟 /kallax-panel 9 专家 并行 联合
