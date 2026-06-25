@@ -26,5 +26,5 @@
   ],
   "estimated_hours": 6,
   "notes": "借 EKET Zod 思路 (Layer 2), KALLAX 增 5 运行时字段. 对应 EKET 6 反 LLM 绕过机制 (TS 强类型)",
-  "status": "ready"
+  "status": "done"
 }
