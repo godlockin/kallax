@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 跟主公 2026-06-19 派单 联合, 跟 v2.7.2 整理 release 联合, 跟 5 战略 联合 ('翻篇&精进' + '诚实修正' + '反讽' + '独立' + '反哺框架'), 跟 Rule 5 DRY 联合, 跟 EPIC-059-D Fact-Forcing 联合:
 
 **SKILL.md 修复 (跟 v2.3.0 --symlink default 联合, 跟 '反讽' 联合 治根 'filePath 假动作')**:
-- **P0 bug fix**: 删 `filePath: /Users/chenchen/.claude/skills/kallax/SKILL.md` (CRITICAL — absolute path 到 user's home 误导 AI 工具, 应 为 project 路径, 跟 CLAUDE.md Rule 32 互为 互补)
+- **P0 bug fix**: 删 `filePath: $HOME/.claude/skills/kallax/SKILL.md` (CRITICAL — absolute path 到 user's home 误导 AI 工具, 应 为 project 路径, 跟 CLAUDE.md Rule 32 互为 互补)
 - 修 description 3264 char → 617 char (跟 Claude Code 1024 char limit 联合, 跟 '可读性 > 完整性' 战略 联合)
 - 简化 triggerKeywords 21 → 13 (跟 Rule 5 DRY 联合)
 - 加 `## Quick Reference` (10 类 29 命令 + argument-hint 表) — AI 工具 加载 后 1 屏 看到 全部
@@ -331,10 +331,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### 4 工具 symlink 闭环 (跟"诚实修正" 联合, 治主公"用一份skills/命令文件" 显式需求)
 
 \`\`\`
-[canonical] skills → /Users/chenchen/.local/share/kallax/skills/kallax
-[claude]     skills → /Users/chenchen/.claude/skills/kallax (symlink → canonical)
-[trae]       skills → /Users/chenchen/.trae/skills/kallax (symlink → canonical)
-[antigravity] skills → /Users/chenchen/.antigravity/skills/kallax (symlink → canonical)
+[canonical] skills → $HOME/.local/share/kallax/skills/kallax
+[claude]     skills → $HOME/.claude/skills/kallax (symlink → canonical)
+[trae]       skills → $HOME/.trae/skills/kallax (symlink → canonical)
+[antigravity] skills → $HOME/.antigravity/skills/kallax (symlink → canonical)
 [opencode]   skills → /Users/chenchen/.opencode/skills/kallax (symlink → canonical)
 
 [canonical] commands → /Users/chenchen/.local/share/kallax/commands (56 files)
