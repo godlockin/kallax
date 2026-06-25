@@ -1,5 +1,8 @@
 #!/bin/bash
 # mode-set.sh — write state.json mode + mode_lock
+# EPIC-029-A: state.json mode + mode_lock schema + mode-set.sh CLI
+# 3 模式: ai-auto | ai-copilot | manual (跟 docs/architecture/3-MODES.md §3 1:1)
+# Ticket: jira/tickets/EPIC-029-A/ticket.json
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
