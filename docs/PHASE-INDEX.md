@@ -8,7 +8,7 @@ KALLAX 文档 Single Source of Truth (SoT) — 修订前查 SoT 边界, 避免�
 
 | SoT 文件 | 内容 | 适用场景 |
 |---|---|---|
-| [CLAUDE.md](../CLAUDE.md) | **Rule SoT** — 规则/红线/必读 (Rule 1-18 + 29-33) | 改 Rule / 加红线 / 必读章节 |
+| [CLAUDE.md](../CLAUDE.md) | **Rule SoT** — 规则/红线/必读 (Rule 1-18 + 30-31) | 改 Rule / 加红线 / 必读章节 |
 | [KALLAX-GLOSSARY.md](KALLAX-GLOSSARY.md) | **术语 SoT** — 黑话/概念/术语 (39 个, 跟 v2.0.6 升级 +5 multi-tool) | 改术语定义 / 加新黑话 |
 | [PHASE-INDEX.md](PHASE-INDEX.md) | **PHASE 文档索引** (本文档) | 引用 PHASE review / 决策文档 |
 
