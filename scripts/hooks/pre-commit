@@ -112,11 +112,40 @@ fi
 
 # ── 3 anti-fab tools (Rule 10) ──────────────────────────────────────────
 # Run on ALL branches to catch KPI falsification, test verbatim, scope creep
+#
+# BE-25 fix: check-scope-creep requires TICKET_ID positional arg.
+# Detect TICKET_ID from (in order):
+#   1. KALLAX_TICKET_ID env var (manual override)
+#   2. Branch name (feature/EPIC-NNN-X-* → EPIC-NNN-X)
+#   3. Commit message (if COMMIT_MSG_FILE readable)
+# If no TICKET_ID found, skip scope-creep check (warn but don't fail).
 ANTIFAB_FAILED=0
+SCOPE_CREEP_TICKET_ID="${KALLAX_TICKET_ID:-}"
+if [[ -z "$SCOPE_CREEP_TICKET_ID" ]]; then
+  # Try branch name: feature/EPIC-NNN-X-...
+  SCOPE_CREEP_TICKET_ID="$(echo "$BRANCH" | grep -oE 'EPIC-[0-9]+-[A-Z]+' | head -1 || true)"
+fi
+if [[ -z "$SCOPE_CREEP_TICKET_ID" ]]; then
+  # Try commit message file (passed by git)
+  if [[ -n "${COMMIT_MSG_FILE:-}" ]] && [[ -f "$COMMIT_MSG_FILE" ]]; then
+    SCOPE_CREEP_TICKET_ID="$(grep -oE 'EPIC-[0-9]+-[A-Z]+' "$COMMIT_MSG_FILE" 2>/dev/null | head -1 || true)"
+  fi
+fi
+
 for _tool in check-test-case-isolation check-kpi-precision check-scope-creep; do
   _tool_path="${KALLAX_ROOT}/scripts/verify/${_tool}.sh"
   if [[ -x "$_tool_path" ]]; then
-    if ! bash "$_tool_path" >/dev/null 2>&1; then
+    # check-scope-creep needs TICKET_ID; skip if not detected
+    if [[ "$_tool" == "check-scope-creep" ]] && [[ -z "$SCOPE_CREEP_TICKET_ID" ]]; then
+      echo "WARN: check-scope-creep skipped (no TICKET_ID detected from branch or env)" >&2
+      continue
+    fi
+    if [[ "$_tool" == "check-scope-creep" ]]; then
+      _tool_cmd="bash $_tool_path $SCOPE_CREEP_TICKET_ID"
+    else
+      _tool_cmd="bash $_tool_path"
+    fi
+    if ! eval "$_tool_cmd" >/dev/null 2>&1; then
       echo "╔══════════════════════════════════════════════════════════════╗"
       echo "║  BLOCKED: $_tool FAILED                            ║"
       echo "║  Run the tool manually to see details:                    ║"
