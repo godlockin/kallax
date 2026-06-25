@@ -14,7 +14,8 @@
     "includes": [
       "jira/tickets/EPIC-035-B/",
       "scripts/isolation/check.sh",
-      "scripts/verify/worktree-role.sh"
+      "scripts/verify/worktree-role.sh",
+      "tests/integration/worktree-role-isolation-test.sh"
     ],
     "excludes": []
   },
