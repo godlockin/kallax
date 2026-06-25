@@ -25,7 +25,9 @@
     "L4 数据流动: feature/EPIC-029-3-modes → testing 合并 → 全量测试 PASS → testing → miao 合并 → push origin miao 成功, miao HEAD 更新"
   ],
   "estimated_hours": 1.0,
-  "blocked_by": ["EPIC-029-J"],
+  "blocked_by": [
+    "EPIC-029-J"
+  ],
   "borrowed_from_eket": "Rule 6 EPIC 交付四件套 + PHASE-003 review 5 升级模式",
   "related_design": "docs/superpowers/plans/2026-06-09-kallax-3-modes.md Task 11"
 }

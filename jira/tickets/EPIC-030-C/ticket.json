@@ -5,7 +5,7 @@
   "title": "waiting-for-expert 自动降级 + inbox 提示 (主公 D 串行第 3)",
   "type": "feature",
   "priority": "P0",
-  "status": "ready",
+  "status": "done",
   "created_by": "master_main",
   "created_at": "2026-06-11T00:00:00+08:00",
   "file_scope": {

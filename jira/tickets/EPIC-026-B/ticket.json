@@ -27,5 +27,5 @@
   ],
   "estimated_hours": 6,
   "notes": "黑洞重演的最强防御. watchdog 监控 + fail-closed safety check 双保险",
-  "status": "ready"
+  "status": "done"
 }
