@@ -153,4 +153,4 @@ KALLAX 在 v2.7.0 → v2.7.1 → v2.7.2 → v2.7.3 → v2.7.4 期间, 4 团队 �
 - scripts/check-anti-patterns.sh (跟 7 anti-pattern 硬性 校验 联合)
 - scripts/hooks/pre-commit Check 2.6 (跟 wire 联合)
 
-**Status**: v2.7.4 C4 闭环, 5 原则 文档 化, 跟 17 release 累计 联合, 跟"翻篇&精进" + "反哺框架" 战略 联合.
+**Status**: v2.7.4 C4 文档 化 + 4 项 留待 (C1 console.log + C2 Rust unwrap + C3 500+ 行 拆 + C4 hardcoded /Users/), 跟"诚实修正" 战略 联合 0 隐藏, 跟 17 release 累计 联合, 跟"翻篇&精进" + "反哺框架" 战略 联合.

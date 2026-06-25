@@ -325,6 +325,8 @@ fd9d0d9 feat(phase-013): v2.4.0 PHASE-013 跨期 review 落地 ...
 
 ### 5.3 闭环验证 checklist (跟 §1.5 闭环 联合)
 
+> **跟 v2.7.4 D5 + /kallax-panel 2026-06-25 9 专家 联合 0 隐藏**: 6 项 checklist 全部 跨 release 留待 落地 实施, 跟"诚实修正" 战略 联合 0 假 PASS 校验 100%, 跟 EPIC-059-D Fact-Forcing 联合 100% 落地.
+
 - [ ] evidence chain 3 件套 (file:line / 命令输出 / 代码位置)
 - [ ] 跨 release 验证 (不只 落地 commit)
 - [ ] raw test output (不接受 "should work")

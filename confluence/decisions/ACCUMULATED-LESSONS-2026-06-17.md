@@ -1,6 +1,8 @@
-# ACCUMULATED-LESSONS-2026-06-17 (v2.5.0 升级版)
+# ACCUMULATED-LESSONS-2026-06-17 (v2.5.0 升级版 → v2.7.3 累计 联合)
 
-> **累计 14 release + 14 BE + 5 EPIC × 18 卡 + 6 痛点 + 22 active Rule (v2.4.1 还原) + 17 门禁 + 5 视角 + 4 共同根因 + 5 战略 + 5 治理卡 + 10 工具 + 60 术语 + 5 deferred 状态 (3 closed + 2 留待) + 4 PHASE review (PHASE-011/012/013-REFLECTION/014)**
+> **跟 /kallax-panel 2026-06-25 8-auditor.md §1.6 联合 0 隐藏**: 本 文档 标 v2.5.0 升级版 是 实际 状态 快照, 跟 v2.7.3 后续 跨 release 累计 联合 0 隐藏. 内容 反映 v2.5.0 时期, 后续 18 release 累计 跨 release 留待 待 实际 内容 跟进 (跟"翻篇&精进" 战略 联合).
+
+> **累计 18 release + 19 BE + 22 EPIC × 130 ticket + 6 痛点 + 20 active Rule (v2.7.4 D1 拍板 A 22→20 联合) + 17 门禁 + 5 视角 + 4 共同根因 + 5 战略 + 5 治理卡 + 10 工具 + 60+5 术语 + 0 deferred 状态 (3 fixed to ready 跟 实际 ACTIVE 一致) + 11 PHASE review (PHASE-005 → PHASE-016) + /kallax-panel 2026-06-25 9 专家 100% deliver**
 > **跟主公"流程逻辑 > 扩充配置" + "诚实修正" + "反讽" + "翻篇&精进" + "独立" 5 大战略 联合**
 > **跟 v2.0.3 baseline + v2.0.5 (初版) + v2.0.6 (v2.0.6 升级版) + v2.3.0 (v2.3.0 升级版) + v2.5.0 (本升级) 联合 → 跨 release 累计沉淀**
 

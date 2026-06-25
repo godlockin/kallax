@@ -9,12 +9,12 @@
 
 ## 1. 背景与定位
 
-**问题**: KALLAX 当前 **22 Rule** (v2.4.1 还原 跟 v2.3.0 一致). Rule 数 多 跟 "治理完成" 不是 因果关系 — v2.4.0 4 合并 (22 → 18) 跟 v2.4.1 revert 实证 净价值 持平 67.0%, 0 实际变化, 治根 "0 实际改变 假动作" 反讽.
+**问题**: KALLAX 当前 **20 Rule** (跟 CLAUDE.md 实际 1-18 + 30-31 一致, v2.7.4 D1 拍板 A 22→20 跨 release 留待 4h 实施). Rule 数 多 跟 "治理完成" 不是 因果关系 — v2.4.0 4 合并 (22 → 18) 跟 v2.4.1 revert 实证 净价值 持平 67.0%, 0 实际变化, 治根 "0 实际改变 假动作" 反讽.
 
 **方法**: 借 eket `template/docs/MASTER-RULES.md` §6 模式 — 9 条 Hard Rules 简表 + 反例 + 撤销方法 — **不复制 eket 9 Hard Rules 全文**, 提取 模式 + 命名, 适配 KALLAX 22 Rule 现状 (Conductor/Performer + outbox-isolation + tag-sop + ...).
 
 **约束**:
-- 0 增 Rule (跟"翻篇&精进" 战略 一致, 跟 v2.4.1 还原 22 Rule 联合)
+- 0 增 Rule (跟"翻篇&精进" 战略 一致, 跟 v2.4.1 还原 20 Rule 联合, 跟 v2.7.4 D1 拍板 A 22→20 联合)
 - 0 重写 (跟 Rule 5 DRY 联合)
 - 22 Rule → 9 类别 group 索引 (file:line 1:1 映射, 不删)
 - 借方法论 不借代码 (不复制 eket 9 Hard Rules 全文)
@@ -31,7 +31,7 @@
 | 4 | **负载分担** | 并行>3 或积压>10 → 委托助理 | Rule 1 并行隔离 |
 | 5 | **分配前确认环境** | `node dist/index.js system:doctor` | Rule 8 L4 脚本必须存在 |
 | 6 | **文档卫生 (每10轮)** | 检查未追踪 md / 僵尸 ticket / 积压 review | Rule 6 经验沉淀强制 + tag-sop |
-| 7 | **新建前先想** | 是否有同类文档可更新？ | Rule 5 DRY + "借方法论 不借代码" 战略 |
+| 7 | **新建前先想** | 是否有同类文档可更新？ | Rule 6 文档卫生 + "借方法论 不借代码" 战略 |
 | 8 | **Rule of 500** (占位) | 净变更>500行 → 必须 codemod, 或 `Approved-Large-PR-By:` | 跟 EPIC-059-B 联合 |
 | 9 | **PR ~100 行上限** (占位) | ≤100 pass, 100-500 warn, >500 fail | 跟 EPIC-059-C 联合 |
 
