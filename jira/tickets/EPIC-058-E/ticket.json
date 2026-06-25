@@ -5,14 +5,17 @@
   "title": "P3-1: Rule 22 进一步合并 22→20 阈值 (跟 Rule 5 DRY 联合, 跟 v2.7.4 D1 拍板 A 联合)",
   "type": "docs",
   "priority": "P3",
-  "status": "ready",
+  "status": "done",
+  "status_updated_at": "2026-06-25T00:00:00Z",
+  "status_updated_by": "master_main (跟 实际 8acdb1a merge commit ACTIVE 一致, 跟 EPIC-060-A/B/C 74f48af reconcile 模式 联合, 跟 v2.7.4 B2 反讽 模式 联合 0 隐藏, 跟'诚实修正' 战略 联合)",
   "created_by": "master_main",
   "created_at": "2026-06-19T00:00:00Z",
   "file_scope": {
     "includes": [
       "CLAUDE.md",
       "docs/process/9-hard-rules.md",
-      "confluence/decisions/EPIC-058-E-IMPL-2026-06-19.md"
+      "confluence/decisions/EPIC-058-E-IMPL-2026-06-19.md",
+      "confluence/decisions/EPIC-058-E-IMPL-2026-06-25.md"
     ],
     "excludes": []
   },
@@ -23,5 +26,7 @@
   ],
   "estimated_hours": 4,
   "master_decision": "A: 22→20 合并 2 处 (4h 实施 ticket 留待 跨期)",
-  "decision_doc": "confluence/decisions/EPIC-058-E-DECISION-2026-06-19.md"
+  "decision_doc": "confluence/decisions/EPIC-058-E-DECISION-2026-06-19.md",
+  "completion_time": "2026-06-25T00:00:00Z",
+  "kpi": "1 doc + CLAUDE.md 20 Rule 验证 + 9-hard-rules.md 9 Rule 同步 + 1 commit landed (跟 4-Level Fact-Forcing 联合 0 假 PASS)"
 }
