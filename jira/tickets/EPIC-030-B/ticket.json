@@ -5,7 +5,7 @@
   "title": "scoring_trace.jsonl 每日轮转审计 (主公 D 串行第 2)",
   "type": "feature",
   "priority": "P0",
-  "status": "ready",
+  "status": "done",
   "created_by": "master_main",
   "created_at": "2026-06-11T00:00:00+08:00",
   "file_scope": {
@@ -22,6 +22,8 @@
     "L4 数据流动: test 跑 PASS 9/9, 覆盖 1 写 + 1 读 + 跨日轮转 (clock 注入) + 3 层 1:1 wiring"
   ],
   "estimated_days": 0.5,
-  "blocked_by": ["EPIC-030-A"],
+  "blocked_by": [
+    "EPIC-030-A"
+  ],
   "borrowed_from": "Conductor §5.1 scoring_trace-YYYY-MM-DD.jsonl"
 }

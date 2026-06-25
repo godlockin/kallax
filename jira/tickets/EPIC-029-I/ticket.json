@@ -5,7 +5,7 @@
   "title": "CLAUDE.md Rule 13 3 模式决策权分配",
   "type": "docs",
   "priority": "P0",
-  "status": "ready",
+  "status": "done",
   "created_by": "master_main",
   "created_at": "2026-06-09T22:30:00+08:00",
   "file_scope": {
@@ -21,7 +21,9 @@
     "L4 数据流动: grep -E '^### 13\\.' CLAUDE.md 命中, 跟 Rule 1-12 格式对比一致"
   ],
   "estimated_hours": 1.0,
-  "blocked_by": ["EPIC-029-H"],
+  "blocked_by": [
+    "EPIC-029-H"
+  ],
   "borrowed_from_eket": "Rule 6 EPIC 交付四件套 + Rule 11 Master 写代码禁令 升级模式",
   "related_design": "docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md §10"
 }

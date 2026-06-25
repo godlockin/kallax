@@ -5,7 +5,7 @@
   "title": "用户文档 docs/architecture/3-MODES.md",
   "type": "docs",
   "priority": "P0",
-  "status": "ready",
+  "status": "done",
   "created_by": "master_main",
   "created_at": "2026-06-09T22:30:00+08:00",
   "file_scope": {
@@ -21,7 +21,9 @@
     "L4 数据流动: 文档可读, 故障排查表覆盖 5 常见问题 (mode 没生效 / 误报 / 改 mode 无效 / ask file 没出现 / 审计)"
   ],
   "estimated_hours": 1.5,
-  "blocked_by": ["EPIC-029-I"],
+  "blocked_by": [
+    "EPIC-029-I"
+  ],
   "borrowed_from_eket": "P1-3 interactive:start 文档化 + UX §5.1 多模式",
   "related_design": "docs/superpowers/plans/2026-06-09-kallax-3-modes.md Task 10"
 }
