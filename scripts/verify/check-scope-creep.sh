@@ -103,10 +103,18 @@ if ! ALLOWED=$(jq -r '.file_scope.includes[]' "$TICKET_FILE" 2>/dev/null); then
     exit 0
 fi
 
-# Get changed files — use last commit only (not entire branch history)
-# On multi-ticket branch, miao...HEAD includes all tickets' changes causing false positives
-# Using HEAD~1..HEAD limits to the most recent commit's changes
-CHANGED=$(git diff --name-only HEAD~1..HEAD 2>/dev/null)
+# Get changed files — detect context (BE-26 fix)
+# - Pre-commit (staged changes present): use cached diff
+# - Post-commit (no staged): fall back to last commit (HEAD~1..HEAD)
+# Previous bug: always used HEAD~1..HEAD which checked last commit's changes
+#   instead of the new staged changes, causing false-positive scope-creep
+#   errors on worktree branches (e.g., b1b76ac pre-commit fix flagged as
+#   out-of-scope for ticket commits branched off miao).
+CHANGED=$(git diff --cached --name-only 2>/dev/null)
+if [ -z "$CHANGED" ]; then
+    # Fallback to last commit (post-commit review / manual scope check)
+    CHANGED=$(git diff --name-only HEAD~1..HEAD 2>/dev/null)
+fi
 
 if [ -z "$CHANGED" ]; then
     echo "No changed files detected."
