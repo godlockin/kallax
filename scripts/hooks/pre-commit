@@ -48,14 +48,30 @@ if [[ ! -x "$AUTHZ_CHECK" ]]; then
   exit 1
 fi
 
-if ! bash "$AUTHZ_CHECK" --action miao.write --actor "$ACTOR_DISPLAY"; then
+# Branch-aware action mapping (跟 BE-23 联合 0 隐藏, 跟 EPIC-022-B 联合)
+# miao branch → miao.write (conductor/master only)
+# feature/* branch → worktree.commit (performer allowed)
+# 其他 branch → miao.write (default fail-closed)
+case "$BRANCH" in
+  miao)
+    AUTHZ_ACTION="miao.write"
+    ;;
+  feature/*|fix/*|hotfix/*)
+    AUTHZ_ACTION="worktree.commit"
+    ;;
+  *)
+    AUTHZ_ACTION="miao.write"
+    ;;
+esac
+
+if ! bash "$AUTHZ_CHECK" --action "$AUTHZ_ACTION" --actor "$ACTOR_DISPLAY"; then
   echo "╔══════════════════════════════════════════════════════════════╗"
   echo "║  BLOCKED: Authorization denied by authz check. ║"
   echo "║ ║"
-  echo "║  Action: miao.write                                        ║"
-  echo "║  Actor: $ACTOR_DISPLAY                               ║"
+  echo "║  Branch: $BRANCH (action: $AUTHZ_ACTION)              ║"
+  echo "║  Actor:  $ACTOR_DISPLAY                               ║"
   echo "║ ║"
-  echo "║  Run 'kallax role:check miao.write' for details. ║"
+  echo "║  Run 'kallax role:check $AUTHZ_ACTION' for details. ║"
   echo "╚══════════════════════════════════════════════════════════════╝"
   exit 1
 fi
