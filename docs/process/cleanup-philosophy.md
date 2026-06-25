@@ -126,6 +126,8 @@ KALLAX 在 v2.7.0 → v2.7.1 → v2.7.2 → v2.7.3 → v2.7.4 期间, 4 团队 �
 - C3: 5 file 500+ 行 拆 (跟 v2.7.4 C3 留待, 跟 Rule 8 联合)
 - C4: 10 hardcoded /Users/ paths 修 (跟 v2.7.4 C3 留待, 跟"反讽" 联合)
 
+> **跟 /kallax-panel 2026-06-25 + 3-frontend.md F8 + 7-process.md F8 联合 0 隐藏 修订**: 10 paths 全部 在 5 historical files (CHANGELOG.md + jira/tickets/EPIC-057-A/B/C/D/*), 跟 baseline 联合 0 NEW. 跟"翻篇&精进" 战略 联合 0 强制 拍 historical 改, 跟"独立" 战略 联合 master explicit 后续 拍 (跟 v2.0.7 PHASE-014 模式 一致, 0 拍 ai-auto 修订).
+
 ## 后续 整理 release 触发 条件 (跟"独立" 拍 explicit 联合)
 
 1. **主公 explicit 派单** (跟 2026-06-19 模式 一致, 跟"独立" 战略 联合)
