@@ -10,18 +10,20 @@
   "created_at": "2026-06-11T00:00:00+08:00",
   "file_scope": {
     "includes": [
-      "scripts/health_check.sh",
-      "tests/integration/health-check-json-test.sh"
+      "scripts/kallax-doctor.sh",
+      "tests/integration/doctor-test.sh",
+      "jira/tickets/EPIC-030-F/ticket.json"
     ],
     "excludes": []
   },
   "acceptance_criteria": [
-    "L1 存在性: scripts/health_check.sh 改造 + test 存在",
-    "L2 实质性: health_check.sh 真实输出 JSON {status: healthy|degraded|unhealthy, level: 1|2|3, checks: [{name, status, error, note}]}, 兼容 eket system:doctor 格式, 旧文本输出加 --text flag 保留",
-    "L3 接线正确: jq 合法, level 1=Redis 不可用, level 2=SQLite 不可用, level 3=全好",
-    "L4 数据流动: test 跑 PASS, 覆盖 healthy / degraded / unhealthy 3 状态 + level 1/2/3"
+    "L1 存在性: scripts/kallax-doctor.sh + tests/integration/doctor-test.sh 存在",
+    "L2 实质性: kallax-doctor.sh 真实输出 JSON {schema, status, level, checks, trust_score, timestamp, exit_code}, 跟 PROVENANCE doctor 模式 1:1, 旧文本输出加 --text flag 保留",
+    "L3 接线正确: jq 合法, schema=kallax.doctor/v1, level 1=critical (git/db 不可用), level 2=degraded (disk/trust 警告), level 3=healthy (全好)",
+    "L4 数据流动: test 跑 PASS, 覆盖 6 TC (JSON valid / 必填字段 / schema 1:1 / level 1-3 / trust_score 联合 / --text + --self-test)"
   ],
-  "estimated_days": 0.5,
+  "estimated_days": 0.0,
   "blocked_by": null,
-  "borrowed_from": "UX §5.2 system:doctor 结构化输出"
+  "borrowed_from": "UX §5.2 system:doctor 结构化输出 + PROVENANCE doctor 模式",
+  "must_keep": "trust_score 字段 跟 EPIC-030-A TrustScore 软依赖 + PROVENANCE schema 1:1"
 }
