@@ -10,6 +10,7 @@
  */
 
 import { execFileSync } from 'node:child_process';
+import { logger } from '../utils/logger.js';
 import { EXIT_FAIL, EXIT_INVALID_ARGS, EXIT_OK } from './constants.js';
 import { die } from './helpers.js';
 import {
@@ -49,19 +50,19 @@ export function runAll(args: Map<string, string>): void {
     checkL5(args),
     checkL6(args),
   ];
-  console.log('');
-  console.log('════════════════════════════════════════════');
-  console.log('  KALLAX Master Verify — 6 Dimensions');
-  console.log('════════════════════════════════════════════');
+  logger.info({}, '');
+  logger.info({}, '════════════════════════════════════════════');
+  logger.info({}, '  KALLAX Master Verify — 6 Dimensions');
+  logger.info({}, '════════════════════════════════════════════');
   for (const r of results) {
     const mark = r.passed ? '✓' : '✗';
-    console.log(`  ${mark} ${r.dimension}: ${r.description}`);
+    logger.info({}, `  ${mark} ${r.dimension}: ${r.description}`);
   }
-  console.log('────────────────────────────────────────────');
+  logger.info({}, '────────────────────────────────────────────');
   const passed = results.filter(r => r.passed).length;
-  console.log(`  Total: ${passed}/${results.length} dimensions passed`);
-  console.log('════════════════════════════════════════════');
-  console.log('');
+  logger.info({}, `  Total: ${passed}/${results.length} dimensions passed`);
+  logger.info({}, '════════════════════════════════════════════');
+  logger.info({}, '');
   if (passed !== results.length) {
     die(`${results.length - passed} dimension(s) failed`, EXIT_FAIL);
   }
@@ -69,16 +70,16 @@ export function runAll(args: Map<string, string>): void {
 
 export function runNetValue(args: Map<string, string>): void {
   const nv = calculateNetValue();
-  console.log('');
-  console.log('════════════════════════════════════════════');
-  console.log('  KALLAX Net Value');
-  console.log('════════════════════════════════════════════');
-  console.log(`  Current:  ${nv.value.toFixed(1)}%`);
-  console.log(`  Baseline: 62.5% (v1.2.4)`);
-  console.log(`  Target:   67.0%`);
-  console.log(`  Improvement: +${nv.improvement.toFixed(1)}%`);
-  console.log('════════════════════════════════════════════');
-  console.log('');
+  logger.info({}, '');
+  logger.info({}, '════════════════════════════════════════════');
+  logger.info({}, '  KALLAX Net Value');
+  logger.info({}, '════════════════════════════════════════════');
+  logger.info({}, `  Current:  ${nv.value.toFixed(1)}%`);
+  logger.info({}, `  Baseline: 62.5% (v1.2.4)`);
+  logger.info({}, `  Target:   67.0%`);
+  logger.info({}, `  Improvement: +${nv.improvement.toFixed(1)}%`);
+  logger.info({}, '════════════════════════════════════════════');
+  logger.info({}, '');
 }
 
 // ============================================================================
@@ -98,7 +99,7 @@ export function main(): void {
     case 'help':
     case '--help':
     case '-h':
-      console.log('Usage: master-verify [--cmd=all|net-value|help]');
+      logger.info({}, 'Usage: master-verify [--cmd=all|net-value|help]');
       break;
     default:
       die(`Unknown command: ${cmd}`, EXIT_INVALID_ARGS);

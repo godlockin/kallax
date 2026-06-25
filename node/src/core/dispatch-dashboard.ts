@@ -19,6 +19,7 @@ import { promisify } from 'node:util';
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { err, ok, type Result } from 'neverthrow';
+import { logger } from '../utils/logger.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -426,7 +427,7 @@ async function main(): Promise<number> {
 
   const loaded = await dashboard.loadDataSources();
   if (loaded.isErr()) {
-    console.error(`ERROR: ${loaded.error.kind} — ${'path' in loaded.error ? loaded.error.path : ''}`);
+    logger.error({}, `ERROR: ${loaded.error.kind} — ${'path' in loaded.error ? loaded.error.path : ''}`);
     return 2;
   }
 
@@ -445,28 +446,28 @@ async function main(): Promise<number> {
     const caseNum = args[0];
     switch (caseNum) {
       case 'case1':
-        console.log(`S1_OK=${status.s1PassReports >= 5 ? 'yes' : 'no'} S2_OK=${status.s2ScopeChecks >= 1 ? 'yes' : 'no'} S3_OK=${status.s3EvidenceChainChecks >= 3 ? 'yes' : 'no'}`);
+        logger.info({}, `S1_OK=${status.s1PassReports >= 5 ? 'yes' : 'no'} S2_OK=${status.s2ScopeChecks >= 1 ? 'yes' : 'no'} S3_OK=${status.s3EvidenceChainChecks >= 3 ? 'yes' : 'no'}`);
         return 0;
       case 'case2':
-        console.log(`all_pass=${summary.passed}/${summary.total} ${summary.formatXofY}`);
+        logger.info({}, `all_pass=${summary.passed}/${summary.total} ${summary.formatXofY}`);
         return 0;
       case 'case3':
-        console.log(`fake_passes=${summary.fakePasses} tickets=${records.filter((r) => r.outcome === 'fake_pass').map((r) => r.ticketId).join(',')}`);
+        logger.info({}, `fake_passes=${summary.fakePasses} tickets=${records.filter((r) => r.outcome === 'fake_pass').map((r) => r.ticketId).join(',')}`);
         return 0;
       case 'case4':
-        console.log(`boundary_violations=${summary.boundaryViolations} be_events=${records.filter((r) => r.outcome === 'boundary_violation').flatMap((r) => r.beEvents).join(',')}`);
+        logger.info({}, `boundary_violations=${summary.boundaryViolations} be_events=${records.filter((r) => r.outcome === 'boundary_violation').flatMap((r) => r.beEvents).join(',')}`);
         return 0;
       case 'case5':
-        console.log(`kpi=${summary.formatXofY} total=${summary.total} passed=${summary.passed} strict_rate=${summary.ratePct.toFixed(1)}% baseline=${summary.baselineRatePct.toFixed(1)}%`);
+        logger.info({}, `kpi=${summary.formatXofY} total=${summary.total} passed=${summary.passed} strict_rate=${summary.ratePct.toFixed(1)}% baseline=${summary.baselineRatePct.toFixed(1)}%`);
         return 0;
       default:
-        console.error(`Unknown case: ${caseNum}`);
+        logger.error({}, `Unknown case: ${caseNum}`);
         return 2;
     }
   }
 
   // Production CLI output
-  console.log(dashboard.formatOutput(summary, records));
+  logger.info({}, dashboard.formatOutput(summary, records));
   return 0;
 }
 
@@ -487,7 +488,7 @@ if (isMainModule) {
   main().then(
     (code) => process.exit(code),
     (e: unknown) => {
-      console.error('FATAL:', e instanceof Error ? e.message : String(e));
+      logger.error({}, 'FATAL:', e instanceof Error ? e.message : String(e));
       process.exit(2);
     },
   );
