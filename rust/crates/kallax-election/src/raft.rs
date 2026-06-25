@@ -10,6 +10,11 @@
 //   Rule 7: 0 commented-out code
 //   Rule 8: 0 copy-paste (1 state machine + 2 RPC handlers + shared term/index helpers)
 //
+// 跟 /kallax-panel 2026-06-25 + check-anti-patterns.sh 实证 联合 文档化:
+//   - 564 lines 触发 Rule 8 "Files > 500 lines" 治根 (跟 baseline 联合 0 NEW)
+//   - 跨 release 留待 master explicit 后续 拍 (跟 v2.0.7 PHASE-014 模式 一致, 0 拍 ai-auto)
+//   - 拆分 计划: raft/core.rs (state + constructors) + raft/election.rs (vote RPC) + raft/replication.rs (append entries RPC)
+//
 // Raft spec (跟 Diego Ongaro thesis 1:1 联合):
 //   §5.2 Leader election: term-based voting, random election timeout, majority quorum
 //   §5.3 Log replication: AppendEntries RPC, leader/follower consistency check
