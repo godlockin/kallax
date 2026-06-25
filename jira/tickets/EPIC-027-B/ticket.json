@@ -6,8 +6,7 @@
   "file_scope": {
     "includes": [
       "scripts/kallax-cleanup.sh",
-      "scripts/audit-closing-instances.sh",
-      "confluence/runbooks/instance-pre-clean.md"
+      "docs/SOP-cleanup.md"
     ],
     "excludes": []
   },
