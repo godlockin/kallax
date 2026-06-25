@@ -7,7 +7,7 @@ review_group: A
 phase: 3
 rationalizations_count: 8
 version: 1.0.0
-last_reviewed: 2026-06-11
+last_reviewed: 2026-06-25
 tickets_served: [EPIC-030]
 trigger: 跨团队,任务规划,协调,风险,阻塞,依赖,进度,排期,里程碑,交付,团队协作,跨ticket,资源,并行冲突,计划,燃尽图,史诗,冲刺,sprint,backlog,优先级,估算,故事点,daily,站会,复盘,回顾
 output_format: |

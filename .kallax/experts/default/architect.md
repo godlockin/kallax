@@ -7,7 +7,7 @@ review_group: A
 phase: 1
 rationalizations_count: 8
 version: 1.0.0
-last_reviewed: 2026-06-11
+last_reviewed: 2026-06-25
 tickets_served: [EPIC-030]
 trigger: 架构,边界,选型,微服务,模块,API契约,服务拆分,系统设计,模块耦合,接口定义,技术债务,扩展性,分布式,一致性,部署架构,灰度,发布,重构,集成,服务,治理,链路
 output_format: |

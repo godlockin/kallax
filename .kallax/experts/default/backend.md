@@ -7,7 +7,7 @@ review_group: A
 phase: 2
 rationalizations_count: 8
 version: 1.0.0
-last_reviewed: 2026-06-11
+last_reviewed: 2026-06-25
 tickets_served: [EPIC-030]
 trigger: API,接口慢,数据库,SQL,查询慢,索引,n+1,事务,缓存,性能,后端,服务端,数据层,连接池,锁竞争,慢查询,超时,内存,GC,泄漏,死锁,压测,瓶颈,监控,告警,分布式,ETL,数据迁移,数据管道,Kafka,Spark,Presto,Flink,数据血缘,BI报表,OLAP,数据仓库,Snowflake,ClickHouse,Redshift,BigQuery
 output_format: |
