@@ -5,7 +5,7 @@
   "title": "cross-worktree-dispatch.sh 实现 (TDD, auto cherry-pick + conflict detect)",
   "type": "feature",
   "priority": "P1",
-  "status": "ready",
+  "status": "done",
   "created_by": "master_main (Top 4 开工, 2026-06-12 拍)",
   "created_at": "2026-06-12T00:00:00Z",
   "blocked_by": null,
