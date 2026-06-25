@@ -5,15 +5,18 @@
   "title": "AuditMiddleware audit_log 新 SQLite 表 (主公 D 串行第 7, 主公 C 选新 DB)",
   "type": "feature",
   "priority": "P0",
-  "status": "ready",
+  "status": "done",
   "created_by": "master_main",
   "created_at": "2026-06-11T00:00:00+08:00",
   "file_scope": {
     "includes": [
       "scripts/audit/audit-middleware.sh",
       "scripts/audit/audit-db.sh",
+      "scripts/check-fact-forcing-preflight.sh",
+      "scripts/permission/authz/check.sh",
       ".kallax/data/audit.db",
-      "tests/integration/audit-middleware-test.sh"
+      "tests/integration/audit-middleware-test.sh",
+      "jira/tickets/EPIC-030-G/ticket.json"
     ],
     "excludes": []
   },

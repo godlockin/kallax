@@ -25,6 +25,7 @@ trap cleanup SIGTERM
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 AUDIT_DB="${KALLAX_ROOT}/.kallax/data/authz.db"
+AUDIT_MW="${KALLAX_ROOT}/scripts/audit/audit-middleware.sh"
 STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
 
 # Default values
@@ -208,18 +209,31 @@ log_audit() {
   fi
 }
 
+# EPIC-030-G / BE-19 联合: 同时写 audit.db (新 SQLite) 跟 audit_log table, 治理路径可追溯
+# 失败不阻塞主流程 (audit.db 是 secondary audit; 主流程仍走 authz.db.log)
+write_audit_db_secondary() {
+  local role="$1"
+  local action="$2"
+  local result="$3"
+  if [[ -f "$AUDIT_MW" ]]; then
+    bash "$AUDIT_MW" authz-event "$role" "$action" "$result" "$ACTOR" 2>/dev/null || true
+  fi
+}
+
 # Perform check
 if check_permission "$ROLE" "$ACTION"; then
   if ! log_audit "$ROLE" "$ACTION" "ALLOWED"; then
     echo "DENIED: $ACTION — audit log write failed for state-changing action" >&2
     exit 1
   fi
+  write_audit_db_secondary "$ROLE" "$ACTION" "ALLOWED"
   exit 0
 else
   # Issue 2 fix: check log_audit return in DENIED path too for consistency
   if ! log_audit "$ROLE" "$ACTION" "DENIED"; then
     echo "ERROR: audit log write failed for DENIED action $ACTION" >&2
   fi
+  write_audit_db_secondary "$ROLE" "$ACTION" "DENIED"
   echo "DENIED: $ACTION for role $ROLE (actor: $ACTOR)" >&2
   exit 1 # P0: fail-closed
 fi

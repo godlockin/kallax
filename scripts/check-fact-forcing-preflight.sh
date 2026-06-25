@@ -7,6 +7,10 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LIB_PATH="$SCRIPT_DIR/lib/fact-forcing-preflight.sh"
+AUDIT_MW="${SCRIPT_DIR}/audit/audit-middleware.sh"
+
+# Capture start time (unix ms) for audit_log elapsed_ms
+PREFLIGHT_START_MS="$(date +%s)000"
 
 # Check if lib exists
 if [[ ! -f "$LIB_PATH" ]]; then
@@ -89,12 +93,20 @@ if [[ $preflight_pass -eq 1 ]]; then
   echo "=========================================="
   echo "PREFLIGHT RESULT: PASS"
   echo "=========================================="
+  # EPIC-030-G: 写 audit_log (command=check-fact-forcing-preflight, ticket=CHECK_LESSONS, slaver=USER)
+  if [[ -x "$AUDIT_MW" ]] || [[ -f "$AUDIT_MW" ]]; then
+    bash "$AUDIT_MW" write-timed "check-fact-forcing-preflight:PASS" "${CHECK_LESSONS:-}" "${USER:-unknown}" "$PREFLIGHT_START_MS" 2>/dev/null || true
+  fi
   exit 0
 else
   echo ""
   echo "=========================================="
   echo "PREFLIGHT RESULT: FAIL"
   echo "=========================================="
+  # EPIC-030-G: 写 audit_log (FAIL result 也要记)
+  if [[ -x "$AUDIT_MW" ]] || [[ -f "$AUDIT_MW" ]]; then
+    bash "$AUDIT_MW" write-timed "check-fact-forcing-preflight:FAIL" "${CHECK_LESSONS:-}" "${USER:-unknown}" "$PREFLIGHT_START_MS" 2>/dev/null || true
+  fi
   echo ""
   echo "Ticket cannot be closed. Fix failures before proceeding."
   echo ""
@@ -120,6 +132,10 @@ else
     TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
     USER_NAME="${USER:-unknown}"
     printf '{"ts":"%s","user":"%s","file":"%s","action":"force-merge-override"}\\n' "$TS" "$USER_NAME" "$EXPERT_FILE" >> "$AUDIT_LOG"
+    # EPIC-030-G: force-merge 也要记 audit_log (BE-19 联合: 治理路径可追溯)
+    if [[ -x "$AUDIT_MW" ]] || [[ -f "$AUDIT_MW" ]]; then
+      bash "$AUDIT_MW" write-timed "check-fact-forcing-preflight:FORCE_MERGE" "${CHECK_LESSONS:-}" "$USER_NAME" "$PREFLIGHT_START_MS" 2>/dev/null || true
+    fi
     echo "[OVERRIDE ACCEPTED] force-merge token valid, preflight bypassed (logged to $AUDIT_LOG)"
     exit 0
   fi
