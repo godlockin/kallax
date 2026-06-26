@@ -1,17 +1,35 @@
 {
   "instances": [
     {
-      "id": "performer-alpha",
+      "id": "performer-analyst",
       "role": "performer",
-      "skills": ["bash", "typescript", "rust"],
-      "expertise_cosine": 0.85,
+      "sub_role": "analyst",
+      "skills": ["research", "analysis", "docs"],
+      "expertise_cosine": 0.80,
+      "trust_score": 0.85
+    },
+    {
+      "id": "performer-incremental",
+      "role": "performer",
+      "sub_role": "incremental",
+      "skills": ["bash", "typescript", "maintenance"],
+      "expertise_cosine": 0.88,
       "trust_score": 0.92
     },
     {
-      "id": "performer-beta",
+      "id": "performer-major",
       "role": "performer",
-      "skills": ["python", "data-analysis"],
-      "expertise_cosine": 0.72,
+      "sub_role": "major",
+      "skills": ["rust", "architecture", "refactor"],
+      "expertise_cosine": 0.75,
+      "trust_score": 0.90
+    },
+    {
+      "id": "performer-auditor",
+      "role": "performer",
+      "sub_role": "auditor",
+      "skills": ["audit", "lessons", "cross-project"],
+      "expertise_cosine": 0.70,
       "trust_score": 0.88
     },
     {

@@ -2,19 +2,29 @@
 # conductor/dispatch.sh — Conductor 派发集成
 # 依赖: EPIC-030-A (best-matching-slaver.sh) + EPIC-030-B (scoring-trace.sh)
 #       EPIC-036-A (cross-worktree-dispatch.sh, --cross-worktree 选项, EPIC-036-B 联合)
+#       EPIC-038-A (--handoff-depth 选项, L1/L2/L3/L4 派单, handoff_depth schema 联合)
+#       EPIC-038-B (4 派单模式, --handoff-depth → analyst/incremental/major/auditor, Rule 15 联合)
 # 主公 2026-06-11 D2 决策: 派发权 60%→80% AI 渐进升级, 默认 80% AI + 20% 人工 override
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-# --cross-worktree=<source_wt> 选项 (EPIC-036-B): 跨 worktree 派单时调用 cross-worktree-dispatch.sh
-# --handoff-depth=<L1|L2|L3|L4> 选项 (EPIC-038-A Rule 15): 4 层接手深度
-# --sub-role=<coder|reviewer|tester|docs> 选项 (EPIC-038-A Rule 15): Performer sub-role
+# 4 派单模式 → Performer sub-role 映射 (EPIC-038-B)
+# 跟 Rule 15 + ticket.json handoff_depth 字段 (L1/L2/L3/L4) 联合
+# L1 → analyst (浅层, read-only, 1-2h)
+# L2 → incremental (维护, write-incremental, 2-3d)
+# L3 → major (深度重构, write-major + A+B review, 5-10d)
+# L4 → auditor (亮点借鉴, cross-project + lessons, 1-2d)
+readonly SUBROLE_BY_DEPTH_L1="performer-analyst"
+readonly SUBROLE_BY_DEPTH_L2="performer-incremental"
+readonly SUBROLE_BY_DEPTH_L3="performer-major"
+readonly SUBROLE_BY_DEPTH_L4="performer-auditor"
+
+# 解析选项 (--cross-worktree + --handoff-depth)
 # 必须从原 args 中剥离, 不污染位置参数
 CROSS_WORKTREE=""
 HANDOFF_DEPTH=""
-SUB_ROLE=""
 POSITIONAL_ARGS=()
 for arg in "$@"; do
   case "$arg" in
@@ -34,37 +44,23 @@ for arg in "$@"; do
       fi
       ;;
     --handoff-depth)
-      echo "ERROR: --handoff-depth requires =<L1|L2|L3|L4> (EPIC-038-A Rule 15)" >&2
+      echo "ERROR: --handoff-depth requires =L1|L2|L3|L4 (EPIC-038-B)" >&2
       exit 1
       ;;
     --handoff-depth=)
-      echo "ERROR: --handoff-depth= requires non-empty <L1|L2|L3|L4>" >&2
+      echo "ERROR: --handoff-depth= requires non-empty L1|L2|L3|L4" >&2
       exit 1
       ;;
     --handoff-depth=*)
       HANDOFF_DEPTH="${arg#*=}"
+      if [[ -z "$HANDOFF_DEPTH" ]]; then
+        echo "ERROR: --handoff-depth= requires non-empty L1|L2|L3|L4" >&2
+        exit 1
+      fi
       case "$HANDOFF_DEPTH" in
         L1|L2|L3|L4) ;;
         *)
           echo "ERROR: --handoff-depth=$HANDOFF_DEPTH invalid (must be L1|L2|L3|L4)" >&2
-          exit 1
-          ;;
-      esac
-      ;;
-    --sub-role)
-      echo "ERROR: --sub-role requires =<coder|reviewer|tester|docs> (EPIC-038-A Rule 15)" >&2
-      exit 1
-      ;;
-    --sub-role=)
-      echo "ERROR: --sub-role= requires non-empty value" >&2
-      exit 1
-      ;;
-    --sub-role=*)
-      SUB_ROLE="${arg#*=}"
-      case "$SUB_ROLE" in
-        coder|reviewer|tester|docs) ;;
-        *)
-          echo "ERROR: --sub-role=$SUB_ROLE invalid (must be coder|reviewer|tester|docs)" >&2
           exit 1
           ;;
       esac
@@ -93,11 +89,14 @@ AI_RATIO="${KALLAX_AI_DELEGATION_RATIO:-80}"
 
 # Use argument count to detect if args were provided (empty string is valid for expertise)
 if [[ $# -lt 2 ]]; then
-  echo "Usage: $0 [--cross-worktree=<source_wt>] [--handoff-depth=<L1|L2|L3|L4>] [--sub-role=<coder|reviewer|tester|docs>] <TICKET_ID> <REQUIRED_EXPERTISE> [accept|veto|override] [OVERRIDE_TO]" >&2
+  echo "Usage: $0 [--cross-worktree=<source_wt>] [--handoff-depth=L1|L2|L3|L4] <TICKET_ID> <REQUIRED_EXPERTISE> [accept|veto|override] [OVERRIDE_TO]" >&2
   echo "       AI delegation ratio: KALLAX_AI_DELEGATION_RATIO=$AI_RATIO (60/80/90, default 80)" >&2
   echo "       --cross-worktree=<source_wt>: route dispatch to source worktree (EPIC-036-B)" >&2
-  echo "       --handoff-depth=<L1|L2|L3|L4>: handoff depth (EPIC-038-A Rule 15, default L1)" >&2
-  echo "       --sub-role=<coder|reviewer|tester|docs>: Performer sub-role (EPIC-038-A Rule 15, default none)" >&2
+  echo "       --handoff-depth=L1|L2|L3|L4: 4 派单模式 (EPIC-038-B)" >&2
+  echo "         L1 → analyst     (浅层 read-only)" >&2
+  echo "         L2 → incremental (维护 write-incremental)" >&2
+  echo "         L3 → major       (深度重构 write-major + A+B review)" >&2
+  echo "         L4 → auditor     (亮点借鉴 cross-project + lessons)" >&2
   exit 1
 fi
 
@@ -142,6 +141,19 @@ case "$DECISION" in
     ;;
 esac
 
+# 4 派单模式 (EPIC-038-B): --handoff-depth=L1/L2/L3/L4 强制 Performer sub-role
+# override 决策优先 (人工 override 不被 handoff-depth 覆盖, 主公 D2 决策权)
+SUBROLE=""
+if [[ -n "$HANDOFF_DEPTH" ]] && [[ "$DECISION" != "override" ]]; then
+  case "$HANDOFF_DEPTH" in
+    L1) SUBROLE="$SUBROLE_BY_DEPTH_L1" ;;
+    L2) SUBROLE="$SUBROLE_BY_DEPTH_L2" ;;
+    L3) SUBROLE="$SUBROLE_BY_DEPTH_L3" ;;
+    L4) SUBROLE="$SUBROLE_BY_DEPTH_L4" ;;
+  esac
+  REASON="${REASON} | handoff_depth=$HANDOFF_DEPTH → sub_role=$SUBROLE"
+fi
+
 # 写 scoring audit (跟 EPIC-030-B scoring-trace.sh 集成)
 # factors: [1.0, 0.0, 0.0] = accept signal, decision=$DECISION, ai_ratio=$AI_RATIO
 bash "${KALLAX_ROOT}/scripts/agent/scoring-trace.sh" append \
@@ -169,4 +181,13 @@ if [[ -n "$CROSS_WORKTREE" ]]; then
   bash "$CWT_SCRIPT" --source-wt="$CROSS_WORKTREE" --ticket-id="$TICKET_ID" --final-id="$FINAL_ID"
 fi
 
-echo "DISPATCH: ticket=$TICKET_ID algo_suggest=$ALGO_ID final=$FINAL_ID decision=$DECISION ai_ratio=${AI_RATIO}% handoff_depth=$HANDOFF_DEPTH sub_role=${SUB_ROLE:-none} reason=$REASON"
+# 输出 (跟 handoff_depth 字段联动, EPIC-038-B)
+if [[ -n "$HANDOFF_DEPTH" ]]; then
+  if [[ -n "$SUBROLE" ]]; then
+    echo "DISPATCH: ticket=$TICKET_ID algo_suggest=$ALGO_ID final=$FINAL_ID decision=$DECISION handoff_depth=$HANDOFF_DEPTH sub_role=$SUBROLE ai_ratio=${AI_RATIO}% reason=$REASON"
+  else
+    echo "DISPATCH: ticket=$TICKET_ID algo_suggest=$ALGO_ID final=$FINAL_ID decision=$DECISION handoff_depth=$HANDOFF_DEPTH ai_ratio=${AI_RATIO}% reason=$REASON"
+  fi
+else
+  echo "DISPATCH: ticket=$TICKET_ID algo_suggest=$ALGO_ID final=$FINAL_ID decision=$DECISION ai_ratio=${AI_RATIO}% reason=$REASON"
+fi

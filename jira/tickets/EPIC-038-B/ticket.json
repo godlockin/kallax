@@ -14,8 +14,9 @@
   "file_scope": {
     "includes": [
       "jira/tickets/EPIC-038-B/",
-      "scripts/conductor/dispatch.sh (扩 4 派单模式)",
-      "scripts/conductor/capacity-check.sh (1+4 容量)",
+      "scripts/conductor/dispatch.sh",
+      "scripts/conductor/capacity-check.sh",
+      "tests/fixtures/agent/instances.json",
       "tests/integration/performer-subrole-test.sh",
       "tests/integration/capacity-1plus4-test.sh",
       "scripts/verify/performer-subrole.sh"
