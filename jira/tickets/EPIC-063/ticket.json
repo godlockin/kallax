@@ -1,0 +1,19 @@
+{
+  "id": "EPIC-063",
+  "title": "BE-28-29-crossrelease-2026-06-25",
+  "type": "docs",
+  "priority": "P1",
+  "status": "ready",
+  "estimated_hours": 0,
+  "file_scope": {
+    "includes": ["docs/be/BE-28-29-crossrelease-2026-06-25.md"],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "docs/be/BE-28-29-crossrelease-2026-06-25.md 存在",
+    "跟 BE-28 + BE-29 跨 release 留待 治根 联合 0 hidden",
+    "跟 baseline 联合 0 NEW",
+    "跟'翻篇&精进' 战略 联合 0 简单 记录",
+    "跟'诚实修正' 战略 联合 0 隐藏"
+  ]
+}

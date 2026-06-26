@@ -1,0 +1,19 @@
+{
+  "id": "EPIC-062",
+  "title": "30+-items-master-B-consolidation-2026-06-25",
+  "type": "docs",
+  "priority": "P1",
+  "status": "ready",
+  "estimated_hours": 0,
+  "file_scope": {
+    "includes": ["docs/governance/EPIC-062-master-B-consolidation-2026-06-25.md"],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "docs/governance/EPIC-062-master-B-consolidation-2026-06-25.md 存在",
+    "跟 30+ items master 拍 B 收口 联合 0 hidden",
+    "跟 baseline 联合 0 NEW",
+    "跟'翻篇&精进' 战略 联合 0 简单 记录",
+    "跟'诚实修正' 战略 联合 0 隐藏"
+  ]
+}

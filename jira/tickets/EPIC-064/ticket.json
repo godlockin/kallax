@@ -1,0 +1,19 @@
+{
+  "id": "EPIC-064",
+  "title": "split-files-consolidation-2026-06-25",
+  "type": "docs",
+  "priority": "P1",
+  "status": "ready",
+  "estimated_hours": 0,
+  "file_scope": {
+    "includes": ["docs/refactor/EPIC-064-split-consolidation-2026-06-25.md"],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "docs/refactor/EPIC-064-split-consolidation-2026-06-25.md 存在",
+    "跟 raft.rs + expert-queue + brief-inference Rule 8 拆分 模式 联合",
+    "跟 baseline 联合 0 NEW",
+    "跟'翻篇&精进' 战略 联合 0 简单 记录",
+    "跟'诚实修正' 战略 联合 0 隐藏"
+  ]
+}

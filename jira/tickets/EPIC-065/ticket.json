@@ -1,0 +1,20 @@
+{
+  "id": "EPIC-065",
+  "title": "Users-paths-cleanup-2026-06-25",
+  "type": "docs",
+  "priority": "P1",
+  "status": "ready",
+  "estimated_hours": 0,
+  "file_scope": {
+    "includes": ["docs/refactor/EPIC-065-users-paths-cleanup-2026-06-25.md"],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "docs/refactor/EPIC-065-users-paths-cleanup-2026-06-25.md 存在",
+    "跟 10 /Users/ paths 治根 联合 0 hidden",
+    "跟 EPIC-061-A mode 联合 (1 票 1 验证 baseline)",
+    "跟 baseline 联合 0 NEW",
+    "跟'翻篇&精进' 战略 联合 0 简单 记录",
+    "跟'诚实修正' 战略 联合 0 隐藏"
+  ]
+}
