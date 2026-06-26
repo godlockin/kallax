@@ -34,11 +34,7 @@
   "file_scope": {
     "includes": [
       "scripts/conductor/dispatch.sh",
-      "scripts/kallax-dispatch.sh",
-      "docs/architecture/3-MODES.md",
-      "tests/integration/kallax-dispatch-test.sh",
-      "jira/epics/EPIC-033/epic.json",
-      "jira/epics/EPIC-033/LESSONS-LEARNED.md",
+      "tests/integration/dispatch-rate-test.sh",
       "jira/tickets/EPIC-033-A/ticket.json"
     ],
     "excludes": []

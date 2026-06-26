@@ -70,7 +70,8 @@ for arg in "$@"; do
       ;;
   esac
 done
-set -- "${POSITIONAL_ARGS[@]}"
+# bash 3.2 (macOS default) + set -u: empty array expansion fails. Guard with parameter expansion.
+set -- ${POSITIONAL_ARGS[@]+"${POSITIONAL_ARGS[@]}"}
 
 # 读参数
 TICKET_ID="${1:-}"
