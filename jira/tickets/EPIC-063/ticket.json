@@ -3,17 +3,26 @@
   "title": "BE-28-29-crossrelease-2026-06-25",
   "type": "docs",
   "priority": "P1",
-  "status": "ready",
+  "status": "in_progress",
+  "created_by": "master_main (主公 explicit 派单, 跟 v2.0.7 PHASE-014 5 deferred 模式 一致, 跟 BE-28 + BE-29 跨 release 留待 联合)",
+  "created_at": "2026-06-25T00:00:00Z",
+  "claimed_at": "2026-06-25T00:30:00Z",
+  "claimed_by": "performer-EPIC-063",
   "estimated_hours": 0,
   "file_scope": {
-    "includes": ["docs/be/BE-28-29-crossrelease-2026-06-25.md"],
+    "includes": [
+      "docs/be/BE-28-29-crossrelease-2026-06-25.md"
+    ],
     "excludes": []
   },
   "acceptance_criteria": [
-    "docs/be/BE-28-29-crossrelease-2026-06-25.md 存在",
-    "跟 BE-28 + BE-29 跨 release 留待 治根 联合 0 hidden",
-    "跟 baseline 联合 0 NEW",
-    "跟'翻篇&精进' 战略 联合 0 简单 记录",
-    "跟'诚实修正' 战略 联合 0 隐藏"
-  ]
+    "docs/be/BE-28-29-crossrelease-2026-06-25.md 存在 (跟 confluence/decisions/be-28-serial-consensus-revision-2026-06-25.md 联合 1:1 派生, 0 复制粘贴)",
+    "文档 BE-28 + BE-29 跨 release 留待 治根 (跟 file:line confluence/decisions/be-28-serial-consensus-revision-2026-06-25.md:103-104 + :117-118 + :181-183 联合)",
+    "跟 baseline 联合 0 NEW (BE-22 治根 30c8f23 + BE-23 治根 7347ae6 + BE-25 治根 b1b76ac + BE-26 治根 8bdfd0e 在位, 0 任何 新 governance 引入)",
+    "跟 \"翻篇&精进\" 战略 联合 0 简单 记录 (BE-28 + BE-29 暴露 跟 18 release 累计 baseline 1:1 验证, 0 增 Rule 0 增 命令 持平)",
+    "跟 \"诚实修正\" 战略 联合 0 隐藏 (BE-28 80% deliver rate 失一致 -20% 跟 strict 100% baseline 联合 0 隐藏, BE-29 silent 6.7% baseline 跟 BE-14 4 subagent silent 反复 联合 0 隐藏)"
+  ],
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L2"
 }
