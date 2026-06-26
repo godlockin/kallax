@@ -512,7 +512,101 @@ L4 数据流动：集成测试验证
 - ❌ Performer session 跳 worktree 写 miao
 - ❌ Performer session 跳 session_start.sh 直接跑 (无 CLAUDE.md + ROLE-RULES + ticket 上下文)
 
-### 15. Subagent 5 步强制流程 (KALLAX P0) — Phase 7 R-NEW 升级红线 (v2.4.1 还原 跟 v2.3.0 一致, 跟 PHASE-013-REFLECTION 联合 治根 "5 步明确指向")
+### 15. Performer sub-role schema (KALLAX P0) — EPIC-038-A R-NEW (主公 2026-06-12 拍 A, 5 能力研究 Q4 重大 Gap 40% 立即派)
+
+**教训**: EPIC-035-A 落地 worktree_role 强制绑定 (master/conductor/performer/auditor 4 角色), 但 Performer 内部缺乏细粒度 sub-role 区分. 多 sub-role 任务 (e.g. 写代码 + 写测试 + 写文档) 串到 1 个 Performer session → 容量 1 (主公 Q4 报告 实测 产能 跟预期 Gap 40%). 跟 EPIC-035-A 一起做, 解决 Performer 产能瓶颈.
+
+**规则**: Performer 必须声明 `handoff_depth` (4 层接手) + `performer_sub_role` (4 sub-role), dispatch.sh 强制校验.
+
+#### 4 层接手 (handoff_depth, enum: L1/L2/L3/L4)
+
+| 深度 | 含义 | 跟 worktree_role 联动 | 跟 sub-role 联动 |
+|------|------|---------------------|------------------|
+| **L1** | 单 ticket 派单 (default) | performer + sub-role=coder/reviewer/tester/docs | 单 sub-role |
+| **L2** | EPIC 内多 ticket 串行 (e.g. A→B) | performer + sub-role 切换 | 跨 sub-role (coder→tester) |
+| **L3** | 跨 EPIC 同 PHASE 接手 (e.g. EPIC-038 → EPIC-039) | performer 复用, sub-role 升级 | sub-role 升级 (tester→reviewer) |
+| **L4** | 跨 PHASE 接手 (e.g. PHASE-006 → PHASE-007) | performer 强制 sub-role reset | sub-role reset + context_migration 字段强制 |
+
+#### Performer sub-role (enum: coder/reviewer/tester/docs)
+
+| sub-role | 职责 | 跟 9 Hard Rules 联合 |
+|----------|------|---------------------|
+| **coder** | 写代码 + commit (默认) | Rule 5/8 类型安全 + Rule of 500 |
+| **reviewer** | 审 PR + A/B review + 跨 PR 验证 | Rule 8 4-Level + Rule 18 KPI falsification |
+| **tester** | 写测试 + 集成测试 + raw stdout 验证 | Rule 9 anti-fab + Rule 8 L2/L4 |
+| **docs** | 写 .md + 跟 docs/KALLAX-GLOSSARY.md 1:1 验证 | Rule 5 DRY + 9 Hard Rules Rule 6+7 |
+
+#### 容量 1+4 (master + 4 sub-roles)
+
+```
+master (1) ─┬─ performer/coder    (写代码)
+            ├─ performer/reviewer  (审 PR)
+            ├─ performer/tester    (写测试)
+            └─ performer/docs      (写文档)
+```
+
+- 1 master 横向管 4 sub-roles, 通过 dispatch.sh `--handoff-depth` + `--sub-role` 派单
+- 单 EPIC 可串行 4 sub-roles (e.g. A=coder → B=tester → C=reviewer → D=docs)
+- L4 跨 PHASE 强制 sub-role reset + context_migration (跟 Rule 17 文件并发竞争 5 步联合)
+
+#### Schema 扩展 (跟 EPIC-035-A worktree_role 联动)
+
+`jira/tickets/TICKET-NNN/ticket.json` 强制字段:
+```json
+{
+  "id": "TASK-NNN",
+  "worktree_role": "performer",              // EPIC-035-A
+  "performer_sub_role": "coder",             // EPIC-038-A 新增
+  "handoff_depth": "L2",                     // EPIC-038-A 新增 (L1=default)
+  "file_scope": { ... }
+}
+```
+
+`jira/tickets/TICKET-TEMPLATE.md` 同步扩展 frontmatter (跟 Rule 5 DRY 联合, single source).
+
+`scripts/conductor/dispatch.sh` 接受:
+- `--handoff-depth=<L1|L2|L3|L4>` (default L1)
+- `--sub-role=<coder|reviewer|tester|docs>` (default none)
+
+#### 5 红线
+
+1. **❌ `handoff_depth` 缺失 = dispatch FAIL**: ticket.json 无 handoff_depth 字段 → dispatch.sh exit 1
+2. **❌ `handoff_depth=L2/L3/L4` 但 `worktree_role != performer` = FAIL**: handoff 是 Performer 概念, Master/Conductor/Auditor 无 handoff
+3. **❌ `handoff_depth=L4` 无 `context_migration` 字段 = FAIL**: 跨 PHASE 必须带 context migration (跟 Rule 17 联合)
+4. **❌ handoff_depth enum 越界 (L0/L5/...) = FAIL**: 只能 L1/L2/L3/L4, 跟 dispatch.sh enum 验证 1:1
+5. **❌ 单 session 并发持有 2 个 sub-role = FAIL**: sub-role 是 session-level 锁定, 跟 state.json mode_lock 联动
+
+#### 落地检查
+
+- `bash scripts/verify/handoff-depth.sh` (L4 verify, H1-H6, EPIC-038-A 提供)
+- `bash tests/integration/handoff-depth-test.sh` (≥4 case: L1/L2/L3/L4, 6 PASS, EPIC-038-A 提供)
+- `KALLAX_TEST_FIXTURES=1 bash scripts/conductor/dispatch.sh --handoff-depth=L2 --sub-role=coder TICKET backend accept`
+
+#### 跟 9 Hard Rules 模式 联合
+
+- **Rule 1 隔离与并行**: handoff_depth=L2/L3/L4 串行不同 sub-role → 1 session 1 sub-role 强制 (隔离扩展)
+- **Rule 5/8 类型安全 + Rule of 500**: sub-role=coder 严格类型 + Rule of 500 (PR 上限)
+- **Rule 6/7 经验沉淀 + PHASE**: handoff_depth=L4 跨 PHASE 触发 PHASE 闭环 review (跟 Rule 6/7 联合)
+- **Rule 8 4-Level Fact-Forcing**: handoff_depth L1-L4 跟 4-Level 一一对应 (L1=L1/L2, L2=L3, L3=handoff-checkpoint, L4=context-migration)
+
+#### KPI
+
+- **当前 Rule 总数**: 20 → 21 (净 +1, 跟"翻篇&精进" 战略 一致, 跟 v2.4.0 反思 联合, 治根 Performer 产能 Gap)
+- **Performer 容量**: 1 → 1+4 (4 sub-roles 并行, 主公 Q4 Gap 40% 解决路径)
+- **handoff_depth enum**: L1/L2/L3/L4 4 档 (跟 Rule 12 3 模式 互为 互补, 跟 Rule 8 4-Level 1:1 映射)
+- **5 红线 落地**: dispatch.sh + ticket.json schema + L4 verify 3 重强制
+
+#### 来源
+
+EPIC-038-A (主公 2026-06-12 拍 A, 5 能力研究 Q4 重大 Gap 40% 立即派, 跟 EPIC-035-A 一起做) + EPIC-035-A worktree_role 4 角色 schema (4→1 模式 联合) + KALLAX-GLOSSARY §6.4 Performer sub-role (已定义 sub-role 概念) + v2.7.5 EPIC-058-E 22→20 合并 (跟"翻篇&精进" 战略 一致, EPIC-038-A 是净 +1 不合并) + Rule 17 文件并发竞争 5 步 (L4 context_migration 强制联合)
+
+#### 跟 BE-23 + BE-25 + BE-26 修复 联合
+
+- **BE-23 (Performer 跳 worktree 写 miao)**: handoff_depth L2/L3/L4 强制 worktree 隔离 (跟 Rule 14 联合, 0 跳 miao)
+- **BE-25 (Performer 报 PASS 实际 0 commit)**: sub-role=tester 强制 raw stdout 验证 (跟 Rule 8 L2 + Rule 9 anti-fab 联合)
+- **BE-26 (Performer 估数 KPI)**: handoff_depth L3/L4 强制跨 ticket 累计, 禁止估数 (跟 Rule 9 KPI falsification 联合)
+
+### 16. Subagent 5 步强制流程 (KALLAX P0) — Phase 7 R-NEW 升级红线 (v2.4.1 还原 跟 v2.3.0 一致, 跟 PHASE-013-REFLECTION 联合 治根 "5 步明确指向")
 
 **教训**: 10 KPI falsification 实证 (Performer-EPIC-036/037 第 9/10 次). 50% 概率假 PASS 模式 (4 subagent: 2 真 + 2 假).
 
@@ -528,7 +622,7 @@ L4 数据流动：集成测试验证
 
 **红线**: ❌ 跳过 Step 1-5 任一
 
-### 16. 文件并发竞争 5 步强制流程 (KALLAX P0) — Phase 7 R-NEW 升级红线 (v2.4.1 还原 跟 v2.3.0 一致)
+### 17. 文件并发竞争 5 步强制流程 (KALLAX P0) — Phase 7 R-NEW 升级红线 (v2.4.1 还原 跟 v2.3.0 一致)
 
 **教训**: 主公 2026-06-12 拍 "还有个痛点是相互影响, 同时修改/编辑文件/文件夹引起工作文件的丢失/修改".
 
@@ -542,7 +636,7 @@ L4 数据流动：集成测试验证
 
 **红线**: ❌ 跳过文件级锁, ❌ 写半截文件, ❌ 跳过冲突检测, ❌ 写 outbox 路径冲突, ❌ worktree 状态不同步
 
-### 17. KPI Falsification 反模式黑名单 (KALLAX P0) — Phase 7 R-NEW 升级红线
+### 18. KPI Falsification 反模式黑名单 (KALLAX P0) — Phase 7 R-NEW 升级红线
 
 **规则**: Master 强验证 6 维度检测以下反模式, 命中任一 → subagent 报 FAIL.
 
@@ -550,7 +644,7 @@ L4 数据流动：集成测试验证
 
 **执行**: Master 强验证 6 维度命中任一 → subagent 报 FAIL + ticket 状态自动同步 + 留 LESSONS-LEARNED 草稿.
 
-### 18. 5 类标签 SOP (KALLAX P1) — EPIC-055-C, 治 A2 咒语化 + A3 笔误
+### 19. 5 类标签 SOP (KALLAX P1) — EPIC-055-C, 治 A2 咒语化 + A3 笔误
 
 **教训**: 历史项目 50+ 文档含"反讽" 咒语化引用 (无证据链 装饰引用), 跟"诚实修正" 战略 矛盾. 主公 14 问题分析 派单 EPIC-055-C explicit 治根.
 
@@ -646,17 +740,17 @@ L4 数据流动：集成测试验证
 
 | 类别 | 主题 | Rule (file:line 1:1) | 联合 |
 |------|------|----------------------|------|
-| **1. 隔离与并行 (Isolation)** | worktree / file-lock / session 隔离 | Rule 1 ([CLAUDE.md:50](CLAUDE.md#L50)) + Rule 14 ([CLAUDE.md:430](CLAUDE.md#L430)) + Rule 16 ([CLAUDE.md:458](CLAUDE.md#L458)) | Rule 1 并行隔离强制化 |
-| **2. 错误处理与验证 (Error & Verify)** | Result 类型 / 产出真实性 / 4-Level / KPI 黑名单 | Rule 2 ([CLAUDE.md:64](CLAUDE.md#L64)) + Rule 3 ([CLAUDE.md:80](CLAUDE.md#L80)) + Rule 8 ([CLAUDE.md:222](CLAUDE.md#L222)) + Rule 17 ([CLAUDE.md:472](CLAUDE.md#L472)) | Rule 8 4-Level Fact-Forcing |
+| **1. 隔离与并行 (Isolation)** | worktree / file-lock / session 隔离 | Rule 1 ([CLAUDE.md:50](CLAUDE.md#L50)) + Rule 14 ([CLAUDE.md:430](CLAUDE.md#L430)) + Rule 17 ([CLAUDE.md:625](CLAUDE.md#L625)) | Rule 1 并行隔离强制化 |
+| **2. 错误处理与验证 (Error & Verify)** | Result 类型 / 产出真实性 / 4-Level / KPI 黑名单 | Rule 2 ([CLAUDE.md:64](CLAUDE.md#L64)) + Rule 3 ([CLAUDE.md:80](CLAUDE.md#L80)) + Rule 8 ([CLAUDE.md:222](CLAUDE.md#L222)) + Rule 18 ([CLAUDE.md:639](CLAUDE.md#L639)) | Rule 8 4-Level Fact-Forcing |
 | **3. 资源与质量 (Resource & Quality)** | TTL 缓存 / expert audit | Rule 4 ([CLAUDE.md:92](CLAUDE.md#L92)) + Rule 11 ([CLAUDE.md:290](CLAUDE.md#L290)) | Rule 4 资源管理规范化 |
 | **4. 类型与安全 (Type & Security)** | 严格类型 / Rule of 500 / 工具 bypass / 独立见证 | Rule 5/8 ([CLAUDE.md:106](CLAUDE.md#L106)) + Rule 30 ([CLAUDE.md:641](CLAUDE.md#L641)) + Rule 31 ([CLAUDE.md:647](CLAUDE.md#L647)) | Rule 5/8 类型安全 + Rule of 500 联合 (EPIC-058-E v2.7.5) |
 | **5. 经验沉淀 (Lessons Accumulation)** | 4 件套 + PHASE 闭环 + Anti-Fab / 文档卫生 (每 10 轮) / 新建前先想 3 问 | Rule 6/7 ([CLAUDE.md:145](CLAUDE.md#L145)) + Rule 9 ([CLAUDE.md:240](CLAUDE.md#L240)) + [9 Hard Rules Rule 6+7 映射](CLAUDE.md#9-hard-rules-rule-67-映射-文档卫生--新建前先想-kallax-p1--跟-eket-master-rules-md-联合-epic-059-g-v270) (EPIC-059-G v2.7.0) | Rule 6/7 经验沉淀 + PHASE 闭环 联合 (EPIC-058-E v2.7.5) + 9 Hard Rules Rule 6+7 升级 (跟 eket MASTER-RULES.md §6 联合) |
 | **6. 角色边界 (Role Boundary)** | Master 禁写 / Conductor 禁越界 | Rule 10 ([CLAUDE.md:254](CLAUDE.md#L254)) + Rule 13 ([CLAUDE.md:417](CLAUDE.md#L417)) | Rule 10 Master 写代码禁令 |
 | **7. 决策与模式 (Decision & Mode)** | 3 模式 + decision-gate | Rule 12 ([CLAUDE.md:296](CLAUDE.md#L296), 扩展 [CLAUDE.md:617](CLAUDE.md#L617)) | Rule 12 3 模式决策权 |
-| **8. 流程与脚本 (Process & Script)** | PR 尺寸 (Rule of 500 / PR ~100 行) / Subagent 5 步 | Rule 5/8 ([CLAUDE.md:106](CLAUDE.md#L106)) + Rule 7 ([CLAUDE.md:192](CLAUDE.md#L192)) + Rule 15 ([CLAUDE.md:442](CLAUDE.md#L442)) | Rule 5/8 Rule of 500 + Rule 7 PR ~100 行 (EPIC-059-B + EPIC-059-C 互为 互补, EPIC-058-E 合并 Rule 5/8 落地) |
-| **9. 标签与治理 (Tag & Governance)** | 5 类标签 SOP | Rule 18 ([CLAUDE.md:480](CLAUDE.md#L480)) | Rule 18 5 类标签 SOP |
+| **8. 流程与脚本 (Process & Script)** | PR 尺寸 (Rule of 500 / PR ~100 行) / Subagent 5 步 / Performer sub-role schema | Rule 5/8 ([CLAUDE.md:106](CLAUDE.md#L106)) + Rule 7 ([CLAUDE.md:192](CLAUDE.md#L192)) + Rule 15 ([CLAUDE.md:515](CLAUDE.md#L515)) + Rule 16 ([CLAUDE.md:609](CLAUDE.md#L609)) | Rule 5/8 Rule of 500 + Rule 7 PR ~100 行 (EPIC-059-B + EPIC-059-C 互为 互补, EPIC-058-E 合并 Rule 5/8 落地) + Rule 15 Performer sub-role schema (EPIC-038-A) |
+| **9. 标签与治理 (Tag & Governance)** | 5 类标签 SOP | Rule 19 ([CLAUDE.md:647](CLAUDE.md#L647)) | Rule 19 5 类标签 SOP |
 
-**KPI**: 20 Rule → 9 类别 group = **20/20 = 100.0%** 落地 (跟"翻篇&精进" 一致, EPIC-058-E v2.7.5 master explicit A 拍板 22→20 合并), **0 增 Rule** (跟 v2.4.1 还原 联合, 跟"诚实修正" + "反讽" 战略 一致, EPIC-059-C 升级 Rule 9 联合 Rule 8 互为 互补, EPIC-058-E Rule 5+8 合并 + Rule 6+7 合并).
+**KPI**: 21 Rule → 9 类别 group = **21/21 = 100.0%** 落地 (跟"翻篇&精进" 一致, EPIC-058-E v2.7.5 master explicit A 拍板 22→20 合并 + EPIC-038-A R-NEW 净 +1 = 21), **净 +1 Rule** (跟"翻篇&精进" 一致, 治根 Performer 产能 Gap, 不合并, 跟 EPIC-058-E 合并模式 区分 联合).
 
 **详细**: 9 Hard Rules 详细 解释 + 反例 + 正例 + 撤销方法 见 [docs/process/9-hard-rules.md](docs/process/9-hard-rules.md).
 
@@ -664,11 +758,11 @@ L4 数据流动：集成测试验证
 
 ## KALLAX Rules Status (跟 EPIC-054-D + EPIC-058-E + PHASE-013-REFLECTION 联合, v2.7.5 跟 v2.4.1 + EPIC-058-E 22→20 合并 落地)
 
-> **当前 Rule 总数 (active)**: **20** (跟 v2.4.1 还原 一致 base 22 - EPIC-058-E 净减 2 = 20, 跟 v2.0.5 EPIC-051 24→22 合并 模式 一致, 跟 v2.4.0 4 合并 反思 revert 教训 一致 (合并不 删落地脚本, 不 制造 "0 实际改变 假动作"))
-> **累计 升级 (实测)**: 10 (R-NEW 14-18 = 5 + v1.2.4 扩展 29-33 = 5)
-> **升级率**: 50.0% (10/20, 实测, 跟 EPIC-055-B LESSONS-LEARNED.md 联合, EPIC-058-E 合并后 升级率提升)
-> **fatigue_index**: 50.0 (HIGH 阈值 50 触及, 跟"反讽" 联合, 阈值 §10.3 需 重新审视)
-> **净价值**: **67.0%** (跟 v1.2.4 baseline 62.5% 联合, 跟 EPIC-056-C Master 6 维恢复 +4.5% 联合, EPIC-058-E 合并 净价值持平 0 实际变化)
+> **当前 Rule 总数 (active)**: **21** (跟 v2.7.5 EPIC-058-E 落地 20 Rule + EPIC-038-A R-NEW 净 +1 = 21, 跟"翻篇&精进" 战略 一致, 治根 Performer 产能 Gap 40%)
+> **累计 升级 (实测)**: 11 (R-NEW 14-19 = 6 + v1.2.4 扩展 29-33 = 5)
+> **升级率**: 52.4% (11/21, 实测, EPIC-038-A R-NEW 提升, 跟"反讽" 联合, 跟 EPIC-055-B LESSONS-LEARNED.md 联合)
+> **fatigue_index**: 52.4 (HIGH 阈值 50 触及, 跟"反讽" 联合, 阈值 §10.3 需 重新审视)
+> **净价值**: **67.0%** (跟 v1.2.4 baseline 62.5% 联合, 跟 EPIC-056-C Master 6 维恢复 +4.5% 联合, EPIC-058-E 合并 净价值持平 0 实际变化, EPIC-038-A R-NEW 净价值持平 +0% (新规则 治根 Gap 跟现有 Rule 互为 互补))
 
 ### 📋 Rule 合并 实际执行 (EPIC-054-D v2.0.5 + EPIC-058-E v2.7.5, v2.4.1 跟 v2.3.0 一致 22 Rule + EPIC-058-E 22→20 合并)
 

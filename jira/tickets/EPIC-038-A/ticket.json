@@ -14,9 +14,9 @@
   "file_scope": {
     "includes": [
       "jira/tickets/EPIC-038-A/",
-      "CLAUDE.md (Rule 15 章节)",
+      "CLAUDE.md",
       "scripts/conductor/dispatch.sh",
-      "jira/tickets/TICKET-TEMPLATE.md (handoff_depth 字段)",
+      "jira/tickets/ticket-template.md",
       "tests/integration/handoff-depth-test.sh",
       "scripts/verify/handoff-depth.sh"
     ],

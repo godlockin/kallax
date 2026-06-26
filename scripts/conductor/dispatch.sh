@@ -9,8 +9,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # --cross-worktree=<source_wt> 选项 (EPIC-036-B): 跨 worktree 派单时调用 cross-worktree-dispatch.sh
+# --handoff-depth=<L1|L2|L3|L4> 选项 (EPIC-038-A Rule 15): 4 层接手深度
+# --sub-role=<coder|reviewer|tester|docs> 选项 (EPIC-038-A Rule 15): Performer sub-role
 # 必须从原 args 中剥离, 不污染位置参数
 CROSS_WORKTREE=""
+HANDOFF_DEPTH=""
+SUB_ROLE=""
 POSITIONAL_ARGS=()
 for arg in "$@"; do
   case "$arg" in
@@ -29,6 +33,42 @@ for arg in "$@"; do
         exit 1
       fi
       ;;
+    --handoff-depth)
+      echo "ERROR: --handoff-depth requires =<L1|L2|L3|L4> (EPIC-038-A Rule 15)" >&2
+      exit 1
+      ;;
+    --handoff-depth=)
+      echo "ERROR: --handoff-depth= requires non-empty <L1|L2|L3|L4>" >&2
+      exit 1
+      ;;
+    --handoff-depth=*)
+      HANDOFF_DEPTH="${arg#*=}"
+      case "$HANDOFF_DEPTH" in
+        L1|L2|L3|L4) ;;
+        *)
+          echo "ERROR: --handoff-depth=$HANDOFF_DEPTH invalid (must be L1|L2|L3|L4)" >&2
+          exit 1
+          ;;
+      esac
+      ;;
+    --sub-role)
+      echo "ERROR: --sub-role requires =<coder|reviewer|tester|docs> (EPIC-038-A Rule 15)" >&2
+      exit 1
+      ;;
+    --sub-role=)
+      echo "ERROR: --sub-role= requires non-empty value" >&2
+      exit 1
+      ;;
+    --sub-role=*)
+      SUB_ROLE="${arg#*=}"
+      case "$SUB_ROLE" in
+        coder|reviewer|tester|docs) ;;
+        *)
+          echo "ERROR: --sub-role=$SUB_ROLE invalid (must be coder|reviewer|tester|docs)" >&2
+          exit 1
+          ;;
+      esac
+      ;;
     *)
       POSITIONAL_ARGS+=("$arg")
       ;;
@@ -42,15 +82,22 @@ REQUIRED_EXPERTISE="${2:-}"
 DECISION="${3:-accept}"  # accept / veto / override
 OVERRIDE_TO="${4:-}"
 
+# handoff_depth 默认值 (Rule 15: L1 = 单 ticket 派单, default)
+if [[ -z "$HANDOFF_DEPTH" ]]; then
+  HANDOFF_DEPTH="L1"
+fi
+
 # AI 派发权比例 (主公 D2 决策: 渐进升级 60%→80%→90%)
 # KALLAX_AI_DELEGATION_RATIO: 60 = 60% AI / 40% 人工, 80 = 80% AI / 20% 人工, 90 = 90% AI / 10% 人工
 AI_RATIO="${KALLAX_AI_DELEGATION_RATIO:-80}"
 
 # Use argument count to detect if args were provided (empty string is valid for expertise)
 if [[ $# -lt 2 ]]; then
-  echo "Usage: $0 [--cross-worktree=<source_wt>] <TICKET_ID> <REQUIRED_EXPERTISE> [accept|veto|override] [OVERRIDE_TO]" >&2
+  echo "Usage: $0 [--cross-worktree=<source_wt>] [--handoff-depth=<L1|L2|L3|L4>] [--sub-role=<coder|reviewer|tester|docs>] <TICKET_ID> <REQUIRED_EXPERTISE> [accept|veto|override] [OVERRIDE_TO]" >&2
   echo "       AI delegation ratio: KALLAX_AI_DELEGATION_RATIO=$AI_RATIO (60/80/90, default 80)" >&2
   echo "       --cross-worktree=<source_wt>: route dispatch to source worktree (EPIC-036-B)" >&2
+  echo "       --handoff-depth=<L1|L2|L3|L4>: handoff depth (EPIC-038-A Rule 15, default L1)" >&2
+  echo "       --sub-role=<coder|reviewer|tester|docs>: Performer sub-role (EPIC-038-A Rule 15, default none)" >&2
   exit 1
 fi
 
@@ -122,4 +169,4 @@ if [[ -n "$CROSS_WORKTREE" ]]; then
   bash "$CWT_SCRIPT" --source-wt="$CROSS_WORKTREE" --ticket-id="$TICKET_ID" --final-id="$FINAL_ID"
 fi
 
-echo "DISPATCH: ticket=$TICKET_ID algo_suggest=$ALGO_ID final=$FINAL_ID decision=$DECISION ai_ratio=${AI_RATIO}% reason=$REASON"
+echo "DISPATCH: ticket=$TICKET_ID algo_suggest=$ALGO_ID final=$FINAL_ID decision=$DECISION ai_ratio=${AI_RATIO}% handoff_depth=$HANDOFF_DEPTH sub_role=${SUB_ROLE:-none} reason=$REASON"
