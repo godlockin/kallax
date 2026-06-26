@@ -5,10 +5,15 @@
   "title": "parallel-dispatch.sh — 并行 Performer 调度规则",
   "type": "feature",
   "priority": "P0",
-  "status": "backlog",
+  "status": "ready",
   "created_by": "master_main",
   "created_at": "2026-06-06T10:00:00Z",
-  "file_scope": { "includes": ["scripts/parallel-dispatch.sh"], "excludes": [] },
+  "file_scope": {
+    "includes": [
+      "scripts/parallel-dispatch.sh"
+    ],
+    "excludes": []
+  },
   "acceptance_criteria": [
     "读取 epic.json → 分析 ticket 依赖关系",
     "无依赖的 tickets → 默认并行创建 worktree + 召唤 Performer",
