@@ -2,7 +2,7 @@
   "id": "EPIC-022-A",
   "epic": "EPIC-022",
   "title": "3 Role Definition: auditor + readonly + role binding",
-  "status": "in_progress",
+  "status": "done",
   "estimate_days": 3,
   "blocked_by": [],
   "file_scope": [

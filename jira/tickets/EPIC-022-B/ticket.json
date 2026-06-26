@@ -2,7 +2,7 @@
   "id": "EPIC-022-B",
   "epic": "EPIC-022",
   "title": "Pre-commit Hook + Conductor Scope Check",
-  "status": "ready",
+  "status": "done",
   "estimate_days": 3,
   "estimated_hours": 24,
   "blocked_by": [

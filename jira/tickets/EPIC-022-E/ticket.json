@@ -2,7 +2,7 @@
   "id": "EPIC-022-E",
   "epic": "EPIC-022",
   "title": "Integration Tests + 5-Expert A+B Review",
-  "status": "ready",
+  "status": "done",
   "estimate_days": 5,
   "estimated_hours": 40,
   "blocked_by": [

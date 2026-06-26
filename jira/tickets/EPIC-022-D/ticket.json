@@ -2,7 +2,7 @@
   "id": "EPIC-022-D",
   "epic": "EPIC-022",
   "title": "Role Transition (master/conductor/performer)",
-  "status": "ready",
+  "status": "done",
   "estimate_days": 3,
   "estimated_hours": 24,
   "blocked_by": [

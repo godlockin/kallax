@@ -2,7 +2,7 @@
   "id": "EPIC-022-C",
   "epic": "EPIC-022",
   "title": "Workspace Switch + Read-Only Path",
-  "status": "ready",
+  "status": "done",
   "estimate_days": 4,
   "estimated_hours": 32,
   "blocked_by": [
