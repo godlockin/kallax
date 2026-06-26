@@ -10,7 +10,8 @@
   "created_at": "2026-06-12T00:00:00Z",
   "file_scope": {
     "includes": [
-      "scripts/verify/expert-match-m1-v3.sh",
+      "tests/m1-100-test-cases.test.ts",
+      "tests/fixtures/m1-cases.json",
       "jira/epics/EPIC-034/",
       "jira/tickets/EPIC-034-A/"
     ],
