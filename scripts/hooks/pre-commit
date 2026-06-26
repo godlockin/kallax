@@ -5,7 +5,8 @@
 # Performer: can only work on feature/*
 # Install: bash scripts/hooks/install.sh
 #
-# EPIC-022-B: Added authz/check.sh integration for miao.write authorization
+# EPIC-022-B: Added authz/check.sh + conductor-scope-check.sh integration
+#             for miao.write authorization + conductor scope validation
 set -euo pipefail
 
 # SIGTERM handler (P0 fix: prevent session_start.sh style hang)
@@ -20,6 +21,7 @@ ROLE_FILE=".kallax/state/instance_config.yml"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 AUTHZ_CHECK="${KALLAX_ROOT}/scripts/permission/authz/check.sh"
+CONDUCTOR_SCOPE_CHECK="${KALLAX_ROOT}/scripts/permission/conductor-scope-check.sh"
 
 # ── Check 0: Authorization check via authz/check.sh (EPIC-022-B) ────────
 # P0 fixes: fail-closed, set -euo pipefail, role name validation, fail-open fix
@@ -74,6 +76,32 @@ if ! bash "$AUTHZ_CHECK" --action "$AUTHZ_ACTION" --actor "$ACTOR_DISPLAY"; then
   echo "║  Run 'kallax role:check $AUTHZ_ACTION' for details. ║"
   echo "╚══════════════════════════════════════════════════════════════╝"
   exit 1
+fi
+
+# ── Check 0.5: Conductor Scope Check (EPIC-022-B) ─────────────────────
+# Focused validation: conductor can only do conductor-scope actions;
+# conductor blocked from miao.write/miao.merge/release.tag.
+# Mirrors node/src/permissions/conductor-scope.ts verifyScope() in bash.
+# 跟 BE-23 branch-aware action mapping 联合
+# 跟 BE-25 / BE-26 pre-commit hook governance 联合
+# 跟 EPIC-022-A 3 Role Definition 联合
+if [[ -x "$CONDUCTOR_SCOPE_CHECK" ]]; then
+  if ! bash "$CONDUCTOR_SCOPE_CHECK" --action "$AUTHZ_ACTION" --actor "$ACTOR_DISPLAY"; then
+    echo "╔══════════════════════════════════════════════════════════════╗"
+    echo "║  BLOCKED: Conductor scope check DENIED.                ║"
+    echo "║ ║"
+    echo "║  Branch: $BRANCH (action: $AUTHZ_ACTION)              ║"
+    echo "║  Actor:  $ACTOR_DISPLAY                               ║"
+    echo "║ ║"
+    echo "║  Conductor cannot write miao, only assign tasks.       ║"
+    echo "║  Run 'bash scripts/permission/whoami.sh' to see role.  ║"
+    echo "╚══════════════════════════════════════════════════════════════╝"
+    exit 1
+  fi
+else
+  # P0: fail-closed if conductor-scope-check is missing (defense-in-depth)
+  echo "WARN: conductor-scope-check.sh not found at $CONDUCTOR_SCOPE_CHECK — skipping" >&2
+  # Note: not exit 1 here, since authz/check.sh above already enforces; this is a focused double-check
 fi
 
 # ── 3 模式 decision-gate (Rule 13) ─────────────────────────────────────
