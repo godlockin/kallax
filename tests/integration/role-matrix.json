@@ -1,0 +1,102 @@
+{
+  "$schema": "https://kallax.dev/schemas/role-matrix-v1.json",
+  "version": "1.0.0",
+  "epic": "EPIC-022",
+  "ticket": "EPIC-022-E",
+  "created_at": "2026-06-25",
+  "source": "confluence/decisions/PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §6",
+  "description": "Permission matrix for KALLAX v1 — 6 roles × 10 actions. Each cell encodes the authoritative grant decision (ALLOW/DENY) as enforced by scripts/permission/authz/check.sh. The integration tests in tests/integration/rbac-integration-test.sh consume this matrix as the oracle and assert reality matches the spec.",
+  "roles": [
+    "master",
+    "conductor",
+    "performer",
+    "readonly",
+    "auditor",
+    "super-admin"
+  ],
+  "actions": [
+    {
+      "id": "task.claim",
+      "domain": "task",
+      "mutability": "state-changing",
+      "description": "Claim a ticket for execution in an isolated worktree"
+    },
+    {
+      "id": "task.assign",
+      "domain": "task",
+      "mutability": "state-changing",
+      "description": "Dispatch a ticket to a Performer"
+    },
+    {
+      "id": "worktree.create",
+      "domain": "worktree",
+      "mutability": "state-changing",
+      "description": "Create an isolated worktree for a ticket"
+    },
+    {
+      "id": "worktree.commit",
+      "domain": "worktree",
+      "mutability": "state-changing",
+      "description": "Commit changes inside the worker's worktree"
+    },
+    {
+      "id": "ticket.read",
+      "domain": "ticket",
+      "mutability": "read-only",
+      "description": "Read ticket content (acceptance criteria, scope, status)"
+    },
+    {
+      "id": "miao.write",
+      "domain": "release",
+      "mutability": "state-changing",
+      "description": "Write directly to the miao (production) branch — conductor-only P0 violation"
+    },
+    {
+      "id": "miao.merge",
+      "domain": "release",
+      "mutability": "state-changing",
+      "description": "Merge a PR into miao — master-only"
+    },
+    {
+      "id": "testing.merge",
+      "domain": "release",
+      "mutability": "state-changing",
+      "description": "Merge a PR into testing — conductor+"
+    },
+    {
+      "id": "audit.export",
+      "domain": "audit",
+      "mutability": "read-only",
+      "description": "Export the audit log (authz.db.log) — auditor-only"
+    },
+    {
+      "id": "instance.terminate",
+      "domain": "emergency",
+      "mutability": "state-changing",
+      "description": "Terminate a KALLAX instance — emergency-responder only, NOT master"
+    }
+  ],
+  "matrix": {
+    "task.claim":      {"master": "ALLOW", "conductor": "DENY",  "performer": "ALLOW", "readonly": "DENY",  "auditor": "DENY",  "super-admin": "DENY"},
+    "task.assign":     {"master": "ALLOW", "conductor": "ALLOW", "performer": "DENY",  "readonly": "DENY",  "auditor": "DENY",  "super-admin": "DENY"},
+    "worktree.create": {"master": "ALLOW", "conductor": "DENY",  "performer": "ALLOW", "readonly": "DENY",  "auditor": "DENY",  "super-admin": "DENY"},
+    "worktree.commit": {"master": "ALLOW", "conductor": "DENY",  "performer": "ALLOW", "readonly": "DENY",  "auditor": "DENY",  "super-admin": "DENY"},
+    "ticket.read":     {"master": "ALLOW", "conductor": "DENY",  "performer": "ALLOW", "readonly": "ALLOW", "auditor": "ALLOW", "super-admin": "DENY"},
+    "miao.write":      {"master": "ALLOW", "conductor": "DENY",  "performer": "DENY",  "readonly": "DENY",  "auditor": "DENY",  "super-admin": "DENY"},
+    "miao.merge":      {"master": "ALLOW", "conductor": "DENY",  "performer": "DENY",  "readonly": "DENY",  "auditor": "DENY",  "super-admin": "DENY"},
+    "testing.merge":   {"master": "ALLOW", "conductor": "ALLOW", "performer": "DENY",  "readonly": "DENY",  "auditor": "DENY",  "super-admin": "DENY"},
+    "audit.export":    {"master": "ALLOW", "conductor": "DENY",  "performer": "DENY",  "readonly": "DENY",  "auditor": "ALLOW", "super-admin": "DENY"},
+    "instance.terminate": {"master": "DENY", "conductor": "DENY", "performer": "DENY", "readonly": "DENY", "auditor": "DENY", "super-admin": "DENY"}
+  },
+  "notes": {
+    "fail_closed_per_role": "Each role has an explicit allowlist in scripts/permission/authz/check.sh::check_permission. Anything outside the allowlist = DENY (closed deny-set PER ROLE). Master is the only role with broad grants (everything EXCEPT instance.terminate).",
+    "super_admin_v2_deferred": "super-admin is NOT in the v1 allowlist — v2 scope per confluence/decisions/PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md. All super-admin cells = DENY until v2 lands.",
+    "conductor_miao_write_block": "AC-3 from EPIC-022-B: conductor attempting miao.write MUST exit 1 with audit log entry. Verified by Test [E2E-CONDUCTOR-MIAO].",
+    "performer_merge_block": "AC-4 from EPIC-022-B: performer attempting testing.merge MUST exit 1 with audit log entry. Verified by Test [E2E-PERFORMER-MERGE].",
+    "master_emergency_block": "master has all permissions EXCEPT emergency-responder-only actions (instance.terminate) — separation of duty for kill-switch authority.",
+    "master_owns_miao": "Per architecture diagram in src/permissions/roles/auditor.md, master sits at the top of the role hierarchy and can write/merge miao. Conductor cannot.",
+    "auditor_inherits_readonly": "auditor grants *.read + audit.export; blocks *.write / *.merge / instance.terminate (per src/permissions/roles/auditor.md + check.sh).",
+    "closed_deny_set_audit": "scripts/permission/authz/check.sh::is_read_only is a closed allowlist of read-only action suffixes used to gate the audit-write fail-closed path. State-changing actions that cannot be audited = fail-closed (exit 1).",
+    "v2_super_admin_path": "When v2 lands, update both check_permission (add super-admin case) AND role-matrix.json (replace super-admin cells with v2 grants)."
+  }
+}
