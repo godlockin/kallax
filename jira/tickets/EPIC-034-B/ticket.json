@@ -5,7 +5,7 @@
   "title": "M1 audit 验证 + 加新集成测试 (Step 2, 跟 Phase 6 衔接)",
   "type": "feature",
   "priority": "P0",
-  "status": "ready",
+  "status": "done",
   "created_by": "performer-EPIC-034",
   "created_at": "2026-06-12T00:00:00Z",
   "blocked_by": "EPIC-034-A",

@@ -3,10 +3,12 @@
   "title": "split-files-consolidation-2026-06-25",
   "type": "docs",
   "priority": "P1",
-  "status": "ready",
+  "status": "done",
   "estimated_hours": 0,
   "file_scope": {
-    "includes": ["docs/refactor/EPIC-064-split-consolidation-2026-06-25.md"],
+    "includes": [
+      "docs/refactor/EPIC-064-split-consolidation-2026-06-25.md"
+    ],
     "excludes": []
   },
   "acceptance_criteria": [

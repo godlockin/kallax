@@ -3,10 +3,12 @@
   "title": "30+-items-master-B-consolidation-2026-06-25",
   "type": "docs",
   "priority": "P1",
-  "status": "ready",
+  "status": "done",
   "estimated_hours": 0,
   "file_scope": {
-    "includes": ["docs/governance/EPIC-062-master-B-consolidation-2026-06-25.md"],
+    "includes": [
+      "docs/governance/EPIC-062-master-B-consolidation-2026-06-25.md"
+    ],
     "excludes": []
   },
   "acceptance_criteria": [
