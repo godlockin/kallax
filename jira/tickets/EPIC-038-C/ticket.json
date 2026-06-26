@@ -5,7 +5,7 @@
   "title": "Auditor 角色 + L4 派单 + 跨项目 import 脚本 (跟 EPIC-037-A 一起做, Q5 闭环)",
   "type": "feature",
   "priority": "P1",
-  "status": "ready",
+  "status": "done",
   "created_by": "master_main (主公 2026-06-12 拍 A, EPIC-038-C 跟 EPIC-037-A 一起做, 经验教训迁移 Q5 闭环)",
   "created_at": "2026-06-12T00:00:00Z",
   "blocked_by": "EPIC-038-B",
