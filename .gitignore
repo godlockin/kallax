@@ -153,3 +153,7 @@ ONRAMP-.-*.md
 # ============================================================
 jira/tickets/**/test_result*.json
 jira/tickets/**/*.tmp
+
+# KALLAX runtime artifacts (跟"翻篇&精进" 战略 一致, 跟 v1.3.3 ONRAMP-test-* 模式 一致)
+.kallax/audit/
+.kallax/inbox/
