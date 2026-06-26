@@ -1,0 +1,581 @@
+{
+  "$schema": "https://kallax.dev/schemas/test-case-fixture-v1.json",
+  "description": "EPIC-032-A M1 50 test case 扩域 fixture — data + legal 场景 (跟 scripts/verify/check-test-case-isolation.sh TEST_CASES 数组 30→50 扩域 联合)",
+  "version": "1.0.0",
+  "epic": "EPIC-032-A",
+  "baseline": {
+    "source": "scripts/verify/check-test-case-isolation.sh",
+    "previous_count": 30,
+    "expanded_count": 50,
+    "added_domains": ["data", "legal"]
+  },
+  "domains": ["data", "legal"],
+  "categories": {
+    "data": [
+      "data-consistency",
+      "data-pipeline",
+      "data-quality",
+      "data-retention",
+      "data-migration"
+    ],
+    "legal": [
+      "gdpr",
+      "privacy",
+      "legal-compliance",
+      "cross-border-transfer",
+      "consent-management"
+    ]
+  },
+  "cases": [
+    {
+      "id": "DATA-001",
+      "domain": "data",
+      "category": "data-consistency",
+      "name": "数据一致性怎么保证",
+      "description": "分布式系统下跨节点数据一致性问题",
+      "expected_category": "data-consistency",
+      "expected_keywords": ["一致性", "cap", "分布式"],
+      "priority": "P0"
+    },
+    {
+      "id": "DATA-002",
+      "domain": "data",
+      "category": "data-pipeline",
+      "name": "数据 pipeline报错",
+      "description": "ETL pipeline 中某个 stage 失败如何定位",
+      "expected_category": "data-pipeline",
+      "expected_keywords": ["pipeline", "etl", "stage"],
+      "priority": "P0"
+    },
+    {
+      "id": "DATA-003",
+      "domain": "data",
+      "category": "data-quality",
+      "name": "数据质量怎么监控",
+      "description": "建立数据质量指标与告警",
+      "expected_category": "data-quality",
+      "expected_keywords": ["数据质量", "监控", "dqc"],
+      "priority": "P0"
+    },
+    {
+      "id": "DATA-004",
+      "domain": "data",
+      "category": "data-pipeline",
+      "name": "报表数字对不上",
+      "description": "OLAP 与源库数据偏差排查",
+      "expected_category": "data-pipeline",
+      "expected_keywords": ["报表", "对账", "olap"],
+      "priority": "P1"
+    },
+    {
+      "id": "DATA-005",
+      "domain": "data",
+      "category": "data-pipeline",
+      "name": "数据延迟怎么查",
+      "description": "实时数据流延迟定位",
+      "expected_category": "data-pipeline",
+      "expected_keywords": ["延迟", "kafka", "watermark"],
+      "priority": "P1"
+    },
+    {
+      "id": "DATA-006",
+      "domain": "data",
+      "category": "data-migration",
+      "name": "数据回滚方案",
+      "description": "schema migration 失败回滚策略",
+      "expected_category": "data-migration",
+      "expected_keywords": ["回滚", "migration", "schema"],
+      "priority": "P0"
+    },
+    {
+      "id": "DATA-007",
+      "domain": "data",
+      "category": "data-consistency",
+      "name": "主从复制延迟",
+      "description": "MySQL 主从延迟导致读不一致",
+      "expected_category": "data-consistency",
+      "expected_keywords": ["主从", "replication", "lag"],
+      "priority": "P1"
+    },
+    {
+      "id": "DATA-008",
+      "domain": "data",
+      "category": "data-pipeline",
+      "name": "数据分片策略",
+      "description": "Sharding key 选择与 rebalance",
+      "expected_category": "data-pipeline",
+      "expected_keywords": ["分片", "sharding", "rebalance"],
+      "priority": "P1"
+    },
+    {
+      "id": "DATA-009",
+      "domain": "data",
+      "category": "data-pipeline",
+      "name": "数据湖架构选型",
+      "description": "Lakehouse vs Data Lake vs Warehouse",
+      "expected_category": "data-pipeline",
+      "expected_keywords": ["数据湖", "iceberg", "hudi"],
+      "priority": "P2"
+    },
+    {
+      "id": "DATA-010",
+      "domain": "data",
+      "category": "data-pipeline",
+      "name": "实时数据流怎么优化",
+      "description": "Flink / Spark Streaming 调优",
+      "expected_category": "data-pipeline",
+      "expected_keywords": ["实时", "flink", "checkpoint"],
+      "priority": "P1"
+    },
+    {
+      "id": "DATA-011",
+      "domain": "data",
+      "category": "data-quality",
+      "name": "空值校验规则",
+      "description": "NOT NULL / 默认值约束的检测",
+      "expected_category": "data-quality",
+      "expected_keywords": ["null", "not-null", "default"],
+      "priority": "P0"
+    },
+    {
+      "id": "DATA-012",
+      "domain": "data",
+      "category": "data-quality",
+      "name": "数值范围越界",
+      "description": "业务字段值域校验",
+      "expected_category": "data-quality",
+      "expected_keywords": ["范围", "range", "validate"],
+      "priority": "P1"
+    },
+    {
+      "id": "DATA-013",
+      "domain": "data",
+      "category": "data-quality",
+      "name": "重复主键检测",
+      "description": "幂等写入与唯一索引",
+      "expected_category": "data-quality",
+      "expected_keywords": ["主键", "unique", "duplicate"],
+      "priority": "P0"
+    },
+    {
+      "id": "DATA-014",
+      "domain": "data",
+      "category": "data-quality",
+      "name": "Schema drift 检测",
+      "description": "上游 schema 变更告警",
+      "expected_category": "data-quality",
+      "expected_keywords": ["schema", "drift", "avro"],
+      "priority": "P1"
+    },
+    {
+      "id": "DATA-015",
+      "domain": "data",
+      "category": "data-quality",
+      "name": "外键悬挂引用",
+      "description": "孤儿记录识别",
+      "expected_category": "data-quality",
+      "expected_keywords": ["外键", "fk", "orphan"],
+      "priority": "P1"
+    },
+    {
+      "id": "DATA-016",
+      "domain": "data",
+      "category": "data-retention",
+      "name": "日志保留期限",
+      "description": "业务日志归档与清理周期",
+      "expected_category": "data-retention",
+      "expected_keywords": ["保留", "retention", "ttl"],
+      "priority": "P0"
+    },
+    {
+      "id": "DATA-017",
+      "domain": "data",
+      "category": "data-retention",
+      "name": "冷热分层存储",
+      "description": "热数据 SSD + 冷数据 OSS",
+      "expected_category": "data-retention",
+      "expected_keywords": ["冷热", "tier", "archive"],
+      "priority": "P1"
+    },
+    {
+      "id": "DATA-018",
+      "domain": "data",
+      "category": "data-retention",
+      "name": "软删除 vs 硬删除",
+      "description": "deleted_at 字段策略",
+      "expected_category": "data-retention",
+      "expected_keywords": ["软删除", "soft-delete", "deleted_at"],
+      "priority": "P0"
+    },
+    {
+      "id": "DATA-019",
+      "domain": "data",
+      "category": "data-retention",
+      "name": "审计追溯",
+      "description": "记录变更历史与责任主体",
+      "expected_category": "data-retention",
+      "expected_keywords": ["审计", "audit", "history"],
+      "priority": "P0"
+    },
+    {
+      "id": "DATA-020",
+      "domain": "data",
+      "category": "data-retention",
+      "name": "归档作业调度",
+      "description": "cron 表达式与失败重试",
+      "expected_category": "data-retention",
+      "expected_keywords": ["归档", "cron", "schedule"],
+      "priority": "P2"
+    },
+    {
+      "id": "DATA-021",
+      "domain": "data",
+      "category": "data-migration",
+      "name": "行数对账",
+      "description": "源表与目标表行数一致性",
+      "expected_category": "data-migration",
+      "expected_keywords": ["行数", "reconcile", "count"],
+      "priority": "P0"
+    },
+    {
+      "id": "DATA-022",
+      "domain": "data",
+      "category": "data-migration",
+      "name": "类型转换矩阵",
+      "description": "INT → BIGINT / VARCHAR 长度变化",
+      "expected_category": "data-migration",
+      "expected_keywords": ["类型", "cast", "alter"],
+      "priority": "P0"
+    },
+    {
+      "id": "DATA-023",
+      "domain": "data",
+      "category": "data-migration",
+      "name": "NULL → NOT NULL 迁移",
+      "description": "默认值填充与回填脚本",
+      "expected_category": "data-migration",
+      "expected_keywords": ["null", "backfill", "default"],
+      "priority": "P1"
+    },
+    {
+      "id": "DATA-024",
+      "domain": "data",
+      "category": "data-migration",
+      "name": "去重合并策略",
+      "description": "重复行合并保留规则",
+      "expected_category": "data-migration",
+      "expected_keywords": ["去重", "dedup", "merge"],
+      "priority": "P1"
+    },
+    {
+      "id": "DATA-025",
+      "domain": "data",
+      "category": "data-migration",
+      "name": "双写校验",
+      "description": "新旧库并行写入对比",
+      "expected_category": "data-migration",
+      "expected_keywords": ["双写", "dual-write", "verify"],
+      "priority": "P0"
+    },
+    {
+      "id": "LEGAL-001",
+      "domain": "legal",
+      "category": "gdpr",
+      "name": "GDPR合规怎么做",
+      "description": "Article 5–32 核心要求落地",
+      "expected_category": "gdpr",
+      "expected_keywords": ["gdpr", "合规", "article"],
+      "priority": "P0"
+    },
+    {
+      "id": "LEGAL-002",
+      "domain": "legal",
+      "category": "privacy",
+      "name": "用户隐私数据怎么处理",
+      "description": "PII 加密、脱敏、访问控制",
+      "expected_category": "privacy",
+      "expected_keywords": ["隐私", "pii", "脱敏"],
+      "priority": "P0"
+    },
+    {
+      "id": "LEGAL-003",
+      "domain": "legal",
+      "category": "legal-compliance",
+      "name": "数据保留期限是多久",
+      "description": "不同数据类型保留时长规定",
+      "expected_category": "legal-compliance",
+      "expected_keywords": ["保留", "retention", "期限"],
+      "priority": "P0"
+    },
+    {
+      "id": "LEGAL-004",
+      "domain": "legal",
+      "category": "cross-border-transfer",
+      "name": "数据跨境传输合规",
+      "description": "SCC / BCR / 安全评估",
+      "expected_category": "cross-border-transfer",
+      "expected_keywords": ["跨境", "scc", "transfer"],
+      "priority": "P0"
+    },
+    {
+      "id": "LEGAL-005",
+      "domain": "legal",
+      "category": "legal-compliance",
+      "name": "审计日志怎么设计",
+      "description": "不可篡改的 append-only 审计流",
+      "expected_category": "legal-compliance",
+      "expected_keywords": ["审计", "audit", "log"],
+      "priority": "P0"
+    },
+    {
+      "id": "LEGAL-006",
+      "domain": "legal",
+      "category": "legal-compliance",
+      "name": "合规报告怎么生成",
+      "description": "定期合规自评报告",
+      "expected_category": "legal-compliance",
+      "expected_keywords": ["合规", "报告", "report"],
+      "priority": "P1"
+    },
+    {
+      "id": "LEGAL-007",
+      "domain": "legal",
+      "category": "gdpr",
+      "name": "个人信息删除请求",
+      "description": "Article 17 Right to erasure",
+      "expected_category": "gdpr",
+      "expected_keywords": ["删除", "erasure", "article-17"],
+      "priority": "P0"
+    },
+    {
+      "id": "LEGAL-008",
+      "domain": "legal",
+      "category": "consent-management",
+      "name": "Cookie consent怎么处理",
+      "description": "ePrivacy Directive 合规",
+      "expected_category": "consent-management",
+      "expected_keywords": ["cookie", "consent", "opt-in"],
+      "priority": "P0"
+    },
+    {
+      "id": "LEGAL-009",
+      "domain": "legal",
+      "category": "legal-compliance",
+      "name": "法律取证怎么配合",
+      "description": "eDiscovery 流程与数据保全",
+      "expected_category": "legal-compliance",
+      "expected_keywords": ["取证", "ediscovery", "legal-hold"],
+      "priority": "P1"
+    },
+    {
+      "id": "LEGAL-010",
+      "domain": "legal",
+      "category": "legal-compliance",
+      "name": "数据泄露通知义务",
+      "description": "72h breach notification under GDPR Art.33",
+      "expected_category": "legal-compliance",
+      "expected_keywords": ["泄露", "breach", "notify"],
+      "priority": "P0"
+    },
+    {
+      "id": "LEGAL-011",
+      "domain": "legal",
+      "category": "gdpr",
+      "name": "数据访问请求 SAR",
+      "description": "Article 15 数据主体访问权",
+      "expected_category": "gdpr",
+      "expected_keywords": ["sar", "access", "article-15"],
+      "priority": "P0"
+    },
+    {
+      "id": "LEGAL-012",
+      "domain": "legal",
+      "category": "gdpr",
+      "name": "数据可携权",
+      "description": "Article 20 Right to data portability",
+      "expected_category": "gdpr",
+      "expected_keywords": ["portability", "导出", "json"],
+      "priority": "P1"
+    },
+    {
+      "id": "LEGAL-013",
+      "domain": "legal",
+      "category": "gdpr",
+      "name": "反对自动化决策",
+      "description": "Article 22 自动化决策反对权",
+      "expected_category": "gdpr",
+      "expected_keywords": ["自动化", "decision", "opt-out"],
+      "priority": "P1"
+    },
+    {
+      "id": "LEGAL-014",
+      "domain": "legal",
+      "category": "gdpr",
+      "name": "数据更正请求",
+      "description": "Article 16 Rectification",
+      "expected_category": "gdpr",
+      "expected_keywords": ["更正", "rectification", "update"],
+      "priority": "P1"
+    },
+    {
+      "id": "LEGAL-015",
+      "domain": "legal",
+      "category": "gdpr",
+      "name": "DPO 指定",
+      "description": "Article 37 数据保护官",
+      "expected_category": "gdpr",
+      "expected_keywords": ["dpo", "officer", "appoint"],
+      "priority": "P1"
+    },
+    {
+      "id": "LEGAL-016",
+      "domain": "legal",
+      "category": "privacy",
+      "name": "PII 自动识别",
+      "description": "regex + ML 检测身份证 / 银行卡",
+      "expected_category": "privacy",
+      "expected_keywords": ["pii", "detect", "scan"],
+      "priority": "P0"
+    },
+    {
+      "id": "LEGAL-017",
+      "domain": "legal",
+      "category": "privacy",
+      "name": "数据最小化原则",
+      "description": "Article 5(1)(c) 只收集必要数据",
+      "expected_category": "privacy",
+      "expected_keywords": ["最小化", "minimize", "necessary"],
+      "priority": "P0"
+    },
+    {
+      "id": "LEGAL-018",
+      "domain": "legal",
+      "category": "privacy",
+      "name": "明示同意",
+      "description": "明确具体可撤回的同意",
+      "expected_category": "privacy",
+      "expected_keywords": ["consent", "明确", "撤回"],
+      "priority": "P0"
+    },
+    {
+      "id": "LEGAL-019",
+      "domain": "legal",
+      "category": "privacy",
+      "name": "匿名化处理",
+      "description": "k-anonymity / l-diversity",
+      "expected_category": "privacy",
+      "expected_keywords": ["匿名", "k-anon", "脱敏"],
+      "priority": "P1"
+    },
+    {
+      "id": "LEGAL-020",
+      "domain": "legal",
+      "category": "privacy",
+      "name": "假名化",
+      "description": "Pseudonymization 仍属于个人数据",
+      "expected_category": "privacy",
+      "expected_keywords": ["pseudonym", "假名", "token"],
+      "priority": "P1"
+    },
+    {
+      "id": "LEGAL-021",
+      "domain": "legal",
+      "category": "cross-border-transfer",
+      "name": "标准合同条款 SCC",
+      "description": "EU Commission 2021/914 模块",
+      "expected_category": "cross-border-transfer",
+      "expected_keywords": ["scc", "contract", "module"],
+      "priority": "P0"
+    },
+    {
+      "id": "LEGAL-022",
+      "domain": "legal",
+      "category": "cross-border-transfer",
+      "name": "充分性认定",
+      "description": "Adequacy decision 国家清单",
+      "expected_category": "cross-border-transfer",
+      "expected_keywords": ["adequacy", "充分性", "whitelist"],
+      "priority": "P1"
+    },
+    {
+      "id": "LEGAL-023",
+      "domain": "legal",
+      "category": "cross-border-transfer",
+      "name": "数据本地化",
+      "description": "Russia / China 数据出境要求",
+      "expected_category": "cross-border-transfer",
+      "expected_keywords": ["本地化", "sovereignty", "ru/cn"],
+      "priority": "P1"
+    },
+    {
+      "id": "LEGAL-024",
+      "domain": "legal",
+      "category": "cross-border-transfer",
+      "name": "传输影响评估 TIA",
+      "description": "Schrems II 合规评估",
+      "expected_category": "cross-border-transfer",
+      "expected_keywords": ["tia", "schrems", "assessment"],
+      "priority": "P1"
+    },
+    {
+      "id": "LEGAL-025",
+      "domain": "legal",
+      "category": "cross-border-transfer",
+      "name": "EU-US DPF 框架",
+      "description": "Data Privacy Framework 2023",
+      "expected_category": "cross-border-transfer",
+      "expected_keywords": ["dpf", "eu-us", "framework"],
+      "priority": "P2"
+    },
+    {
+      "id": "LEGAL-026",
+      "domain": "legal",
+      "category": "consent-management",
+      "name": "Opt-in 同意",
+      "description": "GDPR 主动勾选同意",
+      "expected_category": "consent-management",
+      "expected_keywords": ["opt-in", "主动", "checkbox"],
+      "priority": "P0"
+    },
+    {
+      "id": "LEGAL-027",
+      "domain": "legal",
+      "category": "consent-management",
+      "name": "同意撤回",
+      "description": "随时撤回同等于给出同意一样容易",
+      "expected_category": "consent-management",
+      "expected_keywords": ["withdraw", "撤回", "easy"],
+      "priority": "P0"
+    },
+    {
+      "id": "LEGAL-028",
+      "domain": "legal",
+      "category": "consent-management",
+      "name": "第三方 Cookie",
+      "description": "广告 / 分析第三方 cookie 控制",
+      "expected_category": "consent-management",
+      "expected_keywords": ["3rd-party", "tracker", "cmp"],
+      "priority": "P1"
+    },
+    {
+      "id": "LEGAL-029",
+      "domain": "legal",
+      "category": "consent-management",
+      "name": "同意管理平台 CMP",
+      "description": "TCF v2.2 / IAB Europe 标准",
+      "expected_category": "consent-management",
+      "expected_keywords": ["cmp", "tcf", "iab"],
+      "priority": "P2"
+    },
+    {
+      "id": "LEGAL-030",
+      "domain": "legal",
+      "category": "consent-management",
+      "name": "未成年人同意",
+      "description": "GDPR Art.8 ≥16 / ≥13 年龄门槛",
+      "expected_category": "consent-management",
+      "expected_keywords": ["minor", "child", "年龄"],
+      "priority": "P1"
+    }
+  ]
+}
