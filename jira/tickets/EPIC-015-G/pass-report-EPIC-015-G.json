@@ -1,0 +1,44 @@
+{
+  "ticket_id": "EPIC-015-G",
+  "epic_id": "EPIC-015-G",
+  "type": "feature",
+  "priority": "P0",
+  "performer_id": "performer_91559",
+  "branch": "feature/EPIC-015-G-serial11",
+  "commit_sha": "588f738bd0d7997112a1075e5248226abc57e1ba",
+  "commit_sha_short": "588f738",
+  "submitted_at": "2026-06-26T01:47:29Z",
+  "protocol_version": "1.0.0",
+  "hard_rules_enforced": 9,
+  "self_test": {
+    "result": "PASS",
+    "pass_count": 3,
+    "fail_count": 0,
+    "kpi_x_of_y": "3/3 (100.0%)"
+  },
+  "changed_files": [
+  "scripts/performer-complete.sh",
+  "tests/integration/performer-complete-test.sh"
+],
+  "changed_file_count": 2,
+  "raw_test_output": "/Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/worktrees/EPIC-015-G-serial11/jira/tickets/EPIC-015-G/test-output.log",
+  "raw_test_summary_line": "Summary: PASS (PASS=3, FAIL=0, KPI=3/3 (100.0%))",
+  "fact_forcing_compliance": {
+    "raw_output_preserved": true,
+    "kpi_exact_format": "X/Y (no estimate)",
+    "evidence_chain": "commit_sha + raw_test_output + changed_files"
+  },
+  "anti_patterns_avoided": [
+    "no --no-verify workaround on feature/* (BE-23 fix branch-aware)",
+    "no HEAD~1..HEAD bug for staged (BE-26 fix --cached)",
+    "no TICKET_ID 0 detection (BE-25 fix branch+env+msg)",
+    "no raw output drop (EPIC-059-D Fact-Forcing)",
+    "no magic numbers (Rule 4, named constants)"
+  ],
+  "handoff_to_conductor": {
+    "ready_for_review": true,
+    "rule_1_never_merge_to_main": "Conductor reviews + merges",
+    "review_request_written": "/Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/worktrees/EPIC-015-G-serial11/.kallax/queue/inbox/conductor_main/review_EPIC-015-G_1782438450.json"
+  },
+  "created_by": "performer_91559"
+}
