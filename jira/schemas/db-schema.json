@@ -1,0 +1,167 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://kallax.dev/schemas/db-schema.json",
+  "title": "KALLAX SQLite DB Schema (team collab)",
+  "description": "Single source of truth for .kallax/data/kallax.db. 1:1 mirrors EPIC-015-D JSON schemas (phase/epic/ticket/state) and EPIC-030-G audit_log table. Read by scripts/kallax-db-init.sh to materialize SQLite tables via sqlite3 CLI.",
+  "version": 1,
+  "source_of_truth": {
+    "phase_schema": "jira/schemas/phase-schema.json",
+    "epic_schema": "jira/schemas/epic-schema.json",
+    "ticket_schema": "jira/schemas/ticket-schema.json",
+    "state_schema": "jira/schemas/state-schema.json",
+    "audit_log_1to1": "scripts/audit/audit-db.sh (EPIC-030-G audit_log — 6 columns: id/command/ticket_id/slaver_id/elapsed_ms/created_at)"
+  },
+  "tables": {
+    "phases": {
+      "description": "1:1 with phase-schema.json#/definitions/phaseIndexEntry + state-schema.json status enums",
+      "linked_json_schema": "jira/schemas/phase-schema.json",
+      "columns": [
+        { "name": "id",            "type": "TEXT",    "primary_key": true, "not_null": true, "json_ref": "state-schema.json#/definitions/phaseId" },
+        { "name": "title",         "type": "TEXT",    "not_null": true, "json_ref": "phase-schema.json#/properties/title" },
+        { "name": "scope",         "type": "TEXT",    "json_ref": "phase-schema.json#/properties/scope" },
+        { "name": "status",        "type": "TEXT",    "not_null": true, "check": "status IN ('planning','active','blocked','done','archived','closed')", "json_ref": "state-schema.json#/definitions/phaseStatus" },
+        { "name": "start_time",    "type": "TEXT",    "json_ref": "state-schema.json#/definitions/isoDate" },
+        { "name": "delivery_time", "type": "TEXT",    "json_ref": "state-schema.json#/definitions/isoDate" },
+        { "name": "created_at",    "type": "TEXT",    "not_null": true, "default": "CURRENT_TIMESTAMP" },
+        { "name": "updated_at",    "type": "TEXT",    "not_null": true, "default": "CURRENT_TIMESTAMP" }
+      ],
+      "indexes": [
+        { "name": "idx_phases_status", "columns": ["status"] }
+      ]
+    },
+    "epics": {
+      "description": "1:1 with epic-schema.json#/definitions/epicIndexEntry + state-schema.json status enums",
+      "linked_json_schema": "jira/schemas/epic-schema.json",
+      "columns": [
+        { "name": "id",             "type": "TEXT", "primary_key": true, "not_null": true, "json_ref": "state-schema.json#/definitions/epicId" },
+        { "name": "phase_id",       "type": "TEXT", "not_null": true, "foreign_key": { "table": "phases", "column": "id" } },
+        { "name": "title",          "type": "TEXT", "not_null": true, "json_ref": "epic-schema.json#/properties/title" },
+        { "name": "scope",          "type": "TEXT", "json_ref": "epic-schema.json#/properties/scope" },
+        { "name": "status",         "type": "TEXT", "not_null": true, "check": "status IN ('planning','active','blocked','done','archived','closed')", "json_ref": "state-schema.json#/definitions/epicStatus" },
+        { "name": "start_time",     "type": "TEXT", "json_ref": "state-schema.json#/definitions/isoDate" },
+        { "name": "delivery_time",  "type": "TEXT", "json_ref": "state-schema.json#/definitions/isoDate" },
+        { "name": "tickets_total",    "type": "INTEGER", "not_null": true, "default": 0 },
+        { "name": "tickets_done",     "type": "INTEGER", "not_null": true, "default": 0 },
+        { "name": "tickets_ready",    "type": "INTEGER", "not_null": true, "default": 0 },
+        { "name": "tickets_deferred", "type": "INTEGER", "not_null": true, "default": 0 },
+        { "name": "created_at",     "type": "TEXT", "not_null": true, "default": "CURRENT_TIMESTAMP" },
+        { "name": "updated_at",     "type": "TEXT", "not_null": true, "default": "CURRENT_TIMESTAMP" }
+      ],
+      "indexes": [
+        { "name": "idx_epics_phase_id", "columns": ["phase_id"] },
+        { "name": "idx_epics_status",   "columns": ["status"] }
+      ]
+    },
+    "tickets": {
+      "description": "1:1 with ticket-schema.json required + key optional fields; ACs serialized to TEXT (JSON)",
+      "linked_json_schema": "jira/schemas/ticket-schema.json",
+      "columns": [
+        { "name": "id",            "type": "TEXT",    "primary_key": true, "not_null": true, "json_ref": "state-schema.json#/definitions/ticketId" },
+        { "name": "epic_id",       "type": "TEXT",    "not_null": true, "foreign_key": { "table": "epics", "column": "id" } },
+        { "name": "phase_id",      "type": "TEXT",    "json_ref": "state-schema.json#/definitions/phaseId" },
+        { "name": "title",         "type": "TEXT",    "not_null": true, "json_ref": "ticket-schema.json#/properties/title" },
+        { "name": "type",          "type": "TEXT",    "not_null": true, "check": "type IN ('feature','bug','chore','docs','test','refactor','perf','security')", "json_ref": "state-schema.json#/definitions/taskType" },
+        { "name": "priority",      "type": "TEXT",    "not_null": true, "check": "priority IN ('P0','P1','P2','P3')", "json_ref": "state-schema.json#/definitions/priority" },
+        { "name": "status",        "type": "TEXT",    "not_null": true, "check": "status IN ('backlog','analysis','ready','gate_review','in_progress','test','pr_review','done','blocked','pending','deferred','failed')", "json_ref": "state-schema.json#/definitions/ticketStatus" },
+        { "name": "created_by",    "type": "TEXT",    "not_null": true },
+        { "name": "created_at",    "type": "TEXT",    "not_null": true, "json_ref": "state-schema.json#/definitions/isoDateTime" },
+        { "name": "updated_at",    "type": "TEXT",    "not_null": true, "default": "CURRENT_TIMESTAMP" },
+        { "name": "performer",     "type": "TEXT",    "json_ref": "ticket-schema.json#/properties/performer" },
+        { "name": "worktree",      "type": "TEXT",    "json_ref": "ticket-schema.json#/properties/worktree" },
+        { "name": "file_scope",    "type": "TEXT",    "json_ref": "state-schema.json#/definitions/fileScope", "description": "JSON-serialized file scope (includes/excludes glob arrays)" },
+        { "name": "acceptance_criteria", "type": "TEXT", "not_null": true, "description": "JSON-serialized AC array" },
+        { "name": "estimated_hours", "type": "REAL", "json_ref": "ticket-schema.json#/properties/estimated_hours" },
+        { "name": "actual_hours",    "type": "REAL", "json_ref": "ticket-schema.json#/properties/actual_hours" }
+      ],
+      "indexes": [
+        { "name": "idx_tickets_epic_id",    "columns": ["epic_id"] },
+        { "name": "idx_tickets_phase_id",   "columns": ["phase_id"] },
+        { "name": "idx_tickets_status",     "columns": ["status"] },
+        { "name": "idx_tickets_priority",   "columns": ["priority"] },
+        { "name": "idx_tickets_performer",  "columns": ["performer"] }
+      ]
+    },
+    "team_instances": {
+      "description": "Team instance heartbeat tracking (Conductor/Performer/etc. registered instances)",
+      "columns": [
+        { "name": "instance_id",  "type": "TEXT",    "primary_key": true, "not_null": true },
+        { "name": "role",         "type": "TEXT",    "not_null": true, "check": "role IN ('conductor','performer','master','auditor','slaver','witness')" },
+        { "name": "status",       "type": "TEXT",    "not_null": true, "check": "status IN ('active','idle','stale','dead')" },
+        { "name": "branch",       "type": "TEXT" },
+        { "name": "pid",          "type": "INTEGER", "not_null": true },
+        { "name": "started_at",   "type": "TEXT",    "not_null": true, "default": "CURRENT_TIMESTAMP" },
+        { "name": "heartbeat_at", "type": "INTEGER" },
+        { "name": "missed_count", "type": "INTEGER", "not_null": true, "default": 0 }
+      ],
+      "indexes": [
+        { "name": "idx_team_instances_role",       "columns": ["role"] },
+        { "name": "idx_team_instances_status",     "columns": ["status"] },
+        { "name": "idx_team_instances_heartbeat",  "columns": ["heartbeat_at"] }
+      ]
+    },
+    "heartbeat_log": {
+      "description": "Append-only heartbeat tick log per team instance",
+      "columns": [
+        { "name": "id",          "type": "INTEGER", "primary_key": true, "not_null": true, "auto_increment": true },
+        { "name": "instance_id", "type": "TEXT",    "not_null": true, "foreign_key": { "table": "team_instances", "column": "instance_id" } },
+        { "name": "tick_at",     "type": "INTEGER", "not_null": true },
+        { "name": "status",      "type": "TEXT",    "not_null": true, "check": "status IN ('active','idle','stale','dead')" }
+      ],
+      "indexes": [
+        { "name": "idx_heartbeat_log_instance", "columns": ["instance_id"] },
+        { "name": "idx_heartbeat_log_tick_at",  "columns": ["tick_at"] }
+      ]
+    },
+    "audit_log": {
+      "description": "1:1 with EPIC-030-G audit_log (scripts/audit/audit-db.sh). 6 columns: id/command/ticket_id/slaver_id/elapsed_ms/created_at. Shared schema contract — EPIC-030-G writes via audit-middleware.sh; this DB materializes the same table for in-process team-collab queries.",
+      "linked_source": "scripts/audit/audit-db.sh (EPIC-030-G)",
+      "linked_json_schema": null,
+      "columns": [
+        { "name": "id",         "type": "INTEGER", "primary_key": true, "not_null": true, "auto_increment": true, "json_ref": "EPIC-030-G audit_log.id" },
+        { "name": "command",    "type": "TEXT",    "not_null": true, "json_ref": "EPIC-030-G audit_log.command" },
+        { "name": "ticket_id",  "type": "TEXT",    "json_ref": "EPIC-030-G audit_log.ticket_id" },
+        { "name": "slaver_id",  "type": "TEXT",    "json_ref": "EPIC-030-G audit_log.slaver_id" },
+        { "name": "elapsed_ms", "type": "INTEGER", "json_ref": "EPIC-030-G audit_log.elapsed_ms" },
+        { "name": "created_at", "type": "TEXT",    "not_null": true, "json_ref": "EPIC-030-G audit_log.created_at" }
+      ],
+      "indexes": [
+        { "name": "idx_audit_log_command",    "columns": ["command"] },
+        { "name": "idx_audit_log_ticket_id",  "columns": ["ticket_id"] },
+        { "name": "idx_audit_log_slaver_id",  "columns": ["slaver_id"] },
+        { "name": "idx_audit_log_created_at", "columns": ["created_at"] }
+      ]
+    },
+    "expert_invocations": {
+      "description": "Expert role invocation log (kallax expert panel — governance 3-phase model). Records each expert_invoked + phase + decision.",
+      "columns": [
+        { "name": "id",         "type": "INTEGER", "primary_key": true, "not_null": true, "auto_increment": true },
+        { "name": "ticket_id",  "type": "TEXT",    "not_null": true, "json_ref": "state-schema.json#/definitions/ticketId" },
+        { "name": "expert_role","type": "TEXT",    "not_null": true, "check": "expert_role IN ('architect','backend','frontend','ux','product','security-tool-bypass','process-engineering','auditor','compliance','decision-gate')" },
+        { "name": "phase",      "type": "TEXT",    "not_null": true, "check": "phase IN ('phase1-scan','phase2-execute','phase3-arbitrate')" },
+        { "name": "verdict",    "type": "TEXT",    "not_null": true, "check": "verdict IN ('approve','reject','conditional','escalate')" },
+        { "name": "reasoning",  "type": "TEXT" },
+        { "name": "elapsed_ms", "type": "INTEGER" },
+        { "name": "created_at", "type": "TEXT",    "not_null": true, "default": "CURRENT_TIMESTAMP" }
+      ],
+      "indexes": [
+        { "name": "idx_expert_invocations_ticket_id",   "columns": ["ticket_id"] },
+        { "name": "idx_expert_invocations_expert_role", "columns": ["expert_role"] },
+        { "name": "idx_expert_invocations_phase",       "columns": ["phase"] }
+      ]
+    },
+    "experts": {
+      "description": "Expert role registry (L3 skill catalog: architect/backend/frontend/ux/product + 5 extended)",
+      "columns": [
+        { "name": "id",          "type": "TEXT",    "primary_key": true, "not_null": true },
+        { "name": "name",        "type": "TEXT",    "not_null": true },
+        { "name": "tier",        "type": "TEXT",    "not_null": true, "check": "tier IN ('default','extended')" },
+        { "name": "skill_path",  "type": "TEXT",    "not_null": true },
+        { "name": "description", "type": "TEXT" },
+        { "name": "created_at",  "type": "TEXT",    "not_null": true, "default": "CURRENT_TIMESTAMP" }
+      ],
+      "indexes": [
+        { "name": "idx_experts_tier", "columns": ["tier"] }
+      ]
+    }
+  }
+}
