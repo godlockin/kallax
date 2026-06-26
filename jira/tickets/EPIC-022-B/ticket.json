@@ -2,10 +2,12 @@
   "id": "EPIC-022-B",
   "epic": "EPIC-022",
   "title": "Pre-commit Hook + Conductor Scope Check",
-  "status": "blocked",
+  "status": "ready",
   "estimate_days": 3,
   "estimated_hours": 24,
-  "blocked_by": ["EPIC-022-A"],
+  "blocked_by": [
+    "EPIC-022-A"
+  ],
   "file_scope": [
     ".git/hooks/pre-commit",
     "src/permissions/conductor-scope.ts",

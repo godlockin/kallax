@@ -2,10 +2,15 @@
   "id": "EPIC-022-E",
   "epic": "EPIC-022",
   "title": "Integration Tests + 5-Expert A+B Review",
-  "status": "blocked",
+  "status": "ready",
   "estimate_days": 5,
   "estimated_hours": 40,
-  "blocked_by": ["EPIC-022-A", "EPIC-022-B", "EPIC-022-C", "EPIC-022-D"],
+  "blocked_by": [
+    "EPIC-022-A",
+    "EPIC-022-B",
+    "EPIC-022-C",
+    "EPIC-022-D"
+  ],
   "file_scope": [
     "tests/integration/permission-v1-e2e.sh",
     "tests/integration/role-matrix.json",
