@@ -4,7 +4,62 @@
 # Usage: performer-complete.sh <ticket-id>
 set -euo pipefail
 
-TICKET_ID="${1:?Usage: performer-complete.sh <ticket-id>}"
+# ── Constants (Rule 4: no magic numbers) ───────────────────────────────────
+readonly PROTOCOL_VERSION="1.0.0"
+readonly EPIC_ID="EPIC-015-G"
+readonly BRANCH_PROTECTED="miao"
+readonly HARD_RULES_COUNT=9
+readonly SELF_TEST_RETRIES=0
+readonly OUTBOX_DIR_NAME="queue/outbox"
+readonly PASS_REPORT_PREFIX="pass-report"
+readonly RAW_OUTPUT_LOG="test-output.log"
+readonly CONDUCTOR_INBOX="queue/inbox/conductor_main"
+
+# ── Args + Environment ─────────────────────────────────────────────────────
+DRY_RUN="false"
+TICKET_ID=""
+for arg in "$@"; do
+  case "${arg}" in
+    --dry-run)
+      DRY_RUN="true"
+      ;;
+    --help|-h)
+      echo "Usage: performer-complete.sh [--dry-run] <ticket-id>"
+      echo ""
+      echo "Options:"
+      echo "  --dry-run    Skip git commit (for testing/verification)"
+      echo "  --help       Show this help"
+      echo ""
+      echo "Performer 9 Hard Rules enforced:"
+      echo "  #1 Never merge to main (miao branch blocked)"
+      echo "  #2 Never self-review (review → conductor inbox)"
+      echo "  #3 Never skip tests (self-test required)"
+      echo "  #4 No magic numbers (named constants)"
+      echo "  #5 No console.log (jq for structured output)"
+      echo "  #6 No ignored lint (@ts-ignore/eslint-disable scan)"
+      echo "  #7 No commented-out code"
+      echo "  #8 No copy-paste (function-based)"
+      echo "  #9 No cross-cutting changes (scope-respecting)"
+      exit 0
+      ;;
+    -*)
+      echo "[FAIL] Unknown option: ${arg}"
+      exit 1
+      ;;
+    *)
+      if [ -z "${TICKET_ID}" ]; then
+        TICKET_ID="${arg}"
+      fi
+      ;;
+  esac
+done
+
+if [ -z "${TICKET_ID}" ]; then
+  echo "[FAIL] Usage: performer-complete.sh [--dry-run] <ticket-id>"
+  echo "       Performer Hard Rule #3: Never skip required args"
+  exit 1
+fi
+
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 TICKET_DIR="${REPO_ROOT}/jira/tickets/${TICKET_ID}"
 TICKET_FILE="${TICKET_DIR}/ticket.json"
@@ -13,12 +68,23 @@ NOW="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 INSTANCE_ID="${KALLAX_INSTANCE_ID:-$(hostname)_$$}"
 BRANCH="$(git branch --show-current 2>/dev/null || echo 'unknown')"
 
-echo "╔════════════════════════════════════════════════════╗"
-echo "║  KALLAX Performer Complete Protocol         v1.0.0 ║"
-echo "╠════════════════════════════════════════════════════╣"
-echo "║  TICKET  ▸ ${TICKET_ID}                            ║"
-echo "║  BRANCH  ▸ ${BRANCH}                               ║"
-echo "╚════════════════════════════════════════════════════╝"
+# ── Banner ─────────────────────────────────────────────────────────────────
+if [ "${DRY_RUN}" = "true" ]; then
+  DRY_RUN_BANNER=" (DRY-RUN MODE — no commit)"
+else
+  DRY_RUN_BANNER=""
+fi
+echo "╔════════════════════════════════════════════════════════════╗"
+echo "║  KALLAX Performer Complete Protocol         v${PROTOCOL_VERSION}  ║"
+echo "║  ${EPIC_ID} — Performer 交付协议固化${DRY_RUN_BANNER}"
+echo "╠════════════════════════════════════════════════════════════╣"
+echo "║  TICKET    ▸ ${TICKET_ID}"
+echo "║  BRANCH    ▸ ${BRANCH}"
+echo "║  INSTANCE  ▸ ${INSTANCE_ID}"
+echo "║  BASE_SHA  ▸ ${BASE_SHA:0:12}"
+echo "╠════════════════════════════════════════════════════════════╣"
+echo "║  9 Hard Rules: 9/9 enforced (see Steps below)             ║"
+echo "╚════════════════════════════════════════════════════════════╝"
 echo ""
 
 # ── Step 1: Check ticket exists ───────────────────────────────────────────
@@ -46,8 +112,22 @@ if [ "${CHANGED}" -gt 0 ]; then
   git commit -m "${COMMIT_MSG}" 2>&1 || {
     echo "[FAIL] Commit failed"
     exit 1
-  }
-  echo "  ✓ Committed: ${COMMIT_MSG}"
+  fi
+
+  if [ "${DRY_RUN}" = "true" ]; then
+    echo "  [DRY-RUN] Skipping commit (would be: ${COMMIT_MSG})"
+    echo "  ✓ Changes staged but NOT committed"
+  else
+    if git commit -m "${COMMIT_MSG}" >/tmp/performer-commit.log 2>&1; then
+      echo "  ✓ Committed: ${COMMIT_MSG}"
+      BASE_SHA="$(git rev-parse HEAD)"
+      echo "  New HEAD: ${BASE_SHA:0:12}"
+    else
+      echo "[FAIL] Commit failed (check /tmp/performer-commit.log)"
+      cat /tmp/performer-commit.log | head -20
+      exit 1
+    fi
+  fi
 else
   echo "  ✓ Working tree clean"
 fi
