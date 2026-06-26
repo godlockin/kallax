@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://kallax.dev/schemas/ticket-schema.json",
+  "title": "KALLAX Ticket Schema",
+  "description": "Schema for individual ticket.json files in jira/tickets/{TICKET-ID}/. Validates single ticket lifecycle state including v2.7.4 D5 secondary status (pending/deferred/failed) per ticket-schema.md.",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "type",
+    "priority",
+    "status",
+    "created_by",
+    "created_at"
+  ],
+  "properties": {
+    "id": {
+      "description": "Ticket unique identifier",
+      "$ref": "state-schema.json#/definitions/ticketId"
+    },
+    "epicId": {
+      "description": "Parent EPIC (optional)",
+      "$ref": "state-schema.json#/definitions/epicId"
+    },
+    "phaseId": {
+      "description": "Parent Phase (optional)",
+      "$ref": "state-schema.json#/definitions/phaseId"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable ticket title"
+    },
+    "type": {
+      "$ref": "state-schema.json#/definitions/taskType"
+    },
+    "priority": {
+      "$ref": "state-schema.json#/definitions/priority"
+    },
+    "status": {
+      "$ref": "state-schema.json#/definitions/ticketStatus"
+    },
+    "created_by": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Agent or human creator ID"
+    },
+    "created_at": {
+      "$ref": "state-schema.json#/definitions/isoDateTime"
+    },
+    "updated_at": {
+      "$ref": "state-schema.json#/definitions/isoDateTime"
+    },
+    "performer": {
+      "description": "Assigned performer ID (null if unclaimed)",
+      "type": ["string", "null"]
+    },
+    "worktree": {
+      "description": "Isolated worktree path (null if not started)",
+      "type": ["string", "null"]
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "$ref": "state-schema.json#/definitions/ticketId"
+      },
+      "description": "Other ticket IDs this ticket depends on"
+    },
+    "file_scope": {
+      "$ref": "state-schema.json#/definitions/fileScope"
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1,
+      "description": "KALLAX Performer AC list (must be non-empty)"
+    },
+    "estimated_hours": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Estimated effort in hours"
+    },
+    "actual_hours": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Actual effort in hours (set on completion)"
+    }
+  },
+  "additionalProperties": true
+}

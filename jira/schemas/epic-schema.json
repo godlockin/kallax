@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://kallax.dev/schemas/epic-schema.json",
+  "title": "KALLAX EPIC Schema",
+  "description": "Schema for jira/epics/epic_index.json (top-level epics array) and jira/epics/{EPIC-ID}/epic.json (single EPIC with tickets array). Both formats share the 6-state machine per epic-state-machine.md.",
+  "oneOf": [
+    {
+      "title": "EPIC Index (jira/epics/epic_index.json)",
+      "description": "Top-level registry of all EPICs",
+      "type": "object",
+      "required": ["epics"],
+      "properties": {
+        "epics": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/epicIndexEntry" }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "title": "Single EPIC (jira/epics/{EPIC-ID}/epic.json)",
+      "description": "Per-EPIC detail with tickets array",
+      "type": "object",
+      "required": ["id", "title", "status"],
+      "properties": {
+        "id": {
+          "$ref": "state-schema.json#/definitions/epicId"
+        },
+        "phase": {
+          "$ref": "state-schema.json#/definitions/phaseId"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "type": "string",
+          "description": "Multi-line EPIC scope description"
+        },
+        "start_time": {
+          "$ref": "state-schema.json#/definitions/isoDate"
+        },
+        "delivery_time": {
+          "$ref": "state-schema.json#/definitions/isoDate"
+        },
+        "status": {
+          "$ref": "state-schema.json#/definitions/epicStatus"
+        },
+        "tickets": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/epicTicketRef" }
+        }
+      },
+      "additionalProperties": true
+    }
+  ],
+  "definitions": {
+    "epicIndexEntry": {
+      "type": "object",
+      "required": ["id", "phase", "title", "status"],
+      "properties": {
+        "id": {
+          "$ref": "state-schema.json#/definitions/epicId"
+        },
+        "phase": {
+          "$ref": "state-schema.json#/definitions/phaseId"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "$ref": "state-schema.json#/definitions/epicStatus"
+        },
+        "start_time": {
+          "$ref": "state-schema.json#/definitions/isoDate"
+        },
+        "delivery_time": {
+          "$ref": "state-schema.json#/definitions/isoDate"
+        },
+        "tickets_closed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tickets_deferred": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tickets_ready": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tickets_done": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "epic_file": {
+          "type": "string",
+          "description": "Relative path to per-EPIC detail file"
+        }
+      },
+      "additionalProperties": true
+    },
+    "epicTicketRef": {
+      "type": "object",
+      "required": ["id", "status"],
+      "properties": {
+        "id": {
+          "$ref": "state-schema.json#/definitions/ticketId"
+        },
+        "assignee": {
+          "type": ["string", "null"]
+        },
+        "status": {
+          "$ref": "state-schema.json#/definitions/ticketStatus"
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

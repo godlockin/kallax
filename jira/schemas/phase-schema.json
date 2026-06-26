@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://kallax.dev/schemas/phase-schema.json",
+  "title": "KALLAX Phase Schema",
+  "description": "Schema for jira/phases/phase_index.json (top-level phases array) and jira/phases/{PHASE-ID}/phase.json (single phase detail). Aligned with EPIC 6-state machine per epic-state-machine.md.",
+  "oneOf": [
+    {
+      "title": "Phase Index (jira/phases/phase_index.json)",
+      "description": "Top-level registry of all Phases",
+      "type": "object",
+      "required": ["phases"],
+      "properties": {
+        "phases": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/phaseIndexEntry" }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "title": "Single Phase (jira/phases/{PHASE-ID}/phase.json)",
+      "description": "Per-phase detail with epics array",
+      "type": "object",
+      "required": ["id", "status"],
+      "properties": {
+        "id": {
+          "$ref": "state-schema.json#/definitions/phaseId"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "type": "string"
+        },
+        "epics": {
+          "type": "array",
+          "items": {
+            "$ref": "state-schema.json#/definitions/epicId"
+          }
+        },
+        "start_time": {
+          "$ref": "state-schema.json#/definitions/isoDate"
+        },
+        "delivery_time": {
+          "$ref": "state-schema.json#/definitions/isoDate"
+        },
+        "status": {
+          "$ref": "state-schema.json#/definitions/phaseStatus"
+        }
+      },
+      "additionalProperties": true
+    }
+  ],
+  "definitions": {
+    "phaseIndexEntry": {
+      "type": "object",
+      "required": ["id", "status"],
+      "properties": {
+        "id": {
+          "$ref": "state-schema.json#/definitions/phaseId"
+        },
+        "status": {
+          "$ref": "state-schema.json#/definitions/phaseStatus"
+        },
+        "start_time": {
+          "$ref": "state-schema.json#/definitions/isoDate"
+        },
+        "delivery_time": {
+          "$ref": "state-schema.json#/definitions/isoDate"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}
