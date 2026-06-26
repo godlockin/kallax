@@ -11,7 +11,8 @@
   "file_scope": {
     "includes": [
       "scripts/kallax-init.sh",
-      "node/src/commands/init.ts"
+      "tests/integration/kallax-init-basic-test.sh",
+      "jira/tickets/EPIC-015-E/"
     ],
     "excludes": []
   },
