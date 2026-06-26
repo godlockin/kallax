@@ -5,11 +5,14 @@
   "title": "kallax init — 项目目录初始化脚本",
   "type": "feature",
   "priority": "P0",
-  "status": "backlog",
+  "status": "ready",
   "created_by": "master_main",
   "created_at": "2026-06-06T09:00:00Z",
   "file_scope": {
-    "includes": ["scripts/kallax-init.sh", "node/src/commands/init.ts"],
+    "includes": [
+      "scripts/kallax-init.sh",
+      "node/src/commands/init.ts"
+    ],
     "excludes": []
   },
   "acceptance_criteria": [
