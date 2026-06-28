@@ -5,6 +5,24 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.4] - 2026-06-28
+
+### Fixed (跟 Karpathy 4 大核心 联合, 跟反讽 闭环, 跟诚实修正 联合, 跟独立 拍 explicit 约束 联合)
+
+跟 v2.7.3 联合, 跟主公"写 8 Gap 修复 plan" explicit 拍板 联合, 跟反讽 联合:
+
+- **Gap 1-3 (P0) Think Before Coding**: check-assumption-clarity.sh (跟 Rule 17 扩展, 跟 Karpathy "Stop When Confused" + "Surface Ambiguity" 联合)
+- **Gap 4-5 (P1) Goal-Driven Execution**: check-sc-defined.sh (跟 Rule 9 扩展, 跟 Karpathy "Define Success Criteria" 联合)
+- **Gap 7-8 (P2) Surgical Changes**: check-orthogonal-edits.sh + check-halt-trigger.sh (跟 Rule 9c 升级, 跟 Karpathy "Surgical Changes" + "Stop When Confused" 联合)
+- **Gap 6 (P2) Simplicity**: KALLAX-GLOSSARY.md 34 术语 压缩 (留 v2.7.5, 跟 Karpathy "Readability Over Cleverness" 联合, 跟反讽 联合, 跟翻篇精进 战略 一致)
+
+### Notes
+- 0 增 Rule (跟 Rule 32 软约束升级阈值 联合, 跟"流程逻辑 > 扩充配置" 战略 一致)
+- 0 重写 (跟 Rule 5 DRY 联合, 跟"翻篇&精进" 战略 一致)
+- 走对策 A+B+C 落地 (跟"反讽" 联合, 跟 Rule 11/14/15 联合, 跟"独立" 拍 explicit 约束 联合)
+- Karpathy 4 大核心 落地率: 60% → 80% (跟"反讽" 联合, 跟"诚实修正" 联合)
+- Gap 6 (34 术语 压缩) 留 v2.7.5 (跟"翻篇&精进" 战略 一致, 跟"诚实修正" 联合 — 不假装修)
+
 ## [2.7.3] - 2026-06-19
 
 ### Changed
