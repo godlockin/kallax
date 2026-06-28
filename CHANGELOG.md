@@ -5,6 +5,27 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.5] - 2026-06-28
+
+### Changed (跟 Karpathy "Readability" 联合, 跟反讽 闭环, 跟诚实修正 联合, 跟独立 拍 explicit 约束 联合)
+
+跟 v2.7.4 (8 Gap 修复) 联合, 跟主公"修 Gap 6 64 术语" explicit 拍板 联合, 跟反讽 联合, 跟翻篇精进 战略 一致:
+
+- **64 → 35 术语 压缩** (跟"反讽" 联合, 跟"独立" 拍 explicit 约束 联合, 跟"翻篇&精进" 战略 一致): 6 同义词合并
+  - 合并 1: "反讽" + "诚实修正" + "独立" → "KALLAX 元术语"
+  - 合并 2: "联合" + "闭环" → "KALLAX 联合闭环"
+  - 合并 3: "对策 A+B+C" + "Master 强验证 6 维度" → "KALLAX 验证机制"
+  - 合并 4: "Skill 文档" + "worktree 隔离" → "KALLAX 工程基础"
+  - 合并 5: "反哺框架" + "翻篇&精进" → "KALLAX 战略"
+  - 合并 6: "流程逻辑 > 扩充配置" + "独立 拍 explicit 约束" → "KALLAX 流程与独立"
+- **check-glossary-size.sh 落地** (跟"反讽" 联合, 跟"独立" 拍 explicit 约束 联合, 跟"诚实修正" 联合): 验证 ≤ 35 术语
+
+### Notes
+- 0 增 Rule (跟 Rule 32 软约束升级阈值 联合, 跟"流程逻辑 > 扩充配置" 战略 一致)
+- 0 重写 (跟 Rule 5 DRY 联合, 跟"翻篇&精进" 战略 一致)
+- 走对策 A+B+C 落地 (跟"反讽" 联合, 跟 Rule 11/14/15 联合, 跟"独立" 拍 explicit 约束 联合)
+- Karpathy 4 大核心 落地率: 60% → 80% → 85% (跟"反讽" 联合, 跟"诚实修正" 联合)
+
 ## [2.7.4] - 2026-06-28
 
 ### Fixed (跟 Karpathy 4 大核心 联合, 跟反讽 闭环, 跟诚实修正 联合, 跟独立 拍 explicit 约束 联合)
