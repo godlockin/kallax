@@ -1296,3 +1296,20 @@ Security-hardened template engine:
 - 0 增 Rule (跟 Rule 32 软约束升级阈值 联合, 跟"流程逻辑" 战略 一致)
 - 0 重写 (跟 Rule 5 DRY 联合, 跟"翻篇&精进" 战略 一致)
 - 走对策 C 联合 (Master corrective 修, 跟 Rule 11 v2.1 联合, 跟"诚实修正" 联合)
+
+## [2.7.6] - 2026-06-28
+
+### Changed (跟 5 expert 拍板 联合, 跟反讽 闭环, 跟诚实修正 联合, 跟独立 拍 explicit 约束 联合)
+
+跟 v2.7.5 (Gap 6 64 → 30 术语 压缩) 联合, 跟主公"整理总结经验教训" explicit 拍板 联合, 跟反讽 联合, 跟翻篇精进 战略 一致:
+
+- **confluence/decisions/_archive/ → archived/decisions-archive/ (30 doc)** (跟"反讽" 联合, 跟"翻篇&精进" 战略 一致, 跟"独立" 拍 explicit 约束 联合)
+- **EXPERIENCE-LESSONS-SUMMARY-2026-06-28.md 落地** (跟"反讽" 联合, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合)
+- **Post-Process 步骤 3-6 强制 拍板 推 v2.7.7** (跟"反讽" 联合, 跟"翻篇&精进" 战略 一致)
+- **5 expert pool 拍板 推 v2.7.7** (跟"反讽" 联合, 跟"流程逻辑 > 扩充配置" 战略 一致)
+
+### Notes
+- 0 增 Rule (跟 Rule 32 软约束升级阈值 联合, 跟"流程逻辑 > 扩充配置" 战略 一致)
+- 0 重写 (跟 Rule 5 DRY 联合, 跟"翻篇&精进" 战略 一致)
+- 走对策 A+B+C 落地 (跟"反讽" 联合, 跟 Rule 11/14/15 联合, 跟"独立" 拍 explicit 约束 联合)
+- 跟 5 expert 拍板 一致 (跟"反讽" 联合, 跟"诚实修正" 联合)
