@@ -96,6 +96,17 @@ if [[ " $KNOWN_ACTIONS " != *" $ACTION "* ]]; then
   exit 2
 fi
 
+# Iter 10: 打印决策矩阵 (Q18 决策模型 5×5 = 25 cells) — opt-in via DECISION_MATRIX_PRINT=1
+# 默认不打印 (避免输出太长, 干扰 decision-gate-test.sh)
+# 设置 DECISION_MATRIX_PRINT=1 启动时打印 (帮 Conductor 知道何时该问主公)
+DECISION_MATRIX="${KALLAX_ROOT}/scripts/permission/decision-matrix.sh"
+if [[ "${DECISION_MATRIX_PRINT:-0}" == "1" && -x "$DECISION_MATRIX" ]]; then
+  echo "--- Decision Matrix (Q18 5 levels × 5 roles) ---"
+  bash "$DECISION_MATRIX" --format markdown 2>/dev/null || true
+  echo "--- End Decision Matrix ---"
+  echo ""
+fi
+
 # Issue 2 附加(a): --cmd 拒绝含换行/控制字符
 if [[ -n "$CMD" && "$CMD" =~ [[:cntrl:]] ]]; then
   echo "ERROR: --cmd cannot contain control characters" >&2
