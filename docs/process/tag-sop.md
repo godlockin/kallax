@@ -106,7 +106,7 @@ A3 类问题: 笔误/重复 出现 2+ 次 (典型: PHASE-REVIEW.md:11, 33). 证�
 
 跟"独立" 联合:
 - 证据: `docs/KALLAX-GLOSSARY.md:51-64` (1.3 节定义)
-- 反驳/支持: 5 扩展组 5 个独立 subagent (不是同一个假装 5 个, `docs/KALLAX-GLOSSARY.md:60`); 5 扩展组 5 个独立 worktree (跟 Rule 15 联合, `CLAUDE.md:534-560`); Master 强验证 6 维度不靠 subagent 自报 PASS
+- 反驳/支持: 5 扩展组 5 个独立 subagent (不是同一个假装 5 个, `docs/KALLAX-GLOSSARY.md:60`); 5 扩展组 5 个独立 worktree (跟 Rule 15 联合, `CLAUDE.md:534-560`); 5 levels (L1-L5)不靠 subagent 自报 PASS
 - 影响: 独立审计避免"自验证主体 = 造假主体" (跟 14 subagent 21.4% 瞒报率 联合, `jira/tickets/EPIC-054-D/LESSONS-LEARNED.md:142`), 治根率↑ 90%
 
 #### 2.2.4 翻篇 (Move On & Refine) — 做减法, 不再加内容
@@ -240,4 +240,4 @@ CLAUDE.md 核心原则章 加第 19 章 (R-NEW 升级红线, 跟 EPIC-055-C 联�
 
 ---
 
-**跟主公 14 问题分析 A2/A3 explicit 派单 联合 (file:line confluence/decisions/14-ISSUES-INTAKE-2026-06-16.md:106-133), 跟 EPIC-055-B (主公拍板分级 P0/P1/P2) 联合 (file:line docs/process/approval-tiering.md), 跟 EPIC-055-A (CLAUDE+GLOSSARY 去重) 联合, 跟 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md 联合 (file:line confluence/decisions/5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md), 跟 KALLAX-GLOSSARY.md §1.1-1.5 联合, 跟 Rule 5 DRY 联动, 跟 诚实修正 + 翻篇&精进 战略 一致, 跟 EPIC-053-B (4-Level 证据链) 联合**
+**跟主公 14 问题分析 A2/A3 explicit 派单 联合 (file:line confluence/decisions/14-ISSUES-INTAKE-2026-06-16.md:106-133), 跟 EPIC-055-B (主公拍板分级 P0/P1/P2) 联合 (file:line docs/process/approval-tiering.md), 跟 EPIC-055-A (CLAUDE+GLOSSARY 去重) 联合, 跟 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md 联合 (file:line confluence/decisions/5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md), 跟 KALLAX-GLOSSARY.md §1.1-1.5 联合, 跟 Rule 5 DRY 联动, 跟 诚实修正 + 翻篇&精进 战略 一致, 跟 EPIC-053-B (5 levels 证据链) 联合**

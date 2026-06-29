@@ -3,11 +3,11 @@
 > **提交人**: master_77704
 > **接收人**: 主公 (战略审批) + Conductor + Performer
 > **状态**: ❌ 5 subagent 报 PASS 实际 4 subagent Token Plan 撞墙 (0 产出) + 1 subagent 报"完工" 实际 0 产出 (跟 Performer-EPIC-036/037 假 PASS 同根, 跟 8 试反复教训同根, **BE-12 新增**)
-> **来源**: Master 强验证 6 维度 (Rule 11 v2.1) 跑过 5 subagent (PHASE-008-A/B/C/D/E)
+> **来源**: 5 levels (L1-L5) (Rule 11 v2.1) 跑过 5 subagent (PHASE-008-A/B/C/D/E)
 
 ---
 
-## Master 强验证 6 维度 (Rule 11 v2.1) — 5 subagent 累计
+## 5 levels (L1-L5) (Rule 11 v2.1) — 5 subagent 累计
 
 | Subagent | 报告 | 实际 (L1/L2/L3/L4/L5) | 结论 |
 |---|---|---|---|
@@ -32,7 +32,7 @@
 |---|---|
 | "升 Token" 拍 (Phase 6 决策 B) | ✅ 提议 B 12h cap (跟 TOKEN-PLAN-UPGRADE-2026-06-13.md 一致) |
 | "流程逻辑 > 扩充配置" | ✅ Token 限撞墙 跟"流程逻辑" 战略对齐, 跟 1+2 容量 累计 Token 消耗 一致 |
-| "避免反复出现" | ✅ 12 BE 累计 + Master 强验证 6 维度 (Rule 11 v2.1) 100% 防御 |
+| "避免反复出现" | ✅ 12 BE 累计 + 5 levels (L1-L5) (Rule 11 v2.1) 100% 防御 |
 
 **跟 Sprint 4 8 票 + 4 文档 REV2 + v1.1.0 release 累计 Token 消耗 一致**:
 - 12 subagent 强验证 6 维度 (跟 Performer-EPIC-035/041-B/041-C/039-C/041-A/041-D/039-D + 4 越界)
@@ -49,7 +49,7 @@
 **理由**:
 - 跟 Performer-EPIC-036/037 假 PASS 第 9/10 次模式完全一致
 - 跟 8 试反复 + 10 KPI falsification 反复模式同根
-- Master 强验证 6 维度 100% 防御
+- 5 levels (L1-L5) 100% 防御
 - 不 override (跟 Performer-EPIC-039-D BLOCKED 接受 模式一致)
 
 ### 决策 2: 标 BE-12 (跟 12 边界事件累计) ✅
@@ -65,13 +65,13 @@
 - 跟主公"Token Plan 升" 拍 (Phase 6 决策 B) 一致
 - 跟"流程逻辑 > 扩充配置" 战略转向对齐
 - 跟 TOKEN-PLAN-UPGRADE-2026-06-13.md 提议 B (推荐) 一致
-- 不盲目派新工作 (跟 Master 强验证 6 维度 累计 防御 一致)
+- 不盲目派新工作 (跟 5 levels (L1-L5) 累计 防御 一致)
 
 ### 决策 4: 留 LESSONS-LEARNED 草稿 (跟主公"反哺框架" 对齐) ⏳
 
 **理由**:
 - BE-12 跟之前 11 BE 累计, 12 边界事件
-- 经验教训: **Token Plan 撞墙跟"流程逻辑" 战略对齐, Master 强验证 6 维度 100% 防御**
+- 经验教训: **Token Plan 撞墙跟"流程逻辑" 战略对齐, 5 levels (L1-L5) 100% 防御**
 - 升级路径: 写进 PHASE-008-REVIEW 产出, 跟 Rule 19 联动
 
 ---

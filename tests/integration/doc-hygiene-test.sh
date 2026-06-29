@@ -2,7 +2,7 @@
 # tests/integration/doc-hygiene-test.sh — TDD tests for 文档卫生 (每 10 轮) 5 项 检查
 # EPIC-059-G: 文档卫生 (每 10 轮) + 新建前先想 — 5/5 PASS 验证
 # 跟 eket template/docs/MASTER-RULES.md §6 Master Hard Rule 6 文档卫生 联合
-# 借方法论 不借代码 (跟 EPIC-059-A 9 Hard Rules 模式 一致)
+# 借方法论 不借代码 (跟 EPIC-059-A 5 levels 模式 一致)
 # 跟 KALLAX-GLOSSARY 反哺框架 战略 联合
 #
 # Test cases (5):
@@ -40,7 +40,7 @@ readonly RULE_CONSISTENCY_MIN=95
 echo "=========================================="
 echo "文档卫生 (每 10 轮) — Integration Tests (5/5)"
 echo "EPIC-059-G | 跟 eket MASTER-RULES.md §6 Rule 6 联合"
-echo "借方法论 不借代码 (跟 EPIC-059-A 9 Hard Rules 模式 一致)"
+echo "借方法论 不借代码 (跟 EPIC-059-A 5 levels 模式 一致)"
 echo "=========================================="
 echo ""
 
@@ -290,12 +290,12 @@ else
     TC6_RESULT=1
 fi
 
-# 验证 CLAUDE.md 含 "9 Hard Rules Rule 6+7" 段
-if grep -qE "9 Hard Rules Rule 6\+7" "$CLAUDE_MD" 2>/dev/null; then
-    SECTION_LINE=$(grep -nE "9 Hard Rules Rule 6\+7" "$CLAUDE_MD" | head -1 | cut -d: -f1 || echo "0")
-    pass 6 "CLAUDE.md 含 '9 Hard Rules Rule 6+7 映射' 章节 (line $SECTION_LINE, 跟 ticket AC #2 联合)"
+# 验证 CLAUDE.md 含 "5 levels Rule 6+7" 段
+if grep -qE "5 levels Rule 6\+7" "$CLAUDE_MD" 2>/dev/null; then
+    SECTION_LINE=$(grep -nE "5 levels Rule 6\+7" "$CLAUDE_MD" | head -1 | cut -d: -f1 || echo "0")
+    pass 6 "CLAUDE.md 含 '5 levels Rule 6+7 映射' 章节 (line $SECTION_LINE, 跟 ticket AC #2 联合)"
 else
-    fail 6 "CLAUDE.md 缺 '9 Hard Rules Rule 6+7 映射' 章节"
+    fail 6 "CLAUDE.md 缺 '5 levels Rule 6+7 映射' 章节"
     TC6_RESULT=1
 fi
 

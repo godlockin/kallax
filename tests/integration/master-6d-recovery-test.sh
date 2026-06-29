@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # tests/integration/master-6d-recovery-test.sh — TDD tests for Master 6D recovery
-# EPIC-056-C: 红线 revert — Master 强验证 6 维度恢复, 治 H4
+# EPIC-056-C: 红线 revert — 5 levels (L1-L5)恢复, 治 H4
 # AC6: 6/6 PASS (6 维度全激活 + 失败告警 + 证据链校验 + 跟 Subagent 流程联动 + 跟 Rule 11 v2.1 一致 + 净价值计算)
 #
 # Rule 9 KPI X/Y format: 6/6 = 100.0% (no estimate, exact, 1 decimal)
@@ -146,14 +146,14 @@ fi
 echo ""
 
 # -------------------------------------------------------
-# Test 4: L4 preflight 联动 (跟 EPIC-053-B 4-Level 证据链)
+# Test 4: L4 preflight 联动 (跟 EPIC-053-B 5 levels 证据链)
 # 验证点: L4 subcommand 跑 4 个 preflight (check-fact-forcing-preflight + l3-l4-consistency + kpi-evidence-chain check-l3 + check-l4 独立见证)
 # 期望输出: L4 PASS: 4/4 preflight 格式
 # -------------------------------------------------------
-echo "=== Test 4: L4 preflight 联动 (跟 EPIC-053-B 4-Level 证据链) ==="
+echo "=== Test 4: L4 preflight 联动 (跟 EPIC-053-B 5 levels 证据链) ==="
 run_mv L4 --ticket=EPIC-056-C
 if [ "$MV_RC" -eq 0 ] && echo "$MV_RESULT" | grep -qE "L4 PASS: [0-9]+/[0-9]+ preflight"; then
-    echo "  [PASS] L4 subcommand runs 4 preflight tools (跟 EPIC-053-B 4-Level 联动)"
+    echo "  [PASS] L4 subcommand runs 4 preflight tools (跟 EPIC-053-B 5 levels 联动)"
     echo "$MV_RESULT" | head -3
     PASS_COUNT=$((PASS_COUNT + 1))
 else
@@ -182,14 +182,14 @@ fi
 echo ""
 
 # -------------------------------------------------------
-# Test 6: L6 诚实 (跟 EPIC-053-B 4-Level 证据链 L4 独立见证 联动)
+# Test 6: L6 诚实 (跟 EPIC-053-B 5 levels 证据链 L4 独立见证 联动)
 # 验证点: L6 subcommand 跑 kpi-evidence-chain verify + 拒 KPI 估数黑名单 + 计算净价值
 # 期望输出: L6 PASS: 4/4 evidence + 净价值 67.0% 格式
 # -------------------------------------------------------
-echo "=== Test 6: L6 诚实 (跟 EPIC-053-B 4-Level 证据链 L4 独立见证 联动) ==="
+echo "=== Test 6: L6 诚实 (跟 EPIC-053-B 5 levels 证据链 L4 独立见证 联动) ==="
 run_mv L6 --ticket=EPIC-056-C --commit="$(git rev-parse HEAD)" --stdout="$KALLAX_ROOT/tests/integration/master-6d-recovery-test.sh"
 if [ "$MV_RC" -eq 0 ] && echo "$MV_RESULT" | grep -qE "L6 PASS: [0-9]+/[0-9]+ evidence.*67\.[0-9]+%"; then
-    echo "  [PASS] L6 subcommand verifies 4-Level evidence + reports net value"
+    echo "  [PASS] L6 subcommand verifies 5 levels evidence + reports net value"
     echo "$MV_RESULT" | head -3
     PASS_COUNT=$((PASS_COUNT + 1))
 else
@@ -217,11 +217,11 @@ if [ "$FAIL_COUNT" -eq 0 ]; then
     echo "Rule 9 KPI X/Y format: $PASS_COUNT/$TOTAL PASS (${PERCENT}%)"
     echo ""
     echo "AC status:"
-    echo "  AC1: Master 强验证 6 维度恢复 (L1-L6) — ✅"
+    echo "  AC1: 5 levels (L1-L5)恢复 (L1-L6) — ✅"
     echo "  AC2: strong-verify-6d.sh 升级 (从 流程监督+10%抽查 → 6 维度必跑) — ✅"
     echo "  AC3: master-verify.ts 实现 (6 维度自动验证 + 失败告警) — ✅"
     echo "  AC4: H4 治根 (净价值 62.5% → 67.0%, 跟 5 视角 Product 67.5% 联合不再恶化) — ✅"
-    echo "  AC5: 跟 EPIC-053-B 4-Level 证据链联动 (L6 诚实 = 证据链校验) — ✅"
+    echo "  AC5: 跟 EPIC-053-B 5 levels 证据链联动 (L6 诚实 = 证据链校验) — ✅"
     echo "  AC6: $PASS_COUNT/$TOTAL PASS — ✅"
     echo "  AC7: Rule 9 KPI X/Y 格式 — ✅ ${PASS_COUNT}/${TOTAL} PASS (${PERCENT}%)"
     echo ""

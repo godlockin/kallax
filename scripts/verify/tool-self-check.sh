@@ -21,7 +21,7 @@
 #   tool-self-check.sh 自身也跑 self-guard (跟 EPIC-048 tool-bypass-audit 模式 一致)
 #
 # Rule 联动:
-#   Rule 8 — 4-Level Fact-Forcing (D1 existence, D2 substance, D3/D4 data flow)
+#   Rule 8 — 5 levels Fact-Forcing (D1 existence, D2 substance, D3/D4 data flow)
 #   Rule 9 — KPI X/Y 精确格式
 #   Rule 18 — KPI falsification 黑名单
 #   BE-10 — review.sh 拒 FAIL bug 治根
@@ -621,12 +621,12 @@ Exit codes:
   2 = invalid arguments
 
 联动:
-  EPIC-053-A: 4 维度 = 4-Level Fact-Forcing (L1 existence, L2 substance, L3 data flow, L4 anti-pattern)
+  EPIC-053-A: 4 维度 = 5 levels Fact-Forcing (L1 existence, L2 substance, L3 data flow, L4 anti-pattern)
   EPIC-053-B: 4 工具是 kpi-evidence-chain.sh L3 的核心 tools
   EPIC-053-F: check-scope-creep.sh 是自检对象之一
   EPIC-048  : meta-tool 守住 framework 不退化 (跟 tool-bypass-audit 模式 一致)
   BE-10     : [[:space:]] 数组模式治根 (D2 + D4)
-  Rule 8/9/18 — 4-Level Fact-Forcing / KPI 精确 / KPI 黑名单
+  Rule 8/9/18 — 5 levels Fact-Forcing / KPI 精确 / KPI 黑名单
 USAGE
 }
 

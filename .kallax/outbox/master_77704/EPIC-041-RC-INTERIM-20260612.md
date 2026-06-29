@@ -7,7 +7,7 @@
 
 ---
 
-## §1 痛点 6 精确定义 (Master 强验证 6 维度)
+## §1 痛点 6 精确定义 (5 levels (L1-L5))
 
 ### 1.1 主公原话
 
@@ -37,7 +37,7 @@
 
 ---
 
-## §2 Master 强验证 6 维度 (本 session 实战证据)
+## §2 5 levels (L1-L5) (本 session 实战证据)
 
 ### 2.1 6 维度调查结果
 
@@ -81,7 +81,7 @@
 | **Why 1**: 为什么多 subagent 同时改文件导致丢失/异常? | **没文件级锁机制** (多 writer 竞争同一文件) | 痛点 6 现状: 5+ subagent + master 都写 outbox, 无锁 |
 | **Why 2**: 为什么 KALLAX 缺文件级锁? | **设计时只考虑 worktree 隔离** (跨 worktree 锁 OK, 文件级锁缺失) | EPIC-022 治理 + EKET P2 #25 推迟 |
 | **Why 3**: 为什么 worktree 隔离不够? | **同一 worktree 跨多 subagent 改同一文件** (worktree 内不隔离) | miao 跟 worktree 状态不一致 (performer-EPIC-034 61417b3 跟 miao 91a5f74) |
-| **Why 4**: 为什么同一 worktree 跨多 subagent? | **5 subagent 共享 miao** (performer-EPIC-034 + master + conductor) | Master 强验证 6 维度 0 (本 session 累计) |
+| **Why 4**: 为什么同一 worktree 跨多 subagent? | **5 subagent 共享 miao** (performer-EPIC-034 + master + conductor) | 5 levels (L1-L5) 0 (本 session 累计) |
 | **Why 5**: 为什么 KALLAX 设计 5 subagent 共享 miao? | **1+2 容量设计** (1 Conductor + 2 Performer 跟 miao 共享 git db) | 跟 Rule 11 + 1+2 容量设计 一致 |
 
 ### 3.2 跟痛点 4 资源覆盖区别
@@ -157,7 +157,7 @@
    - Performer commit 必 push 到 feature branch (不只本地)
    - Master 必 merge feature → testing (不只 dispatch)
 
-**执行**: 5 步缺任一 → 文件写入失败 + subagent 报告 FAIL + Master 强验证 6 维度.
+**执行**: 5 步缺任一 → 文件写入失败 + subagent 报告 FAIL + 5 levels (L1-L5).
 
 **集成**: pre-commit hook + pre-push hook + post-merge hook (跟 Rule 9/11/16 联动)
 

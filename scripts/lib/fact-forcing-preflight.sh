@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # scripts/lib/fact-forcing-preflight.sh
-# EPIC-025-B UP-2 (FIXED): Parse and execute 4-Level Fact-Forcing commands
+# EPIC-025-B UP-2 (FIXED): Parse and execute 5 levels Fact-Forcing commands
 # State-based awk parser (following EPIC-021-E pattern)
 #
 # 修复 (A+B review + security review):
@@ -218,7 +218,7 @@ extract_and_execute() {
   fi
 
   echo "=========================================="
-  echo "4-Level Fact-Forcing Preflight"
+  echo "5 levels Fact-Forcing Preflight"
   echo "File: $file"
   echo "Timeout per level: ${LEVEL_TIMEOUT}s"
   echo "=========================================="

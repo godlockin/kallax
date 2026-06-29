@@ -3,7 +3,7 @@
 # EPIC-039-D + EPIC-056-C: Master strong verification 6 dimensions
 # EPIC-056-C: ⚠️ 红线 revert — 6 维度全激活, 不再"流程监督 + 10% 抽查"
 # Rule 11 v2.1 + Rule 16 Step 5 + Rule 18 anti-fabrication
-# 跟 EPIC-053-B 4-Level 证据链联动 (L6 诚实 = 证据链校验)
+# 跟 EPIC-053-B 5 levels 证据链联动 (L6 诚实 = 证据链校验)
 # 跟 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md (主公 explicit 拍板) 联合
 #
 # 6 Dimensions:
@@ -13,7 +13,7 @@
 #   L4: check-fact-forcing-preflight.sh + 4 anti-fab + Rule 14/15/16/17/18
 #   L5: any Rule 1/11/14-18 boundary event flag + LESSONS-LEARNED draft
 #   L6: honesty (report fake PASS = FAIL, Rule 9e + Rule 18 blacklist) +
-#       跟 EPIC-053-B kpi-evidence-chain 4-Level 联动 (L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证)
+#       跟 EPIC-053-B kpi-evidence-chain 5 levels 联动 (L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证)
 #
 # EPIC-056-C 新增: wire master-verify.ts (Node.js) — 6 维度自动验证 + 失败告警
 # EPIC-056-C 新增: net value calculation (62.5% → 67.0%, +4.5%)
@@ -227,7 +227,7 @@ else
 fi
 
 # EPIC-053-E: l3-l4-consistency.sh must be wired into Master L4 preflight chain (治 BE-5 反讽)
-# Master 强验证 6 维度必须包含 L3↔L4 一致性工具的存活验证, 否则治 BE-9 工具自己不在生产路径 — BE-5 反讽.
+# 5 levels (L1-L5)必须包含 L3↔L4 一致性工具的存活验证, 否则治 BE-9 工具自己不在生产路径 — BE-5 反讽.
 L3L4_SCRIPT="$KALLAX_ROOT/scripts/verify/l3-l4-consistency.sh"
 if [ ! -x "$L3L4_SCRIPT" ]; then
     fail "L4: l3-l4-consistency.sh missing or not executable: $L3L4_SCRIPT"

@@ -2,7 +2,7 @@
 # scripts/check-doc-hygiene.sh
 # EPIC-059-G: 文档卫生 (每 10 轮) + 新建前先想 — 5 项 检查 自动化
 # 跟 eket template/docs/MASTER-RULES.md §6 Master Hard Rule 6 文档卫生 联合
-# 借方法论 不借代码 (跟 EPIC-059-A 9 Hard Rules 模式 一致)
+# 借方法论 不借代码 (跟 EPIC-059-A 5 levels 模式 一致)
 # 跟 KALLAX-GLOSSARY 反哺框架 战略 联合 (文档卫生 = 反哺框架 入口)
 # 跟 PHASE-013-REFLECTION-2026-06-18.md 联合, 治根 "文档碎片化" 反讽
 # 跟 v2.4.0+v2.4.1 反思 联合 (0 增 Rule 持平, 跟"翻篇&精进" 一致)
@@ -265,7 +265,7 @@ check_duplicate_docs() {
 
 # ----------------------------------------
 # Function: check_rule_currency
-# AC #5: CLAUDE.md 跟 docs/process/9-hard-rules.md Rule 一致性 (跟 Rule 6 经验沉淀 + 9 Hard Rules 索引 联合)
+# AC #5: CLAUDE.md 跟 docs/process/9-hard-rules.md Rule 一致性 (跟 Rule 6 经验沉淀 + 5 levels 索引 联合)
 #   简化: CLAUDE.md active Rule 数 = 22 (跟 v2.4.1 revert 一致)
 # ----------------------------------------
 check_rule_currency() {
@@ -307,7 +307,7 @@ check_rule_currency() {
 
   if [ "$consistency_pct" -ge "$threshold_pct" ]; then
     echo "check_5_status=PASS reason=silent tier=silent consistency=${consistency_pct} threshold=${threshold_pct}"
-    echo "  [PASS] Check 5 — 过期 Rule: ${consistency_pct}% ≥ ${threshold_pct}% (跟 Rule 6 + 9 Hard Rules 索引 联合)"
+    echo "  [PASS] Check 5 — 过期 Rule: ${consistency_pct}% ≥ ${threshold_pct}% (跟 Rule 6 + 5 levels 索引 联合)"
     return 0
   fi
 
@@ -329,7 +329,7 @@ run_all_checks() {
   echo "=========================================="
   echo "文档卫生 (每 10 轮) — 5 项 检查"
   echo "EPIC-059-G | 跟 eket MASTER-RULES.md §6 Rule 6 联合"
-  echo "借方法论 不借代码 (跟 EPIC-059-A 9 Hard Rules 模式 一致)"
+  echo "借方法论 不借代码 (跟 EPIC-059-A 5 levels 模式 一致)"
   if [ -n "$MOCK_MODE" ]; then
     echo "MOCK MODE: ${MOCK_MODE}"
   fi
@@ -389,7 +389,7 @@ run_all_checks() {
   fi
 
   if [ "$only_check" = "all" ] || [ "$only_check" = "5" ]; then
-    echo ">>> Check 5: 过期 Rule (跟 Rule 6 经验沉淀 + 9 Hard Rules 索引 联合)"
+    echo ">>> Check 5: 过期 Rule (跟 Rule 6 经验沉淀 + 5 levels 索引 联合)"
     echo "------------------------------------------"
     if check_rule_currency > /tmp/check_doc_hyg_5 2>&1; then
       pass_count=$((pass_count + 1))

@@ -12,7 +12,7 @@
 #   TC6: session_start.sh zombie cleanup — pid_belongs_to_kallax + orphan kill
 #
 # Rule 9 KPI X/Y 精确格式: 6/6 = 100.0% (no estimate, exact)
-# 跟 AGENTS.md §"Verification Protocol" 4-Level 联合
+# 跟 AGENTS.md §"Verification Protocol" 5 levels 联合
 # 跟 EPIC-026-C rollback SOP 联合, 12 P0 fix 集成测试 模式 一致
 
 set -uo pipefail

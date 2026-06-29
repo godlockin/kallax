@@ -8,7 +8,7 @@
 #   kallax promote testing → miao --skip-pr   (merge + push only, no PR creation)
 #
 # 跟"翻篇&精进" 战略 联合: 0 简单 记录, 跟 branch-promote.sh 联合 0 重写
-# 跟 AGENTS.md 4-Level Fact-Forcing 联合: 验证 0 假 PASS
+# 跟 AGENTS.md 5 levels Fact-Forcing 联合: 验证 0 假 PASS
 # Ticket: jira/tickets/EPIC-029-K/ticket.json
 set -euo pipefail
 

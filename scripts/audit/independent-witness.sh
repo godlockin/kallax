@@ -4,7 +4,7 @@
 # 根因 3: 独立见证机制缺失 — 治 root cause
 # 跟 BE-7 修复模式 联合 (umask 077 + install -d -m 700)
 # 跟 Rule 31 联合 (独立见证机制)
-# 跟 EPIC-053-B 联合: 4-Level KPI Evidence Chain 集成
+# 跟 EPIC-053-B 联合: 5 levels KPI Evidence Chain 集成
 #
 # 用法:
 #   bash scripts/audit/independent-witness.sh verify <subagent_id> <ticket_id>
@@ -126,7 +126,7 @@ witness_record() {
 }
 
 # -------------------------------------------------------
-# 4-Level evidence chain verification (EPIC-053-B 联动)
+# 5 levels evidence chain verification (EPIC-053-B 联动)
 # Args: $1 = ticket_id, $2 = commit_sha, $3 = test_stdout_file
 # Returns: 0 if all 4 levels PASS, 1 if any FAIL
 # -------------------------------------------------------
@@ -146,7 +146,7 @@ witness_verify_4level() {
     fi
 
     echo "=========================================="
-    echo "Independent Witness — 4-Level Evidence Chain (EPIC-053-B)"
+    echo "Independent Witness — 5 levels Evidence Chain (EPIC-053-B)"
     echo "=========================================="
     echo "Ticket: $ticket_id"
     echo "Commit: $commit_sha"
@@ -164,12 +164,12 @@ witness_verify_4level() {
                 >/dev/null 2>&1 || true
         fi
         echo ""
-        echo "PASS: 4-Level evidence chain witnessed for $ticket_id"
+        echo "PASS: 5 levels evidence chain witnessed for $ticket_id"
         return 0
     fi
 
     echo ""
-    echo "FAIL: 4-Level evidence chain verification FAILED for $ticket_id"
+    echo "FAIL: 5 levels evidence chain verification FAILED for $ticket_id"
     return 1
 }
 
@@ -211,11 +211,11 @@ main() {
             echo "Commands:"
             echo "  verify <subagent_id> <ticket_id>                       — Verify subagent PASS with independent witness"
             echo "  witness <subagent_id> <ticket_id> <type>               — Record evidence to audit-log-sink"
-            echo "  verify-4level <ticket_id> <commit_sha> <stdout_file>   — 4-Level evidence chain verify (EPIC-053-B)"
+            echo "  verify-4level <ticket_id> <commit_sha> <stdout_file>   — 5 levels evidence chain verify (EPIC-053-B)"
             echo ""
             echo "跟 Rule 31 联合: 独立见证机制"
             echo "跟 BE-7 修复模式 联合: umask 077 + install -d -m 700"
-            echo "跟 EPIC-053-B 联合: 4-Level KPI Evidence Chain 集成"
+            echo "跟 EPIC-053-B 联合: 5 levels KPI Evidence Chain 集成"
             exit 1
             ;;
     esac

@@ -3,7 +3,7 @@
 > **调查卡**: EPIC-040 (跟 EPIC-039 Sprint 4 修复执行 分开, 跟主公 2026-06-12 拍 "再见张卡专门用来调查" 联合)
 > **报告人**: master_main (调查卡不写代码, 只写报告, 跟 Rule 11 v2.1 联动)
 > **调查日期**: 2026-06-25
-> **Master 强验证 6 维度**: L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实
+> **5 levels (L1-L5)**: L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实
 > **战略对齐**: "翻篇&精进" (0 增 Rule 0 增命令) + "诚实修正" (0 隐藏 governance gap) + "反讽" (治根 反复)
 
 ---
@@ -262,7 +262,7 @@ fi
 
 ---
 
-## 8. Master 强验证 6 维度 (跟 Rule 11 v2.1 联动)
+## 8. 5 levels (L1-L5) (跟 Rule 11 v2.1 联动)
 
 | L | 维度 | 验证 | 结果 |
 |---|------|------|------|

@@ -38,7 +38,7 @@ B 组 找盲点, 跟现有 5 extended 联合 (跟"反讽" 联合, 跟 v1.2.4 5 �
    ↓
 6. Performer 修
    ↓
-7. Master 强验证 6 维度 (Rule 11 v2.1)
+7. 5 levels (L1-L5) (Rule 11 v2.1)
    ↓
 8. PASS → Conductor merge → Master promote miao
    FAIL → 退回 Performer 修
@@ -56,7 +56,7 @@ B 组 找盲点, 跟现有 5 extended 联合 (跟"反讽" 联合, 跟 v1.2.4 5 �
 - 跟 v1.2.4 5 扩展组 联合 (跟"反讽" 联合)
 - 跟 Rule 6 EPIC 交付四件套 联合 (跟"反讽" 联合)
 - 跟 Rule 16 5 步强制流程 联合 (跟"反讽" 联合)
-- 跟 Rule 11 v2.1 Master 强验证 6 维度 联合 (跟"反讽" 联合)
+- 跟 Rule 11 v2.1 5 levels (L1-L5) 联合 (跟"反讽" 联合)
 - 跟 KALLAX Onramp 1 入口 模式 拍 explicit 撤销 联合 (跟"反讽" 联合, 跟 v1.3.3 模式 联合)
 
 ---

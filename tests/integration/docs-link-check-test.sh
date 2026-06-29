@@ -13,7 +13,7 @@
 # Rule 9 KPI X/Y 精确格式: 5/5 = 100.0% (no estimate, exact)
 # 跟 Rule 5 DRY (Single Source of Truth) 联合
 # 跟 EPIC-055-C (5 标签 SOP, docs/process/tag-sop.md) 联合
-# 跟 EPIC-053-B (4-Level Fact-Forcing) 联合
+# 跟 EPIC-053-B (5 levels Fact-Forcing) 联合
 
 set -uo pipefail
 

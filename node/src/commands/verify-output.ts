@@ -1,6 +1,6 @@
 /**
  * KALLAX Verify Output Command
- * Verify task output authenticity using Fact-Forcing 4-Level verification
+ * Verify task output authenticity using Fact-Forcing 5 levels verification
  */
 
 import { err, ok } from 'neverthrow';

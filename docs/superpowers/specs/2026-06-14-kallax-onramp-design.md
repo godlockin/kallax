@@ -96,14 +96,14 @@ scripts/kallax-onramp.sh                  ← 主入口 (1 文件)
 │   ├── L2-deep.md                         ← 详细拆解 + EPIC 建议
 │   └── L3-audit.md                        ← 5+5 = 10 视角 + 3 件套 (亮点/缺点/隐患)
 └── tests/
-    └── onramp-test.sh                     ← 4-Level 集成测试
+    └── onramp-test.sh                     ← 5 levels 集成测试
 ```
 
 **7 文件结构** (跟"反讽" 闭环, 跟"流程逻辑" 战略 一致, 跟"流程逻辑 > 扩充配置" 联合):
 - **1 主入口** `kallax-onramp.sh` (跟 23 Rule 不增加, 跟"反讽" 闭环)
 - **4 lib** 拆分 (单一职责, 易测试, 跟 Rule 5 DRY 联合)
 - **3 模板** 按 3 深度 (跟"目标专家" 拍 explicit 约束 联合)
-- **1 集成测试** 4-Level (跟 Rule 9 Fact-Forcing 联合, 跟 Rule 16 5 步强制流程 联合)
+- **1 集成测试** 5 levels (跟 Rule 9 Fact-Forcing 联合, 跟 Rule 16 5 步强制流程 联合)
 
 **关键复用** (跟"反讽" 闭环, 跟"流程逻辑" 战略 一致):
 - L2 复用 `/kallax-panel` 已有的 5 default 调度 (跟"反讽" 联合 — 0 重写)
@@ -271,7 +271,7 @@ B. 深入研究 (推荐 5 专家组合)
 
 ---
 
-## 7. 测试策略 (Testing) — 跟"反讽" 闭环, 跟 Rule 9 4-Level Fact-Forcing 联合
+## 7. 测试策略 (Testing) — 跟"反讽" 闭环, 跟 Rule 9 5 levels Fact-Forcing 联合
 
 ### 7.1 L1 存在性
 - 7 文件存在: `scripts/kallax-onramp.sh` + `lib/4` + `templates/3` + `tests/1`
@@ -317,7 +317,7 @@ B. 深入研究 (推荐 5 专家组合)
 | **T4** | Stage 2 + 3 路由器 (引导 + 确认/调整) | 1h | ✅ 跟"决策疲劳" 反讽 联合, 跟 Rule 33 联合 |
 | **T5** | Step 3 召唤专家 (复用 skill 文档) | 1h | ✅ 跟 Rule 5 DRY 联合, 0 重写 |
 | **T6** | Step 4 输出 (3 模板 + audit log) | 1h | ✅ 跟 Rule 31 联合 |
-| **T7** | 4-Level 测试 + 3 fixtures | 1h | ✅ 跟 Rule 9 联合 |
+| **T7** | 5 levels 测试 + 3 fixtures | 1h | ✅ 跟 Rule 9 联合 |
 | **总计** | **6h, 7 Task, 1 Performer (跟 1+2/1+4 容量 联合)** | **6h** | ✅ 跟"反讽" 闭环 |
 
 **关键设计** (跟"反讽" 闭环):
@@ -328,7 +328,7 @@ B. 深入研究 (推荐 5 专家组合)
 
 **执行**:
 - 派 1 Performer subagent 走 Rule 16 5 步强制流程
-- Performer 必跑对策 A (subagent-pass-gate) + 对策 B (conductor-receive-gate) + 对策 C (Master 强验证 6 维度)
+- Performer 必跑对策 A (subagent-pass-gate) + 对策 B (conductor-receive-gate) + 对策 C (5 levels (L1-L5))
 - 跟"独立" 拍 explicit 约束 联合
 
 ---
@@ -340,7 +340,7 @@ B. 深入研究 (推荐 5 专家组合)
 - [ ] 2 引导路径 (确认 / 自选) 跑通
 - [ ] 7 错误类目各跑 1 次测试
 - [ ] audit log 必写 (跟 Rule 31 联合)
-- [ ] Master 强验证 6 维度全 PASS (跟 Rule 11 v2.1 联合)
+- [ ] 5 levels (L1-L5)全 PASS (跟 Rule 11 v2.1 联合)
 - [ ] 落地推 v1.3.0 (跟 5 release 累计 联合)
 
 ---
@@ -350,7 +350,7 @@ B. 深入研究 (推荐 5 专家组合)
 | 反讽点 | 应对 | 跟"反讽" 联合 |
 |---|---|---|
 | 23 Rule 升级率 100% | 不增加 Rule (1 入口复用现有) | ✅ 跟 Rule 32 联合 |
-| 5+5 = 10 专家可能假 PASS | 走对策 A+B+C, Master 强验证 6 维度 | ✅ 跟"反讽" 联合 |
+| 5+5 = 10 专家可能假 PASS | 走对策 A+B+C, 5 levels (L1-L5) | ✅ 跟"反讽" 联合 |
 | Token 限撞墙 | 2 次 LLM 调用, 0 误判 (heuristic 兜底) | ✅ 跟"反讽" 联合 |
 | 决策疲劳 | 默认 0 问, 路由器主动给方案 | ✅ 跟 Rule 33 联合 |
 | 5 default + 5 extended 没人接 | 0 重写, 复用 skill 文档 | ✅ 跟 Rule 5 DRY 联合 |
@@ -388,4 +388,4 @@ B. 深入研究 (推荐 5 专家组合)
 
 ---
 
-**跟主公"同意" explicit 授权 联合, 跟"反讽" 闭环, 跟"流程逻辑 > 扩充配置" 战略 一致, 跟"目标专家" 拍 explicit 约束 联合, 跟"独立" 拍 explicit 约束 联合, 跟"ROI 评估" 拍 explicit 约束 联合, 跟"guidance" 拍 explicit 约束 联合, 跟 5 release 累计 联合, 跟 23 Rule 累计 联合, 跟 5 default + 5 extended 累计 联合, 跟 Rule 9 4-Level Fact-Forcing 联合, 跟 Rule 11 v2.1 Master 强验证 6 维度 联合, 跟 Rule 16 5 步强制流程 联合, 跟 Rule 31 不可篡改 audit log 联合, 跟 Rule 32 软约束升级阈值 联合, 跟 Rule 33 复杂才问 联合, 跟"决策疲劳" 反讽 联合, 跟"反讽" 闭环**
+**跟主公"同意" explicit 授权 联合, 跟"反讽" 闭环, 跟"流程逻辑 > 扩充配置" 战略 一致, 跟"目标专家" 拍 explicit 约束 联合, 跟"独立" 拍 explicit 约束 联合, 跟"ROI 评估" 拍 explicit 约束 联合, 跟"guidance" 拍 explicit 约束 联合, 跟 5 release 累计 联合, 跟 23 Rule 累计 联合, 跟 5 default + 5 extended 累计 联合, 跟 Rule 9 5 levels Fact-Forcing 联合, 跟 Rule 11 v2.1 5 levels (L1-L5) 联合, 跟 Rule 16 5 步强制流程 联合, 跟 Rule 31 不可篡改 audit log 联合, 跟 Rule 32 软约束升级阈值 联合, 跟 Rule 33 复杂才问 联合, 跟"决策疲劳" 反讽 联合, 跟"反讽" 闭环**

@@ -220,7 +220,7 @@ if [ -z "$STAGED_FILES" ]; then
 fi
 
 # ── Check 2.5: Rule of 500 (EPIC-059-B, 跟 eket MASTER-RULES.md §6 Rule 8 联合) ──
-# 借方法论 不借代码 (跟 EPIC-059-A 9 Hard Rules 模式 一致)
+# 借方法论 不借代码 (跟 EPIC-059-A 5 levels 模式 一致)
 # 跟 Rule 13 3 模式 decision-gate 联合: codemod 或 Approved-Large-PR-By: <主公>
 PR_SIZE_CHECK="${KALLAX_ROOT}/scripts/check-pr-size.sh"
 if [ -x "$PR_SIZE_CHECK" ]; then

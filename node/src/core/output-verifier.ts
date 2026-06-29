@@ -1,8 +1,8 @@
 /**
  * KALLAX Output Verifier
- * Verify task output authenticity using Fact-Forcing 4-Level verification
+ * Verify task output authenticity using Fact-Forcing 5 levels verification
  *
- * EPIC-053-B: Pass Evidence Verification — Performer must submit 4-Level evidence
+ * EPIC-053-B: Pass Evidence Verification — Performer must submit 5 levels evidence
  * when reporting PASS; missing any level = FAIL.
  */
 
@@ -31,7 +31,7 @@ export interface OutputVerifierConfig {
 
 /**
  * EPIC-053-B — Pass Evidence Bundle
- * 4-Level evidence chain: L1 git-anchor + L2 test stdout + L3 5 extended groups + L4 independent witness
+ * 5 levels evidence chain: L1 git-anchor + L2 test stdout + L3 5 extended groups + L4 independent witness
  */
 export interface PassEvidenceBundle {
   readonly ticketId: string;
@@ -341,7 +341,7 @@ export function createOutputVerifier(config: OutputVerifierConfig): OutputVerifi
     },
 
     /**
-     * EPIC-053-B — Verify Performer-submitted 4-Level pass evidence bundle.
+     * EPIC-053-B — Verify Performer-submitted 5 levels pass evidence bundle.
      *
      * Calls `scripts/verify/kpi-evidence-chain.sh verify <ticket_id> <commit_sha> <stdout_file>`
      * which enforces:
@@ -356,12 +356,12 @@ export function createOutputVerifier(config: OutputVerifierConfig): OutputVerifi
      * @returns KallaxResult<PassEvidenceVerificationResult>
      */
     async verifyPassEvidence(bundle: PassEvidenceBundle): Promise<KallaxResult<PassEvidenceVerificationResult>> {
-      logger.info({ ticketId: bundle.ticketId, sha: bundle.commitSha }, 'EPIC-053-B: verifying 4-Level pass evidence');
+      logger.info({ ticketId: bundle.ticketId, sha: bundle.commitSha }, 'EPIC-053-B: verifying 5 levels pass evidence');
 
       if (!bundle.ticketId || !bundle.commitSha || !bundle.testStdoutPath) {
         return err(new KallaxError(
           KallaxErrorCode.CONFIG_INVALID,
-          'verifyPassEvidence requires ticketId, commitSha, and testStdoutPath (4-Level evidence)'
+          'verifyPassEvidence requires ticketId, commitSha, and testStdoutPath (5 levels evidence)'
         ));
       }
 
@@ -424,7 +424,7 @@ export function createOutputVerifier(config: OutputVerifierConfig): OutputVerifi
           l3: l3ExtendedGroups,
           l4: l4Witness,
         },
-        'EPIC-053-B: 4-Level pass evidence verification complete'
+        'EPIC-053-B: 5 levels pass evidence verification complete'
       );
 
       if (!passed) {

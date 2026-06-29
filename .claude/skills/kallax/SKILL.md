@@ -31,7 +31,7 @@ triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专�
 | **Work** | `/kallax-merge` | Merge an approved PR | `[PR_NUMBER]` |
 | **Work** | `/kallax-save` | Save current session state for later resumption | (no args) |
 | **Work** | `/kallax-resume` | Resume from a saved session | (no args) |
-| **Review** | `/kallax-verify-pr` | Verify PR output before merge (4-Level Fact-Forcing) | `[PR_NUMBER]` |
+| **Review** | `/kallax-verify-pr` | Verify PR output before merge (5 levels Fact-Forcing) | `[PR_NUMBER]` |
 | **Review** | `/kallax-review-pr` | Review a pull request (Conductor only) | `[PR_NUMBER] [BASE_BRANCH]` |
 | **Review** | `/kallax-review-merge` | Combined review + merge workflow | `[PR_NUMBER]` |
 | **Review** | `/kallax-review-analysis` | Review codebase analysis results | (no args) |
@@ -172,7 +172,7 @@ triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专�
 3. **Phase 3 — Master 仲裁 + 主公拍板** (跟 EPIC-055-B P0/P1/P2 联动)
    - Master 收 9 份报告 → 合并去重 → 仲裁冲突 → 出汇总
    - 主公按 055-B 拍板分级: P0 战略红线 (阻塞 + REQUEST-P0-*.md) / P1 流程升级 (备案 + RECORD-P1-*.md) / P2 操作 (放手 + p2-log-*.jsonl)
-   - Master 强验证 6 维度 (Rule 11 v2.1 联合)
+   - 5 levels (L1-L5) (Rule 11 v2.1 联合)
 
 **净价值估算** (跟 EPIC-056-B 3 KPI 联动): 62.5% → 65%+ (跟"流程效果 > 流程表演" 一致)
 

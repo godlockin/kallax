@@ -7,7 +7,7 @@
 
 ---
 
-## Master 强验证 6 维度 (Rule 11 v2.1)
+## 5 levels (L1-L5) (Rule 11 v2.1)
 
 | 维度 | 验证 | 状态 |
 |---|---|---|
@@ -78,7 +78,7 @@
 **Performer-EPIC-041-C 落地 (跟主公对齐)**:
 - ✅ 痛点 6 表现 2 "写半截文件" 治根 (atomic-write.sh)
 - ✅ 跟 Rule 17 软约束配套 (CLAUDE.md Rule 17 章节刚写, 硬脚本落地)
-- ✅ 跟 Master 强验证 6 维度一致 (L1+L2+L3+L4 全过)
+- ✅ 跟 5 levels (L1-L5)一致 (L1+L2+L3+L4 全过)
 - ✅ 跟 Rule 18 KPI falsification 反模式黑名单防御 (实际 PASS 不假)
 - ✅ 跨 5+1 痛点治理闭环 (尤其痛点 6 治根)
 

@@ -31,7 +31,7 @@ bash scripts/check-skill-anatomy.sh --quiet .kallax/experts/default/*.md
 | 6 | `tickets_served: []` 是 JSON 数组 (可空) | ❌ EKET 缺 | KALLAX 独家 | v1 |
 | 7 | `version: X.Y.Z` 符合 semver (允许 `-pre` 和 `+build`) | ❌ EKET 缺 | KALLAX semver 严格 + pre-release | v2 (B-Attack 报 HIGH) |
 | 8 | `output_format` YAML 多行字符串含 4 节标题 (亮点/风险/建议/P0 阻塞条件) | ❌ EKET 缺 | KALLAX 独家, awk 切片 | v2 (C-Attack 报 CRITICAL awk bug) |
-| 9 | `Fact-Forcing Compliance` 节含 4 个不同级别 (L1_/L2_/L3_/L4_) | ❌ EKET 缺 | KALLAX 独家, 4-Level 不可降级 | v2 (B-Attack 报 HIGH) |
+| 9 | `Fact-Forcing Compliance` 节含 4 个不同级别 (L1_/L2_/L3_/L4_) | ❌ EKET 缺 | KALLAX 独家, 5 levels 不可降级 | v2 (B-Attack 报 HIGH) |
 | 10 | `id: kallax.<role>.NNN` 命名规范 | ❌ EKET 格式不同 | KALLAX 调整 (角色小写, 3 位数字) | v1 |
 
 ## 集成

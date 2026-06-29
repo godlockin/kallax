@@ -83,7 +83,7 @@ gate_review:
       no_commented_code: true    # 禁止注释代码
 
 # ============================================================
-# 4-Level Fact-Forcing (验证幻觉)
+# 5-Level Fact-Forcing (验证幻觉)
 # ============================================================
 fact_forcing:
   enabled: true

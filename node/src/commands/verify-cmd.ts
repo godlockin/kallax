@@ -11,12 +11,12 @@ import { executeVerifyOutput } from './verify-output.js';
 export function registerVerifyCommands(program: Command, ctx: AppContext): void {
   program
     .command('verify:output <taskId>')
-    .description('Verify task output — Fact-Forcing 4-Level check')
-    .option('-l, --level <level>', 'Verification level (1-4)', '4')
+    .description('Verify task output — Fact-Forcing 5 levels check')
+    .option('-l, --level <level>', 'Verification level (1-5)', '5')
     .option('-v, --verbose', 'Show detailed evidence')
     .action(async (taskId: string, opts?: { level?: string; verbose?: boolean }) => {
       try {
-        const level = (parseInt(opts?.['level'] ?? '4', 10) as 1 | 2 | 3 | 4);
+        const level = (parseInt(opts?.['level'] ?? '5', 10) as 1 | 2 | 3 | 4 | 5);
         const result = await executeVerifyOutput(
           ctx.db, ctx.worktreeManager, ctx.outputVerifier,
           { taskId, level, verbose: opts?.['verbose'] },

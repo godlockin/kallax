@@ -4,7 +4,7 @@
 # 输出 (跟 AC 1:1):
 #   - 每 EPIC 派单成功率 (X/Y 格式, Rule 9 精确)
 #   - 越界事件 (BE-1/6/11, 跟 Rule 15 联动)
-#   - 假 PASS 计数 (跟 EPIC-053-B 4-Level 证据链 联动)
+#   - 假 PASS 计数 (跟 EPIC-053-B 5 levels 证据链 联动)
 #   - 历史 baseline 对比 (line 43 PROJECT-STATUS: 7/12 58.3% → 目标 95%+)
 #
 # Usage:

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # tests/integration/check-pr-100-test.sh — TDD tests for PR ~100 行上限 (EPIC-059-C)
 # 跟 eket template/docs/MASTER-RULES.md §6 Rule 9 联合, 借方法论 不借代码
-# 跟 EPIC-059-A 9 Hard Rules 模式 + EPIC-059-B Rule of 500 模式 一致
+# 跟 EPIC-059-A 5 levels 模式 + EPIC-059-B Rule of 500 模式 一致
 #
 # Test cases (5):
 #   TC1: PR 50 行   → PASS silent (跟 EPIC-059-C 联合)

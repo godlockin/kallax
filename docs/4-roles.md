@@ -89,7 +89,7 @@ kallax performer:claim TICKET-001 --sub-role=coder
 - 跨 PR 验证 (跟其他 reviewer 独立审)
 
 **关键约束**:
-- Rule 8 4-Level Fact-Forcing (L1-L5)
+- Rule 8 5-Level Fact-Forcing (L1-L5)
 - Rule 18 KPI falsification 黑名单
 
 **入口命令**:

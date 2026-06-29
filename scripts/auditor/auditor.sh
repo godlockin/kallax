@@ -8,7 +8,7 @@
 #   ❌ 不改原项目代码 (跟 Q5 L4 角色规范一致)
 #
 # 触发场景:
-#   - subagent 报 PASS 但 Master 强验证 6 维度发现 FAIL
+#   - subagent 报 PASS 但 5 levels (L1-L5)发现 FAIL
 #   - 12 subagent 强验证 (EPIC-039-D 实证)
 #
 # 集成:
@@ -208,7 +208,7 @@ auditor_block_write_original() {
 }
 
 # ----------------------------------------
-# auditor联动_strong_verify_6d: 跟 Master 强验证 6 维度联动
+# auditor联动_strong_verify_6d: 跟 5 levels (L1-L5)联动
 # ----------------------------------------
 auditor联动_strong_verify_6d() {
     local ticket_id="${1:-}"

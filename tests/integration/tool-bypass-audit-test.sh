@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tests/integration/tool-bypass-audit-test.sh — 4-Level Fact-Forcing for tool-bypass-audit.sh
+# tests/integration/tool-bypass-audit-test.sh — 5 levels Fact-Forcing for tool-bypass-audit.sh
 # L1: 存在性 — 文件存在于 diff
 # L2: 实质性 — 真实逻辑, 非 stub
 # L3: 接线正确 — 正确 import/export
@@ -11,7 +11,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 TOOL_BYPASS_AUDIT="$REPO_ROOT/scripts/verify/tool-bypass-audit.sh"
 
 echo "=========================================="
-echo "Tool Bypass Audit — 4-Level Integration Test"
+echo "Tool Bypass Audit — 5 levels Integration Test"
 echo "=========================================="
 echo ""
 
@@ -93,7 +93,7 @@ fi
 
 echo ""
 echo "=========================================="
-echo "4-Level Integration Test: PASS"
+echo "5 levels Integration Test: PASS"
 echo "=========================================="
 echo ""
 echo "Summary:"

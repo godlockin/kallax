@@ -10,7 +10,7 @@
 
 - 元术语 ([反讽](docs/KALLAX-GLOSSARY.md#1-元术语-meta--描述-kalax-自身行为) / 诚实修正 / 独立 / 闭环 / 联合)
 - 战略/方向 ([流程逻辑 > 扩充配置](docs/KALLAX-GLOSSARY.md#2-战略--方向术语-strategy) / 反哺框架 / 翻篇&精进)
-- 流程/工作流 ([对策 A+B+C](docs/KALLAX-GLOSSARY.md#3-流程--工作流术语-workflow) / Master 强验证 6 维度 / 4-Level / 5 步强制流程 / 飞轮反哺)
+- 流程/工作流 ([对策 A+B+C](docs/KALLAX-GLOSSARY.md#3-流程--工作流术语-workflow) / 5 levels (L1-L5) / 5-Level / 5 步强制流程 / 飞轮反哺)
 - 反模式 ([KPI falsification](docs/KALLAX-GLOSSARY.md#4-反模式--黑名单术语-anti-patterns--blacklist) / verbatim / scope creep / 越界反向 / 3 假 PASS)
 - 角色/决策 ([3 模式](docs/KALLAX-GLOSSARY.md#6-角色--决策术语-roles--decisions) / Conductor 不能越界 / Master 接管 / Performer sub-role)
 - 量化/指标 ([Rule 升级率](docs/KALLAX-GLOSSARY.md#7-量化--指标术语-metrics) / 净价值 / 1+2/1+4 容量)
@@ -134,7 +134,7 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 **落地检查**: `bash scripts/check-pr-size.sh --check-rule-of-500` + `.git/hooks/pre-commit` Check 3 + TypeScript strict mode + `tsconfig.json` `strict: true`.
 
-**跟 9 Hard Rules 模式 联合**: Rule 5/8 升级 (跟 EPIC-059-A 22 Rule → 9 类别 group 索引 联合, 0 删 Rule, 0 增 Rule, Rule 5/8 file:line 1:1 映射).
+**跟 5 levels 模式 联合**: Rule 5/8 升级 (跟 EPIC-059-A 22 Rule → 9 类别 group 索引 联合, 0 删 Rule, 0 增 Rule, Rule 5/8 file:line 1:1 映射).
 
 **跟 Rule 12 decision-gate 联合**: 3 模式 decision-gate (coder/reviewer/owner) → 500-1000 档 owner 可豁免 (注释 `Approved-Large-PR-By: <name>`).
 
@@ -213,7 +213,7 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 **落地检查**: `bash scripts/check-pr-size.sh --check-pr-100` + `.github/workflows/pr-size-check.yml` GitHub Actions + `bash tests/integration/check-pr-100-test.sh`
 
-**跟 9 Hard Rules 模式 联合**: Rule 9 升级为 "PR ~100 行上限" (跟 EPIC-059-A 22 Rule → 9 类别 group 索引 联合, 0 删 Rule, 0 增 Rule, Rule 9 file:line 1:1 映射).
+**跟 5 levels 模式 联合**: Rule 9 升级为 "PR ~100 行上限" (跟 EPIC-059-A 22 Rule → 9 类别 group 索引 联合, 0 删 Rule, 0 增 Rule, Rule 9 file:line 1:1 映射).
 
 **跟 Rule 12 decision-gate 联合**: 3 模式 decision-gate (coder/reviewer/owner) → warn-strong 档 owner 可豁免 (注释 `Approved-Large-PR-By: <name>`).
 
@@ -223,9 +223,9 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 ---
 
-### 8. 4-Level Fact-Forcing 强制 (KALLAX P0) — task:complete 前置
+### 8. 5-Level Fact-Forcing 强制 (KALLAX P0) — task:complete 前置
 
-**教训**: 4-Level 是 documentation, 不是 enforcement. EPIC-024/028 KPI falsification 3 次强化此教训. EPIC-021 D review P1 实证 "L4 bash 命令引用不存在脚本 = 假完成" 反讽 → 升级 "L4 脚本必须存在" (UP-1, EPIC-025-A).
+**教训**: 5-Level 是 documentation, 不是 enforcement. EPIC-024/028 KPI falsification 3 次强化此教训. EPIC-021 D review P1 实证 "L4 bash 命令引用不存在脚本 = 假完成" 反讽 → 升级 "L4 脚本必须存在" (UP-1, EPIC-025-A).
 
 **规则**: `task:complete <TICKET>` 前必须运行 `check-fact-forcing-preflight.sh <expert.md>`, 全部 L1/L2/L3/L4 通过才能 close ticket. **L4 脚本必须存在**: L4 引用的验证脚本 (`scripts/verify/*.sh` + L4 落地脚本) 必须在文件系统存在 + 可执行, 否则 `task:complete` 拒绝 close ticket.
 
@@ -233,7 +233,7 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 **4 级执行顺序**: L1 存在性 → L2 实质性 → L3 接线正确 → L4 数据流动
 
-**跟 EPIC-053-B 4-Level 证据链 1:1 映射** (跟 docs/process/fact-forcing.md §5.2 联合, EPIC-025-B 落地):
+**跟 EPIC-053-B 5-Level 证据链 1:1 映射** (跟 docs/process/fact-forcing.md §5.2 联合, EPIC-025-B 落地):
 - L1 git-anchor (存在性): 文件存在 + git log anchor 可追溯
 - L2 test stdout (实质性): 真实 raw stdout, 不接受 "should work"
 - L3 5 扩展组 (接线正确): security + process-engineering + auditor + compliance + decision-gate
@@ -267,7 +267,7 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 **集成**: `.kallax/hooks/pre-commit` 必跑 3 工具, 任一 FAIL = 拒绝 commit.
 
-**跟 Rule 8 4-Level Fact-Forcing 强制 联动**: `task:complete <TICKET>` 前必跑 `scripts/check-fact-forcing-preflight.sh <expert.md>` (跟 Rule 8 file:line `CLAUDE.md:226` 联合). 集成测试: `bash scripts/verify/test-fact-forcing-preflight.sh` (13/13 PASS, 跟 EPIC-059-D Fact-Forcing 1:1 验证 + EPIC-053-B 4-Level 证据链 L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证 联合).
+**跟 Rule 8 5-Level Fact-Forcing 强制 联动**: `task:complete <TICKET>` 前必跑 `scripts/check-fact-forcing-preflight.sh <expert.md>` (跟 Rule 8 file:line `CLAUDE.md:226` 联合). 集成测试: `bash scripts/verify/test-fact-forcing-preflight.sh` (13/13 PASS, 跟 EPIC-059-D Fact-Forcing 1:1 验证 + EPIC-053-B 5-Level 证据链 L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证 联合).
 
 **红线**: ❌ 跳过 3 anti-fab 工具, ❌ pre-commit hook 改 Bypass, ❌ 估数/verbatim/scope creep 任一造假, ❌ 跳过 check-fact-forcing-preflight.sh 直接 close ticket (跟 Rule 8 联合 红线)
 
@@ -289,7 +289,7 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 1. Master 在主公面前**明确汇报** (理由 + 范围 + 估时)
 2. 主公**明确指令** ("你来干" / "你来 fix")
 3. Master 才执行, commit message 写 "Master corrective integration under 主公 explicit 授权: [理由]"
-4. 4-Level + A+B review 走 Performer 自审路径
+4. 5-Level + A+B review 走 Performer 自审路径
 5. 事后必须在 LESSONS-LEARNED 标 "极端情况触发"
 
 **bypass 条件** (Performer design 阶段专用): `KALLAX_BYPASS_SCOPE_CHECK=1` 短路 scope 检查 (Master 自修不受 bypass)
@@ -344,7 +344,7 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 **危险操作 (3 类, 3 模式都停下问)**:
 1. `danger.miao_modify` — 修改 miao 分支 (commit/push/merge)
-2. `danger.security_failing` — 安全相关 (pre-commit FAIL/anti-fab FAIL/4-Level FAIL/凭据变动)
+2. `danger.security_failing` — 安全相关 (pre-commit FAIL/anti-fab FAIL/5-Level FAIL/凭据变动)
 3. `danger.data_destruction` — rm -rf / reset --hard / push --force / worktree drop / db drop
 
 **Performer 5 阶段复杂度 (ai-copilot 默认行为)**:
@@ -529,12 +529,12 @@ L4 数据流动：集成测试验证
 
 #### Performer sub-role (enum: coder/reviewer/tester/docs)
 
-| sub-role | 职责 | 跟 9 Hard Rules 联合 |
+| sub-role | 职责 | 跟 5 levels 联合 |
 |----------|------|---------------------|
 | **coder** | 写代码 + commit (默认) | Rule 5/8 类型安全 + Rule of 500 |
-| **reviewer** | 审 PR + A/B review + 跨 PR 验证 | Rule 8 4-Level + Rule 18 KPI falsification |
+| **reviewer** | 审 PR + A/B review + 跨 PR 验证 | Rule 8 5-Level + Rule 18 KPI falsification |
 | **tester** | 写测试 + 集成测试 + raw stdout 验证 | Rule 9 anti-fab + Rule 8 L2/L4 |
-| **docs** | 写 .md + 跟 docs/KALLAX-GLOSSARY.md 1:1 验证 | Rule 5 DRY + 9 Hard Rules Rule 6+7 |
+| **docs** | 写 .md + 跟 docs/KALLAX-GLOSSARY.md 1:1 验证 | Rule 5 DRY + 5 levels Rule 6+7 |
 
 #### 容量 1+4 (master + 4 sub-roles)
 
@@ -582,18 +582,18 @@ master (1) ─┬─ performer/coder    (写代码)
 - `bash tests/integration/handoff-depth-test.sh` (≥4 case: L1/L2/L3/L4, 6 PASS, EPIC-038-A 提供)
 - `KALLAX_TEST_FIXTURES=1 bash scripts/conductor/dispatch.sh --handoff-depth=L2 --sub-role=coder TICKET backend accept`
 
-#### 跟 9 Hard Rules 模式 联合
+#### 跟 5 levels 模式 联合
 
 - **Rule 1 隔离与并行**: handoff_depth=L2/L3/L4 串行不同 sub-role → 1 session 1 sub-role 强制 (隔离扩展)
 - **Rule 5/8 类型安全 + Rule of 500**: sub-role=coder 严格类型 + Rule of 500 (PR 上限)
 - **Rule 6/7 经验沉淀 + PHASE**: handoff_depth=L4 跨 PHASE 触发 PHASE 闭环 review (跟 Rule 6/7 联合)
-- **Rule 8 4-Level Fact-Forcing**: handoff_depth L1-L4 跟 4-Level 一一对应 (L1=L1/L2, L2=L3, L3=handoff-checkpoint, L4=context-migration)
+- **Rule 8 5-Level Fact-Forcing**: handoff_depth L1-L4 跟 5-Level 一一对应 (L1=L1/L2, L2=L3, L3=handoff-checkpoint, L4=context-migration)
 
 #### KPI
 
 - **当前 Rule 总数**: 20 → 21 (净 +1, 跟"翻篇&精进" 战略 一致, 跟 v2.4.0 反思 联合, 治根 Performer 产能 Gap)
 - **Performer 容量**: 1 → 1+4 (4 sub-roles 并行, 主公 Q4 Gap 40% 解决路径)
-- **handoff_depth enum**: L1/L2/L3/L4 4 档 (跟 Rule 12 3 模式 互为 互补, 跟 Rule 8 4-Level 1:1 映射)
+- **handoff_depth enum**: L1/L2/L3/L4 4 档 (跟 Rule 12 3 模式 互为 互补, 跟 Rule 8 5-Level 1:1 映射)
 - **5 红线 落地**: dispatch.sh + ticket.json schema + L4 verify 3 重强制
 
 #### 来源
@@ -638,11 +638,11 @@ EPIC-038-A (主公 2026-06-12 拍 A, 5 能力研究 Q4 重大 Gap 40% 立即派,
 
 ### 18. KPI Falsification 反模式黑名单 (KALLAX P0) — Phase 7 R-NEW 升级红线
 
-**规则**: Master 强验证 6 维度检测以下反模式, 命中任一 → subagent 报 FAIL.
+**规则**: 5 levels (L1-L5)检测以下反模式, 命中任一 → subagent 报 FAIL.
 
 **10 反模式黑名单**: KPI 估数/模糊 / Test case verbatim / Scope creep / Amend SHA 没变 / 工具调用后未自验证 / 报 PASS 实际 0 commit / 借口"环境问题"/ 借口"估数"/ 借口"删 build fix 假装修完"/ Tier-Domain 不一致
 
-**执行**: Master 强验证 6 维度命中任一 → subagent 报 FAIL + ticket 状态自动同步 + 留 LESSONS-LEARNED 草稿.
+**执行**: 5 levels (L1-L5)命中任一 → subagent 报 FAIL + ticket 状态自动同步 + 留 LESSONS-LEARNED 草稿.
 
 ### 19. 5 类标签 SOP (KALLAX P1) — EPIC-055-C, 治 A2 咒语化 + A3 笔误
 
@@ -681,14 +681,14 @@ EPIC-038-A (主公 2026-06-12 拍 A, 5 能力研究 Q4 重大 Gap 40% 立即派,
 
 ---
 
-### 9 Hard Rules Rule 6+7 映射: 文档卫生 + 新建前先想 (KALLAX P1) — 跟 eket MASTER-RULES.md §6 联合 (EPIC-059-G v2.7.0)
+### 5 levels Rule 6+7 映射: 文档卫生 + 新建前先想 (KALLAX P1) — 跟 eket MASTER-RULES.md §6 联合 (EPIC-059-G v2.7.0)
 
 **教训**: v2.4.0 反思 "0 实际变化 假动作" + "文档碎片化" 反讽 → 治根需 "每 10 轮 文档卫生" + "新建前先想" 模式. 跟 v2.6.0 经验教训 整理 release 联合, 跟 KALLAX-GLOSSARY 反哺框架 战略 联合 (文档卫生 = 反哺框架 入口).
 
 **约束**:
 - ❌ **0 增 Rule** (跟"翻篇&精进" 战略 一致, 跟 v2.4.1 还原 22 Rule 联合) — 升级 现有 Rule 5/6/11/20 索引映射
 - ❌ **0 重写** (跟 Rule 5 DRY 联合)
-- ❌ **借方法论 不借代码** (不复制 eket 9 Hard Rules 全文, 跟 EPIC-059-A 模式 一致)
+- ❌ **借方法论 不借代码** (不复制 eket 5 levels 全文, 跟 EPIC-059-A 模式 一致)
 - ✅ 22 Rule → 9 类别 group 索引 (file:line 1:1 映射, 跟 类别 5 行 升级 联合)
 
 #### 文档卫生 (每 10 轮) — 跟 eket §6 Master Hard Rule 6 联合
@@ -703,7 +703,7 @@ EPIC-038-A (主公 2026-06-12 拍 A, 5 能力研究 Q4 重大 Gap 40% 立即派,
 | 2 | **僵尸 ticket** | `jira/tickets/*/ticket.json` status=in_progress 跟 claimed_at 间隔 > 7d | Rule 6 经验沉淀强制化 + Rule 11 Anti-Fab |
 | 3 | **积压 review** | `outbox/review_requests/*.md` mtime > 3d 未处理 | Rule 17 文件并发竞争 5 步 |
 | 4 | **重复文档** | `docs/` + `confluence/` 内容重复 > 阈值 (grep 相似章节) | Rule 5 DRY (Single Source of Truth) |
-| 5 | **过期 Rule** | CLAUDE.md 跟 `docs/process/9-hard-rules.md` 一致性 < 95% | Rule 6 经验沉淀 + 9 Hard Rules 索引 |
+| 5 | **过期 Rule** | CLAUDE.md 跟 `docs/process/9-hard-rules.md` 一致性 < 95% | Rule 6 经验沉淀 + 5 levels 索引 |
 
 #### 新建前先想 — 跟 eket §6 Master Hard Rule 7 联合
 
@@ -713,7 +713,7 @@ EPIC-038-A (主公 2026-06-12 拍 A, 5 能力研究 Q4 重大 Gap 40% 立即派,
 |---|---|---|---|
 | 1 | **是否有同类文档可更新?** | `grep -rn "<主题>" docs/ confluence/decisions/ 2>/dev/null` | Rule 5 DRY (SoT, 0 重复) |
 | 2 | **是否有同类 ticket 可扩展?** | `find jira/tickets -name "ticket.json" -exec grep -l "<主题>" {} \;` | Rule 5 DRY + Rule 6 经验沉淀强制化 |
-| 3 | **是否有同类 Rule 可引用?** | `grep -nE "^### [0-9]+\. " CLAUDE.md \| grep "<主题>"` | 9 Hard Rules 索引 (跟类别 5 升级 联合) |
+| 3 | **是否有同类 Rule 可引用?** | `grep -nE "^### [0-9]+\. " CLAUDE.md \| grep "<主题>"` | 5 levels 索引 (跟类别 5 升级 联合) |
 
 **红线**:
 - ❌ 3 问 任意 1 答 "有" 但 未 引用/扩展/更新, 直接新建 = FAIL + 触发 Rule 19 KPI 反模式
@@ -728,7 +728,7 @@ EPIC-038-A (主公 2026-06-12 拍 A, 5 能力研究 Q4 重大 Gap 40% 立即派,
 
 ---
 
-## 9 Hard Rules 模式 (跟 eket MASTER-RULES.md §6 联合, 借方法论 不借代码, EPIC-059-A v2.7.0)
+## 5 levels 模式 (跟 eket MASTER-RULES.md §6 联合, 借方法论 不借代码, EPIC-059-A v2.7.0)
 
 > **20 Rule → 9 类别 group 索引 (file:line 1:1 映射, 0 删 Rule)**
 > **跟 PHASE-013-REFLECTION-2026-06-18.md 联合, 治根 "Rule 数 通胀" 迷信**
@@ -741,10 +741,10 @@ EPIC-038-A (主公 2026-06-12 拍 A, 5 能力研究 Q4 重大 Gap 40% 立即派,
 | 类别 | 主题 | Rule (file:line 1:1) | 联合 |
 |------|------|----------------------|------|
 | **1. 隔离与并行 (Isolation)** | worktree / file-lock / session 隔离 | Rule 1 ([CLAUDE.md:50](CLAUDE.md#L50)) + Rule 14 ([CLAUDE.md:430](CLAUDE.md#L430)) + Rule 17 ([CLAUDE.md:625](CLAUDE.md#L625)) | Rule 1 并行隔离强制化 |
-| **2. 错误处理与验证 (Error & Verify)** | Result 类型 / 产出真实性 / 4-Level / KPI 黑名单 | Rule 2 ([CLAUDE.md:64](CLAUDE.md#L64)) + Rule 3 ([CLAUDE.md:80](CLAUDE.md#L80)) + Rule 8 ([CLAUDE.md:222](CLAUDE.md#L222)) + Rule 18 ([CLAUDE.md:639](CLAUDE.md#L639)) | Rule 8 4-Level Fact-Forcing |
+| **2. 错误处理与验证 (Error & Verify)** | Result 类型 / 产出真实性 / 5-Level / KPI 黑名单 | Rule 2 ([CLAUDE.md:64](CLAUDE.md#L64)) + Rule 3 ([CLAUDE.md:80](CLAUDE.md#L80)) + Rule 8 ([CLAUDE.md:222](CLAUDE.md#L222)) + Rule 18 ([CLAUDE.md:639](CLAUDE.md#L639)) | Rule 8 5-Level Fact-Forcing |
 | **3. 资源与质量 (Resource & Quality)** | TTL 缓存 / expert audit | Rule 4 ([CLAUDE.md:92](CLAUDE.md#L92)) + Rule 11 ([CLAUDE.md:290](CLAUDE.md#L290)) | Rule 4 资源管理规范化 |
 | **4. 类型与安全 (Type & Security)** | 严格类型 / Rule of 500 / 工具 bypass / 独立见证 | Rule 5/8 ([CLAUDE.md:106](CLAUDE.md#L106)) + Rule 30 ([CLAUDE.md:641](CLAUDE.md#L641)) + Rule 31 ([CLAUDE.md:647](CLAUDE.md#L647)) | Rule 5/8 类型安全 + Rule of 500 联合 (EPIC-058-E v2.7.5) |
-| **5. 经验沉淀 (Lessons Accumulation)** | 4 件套 + PHASE 闭环 + Anti-Fab / 文档卫生 (每 10 轮) / 新建前先想 3 问 | Rule 6/7 ([CLAUDE.md:145](CLAUDE.md#L145)) + Rule 9 ([CLAUDE.md:240](CLAUDE.md#L240)) + [9 Hard Rules Rule 6+7 映射](CLAUDE.md#9-hard-rules-rule-67-映射-文档卫生--新建前先想-kallax-p1--跟-eket-master-rules-md-联合-epic-059-g-v270) (EPIC-059-G v2.7.0) | Rule 6/7 经验沉淀 + PHASE 闭环 联合 (EPIC-058-E v2.7.5) + 9 Hard Rules Rule 6+7 升级 (跟 eket MASTER-RULES.md §6 联合) |
+| **5. 经验沉淀 (Lessons Accumulation)** | 4 件套 + PHASE 闭环 + Anti-Fab / 文档卫生 (每 10 轮) / 新建前先想 3 问 | Rule 6/7 ([CLAUDE.md:145](CLAUDE.md#L145)) + Rule 9 ([CLAUDE.md:240](CLAUDE.md#L240)) + [5 levels Rule 6+7 映射](CLAUDE.md#9-hard-rules-rule-67-映射-文档卫生--新建前先想-kallax-p1--跟-eket-master-rules-md-联合-epic-059-g-v270) (EPIC-059-G v2.7.0) | Rule 6/7 经验沉淀 + PHASE 闭环 联合 (EPIC-058-E v2.7.5) + 5 levels Rule 6+7 升级 (跟 eket MASTER-RULES.md §6 联合) |
 | **6. 角色边界 (Role Boundary)** | Master 禁写 / Conductor 禁越界 | Rule 10 ([CLAUDE.md:254](CLAUDE.md#L254)) + Rule 13 ([CLAUDE.md:417](CLAUDE.md#L417)) | Rule 10 Master 写代码禁令 |
 | **7. 决策与模式 (Decision & Mode)** | 3 模式 + decision-gate | Rule 12 ([CLAUDE.md:296](CLAUDE.md#L296), 扩展 [CLAUDE.md:617](CLAUDE.md#L617)) | Rule 12 3 模式决策权 |
 | **8. 流程与脚本 (Process & Script)** | PR 尺寸 (Rule of 500 / PR ~100 行) / Subagent 5 步 / Performer sub-role schema | Rule 5/8 ([CLAUDE.md:106](CLAUDE.md#L106)) + Rule 7 ([CLAUDE.md:192](CLAUDE.md#L192)) + Rule 15 ([CLAUDE.md:515](CLAUDE.md#L515)) + Rule 16 ([CLAUDE.md:609](CLAUDE.md#L609)) | Rule 5/8 Rule of 500 + Rule 7 PR ~100 行 (EPIC-059-B + EPIC-059-C 互为 互补, EPIC-058-E 合并 Rule 5/8 落地) + Rule 15 Performer sub-role schema (EPIC-038-A) |
@@ -752,7 +752,7 @@ EPIC-038-A (主公 2026-06-12 拍 A, 5 能力研究 Q4 重大 Gap 40% 立即派,
 
 **KPI**: 21 Rule → 9 类别 group = **21/21 = 100.0%** 落地 (跟"翻篇&精进" 一致, EPIC-058-E v2.7.5 master explicit A 拍板 22→20 合并 + EPIC-038-A R-NEW 净 +1 = 21), **净 +1 Rule** (跟"翻篇&精进" 一致, 治根 Performer 产能 Gap, 不合并, 跟 EPIC-058-E 合并模式 区分 联合).
 
-**详细**: 9 Hard Rules 详细 解释 + 反例 + 正例 + 撤销方法 见 [docs/process/9-hard-rules.md](docs/process/9-hard-rules.md).
+**详细**: 5 levels 详细 解释 + 反例 + 正例 + 撤销方法 见 [docs/process/9-hard-rules.md](docs/process/9-hard-rules.md).
 
 ---
 

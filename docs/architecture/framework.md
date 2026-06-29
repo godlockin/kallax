@@ -53,7 +53,7 @@ KALLAX 基于以下核心信念构建：
 │  │  职责:                                                │   │
 │  │  ✓ 需求分析与任务拆解                                │   │
 │  │  ✓ 任务派发与进度追踪                                │   │
-│  │  ✓ PR 审核 (4-Level Fact-Forcing)                    │   │
+│  │  ✓ PR 审核 (5 levels Fact-Forcing)                    │   │
 │  │  ✓ 合并到 main 分支                                  │   │
 │  │  ✓ 知识库维护                                        │   │
 │  │                                                       │   │
@@ -102,7 +102,7 @@ KALLAX 基于以下核心信念构建：
 |-----|----------|----------|------------|
 | 命名 | Master/Performer | 敏感词汇 | Conductor/Performer |
 | 并行隔离 | 可选 worktree | 文件冲突频发 | 强制 worktree + 文件范围 |
-| 验证机制 | 信任 Agent 报告 | 幻觉产出 | 4-Level Fact-Forcing |
+| 验证机制 | 信任 Agent 报告 | 幻觉产出 | 5 levels Fact-Forcing |
 | 错误处理 | `expect()`/`panic!()` | 生产崩溃 | 强制 `Result<T, E>` |
 
 ---
@@ -488,7 +488,7 @@ async function checkFileOverlap(
 - 代码为 stub
 - 测试未实际运行
 
-### 7.2 4-Level Fact-Forcing
+### 7.2 5 levels Fact-Forcing
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
