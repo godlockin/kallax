@@ -40,7 +40,7 @@ function httpRequest(
       agent: false,
       headers: {
         'Content-Type': 'application/json',
-        'X-KALLAX-API-Key': 'kallax-dev-key',
+        'X-KALLAX-API-Key': 'kallax-test-key-0123456789abcdef0123',
         ...options.headers,
       },
     };
@@ -263,7 +263,7 @@ describe('ClaimQueue API Integration (E2E)', () => {
   let baseUrl: string;
   let claimQueue: ClaimQueue;
   const PORT = 19879;
-  const API_KEY = 'kallax-dev-key';
+  const API_KEY = 'kallax-test-key-0123456789abcdef0123';
 
   async function startServer(): Promise<ApiServer> {
     const isolation = createIsolationChecker();

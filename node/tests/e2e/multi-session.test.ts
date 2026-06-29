@@ -26,7 +26,7 @@ import type { Ticket } from '../../src/types/index.js';
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const MONOREPO_ROOT = path.resolve(__dirname, '../../..');
 const PROJECT_ROOT = path.resolve(__dirname, '../..');
-const API_KEY = 'kallax-dev-key';
+const API_KEY = 'kallax-test-key-0123456789abcdef0123';
 const TSX_BIN = path.join(MONOREPO_ROOT, 'node_modules', '.bin', 'tsx');
 const BOOT_DIR = path.join(PROJECT_ROOT, 'tests', '.boot');
 const TICKET_ID = 'MULTI-SESSION-TKT-001';
