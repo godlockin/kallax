@@ -18,6 +18,8 @@
     "build": "npm run build -w node",
     "build:rust": "cd rust && cargo build --release",
     "build:all": "npm run build:rust && npm run build",
+    "audit:kpi": "bash scripts/audit/kpi-snapshot.sh",
+    "pretest": "bash scripts/audit/kpi-snapshot.sh --build-only",
     "test": "npm run test -w node",
     "test:rust": "cd rust && cargo test",
     "test:all": "npm run test:rust && npm run test",
