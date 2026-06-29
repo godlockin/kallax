@@ -87,7 +87,11 @@ export function createHookServer(
   const auditStore: HookEventsStore | null = config.auditStore ?? null;
 
   function isAuthorized(req: IncomingMessage): boolean {
-    if (!config.apiKey) return true;
+    // S-002 fail-closed: API key 必须存在, 否则 deny 所有 request (治 root cause of auth bypass)
+    if (!config.apiKey) {
+      logger.error({}, 'KALLAX_HOOK_API_KEY required for /hooks/* endpoints');
+      return false;
+    }
     const auth = req.headers['authorization'] ?? '';
     const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
     return token === config.apiKey;
@@ -294,6 +298,13 @@ export function createHookServer(
     async start(): Promise<KallaxResult<void>> {
       if (running) {
         return ok(undefined);
+      }
+
+      // S-002 fail-closed: 启动时强制 apiKey 必须存在 (治 root cause)
+      if (!config.apiKey) {
+        const msg = 'KALLAX_HOOK_API_KEY required for hook server to start (fail-closed, S-002)';
+        logger.fatal({}, msg);
+        return Promise.resolve(err(new KallaxError(KallaxErrorCode.CONFIG_INVALID, msg)));
       }
 
       return new Promise((resolve) => {

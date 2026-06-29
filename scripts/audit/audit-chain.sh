@@ -107,6 +107,17 @@ append_entry() {
             echo "ERROR: Cannot create audit dir: $dir" >&2
             return 1
         }
+    else
+        # S-003 self-heal: dir 存在但权限弱 (e.g. 755 world-readable) → chmod 700 (治 world-readable 攻击面)
+        local dir_perms
+        dir_perms=$(stat -f "%Lp" "$dir" 2>/dev/null || stat -c "%a" "$dir" 2>/dev/null || echo "")
+        if [[ "$dir_perms" != "700" ]]; then
+            echo "WARN: $dir permissions weak ($dir_perms), self-healing to 700" >&2
+            chmod 700 "$dir" 2>/dev/null || {
+                echo "ERROR: Cannot chmod 700 $dir (self-heal fail)" >&2
+                return 1
+            }
+        fi
     fi
 
     # 验证 entry 是合法 JSON
@@ -153,14 +164,18 @@ append_entry() {
         return 1
     fi
 
-    # 验证文件权限 (如果已存在)
+    # 验证文件权限 (如果已存在) + S-003 self-heal
     if [[ -f "$file" ]]; then
         local perms
         perms=$(stat -f "%Lp" "$file" 2>/dev/null || stat -c "%a" "$file" 2>/dev/null || echo "")
         if [[ "$perms" != "600" && "$perms" != "400" ]]; then
-            echo "ERROR: $file permissions incorrect: $perms (expected 600 or 400)" >&2
-            rmdir "$lock_dir" 2>/dev/null
-            return 1
+            # S-003 self-heal: 文件权限弱 (e.g. 644 world-readable) → chmod 600
+            echo "WARN: $file permissions weak ($perms), self-healing to 600" >&2
+            chmod 600 "$file" 2>/dev/null || {
+                echo "ERROR: Cannot chmod 600 $file (self-heal fail)" >&2
+                rmdir "$lock_dir" 2>/dev/null
+                return 1
+            }
         fi
     fi
 
