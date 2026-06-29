@@ -10,10 +10,6 @@ description = "CLI for KALLAX multi-agent orchestrator"
 name = "kallax"
 path = "src/main/cli.rs"
 
-[[bin]]
-name = "kallax-expert-match"
-path = "src/bin/kallax-expert-match/main.rs"
-
 [dependencies]
 kallax-core.workspace = true
 kallax-engine.workspace = true
@@ -25,7 +21,6 @@ tracing.workspace = true
 tracing-subscriber.workspace = true
 chrono.workspace = true
 uuid.workspace = true
-jieba-rs = "0.7"
 regex = "1.10"
 dirs = "5.0"
 
