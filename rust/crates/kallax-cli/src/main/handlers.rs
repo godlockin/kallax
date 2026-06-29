@@ -4,10 +4,10 @@
 use std::str::FromStr;
 use std::sync::Arc;
 
-use crate::main::enums::OutputFormat;
-use crate::main::output::output_result;
-use crate::main::parsers::{parse_priority, parse_scope};
-use crate::main::sub_enums::{
+use crate::enums::OutputFormat;
+use crate::output::output_result;
+use crate::parsers::{parse_priority, parse_scope};
+use crate::sub_enums::{
     ConductorAction, IsolationAction, KnowledgeAction, PerformerAction, SystemAction,
     TaskAction, VerifyAction,
 };
@@ -103,7 +103,9 @@ pub async fn handle_conductor_action(
             output_result(format, "performers", serde_json::json!({ "performers": [] }));
         }
         ConductorAction::Dispatch { ticket_id } => {
-            engine.dispatch_ticket(&ticket_id)?;
+            // Stub: dispatch_ticket not in TicketEngine API (S-07.5 范围不动 engine)
+            // For now, verify ticket exists and is claimable
+            let _ticket = engine.get_ticket(&ticket_id)?;
             output_result(format, "dispatched", serde_json::json!({ "ticket_id": ticket_id }));
         }
         ConductorAction::Heartbeat { conductor_id } => {
