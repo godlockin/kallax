@@ -38,8 +38,9 @@ if [ ! -d "$WEB_ROOT/node_modules/http-server" ]; then
 fi
 
 # Launch http-server (background, fully detached: closed FDs + disown)
+# Iter 9: serve web/ root directly (1 page, 4 tabs) — 砍 src/dashboard/dispatch/
 cd "$WEB_ROOT"
-nohup npx http-server src/dashboard -p "$PORT" -c-1 --silent \
+nohup npx http-server . -p "$PORT" -c-1 --silent \
   </dev/null >>"$LOG_FILE" 2>&1 &
 DASHBOARD_PID=$!
 disown "$DASHBOARD_PID" 2>/dev/null || true
@@ -51,7 +52,7 @@ if command -v lsof >/dev/null 2>&1; then
   DASHBOARD_PID="$(lsof -ti :"$PORT" 2>/dev/null | head -n 1 || true)"
 fi
 if [ -z "$DASHBOARD_PID" ] && command -v pgrep >/dev/null 2>&1; then
-  DASHBOARD_PID="$(pgrep -f "http-server src/dashboard -p $PORT" | head -n 1 || true)"
+  DASHBOARD_PID="$(pgrep -f "http-server . -p $PORT" | head -n 1 || true)"
 fi
 
 if [ -z "$DASHBOARD_PID" ]; then
