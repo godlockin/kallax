@@ -11,7 +11,8 @@
     ? window.location.origin : 'http://127.0.0.1:9877';
   const { el } = window.KallaxEscape;
 
-  let activeTab = 'overview';
+  // V310 hotfix P-004: 持久化 activeTab 到 localStorage, 刷新后恢复
+  let activeTab = (typeof localStorage !== 'undefined' && localStorage.getItem('kallax.activeTab')) || 'overview';
   let tasksCache = [];
   const STATUSES = ['pending', 'claimed', 'running', 'completed', 'failed'];
   const ZH = document.documentElement.lang.startsWith('zh');
@@ -48,6 +49,8 @@
 
   function switchTab(tab) {
     activeTab = tab;
+    // V310 hotfix P-004: 持久化 tab 选择, 刷新/重连后 恢复
+    try { localStorage.setItem('kallax.activeTab', tab); } catch (e) { /* private mode 等 */ }
     document.querySelectorAll('.nav-btn').forEach((btn) => btn.classList.toggle('active', btn.dataset.tab === tab));
     document.querySelectorAll('.tab-content').forEach((sec) => sec.classList.toggle('active', sec.id === 'tab-' + tab));
     if (tab === 'overview') loadOverview();
@@ -251,7 +254,8 @@
     document.getElementById('task-type-filter')?.addEventListener('change', applyTaskFilters);
     document.getElementById('task-search')?.addEventListener('input', applyTaskFilters);
     setInterval(() => { const e = document.getElementById('last-update'); if (e) e.textContent = new Date().toLocaleString(); }, 1000);
-    switchTab('overview');
+    // V310 hotfix P-004: 用 activeTab (从 localStorage 恢复) 而非硬编码 'overview'
+    switchTab(activeTab);
     connectSSE();
   }
 
