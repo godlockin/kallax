@@ -27,6 +27,8 @@ export interface HookServerConfig {
   readonly port: number;
   readonly host?: string;
   readonly apiKey?: string;
+  /** Optional admin API key. Required for cross-session replay (S-005 hotfix). */
+  readonly adminApiKey?: string;
   readonly auditStore?: HookEventsStore;
 }
 
@@ -118,6 +120,23 @@ export function createHookServer(
     if (!targetSessionId) {
       sendJson(res, 400, { error: 'targetSessionId is required' });
       return;
+    }
+
+    // S-005 hotfix: cross-session replay requires admin token. Source session
+    // ownership check: caller (Bearer token) must either match the source
+    // session, hold the admin API key, or the source session must match the
+    // target session (intra-session replay).
+    const isCrossSession = sourceSessionId !== undefined && sourceSessionId !== targetSessionId;
+    if (isCrossSession) {
+      const auth = req.headers['authorization'] ?? '';
+      const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+      const isAdmin = config.adminApiKey !== undefined && token === config.adminApiKey;
+      const isSourceOwner = token !== '' && token === sourceSessionId;
+      if (!isAdmin && !isSourceOwner) {
+        logger.warn({ sourceSessionId, targetSessionId }, 'cross-session replay denied: caller lacks ownership of source session');
+        sendJson(res, 403, { error: 'cross-session replay requires admin token or source session ownership' });
+        return;
+      }
     }
 
     const events = auditStore.query({

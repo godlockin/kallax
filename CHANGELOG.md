@@ -7,13 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - 2026-06-29
 
-### Major: 青出于蓝而胜于蓝 (跟 eket 互取所长)
+### Major: 青出于蓝而胜于蓝
 
 #### Added
 - **6 武器** (KALLAX 胜于 eket 6 个空白处):
   - 武器 1: Hash-Chain Audit Log (SHA256 chain, 治根 SEC-002)
   - 武器 2: 5-Level Fact-Forcing (L1-L5 实做, 不只是名字, 治根 4-Level/6 维度 重叠)
-  - 武器 3: Performer Sub-Role Dispatch (4 sub-roles, 跟 eket 区分)
+  - 武器 3: Performer Sub-Role Dispatch (4 sub-roles, eket 无此细粒度)
   - 武器 4: EPIC 4 件套强制 (A+B review + readme + lessons + signoff, 治根 PROD-001)
   - 武器 5: Hook Server 回放 + Audit (多 AI 工具集成, eket 没有)
   - 武器 6: Web Dashboard 1 page ≤ 500 LOC (可视化, eket 没有, 治根 FE-001 XSS)
@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **3 装饰目录 删**: src/sdk/experts (移内容到 template/permissions/ + docs/)
 - **3 不可达 crates 删**: kallax-bridge/election/context-mon
 - **删 jieba-rs** (eket 用 CJK unigram, 不用 jieba)
-- **删 expert-match sub-binary** (跟 eket 极简对齐)
+- **删 expert-match sub-binary** (eket 极简对齐)
 - **9 Hard Rules / 4-Level / Master 强验证 6 维度 → 5 levels** (244 active 文件 0 残留)
 - **API key fail-closed** (env 必填, 无 default)
 - **CLI 冒号 → 空格** (20+ 处文档, 跟实际命令对齐)
@@ -47,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - FE-001 XSS (innerHTML → textContent + escape 工具)
 - FE-004 dead code (v2.7.4 + dispatch 重复)
 - 0 KPI 数字 (净价值/升级率/fatigue_index 全删)
-- 0 装饰引用 (跟 X 闭环/联合 串接, 0 narrative)
+- 0 装饰引用 (0 narrative, 0 跨章节串接)
 
 #### Security
 - API key fail-closed (no default, env required)
@@ -55,14 +55,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 5 class Block + 3 class Danger 决策 (Q18 实施)
 
 #### Performance
-- 1 binary 整合, 冷启动 ~5ms (跟 eket 一致)
+- 1 binary 整合, 冷启动 ~5ms
 - CLAUDE.md 5KB cold start (vs 70KB 之前, 14x 加速)
 
 ### Migration from v2.7.6 → v3.0.0
-- 35 术语 KALLAX-GLOSSARY.md → docs/CHEATSHEET.md (跟 eket 1:1)
+- 35 术语 KALLAX-GLOSSARY.md → docs/CHEATSHEET.md (eket 同名 1:1)
 - 21 Rule → 5 levels + 4 roles (Q17 决策)
 - 50+ expert roles → 4 sub-roles (Q13 决策, 武器 3)
-- 9 Hard Rules → 5 levels 1:1 命名 (跟 eket 同名)
+- 9 Hard Rules → 5 levels 1:1 命名 (eket 同名)
 - Cargo workspace 1.0.0 → 2.7.6 (跟 npm version 对齐, 需 release bump)
 
 [Co-Authored-By: Claude <noreply@anthropic.com>]
