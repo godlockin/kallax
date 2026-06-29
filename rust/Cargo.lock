@@ -1103,7 +1103,7 @@ dependencies = [
 
 [[package]]
 name = "kallax-bench"
-version = "1.0.0"
+version = "2.7.6"
 dependencies = [
  "criterion",
  "hex",
@@ -1116,7 +1116,7 @@ dependencies = [
 
 [[package]]
 name = "kallax-cli"
-version = "1.0.0"
+version = "2.7.6"
 dependencies = [
  "chrono",
  "clap",
@@ -1135,7 +1135,7 @@ dependencies = [
 
 [[package]]
 name = "kallax-core"
-version = "1.0.0"
+version = "2.7.6"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1157,7 +1157,7 @@ dependencies = [
 
 [[package]]
 name = "kallax-engine"
-version = "1.0.0"
+version = "2.7.6"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1175,7 +1175,7 @@ dependencies = [
 
 [[package]]
 name = "kallax-server"
-version = "1.0.0"
+version = "2.7.6"
 dependencies = [
  "axum",
  "chrono",
