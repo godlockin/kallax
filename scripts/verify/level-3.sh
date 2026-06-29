@@ -29,6 +29,34 @@ if [ "${2:-}" = "--dry-run" ]; then
     DRY_RUN=1
 fi
 
+# V310 hotfix U-003 (B-Attack U-003): --dry-run 限速 + WARN banner
+# 限速: 每 session 1 次, 超限 强制真实 check
+DRY_RUN_COUNTER_FILE="${TMPDIR:-/tmp}/kallax-l3-dryrun-${USER:-anon}.count"
+DRY_RUN_MAX_PER_SESSION="${KALLAX_DRY_RUN_MAX:-1}"
+if [ "$DRY_RUN" -eq 1 ]; then
+    CURRENT_COUNT=0
+    if [ -f "$DRY_RUN_COUNTER_FILE" ]; then
+        CURRENT_COUNT=$(cat "$DRY_RUN_COUNTER_FILE" 2>/dev/null || echo 0)
+    fi
+    CURRENT_COUNT=$((CURRENT_COUNT + 1))
+    if [ "$CURRENT_COUNT" -gt "$DRY_RUN_MAX_PER_SESSION" ]; then
+        echo "==========================================" >&2
+        echo "ERROR: --dry-run rate limit exceeded" >&2
+        echo "  session_count=$CURRENT_COUNT (max=$DRY_RUN_MAX_PER_SESSION)" >&2
+        echo "  --dry-run 是 cheat, 不能替代真实 4-expert 评审" >&2
+        echo "  ticket close 前 必跑 真实 L3" >&2
+        echo "==========================================" >&2
+        exit 2
+    fi
+    echo "$CURRENT_COUNT" > "$DRY_RUN_COUNTER_FILE"
+    echo "==========================================" >&2
+    echo "WARN: --dry-run mode (V310 hotfix U-003)" >&2
+    echo "  review files NOT verified, must run real mode before ticket close" >&2
+    echo "  session dry-run count: $CURRENT_COUNT/$DRY_RUN_MAX_PER_SESSION" >&2
+    echo "  ticket close pre-commit hook 会检测 dry-run → FAIL" >&2
+    echo "==========================================" >&2
+fi
+
 EXPERT_LIST=("architect" "backend" "frontend" "security")
 
 echo "=========================================="
