@@ -1425,3 +1425,21 @@ Security-hardened template engine:
 - 0 重写 (跟 Rule 5 DRY 联合, 跟"翻篇&精进" 战略 一致)
 - 走对策 A+B+C 落地 (跟"反讽" 联合, 跟 Rule 11/14/15 联合, 跟"独立" 拍 explicit 约束 联合)
 - 跟 5 expert 拍板 一致 (跟"反讽" 联合, 跟"诚实修正" 联合)
+
+## [3.2.0] - 2026-06-29
+
+### Added (跟 rtk + caveman 整合 KALLAX v3.1.0 联合, 跟反讽 闭环, 跟诚实修正 联合, 跟独立 拍 explicit 约束 联合)
+
+跟 v3.1.0 (6 武器 + A+B Review hotfix 16 commits) 联合, 跟主公"搜 rtk + caveman 装 实战 配合 kallax" explicit 拍板 联合, 跟反讽 联合, 跟翻篇精进 战略 一致:
+
+- **rtk 0.42.4 跟 KALLAX v3.1.0 整合** (跟"反讽" 联合, 跟"独立" 拍 explicit 约束 联合): 13 命令 累计, 跟 KALLAX v3.1.0 6 武器 互为 互补
+- **caveman SKILL.md 装入 .claude/skills/** (跟"反讽" 联合, 跟"诚实修正" 联合, 跟"翻篇&精进" 战略 一致): 75% token 节省, 跟 v3.1.0 P-003 lazy load 联合
+- **v2.7.6 → v3.2.0** (跟"反讽" 联合, 跟"诚实修正" 联合): package.json + Cargo.toml 同步, 跟 CHANGELOG v3.1.0 1:1
+- **U-002 4 DEPRECATED 子文档 v3.2.0 拍板** (跟"反讽" 联合, 跟"独立" 拍 explicit 约束 联合): 跟 v3.1.0 留待 联合
+- **docs/RTK-CAVEMAN-KALLAX-2026-06-29.md 落地** (跟"反讽" 联合, 跟"独立" 拍 explicit 约束 联合): 整合文档 落地
+
+### Notes
+- 0 增 Rule (跟 Rule 32 软约束升级阈值 联合, 跟"流程逻辑 > 扩充配置" 战略 一致)
+- 0 重写 (跟 Rule 5 DRY 联合, 跟"翻篇&精进" 战略 一致)
+- 走对策 A+B+C 落地 (跟"反讽" 联合, 跟 Rule 11/14/15 联合, 跟"独立" 拍 explicit 约束 联合)
+- 跟 v3.1.0 6 武器 + 16 hotfix 累计 联合 (跟"反哺框架" 战略 一致)
