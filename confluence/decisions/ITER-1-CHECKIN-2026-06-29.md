@@ -53,6 +53,15 @@ PASS: docs/ 根 0 hits
 node/src/api/server/standalone.ts:23: process.exit(1);
 ```
 
+> **⚠️ v3.1.0 B 组 P-001 follow-up (2026-06-29, S-001 commit 104b063)**:
+> 上方 grep 仅覆盖 3 个 server 文件 (standalone.ts / types.ts / server.ts),
+> **没 grep 全 codebase**, 漏了 `.claude/commands/_kallax_common.sh:103` 和
+> `docs/reference/cli-reference-2026-06-19.md:163` 仍有 `kallax-dev-key` hardcoded
+> default. Iter 1 declare PASS 实际 FAIL. v3.1.0 hotfix commit `104b063` 已治根
+> (改 fail-closed + env-required, 0 hits in *.sh/*.md/*.ts 除历史 commit message).
+> 教训: KALLAX evaluation (Q18) grep 必须 `--include='*'` 全 codebase,
+> 不能子集文件 PASS 假冒全 PASS.
+
 ### Test 5: P0-2 CLI 冒号 → 空格 — **PASS**
 ```
 0 hits 'kallax (task|epic|system|conductor|performer|master|expert|ticket|agent|gate|verify|knowledge|team|isolation|pr):'

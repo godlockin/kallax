@@ -57,14 +57,24 @@ sha256_hex() {
     fi
 }
 
-# 计算 entry 的 chain_hash: sha256(prev_hash || canonical_entry)
-# 入参: prev_hash, entry (无 chain_hash 字段)
+# 计算 entry 的 chain_hash (V310 hotfix S-006: 双 sha256 抗 collision)
+# 算法: chain_algo = "sha256-v2" → chain_hash = sha256(sha256(prev_hash || canonical_entry))
+# 入参: prev_hash, entry (无 chain_hash 字段), algo (默认 sha256-v2)
 calc_chain_hash() {
     local prev_hash="$1"
     local entry_no_self="$2"
+    local algo="${3:-sha256-v2}"
     local canonical
     canonical=$(canonical_json "$entry_no_self")
-    sha256_hex "${prev_hash}${canonical}"
+    if [[ "$algo" == "sha256-v2" ]]; then
+        # 双 sha256: 抗 collision 强化 (跟 V310-B-REVIEW S-006 P1 联合)
+        local inner
+        inner=$(sha256_hex "${prev_hash}${canonical}")
+        sha256_hex "$inner"
+    else
+        # sha256-v1: 旧 log 兼容性 (single sha256)
+        sha256_hex "${prev_hash}${canonical}"
+    fi
 }
 
 # 读最后一条 entry 的 chain_hash; 文件不存在/空 → 返回 "0"*64
@@ -107,6 +117,17 @@ append_entry() {
             echo "ERROR: Cannot create audit dir: $dir" >&2
             return 1
         }
+    else
+        # S-003 self-heal: dir 存在但权限弱 (e.g. 755 world-readable) → chmod 700 (治 world-readable 攻击面)
+        local dir_perms
+        dir_perms=$(stat -f "%Lp" "$dir" 2>/dev/null || stat -c "%a" "$dir" 2>/dev/null || echo "")
+        if [[ "$dir_perms" != "700" ]]; then
+            echo "WARN: $dir permissions weak ($dir_perms), self-healing to 700" >&2
+            chmod 700 "$dir" 2>/dev/null || {
+                echo "ERROR: Cannot chmod 700 $dir (self-heal fail)" >&2
+                return 1
+            }
+        fi
     fi
 
     # 验证 entry 是合法 JSON
@@ -128,39 +149,62 @@ append_entry() {
     # 计算 chain_hash — 必须跟 verify 视角一致:
     #   verify 看到磁盘 entry (含 prev_hash + chain_hash), 重算时去掉 chain_hash
     #   append 也必须按"含 prev_hash 但无 chain_hash" 计算
+    # V310 hotfix S-006: 默认 sha256-v2 (双 sha256), 通过 chain_algo 字段标记
     local entry_with_prev
-    entry_with_prev=$(echo "$entry" | jq -c --arg ph "$prev_hash" '. + {prev_hash:$ph}')
+    entry_with_prev=$(echo "$entry" | jq -c --arg ph "$prev_hash" \
+        '. + {prev_hash:$ph, chain_algo:"sha256-v2"}')
     local chain_hash
-    chain_hash=$(calc_chain_hash "$prev_hash" "$entry_with_prev")
+    chain_hash=$(calc_chain_hash "$prev_hash" "$entry_with_prev" "sha256-v2")
 
-    # 构造最终 entry (字段按字典序 + prev_hash + chain_hash)
+    # 构造最终 entry (字段按字典序 + prev_hash + chain_algo + chain_hash)
     local final
     final=$(echo "$entry_with_prev" | jq -c --arg ch "$chain_hash" \
         '. + {chain_hash:$ch}' | jq -c -S '.')
 
-    # 原子追加 (跨平台: mkdir 互斥锁 + temp + mv, BE-7 模式 兼容)
-    local lock_dir="${file}.lock"
+    # 原子追加 (跨平台: V310 hotfix S-007 flock 优先, mkdir fallback)
+    # flock 在 Linux 提供 跨进程 OS-level 锁; macOS 无 flock, fallback mkdir 模式.
+    local lock_file="${file}.lock"
     local acquired=false
-    for _ in 1 2 3 4 5 10 20 40 80 100; do
-        if mkdir "$lock_dir" 2>/dev/null; then
+    if command -v flock >/dev/null 2>&1; then
+        # flock 模式: 用 file descriptor 200, -w 5 wait up to 5s
+        exec 200>"$lock_file"
+        if flock -w 5 200; then
             acquired=true
-            break
+            FLOCK_FD=200
         fi
-        sleep 0.05
-    done
+    else
+        # mkdir fallback (跟 BE-7 模式 兼容, macOS 仍 0 变更)
+        for _ in 1 2 3 4 5 10 20 40 80 100; do
+            if mkdir "$lock_file" 2>/dev/null; then
+                acquired=true
+                break
+            fi
+            sleep 0.05
+        done
+    fi
     if [[ "$acquired" != "true" ]]; then
         echo "ERROR: Cannot acquire lock for $file" >&2
         return 1
     fi
 
-    # 验证文件权限 (如果已存在)
+    # 验证文件权限 (如果已存在) + S-003 self-heal
     if [[ -f "$file" ]]; then
         local perms
         perms=$(stat -f "%Lp" "$file" 2>/dev/null || stat -c "%a" "$file" 2>/dev/null || echo "")
         if [[ "$perms" != "600" && "$perms" != "400" ]]; then
-            echo "ERROR: $file permissions incorrect: $perms (expected 600 or 400)" >&2
-            rmdir "$lock_dir" 2>/dev/null
-            return 1
+            # S-003 self-heal (P0): 文件权限弱 (e.g. 644 world-readable) → chmod 600
+            echo "WARN: $file permissions weak ($perms), self-healing to 600" >&2
+            if ! chmod 600 "$file" 2>/dev/null; then
+                echo "ERROR: Cannot chmod 600 $file (self-heal fail)" >&2
+                # S-007 释放锁 (按模式: flock / mkdir fallback)
+                if [[ -n "${FLOCK_FD:-}" ]]; then
+                    flock -u "$FLOCK_FD"
+                    exec 200>&- 2>/dev/null || true
+                else
+                    rmdir "$lock_file" 2>/dev/null
+                fi
+                return 1
+            fi
         fi
     fi
 
@@ -170,7 +214,14 @@ append_entry() {
     cat "$tmp" >> "$file"
     rm -f "$tmp"
     chmod 600 "$file"
-    rmdir "$lock_dir" 2>/dev/null
+
+    # 释放锁 (按模式)
+    if [[ -n "${FLOCK_FD:-}" ]]; then
+        flock -u "$FLOCK_FD"
+        exec 200>&- 2>/dev/null || true
+    else
+        rmdir "$lock_file" 2>/dev/null
+    fi
 }
 
 # ── verify: 校验整条 chain + 文件权限
@@ -222,8 +273,10 @@ verify_file() {
         # 提取 prev_hash 和 chain_hash
         local entry_prev
         local entry_chain
+        local entry_algo
         entry_prev=$(echo "$line" | jq -r '.prev_hash // empty' 2>/dev/null)
         entry_chain=$(echo "$line" | jq -r '.chain_hash // empty' 2>/dev/null)
+        entry_algo=$(echo "$line" | jq -r '.chain_algo // "sha256-v1"' 2>/dev/null)
 
         # legacy entry (无 hash 字段) → 跳过 (向后兼容)
         if [[ -z "$entry_chain" ]]; then
@@ -237,12 +290,12 @@ verify_file() {
             fail_count=$((fail_count + 1))
         fi
 
-        # 校验 chain_hash = sha256(prev_hash || canonical_entry_without_chain_hash)
+        # 校验 chain_hash: V310 hotfix S-006 派 algo (默认 sha256-v1 兼容旧 log)
         local expected_chain
-        expected_chain=$(calc_chain_hash "$entry_prev" "$line")
+        expected_chain=$(calc_chain_hash "$entry_prev" "$line" "$entry_algo")
 
         if [[ "$expected_chain" != "$entry_chain" ]]; then
-            echo "FAIL: $file:$line_num chain_hash mismatch (expected=$expected_chain actual=$entry_chain)"
+            echo "FAIL: $file:$line_num chain_hash mismatch (algo=$entry_algo expected=$expected_chain actual=$entry_chain)"
             fail_count=$((fail_count + 1))
         fi
 

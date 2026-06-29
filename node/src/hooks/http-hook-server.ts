@@ -27,6 +27,8 @@ export interface HookServerConfig {
   readonly port: number;
   readonly host?: string;
   readonly apiKey?: string;
+  /** Optional admin API key. Required for cross-session replay (S-005 hotfix). */
+  readonly adminApiKey?: string;
   readonly auditStore?: HookEventsStore;
 }
 
@@ -87,7 +89,11 @@ export function createHookServer(
   const auditStore: HookEventsStore | null = config.auditStore ?? null;
 
   function isAuthorized(req: IncomingMessage): boolean {
-    if (!config.apiKey) return true;
+    // S-002 fail-closed: API key 必须存在, 否则 deny 所有 request (治 root cause of auth bypass)
+    if (!config.apiKey) {
+      logger.error({}, 'KALLAX_HOOK_API_KEY required for /hooks/* endpoints');
+      return false;
+    }
     const auth = req.headers['authorization'] ?? '';
     const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
     return token === config.apiKey;
@@ -114,6 +120,23 @@ export function createHookServer(
     if (!targetSessionId) {
       sendJson(res, 400, { error: 'targetSessionId is required' });
       return;
+    }
+
+    // S-005 hotfix: cross-session replay requires admin token. Source session
+    // ownership check: caller (Bearer token) must either match the source
+    // session, hold the admin API key, or the source session must match the
+    // target session (intra-session replay).
+    const isCrossSession = sourceSessionId !== undefined && sourceSessionId !== targetSessionId;
+    if (isCrossSession) {
+      const auth = req.headers['authorization'] ?? '';
+      const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+      const isAdmin = config.adminApiKey !== undefined && token === config.adminApiKey;
+      const isSourceOwner = token !== '' && token === sourceSessionId;
+      if (!isAdmin && !isSourceOwner) {
+        logger.warn({ sourceSessionId, targetSessionId }, 'cross-session replay denied: caller lacks ownership of source session');
+        sendJson(res, 403, { error: 'cross-session replay requires admin token or source session ownership' });
+        return;
+      }
     }
 
     const events = auditStore.query({
@@ -294,6 +317,13 @@ export function createHookServer(
     async start(): Promise<KallaxResult<void>> {
       if (running) {
         return ok(undefined);
+      }
+
+      // S-002 fail-closed: 启动时强制 apiKey 必须存在 (治 root cause)
+      if (!config.apiKey) {
+        const msg = 'KALLAX_HOOK_API_KEY required for hook server to start (fail-closed, S-002)';
+        logger.fatal({}, msg);
+        return Promise.resolve(err(new KallaxError(KallaxErrorCode.CONFIG_INVALID, msg)));
       }
 
       return new Promise((resolve) => {
