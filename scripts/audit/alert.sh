@@ -79,7 +79,18 @@ write_alert() {
       --argjson det "$details" \
       '{timestamp:$ts, source:$src, severity:$sev, message:$msg, details:$det}')
   fi
-  printf '%s\n' "$entry" >> "$alert_file"
+  # 武器 1 (Iter 4): 通过 audit-chain.sh append 加 prev_hash + chain_hash
+  local audit_chain="$SCRIPT_DIR/audit-chain.sh"
+  if [[ -x "$audit_chain" ]]; then
+      bash "$audit_chain" append "$alert_file" "$entry" || {
+          echo "WARN: audit-chain append failed, falling back to raw write" >&2
+          printf '%s\n' "$entry" >> "$alert_file"
+          chmod 600 "$alert_file" 2>/dev/null || true
+      }
+  else
+      printf '%s\n' "$entry" >> "$alert_file"
+      chmod 600 "$alert_file" 2>/dev/null || true
+  fi
 }
 
 # read_alert [YYYY-MM-DD]
