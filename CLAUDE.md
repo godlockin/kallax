@@ -53,8 +53,8 @@ feature/<name> ──merge──→ testing ──promote──→ miao
 
 ```bash
 # ✅ KALLAX 强制要求
-kallax task:claim TASK-001  # 自动创建 worktree 隔离
-kallax isolation:check TASK-001 TASK-002  # 检测文件重叠
+kallax task claim TASK-001  # 自动创建 worktree 隔离
+kallax isolation check TASK-001 TASK-002  # 检测文件重叠
 ```
 
 **红线**:
@@ -82,7 +82,7 @@ let result = operation().map_err(|e| KallaxError::Operation { source: e })?;
 **教训**: background agent 报告"完成"但实际零产出
 
 ```bash
-kallax verify:output TASK-001  # ls -la + git show + npm test
+kallax verify output TASK-001  # ls -la + git show + npm test
 ```
 
 **红线**:
@@ -399,11 +399,11 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 
 ### CLI 命令
 ```bash
-kallax task:claim [TASK-NNN]        # 领取任务
-kallax task:complete TASK-NNN       # 完成任务
-kallax conductor:heartbeat          # Conductor 心跳
-kallax performer:poll               # Performer 轮询
-kallax system:doctor                # 系统诊断
+kallax task claim [TASK-NNN]        # 领取任务
+kallax task complete TASK-NNN       # 完成任务
+kallax conductor heartbeat          # Conductor 心跳
+kallax performer poll               # Performer 轮询
+kallax system doctor                # 系统诊断
 ```
 
 ---
@@ -423,7 +423,7 @@ Q5: 消息队列？（处理 shared/message_queue）
 ### Performer 执行流程
 
 ```
-1. kallax task:claim TASK-NNN
+1. kallax task claim TASK-NNN
    └── 自动创建 worktree 隔离
 
 2. 开发执行
@@ -431,7 +431,7 @@ Q5: 消息队列？（处理 shared/message_queue）
    └── 按 Ticket AC 编码
    └── 分步 commit
 
-3. kallax task:complete TASK-NNN
+3. kallax task complete TASK-NNN
    └── Saga 5 步原子提交
 
 4. 等待 Conductor Review
