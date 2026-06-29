@@ -368,7 +368,7 @@ function process(data: unknown): Result<ProcessedData, ProcessError> {
 **审计**: `.kallax/audit/decision-YYYY-MM-DD.jsonl` 每日轮转 (JSONL 格式, jq -n 构造), 记录 block/danger 命中 + 决策结果.
 
 **设计文档**: [`docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md`](docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md) §1-§10
-**实施计划**: [`docs/superpowers/plans/2026-06-09-kallax-3-modes.md`](docs/superpowers/plans/2026-06-09-kallax-3-modes.md)
+**实施计划**: [`confluence/archived/_archive/superpowers-plans/2026-06-09-kallax-3-modes.md`](confluence/archived/_archive/superpowers-plans/2026-06-09-kallax-3-modes.md)
 **1:1 验证**: `docs/process/9-hard-rules.md` 类别 7 决策与模式 + `docs/process.md` Subagent 完整流程 步骤 6-7
 **集成测试**: `tests/integration/3-modes-e2e.sh` 16 场景 (3 模式 × 4 维度, EPIC-029-H, 16/16 PASS)
 
