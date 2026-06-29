@@ -1,0 +1,108 @@
+{
+  "_comment": "KALLAX × Claude Code settings.json example (v3.1.0, Track 4 武器 5)",
+  "_usage": "Copy this to $HOME/.claude/settings.json (user-level) or .claude/settings.local.json (project-level). DO NOT commit the real file with API key.",
+  "_docs": "See docs/guides/claude-code-integration.md for full guide.",
+  "_pre_reqs": [
+    "KALLAX hook server running: KALLAX_API_KEY=<secret> bun node/src/hooks/server-entry.ts",
+    "API key exported in env as KALLAX_API_KEY (Claude Code will substitute ${KALLAX_API_KEY} from its env)"
+  ],
+
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://127.0.0.1:8787/hooks/pre-tool-use",
+            "headers": {
+              "Authorization": "Bearer ${KALLAX_API_KEY}",
+              "Content-Type": "application/json"
+            },
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://127.0.0.1:8787/hooks/post-tool-use",
+            "headers": {
+              "Authorization": "Bearer ${KALLAX_API_KEY}",
+              "Content-Type": "application/json"
+            },
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://127.0.0.1:8787/hooks/compact",
+            "headers": {
+              "Authorization": "Bearer ${KALLAX_API_KEY}",
+              "Content-Type": "application/json"
+            },
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://127.0.0.1:8787/hooks/permission",
+            "headers": {
+              "Authorization": "Bearer ${KALLAX_API_KEY}",
+              "Content-Type": "application/json"
+            },
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://127.0.0.1:8787/hooks/session-start",
+            "headers": {
+              "Authorization": "Bearer ${KALLAX_API_KEY}",
+              "Content-Type": "application/json"
+            },
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://127.0.0.1:8787/hooks/session-end",
+            "headers": {
+              "Authorization": "Bearer ${KALLAX_API_KEY}",
+              "Content-Type": "application/json"
+            },
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
