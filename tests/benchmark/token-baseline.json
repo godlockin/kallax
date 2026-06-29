@@ -1,0 +1,54 @@
+{
+  "version": "v3.1.0",
+  "date": "2026-06-29",
+  "source_benchmark": "tests/benchmark/kallax-vs-eket-token.md",
+  "approximation": "1 token ≈ 4 chars (Anthropic guidance)",
+  "kallax_v3_1_0": {
+    "cold_start_always_loaded": {
+      "files": ["CLAUDE.md", "docs/CHEATSHEET.md"],
+      "bytes": 5015,
+      "tokens": 1254
+    },
+    "cold_start_lines_only": {
+      "files": ["CLAUDE.md"],
+      "lines": 88,
+      "bytes_explanation": "first ~88 lines (header + role + commands)"
+    },
+    "lazy_load_5_levels_md": {
+      "file": "docs/5-levels.md",
+      "bytes": 4075,
+      "tokens": 1019
+    },
+    "lazy_load_4_roles_md": {
+      "file": "docs/4-roles.md",
+      "bytes": 5451,
+      "tokens": 1363
+    },
+    "per_session_typical": {
+      "description": "cold start + 1 ticket + 1 lazy doc (5-levels.md)",
+      "files": ["CLAUDE.md", "docs/CHEATSHEET.md", "docs/5-levels.md"],
+      "bytes": 9090,
+      "tokens": 2273
+    },
+    "total_everything_loaded": {
+      "bytes": 14541,
+      "tokens": 3635
+    }
+  },
+  "eket_v2_9_2_reference": {
+    "skill_md_only": {
+      "bytes": 3293,
+      "tokens": 823
+    },
+    "full_bundle": {
+      "bytes": 7814,
+      "tokens": 1954
+    },
+    "per_session": {
+      "bytes": 9912,
+      "tokens": 2478
+    }
+  },
+  "regression_check_threshold_pct": 20,
+  "rationale": "20% threshold 跟 eket Rule 8/9 PR size check 阈值 1:1, 防止 ±5% noise 误报"
+}
