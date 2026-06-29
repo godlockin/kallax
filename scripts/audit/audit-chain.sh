@@ -150,16 +150,27 @@ append_entry() {
     final=$(echo "$entry_with_prev" | jq -c --arg ch "$chain_hash" \
         '. + {chain_hash:$ch}' | jq -c -S '.')
 
-    # 原子追加 (跨平台: mkdir 互斥锁 + temp + mv, BE-7 模式 兼容)
-    local lock_dir="${file}.lock"
+    # 原子追加 (跨平台: V310 hotfix S-007 flock 优先, mkdir fallback)
+    # flock 在 Linux 提供 跨进程 OS-level 锁; macOS 无 flock, fallback mkdir 模式.
+    local lock_file="${file}.lock"
     local acquired=false
-    for _ in 1 2 3 4 5 10 20 40 80 100; do
-        if mkdir "$lock_dir" 2>/dev/null; then
+    if command -v flock >/dev/null 2>&1; then
+        # flock 模式: 用 file descriptor 200, -w 5 wait up to 5s
+        exec 200>"$lock_file"
+        if flock -w 5 200; then
             acquired=true
-            break
+            FLOCK_FD=200
         fi
-        sleep 0.05
-    done
+    else
+        # mkdir fallback (跟 BE-7 模式 兼容, macOS 仍 0 变更)
+        for _ in 1 2 3 4 5 10 20 40 80 100; do
+            if mkdir "$lock_file" 2>/dev/null; then
+                acquired=true
+                break
+            fi
+            sleep 0.05
+        done
+    fi
     if [[ "$acquired" != "true" ]]; then
         echo "ERROR: Cannot acquire lock for $file" >&2
         return 1
@@ -171,7 +182,13 @@ append_entry() {
         perms=$(stat -f "%Lp" "$file" 2>/dev/null || stat -c "%a" "$file" 2>/dev/null || echo "")
         if [[ "$perms" != "600" && "$perms" != "400" ]]; then
             echo "ERROR: $file permissions incorrect: $perms (expected 600 or 400)" >&2
-            rmdir "$lock_dir" 2>/dev/null
+            # 释放锁 (按模式)
+            if [[ -n "${FLOCK_FD:-}" ]]; then
+                flock -u "$FLOCK_FD"
+                exec 200>&- 2>/dev/null || true
+            else
+                rmdir "$lock_file" 2>/dev/null
+            fi
             return 1
         fi
     fi
@@ -182,7 +199,14 @@ append_entry() {
     cat "$tmp" >> "$file"
     rm -f "$tmp"
     chmod 600 "$file"
-    rmdir "$lock_dir" 2>/dev/null
+
+    # 释放锁 (按模式)
+    if [[ -n "${FLOCK_FD:-}" ]]; then
+        flock -u "$FLOCK_FD"
+        exec 200>&- 2>/dev/null || true
+    else
+        rmdir "$lock_file" 2>/dev/null
+    fi
 }
 
 # ── verify: 校验整条 chain + 文件权限
