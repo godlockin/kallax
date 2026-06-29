@@ -4,8 +4,8 @@
   "private": true,
   "description": "KALLAX web dashboard — static files served via http-server",
   "scripts": {
-    "start": "http-server src/dashboard -p 8080 -c-1 --silent",
-    "start:verbose": "http-server src/dashboard -p 8080 -c-1"
+    "start": "http-server . -p 8080 -c-1 --silent",
+    "start:verbose": "http-server . -p 8080 -c-1"
   },
   "dependencies": {
     "http-server": "^14.1.1"

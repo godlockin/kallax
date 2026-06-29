@@ -2,11 +2,13 @@
 # audit/dispatch-audit.sh — 派发决策审计 (EPIC-031-C)
 # 主公 C 派: 派发决策可追溯, 跟 EPIC-030-B scoring-trace.sh 集成
 # 7 字段: timestamp / ticket_id / algo_suggest / final_slaver / decision / actor / type
+# 武器 1 (Iter 4): 用 audit-chain.sh append 替代 raw >>, 加 prev_hash + chain_hash
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 AUDIT_DIR="${AUDIT_DIR:-${KALLAX_ROOT}/.kallax/audit}"
+AUDIT_CHAIN="$SCRIPT_DIR/audit-chain.sh"
 
 # dispatch_audit — 写一条派发决策审计记录到 scoring-YYYY-MM-DD.jsonl
 # 用法: dispatch_audit <ticket_id> <algo_id> <final_id> <decision> [actor]
@@ -35,7 +37,7 @@ dispatch_audit() {
 
   # jq -n 防 JSON injection (跟 EPIC-029 决策门一致)
   local entry
-  entry=$(jq -n \
+  entry=$(jq -c -n \
     --arg ts "$timestamp" \
     --arg tid "$ticket_id" \
     --arg algo "$algo_id" \
@@ -43,7 +45,18 @@ dispatch_audit() {
     --arg dec "$decision" \
     --arg act "$actor" \
     '{timestamp:$ts, ticket_id:$tid, algo_suggest:$algo, final_slaver:$final, decision:$dec, actor:$act, type:"dispatch"}')
-  printf '%s\n' "$entry" >> "$audit_file"
+
+  # 武器 1: 通过 audit-chain.sh append 加 prev_hash + chain_hash
+  if [[ -x "$AUDIT_CHAIN" ]]; then
+      bash "$AUDIT_CHAIN" append "$audit_file" "$entry" || {
+          echo "WARN: audit-chain append failed, falling back to raw write" >&2
+          printf '%s\n' "$entry" >> "$audit_file"
+          chmod 600 "$audit_file" 2>/dev/null || true
+      }
+  else
+      printf '%s\n' "$entry" >> "$audit_file"
+      chmod 600 "$audit_file" 2>/dev/null || true
+  fi
 }
 
 # read_dispatch_audit — 读当日派发审计记录

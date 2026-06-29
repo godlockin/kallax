@@ -36,11 +36,12 @@ RUN addgroup -g 1001 kallax && \
 COPY --from=builder --chown=kallax:kallax /app/node_modules ./node_modules
 COPY --from=builder --chown=kallax:kallax /app/package.json ./package.json
 
-# Copy web content (entry: src/dashboard)
-COPY --chown=kallax:kallax src/dashboard ./src/dashboard
+# Copy web content (single entry: web/ root, Iter 9 砍 dead dispatch dashboard)
 COPY --chown=kallax:kallax index.html ./index.html
 COPY --chown=kallax:kallax styles.css ./styles.css
 COPY --chown=kallax:kallax app.js ./app.js
+COPY --chown=kallax:kallax lib ./lib
+COPY --chown=kallax:kallax src ./src
 
 USER kallax
 
@@ -51,5 +52,5 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=3s --retries=3 \
     CMD wget --quiet --tries=1 --spider http://localhost:8080/ || exit 1
 
-# Default command — http-server with cache disabled (deployment-ready)
-CMD ["npx", "http-server", "src/dashboard", "-p", "8080", "-c-1", "--silent"]
+# Default command — http-server serves web/ root with cache disabled (deployment-ready)
+CMD ["npx", "http-server", ".", "-p", "8080", "-c-1", "--silent"]
