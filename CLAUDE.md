@@ -37,7 +37,7 @@
 | 2. 错误与验证 | Result / 产出真实性 / 5 levels / KPI 黑名单 | Rule 2 + 3 + 5/8 + 18 |
 | 3. 资源与质量 | TTL / expert audit | Rule 4 + 12 |
 | 4. 类型与安全 | strict / Rule of 500 / bypass / 见证 | Rule 5/8 + 30 + 31 |
-| 5. 经验沉淀 | 4 件套 + PHASE + Anti-Fab / 文档卫生 / 新建 3 问 | Rule 6/7 + 10 + 9 Hard Rules Rule 6+7 |
+| 5. 经验沉淀 | 4 件套 + PHASE + Anti-Fab / 文档卫生 / 新建 3 问 | Rule 6/7 + 10 + 5 levels Rule 6+7 |
 | 6. 角色边界 | Master 禁写 / Conductor 禁越界 | Rule 11 + 13 |
 | 7. 决策与模式 | 3 模式 + decision-gate | Rule 14 |
 | 8. 流程与脚本 | PR 尺寸 / Subagent 5 步 / sub-role | Rule 5/8 + 9 + 16 + 15 |
