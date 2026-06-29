@@ -105,7 +105,7 @@ KALLAX 基于多 Agent 协作的最佳实践：
 
 ```bash
 # 克隆仓库
-git clone https://github.com/your-org/kallax.git
+git clone https://github.com/godlockin/kallax.git
 cd kallax
 
 # 默认 --target=auto 检测 (Claude Code 优先, 跟 EPIC-057-B AC #3 一致)
