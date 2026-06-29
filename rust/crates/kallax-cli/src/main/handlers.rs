@@ -14,7 +14,7 @@ use crate::main::sub_enums::{
 
 use kallax_core::error::Result;
 use kallax_core::{PerformerId, Ticket, TicketStatus};
-use kallax_engine::ticket::TicketEngine;
+use kallax_engine::ticket_engine::TicketEngine;
 
 // ---------------------------------------------------------------------------
 // handle_task_action

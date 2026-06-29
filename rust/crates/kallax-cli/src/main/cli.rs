@@ -19,7 +19,7 @@ use output::output_result;
 use parsers::init_logging;
 
 use kallax_core::error::Result;
-use kallax_engine::ticket::TicketEngine;
+use kallax_engine::ticket_engine::TicketEngine;
 
 #[tokio::main]
 async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {

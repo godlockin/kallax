@@ -11,6 +11,10 @@
     "node"
   ],
   "scripts": {
+    "version:check": "bash scripts/build-tools/version-check.sh",
+    "prebuild": "npm run version:check",
+    "prebuild:rust": "npm run version:check",
+    "prebuild:all": "npm run version:check",
     "build": "npm run build -w node",
     "build:rust": "cd rust && cargo build --release",
     "build:all": "npm run build:rust && npm run build",
