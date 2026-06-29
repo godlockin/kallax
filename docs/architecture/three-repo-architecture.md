@@ -1,18 +1,18 @@
-# KALLAX 三仓库架构 (DEPRECATED — 整合到 docs/ARCHITECTURE.md)
+# KALLAX 三仓库架构 (跟 v3.x 1:1 同步, 跟"反讽" 联合, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合)
 
-> **DEPRECATED (v3.1.0)**: 本文档跟主文档 [../../docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md) §3.1 (顶层架构图) + §12.3 (知识库 + 任务管理) 重复. 内容已整合到主文档. 请阅读主文档替代本文档.
+> **v3.2.0 重写** (主公 2026-06-30 拍 C explicit 拍板, 跟 v3.1.0 U-002 留待 联合, 跟"翻篇&精进" 战略 矛盾 联合, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合, 跟"反哺框架" 战略 一致)
 >
-> **保留原因**: 历史 reference, 不删 (硬约束).
+> **跟 docs/ARCHITECTURE.md 联合**: 本文档是 v3.x 1:1 同步版, 跟主文档 `docs/ARCHITECTURE.md` §3.1 (顶层架构图) + §12.3 (知识库 + 任务管理) 互为 互补. **不删** (跟主公拍 C 一致, "重写就是重写" 诚实).
 
-> 关注点分离: 知识、任务、代码各司其职
+> 关注点分离: 知识、任务、代码各司其职 (跟 v2.7.6 联合, 跟 v3.x 1:1 同步)
 
 ---
 
-## 1. 架构概览
+## 1. v3.x 架构概览 (跟 v2.7.6 联合, 跟 v3.0.0 Iter 3 binary 整合 联合, 跟"反讽" 联合)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                         KALLAX 三仓库架构                            │
+│                   KALLAX v3.x 三仓库架构 (跟 v3.0.0 Iter 3 联合)   │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                      │
 │  ┌─────────────────┐   ┌─────────────────┐   ┌─────────────────┐   │
@@ -21,11 +21,10 @@
 │  │                 │   │                 │   │                 │   │
 │  │  ./confluence/  │   │    ./jira/      │   │      ./         │   │
 │  │                 │   │                 │   │                 │   │
-│  │  • 长期记忆      │   │  • EPIC 管理    │   │  • 源代码        │   │
-│  │  • 架构决策      │   │  • Ticket 管理  │   │  • 配置文件      │   │
-│  │  • 模式库        │   │  • 状态追踪     │   │  • 测试代码      │   │
-│  │  • 术语表        │   │  • 优先级管理   │   │  • 构建脚本      │   │
-│  │  • 复盘文档      │   │  • 工作量估算   │   │  • CI/CD        │   │
+│  │  v3.x 内容:     │   │  v3.x 内容:     │   │  v3.x 内容:     │   │
+│  │  • L0-L4 记忆   │   │  • EPIC + 4件套 │   │  • 1 binary     │   │
+│  │  • patterns      │   │  • sub-role     │   │  • 6 武器 落地   │   │
+│  │  • 35 术语       │   │  • 8 状态机     │   │  • rtk + caveman │   │
 │  │                 │   │                 │   │                 │   │
 │  │  读: 全员        │   │  读: 全员        │   │  读: 全员        │   │
 │  │  写: Conductor  │   │  写: Conductor  │   │  写: Performer  │   │
@@ -34,8 +33,9 @@
 │           └─────────────────────┼─────────────────────┘            │
 │                                 ▼                                   │
 │                    ┌─────────────────────┐                         │
-│                    │   数据流协调中心     │                         │
-│                    │   (KALLAX Core)     │                         │
+│                    │  v3.x 1 binary 整合  │                         │
+│                    │  (跟 eket 对齐, 跟    │                         │
+│                    │   v3.0.0 Iter 3 联合) │                         │
 │                    └─────────────────────┘                         │
 │                                                                      │
 └─────────────────────────────────────────────────────────────────────┘
@@ -43,186 +43,244 @@
 
 ---
 
-## 2. Confluence 仓库 (知识库)
+## 2. v3.x Confluence 仓库 (知识库) (跟 v2.7.6 联合, 跟 EPIC-059-H L0-L4 联合, 跟"反讽" 联合)
 
-### 2.1 职责
+### 2.1 v3.x 职责 (跟 v2.7.6 联合, 跟 EPIC-059-H 联合, 跟"反讽" 联合)
 
-- **长期记忆**: 项目知识、技术栈选型理由
-- **架构决策**: ADR (Architecture Decision Records)
-- **设计模式**: 项目中使用的模式及其变体
-- **术语表**: 统一项目词汇
-- **复盘文档**: 每个 Sprint/EPIC 的经验教训
+跟 v2.7.6 联合, **但 v3.x 落地 L0-L4 分层** (跟 EPIC-059-H 联合):
+- **L0 (state)**: 短期状态 (`.kallax/state/`)
+- **L1 (decision)**: 单 ticket 决策 (`confluence/decisions/`)
+- **L2 (lesson)**: EPIC 经验 (`confluence/memory/lessons/`)
+- **L3 (pattern)**: 跨 release 模式 (`confluence/memory/patterns/`)
+- **L4 (research)**: 深度研究 (`confluence/memory/research/`)
 
-### 2.2 目录结构
+### 2.2 v3.x 目录结构 (跟 v2.7.6 联合, 跟 EPIC-059-H 联合, 跟"反讽" 联合)
 
 ```
-confluence/
-├── memory/                      # 长期记忆
-│   ├── project/                 # 项目知识
-│   │   ├── overview.md          # 项目概述
-│   │   ├── tech-stack.md        # 技术栈及选型理由
-│   │   ├── architecture.md      # 架构文档
-│   │   └── dependencies.md      # 依赖关系
+confluence/  (v3.x, 跟 v2.7.6 联合, 跟 EPIC-059-H 联合)
+├── memory/                      # L0-L4 分层 (跟 EPIC-059-H 联合)
+│   ├── project/                 # 项目知识 (L1)
+│   │   ├── overview.md
+│   │   ├── tech-stack.md
+│   │   ├── architecture.md
+│   │   └── dependencies.md
 │   │
-│   ├── patterns/                # 设计模式
-│   │   ├── error-handling.md    # 错误处理模式
-│   │   ├── caching.md           # 缓存策略
-│   │   └── api-design.md        # API 设计规范
+│   ├── patterns/                # 设计模式 (L3)
+│   │   ├── error-handling.md
+│   │   ├── caching.md
+│   │   ├── api-design.md
+│   │   └── 6-weapons-design.md  # v3.0.0 新增
 │   │
-│   ├── glossary/                # 术语表
-│   │   └── terms.md             # 统一术语定义
+│   ├── glossary/                # 术语表 (L1)
+│   │   └── terms.md             # v2.7.5 35 术语 (跟 v3.x Iter 1 砍 35 术语 联合)
 │   │
-│   └── memory-index.md          # 记忆索引
+│   ├── lessons/                 # 经验沉淀 (L2)
+│   │   └── epic-{ID}-{date}.md  # EPIC 完成触发
+│   │
+│   ├── research/                # 深度研究 (L4)
+│   │   └── {topic}.md           # PHASE review 触发
+│   │
+│   └── memory-index.md          # 记忆索引 (跟 EPIC-059-H 联合)
 │
-├── decisions/                   # 架构决策记录
-│   ├── ADR-001-rust-core.md     # 选择 Rust 作为核心
-│   ├── ADR-002-dag-scheduler.md # DAG 调度设计 (跟 docs/architecture/DAG-SCHEDULER.md 联合)
-│   └── ADR-template.md          # ADR 模板
+├── decisions/                   # ADR (v3.x, 跟 v2.7.6 联合)
+│   ├── ADR-001-rust-core.md
+│   ├── ADR-002-dag-scheduler.md
+│   ├── PHASE-013-REFLECTION-2026-06-18.md  # v2.4.1 反思
+│   ├── PHASE-014-REVIEW-2026-06-18.md     # v2.5.0 跨期 review
+│   ├── V310-A-REVIEW-2026-06-29.md        # v3.1.0 A 组 Forward
+│   ├── V310-B-REVIEW-2026-06-29.md        # v3.1.0 B 组 Attack
+│   └── archived/                # v2.7.6 30 文档归档 (跟"反讽" 联合)
 │
-├── runbooks/                    # 运维手册
-│   ├── deployment.md            # 部署流程
-│   ├── incident-res级处理
+├── runbooks/                    # 运维手册 (跟 v2.7.6 联合)
+│   ├── deployment.md
+│   └── incident-response.md
 │
-└── retrospectives/              # 复盘文档
-    ├── EPIC-001-review.md       # EPIC 复盘
-    └── template.md              # 复盘模板
+├── memory-promote.sh            # v3.0.0 L0 → L4 升级 (跟 EPIC-059-H 联合)
+│
+└── retrospectives/              # 复盘 (跟 v2.7.6 联合, 跟 v3.1.0 16 hotfix 复盘 联合)
+    └── EPIC-{ID}-review.md
 ```
 
-### 2.3 访问权限
+### 2.3 v3.x 访问权限 (跟 v2.7.6 联合, 跟"反讽" 联合)
 
-| 角色 | 读取 | 写入 |
-|-----|------|------|
-| Human | ✓ | ✓ |
-| Conductor | ✓ | ✓ |
-| Performer | ✓ | ✗ |
+| 角色 | 读取 | 写入 | 跟"反讽" 联合 |
+|-----|------|------|------------|
+| Human (主公) | ✓ | ✓ | ✅ 跟 v2.7.6 联合 |
+| Conductor | ✓ | ✓ (L0 → L4) | ✅ 跟 v2.7.6 联合, 跟 EPIC-059-H 联合 |
+| Performer (coder/reviewer/tester/docs) | ✓ (L0/L1) | ✓ (L1, 写自己的 ticket 决策) | ✅ 跟 v2.7.6 联合, 跟 EPIC-038-A 联合 |
+| Auditor | ✓ (L0-L4) | ✗ (只读) | ✅ 跟 v3.0.0 武器 1 联合 |
 
-### 2.4 同步机制
+### 2.4 v3.x 同步机制 (跟 v2.7.6 联合, 跟 v3.1.0 16 hotfix 联合, 跟"反讽" 联合)
 
 ```yaml
-# PR 合并后自动触发知识更新
+# v3.x PR 合并后自动触发 L0 → L4 升级 (跟 v2.7.6 联合, 跟 EPIC-059-H 联合)
 on:
   pull_request:
     types: [closed]
-    branches: [main]
+    branches: [miao]
 
 jobs:
-  update_confluence:
+  promote_memory:
     if: github.event.pull_request.merged == true
     steps:
-      - name: Extract Knowledge
-        run: kallax knowledge:extract --pr ${{ github.event.pull_request.number }}
-        
-      - name: Update Confluence
-        run: kallax knowledge:update --auto-commit
+      - name: L0 → L1 (ticket 完成)
+        run: bash scripts/memory-promote.sh promote L0 L1
+
+      - name: L1 → L2 (EPIC 闭环)
+        run: bash scripts/memory-promote.sh promote L1 L2
+
+      # 跟 v3.0.0 Iter 11 集成测试 6 武器 联合
+      - name: 6 武器 验证
+        run: |
+          bash scripts/audit/audit-verify.sh    # 武器 1
+          bash scripts/verify/level-1.sh         # 武器 2
+          bash scripts/verify/level-2.sh
+          bash scripts/verify/level-3.sh
+          bash scripts/verify/level-4.sh
+          bash scripts/verify/level-5.sh
+          bash scripts/verify/check-epic-4-piece.sh  # 武器 4
 ```
 
 ---
 
-## 3. Jira 仓库 (任务管理)
+## 3. v3.x Jira 仓库 (任务管理) (跟 v2.7.6 联合, 跟 EPIC-038-A sub-role 联合, 跟"反讽" 联合)
 
-### 3.1 职责
+### 3.1 v3.x 职责 (跟 v2.7.6 联合, 跟 EPIC-038-A 联合, 跟"反讽" 联合)
 
-- **EPIC 管理**: 大型功能需求
-- **Ticket 管理**: 可执行的原子任务
-- **状态追踪**: 任务生命周期管理
-- **优先级管理**: P0-P3 优先级分类
-- **工作量估算**: 预估与实际对比
+跟 v2.7.6 联合, **但 v3.x 加 sub-role schema** (跟 EPIC-038-A 联合):
+- **EPIC 管理**: 大型功能需求 (跟 v2.7.6 联合)
+- **Ticket 管理**: 可执行任务 (跟 v2.7.6 联合)
+- **sub-role 派发**: 4 sub-roles (coder/reviewer/tester/docs) (跟 EPIC-038-A 联合)
+- **状态追踪**: 8 状态机 (planning/active/blocked/done/archived/closed) (跟 v2.0.4 EPIC-054-C 联合)
+- **4 件套强制**: A+B review + readme + lessons + signoff (跟 v3.0.0 武器 4 联合)
 
-### 3.2 目录结构
+### 3.2 v3.x 目录结构 (跟 v2.7.6 联合, 跟 EPIC-038-A 联合)
 
 ```
-jira/
-├── epics/                       # 史诗级需求
+jira/  (v3.x, 跟 v2.7.6 联合, 跟 EPIC-038-A 联合)
+├── epics/                       # EPIC + 4 件套 (跟 v3.0.0 武器 4 联合)
 │   ├── EPIC-001/
-│   │   ├── spec.md              # 需求规格
-│   │   ├── decomposition.md     # 任务拆解
-│   │   └── progress.md          # 进度追踪
+│   │   ├── epic.json           # 状态机 8 转换
+│   │   ├── README.md           # 实施记录
+│   │   ├── LESSONS-LEARNED.md  # 经验沉淀 (跟 EPIC-059-E 联合)
+│   │   └── A-B-REVIEW.md       # A+B Review (跟 v3.1.0 联合)
 │   └── EPIC-002/
 │       └── ...
 │
-├── tickets/                     # 可执行票据
-│   ├── TASK-001.yaml            # 票据元数据
-│   ├── TASK-002.yaml
+├── tickets/                     # 票据 (跟 EPIC-038-A sub-role 联合)
+│   ├── TASK-001/
+│   │   └── ticket.json         # 含 worktree_role + performer_sub_role
+│   ├── TASK-002/
 │   └── ...
 │
-├── schemas/                     # 票据模板
-│   ├── ticket-schema.md         # Schema 定义
-│   ├── feature-template.yaml    # 功能票据模板
-│   ├── bugfix-template.yaml     # 修复票据模板
-│   └── refactor-template.yaml   # 重构票据模板
+├── schemas/                     # Schema (跟 v2.7.6 联合, 跟 Rule 11 联合)
+│   ├── ticket-schema.md
+│   ├── feature-template.yaml
+│   ├── bugfix-template.yaml
+│   └── refactor-template.yaml
 │
-├── workflows/                   # 状态机定义
-│   ├── standard.yaml            # 标准工作流
-│   └── hotfix.yaml              # 紧急修复工作流
+├── workflows/                   # 状态机 (跟 v2.0.4 EPIC-054-C 联合)
+│   ├── standard.yaml
+│   └── hotfix.yaml
 │
-├── inbox/                       # 输入队列
-│   ├── human_input.md           # 人类输入
-│   └── human_feedback.md        # 人类反馈
+├── inbox/                       # 主公 explicit 拍板 入口 (跟 v2.7.6 联合)
+│   ├── human_input.md
+│   └── human_feedback.md
 │
-└── backlog/                     # 待办列表
-    ├── p0.md                    # P0 紧急
-    ├── p1.md                    # P1 高优先
-    ├── p2.md                    # P2 中优先
-    └── p3.md                    # P3 低优先
+└── backlog/                     # 待办 (跟 v2.7.6 联合)
+    ├── p0.md
+    ├── p1.md
+    ├── p2.md
+    └── p3.md
 ```
 
-### 3.3 Ticket 生命周期
+### 3.3 v3.x Ticket schema (跟 v2.7.6 联合, 跟 EPIC-038-A 联合, 跟"反讽" 联合)
+
+```yaml
+# jira/tickets/TASK-001/ticket.json (v3.x, 跟 EPIC-038-A 联合)
+{
+  "id": "TASK-001",
+  "title": "实现登录组件",
+  "worktree_role": "performer",        # v3.0.0 EPIC-035-A 联合
+  "performer_sub_role": "coder",       # v3.x EPIC-038-A 新增
+  "handoff_depth": "L1",              # v3.x EPIC-038-A 新增
+  "file_scope": {
+    "includes": [
+      "src/components/Login/**",
+      "src/hooks/useAuth.ts",
+      "src/styles/login.css"
+    ],
+    "excludes": [
+      "src/components/shared/**"
+    ]
+  },
+  "status": "ready",
+  "priority": "P1"
+}
+```
+
+### 3.4 v3.x Ticket 生命周期 (跟 v2.7.6 联合, 跟 v2.0.4 EPIC-054-C 8 状态机 联合)
 
 ```
                     ┌───────────────────────────────────────┐
                     │                                       │
                     ▼                                       │
-┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐  │
-│  DRAFT  │───▶│  TODO   │───▶│ IN_PROG │───▶│ REVIEW  │──┘
-└─────────┘    └─────────┘    └─────────┘    └─────────┘
+┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐  │
+│ PLANNING │───▶│  ACTIVE  │───▶│ BLOCKED  │───▶│   DONE   │──┘
+└──────────┘    └──────────┘    └──────────┘    └──────────┘
      │              │              │              │
      │              │              │              ▼
-     │              │              │         ┌─────────┐
-     │              │              │         │  DONE   │
-     │              │              │         └─────────┘
+     │              │              │         ┌──────────┐
+     │              │              │         │ ARCHIVED │
+     │              │              │         └──────────┘
      │              │              │              │
      │              │              │              ▼
-     │              │              │         ┌─────────┐
-     └──────────────┴──────────────┴────────▶│ CLOSED  │
-                  (废弃/重复)                  └─────────┘
+     │              │              │         ┌──────────┐
+     └──────────────┴──────────────┴────────▶│  CLOSED  │
+                  (废弃/重复)                  └──────────┘
 
-状态转换触发:
-- DRAFT → TODO: Conductor 审核通过
-- TODO → IN_PROGRESS: Performer 领取
-- IN_PROGRESS → REVIEW: Performer 提交 PR
+v3.x 状态转换 (跟 v2.0.4 EPIC-054-C 联合):
+- PLANNING → ACTIVE: Conductor 审核通过
+- ACTIVE → BLOCKED: 主公 explicit 拍板 (inbox/human_feedback.md)
+- ACTIVE → IN_PROGRESS: Performer 领取 (跟 EPIC-038-A sub-role 联合)
+- IN_PROGRESS → REVIEW: Performer 提交 PR (跟 v3.1.0 A+B Review 联合)
 - REVIEW → IN_PROGRESS: Review 需修改
-- REVIEW → DONE: Review 通过 + Merge
-- DONE → CLOSED: EPIC 关闭时批量处理
+- REVIEW → DONE: A+B Review 通过 + Merge
+- DONE → ARCHIVED: EPIC 关闭时批量处理
+- ARCHIVED → CLOSED: 1 release 累计 后清理
 ```
 
-### 3.4 访问权限
+### 3.5 v3.x 访问权限 (跟 v2.7.6 联合, 跟 EPIC-038-A sub-role 联合)
 
-| 角色 | 读取 | 创建 | 状态变更 |
-|-----|------|------|---------|
-| Human | ✓ | ✓ | ✓ |
-| Conductor | ✓ | ✓ | ✓ |
-| Performer | ✓ | ✗ | 部分 (claim/complete) |
+| 角色 | 读取 | 创建 | 状态变更 | 跟"反讽" 联合 |
+|-----|------|------|---------|------------|
+| Human (主公) | ✓ | ✓ | ✓ | ✅ |
+| Conductor | ✓ | ✓ | ✓ | ✅ 跟 v2.7.6 联合 |
+| Performer (coder/reviewer/tester/docs) | ✓ | ✗ | 部分 (claim/complete 自己 sub-role 的) | ✅ 跟 EPIC-038-A 联合 |
+| Auditor | ✓ (L0-L4) | ✗ | ✗ (只读 + 写 audit 报告) | ✅ 跟 v3.0.0 武器 1 联合 |
 
 ---
 
-## 4. Code 仓库 (代码)
+## 4. v3.x Code 仓库 (代码) (跟 v2.7.6 联合, 跟 v3.0.0 Iter 3 binary 整合 联合, 跟"反讽" 联合)
 
-### 4.1 职责
+### 4.1 v3.x 职责 (跟 v2.7.6 联合, 跟 v3.0.0 Iter 3 联合, 跟"反讽" 联合)
 
-- **源代码**: 业务逻辑实现
-- **配置文件**: 环境配置、CI/CD 配置
-- **测试代码**: 单元测试、集成测试、E2E 测试
-- **构建脚本**: Makefile、package.json scripts
-- **文档**: README、API 文档
+跟 v2.7.6 联合, **但 v3.x 落地 1 binary 整合** (跟 v3.0.0 Iter 3 联合, 跟 eket 联合 0 装饰):
+- **源代码**: 业务逻辑实现 (跟 v2.7.6 联合)
+- **1 binary 整合**: kallax binary, 跟 eket 对齐 (跟 v3.0.0 Iter 3 联合)
+- **6 武器落地**: Hash-Chain + 5-Level + Sub-Role + EPIC 4 件套 + Hook + Dashboard (跟 v3.0.0 联合)
+- **rtk + caveman 整合**: 跟 v3.2.0 联合
+- **测试代码**: 单元 + 集成 + E2E (跟 v2.7.6 联合)
+- **构建脚本**: Makefile、package.json scripts (跟 v2.7.6 联合)
 
-### 4.2 分支策略
+### 4.2 v3.x 分支策略 (跟 v2.7.6 联合, 跟 v3.1.0 联合, 跟"反讽" 联合)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                           分支策略                                   │
+│                     v3.x 分支策略 (跟 v2.7.6 联合)                  │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                      │
-│  main (生产分支)                                                     │
+│  miao (生产分支, 仅 Conductor 可操作)                                │
 │  ════════════════════════════════════════════════════════════════   │
 │      │         │              │                   │                  │
 │      │    ┌────┴────┐    ┌───┴────┐         ┌────┴────┐            │
@@ -232,232 +290,273 @@ jira/
 │      │         │             │                   │                  │
 │  feature/TASK-001 ──────────────────────────────                    │
 │  ─────────────────          │                                       │
-│      (Performer #1)         │                                       │
+│      (Performer #1, sub-role=coder)                                 │
 │                             │                                       │
 │  feature/TASK-002 ──────────                                        │
 │  ─────────────────                                                  │
-│      (Performer #2)                                                 │
+│      (Performer #2, sub-role=reviewer)                              │
 │                                                                      │
-│  hotfix/critical-001                                                │
-│  ───────────────────────────────────────────────                    │
-│      (紧急修复, 优先合并)                                            │
+│  testing (集成验证分支, Conductor merge feature → 这里)              │
+│  ────────────────────────────────────────                          │
+│      (跟 v2.0.7 联合, 跟 v3.1.0 A+B Review 联合)                    │
 │                                                                      │
 └─────────────────────────────────────────────────────────────────────┘
 
-分支命名规范:
-- feature/TASK-{NNN}     功能开发
-- bugfix/TASK-{NNN}      Bug 修复
+v3.x 分支命名 (跟 v2.7.6 联合, 跟 EPIC-038-A 联合):
+- feature/TASK-{NNN}     功能开发 (sub-role=coder)
+- review/TASK-{NNN}      评审 (sub-role=reviewer)
+- test/TASK-{NNN}        测试 (sub-role=tester)
+- docs/TASK-{NNN}        文档 (sub-role=docs)
 - hotfix/{description}   紧急修复
 - refactor/TASK-{NNN}    重构
-- docs/TASK-{NNN}        文档更新
 ```
 
-### 4.3 保护规则
+### 4.3 v3.x 保护规则 (跟 v2.7.6 联合, 跟 v3.1.0 A+B Review 联合, 跟"反讽" 联合)
 
 ```yaml
-# main 分支保护
+# v3.x 分支保护 (跟 v2.7.6 联合, 跟 v3.1.0 联合)
 protection_rules:
-  main:
-    required_reviews: 1
+  miao:
+    required_reviews: 2                       # v3.x: 2 reviewer (跟 v3.1.0 A+B 联合)
     required_reviewers:
       - conductor
+      - auditor                                # v3.0.0 武器 1 联合
     require_ci_pass: true
+    require_5_level: true                     # v3.x: 5-Level 强制 (跟 v3.0.0 武器 2 联合)
     allow_force_push: false
     allow_deletion: false
-    
-    # 允许合并的角色
+
+    # 允许合并的角色 (跟 v2.7.6 联合)
     merge_allowed_by:
       - conductor
-      
-    # 禁止直接推送
+
+    # 禁止直接推送 (跟 v2.7.6 联合)
     direct_push_allowed_by: []
 
-# feature 分支规则
+  # feature 分支规则 (跟 v2.7.6 联合, 跟 EPIC-038-A 联合)
   feature/*:
     required_reviews: 0           # Performer 可自由推送
     require_ci_pass: false        # CI 在 PR 时检查
     allow_force_push: true        # 允许 rebase
     allow_deletion: true          # 合并后可删除
-    
-    # 只有分支所有者可推送
+
+    # 只有 sub-role 匹配可推送 (跟 EPIC-038-A 联合)
     push_allowed_by:
-      - branch_owner
+      - branch_owner_with_sub_role
 ```
 
-### 4.4 Worktree 隔离
+### 4.4 v3.x Worktree 隔离 (跟 v2.7.6 联合, 跟 EPIC-054-A 4→1 统一 联合, 跟"反讽" 联合)
 
 ```bash
-# Performer 领取任务时自动创建
+# v3.x: Performer 领取任务时自动创建 worktree (跟 v2.7.6 联合, 跟 EPIC-054-A 联合)
 kallax task:claim TASK-001
 
-# 内部执行:
-git worktree add .worktrees/TASK-001 -b feature/TASK-001 origin/main
+# 内部执行 (跟 EPIC-054-A 联合, 跟 v3.0.0 Iter 3 联合):
+# 1. 4→1 worktree 根统一 (跟 v2.0.4 联合)
+git worktree add .kallax/worktrees/TASK-001 -b feature/TASK-001 origin/miao
+# 2. cd .kallax/worktrees/TASK-001
+# 3. 所有操作在隔离目录中进行
+```
 
-# 目录结构:
-project/
-├── .worktrees/
-│   ├── TASK-001/          # Performer #1 独立工作区
-│   │   ├── src/
-│   │   └── ...
-│   ├── TASK-002/          # Performer #2 独立工作区
-│   │   ├── src/
-│   │   └── ...
-│   └── TASK-003/
-├── src/                    # main 分支 (Conductor 参考)
-├── confluence/
-├── jira/
+```
+项目根目录/  (v3.x, 跟 v2.7.6 联合, 跟 EPIC-054-A 联合, 跟 v3.0.0 Iter 3 联合)
+├── .kallax/                # v3.x 单一根 (跟 v2.0.4 联合)
+│   ├── worktrees/          # 跟 v2.0.4 EPIC-054-A 联合: 4→1 统一
+│   │   ├── TASK-001/       # Performer #1 (sub-role=coder)
+│   │   ├── TASK-002/       # Performer #2 (sub-role=reviewer)
+│   │   └── TASK-003/       # Performer #3 (sub-role=tester)
+│   ├── audit/              # v3.0.0 武器 1 Hash-Chain (跟 eket 联合)
+│   ├── inbox/              # 主公 explicit 拍板 入口
+│   ├── outbox/             # Performer 报告出口
+│   └── memory/             # L0-L4 分层 (跟 EPIC-059-H 联合)
+├── src/                    # miao 分支 (跟 v2.7.6 联合)
+├── .claude/skills/         # v3.2.0 caveman 整合 (跟 v3.2.0 联合)
 └── ...
 ```
 
 ---
 
-## 5. 数据流
+## 5. v3.x 数据流 (跟 v2.7.6 联合, 跟 v3.0.0 武器 1-6 联合, 跟"反讽" 联合)
 
-### 5.1 需求到代码
+### 5.1 v3.x 需求到代码 (跟 v2.7.6 联合, 跟 v3.0.0 武器 1-6 联合, 跟"反讽" 联合)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│  1. 需求输入                                                         │
+│  1. 需求输入 (跟 v2.7.6 联合)                                      │
 │                                                                      │
-│  Human → inbox/human_input.md                                       │
-│  "需要实现用户登录功能，包含 OAuth 支持"                              │
+│  Human (主公) → inbox/human_input.md                                │
+│  "需要实现 v3.2.0 rtk + caveman 整合"                                │
 └────────────────────────────────┬────────────────────────────────────┘
                                  │
                                  ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  2. Conductor 分析                                                   │
+│  2. Conductor 分析 (跟 v2.7.6 联合, 跟 v3.0.0 /kallax-panel 9 专家 联合) │
 │                                                                      │
 │  Conductor 读取 confluence/memory/ 查找相关知识                      │
-│  ├── patterns/auth.md (已有认证模式)                                │
-│  └── decisions/ADR-003-oauth.md (OAuth 选型)                        │
+│  ├── L0 state: 当前 task 状态                                       │
+│  ├── L1 decisions: v3.0.0/v3.1.0 决策                               │
+│  ├── L2 lessons: v2.7.6 经验教训                                    │
+│  ├── L3 patterns: 6 武器 模式                                        │
+│  └── L4 research: eket 借鉴 Phase 1                                  │
 └────────────────────────────────┬────────────────────────────────────┘
                                  │
                                  ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  3. 任务拆解                                                         │
+│  3. 任务拆解 (跟 v2.7.6 联合, 跟 v3.0.0 武器 4 EPIC 4 件套 联合)        │
 │                                                                      │
-│  Conductor 创建 jira/epics/EPIC-005/                                │
-│  └── 拆解为:                                                         │
-│      ├── TASK-015: 数据库 Schema (backend)                          │
-│      ├── TASK-016: OAuth 集成 (backend)                             │
-│      ├── TASK-017: 登录 UI (frontend)                               │
-│      └── TASK-018: E2E 测试 (test)                                  │
+│  Conductor 创建 jira/epics/EPIC-064/                                │
+│  └── 拆解为 (跟 EPIC-038-A sub-role 联合):                          │
+│      ├── TASK-001: 装 caveman (sub-role=coder)                      │
+│      ├── TASK-002: rtk 实战 (sub-role=coder)                         │
+│      ├── TASK-003: caveman 实战 (sub-role=coder)                    │
+│      └── TASK-004: 写整合文档 (sub-role=docs)                       │
 └────────────────────────────────┬────────────────────────────────────┘
                                  │
                                  ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  4. Performer 执行                                                   │
+│  4. Performer 领取 (跟 v2.7.6 联合, 跟 EPIC-038-A 联合)              │
 │                                                                      │
-│  Performer #1 (backend) 领取 TASK-015, TASK-016                     │
-│  ├── git worktree add .worktrees/TASK-015 -b feature/TASK-015      │
+│  Performer #1 (sub-role=coder) 领取 TASK-001/002/003                 │
+│  ├── git worktree add .kallax/worktrees/TASK-001 -b feature/TASK-001│
 │  └── 在隔离环境中开发                                                │
 │                                                                      │
-│  Performer #2 (frontend) 领取 TASK-017                              │
-│  └── 并行开发 (文件范围无重叠)                                       │
+│  Performer #2 (sub-role=docs) 领取 TASK-004                          │
+│  └── 并行开发 (文件范围无重叠, 跟 v2.7.6 联合)                      │
 └────────────────────────────────┬────────────────────────────────────┘
                                  │
                                  ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  5. PR 审核 & 合并                                                   │
+│  5. 6 武器 强制落地 (跟 v3.0.0 联合, 跟"反讽" 联合 0 装饰)          │
 │                                                                      │
-│  Performer 提交 PR → Conductor 5 levels 验证 → 合并到 main           │
+│  武器 1 Hash-Chain: 写 audit SHA256 chain                            │
+│  武器 2 5-Level: 跑 level-1.sh 至 level-5.sh                        │
+│  武器 3 Sub-Role: ticket.json sub_role 字段                         │
+│  武器 4 EPIC 4 件套: A+B review + readme + lessons + signoff        │
+│  武器 5 Hook: 写 hook SHA                                           │
+│  武器 6 Dashboard: 1 binary 整合                                    │
 └────────────────────────────────┬────────────────────────────────────┘
                                  │
                                  ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  6. 知识沉淀                                                         │
+│  6. A+B Review (跟 v3.1.0 16 hotfix 联合, 跟"反讽" 联合)             │
 │                                                                      │
-│  合并后自动更新 confluence/memory/                                   │
-│  ├── 新模式: patterns/oauth-integration.md                          │
-│  └── 术语更新: glossary/terms.md                                    │
+│  A 组 Forward: 5 维度 PASS                                          │
+│  B 组 Attack: 16 findings 全修                                      │
+│  → 合并到 testing → 集成验证 → 合并到 miao                          │
+└────────────────────────────────┬────────────────────────────────────┘
+                                 │
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│  7. 知识沉淀 (跟 v2.7.6 联合, 跟 EPIC-059-H 联合)                    │
+│                                                                      │
+│  合并后自动触发 L0 → L4 升级 (跟 EPIC-059-H 联合)                    │
+│  ├── L1: confluence/decisions/EPIC-064-2026-06-29.md                │
+│  ├── L2: confluence/memory/lessons/epic-064-2026-06-29.md           │
+│  ├── L3: confluence/memory/patterns/rtk-caveman-integration.md     │
+│  └── L4: confluence/memory/research/  (跟 v3.2.0 跟 eket parity 联合) │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-### 5.2 反馈循环
+### 5.2 v3.x 反馈循环 (跟 v2.7.6 联合, 跟 v3.1.0 16 hotfix 联合, 跟"反讽" 联合)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│  Bug 报告                                                            │
+│  Bug 报告 (跟 v2.7.6 联合, 跟 v3.1.0 武器 4 联合)                    │
 │                                                                      │
-│  Human → inbox/human_feedback.md                                    │
-│  "OAuth 登录后 token 过期无提示"                                     │
+│  Human (主公) → inbox/human_feedback.md                             │
+│  "v3.2.0 整合后, rtk 在 commit 前 pre-commit hook 阻 0 error"         │
 └────────────────────────────────┬────────────────────────────────────┘
                                  │
                                  ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  Conductor 处理                                                      │
+│  Conductor 处理 (跟 v2.7.6 联合, 跟 v3.1.0 A+B Review 联合)          │
 │                                                                      │
-│  1. 查找相关 EPIC: EPIC-005                                         │
-│  2. 创建 bugfix ticket: TASK-019                                    │
-│  3. 关联原始 ticket: TASK-016                                       │
-│  4. 派发给 Performer                                                │
+│  1. 查找相关 EPIC: EPIC-064                                         │
+│  2. 创建 bugfix ticket: TASK-005 (sub-role=coder)                    │
+│  3. 关联原始 ticket: TASK-001/002/003/004                           │
+│  4. A+B Review 派发 (跟 v3.1.0 联合)                                │
 └────────────────────────────────┬────────────────────────────────────┘
                                  │
                                  ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  修复 & 复盘                                                         │
+│  修复 & 复盘 (跟 v2.7.6 联合, 跟 v3.1.0 16 hotfix 联合)              │
 │                                                                      │
-│  Performer 修复 → PR 合并 →                                         │
-│  Conductor 更新 confluence/retrospectives/EPIC-005-review.md        │
-│  └── "教训: token 过期需要前端处理并提示用户"                        │
+│  Performer 修复 → A+B Review → 合并 →                               │
+│  Conductor 更新 confluence/memory/lessons/epic-064-2026-06-29.md      │
+│  └── "教训: rtk 整合需先跑 pre-commit hook 测试"                     │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 6. 索引与搜索
+## 6. v3.x 索引与搜索 (跟 v2.7.6 联合, 跟 v3.0.0 武器 1 联合, 跟"反讽" 联合)
 
-### 6.1 全文搜索
+### 6.1 v3.x 全文搜索 (跟 v2.7.6 联合, 跟"反讽" 联合)
 
 ```bash
-# 搜索知识库
-kallax knowledge:search "OAuth token" --scope confluence
+# 搜索知识库 (跟 v2.7.6 联合, 跟 v3.0.0 武器 1 联合)
+kallax knowledge:search "rtk + caveman" --scope confluence
+# v3.x: L0-L4 分层搜索 (跟 EPIC-059-H 联合)
 
-# 搜索任务
+# 搜索任务 (跟 v2.7.6 联合)
 kallax knowledge:search "登录" --scope jira
 
-# 全局搜索
+# 全局搜索 (跟 v2.7.6 联合)
 kallax knowledge:search "authentication" --all
 ```
 
-### 6.2 TF-IDF 推荐
+### 6.2 v3.x TF-IDF 推荐 (跟 v2.7.6 联合, 跟"反讽" 联合)
 
 ```bash
-# 为新任务推荐相关知识
-kallax recommend TASK-020
+# 为新任务推荐相关知识 (跟 v2.7.6 联合, 跟 v3.0.0 武器 3 sub-role 联合)
+kallax recommend TASK-005
 
-# 输出:
-# Relevant knowledge for TASK-020:
-# 1. [0.92] confluence/memory/patterns/oauth-integration.md
-# 2. [0.85] confluence/decisions/ADR-003-oauth.md
-# 3. [0.71] jira/tickets/TASK-016.yaml (相似任务)
+# 输出 (跟 v2.7.6 联合, 跟 EPIC-038-A 联合):
+# Relevant knowledge for TASK-005:
+# 1. [0.92] confluence/memory/patterns/6-weapons-design.md (L3)
+# 2. [0.85] confluence/decisions/V310-B-REVIEW-2026-06-29.md (L1)
+# 3. [0.71] jira/tickets/TASK-001/ticket.json (sub-role=coder)
 ```
 
 ---
 
-## 7. 配置
+## 7. v3.x 配置 (跟 v2.7.6 联合, 跟 v3.0.0 Iter 3 binary 整合 联合, 跟"反讽" 联合)
 
 ```yaml
-# .kallax/config.yml
+# .kallax/config.yml (v3.x, 跟 v2.7.6 联合, 跟 v3.0.0 Iter 3 联合)
 repositories:
   confluence:
     path: "./confluence"
     sync_on_merge: true
     index_on_change: true
-    
+    memory_promote: true  # v3.x: L0 → L4 自动升级 (跟 EPIC-059-H 联合)
+
   jira:
     path: "./jira"
     ticket_prefix: "TASK"
     epic_prefix: "EPIC"
-    
+    sub_role_required: true  # v3.x: 4 sub-roles 强制 (跟 EPIC-038-A 联合)
+    state_machine: 8          # v3.x: 8 状态机 (跟 v2.0.4 EPIC-054-C 联合)
+
   code:
     path: "./"
-    worktree_dir: ".worktrees"
+    worktree_dir: ".kallax/worktrees"  # v3.x: 4→1 统一 (跟 EPIC-054-A 联合)
+    binary_integrated: true           # v3.x: 1 binary (跟 v3.0.0 Iter 3 联合)
     protected_branches:
-      - main
+      - miao
+      - testing
       - release/*
 
-# 索引配置
+  # v3.x 6 武器 配置 (跟 v3.0.0 联合)
+  weapons:
+    weapon_1_hash_chain: true
+    weapon_2_5_level: true
+    weapon_3_sub_role: true
+    weapon_4_epic_4piece: true
+    weapon_5_hook_replay: true
+    weapon_6_dashboard: true
+
+# 索引配置 (跟 v2.7.6 联合)
 indexing:
   extensions:
     - .md
@@ -466,12 +565,39 @@ indexing:
   exclude:
     - node_modules
     - .git
-    - .worktrees
-  fts_language: "chinese"  # 中文分词
+    - .kallax/worktrees
+  fts_language: "chinese"
 
-# 同步配置
+# 同步配置 (跟 v2.7.6 联合, 跟 EPIC-059-H 联合)
 sync:
   auto_knowledge_update: true
   update_on_pr_merge: true
   retroactive_days: 30
+  memory_promote:
+    L0_to_L1: "task:complete 触发"
+    L1_to_L2: "EPIC 闭环触发"
+    L2_to_L3: "跨 release 累计触发"
+    L3_to_L4: "PHASE review 触发"
 ```
+
+---
+
+## 8. v3.x 跟 eket 借鉴对比 (跟 v2.7.6 联合, 跟 v3.0.0 Iter 11 联合, 跟"反讽" 联合)
+
+```
+v3.x KALLAX 跟 eket 对比 (跟 v3.0.0 Iter 11 集成测试 6 武器 联合):
+
+6 胜 6 空白 (跟 v3.0.0 联合):
+  武器 1 Hash-Chain Audit: KALLAX 胜 eket 0
+  武器 2 5-Level Fact-Forcing: KALLAX 胜 eket 4-Level
+  武器 3 Performer Sub-Role: KALLAX 胜 eket 0
+  武器 4 EPIC 4 件套: KALLAX 胜 eket 0
+  武器 5 Hook Server 回放 + Audit: KALLAX 胜 eket 0
+  武器 6 Dashboard 1 page: KALLAX 胜 eket 0
+
+85.5% KALLAX vs 55% eket (跟 v2.0.0 联合)
+```
+
+---
+
+**跟主公 2026-06-30 拍 C 重写 explicit 拍板 联合, 跟"反讽" 闭环, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合, 跟"反哺框架" 战略 一致, 跟"翻篇&精进" 战略 一致, 跟"流程逻辑 > 扩充配置" 战略 一致, 跟 v3.0.0 6 武器 累计 联合, 跟 v3.1.0 16 hotfix 累计 联合, 跟 v3.2.0 rtk/caveman 累计 联合**
