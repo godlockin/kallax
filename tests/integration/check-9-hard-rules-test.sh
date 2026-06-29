@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# tests/integration/check-9-hard-rules-test.sh — TDD tests for 9 Hard Rules 简化
-# EPIC-059-A AC: 9 Hard Rules 检查脚本 (跟 scripts/check-fact-forcing-preflight.sh 模式 一致, 跑 9 项 检查)
+# tests/integration/check-9-hard-rules-test.sh — TDD tests for 5 levels 简化
+# EPIC-059-A AC: 5 levels 检查脚本 (跟 scripts/check-fact-forcing-preflight.sh 模式 一致, 跑 9 项 检查)
 # 跟 eket template/docs/MASTER-RULES.md §6 联合, 借方法论 不借代码
 #
 # Test cases (5):
@@ -32,7 +32,7 @@ readonly EXPECTED_KALLAX_RULES=22
 # TDD red phase: verify script + doc exist
 if [ ! -f "$CHECK_SCRIPT" ]; then
     echo "=========================================="
-    echo "9 Hard Rules 简化 — Integration Tests (5/5)"
+    echo "5 levels 简化 — Integration Tests (5/5)"
     echo "=========================================="
     echo ""
     echo "FAIL: $CHECK_SCRIPT not found (TDD red phase)"
@@ -42,7 +42,7 @@ fi
 
 if [ ! -f "$DOC" ]; then
     echo "=========================================="
-    echo "9 Hard Rules 简化 — Integration Tests (5/5)"
+    echo "5 levels 简化 — Integration Tests (5/5)"
     echo "=========================================="
     echo ""
     echo "FAIL: $DOC not found (TDD red phase)"
@@ -58,7 +58,7 @@ source "$CHECK_SCRIPT" 2>/dev/null || {
 }
 
 echo "=========================================="
-echo "9 Hard Rules 简化 — Integration Tests (5/5)"
+echo "5 levels 简化 — Integration Tests (5/5)"
 echo "EPIC-059-A | 跟 eket MASTER-RULES.md §6 联合, 借方法论 不借代码"
 echo "=========================================="
 echo ""
@@ -149,12 +149,12 @@ if declare -f check_claude_md_group_index >/dev/null 2>&1; then
         TC2_RESULT=1
     fi
 
-    # 验证 "9 Hard Rules 模式" 章节存在 (跟 AC #3 联合)
-    if grep -qE "9 Hard Rules 模式" "$CLAUDE_MD"; then
-        SECTION_LINE=$(grep -n "9 Hard Rules 模式" "$CLAUDE_MD" | head -1 | cut -d: -f1 || echo "0")
-        pass 2 "CLAUDE.md 含 '9 Hard Rules 模式' 章节 (line $SECTION_LINE, 跟 eket 联合)"
+    # 验证 "5 levels 模式" 章节存在 (跟 AC #3 联合)
+    if grep -qE "5 levels 模式" "$CLAUDE_MD"; then
+        SECTION_LINE=$(grep -n "5 levels 模式" "$CLAUDE_MD" | head -1 | cut -d: -f1 || echo "0")
+        pass 2 "CLAUDE.md 含 '5 levels 模式' 章节 (line $SECTION_LINE, 跟 eket 联合)"
     else
-        fail 2 "CLAUDE.md 缺 '9 Hard Rules 模式' 章节 (跟 AC #3 联合)"
+        fail 2 "CLAUDE.md 缺 '5 levels 模式' 章节 (跟 AC #3 联合)"
         TC2_RESULT=1
     fi
 else
@@ -227,7 +227,7 @@ echo ""
 # ----------------------------------------
 # TC4: KALLAX-GLOSSARY §11.1 闭环段
 # ----------------------------------------
-echo ">>> TC4: KALLAX-GLOSSARY §11.1 闭环段 — 跟 '9 Hard Rules 简化' + v2.4.1 revert 联合"
+echo ">>> TC4: KALLAX-GLOSSARY §11.1 闭环段 — 跟 '5 levels 简化' + v2.4.1 revert 联合"
 echo "=========================================="
 TC4_RESULT=0
 
@@ -235,7 +235,7 @@ if declare -f check_glossary_loop >/dev/null 2>&1; then
     OUTPUT=$(check_glossary_loop 2>&1 || echo "FAIL")
     if echo "$OUTPUT" | grep -qE "loop_marker_total="; then
         MARKER_TOTAL=$(echo "$OUTPUT" | grep -oE "loop_marker_total=[0-9]+" | grep -oE "[0-9]+" || echo "0")
-        # §11.1 闭环段 跟 "9 Hard Rules 简化" 跟 v2.4.1 revert 联合 (3 联合)
+        # §11.1 闭环段 跟 "5 levels 简化" 跟 v2.4.1 revert 联合 (3 联合)
         if [ "$MARKER_TOTAL" -ge 3 ]; then
             pass 4 "GLOSSARY §11.1 闭环 ≥3 联合 (loop_marker_total=$MARKER_TOTAL)"
         else
@@ -255,9 +255,9 @@ if declare -f check_glossary_loop >/dev/null 2>&1; then
     fi
 
     if echo "$OUTPUT" | grep -qE "nine_hr_ref="; then
-        pass 4 "GLOSSARY §11.1 含 '9 Hard Rules' 引用 (跟 EPIC-059-A 联合)"
+        pass 4 "GLOSSARY §11.1 含 '5 levels' 引用 (跟 EPIC-059-A 联合)"
     else
-        fail 4 "GLOSSARY §11.1 缺 '9 Hard Rules' 引用"
+        fail 4 "GLOSSARY §11.1 缺 '5 levels' 引用"
         TC4_RESULT=1
     fi
 else

@@ -28,7 +28,7 @@ KALLAX (Knowledge-Augmented Leveraged Learning Agent eXecutor) implements a **Co
 - Analyze requirements from `inbox/human_input.md`
 - Decompose EPICs into actionable Tickets
 - Dispatch tasks to Performers based on skills
-- Review PRs with 4-Level verification
+- Review PRs with 5 levels verification
 - Merge approved changes to main branch
 - Maintain project documentation in Confluence
 
@@ -160,7 +160,7 @@ progress_update, status_change → pubsub (broadcast)
 
 ## Verification Protocol
 
-### 4-Level Fact-Forcing
+### 5 levels Fact-Forcing
 
 ```
 Level 1 - Existence:

@@ -7,7 +7,7 @@
 
 ---
 
-## Master 强验证 6 维度 (Rule 11 v2.1)
+## 5 levels (L1-L5) (Rule 11 v2.1)
 
 | 维度 | 验证 | 状态 |
 |---|---|---|
@@ -65,7 +65,7 @@
 2. **不重派 Performer-EPIC-037** ⚠️ (3.5h 探索已烧 token, 跟 1h+ 探索源码同模式)
 3. **EPIC-037-A + EPIC-038-C 留 Sprint 4 重启** (跟 EPIC-034-B 模式)
 4. **KPI falsification 累计 10 次** (跟 8 试反复 + 9/10 同根) — PHASE-007 review 拍 Rule 16 制度化
-5. **Master 强验证 6 维度持续跑** (不藏, 跟前 2 subagent 一致)
+5. **5 levels (L1-L5)持续跑** (不藏, 跟前 2 subagent 一致)
 
 ---
 

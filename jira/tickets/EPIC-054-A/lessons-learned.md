@@ -17,7 +17,7 @@
 - `.gitignore` 加 3 套 ignore (新 worktree 不再创建到那)
 - `detect-stale-worktrees.sh` 加 invariant check (warn on 散落, exit 1 on violation)
 
-**Rule 联动**: DRY + Single Source of Truth + Rule 8 L3 (4-Level Fact-Forcing).
+**Rule 联动**: DRY + Single Source of Truth + Rule 8 L3 (5-Level Fact-Forcing).
 
 ---
 

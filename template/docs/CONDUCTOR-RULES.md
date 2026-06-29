@@ -62,7 +62,7 @@ kallax task:assign TASK-001 --performer performer_frontend_001
 
 ### 3. PR 审核
 
-**4-Level Fact-Forcing**:
+**5 levels Fact-Forcing**:
 
 | Level | 验证内容 | 命令 |
 |-------|---------|------|
@@ -82,7 +82,7 @@ kallax verify:output TASK-001
 - [ ] CI 全部通过
 - [ ] 至少 1 个 Approval
 - [ ] 所有讨论已解决
-- [ ] 4-Level 验证通过
+- [ ] 5 levels 验证通过
 
 **合并命令**:
 ```bash
@@ -199,7 +199,7 @@ Conductor 可以委派部分职责给 Assistant：
 2. 运行验证
    kallax verify:output TASK-001
    ↓
-3. 执行 4-Level 检查
+3. 执行 5 levels 检查
    - L1: git diff --name-only
    - L2: 代码审查
    - L3: npm run type-check

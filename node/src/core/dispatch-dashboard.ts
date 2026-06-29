@@ -7,7 +7,7 @@
  * visible in real-time across 3 data sources:
  *   S1: pass-report JSON (outbox) — Performer self-reported outcome
  *   S2: check-scope-creep.sh exit — boundary check (Rule 15 / EPIC-053-F glob)
- *   S3: kpi-evidence-chain.sh exit — 4-Level evidence (EPIC-053-B)
+ *   S3: kpi-evidence-chain.sh exit — 5 levels evidence (EPIC-053-B)
  *
  * All outputs use Rule 9 X/Y format precision (no estimate, exact).
  * Baseline reference: PROJECT-STATUS-AND-LESSONS-2026-06-13.md line 43

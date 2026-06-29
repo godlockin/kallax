@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # KALLAX PR Size Check — evaluate diff size and flag oversized PRs
 # 跟 eket template/docs/MASTER-RULES.md §6 Rule 8 (Rule of 500) + Rule 9 (PR ~100 行) 联合
-# 借方法论 不借代码 (跟 EPIC-059-A 9 Hard Rules 模式 一致)
+# 借方法论 不借代码 (跟 EPIC-059-A 5 levels 模式 一致)
 #
 # Rule of 500 (净变更 粒度, EPIC-059-B):
 #   0-100      → PASS    (silent, ideal, 跟 EPIC-059-C 联合)

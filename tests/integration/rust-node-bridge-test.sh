@@ -18,7 +18,7 @@ PASS=0
 FAIL=0
 SKIP=0
 
-# 命名常量 (9 Hard Rules §4, 0 magic numbers)
+# 命名常量 (5 levels §4, 0 magic numbers)
 readonly BENCHMARK_ITERATIONS_SMALL=1000
 readonly EXPECTED_RUST_CRATES_MIN=5
 readonly EXPECTED_NODE_BRIDGE_FILES=4

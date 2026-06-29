@@ -6,7 +6,7 @@
 # EPIC-053-C: BE-10 治根
 #   - Self-guard: 静态检查本脚本不复发 [[:space:]] 数组模式 (bash 5.x 兼容要求 \s)
 #   - 跟 check-kpi-precision.sh / tool-self-check.sh 同步
-#   - 跟 EPIC-053-B 4-Level 证据链 联动, 跟 EPIC-048 tool-bypass-audit 模式 一致
+#   - 跟 EPIC-053-B 5 levels 证据链 联动, 跟 EPIC-048 tool-bypass-audit 模式 一致
 
 set -euo pipefail
 

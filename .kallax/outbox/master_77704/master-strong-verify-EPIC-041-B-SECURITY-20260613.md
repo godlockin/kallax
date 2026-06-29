@@ -85,7 +85,7 @@ _file_lock_init() {
 
 ---
 
-## Master 强验证 6 维度 (Performer-EPIC-041-B 综合)
+## 5 levels (L1-L5) (Performer-EPIC-041-B 综合)
 
 | 维度 | 状态 | 详情 |
 |---|---|---|

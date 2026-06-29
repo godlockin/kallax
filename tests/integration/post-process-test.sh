@@ -2,7 +2,7 @@
 # tests/integration/post-process-test.sh — TDD tests for Post-Process 11 步骤 (EPIC-059-E)
 # 跟 eket template/docs/MASTER-RULES.md §10 4 步骤 升级 联合
 # 跟 PHASE review 10 累计 联合 (PHASE-005 → PHASE-014)
-# 借方法论 不借代码 (跟 EPIC-059-A 9 Hard Rules + EPIC-059-B Rule of 500 + EPIC-059-C PR ~100 模式 一致)
+# 借方法论 不借代码 (跟 EPIC-059-A 5 levels + EPIC-059-B Rule of 500 + EPIC-059-C PR ~100 模式 一致)
 #
 # Test cases (5):
 #   TC1: 11 步骤 全部 满足 → 11/11 PASS

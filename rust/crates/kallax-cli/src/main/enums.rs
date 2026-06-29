@@ -59,6 +59,6 @@ pub enum Commands {
     System(SystemAction),
     /// Isolation checking subcommands
     Isolation(IsolationAction),
-    /// Verification subcommands (4-Level Fact-Forcing)
+    /// Verification subcommands (5-Level Fact-Forcing)
     Verify(VerifyAction),
 }

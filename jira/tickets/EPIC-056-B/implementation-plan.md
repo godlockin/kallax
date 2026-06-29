@@ -157,13 +157,13 @@ Step 12 ⏳ 报 PASS (写 pass-report JSON)
 - ✅ AC6: Rule 9 X/Y 格式 — `6/6 PASS (100.0%)` 1 位小数
 - ✅ AC7: 治理升级已拍板 (主公 2026-06-16 APPROVED, 不自助)
 
-**Anti-fab 7 工具 (跟 4-Level Fact-Forcing 联动)**:
+**Anti-fab 7 工具 (跟 5-Level Fact-Forcing 联动)**:
 1. check-test-case-isolation — 测试独立性
 2. check-kpi-precision — X/Y 格式 (Rule 9a)
 3. check-scope-creep — file_scope 边界
 4. check-fact-forcing-preflight — L1-L4 存在
 5. l3-l4-consistency — L3 跟 L4 一致
-6. kpi-evidence-chain — 4-Level evidence chain (commit + stdout + 5 groups + witness)
+6. kpi-evidence-chain — 5-Level evidence chain (commit + stdout + 5 groups + witness)
 7. tool-self-check — 工具自检
 
 ---

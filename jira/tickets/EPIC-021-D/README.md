@@ -1,14 +1,14 @@
-# EPIC-021-D: Fact-Forcing 4-Level 嵌入 (7 文件)
+# EPIC-021-D: Fact-Forcing 5-Level 嵌入 (7 文件)
 
 ## 需求
 
-把 KALLAX 4-Level Fact-Forcing 嵌入 7 个 expert 文件的 `Verification` 节 + 新增 `Fact-Forcing Compliance` 节. EKET 只有 L1/L2 级 (bash 命令), KALLAX 4-Level 是独家超越点, 体现"执行式 persona 不可伪造".
+把 KALLAX 5-Level Fact-Forcing 嵌入 7 个 expert 文件的 `Verification` 节 + 新增 `Fact-Forcing Compliance` 节. EKET 只有 L1/L2 级 (bash 命令), KALLAX 5-Level 是独家超越点, 体现"执行式 persona 不可伪造".
 
 ## 接受标准 (AC)
 
 详见 `ticket.json`. 6 条 AC.
 
-## Fact-Forcing 4-Level 定义 (KALLAX 独家)
+## Fact-Forcing 5-Level 定义 (KALLAX 独家)
 
 | Level | 含义 | 通用 bash | 角色特化 |
 |---|---|---|---|
@@ -17,9 +17,9 @@
 | **L3 接线正确** | import/export 无断裂, type check 通过 | `tsc --noEmit` / `cargo check` / `bash -n` | 角色特化 |
 | **L4 数据流动** | 集成测试通过, 覆盖率不下降 | `npm test` / `cargo test` / `bash scripts/test-*.sh` | 角色特化 |
 
-## 模板 (借 EKET Verification, 升级 4-Level)
+## 模板 (借 EKET Verification, 升级 5-Level)
 
-### Verification 节 (改 EKET 3 checkbox → 4-Level)
+### Verification 节 (改 EKET 3 checkbox → 5-Level)
 
 ```markdown
 ## Verification
@@ -106,7 +106,7 @@ Performer 在 `task:complete <TICKET>` 前**必须勾选 4 项**:
 
 ## 2-Group review 期望
 
-- **A 组 (Forward)**: 校验 4-Level 命令可执行 (手动跑 L1-L4 各 1 次)
+- **A 组 (Forward)**: 校验 5-Level 命令可执行 (手动跑 L1-L4 各 1 次)
 - **B 组 (Attack)**: 找 L3/L4 是否漏角色特化 (e.g. security 的 L4 是否含攻击模拟, 不只是 happy path)
 
 ## 状态变更历史

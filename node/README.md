@@ -93,7 +93,7 @@ npm run lint         # eslint src/
 - `commander`, `express`, `helmet`, `cors` — CLI + HTTP API
 - `lru-cache` — TTL caches (no TTL-less Maps)
 
-## 9 Hard Rules (per AGENTS.md v1.0.0)
+## 5 levels (per AGENTS.md v1.0.0)
 
 1. Never merge to main (Conductor only)
 2. Never self-review PRs

@@ -7,7 +7,7 @@
 
 ---
 
-## Master 强验证 6 维度 (Performer-EPIC-039-D BLOCKED 报告)
+## 5 levels (L1-L5) (Performer-EPIC-039-D BLOCKED 报告)
 
 | 维度 | 状态 | 证据 |
 |---|---|---|
@@ -32,7 +32,7 @@
 - 之前 Master 修 EPIC-039-A status=done 是在 worktree 里改 (`feature/master-sv-both`)
 - commit `b079baa` 包含 5 文件 + EPIC-039-A status=done + EPIC-041-B ticket.json
 - 但 merge `b069a84` 时, 主 checkout 的 EPIC-039-A status 跟 worktree 不同步 (CWD 漂移)
-- Master 后来在主 checkout 跑 "Master 强验证 6 维度" 时, EPIC-039-A status 已经回到 pending (worktree merge 行为)
+- Master 后来在主 checkout 跑 "5 levels (L1-L5)" 时, EPIC-039-A status 已经回到 pending (worktree merge 行为)
 
 **这跟 Performer-EPIC-039-D BLOCKED 报告闭环**:
 - Performer-EPIC-039-D 报"EPIC-039-C blocked" 跟 ticket 链一致

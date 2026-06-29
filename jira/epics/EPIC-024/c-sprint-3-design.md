@@ -131,7 +131,7 @@ Run these **before** any LLM call or merge:
 | 2 | LLM integration + 50 candidates | EPIC-024-D | 1-2h |
 | 3 | E2E test + 5 KPI validation | EPIC-024-E | 1h |
 
-## 8. Verification (4-Level)
+## 8. Verification (5-Level)
 
 ### L1 存在性
 ```bash

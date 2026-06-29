@@ -13,13 +13,13 @@
   },
   "target": {
     "ticket_status_auto_sync": "subagent 报 PASS/FAIL 触发 jq 自动更新 ticket 状态 (跟 task-claim 流程联动)",
-    "real_review_flow": "Conductor 跑 3 anti-fab + check-fact-forcing-preflight.sh + Master 强验证 6 维度 (per Rule 11 v2.1)",
+    "real_review_flow": "Conductor 跑 3 anti-fab + check-fact-forcing-preflight.sh + 5 levels (L1-L5) (per Rule 11 v2.1)",
     "real_merge_flow": "Conductor merge feature → testing (跟之前 testing→miao 流程一致, 跳过 R-NEW PR)",
     "token_plan_upgrade": "Phase 6 决策 B 升 Token Plan 档 (5h → 8h/12h/24h, 跟 Conductor decision-record 一致)"
   },
   "decisions": {
     "priority": 1,
-    "rationale": "主公 2026-06-12 拍 B 立即派 (Master 强验证 6 维度 0 后)",
+    "rationale": "主公 2026-06-12 拍 B 立即派 (5 levels (L1-L5) 0 后)",
     "phase": "PHASE-006 Sprint 4",
     "boundary_events_closure": "BE-1 C/D bypass + BE-2 035-A stale + BE-3 034-B blocked + BE-4 ticket 状态没更新 闭环"
   },

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 4-Level Fact-Forcing 集成测试 (跟 Rule 9 联合, 跟"反讽" 闭环)
+# 5 levels Fact-Forcing 集成测试 (跟 Rule 9 联合, 跟"反讽" 闭环)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -60,4 +60,4 @@ echo "L4 PASS: medium + large 走完"
 
 # Cleanup
 rm -rf "${MOCK_DIR}"
-echo "onramp-test PASS (4-Level)"
+echo "onramp-test PASS (5 levels)"

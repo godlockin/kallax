@@ -26,7 +26,7 @@
     "scripts/dashboard/dispatch-dashboard.sh CLI 仪表盘 — 输出每 EPIC 派单成功率 + 越界事件 + 假 PASS 计数",
     "web/src/dashboard/dispatch/ Web 仪表盘 — 图表显示历史趋势, 跟 web/ 框架一致",
     "Performer 派单成功率从 58.3% (PROJECT-STATUS-2026-06-13.md line 43) → 95%+ 目标",
-    "H1 治根 — KPI falsification 反复 实时可视化, 跟 EPIC-053-B 4-Level 证据链联动",
+    "H1 治根 — KPI falsification 反复 实时可视化, 跟 EPIC-053-B 5-Level 证据链联动",
     "H6 治根 — 越界事件 (BE-1/BE-6/BE-11) 实时告警, 跟 Rule 15 联动",
     "tests/integration/dispatch-dashboard-test.sh 5/5 PASS (3 数据源 mock + 2 case: 派单成功 + 派单失败)",
     "Rule 9 KPI 精确 X/Y 格式 — 5/5 PASS = 100.0%"

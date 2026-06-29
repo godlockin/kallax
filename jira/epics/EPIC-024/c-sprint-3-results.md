@@ -86,7 +86,7 @@ FAIL (6ms over target)
 
 **Analysis**: P99 regression. 4 new experts appended to INDEX.md increased parse overhead. Min 185ms, Avg 189.5ms, Max 206ms.
 
-## 5. 4-Level L4 Evidence
+## 5. 5-Level L4 Evidence
 
 ```
 $ bash scripts/verify/expert-match-m1-v3.sh 2>&1 | tail -5

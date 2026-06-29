@@ -32,7 +32,7 @@ filePath: /path/to/kallax/.claude/skills/kallax/extended/security-tool-bypass.md
 - `scripts/audit/conductor-receive-gate.sh` (3397 bytes): Rule 27 Conductor 接收验证 gate
 - `scripts/verify/check-scope-creep.sh` 修: KALLAX_BYPASS_SCOPE_CHECK=1 移除
 - `scripts/check-fact-forcing-preflight.sh` 修: --force-merge token check 移到 preflight 前
-- `tests/integration/tool-bypass-audit-test.sh` (104 lines): 4-Level 集成测试
+- `tests/integration/tool-bypass-audit-test.sh` (104 lines): 5 levels 集成测试
 - CLAUDE.md Rule 29: 工具不可绕过 (KALLAX P0)
 
 ## 跟对策 C 联合 (跟"诚实修正" 联合, 跟主公"同意" explicit 授权 联合)

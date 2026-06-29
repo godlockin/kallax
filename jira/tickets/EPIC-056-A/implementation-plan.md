@@ -15,7 +15,7 @@
 - `jira/tickets/EPIC-056-A/` (实现记录)
 - `docs/PROCESS.md` (改, Subagent 流程 15 步 → 10 步)
 - `.claude/skills/kallax/SKILL.md` (改, Expert Panel 3 阶段描述)
-- `node/src/core/gate-reviewer.ts` (扩展, 3 阶段协调器 — 4-Level 逻辑保留)
+- `node/src/core/gate-reviewer.ts` (扩展, 3 阶段协调器 — 5-Level 逻辑保留)
 - `tests/integration/governance-3phase-test.sh` (新文件, TDD 6 case)
 
 **不可改 (越界即 BE)**:
@@ -85,7 +85,7 @@
 
 **Master 仲裁**:
 - Master 收 9 份报告 → 合并去重 → 仲裁冲突 → 出"汇总报告 + 建议"
-- Master 强验证 6 维度 (Rule 11 v2.1 联合)
+- 5 levels (L1-L5) (Rule 11 v2.1 联合)
 - 失败 → 退回 Performer 修 (跟 v1.2.4 流程 一致)
 
 **主公拍板** (跟 EPIC-055-B 拍板分级 联动):
@@ -114,7 +114,7 @@
 10. B 组逆袭 review
 11. 写 LESSONS-LEARNED
 12. 报 PASS
-13. Master 强验证 6 维度
+13. 5 levels (L1-L5)
 14. PASS → Conductor merge
 15. FAIL → 退回 Performer
 
@@ -191,7 +191,7 @@ EPIC-056-B (流程效果度量, 独立) — 跟本 ticket KPI 闭环
 - ✅ EPIC-055-B: Phase 3 主公拍板用 route_p0/p1/p2 (跟 PROCESS.md:25-26 联合)
 - ✅ EPIC-056-B: 净价值 62.5% → 65%+ 跟 3 KPI 闭环
 - ⚠️ EPIC-054-D: Rule 合并扫描跟本 ticket 0 增 0 删专家 联合
-- ⚠️ EPIC-056-C: Master 强验证 6 维度恢复跟本 ticket Phase 3 仲裁 联合
+- ⚠️ EPIC-056-C: 5 levels (L1-L5)恢复跟本 ticket Phase 3 仲裁 联合
 
 ---
 

@@ -5,7 +5,7 @@
 > **Ticket**: EPIC-056-B
 > **Phase**: PHASE-009
 > **Author**: performer-EPIC-056-B
-> **Reviewers**: Conductor + Master 强验证 6 维度 + 主公 2026-06-16 拍板
+> **Reviewers**: Conductor + 5 levels (L1-L5) + 主公 2026-06-16 拍板
 > **Status**: ✅ APPROVED (主公 2026-06-16 explicit 拍板, 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md line 21)
 
 ---

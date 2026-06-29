@@ -152,7 +152,7 @@ KPI 必须 X/Y 格式 (8/8 = 100.0%, 不写 "PASS" 写 "8/8"). 这是 CLAUDE.md 
 
 ## 给 Conductor 的 强验证 Checkpoint 建议
 
-Master 强验证 6 维度 (per Rule 11 v2.1) 应额外检查:
+5 levels (L1-L5) (per Rule 11 v2.1) 应额外检查:
 1. L1 existence: 5 文件 + 1 修改都在 git diff
 2. L2 substance: `validateTransition` 实现不是 stub (有 VALID_TRANSITIONS 真表)
 3. L3 wiring: `epic status` 子命令注册到 commander (跟 create/analyze/plan/run 同级别)

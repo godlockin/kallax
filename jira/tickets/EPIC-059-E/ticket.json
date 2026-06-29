@@ -33,7 +33,7 @@
     "跟 PHASE review 10 累计 联合 (file:line docs/PHASE-INDEX.md, file:line confluence/decisions/PHASE-005 → PHASE-014, 11 步骤 是 PHASE review 入口 标准化)",
     "跟 '翻篇&精进' 战略 一致 (跨 release 累计, 0 增命令 0 增 Rule 持平, 跟 14 release 累计 联合)",
     "跟 '反哺框架' 战略 一致 (Post-Process 11 步骤 是 KALLAX-GLOSSARY 反哺框架 入口 标准化)",
-    "跟 Rule 9 'PR ~100 行' 联合 (file:line CLAUDE.md, Post-Process 11 步骤 触发条件 = EPIC/Sprint 完成, 跟 EPIC-059-A 9 Hard Rules 联合)",
+    "跟 Rule 9 'PR ~100 行' 联合 (file:line CLAUDE.md, Post-Process 11 步骤 触发条件 = EPIC/Sprint 完成, 跟 EPIC-059-A 5 levels 联合)",
     "Rule 9 KPI 精确 X/Y 格式 — post-process.sh 1/1 + PHASE-INDEX 段 1/1 + SKILL.md 段 1/1 + test 5/5 PASS = 100.0%"
   ],
   "estimated_hours": 4,

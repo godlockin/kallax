@@ -230,7 +230,7 @@ Out-of-scope (NEVER touch):
 - Use `bash 4+` if available (`/opt/homebrew/bin/bash`, `brew install bash`).
 - **Decision**: use 4 parallel arrays + index lookup, works on bash 3.2 (10.14兼容性 + 10.15+).
 
-## 8. Verification Checklist (4-Level)
+## 8. Verification Checklist (5-Level)
 
 - Level 1 (Existence): `scripts/install.sh` exists, tests file exists in worktree
 - Level 2 (Substance): no TODO/stubs in critical paths, real logic

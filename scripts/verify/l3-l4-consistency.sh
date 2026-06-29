@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # scripts/verify/l3-l4-consistency.sh — L3 集成测试 vs L4 verify 一致性强制 (BE-9 治根)
 #
-# EPIC-053-A — Rule 8 (4-Level Fact-Forcing) 强约束: L3 + L4 不许矛盾
+# EPIC-053-A — Rule 8 (5 levels Fact-Forcing) 强约束: L3 + L4 不许矛盾
 # 防防御体系自检漏洞 (BE-9): 当 L3 跑 PASS, L4 报 FAIL (或反之) 时,
 # 意味着 verify 系统在自检自己的失败 — 必须硬约束为 ERROR.
 #
@@ -18,7 +18,7 @@
 # L4 PASS  OK      ERROR  ← 矛盾
 # L4 FAIL  ERROR   OK
 #
-# 跟 check-fact-forcing-preflight.sh 联动, 跟 Rule 8 4-Level 联合.
+# 跟 check-fact-forcing-preflight.sh 联动, 跟 Rule 8 5 levels 联合.
 
 set -euo pipefail
 

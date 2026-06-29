@@ -57,7 +57,7 @@
 ## 5. 3 类危险操作 (3 模式都触发)
 
 1. **miao_modify** — 修改 miao 分支 (commit/push/merge)
-2. **security_failing** — 安全检查 FAIL (pre-commit/anti-fab/4-Level)
+2. **security_failing** — 安全检查 FAIL (pre-commit/anti-fab/5 levels)
 3. **data_destruction** — rm -rf / reset --hard / drop table
 
 ## 6. 怎么改模式?

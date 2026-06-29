@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# scripts/verify/kpi-evidence-chain.sh — 4-Level KPI Evidence Chain (EPIC-053-B)
+# scripts/verify/kpi-evidence-chain.sh — 5 levels KPI Evidence Chain (EPIC-053-B)
 #
 # 12 KPI falsification 反复治根 (EPIC-024/028/031/036/037/039-B)
 # BE-5 治根 (Performer-EPIC-036/037 假 PASS 第 9/10 次)
 #
-# 4-Level evidence chain:
+# 5 levels evidence chain:
 #   L1: git-anchor — real commit SHA (not cached, not fake)
 #   L2: test stdout — raw output with "PASS" + "X/Y PASS" format (Rule 9)
 #   L3: 5 extended groups — security / process-engineering / auditor / compliance / decision-gate
@@ -27,7 +27,7 @@
 #   KALLAX_AUDIT_SINK_DIR — override audit sink directory
 #
 # Rule alignment:
-#   - Rule 8: 4-Level Fact-Forcing (extended from EPIC-053-A L3↔L4 to 4 dimensions)
+#   - Rule 8: 5 levels Fact-Forcing (extended from EPIC-053-A L3↔L4 to 4 dimensions)
 #   - Rule 9: KPI X/Y format precision (no estimate, exact)
 #   - Rule 18: KPI falsification blacklist
 #   - Rule 30/31: Independent witness mechanism (BE-5 + BE-7 修复模式)
@@ -272,7 +272,7 @@ check_l4_witness() {
 }
 
 # -------------------------------------------------------
-# verify: full 4-Level verification
+# verify: full 5 levels verification
 # Args: $1 = ticket_id, $2 = commit_sha, $3 = test_stdout_file
 # -------------------------------------------------------
 cmd_verify() {
@@ -281,7 +281,7 @@ cmd_verify() {
     local stdout_file="$3"
 
     echo "=========================================="
-    echo "4-Level KPI Evidence Chain Verification"
+    echo "5 levels KPI Evidence Chain Verification"
     echo "=========================================="
     echo "Ticket: $ticket_id"
     echo "Commit: $commit_sha"
@@ -320,7 +320,7 @@ cmd_verify() {
 
     echo "=========================================="
     if [ "$all_pass" -eq 1 ]; then
-        echo "RESULT: PASS — 4-Level evidence chain complete"
+        echo "RESULT: PASS — 5 levels evidence chain complete"
         echo "跟 EPIC-053-A l3-l4-consistency 联合, 治 BE-5 + 12 KPI falsification 反复"
         return 0
     fi
@@ -336,7 +336,7 @@ usage() {
 Usage: kpi-evidence-chain.sh <command> [args]
 
 Commands:
-  verify <ticket_id> <commit_sha> <test_stdout_file>  — Full 4-Level verification
+  verify <ticket_id> <commit_sha> <test_stdout_file>  — Full 5 levels verification
   check-l1 <commit_sha>                                — Verify L1 git-anchor
   check-l2 <test_stdout_file>                          — Verify L2 test stdout
   check-l3                                             — Verify L3 5 extended groups
@@ -353,7 +353,7 @@ Env overrides:
   KALLAX_SUBAGENT_ID          — subagent identifier for witness
 
 Rule alignment:
-  Rule 8  — 4-Level Fact-Forcing (L1/L2/L3/L4)
+  Rule 8  — 5 levels Fact-Forcing (L1/L2/L3/L4)
   Rule 9  — KPI X/Y format precision
   Rule 18 — KPI falsification blacklist
   Rule 30/31 — Independent witness mechanism (BE-5 + BE-7 修复模式)

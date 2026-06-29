@@ -40,7 +40,7 @@ filePath: /path/to/kallax/.claude/skills/kallax/extended/process-engineering-sel
 - `scripts/process/independent-witness.sh` (4141 bytes): 独立见证机制
 - `scripts/process/conductor-verify-gate.sh` (2845 bytes): Conductor 强制验证
 - `scripts/process/subagent-pass-gate.sh` (3008 bytes): Subagent 自验证 gate
-- `tests/integration/process-engineering-test.sh` (122 lines): 4-Level 集成测试
+- `tests/integration/process-engineering-test.sh` (122 lines): 5 levels 集成测试
 - CLAUDE.md Rule 30: 自验证需独立见证 (KALLAX P0)
 
 ## 跟对策 C 联合 (跟"诚实修正" 联合, 跟主公"同意" explicit 授权 联合)

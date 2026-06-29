@@ -24,7 +24,7 @@
 **跨 EPIC 联动**:
 - 跟 EPIC-055-B (主公拍板分级 P0/P1/P2) 联合 — 标签 SOP 引用 拍板分级 流程
 - 跟 EPIC-055-A (CLAUDE.md + GLOSSARY 去重) 联合 — 标签 SOP 加入核心原则
-- 跟 EPIC-053-B (4-Level 证据链) 联合 — 标签 引用 证据链 = 4-Level 模式
+- 跟 EPIC-053-B (5-Level 证据链) 联合 — 标签 引用 证据链 = 5-Level 模式
 
 ### 1.2 现状数据 (实测, 跟 baseline 联合)
 

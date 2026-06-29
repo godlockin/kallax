@@ -1,4 +1,4 @@
-# 9 Hard Rules 模式 (KALLAX, EPIC-059-A)
+# 5 levels 模式 (KALLAX, EPIC-059-A)
 
 > **跟 eket MASTER-RULES.md §6 联合, 借方法论 不借代码**
 > **跟 PHASE-013-REFLECTION-2026-06-18.md 联合, 治根 "Rule 数 通胀" 迷信**
@@ -11,17 +11,17 @@
 
 **问题**: KALLAX 当前 **20 Rule** (跟 CLAUDE.md 实际 1-18 + 30-31 一致, v2.7.4 D1 拍板 A 22→20 跨 release 留待 4h 实施). Rule 数 多 跟 "治理完成" 不是 因果关系 — v2.4.0 4 合并 (22 → 18) 跟 v2.4.1 revert 实证 净价值 持平 67.0%, 0 实际变化, 治根 "0 实际改变 假动作" 反讽.
 
-**方法**: 借 eket `template/docs/MASTER-RULES.md` §6 模式 — 9 条 Hard Rules 简表 + 反例 + 撤销方法 — **不复制 eket 9 Hard Rules 全文**, 提取 模式 + 命名, 适配 KALLAX 20 Rule 现状 (Conductor/Performer + outbox-isolation + tag-sop + ...).
+**方法**: 借 eket `template/docs/MASTER-RULES.md` §6 模式 — 9 条 Hard Rules 简表 + 反例 + 撤销方法 — **不复制 eket 5 levels 全文**, 提取 模式 + 命名, 适配 KALLAX 20 Rule 现状 (Conductor/Performer + outbox-isolation + tag-sop + ...).
 
 **约束**:
 - 0 增 Rule (跟"翻篇&精进" 战略 一致, 跟 v2.4.1 还原 20 Rule 联合, 跟 v2.7.4 D1 拍板 A 22→20 联合)
 - 0 重写 (跟 Rule 5 DRY 联合)
 - 20 Rule → 9 类别 group 索引 (file:line 1:1 映射, 不删)
-- 借方法论 不借代码 (不复制 eket 9 Hard Rules 全文)
+- 借方法论 不借代码 (不复制 eket 5 levels 全文)
 
 ---
 
-## 2. 9 Hard Rules 简表 (跟 eket §6 模式 一致)
+## 2. 5 levels 简表 (跟 eket §6 模式 一致)
 
 | # | 规则 | 要点 | 联合 KALLAX Rule |
 |---|------|------|-----------------|
@@ -37,7 +37,7 @@
 
 ---
 
-## 3. 9 Hard Rules 详细 解释 (跟 eket §6 模式 一致)
+## 3. 5 levels 详细 解释 (跟 eket §6 模式 一致)
 
 ### Rule 1: PR 合并后清理 outbox
 
@@ -142,7 +142,7 @@
 ### 反例
 
 - ❌ 新建 `docs/process/9-hard-rules.md` 前未查 已有 rule-merge-proposal.md, 导致 Rule 合并 主题 双文档 重复
-- ❌ 新建 eket 9 Hard Rules 复制版 → 跟"借方法论 不借代码" 战略 矛盾, 触发 反讽 治根
+- ❌ 新建 eket 5 levels 复制版 → 跟"借方法论 不借代码" 战略 矛盾, 触发 反讽 治根
 
 ### 正例
 
@@ -172,7 +172,7 @@
 
 ### 反例
 
-- ❌ PR 1200 行 → 触发 Rule 18 (KPI Falsification 黑名单) + 4-Level 验证 FAIL
+- ❌ PR 1200 行 → 触发 Rule 18 (KPI Falsification 黑名单) + 5 levels 验证 FAIL
 - ❌ PR 200 行未拆 → 评审成本↑, fatigue_index↑
 
 ### 正例
@@ -184,7 +184,7 @@
 
 ## 4. 撤销方法 (跟 v2.4.1 revert 联合)
 
-**触发**: 9 Hard Rules 跟 KALLAX 20 Rule 不再 1:1 适配 (e.g. 20 Rule 升 25, 或净价值↓).
+**触发**: 5 levels 跟 KALLAX 20 Rule 不再 1:1 适配 (e.g. 20 Rule 升 25, 或净价值↓).
 
 **流程** (跟 Rule 6 经验沉淀强制 + Rule 11 Master 写代码禁令 联合):
 
@@ -192,10 +192,10 @@
 2. **Step 2**: 提交 PHASE 反思 ticket (PHASE-XXX-REFLECTION), 跟 KALLAX-GLOSSARY §11.x 联合
 3. **Step 3**: 主公拍板 "撤销" 或 "修订", 跟 PROCESS.md:25-26 "Master 不能自己升级红线" 联合
 4. **Step 4**: revert 跟 v2.4.1 revert 模式 一致 — 0 落地脚本 变化, 0 净价值 损失, 跟"翻篇&精进" 一致
-5. **Step 5**: LESSONS-LEARNED.md 标 "9 Hard Rules 撤销", 跟 PHASE-013-REFLECTION 联合
+5. **Step 5**: LESSONS-LEARNED.md 标 "5 levels 撤销", 跟 PHASE-013-REFLECTION 联合
 
 **红线**:
-- ❌ 不经 主公拍板 Master 自行撤销 9 Hard Rules
+- ❌ 不经 主公拍板 Master 自行撤销 5 levels
 - ❌ 撤销 不带 LESSONS-LEARNED
 - ❌ 撤销 不跑 PHASE 反思 (跟 KALLAX-GLOSSARY §11.1 联合 反讽 模式)
 
@@ -214,9 +214,9 @@
 
 **§11.1**: "Rule 数 ≠ 治理完成" — 治理完成信号 是 净价值 持平 + 0 增命令 + 0 增 Rule, 不是 "Rule 数 ≤ 阈值 15" (迷信).
 
-**9 Hard Rules 简化 跟 §11.1 联合**:
-- 9 Hard Rules 是 模式 (Pattern), 不是 Rule 数 减 13 (22 → 9)
-- 20 Rule 仍 落地 (file:line 1:1 映射), 9 Hard Rules 是 group 索引 (索引表, 不删 Rule)
+**5 levels 简化 跟 §11.1 联合**:
+- 5 levels 是 模式 (Pattern), 不是 Rule 数 减 13 (22 → 9)
+- 20 Rule 仍 落地 (file:line 1:1 映射), 5 levels 是 group 索引 (索引表, 不删 Rule)
 - 跟 v2.4.0 4 合并 反思 联合, 治根 "0 实际改变 假动作" 反讽
 - 跟 PHASE-013-REFLECTION 联合, 跟"反讽" + "诚实修正" 战略 一致
 

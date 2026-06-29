@@ -1,5 +1,5 @@
 ---
-description: Verify PR output before merge (4-Level Fact-Forcing).
+description: Verify PR output before merge (5 levels Fact-Forcing).
 argument-hint: [PR_NUMBER]
 ---
 

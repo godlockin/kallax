@@ -1,5 +1,5 @@
 /**
- * KALLAX Fact-Forcing Gate — 4-Level verification for tool use.
+ * KALLAX Fact-Forcing Gate — 5 levels verification for tool use.
  *
  * L1: Existence — file/change exists
  * L2: Substance — real logic, not stubs
