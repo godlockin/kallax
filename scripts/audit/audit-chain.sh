@@ -57,14 +57,24 @@ sha256_hex() {
     fi
 }
 
-# 计算 entry 的 chain_hash: sha256(prev_hash || canonical_entry)
-# 入参: prev_hash, entry (无 chain_hash 字段)
+# 计算 entry 的 chain_hash (V310 hotfix S-006: 双 sha256 抗 collision)
+# 算法: chain_algo = "sha256-v2" → chain_hash = sha256(sha256(prev_hash || canonical_entry))
+# 入参: prev_hash, entry (无 chain_hash 字段), algo (默认 sha256-v2)
 calc_chain_hash() {
     local prev_hash="$1"
     local entry_no_self="$2"
+    local algo="${3:-sha256-v2}"
     local canonical
     canonical=$(canonical_json "$entry_no_self")
-    sha256_hex "${prev_hash}${canonical}"
+    if [[ "$algo" == "sha256-v2" ]]; then
+        # 双 sha256: 抗 collision 强化 (跟 V310-B-REVIEW S-006 P1 联合)
+        local inner
+        inner=$(sha256_hex "${prev_hash}${canonical}")
+        sha256_hex "$inner"
+    else
+        # sha256-v1: 旧 log 兼容性 (single sha256)
+        sha256_hex "${prev_hash}${canonical}"
+    fi
 }
 
 # 读最后一条 entry 的 chain_hash; 文件不存在/空 → 返回 "0"*64
@@ -128,12 +138,14 @@ append_entry() {
     # 计算 chain_hash — 必须跟 verify 视角一致:
     #   verify 看到磁盘 entry (含 prev_hash + chain_hash), 重算时去掉 chain_hash
     #   append 也必须按"含 prev_hash 但无 chain_hash" 计算
+    # V310 hotfix S-006: 默认 sha256-v2 (双 sha256), 通过 chain_algo 字段标记
     local entry_with_prev
-    entry_with_prev=$(echo "$entry" | jq -c --arg ph "$prev_hash" '. + {prev_hash:$ph}')
+    entry_with_prev=$(echo "$entry" | jq -c --arg ph "$prev_hash" \
+        '. + {prev_hash:$ph, chain_algo:"sha256-v2"}')
     local chain_hash
-    chain_hash=$(calc_chain_hash "$prev_hash" "$entry_with_prev")
+    chain_hash=$(calc_chain_hash "$prev_hash" "$entry_with_prev" "sha256-v2")
 
-    # 构造最终 entry (字段按字典序 + prev_hash + chain_hash)
+    # 构造最终 entry (字段按字典序 + prev_hash + chain_algo + chain_hash)
     local final
     final=$(echo "$entry_with_prev" | jq -c --arg ch "$chain_hash" \
         '. + {chain_hash:$ch}' | jq -c -S '.')
@@ -222,8 +234,10 @@ verify_file() {
         # 提取 prev_hash 和 chain_hash
         local entry_prev
         local entry_chain
+        local entry_algo
         entry_prev=$(echo "$line" | jq -r '.prev_hash // empty' 2>/dev/null)
         entry_chain=$(echo "$line" | jq -r '.chain_hash // empty' 2>/dev/null)
+        entry_algo=$(echo "$line" | jq -r '.chain_algo // "sha256-v1"' 2>/dev/null)
 
         # legacy entry (无 hash 字段) → 跳过 (向后兼容)
         if [[ -z "$entry_chain" ]]; then
@@ -237,12 +251,12 @@ verify_file() {
             fail_count=$((fail_count + 1))
         fi
 
-        # 校验 chain_hash = sha256(prev_hash || canonical_entry_without_chain_hash)
+        # 校验 chain_hash: V310 hotfix S-006 派 algo (默认 sha256-v1 兼容旧 log)
         local expected_chain
-        expected_chain=$(calc_chain_hash "$entry_prev" "$line")
+        expected_chain=$(calc_chain_hash "$entry_prev" "$line" "$entry_algo")
 
         if [[ "$expected_chain" != "$entry_chain" ]]; then
-            echo "FAIL: $file:$line_num chain_hash mismatch (expected=$expected_chain actual=$entry_chain)"
+            echo "FAIL: $file:$line_num chain_hash mismatch (algo=$entry_algo expected=$expected_chain actual=$entry_chain)"
             fail_count=$((fail_count + 1))
         fi
 
