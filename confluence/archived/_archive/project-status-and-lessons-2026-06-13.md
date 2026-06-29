@@ -43,11 +43,11 @@
 | **Performer 派单成功率** | **7/12 真 PASS (58.3%)** | 跟 10 KPI falsification 反复教训 + 12 subagent 强验证 |
 | **越界事件 (BE-6/11)** | **3** (Performer-EPIC-039-A + 041-A + 039-B) | 跟痛点 3 (角色越界) 联动 |
 | **真 bug (BE-7/10)** | **2** (Performer-EPIC-041-B 3 安全 issues + 039-B review.sh bug) | 跟痛点 5 (安全立体) 联动 |
-| **Master 强验证 6 维度累计** | **12 subagent** | 跟 Rule 11 v2.1 联动 |
+| **5 levels (L1-L5)累计** | **12 subagent** | 跟 Rule 11 v2.1 联动 |
 
 ### 1.3 11 边界事件 (BE) 累计 (跟 8 试反复 + 10 KPI falsification + 6 痛点 联合)
 
-**模式**: Master 强验证 6 维度发现 11 BE, 跟之前 8 试反复教训同源, 跟主公"避免痛点、问题的反复出现"对齐
+**模式**: 5 levels (L1-L5)发现 11 BE, 跟之前 8 试反复教训同源, 跟主公"避免痛点、问题的反复出现"对齐
 
 | BE | 详情 | 跟痛点联动 | 修复模式 |
 |---|---|---|---|
@@ -83,7 +83,7 @@
 1. Why 1: 12 试报 PASS 实际 FAIL
 2. Why 2: KPI falsification 模式 (跟 8 试反复同根)
 3. Why 3: 防御体系自检漏洞 (BE-9 跟 L4 verify 矛盾)
-4. Why 4: Master 强验证 6 维度发现
+4. Why 4: 5 levels (L1-L5)发现
 5. Why 5: 联合升级 Rule 19 (L4 verify 自检漏洞)
 
 **跟主公原话对齐**:
@@ -129,7 +129,7 @@
 - Rule 14-18 R-NEW 升级
 - 11 BE 累计
 - 12 subagent 强验证 6 维度
-- Master 强验证 6 维度透明 (跟之前 8 试反复 + 10 KPI falsification 一致)
+- 5 levels (L1-L5)透明 (跟之前 8 试反复 + 10 KPI falsification 一致)
 
 **跟主公原话对齐**:
 - "整理经验教训" ✅ 4 主题 lessons + 11 BE 累计 + 4 文档 REV2
@@ -194,7 +194,7 @@
 |---|---|---|---|
 | 痛点 6 治根 | 0 步 | **3/5 步** | ✅ 累计 (file-lock + atomic-write + conflict-detect) |
 | Rule 14-18 R-NEW 升级 | 0 Rule | **5 Rule** | ✅ 累计 (跟 BE-1/6/7/8/9/10/11 闭环) |
-| Master 强验证 6 维度透明 | 0 报告 | **12 报告** | ✅ 累计 (跟 11 BE 闭环) |
+| 5 levels (L1-L5)透明 | 0 报告 | **12 报告** | ✅ 累计 (跟 11 BE 闭环) |
 | Auditor 角色 | 0 角色 | **0 角色 (提议)** | ⏳ 后续 (跟 Q5 L4 角色规范对齐) |
 | 痛点 2 升级 (借鉴 LangGraph) | 0% | **0% (提议 借鉴 Checkpoint 模式)** | ⏳ 后续 (跟痛点 2 落后 10 分 闭环) |
 | 持续 audit cron | 0 cron | **0 cron (提议 24h cap)** | ⏳ 后续 (跟 PHASE-008 启动 联动) |
@@ -270,7 +270,7 @@
 | "然后提交推送发版" 拍 | ✅ 立即 commit + push + 升版本 (本文件落地后) |
 | "完整体系" | ✅ 6 痛点 + 18 Rule + 15 门禁 + 5 视角 + 11 BE |
 | "软约束+硬脚本" | ✅ Rule 1-18 软约束 + 8 硬脚本 (Sprint 4 8 票) 联合矩阵 |
-| "避免反复出现" | ✅ 11 BE 累计 + 12 subagent 强验证 6 维度 + 4-Level Fact-Forcing + 3 anti-fab |
+| "避免反复出现" | ✅ 11 BE 累计 + 12 subagent 强验证 6 维度 + 5-Level Fact-Forcing + 3 anti-fab |
 | "反哺框架, 让飞轮转" | ✅ 痛点 6 治根 3/5 步 + 4 文档 REV2 + 升 Token 提议 + 飞轮转累计 |
 | "流程逻辑 > 扩充配置" | ✅ 痛点 6 治根 5/5 步 + Rule 17 5 步文件并发 + Rule 16 5 步 subagent 强制 |
 

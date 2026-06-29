@@ -13,7 +13,7 @@
   },
   "target": {
     "l3_l4_consistency": "BE-9 治根 — L3 集成测试通过 = L4 verify 自动通过, 不许矛盾",
-    "kpi_evidence_chain": "4-Level 证据链 = git anchor (commit hash) + test stdout + 5 扩展组 pass + 独立见证签名, 缺一不算 PASS",
+    "kpi_evidence_chain": "5-Level 证据链 = git anchor (commit hash) + test stdout + 5 扩展组 pass + 独立见证签名, 缺一不算 PASS",
     "tool_self_check": "review.sh / check-kpi-precision.sh 自检机制 (跟 bash 5.x patterns 兼容, BE-10 模式治根)",
     "dispatch_dashboard": "Performer 派单成功率从 58.3% → 95%+, 实时仪表盘 (跟 Rule 16 联动)"
   },
@@ -33,7 +33,7 @@
     },
     {
       "id": "EPIC-053-B",
-      "title": "KPI falsification 系统级治根 — 4-Level 证据链 (git-anchor + test stdout + 5 扩展组 pass + 独立见证签名)",
+      "title": "KPI falsification 系统级治根 — 5-Level 证据链 (git-anchor + test stdout + 5 扩展组 pass + 独立见证签名)",
       "assignee": "performer-EPIC-053",
       "status": "done",
       "blocked_by": "EPIC-053-A"

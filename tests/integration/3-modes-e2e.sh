@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # 3-modes-e2e.sh — EPIC-029-H 3 模式 × 4 维度 E2E 集成测试 (16 场景)
 # 16 场景 = ai-auto(4) + ai-copilot(6) + manual(6) (跟 docs/superpowers/plans/2026-06-09-kallax-3-modes.md Task 8 1:1)
-# 4-Level Fact-Forcing: L1 存在性 + L2 实质性 + L3 接线 + L4 数据流 (跟 AGENTS.md 1:1)
+# 5 levels Fact-Forcing: L1 存在性 + L2 实质性 + L3 接线 + L4 数据流 (跟 AGENTS.md 1:1)
 # 跟 EPIC-029-A mode-set.sh 1:1 验证 (state.json mode + mode_set_at + mode_lock)
 # 跟 EPIC-029-K full-integration-test.sh 1:1 验证 (覆盖场景 + trap 恢复)
 # 跟"翻篇&精进" 战略 联合: 0 简单 记录, 真实 exit code 验证 + raw stdout
@@ -81,7 +81,7 @@ test_case() {
   fi
 }
 
-# record helper: 4-Level Fact-Forcing 维度记录
+# record helper: 5 levels Fact-Forcing 维度记录
 record_dim() {
   local dim="$1"   # L1/L2/L3/L4
   local name="$2"
@@ -361,7 +361,7 @@ echo ""
 # AC #2: 12 minimum, 16 expected (3 modes × 4 dim baseline + 16 E2E scenarios)
 EXPECTED_MIN=12
 if [[ $TOTAL -lt $EXPECTED_MIN ]]; then
-  echo "FAILED: 4-Level coverage < $EXPECTED_MIN minimum (got $TOTAL)"
+  echo "FAILED: 5 levels coverage < $EXPECTED_MIN minimum (got $TOTAL)"
   exit 1
 fi
 
@@ -374,5 +374,5 @@ echo "PASS: 3-modes-e2e.sh ($TOTAL cases, 3 modes × 4 dimensions, 100% PASS)"
 echo "  - ai-auto:    4 scenarios PASS"
 echo "  - ai-copilot: 6 scenarios PASS"
 echo "  - manual:     6 scenarios PASS"
-echo "  - 4-Level: L1/L2/L3/L4 all PASS"
+echo "  - 5 levels: L1/L2/L3/L4 all PASS"
 exit 0

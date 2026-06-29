@@ -22,7 +22,7 @@
 | 2 | [AC 2] | ✅/❌ | [证据] |
 | ... | | | |
 
-### 4-Level Fact-Forcing
+### 5-Level Fact-Forcing
 
 - L1 存在性: ✅/❌
 - L2 实质性: ✅/❌

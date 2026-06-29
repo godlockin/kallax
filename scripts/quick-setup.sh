@@ -154,7 +154,7 @@ init_kallax() {
 - Multi-agent orchestration (Conductor-Performer pattern)
 - Automatic degradation (Rust → Node.js → Shell)
 - Worktree-based parallel execution
-- 4-Level Fact-Forcing verification
+- 5 levels Fact-Forcing verification
 EOF
         log_success "Created IDENTITY.md"
     fi

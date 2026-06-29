@@ -8,7 +8,7 @@
 #   - Bug 2: bash 5.x 数组 [[:space:]] 模式不兼容 (用 \s 替代)
 #   - Self-guard: 静态检查本脚本不复发 [[:space:]] 数组模式
 #
-# 跟 review.sh / tool-self-check.sh 同步升级, 跟 EPIC-053-B 4-Level 证据链 联动
+# 跟 review.sh / tool-self-check.sh 同步升级, 跟 EPIC-053-B 5 levels 证据链 联动
 
 set -euo pipefail
 

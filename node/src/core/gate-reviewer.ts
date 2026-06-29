@@ -1,13 +1,13 @@
 /**
  * KALLAX Gate Reviewer
- * 4-Level gate review for PRs and task completion.
+ * 5 levels gate review for PRs and task completion.
  * Gate 1: Preflight — existence, file count, CI status
  * Gate 2: Architecture — isolation, dependency, pattern compliance
  * Gate 3: Security — forbidden patterns, secrets, dependencies
  * Gate 4: Performance — test coverage, complexity, benchmarks
  *
  * v2.0.3 EPIC-056-A: 3 阶段治理协调器 (Conductor 全局 → 4+5 专家并行 → Master 仲裁 + 主公拍板)
- * 跟 4-Level 共存 — 4-Level 用于 PR 评审, 3 阶段用于 EPIC/expert 评审
+ * 跟 5 levels 共存 — 5 levels 用于 PR 评审, 3 阶段用于 EPIC/expert 评审
  */
 import { execFile } from 'node:child_process';
 import { err, ok } from 'neverthrow';
@@ -179,7 +179,7 @@ export function getGateReviewer(): GateReviewer {
 
 // ========================================================================
 // 3 阶段治理协调器 (v2.0.3 EPIC-056-A)
-// 跟 4-Level Gate Review 并存 — 4-Level 用于 PR 评审, 3 阶段用于 EPIC/expert 评审
+// 跟 5 levels Gate Review 并存 — 5 levels 用于 PR 评审, 3 阶段用于 EPIC/expert 评审
 // 跟 v1.2.4 5 扩展组 联合, 跟 EPIC-055-B 拍板分级 P0/P1/P2 联合
 // 治 A4 治理爆炸, 净价值 62.5% → 65%+
 // ========================================================================

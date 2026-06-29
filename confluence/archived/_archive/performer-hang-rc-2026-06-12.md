@@ -127,7 +127,7 @@
 ### 3.4 防御 4: 边界事件 Master 强验证 (跟 Rule 11 联动)
 
 **操作**:
-- Conductor 撞 Rule 1 / Rule 11 边界时, Master 强验证 6 维度 (跟 Rule 11 v2.1 一致):
+- Conductor 撞 Rule 1 / Rule 11 边界时, 5 levels (L1-L5) (跟 Rule 11 v2.1 一致):
   1. `git log --oneline -1` 看 SHA 真变
   2. `git show HEAD:file | grep` 看内容真改
   3. 跑全量 E2E
@@ -148,7 +148,7 @@
 |---|---|---|
 | Rule 9d (commit amend verify, 4 维度) | ✅ 间接防 hang (commit 后验证) | 升级: 加"commit message < 5 行" 约束 |
 | Rule 9e (Performer 自验证) | ❌ 不覆盖 (hang 时无产物) | 升级: 加"performer spawn fail 重试上限 3 次" |
-| Rule 11 v2.1 (Master 强验证 6 维度) | ❌ Hang 时强验证失效 | 升级: 加"hang 边界事件必须 4 防御 1 验证" |
+| Rule 11 v2.1 (5 levels (L1-L5)) | ❌ Hang 时强验证失效 | 升级: 加"hang 边界事件必须 4 防御 1 验证" |
 | Rule 13 (3 模式决策权) | ✅ Conductor 决策 hang 处置 | 升级: 写 Rule 14 anti-hang 任务结构 |
 | **🆕 Rule 14 (Anti-Hang)** | **新规则** | **本 RC 提议** |
 
@@ -199,7 +199,7 @@
 ├─────────────────────────────────────────────────────────────────┤
 │ Rule 9d (commit amend verify) 升级: 加 "commit msg < 5 行"       │
 │ Rule 9e (Performer 自验证) 升级: 加 "spawn fail 重试 ≤ 3 次"     │
-│ Rule 11 v2.1 (Master 强验证 6 维度) 升级: 加 "hang 边界事件"    │
+│ Rule 11 v2.1 (5 levels (L1-L5)) 升级: 加 "hang 边界事件"    │
 │ Rule 13 (3 模式) 升级: 写 Rule 14 anti-hang 任务结构            │
 │ 🆕 Rule 14 (Anti-Hang): spawn 任务结构强制 (草案 §4.1)          │
 └─────────────────────────────────────────────────────────────────┘

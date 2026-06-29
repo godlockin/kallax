@@ -16,7 +16,7 @@ EKET (v0)                              KALLAX (v1)
 ├── Single agent per session           ├── 5 parallel performers
 ├── Shared file space                  ├── Isolated worktrees
 ├── Silent degradation                 ├── 3-level explicit degradation
-├── trust-based verification           ├── 4-Level Fact-Forcing
+├── trust-based verification           ├── 5-Level Fact-Forcing
 ├── `expect()`/`unwrap()` everywhere   ├── `Result<T, E>` enforced
 ├── Master/Performer naming            ├── Conductor/Performer naming
 ├── `~/.kallax/` global data           ├── `<project>/.kallax/` scoped data
@@ -191,7 +191,7 @@ Performer E: Integration tests
 | Linter conflicts | Two formatters undoing each other | Unified prettier config |
 | Port conflicts | Two servers on same port | `KALLAX_PORT` env per worktree |
 | Implicit dependencies | Task B blocked on Task A | Explicit "Blocks: TASK-NNN" declaration |
-| Phantom completions | Background agent hallucination | Foreground-only writes, 4-Level verify |
+| Phantom completions | Background agent hallucination | Foreground-only writes, 5-Level verify |
 
 ### Optimal Formula
 
@@ -267,7 +267,7 @@ CI scan results (monthly):
 
 ### Don't
 
-- Don't trust agent self-reports. 4-Level verification is not paranoia, it's experience.
+- Don't trust agent self-reports. 5-Level verification is not paranoia, it's experience.
 - Don't use background agents for code writes. They will hallucinate confidently.
 - Don't merge without CI green. Every skip creates a cascading debugging session.
 - Don't let the Conductor write code. The moment the Conductor codes, coordination breaks.

@@ -15,7 +15,7 @@
 | AC2 | `scripts/dashboard/dispatch-dashboard.sh` CLI 仪表盘 — 输出每 EPIC 派单成功率 + 越界事件 + 假 PASS 计数 | `bash scripts/dashboard/dispatch-dashboard.sh` raw output |
 | AC3 | `web/src/dashboard/dispatch/` Web 仪表盘 — 图表显示历史趋势, 跟 web/ 框架一致 | 跟 web/styles.css dark theme 一致 + vanilla JS (zero deps, 跟 web/app.js 一致) |
 | AC4 | Performer 派单成功率从 58.3% (PROJECT-STATUS line 43) → 95%+ 目标 | KPI 公式 + 历史 baseline (line 43) |
-| AC5 | H1 治根 — KPI falsification 反复 实时可视化, 跟 EPIC-053-B 4-Level 证据链联动 | `detectFakePasses()` 函数 + `kpi-evidence-chain.sh` exit code 解析 |
+| AC5 | H1 治根 — KPI falsification 反复 实时可视化, 跟 EPIC-053-B 5-Level 证据链联动 | `detectFakePasses()` 函数 + `kpi-evidence-chain.sh` exit code 解析 |
 | AC6 | H6 治根 — 越界事件 (BE-1/BE-6/BE-11) 实时告警, 跟 Rule 15 联动 | `detectBoundaryViolations()` 函数 + `check-scope-creep.sh` exit code 解析 |
 | AC7 | `tests/integration/dispatch-dashboard-test.sh` 5/5 PASS (3 数据源 mock + 2 case: 派单成功 + 派单失败) | `bash tests/integration/dispatch-dashboard-test.sh` raw output |
 | AC8 | Rule 9 KPI 精确 X/Y 格式 — 5/5 PASS = 100.0% | test output 含 `5/5 PASS (100.0%)` |
@@ -32,7 +32,7 @@
 │  S1: pass-report JSON (.kallax/queue/outbox/performer-*/│
 │       pass-report-*.json) — 派单 outcome 真相          │
 │  S2: check-scope-creep.sh exit (BE-1/6/11 越界)        │
-│  S3: kpi-evidence-chain.sh exit (4-Level evidence)     │
+│  S3: kpi-evidence-chain.sh exit (5-Level evidence)     │
 └──────────────┬──────────────────────────────────────────┘
                ↓
 ┌─────────────────────────────────────────────────────────┐
@@ -65,7 +65,7 @@ interface DispatchRecord {
   readonly performerId: string;
   readonly commitSha: string;
   readonly outcome: DispatchOutcome;
-  readonly evidenceChainPassed: boolean;  // EPIC-053-B 4-Level
+  readonly evidenceChainPassed: boolean;  // EPIC-053-B 5-Level
   readonly scopeViolations: ReadonlyArray<string>;  // BE-1/6/11
   readonly timestamp: number;
 }
@@ -109,7 +109,7 @@ interface DispatchKpiSummary {
 
 ### 2.5 数据源 S3 (kpi-evidence-chain.sh) exit 解析
 
-调用 `bash scripts/verify/kpi-evidence-chain.sh verify <ticket> <sha> <stdout>` → exit 0 = evidence PASS, exit 1 = evidence FAIL. Parse `[L1 PASS|FAIL]` markers 验证 4-Level 一致性 (跟 output-verifier.ts:392-400 一致).
+调用 `bash scripts/verify/kpi-evidence-chain.sh verify <ticket> <sha> <stdout>` → exit 0 = evidence PASS, exit 1 = evidence FAIL. Parse `[L1 PASS|FAIL]` markers 验证 5-Level 一致性 (跟 output-verifier.ts:392-400 一致).
 
 ---
 
@@ -175,7 +175,7 @@ interface DispatchKpiSummary {
 测试用临时目录 (mktemp) 装 3 个 mock 数据源:
 - `mock/outbox/performer-EPIC-X/{pass-report-EPIC-X-1..5}.json` (5 个 pass-report)
 - `mock/scope-creep/{EPIC-X-1..5}.exit` (5 个 exit code 文件)
-- `mock/evidence-chain/{EPIC-X-1..5}.exit` (5 个 4-Level 验证结果)
+- `mock/evidence-chain/{EPIC-X-1..5}.exit` (5 个 5-Level 验证结果)
 
 Case 3 (假 PASS): 1 个 pass-report `kpi_x_of_y="5/5 PASS"` 但 `boundary_violations=1` → outcome='fake_pass'
 Case 4 (越界): 1 个 pass-report 跟 scope-creep exit=1 联动 → outcome='boundary_violation'
@@ -208,7 +208,7 @@ Case 4 (越界): 1 个 pass-report 跟 scope-creep exit=1 联动 → outcome='bo
 
 | Ticket | 联动点 |
 |--------|--------|
-| EPIC-053-A | L3↔L4 一致性 (l3-l4-consistency.sh 不动, 仪表盘在 S3 验证 4-Level) |
+| EPIC-053-A | L3↔L4 一致性 (l3-l4-consistency.sh 不动, 仪表盘在 S3 验证 5-Level) |
 | EPIC-053-B | `kpi-evidence-chain.sh verify` exit → evidenceChainPassed |
 | EPIC-053-C | `check-scope-creep.sh` 修复版 exit → scopeViolations (BE-10 模式联动) |
 | EPIC-053-E | wiring gap 治根, 仪表盘不复用 `output-verifier.verify` 而是用 `verifyPassEvidence` (avoid 5 调用点重复) |

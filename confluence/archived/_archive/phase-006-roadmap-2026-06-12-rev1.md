@@ -18,7 +18,7 @@
 
 | 痛点 | KALLAX 现状 | 残余 Gap | 业内最强 |
 |---|---|---|---|
-| 1 假装完成 | 90% (4-Level + 3 anti-fab + Rule 9/11) | Edit tool bash multi-line 工具层 | CrewAI 70% |
+| 1 假装完成 | 90% (5-Level + 3 anti-fab + Rule 9/11) | Edit tool bash multi-line 工具层 | CrewAI 70% |
 | 2 上下文失忆 | 85% (3 模式 + decision-gate + handoff) | 缺 Checkpoint 时间旅行 (-10 分) | LangGraph 95% |
 | 3 角色越界 | 90% (ROLE-RULES + decision-gate + Rule 11) | 缺 Auditor 独立角色 | AutoGen 50% |
 | 4 资源覆盖 | 85% (worktree + file-scope) | 跨 worktree 派单 friction | LangGraph 60% |

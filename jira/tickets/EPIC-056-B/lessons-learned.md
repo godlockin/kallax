@@ -4,7 +4,7 @@
 > **Phase**: PHASE-009
 > **Date**: 2026-06-17
 > **Author**: performer-EPIC-056-B
-> **Reviewers**: Conductor + Master 强验证 6 维度 (待 Conductor 复审)
+> **Reviewers**: Conductor + 5 levels (L1-L5) (待 Conductor 复审)
 > **Status**: ✅ DONE — 6/6 PASS (100.0%)
 
 ---
@@ -194,7 +194,7 @@
 ## 7. 下一步 (Conductor merge 阶段)
 
 1. **Conductor 验证**: 跑 anti-fab 7 工具 + read pass-report JSON
-2. **Master 强验证 6 维度**: 跟之前 12 subagent 强验证 一致 (跟 PROJECT-STATUS-2026-06-13.md 联动)
+2. **5 levels (L1-L5)**: 跟之前 12 subagent 强验证 一致 (跟 PROJECT-STATUS-2026-06-13.md 联动)
 3. **PASS → Conductor merge**: `feature/EPIC-056-B-process-metrics` → `testing` → `miao`
 4. **后续 ticket 联动**:
    - EPIC-053-D (派单仪表盘) — 数据源对齐

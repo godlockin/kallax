@@ -1,8 +1,8 @@
-# EPIC-025-B: UP-2 Rule 9 — 4-Level Fact-Forcing 强制 (scripts/check-fact-forcing-preflight.sh)
+# EPIC-025-B: UP-2 Rule 9 — 5-Level Fact-Forcing 强制 (scripts/check-fact-forcing-preflight.sh)
 
 ## 需求
 
-EPIC-021 LESSONS §8.3 UP-2, D review CRITICAL 触发, 这是 4-Level 从文档变 enforcement 的关键
+EPIC-021 LESSONS §8.3 UP-2, D review CRITICAL 触发, 这是 5-Level 从文档变 enforcement 的关键
 
 ## 接受标准 (AC)
 

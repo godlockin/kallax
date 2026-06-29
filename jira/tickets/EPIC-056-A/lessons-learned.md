@@ -149,7 +149,7 @@ EPIC-056-B (流程效果度量) ✅ DONE — 跟本 ticket 3 KPI 闭环
 - ✅ EPIC-055-B: Phase 3 主公拍板用 route_p0/p1/p2 (跟 PROCESS.md:25-26 联合)
 - ✅ EPIC-056-B: 净价值 62.5% → 65%+ 跟 3 KPI 闭环
 - ⚠️ EPIC-054-D: Rule 合并扫描跟本 ticket 0 增 0 删专家 联合
-- ⚠️ EPIC-056-C: Master 强验证 6 维度恢复跟本 ticket Phase 3 仲裁 联合
+- ⚠️ EPIC-056-C: 5 levels (L1-L5)恢复跟本 ticket Phase 3 仲裁 联合
 
 ---
 
@@ -159,7 +159,7 @@ EPIC-056-B (流程效果度量) ✅ DONE — 跟本 ticket 3 KPI 闭环
 - `jira/tickets/EPIC-056-A/` (实现记录)
 - `docs/PROCESS.md` ✅ 改
 - `.claude/skills/kallax/SKILL.md` ✅ 改
-- `node/src/core/gate-reviewer.ts` ✅ 扩展 (4-Level 保留 + 3 阶段 增量)
+- `node/src/core/gate-reviewer.ts` ✅ 扩展 (5-Level 保留 + 3 阶段 增量)
 - `tests/integration/governance-3phase-test.sh` ✅ 新建
 - `scripts/audit/governance-3phase.sh` ✅ 新建 (实现 — 测试 source 依赖)
 
@@ -194,7 +194,7 @@ EPIC-056-B (流程效果度量) ✅ DONE — 跟本 ticket 3 KPI 闭环
 | check-test-case-isolation | PASS | 6 TC 独立, 无依赖 |
 | check-kpi-precision | PASS | 6/6 (100.0%) Rule 9 X/Y 格式 |
 | check-scope-creep | PASS | 0 越界 (Section 4 详) |
-| check-fact-forcing-preflight | PASS | 4-Level + 3 阶段 双层验证 |
+| check-fact-forcing-preflight | PASS | 5-Level + 3 阶段 双层验证 |
 | l3-l4-consistency | PASS | gate-reviewer.ts L3 (security) + L4 (perf) 保留, 3 阶段增量 |
 | kpi-evidence-chain | PASS | 6/6 PASS 输出, Rule 9 格式严格 |
 | tool-self-check | PASS | TypeScript 0 errors in gate-reviewer.ts (4 预存 errors 在 permissions/ 不在本 ticket 范围) |

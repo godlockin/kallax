@@ -125,7 +125,7 @@ EPIC-022 ticket 结构 (待建)
 
 来自 EPIC-021 LESSONS-LEARNED §8.3:
 - **UP-1**: Rule 8 "L4 脚本必须存在, 否则 ticket 不 close"
-- **UP-2**: Rule 9 "4-Level Fact-Forcing 强制机制 = task:complete 集成"
+- **UP-2**: Rule 9 "5-Level Fact-Forcing 强制机制 = task:complete 集成"
 - **UP-3**: Rule 6 修订 "EPIC 实施 commit 必带 LESSONS-LEARNED 草稿"
 - **UP-4**: 新增 architecture 文档 `confluence/architecture/heartbeat-observability.md`
 

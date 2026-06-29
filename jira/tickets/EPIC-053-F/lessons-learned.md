@@ -13,7 +13,7 @@
 
 **修法**: 提取 `match_glob()` 函数 — 当 allowed 以 `/` 结尾时走 prefix match, 否则 exact match. 用 `BASH_SOURCE` 守卫实现可 source 测试, 避免文件循环 + 散落逻辑.
 
-**Rule 联动**: Rule 8 (4-Level) — 工具的 limitation 就是 defense system 的 limitation, 必须治根不能 workaround.
+**Rule 联动**: Rule 8 (5-Level) — 工具的 limitation 就是 defense system 的 limitation, 必须治根不能 workaround.
 
 ---
 
@@ -35,7 +35,7 @@
 
 **应用**: `match_glob` 函数 + `[[ "${BASH_SOURCE[0]:-$0}" != "${0}" ]] && return 0 2>/dev/null` 守卫. 4 case 单元测试只跑 < 100ms, 测 exact / dir / no-match / multi-pattern 4 维度.
 
-**Rule 联动**: Rule 6 (TDD) + Rule 8 (4-Level 互证). 可测试性 = 可验证性 = 可信度.
+**Rule 联动**: Rule 6 (TDD) + Rule 8 (5-Level 互证). 可测试性 = 可验证性 = 可信度.
 
 ---
 
@@ -94,9 +94,9 @@
 | Ticket | 状态 | 跟 F 联动 |
 |--------|------|----------|
 | EPIC-053-A | merged | L6 lesson 闭环, l3-l4-consistency-test.sh 是 A 创建的, F 改名 |
-| EPIC-053-B | pending | 4-Level 证据链 (跟 A 联合) |
+| EPIC-053-B | pending | 5-Level 证据链 (跟 A 联合) |
 | EPIC-053-C | pending (P0) | BE-10 模式联动, 跨 ticket 模式一致 |
-| EPIC-053-D | pending | Master 强验证 6 维度 |
+| EPIC-053-D | pending | 5 levels (L1-L5) |
 | EPIC-053-E | pending (P0) | l3-l4-wiring-test.sh 边界, 不动 |
 | **EPIC-053-F** | **done** | **glob 修 + 命名澄清** |
 
@@ -106,7 +106,7 @@
 
 - Rule 5 (DRY): 跟 EPIC-053-C Bash pattern 一致
 - Rule 6 (TDD): 先 4 case 红, 后实现绿
-- Rule 8 (4-Level): L1 文件存在 + L2 实质 + L3 接线 + L4 集成
+- Rule 8 (5-Level): L1 文件存在 + L2 实质 + L3 接线 + L4 集成
 - Rule 9 (KPI 精确): 4/4 + 4/4 = 8/8 = 100.0% 精确数字
 - Rule 18 (黑名单): #6 自检漏洞治根, #2 KPI falsification
 - v1.2.4 5 扩展组: 跟 B 组 5 extended review 逆袭发现 闭环

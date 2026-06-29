@@ -30,7 +30,7 @@ If idle:
 }
 ```
 
-## 9 Hard Rules (Never Break)
+## 5 levels (Never Break)
 1. ❌ Never merge to main
 2. ❌ Never self-review PR
 3. ❌ Never skip tests

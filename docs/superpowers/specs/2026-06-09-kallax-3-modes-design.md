@@ -54,7 +54,7 @@
 | # | 危险操作 | 来源 |
 |---|---|---|
 | 1 | 修改 miao 分支 (commit/push/merge) | Rule 1 + 主公 2026-06-09 |
-| 2 | 安全相关 (pre-commit FAIL/anti-fab FAIL/4-Level FAIL/凭据变动) | Rule 9/10 |
+| 2 | 安全相关 (pre-commit FAIL/anti-fab FAIL/5 levels FAIL/凭据变动) | Rule 9/10 |
 | 3 | 删除/恢复数据 (rm -rf/reset --hard/push --force/worktree drop/db drop) | 通用红线 |
 
 ---
@@ -156,7 +156,7 @@
 
 ---
 
-## 11. 验收标准 (4-Level Fact-Forcing)
+## 11. 验收标准 (5 levels Fact-Forcing)
 
 ### L1 存在性
 - [ ] `state.json` 加 `mode` + `mode_lock` 字段, type 验证
@@ -186,7 +186,7 @@
 
 - **EKET 借鉴清单**: `confluence/decisions/CONDUCTOR-VIEW-EKET-VS-KALLAX-2026-06-09.md` §5, `UX-VIEW-EKET-VS-KALLAX-2026-06-09.md` §5.1
 - **EKET 全量借鉴路线图**: brainstorming 输出 (10 P0 + 8 P1 + 8 P2)
-- **KALLAX Rules**: Rule 1 (miao 禁写), Rule 9 (4-Level), Rule 10 (anti-fab), Rule 11 (Master 写代码禁令)
+- **KALLAX Rules**: Rule 1 (miao 禁写), Rule 9 (5 levels), Rule 10 (anti-fab), Rule 11 (Master 写代码禁令)
 - **EPIC-021 战略**: `confluence/research/eket-surpass-strategy-2026-06-07.md` §3.1 state 字段
 
 ---

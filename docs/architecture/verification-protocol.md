@@ -33,11 +33,11 @@ Conductor: "好的，合并" (未验证)
 
 ---
 
-## 2. KALLAX 4-Level Fact-Forcing
+## 2. KALLAX 5 levels Fact-Forcing
 
 ### 2.1 概览
 
-     4-Level Fact-Forcing                              │
+     5 levels Fact-Forcing                              │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                      │
 │  Level 1: 存在性验证 (Existence)                                    │
@@ -313,7 +313,7 @@ echo "✅ Level 4 PASSED: Data flow verified"
 │     └───────────────────────────────────────────────────────────┘  │
 │                          │                                          │
 │                          ▼                                          │
-│  3. Conductor 4-Level 验证                                         │
+│  3. Conductor 5 levels 验证                                         │
 │     ┌───────────────────────────────────────────────────────────┐  │
 │     │ Level 1: 存在性验证                                        │  │
 │     │   $ git diff --name-only                                   │  │
@@ -745,7 +745,7 @@ kallax self-check
 
 ### Automated Verification
 - [ ] CI pipeline green
-- [ ] 4-Level verification passed
+- [ ] 5 levels verification passed
 
 ### Manual Review
 - [ ] Logic correctness

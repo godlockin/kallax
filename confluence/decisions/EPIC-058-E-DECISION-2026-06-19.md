@@ -189,9 +189,9 @@ $ grep -c "Rule [0-9]\+\|R-[A-Z0-9]\+" /Users/chenchen/.claude/CLAUDE.md
 
 ---
 
-## 5. 闭环验证 (跟 9 Hard Rules + 5 原则 联合)
+## 5. 闭环验证 (跟 5 levels + 5 原则 联合)
 
-### 5.1 9 Hard Rules (AGENTS.md) 验证
+### 5.1 5 levels (AGENTS.md) 验证
 
 | # | Rule | 落地 | 状态 |
 |---|---|---|---|

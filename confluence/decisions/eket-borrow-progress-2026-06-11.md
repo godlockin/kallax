@@ -25,7 +25,7 @@
 EPIC-021 5 专家 panel 分析 EKET, 12 共识点:
 1. KALLAX 7 expert 体系 vs EKET 强
 2. 2-Group review vs EKET 自审
-3. 4-Level Fact-Forcing vs EKET 2-Level
+3. 5-Level Fact-Forcing vs EKET 2-Level
 4. heartbeat 机制 vs EKET 定时
 5. file-scope 隔离 vs EKET workspace
 6. TrustScore 派发 vs EKET 轮询

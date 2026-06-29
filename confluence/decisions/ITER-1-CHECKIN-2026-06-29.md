@@ -108,7 +108,7 @@ d875daa  chore: bump to v2.7.6 (主公拍板起点)
 | Q14 CLAUDE.md 5KB | B 极简 | 推迟 Iter 2 |
 | Q15 命名 | B 保留 Conductor/Performer | **Iter 1 遵守** ✅ |
 | Q16 术语文件 | A 整理 | **Iter 1 完成** ✅ |
-| Q17 9 Hard Rules → 5 levels | B | 推迟 Iter 2 (5 levels 文档已建, CLAUDE.md 改推迟) |
+| Q17 5 levels → 5 levels | B | 推迟 Iter 2 (5 levels 文档已建, CLAUDE.md 改推迟) |
 | Q18 决策模型 | KALLAX 评估+主公拍 | **Iter 1 实施** ✅ (本 check-in) |
 
 **Iter 1 完成 3/18 决策**: Q7, Q15, Q16 + 4 P0 修复

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# tests/integration/kpi-evidence-chain-test.sh — TDD tests for 4-Level KPI evidence chain
+# tests/integration/kpi-evidence-chain-test.sh — TDD tests for 5 levels KPI evidence chain
 # EPIC-053-B AC2: 6/6 PASS
-#   1. 4-Level 完整 → OK
+#   1. 5 levels 完整 → OK
 #   2. 缺 1 Level → FAIL
 #   3. 假 git-anchor → FAIL
 #   4. 假 test stdout → FAIL
@@ -26,7 +26,7 @@ TOTAL=6
 # Verify script exists (TDD red phase will fail with clear error if missing)
 if [ ! -f "$VERIFY_SCRIPT" ]; then
     echo "=========================================="
-    echo "4-Level KPI Evidence Chain — Integration Tests"
+    echo "5 levels KPI Evidence Chain — Integration Tests"
     echo "=========================================="
     echo ""
     echo "FAIL: $VERIFY_SCRIPT not found (TDD red phase)"
@@ -35,7 +35,7 @@ if [ ! -f "$VERIFY_SCRIPT" ]; then
 fi
 
 echo "=========================================="
-echo "4-Level KPI Evidence Chain — Integration Tests (6/6)"
+echo "5 levels KPI Evidence Chain — Integration Tests (6/6)"
 echo "=========================================="
 echo ""
 
@@ -140,9 +140,9 @@ TMPDIR_ROOT=$(mktemp -d)
 trap 'rm -rf "$TMPDIR_ROOT"' EXIT
 
 # -------------------------------------------------------
-# Test 1: 4-Level 完整 → OK
+# Test 1: 5 levels 完整 → OK
 # -------------------------------------------------------
-echo "--- Test 1: 4-Level 完整 → OK ---"
+echo "--- Test 1: 5 levels 完整 → OK ---"
 T1_DIR="$TMPDIR_ROOT/test1"
 mkdir -p "$T1_DIR"
 setup_mock_tools "$T1_DIR/tools" "pass"

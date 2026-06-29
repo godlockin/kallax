@@ -21,7 +21,7 @@
   "acceptance_criteria": [
     "L1 存在性: 5 套 E2E 测试脚本全存在",
     "L2 实质性: 5 套全过 (3-modes 16 + permission-v1 20 + conductor-scope 18 + workspace-switch 15 + authz-sanitization 5 = 74 PASS, 0 FAIL), 真实运行 stdout 记录",
-    "L3 接线正确: 5 套 E2E 串联运行, 跟 4-Level 验证串联, 跟 Rule 9 强制",
+    "L3 接线正确: 5 套 E2E 串联运行, 跟 5-Level 验证串联, 跟 Rule 9 强制",
     "L4 数据流动: feature/EPIC-029-3-modes → testing 合并 → 全量测试 PASS → testing → miao 合并 → push origin miao 成功, miao HEAD 更新"
   ],
   "estimated_hours": 1.0,

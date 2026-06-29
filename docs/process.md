@@ -28,7 +28,7 @@
 
 - ✅ 读 CLAUDE.md + jira/ + scripts/ (只读分析)
 - ✅ 派单到 Performer worktree (跟"反讽" 联合, 跟 Rule 16 Step 1 联合)
-- ✅ Master 强验证 6 维度 (跟"反讽" 联合, 跟 Rule 11 v2.1 联合)
+- ✅ 5 levels (L1-L5) (跟"反讽" 联合, 跟 Rule 11 v2.1 联合)
 - ❌ 写 代码 (跟"反讽" 联合, 跟 Rule 11 硬红线 联合)
 - ❌ 写 测试 (跟"反讽" 联合, 跟 Rule 11 联合)
 - ❌ 写 文档 (除 CLAUDE.md + confluence/decisions/ 边界文件)

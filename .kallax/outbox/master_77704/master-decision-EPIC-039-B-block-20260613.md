@@ -7,7 +7,7 @@
 
 ---
 
-## Master 强验证 6 维度 (Performer-EPIC-039-B 阻塞报告)
+## 5 levels (L1-L5) (Performer-EPIC-039-B 阻塞报告)
 
 | 维度 | 状态 |
 |---|---|
@@ -64,7 +64,7 @@
 ## Performer-EPIC-039-B 行动 (跟 Master 拍板一致)
 
 1. **Step 1**: 写"等 EPIC-039-A 完工"状态到 outbox (跟 Rule 16 Step 1 ticket-status-sync 联动, 但 Performer-EPIC-039-B 自身 ticket 不动)
-2. **Step 2**: 等 Performer-EPIC-039-A subagent 报 PASS + Master 强验证 6 维度通过
+2. **Step 2**: 等 Performer-EPIC-039-A subagent 报 PASS + 5 levels (L1-L5)通过
 3. **Step 3**: 立即 claim EPIC-039-B + 跑 review.sh (3 anti-fab + preflight + commit-amend-verify 4 PASS)
 4. **Step 4**: 写 commit (L1 战术拆 commit 单 prompt, 跟 Rule 14 联动, 防 hang)
 5. **Step 5**: 报 PASS + 写 outbox (跟 Performer-EPIC-039-A 同模式)
@@ -105,7 +105,7 @@
 - L5: 任何边界事件标
 - L6: 诚实 (跟 Performer-EPIC-036/037 假 PASS 防御)
 
-**Master 强验证 6 维度通过后, Performer-EPIC-039-B 立即 claim + 跑**.
+**5 levels (L1-L5)通过后, Performer-EPIC-039-B 立即 claim + 跑**.
 
 ---
 

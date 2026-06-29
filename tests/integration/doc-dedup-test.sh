@@ -286,9 +286,9 @@ else
     TC6_PASS=$((TC6_PASS+1))
 fi
 
-# Check that Rule 9 (4-Level Fact-Forcing) exists in both files consistently
+# Check that Rule 9 (5 levels Fact-Forcing) exists in both files consistently
 if ! grep -qE "^###\s+9\." "$CLAUDE_MD"; then
-    fail 6 "CLAUDE.md missing '### 9.' (Rule 9 4-Level, 基础 Rule 应存在)"
+    fail 6 "CLAUDE.md missing '### 9.' (Rule 9 5 levels, 基础 Rule 应存在)"
 else
     TC6_PASS=$((TC6_PASS+1))
 fi

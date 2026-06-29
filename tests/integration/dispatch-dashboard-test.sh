@@ -9,7 +9,7 @@
 #   Case 5: X/Y 格式 KPI 输出 (Rule 9 precision, 跟 PROJECT-STATUS line 43 baseline 58.3% 对比)
 #
 # Rule 9 KPI X/Y format: 5/5 = 100.0% (no estimate, exact)
-# 跟 EPIC-053-A L6 lesson + EPIC-053-B 4-Level evidence + EPIC-053-C tool-self-check + EPIC-053-E wiring + EPIC-053-F glob 联合
+# 跟 EPIC-053-A L6 lesson + EPIC-053-B 5 levels evidence + EPIC-053-C tool-self-check + EPIC-053-E wiring + EPIC-053-F glob 联合
 
 set -uo pipefail
 

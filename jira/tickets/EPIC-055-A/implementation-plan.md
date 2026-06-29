@@ -45,8 +45,8 @@
 | 4 | "闭环" | 全文 (跟"闭环" 联合 出现 25+ 次) | 1.5 节 (80+ 字) | 两处都解释 |
 | 5 | "联合" | 全文 (`跟 X 联合` 出现 200+ 次) | 1.6 节 (60+ 字) | 两处都解释 |
 | 6 | "5 步强制流程" (Rule 16) | Rule 16 全文 (590-603 行) | 3.4 节 (130+ 字) | 两处都解释 |
-| 7 | "Master 强验证 6 维度" (Rule 11 v2.1) | Rule 11 304-309 行 | 3.2 节 (130+ 字) | 两处都解释 |
-| 8 | "4-Level Fact-Forcing" (Rule 9) | Rule 9 204-218 行 | 3.3 节 (110+ 字) | 两处都解释 |
+| 7 | "5 levels (L1-L5)" (Rule 11 v2.1) | Rule 11 304-309 行 | 3.2 节 (130+ 字) | 两处都解释 |
+| 8 | "5-Level Fact-Forcing" (Rule 9) | Rule 9 204-218 行 | 3.3 节 (110+ 字) | 两处都解释 |
 | 9 | "3 模式" (Rule 13) | Rule 13 349-388 行 | 6.1 节 (110+ 字) | 两处都解释 |
 | 10 | "Conductor 不能越界" (Rule 14) | Rule 14 509-532 行 | 6.2 节 (110+ 字) | 两处都解释 |
 | 11 | "Master 接管" (Rule 11) | Rule 11 256-309 行 | 6.3 节 (180+ 字) | 两处都解释 |
@@ -69,7 +69,7 @@
 - 13 主 Rule (Rule 1-13)
 - 5 R-NEW 升级 Rule (Rule 14-18)
 - 5 v1.2.4 扩展 Rule (Rule 29-33)
-- 身份/分支管线/命令速查/工作流/禁止操作/4-Level
+- 身份/分支管线/命令速查/工作流/禁止操作/5-Level
 - **新增**: 顶部 `📖 术语参考` → 链接到 GLOSSARY, 治术语重复
 
 **docs/KALLAX-GLOSSARY.md = 术语 SoT** (术语/概念/黑话 的 唯一真相来源):
@@ -87,7 +87,7 @@
 **GLOSSARY 去重**:
 - 每个术语保留 大白话 + 来源 + 落地 (一句话)
 - "跟 X 联合" 字段: 从 inline 解释 → 改为 rule 编号引用 (e.g. "见 [CLAUDE.md Rule 16](../../CLAUDE.md#16-...)")
-- 重复 5 步强制流程/Master 强验证 6 维度/4-Level 解释 → 改为 rule 编号引用
+- 重复 5 步强制流程/5 levels (L1-L5)/5-Level 解释 → 改为 rule 编号引用
 
 ### 2.3 预期体量减少 (跟 EPIC-055-A ticket.json AC 联合)
 
@@ -148,7 +148,7 @@
    │                                          │
    ├─ Rule 1-18 + 29-33                      ├─ 34 术语
    ├─ 身份/分支管线/命令速查                   ├─ 大白话 + 来源 + rule 引用
-   ├─ 工作流/禁止操作/4-Level                  │
+   ├─ 工作流/禁止操作/5-Level                  │
    └─ 顶部: 📖 术语参考 → 链 GLOSSARY          └─ 顶部: 📖 规则参考 → 链 CLAUDE.md
               │                                          │
               └──────────┐                  ┌────────────┘
@@ -166,7 +166,7 @@
 
 - **元术语** (反讽/诚实修正/独立/闭环/联合): [→ docs/KALLAX-GLOSSARY.md §1](docs/KALLAX-GLOSSARY.md#1-元术语-meta--描述-kalax-自身行为)
 - **战略/方向** (流程逻辑 > 扩充配置/反哺框架/翻篇&精进): [→ §2](docs/KALLAX-GLOSSARY.md#2-战略--方向术语-strategy)
-- **流程/工作流** (对策 A+B+C/Master 强验证 6 维度/4-Level/5 步强制流程/飞轮反哺): [→ §3](docs/KALLAX-GLOSSARY.md#3-流程--工作流术语-workflow)
+- **流程/工作流** (对策 A+B+C/5 levels (L1-L5)/5-Level/5 步强制流程/飞轮反哺): [→ §3](docs/KALLAX-GLOSSARY.md#3-流程--工作流术语-workflow)
 - **反模式/黑名单** (KPI falsification/verbatim/scope creep/越界反向/3 假 PASS): [→ §4](docs/KALLAX-GLOSSARY.md#4-反模式--黑名单术语-anti-patterns--blacklist)
 - **角色/决策** (3 模式/Conductor 不能越界/Master 接管/Performer sub-role): [→ §6](docs/KALLAX-GLOSSARY.md#6-角色--决策术语-roles--decisions)
 - **量化/指标** (Rule 升级率/净价值/1+2/1+4 容量): [→ §7](docs/KALLAX-GLOSSARY.md#7-量化--指标术语-metrics)
@@ -197,7 +197,7 @@ KALLAX 规则 (Rule 1-18 + 29-33) 的唯一真相来源 → [CLAUDE.md](CLAUDE.m
 3. **改 docs/KALLAX-GLOSSARY.md**:
    - 顶部新增 `📖 规则参考` 章节 (链 CLAUDE.md)
    - 每个术语"跟 X 联合" 字段: inline 解释 → rule 编号引用 (e.g. `[CLAUDE.md Rule 16](../CLAUDE.md#16)`)
-   - 去除 5 步强制流程/Master 强验证 6 维度/4-Level 等 inline rule 定义 (改为引用)
+   - 去除 5 步强制流程/5 levels (L1-L5)/5-Level 等 inline rule 定义 (改为引用)
 4. **改 docs/PHASE-INDEX.md**:
    - 同步 `KALLAX-GLOSSARY.md` 链接 + 加 `📖 SoT 索引` 章节
 5. **跑 6/6 测试** — `bash tests/integration/doc-dedup-test.sh`

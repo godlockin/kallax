@@ -99,7 +99,7 @@ verification:
     - command: "npm test"
       description: "运行真实测试"
 
-  # 4-Level Fact-Forcing
+  # 5-Level Fact-Forcing
   fact_forcing:
     level_1_existence: true      # 文件存在检查
     level_2_substance: true      # 实质内容检查

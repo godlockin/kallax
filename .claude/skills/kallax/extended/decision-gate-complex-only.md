@@ -39,7 +39,7 @@ filePath: /path/to/kallax/.claude/skills/kallax/extended/decision-gate-complex-o
 
 - `docs/process/decision-gate-design.md` (269 lines): 4 方案对比
 - `scripts/permission/decision-gate-complex-only.sh` (1164 bytes): 硬脚本
-- `tests/integration/decision-gate-test.sh` (232 lines): 4-Level 集成测试
+- `tests/integration/decision-gate-test.sh` (232 lines): 5 levels 集成测试
 - CLAUDE.md Rule 33: decision-gate 复杂才问 (KALLAX P0)
 
 ## 跟对策 C 联合 (跟"诚实修正" 联合, 跟主公"同意" explicit 授权 联合)

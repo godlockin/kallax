@@ -3,7 +3,7 @@
 //! EPIC-060-B Phase 3 Sub-Task 2: in-process typed event bus
 //! (`node/src/core/event-bus.ts`, 358 lines) → Rust napi-rs binding.
 //!
-//! ## 4-Level Degradation (跟 AGENTS.md 联合, 跟 eket 4 级降级 模式 联合)
+//! ## 4-Layer Degradation (跟 AGENTS.md 联合, 跟 eket 4 级降级 模式 联合)
 //!
 //! ```text
 //! L1+napi   Rust native module (kallax-bridge, --features napi)  [primary when built]

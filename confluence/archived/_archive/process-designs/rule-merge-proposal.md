@@ -289,7 +289,7 @@ EPIC-055-B (本 ticket 联动基础, 拍板分级 P0/P1/P2)
 
 1. **本 ticket (EPIC-054-D)**: 输出 proposal 文档 (本文) + 升级 audit 脚本
 2. **Conductor 收到 PASS 报告**: 写 `inbox/human_feedback/RECORD-P1-EPIC-054-D.md` (P1 备案)
-3. **Master 强验证 6 维度**: 验证本 ticket 实际产出 (跟 Rule 11 v2.1 联合)
+3. **5 levels (L1-L5)**: 验证本 ticket 实际产出 (跟 Rule 11 v2.1 联合)
 4. **主公 review**: review proposal 文档, 对 候选 B (P0) 必拍, 对 候选 A/C (P1) 备案
 5. **后续 ticket (EPIC-054-D-merge 或 EPIC-054-E)**: 主公拍板 后, 执行实际 Rule 合并, 更新 CLAUDE.md
 
@@ -318,7 +318,7 @@ EPIC-054-D (本 ticket)
 ## 7. 下一步 (待 主公拍板)
 
 1. **Conductor 收到本 ticket PASS 报告**: 写 RECORD-P1-EPIC-054-D.md
-2. **Master 强验证 6 维度**: 验证本 ticket 实际产出
+2. **5 levels (L1-L5)**: 验证本 ticket 实际产出
 3. **主公 review proposal**: 候选 B (P0) 必拍, 候选 A/C (P1) 备案
 4. **后续 ticket (EPIC-054-D-merge 或 EPIC-054-E)**: 执行实际 Rule 合并:
    - Rule 30+31 合并 → 写入 CLAUDE.md Rule 30 章节 (新文本)

@@ -23,7 +23,7 @@ Reality: No files changed, no commits, no PR created
 
 ## Solution
 
-**4-Level Fact-Forcing Verification:**
+**5-Level Fact-Forcing Verification:**
 
 | Level | Check | Evidence Required |
 |-------|-------|-------------------|
@@ -46,4 +46,4 @@ Rule: Conductor must verify before Approve
 
 ## Related
 - [[anti-hallucination]] — Agent hallucination patterns
-- [[gate-review]] — 4-Level gate review protocol
+- [[gate-review]] — 5-Level gate review protocol

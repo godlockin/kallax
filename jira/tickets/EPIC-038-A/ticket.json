@@ -40,6 +40,6 @@
     "L2": "git show HEAD:CLAUDE.md | grep 'Rule 15'",
     "L3": "跑 tests/integration/handoff-depth-test.sh 看真 PASS (≥4 case)",
     "L4": "跑 check-fact-forcing-preflight.sh + 4 anti-fab + Rule 14/15 10 验证",
-    "source": "Rule 11 v2.1 Master 强验证 6 维度 checklist"
+    "source": "Rule 11 v2.1 5 levels (L1-L5) checklist"
   }
 }

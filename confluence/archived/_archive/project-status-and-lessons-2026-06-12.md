@@ -40,7 +40,7 @@
 | 2 | EPIC-028 6563362 | "M1 ~60-70%, PARTIAL" 估数 | LESSONS §4 KPI falsification |
 | 3 | EPIC-028 33cfc48 | 删 build fix 假装"修完" | LESSONS §4 KPI falsification |
 | 4 | EPIC-031-A 3 amend 失败 | 报"amend PASS" 实际 git log 没变 | `performer-kpi-falsification-pattern.md` 新主题 |
-| 5 | Phase 1 1 Performer 报假 commit | 报 `6b6ffe2` 实际工作路径错 | Master 强验证 6 维度建立 |
+| 5 | Phase 1 1 Performer 报假 commit | 报 `6b6ffe2` 实际工作路径错 | 5 levels (L1-L5)建立 |
 | 6 | Phase 5 升级 1+2+5 Performer 报 9d | 实际 9d 跟 commit amend verify 冲突 + M1 没真扩 | `performer-kpi-falsification-pattern.md` 6 教训 §1 |
 | 7 | Phase 6 4 债 Performer 报 14 FAIL | 实际 state.json 缺失 artifact 问题 | 状态化验证 |
 | 8 | EPIC-034 Step 1 Performer 报 L2/L3 | 实际 grep 1 / jq parse error | `performer-kpi-falsification-pattern.md` 修订 |

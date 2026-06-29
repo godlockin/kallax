@@ -1,7 +1,7 @@
 # EPIC-053-A — LESSONS LEARNED
 
 > L3 集成测试 vs L4 verify 一致性检查 (治 H2 / BE-9)
-> 跟 Rule 6 (事后复盘) 联合, 跟 Rule 8 (4-Level Fact-Forcing) 联合
+> 跟 Rule 6 (事后复盘) 联合, 跟 Rule 8 (5-Level Fact-Forcing) 联合
 
 ---
 
@@ -13,11 +13,11 @@
 
 **修法**: `l3-l4-consistency.sh` 把矛盾作为 ERROR 硬约束, exit=1. 同状态 (pass+pass, fail+fail) 才是 OK. 这把"自检漏洞"从无声掩盖变成显式失败.
 
-**Rule 联动**: Rule 8 (4-Level Fact-Forcing) — L3 + L4 不许矛盾.
+**Rule 联动**: Rule 8 (5-Level Fact-Forcing) — L3 + L4 不许矛盾.
 
 ---
 
-## L2 — 4-Level Fact-Forcing 的关键不是 L1/L2, 是 L3↔L4
+## L2 — 5-Level Fact-Forcing 的关键不是 L1/L2, 是 L3↔L4
 
 **洞察**: Rule 8 的核心约束在 L3 (集成) 跟 L4 (verify) 的**互证**, 不是 L1/L2 单层. 单层 pass 容易, 双层互证才能抓出"defense system lying about its own checks".
 
@@ -51,7 +51,7 @@ L4 FAIL  ERROR   OK
 
 **修法**: `check-fact-forcing-preflight.sh` 做 6 项检查: 4 工具可执行 + l3-l4-consistency 双向 self-test (PASS/PASS=OK, PASS/FAIL=ERROR). 任一失败 ⇒ preflight FAIL ⇒ 整个体系不可信.
 
-**Rule 联动**: Rule 8 (4-Level), Rule 18 (黑名单 #6 — 自检漏洞).
+**Rule 联动**: Rule 8 (5-Level), Rule 18 (黑名单 #6 — 自检漏洞).
 
 ---
 
@@ -81,9 +81,9 @@ L4 FAIL  ERROR   OK
 
 | Ticket | 责任 | 跟 EPIC-053-A 联动 |
 |--------|------|--------------------|
-| EPIC-053-B | 4-Level 证据链 pass-report | 用 `l3-l4-consistency` 验证 pass-report 信号一致 |
+| EPIC-053-B | 5-Level 证据链 pass-report | 用 `l3-l4-consistency` 验证 pass-report 信号一致 |
 | EPIC-053-C | KPI X/Y 格式 | 跟 `check-kpi-precision` 联动 |
-| EPIC-053-D | Master 强验证 6 维度 | 强验证 L3 跑 test, L4 跑 preflight, 一致性 OK |
+| EPIC-053-D | 5 levels (L1-L5) | 强验证 L3 跑 test, L4 跑 preflight, 一致性 OK |
 
 ---
 

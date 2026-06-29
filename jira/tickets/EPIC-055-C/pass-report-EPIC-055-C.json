@@ -30,7 +30,7 @@
     "check-fact-forcing-preflight": "PASS (9 PASS, 0 FAIL, L4 verify framework ready)",
     "l3-l4-consistency": "PASS (0 contradiction, 0 inconsistency)",
     "kpi-evidence-chain": "PASS (Rule 30/31 独立见证 机制 BE-5 + BE-7 修复模式 验证)",
-    "tool-self-check": "PASS (EPIC-048 meta-tool 守住 framework, Rule 8/9/18 4-Level Fact-Forcing 验证)"
+    "tool-self-check": "PASS (EPIC-048 meta-tool 守住 framework, Rule 8/9/18 5-Level Fact-Forcing 验证)"
   },
   "kpi_x_of_y": "5/5 (100.0%)",
   "lessons_learned_path": "jira/tickets/EPIC-055-C/LESSONS-LEARNED.md",
@@ -68,7 +68,7 @@
     "tag_3_independence": {
       "definition": "5 维度全独立 (session/角色/路径/报告/审计)",
       "evidence": "docs/KALLAX-GLOSSARY.md:51-64",
-      "case": "5 扩展组 5 个独立 subagent; 5 个独立 worktree (跟 Rule 15 联合); Master 强验证 6 维度不靠 subagent 自报",
+      "case": "5 扩展组 5 个独立 subagent; 5 个独立 worktree (跟 Rule 15 联合); 5 levels (L1-L5)不靠 subagent 自报",
       "impact": "独立审计避免 自验证主体 = 造假主体, 治根率↑ 90%"
     },
     "tag_4_move_on_refine": {

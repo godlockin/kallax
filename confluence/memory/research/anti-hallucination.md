@@ -41,7 +41,7 @@ kallax task:claim TASK-001 --mode background
 | 需求分析 | background | 仅读取 |
 | 文档阅读 | background | 仅读取 |
 
-### 2. 4-Level Fact-Forcing 验证
+### 2. 5-Level Fact-Forcing 验证
 
 Conductor 必须执行 4 级验证后才能 Approve：
 
@@ -96,7 +96,7 @@ verification:
     - command: "npm run build"
       description: "构建验证"
   
-  # 4-Level Fact-Forcing
+  # 5-Level Fact-Forcing
   fact_forcing:
     level_1_existence: true
     level_2_substance: true

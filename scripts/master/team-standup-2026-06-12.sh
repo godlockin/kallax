@@ -93,10 +93,10 @@ echo "  3. 2 Performer 容器 (1+2 容量) 拉各自 inbox 跑 worktree"
 echo "  4. EPIC-035/036/037 跟 EPIC-038 合并 ticket 减少独立跑次数"
 echo "  5. L1 战术 (拆 commit) 跑前必过 decide-on-spawn.sh (Wave 1 EPIC-035-A 完工后)"
 
-# 4. Master 强验证 6 维度
+# 4. 5 levels (L1-L5)
 echo ""
 echo "=========================================="
-echo " Master 强验证 6 维度 (Rule 11 v2.1):"
+echo " 5 levels (L1-L5) (Rule 11 v2.1):"
 echo "=========================================="
 echo ""
 echo "  L1 git log --oneline -1 看 SHA 真变"
@@ -135,7 +135,7 @@ echo "    2. 算法派单 (3-layer matching, TrustScore highest)"
 echo "    3. 派给 Performer-EPIC-034/035/036/037 4 类 (Rule 15 落地后)"
 echo "    4. 2 Performer 容器 (1+2 容量) 跑 worktree"
 echo "    5. Conductor merge feature → testing"
-echo "    6. Master 强验证 6 维度 (本 session 持续)"
+echo "    6. 5 levels (L1-L5) (本 session 持续)"
 
 # 7. 任务清单 (主公可视化)
 echo ""
@@ -149,5 +149,5 @@ echo "  ✅ 3. 团队清单 (1 master + 1 conductor + 4 Performer types)"
 echo "  ⏳ 4. Conductor 容器触发 (主公开新 session)"
 echo "  ⏳ 5. Performer 跑 worktree (4 类 × 1 容器)"
 echo "  ⏳ 6. Conductor merge → testing"
-echo "  ⏳ 7. Master 强验证 6 维度 (每 Wave 报 PASS 后)"
+echo "  ⏳ 7. 5 levels (L1-L5) (每 Wave 报 PASS 后)"
 echo "  ⏳ 8. PHASE-007 review 触发 (6+ ticket 累计)"

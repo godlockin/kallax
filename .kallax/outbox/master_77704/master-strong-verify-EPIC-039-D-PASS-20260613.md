@@ -7,7 +7,7 @@
 
 ---
 
-## Master 强验证 6 维度 (Rule 11 v2.1)
+## 5 levels (L1-L5) (Rule 11 v2.1)
 
 | 维度 | 验证 | 状态 |
 |---|---|---|
@@ -69,7 +69,7 @@
 
 | Rule / BE | 跟 Performer-EPIC-039-D 关系 |
 |---|---|
-| **Rule 16 Step 5** (Master 强验证 6 维度) | ✅ 落地 (本 ticket 是载体, 跟 EPIC-039-A/B/C 联动闭环) |
+| **Rule 16 Step 5** (5 levels (L1-L5)) | ✅ 落地 (本 ticket 是载体, 跟 EPIC-039-A/B/C 联动闭环) |
 | **Rule 9 9c** (scope creep) | ✅ 修 file_scope parenthetical notes (防 false positive) |
 | **Rule 9 9d** (amend SHA) | ✅ 3 commit 拆开, SHA 真变 |
 | **Rule 14 L1 战术** (拆 commit 单 prompt) | ✅ 3 commit 拆开 (feat + 2 fix) |

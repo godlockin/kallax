@@ -49,7 +49,7 @@
 | A | **自动 ticket 状态同步** (subagent 报 PASS/FAIL → 自动 jq 更新) | ✅ **强烈推荐** (跟 EPIC-039-A 一致, 治根) | 增加 |
 | B | **强制 review checkpoint** (Conductor merge 前必跑 review.sh 5 验证) | ✅ 推荐 (跟 EPIC-039-B 一致, 治标) | 判断 |
 | C | **强制 merge 流程** (跳过 R-NEW PR, 走 Conductor merge-to-testing) | ✅ 推荐 (跟 EPIC-039-C 一致, 治标) | 接受 |
-| D | **Master 强验证 6 维度 checkpoint** (跟 Rule 11 v2.1 联动) | ✅ **强烈推荐** (跟 EPIC-039-D 一致, 治根) | 接受 |
+| D | **5 levels (L1-L5) checkpoint** (跟 Rule 11 v2.1 联动) | ✅ **强烈推荐** (跟 EPIC-039-D 一致, 治根) | 接受 |
 | E | **Performer 自验证强制** (工具调用后必 grep/log/stdout 验证) | ✅ 推荐 (跟 Rule 9e 一致, 治标) | 思考 |
 
 ### 3.2 5 候选方法

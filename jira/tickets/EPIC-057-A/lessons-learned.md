@@ -27,7 +27,7 @@ anti-pattern (BE-9 family).
 
 **Generalization**: When `set -u` triggers an error in production code, the failure mode
 may save the test but break the user. Always verify test PASS == expected behavior, not
-just expected exit code. The 4-Level Fact-Forcing protocol applies to test outcomes too.
+just expected exit code. The 5-Level Fact-Forcing protocol applies to test outcomes too.
 
 ## L3 — `.opencode/command/` singular vs `.claude/commands/` plural
 
@@ -93,7 +93,7 @@ RED-GREEN-REFACTOR with real bash invocations, not mocked assertions.
 - a2426a8 (this commit, 4 工具 verified + integration test + verify_install empty cmds fix)
 - EPIC-057 epic.json (4-ticket parallel dispatch, EPIC-057-A is first serial)
 - EPIC-053-D dispatch-dashboard (test-isolation pattern precedent)
-- BE-9 family (verification protocol + 4-Level Fact-Forcing)
+- BE-9 family (verification protocol + 5-Level Fact-Forcing)
 
 ## L7 — 2026-06-25 update: v2.3.0 10-tool baseline 跟 4-tool ticket scope 的关系
 
@@ -124,7 +124,7 @@ state.json, fail-closed. 实际影响: 所有 worktree commit 都被 authz 阻�
 KALLAX_ROOT="$(cd "$(git rev-parse --git-common-dir)/.." && pwd)"
 ```
 
-**Workaround (本 ticket)**: `git commit --no-verify` (commit 落库 + 后续 4-Level 验证
+**Workaround (本 ticket)**: `git commit --no-verify` (commit 落库 + 后续 5-Level 验证
 保证了 quality). Workaround 是 acceptable for Performer 串行模式 (不 推到远程, 跟 PR
 review 流程 解耦), 但不 scalable.
 

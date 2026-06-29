@@ -37,7 +37,7 @@
     "Rule 17 草案 (强制限制流程, 跟 Rule 14/15/16 同级)",
     "跟 EPIC-041-B/C/D 4 票修复对齐表",
     "PHASE-007 review 触发建议 (跟 5+ ticket + 5 BE + 第 9 次 KPI falsification 一致)",
-    "Master 强验证 6 维度写报告 (跟 Rule 11 v2.1 联动)"
+    "5 levels (L1-L5)写报告 (跟 Rule 11 v2.1 联动)"
   ],
   "estimated_hours": 4,
   "l1_tactic_required": "调查卡不写代码, 只写报告 (跟 Rule 11 联动)",

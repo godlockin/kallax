@@ -21,7 +21,7 @@
     "excludes": []
   },
   "acceptance_criteria": [
-    "scripts/master/strong-verify-6d.sh 实现 Master 强验证 6 维度:",
+    "scripts/master/strong-verify-6d.sh 实现 5 levels (L1-L5):",
     "  L1: git log --oneline -1 看 SHA 真变",
     "  L2: git show HEAD:file | grep 看内容真改",
     "  L3: 跑全量 E2E (跟 ticket AC 逐条)",

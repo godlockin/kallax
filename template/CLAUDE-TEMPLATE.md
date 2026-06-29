@@ -104,7 +104,7 @@ function process(data: unknown): Result<Data, Error> { }
 kallax verify:all TASK-001
 ```
 
-**4-Level 验证**:
+**5 levels 验证**:
 1. 存在性: 文件确实存在
 2. 实质性: 非 stub 代码
 3. 接线: 编译/lint 通过

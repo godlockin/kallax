@@ -15,7 +15,7 @@
 
 **方法** (跟 eket MASTER-RULES.md §2 联合, 借方法论 不借代码):
 - **借**: eket Fact-Forcing 模式 (不问确定, 问证据)
-- **不借**: eket 9 Hard Rules 全文 + 具体 rule 内容 (跟 EPIC-059-A 9-hard-rules.md §1 联合)
+- **不借**: eket 5 levels 全文 + 具体 rule 内容 (跟 EPIC-059-A 9-hard-rules.md §1 联合)
 - **适配**: KALLAX 实际 release 案例 (BE-9/BE-14/BE-15/BE-16 + v2.0.2/v2.0.5/v2.0.6/v2.4.0/v2.4.1)
 
 ### 1.2 跟 KALLAX 5 红线 revert 联合 (跟"诚实修正" 战略 一致)
@@ -136,7 +136,7 @@ fd9d0d9 feat(phase-013): v2.4.0 PHASE-013 跨期 review 落地 ...
 - 原则 2: 缺 raw test output
 - 原则 3: 缺 evidence 视为 OK = silent output 0 deliver
 
-**治根** (跟 v2.0.4 EPIC-053-A truth-table 联合): truth-table 强制 raw stdout/stderr, 4-Level Fact-Forcing (file:line `docs/KALLAX-GLOSSARY.md:641-651`)
+**治根** (跟 v2.0.4 EPIC-053-A truth-table 联合): truth-table 强制 raw stdout/stderr, 5 levels Fact-Forcing (file:line `docs/KALLAX-GLOSSARY.md:641-651`)
 
 **跟 §11.3 联合**: "L4 verify PASS" 命名 ≠ reality (silent output) = "0 实际变化 假动作"
 
@@ -201,7 +201,7 @@ fd9d0d9 feat(phase-013): v2.4.0 PHASE-013 跨期 review 落地 ...
 - 原则 2: 缺 raw test output / X/Y 格式 evidence
 - 原则 3: 缺 evidence 视为 OK = 估数 算 FAIL 模式
 
-**治根** (跟 v2.0.4 EPIC-053-B 联合): 4-Level 证据链 + Master 6 维恢复 (v1.2.4 6→0 退步 反转)
+**治根** (跟 v2.0.4 EPIC-053-B 联合): 5 levels 证据链 + Master 6 维恢复 (v1.2.4 6→0 退步 反转)
 
 **跟 §11.3 联合**: "11/16 KPI 达标" 命名 ≠ reality (估数) = "0 实际变化 假动作"
 
@@ -314,7 +314,7 @@ fd9d0d9 feat(phase-013): v2.4.0 PHASE-013 跨期 review 落地 ...
 | **L5** | 边界 | `git diff --name-only` | file scope 合规? |
 | **L6** | 诚实 | raw test output review | 不接受 "should work" / "looks correct" |
 
-### 5.2 4-Level Fact-Forcing (file:line `docs/KALLAX-GLOSSARY.md:641-651`)
+### 5.2 5 levels Fact-Forcing (file:line `docs/KALLAX-GLOSSARY.md:641-651`)
 
 | L# | 内容 | 跟 Fact-Forcing 联合 |
 |---|---|---|

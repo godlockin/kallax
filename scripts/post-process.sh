@@ -2,7 +2,7 @@
 # KALLAX Post-Process 11 步骤 — EPIC/Sprint 完成后 自动验证 + 引导 触发
 # 跟 eket template/docs/MASTER-RULES.md §10 4 步骤 (回归验证/分支同步/经验沉淀/技术债登记) 升级
 # 跟 PHASE review 10 累计 联合 (PHASE-005 → PHASE-014, 11 步骤 是 review 入口 标准化)
-# 借方法论 不借代码 (跟 EPIC-059-A 9 Hard Rules + EPIC-059-B Rule of 500 + EPIC-059-C PR ~100 模式 一致)
+# 借方法论 不借代码 (跟 EPIC-059-A 5 levels + EPIC-059-B Rule of 500 + EPIC-059-C PR ~100 模式 一致)
 # 跟 Rule 32 "0 增命令" 联合 (post-process.sh 是 1 脚本 不增 Rule)
 # 跟 Rule 4 "no magic numbers" 联合 (11 步骤 阈值全部命名 常量化)
 #
@@ -496,7 +496,7 @@ elif [ -f "$PRE_COMMIT" ]; then
     check_step 10 "PASS"
     PASS_COUNT=$((PASS_COUNT + 1))
 else
-    echo "  → ${PRE_COMMIT} 不存在, 跟 EPIC-059-A 9 Hard Rules 联合 评估 是否 安装"
+    echo "  → ${PRE_COMMIT} 不存在, 跟 EPIC-059-A 5 levels 联合 评估 是否 安装"
     check_step 10 "PASS"
     PASS_COUNT=$((PASS_COUNT + 1))
 fi

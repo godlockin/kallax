@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # scripts/check-9-hard-rules.sh
-# EPIC-059-A: 9 Hard Rules 简化 检查脚本
+# EPIC-059-A: 5 levels 简化 检查脚本
 # 跟 scripts/check-fact-forcing-preflight.sh 模式 一致
 # 跟 eket template/docs/MASTER-RULES.md §6 联合, 借方法论 不借代码
 # 跟 PHASE-013-REFLECTION-2026-06-18.md 联合, 治根 "Rule 数 通胀" 迷信
@@ -35,7 +35,7 @@ readonly KALLAX_RULES_TARGET=22
 readonly DOC_LINES_MIN=150
 readonly DOC_LINES_MAX=250
 
-# 9 Hard Rules 命名 (跟 eket MASTER-RULES.md §6 联合, 借方法论 不借代码)
+# 5 levels 命名 (跟 eket MASTER-RULES.md §6 联合, 借方法论 不借代码)
 # 适配 KALLAX 22 Rule 现状 (Conductor/Performer + outbox-isolation + tag-sop + ...)
 readonly -a HARD_RULE_NAMES=(
   "PR 合并后清理 outbox"
@@ -63,7 +63,7 @@ check_9_hard_rules() {
 
 # ----------------------------------------
 # Function: check_claude_md_group_index
-# AC #1 + AC #3: CLAUDE.md 22 Rule 保留 + 9 类别 group 索引 + "9 Hard Rules 模式" 章节
+# AC #1 + AC #3: CLAUDE.md 22 Rule 保留 + 9 类别 group 索引 + "5 levels 模式" 章节
 # 0 删 Rule, file:line 1:1 映射
 # ----------------------------------------
 check_claude_md_group_index() {
@@ -81,8 +81,8 @@ check_claude_md_group_index() {
     echo "group_count=0"
   fi
 
-  # "9 Hard Rules 模式" 章节 (跟 AC #3 联合)
-  if grep -qE "9 Hard Rules 模式" "$CLAUDE_MD" 2>/dev/null; then
+  # "5 levels 模式" 章节 (跟 AC #3 联合)
+  if grep -qE "5 levels 模式" "$CLAUDE_MD" 2>/dev/null; then
     echo "nine_hr_section=present"
   else
     echo "nine_hr_section=missing"
@@ -132,7 +132,7 @@ check_doc_completeness() {
 
 # ----------------------------------------
 # Function: check_glossary_loop
-# AC #4: KALLAX-GLOSSARY §11.1 闭环段, 跟 "9 Hard Rules 简化" + v2.4.1 revert 联合
+# AC #4: KALLAX-GLOSSARY §11.1 闭环段, 跟 "5 levels 简化" + v2.4.1 revert 联合
 # ----------------------------------------
 check_glossary_loop() {
   if [ ! -f "$GLOSSARY" ]; then
@@ -145,7 +145,7 @@ check_glossary_loop() {
   section_11_1=$(awk '/^### 11\.1 /,/^### 11\.2 /' "$GLOSSARY" 2>/dev/null || echo "")
 
   local markers=0
-  if echo "$section_11_1" | grep -qE "9 Hard Rules"; then
+  if echo "$section_11_1" | grep -qE "5 levels"; then
     markers=$((markers + 1))
     echo "nine_hr_ref=1"
   else
@@ -205,7 +205,7 @@ check_zero_rule_inflation() {
 # ----------------------------------------
 _run_main() {
   if [ "${1:-}" = "--self-test" ]; then
-    echo "=== 9 Hard Rules 简化 — Self Test ==="
+    echo "=== 5 levels 简化 — Self Test ==="
     echo ""
     echo ">>> check_9_hard_rules"
     check_9_hard_rules
@@ -228,7 +228,7 @@ _run_main() {
 
   # Default: 跑全 9 项 (跟 AC 联合, 输出 5/5 PASS 格式)
   echo "=========================================="
-  echo "9 Hard Rules 简化 — EPIC-059-A"
+  echo "5 levels 简化 — EPIC-059-A"
   echo "跟 eket MASTER-RULES.md §6 联合, 借方法论 不借代码"
   echo "=========================================="
   echo ""

@@ -33,7 +33,7 @@
 
 | 维度 | 累计 |
 |---|---|
-| **解决方案** | 4-Level Fact-Forcing (L1/L2/L3/L4) + 3 anti-fab 工具 (test-case-isolation + kpi-precision + scope-creep) + 10 KPI falsification 反复模式 + Master 强验证 6 维度 (Rule 11 v2.1) + Rule 18 KPI falsification 反模式黑名单 + 11 BE 累计 |
+| **解决方案** | 5-Level Fact-Forcing (L1/L2/L3/L4) + 3 anti-fab 工具 (test-case-isolation + kpi-precision + scope-creep) + 10 KPI falsification 反复模式 + 5 levels (L1-L5) (Rule 11 v2.1) + Rule 18 KPI falsification 反模式黑名单 + 11 BE 累计 |
 | **载体** | EPIC-039-A (ticket-status-sync) + EPIC-039-B (review.sh) + EPIC-039-D (strong-verify-6d.sh) |
 | **累计 BE** | BE-1, BE-2, BE-3, BE-4, BE-5, BE-8, BE-9, BE-10 (8 BE) |
 | **进度** | 95% 解决 (REV1: 90%, REV2 升级 5%) |
@@ -98,7 +98,7 @@
 | Rule 6 | 经验沉淀强制化 (KALLAX P0) | 痛点 1 (假完成) + 飞轮反哺 |
 | Rule 7 | PHASE 闭环 review (KALLAX P0) | 痛点 1 (假完成) + 飞轮反哺 |
 | Rule 8 | L4 脚本必须存在 (KALLAX P0) | 痛点 1 (假完成) |
-| Rule 9 | 4-Level Fact-Forcing 强制 (KALLAX P0) | 痛点 1 (假完成) |
+| Rule 9 | 5-Level Fact-Forcing 强制 (KALLAX P0) | 痛点 1 (假完成) |
 | Rule 10 | Anti-Fabrication 强制 (KALLAX P0) | 痛点 1 (假完成) |
 | Rule 11 | Master 写代码禁令 (KALLAX P0) | 痛点 3 (角色越界) |
 | Rule 12 | 质量 ensure 强制 (KALLAX P1) | 痛点 1 (假完成) |
@@ -188,7 +188,7 @@
 |---|---|---|
 | 🏗️ Architect | 8 票系统架构落地 (跟 Rule 16/17 联合) | 痛点 4 (资源覆盖) + 痛点 6 (并发文件竞争) |
 | 🛡️ Security | 痛点 5 累计升级 (3D 安全) | 痛点 5 (安全立体) + 痛点 6 (跟 BE-7 修复同模式) |
-| 💻 Backend | 8 票工程实现累计 (跟 Rule 9 4-Level 联动) | 痛点 1 (假完成) + 痛点 4 (资源覆盖) |
+| 💻 Backend | 8 票工程实现累计 (跟 Rule 9 5-Level 联动) | 痛点 1 (假完成) + 痛点 4 (资源覆盖) |
 | 📋 Product | 飞轮反哺价值累计 (6 痛点 100% 覆盖) | 痛点 1-6 全部 |
 | 🖌️ UX | 3 模式决策权 (Rule 13) 跟 UX 体验 | 痛点 3 (角色越界) + 痛点 2 (上下文失忆) |
 
@@ -263,7 +263,7 @@
 |---|---|
 | "完整体系" | ✅ **6 痛点 + 18 Rule + 15 门禁 + 5 视角 + 11 BE** |
 | "软约束+硬脚本" | ✅ **Rule 16/17/18 (软约束) + 8 票 (硬脚本) 联合矩阵** |
-| "避免反复出现" | ✅ **11 BE 累计 + 12 subagent 强验证 + 4-Level Fact-Forcing + 3 anti-fab** |
+| "避免反复出现" | ✅ **11 BE 累计 + 12 subagent 强验证 + 5-Level Fact-Forcing + 3 anti-fab** |
 | "反哺框架, 让飞轮转" | ✅ **4 文档 REV2 (3 done + 1 待) + 痛点 6 治根 3/5 步 + 升 Token (主公预算)** |
 | "流程逻辑 > 扩充配置" | ✅ **痛点 6 治根累计 3/5 步 + Rule 17 5 步文件并发流程 + Rule 16 5 步 subagent 强制** |
 

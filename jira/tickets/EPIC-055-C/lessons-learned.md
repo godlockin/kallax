@@ -30,7 +30,7 @@
 
 **跟 EPIC-055-B (主公拍板分级) 联动**: 5 类标签 SOP 本身 = P1 备案, 跟"独立" 拍板 联合.
 **跟 EPIC-055-A (CLAUDE+GLOSSARY 去重) 联动**: 标签引用去重, 跟 Rule 5 DRY 一致.
-**跟 EPIC-053-B (4-Level 证据链) 联动**: 标签 引用 证据链 = 4-Level 模式.
+**跟 EPIC-053-B (5-Level 证据链) 联动**: 标签 引用 证据链 = 5-Level 模式.
 
 ---
 
@@ -246,7 +246,7 @@ EPIC-055-C 5 类标签 SOP 化 = 治 A2 咒语化 + A3 笔误 闭环.
 - 净价值 62.5%→65.5% (+3.0%) ✅
 
 **跟 5 治理卡 联动**:
-- EPIC-053-B (4-Level 证据链): 标签 引用 证据链 = 4-Level 模式
+- EPIC-053-B (5-Level 证据链): 标签 引用 证据链 = 5-Level 模式
 - EPIC-054-D (Rule 合并扫描): 5 类标签 SOP 不增 Rule, 跟 Rule 32 联合
 - EPIC-055-A (CLAUDE+GLOSSARY 去重): 标签 引用 去重
 - EPIC-055-B (主公拍板分级): 5 类标签 SOP = P1 备案
@@ -256,4 +256,4 @@ EPIC-055-C 5 类标签 SOP 化 = 治 A2 咒语化 + A3 笔误 闭环.
 
 ---
 
-**跟 EPIC-055-B (主公拍板分级 P0/P1/P2) 联合, 跟 EPIC-055-A (CLAUDE+GLOSSARY 去重) 联合, 跟 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md 联合, 跟 14-ISSUES-INTAKE-2026-06-16.md Part 4 联合, 跟 KALLAX-GLOSSARY.md §1.1-1.5 联合, 跟 Rule 5 DRY 联动, 跟"诚实修正" + "翻篇&精进" 战略 一致, 跟 EPIC-053-B (4-Level 证据链) 联合, 跟 Rule 9 X/Y 格式 联合**
+**跟 EPIC-055-B (主公拍板分级 P0/P1/P2) 联合, 跟 EPIC-055-A (CLAUDE+GLOSSARY 去重) 联合, 跟 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md 联合, 跟 14-ISSUES-INTAKE-2026-06-16.md Part 4 联合, 跟 KALLAX-GLOSSARY.md §1.1-1.5 联合, 跟 Rule 5 DRY 联动, 跟"诚实修正" + "翻篇&精进" 战略 一致, 跟 EPIC-053-B (5-Level 证据链) 联合, 跟 Rule 9 X/Y 格式 联合**

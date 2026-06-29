@@ -112,7 +112,7 @@ pub enum IsolationAction {
 
 #[derive(Debug, Subcommand)]
 pub enum VerifyAction {
-    /// Run 4-Level Fact-Forcing verification
+    /// Run 5-Level Fact-Forcing verification
     Run {
         #[arg(short, long)]
         ticket_id: String,

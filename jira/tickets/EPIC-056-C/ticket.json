@@ -2,7 +2,7 @@
   "id": "EPIC-056-C",
   "epicId": "EPIC-056",
   "phaseId": "PHASE-009",
-  "title": "Master 强验证 6 维度恢复 (revert v1.2.4 6→0 退步, 治 H4, ⚠️ 需主公拍板)",
+  "title": "5 levels (L1-L5)恢复 (revert v1.2.4 6→0 退步, 治 H4, ⚠️ 需主公拍板)",
   "type": "refactor",
   "priority": "P2",
   "status": "done",
@@ -22,11 +22,11 @@
     "excludes": []
   },
   "acceptance_criteria": [
-    "Master 强验证 6 维度恢复: L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 (跟 Rule 15) / L6 诚实 (跟 Rule 26/27 联动)",
+    "5 levels (L1-L5)恢复: L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 (跟 Rule 15) / L6 诚实 (跟 Rule 26/27 联动)",
     "scripts/master/strong-verify-6d.sh 升级 — 6 维度全部激活, 不再'流程监督 + 10% 抽查'",
     "node/src/core/master-verify.ts 实现 — 6 维度自动验证 + 失败告警",
     "H4 治根 — v1.2.4 6→0 维度 退步 闭环, 跟净价值 62.5% (跟 5 视角 Product 67.5% 联合 恶化 -5%) 联合",
-    "跟 EPIC-053-B 4-Level 证据链联动 — Master L6 诚实维度 = 证据链校验",
+    "跟 EPIC-053-B 5-Level 证据链联动 — Master L6 诚实维度 = 证据链校验",
     "tests/integration/master-6d-recovery-test.sh 6/6 PASS (6 维度全激活 + 失败告警 + 证据链校验 + 跟 Subagent 流程联动 + 跟 Rule 11 v2.1 一致 + 净价值计算)",
     "Rule 9 KPI 精确 X/Y 格式 — 6/6 PASS = 100.0%",
     "⚠️ revert v1.2.4 主公拍板决策, 治理升级红线, Master 不能自己升级, 需主公拍 explicit 拍板后才执行 — 跟 EPIC-055-B 拍板分级联动"

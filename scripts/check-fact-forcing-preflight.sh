@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # scripts/check-fact-forcing-preflight.sh
-# EPIC-025-B UP-2: 4-Level Fact-Forcing preflight checker
+# EPIC-025-B UP-2: 5 levels Fact-Forcing preflight checker
 # Usage: check-fact-forcing-preflight.sh <expert.md> [--check-lessons <epic-id>] [--force-merge]
 
 set -euo pipefail
@@ -71,7 +71,7 @@ if [[ ! -f "$EXPERT_FILE" ]]; then
 fi
 
 # Run preflight
-echo "Running 4-Level Fact-Forcing preflight..."
+echo "Running 5 levels Fact-Forcing preflight..."
 echo ""
 
 if [[ -n "$CHECK_LESSONS" ]]; then

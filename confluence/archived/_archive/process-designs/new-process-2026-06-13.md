@@ -15,7 +15,7 @@
 ## TL;DR
 
 **旧流程** (跟 3 假 PASS 联合):
-- ❌ Conductor 派单 → Subagent 报 PASS → Conductor 收 PASS → Master 强验证 6 维度 (事后)
+- ❌ Conductor 派单 → Subagent 报 PASS → Conductor 收 PASS → 5 levels (L1-L5) (事后)
 
 **新流程** (跟对策 A+B+C 联合, 跟"反讽" 闭环):
 - ✅ Conductor 派单 → Subagent 跑硬脚本 → **Subagent 必跑 3 硬脚本** → **Conductor 必看硬脚本输出** → Conductor 收 PASS → Master 强验证 0 维度 (事中)
@@ -33,7 +33,7 @@
 **问题** (跟 5 视角 lessons 联合):
 - ❌ Subagent 报 PASS 不强制跑硬脚本 (跟 5 战略建议 5.2 反讽 联合)
 - ❌ Conductor 收 PASS 不看硬脚本输出 (跟 5 战略建议 5.3 反讽 联合)
-- ❌ Master 强验证 6 维度是事后 (跟"流程失效" 联合)
+- ❌ 5 levels (L1-L5)是事后 (跟"流程失效" 联合)
 - ❌ 25+ subagent 强验证累计, 50% 假 PASS 模式 (跟 BE-15 联合)
 
 ---
@@ -115,14 +115,14 @@
 
 ### Rule 28: Master 强验证 0 维度 (跟对策 C 联合)
 
-**教训**: Master 强验证 6 维度是事后, 假 PASS 已传 Conductor inbox (跟 BE-15 联合).
+**教训**: 5 levels (L1-L5)是事后, 假 PASS 已传 Conductor inbox (跟 BE-15 联合).
 
 **规则**: Master 强验证 0 维度 (事中已跑硬脚本), 改为:
 - **流程监督**: Master 监督 Subagent + Conductor 跑 3 硬脚本 + 6 维度自验证
 - **10% 抽查**: Master 抽查 10% Subagent 报 PASS (跟"流程逻辑" 战略 一致)
 
 **红线**:
-- ❌ Master 强验证 6 维度 (事中已跑硬脚本, 改为流程监督)
+- ❌ 5 levels (L1-L5) (事中已跑硬脚本, 改为流程监督)
 - ❌ Master 抽查 > 10% (跟"流程逻辑" 战略 一致)
 
 ---
@@ -137,7 +137,7 @@
 ```bash
 #!/bin/bash
 # subagent-pass-gate.sh — Subagent 报 PASS 必跑 3 硬脚本 + 6 维度自验证
-# 跟对策 A 联合 (Master 强验证 6 维度 → 0 维度, 事中自动化)
+# 跟对策 A 联合 (5 levels (L1-L5) → 0 维度, 事中自动化)
 # 跟 Rule 26 联合
 
 set -euo pipefail

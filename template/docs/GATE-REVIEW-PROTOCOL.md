@@ -20,7 +20,7 @@ Gate Review 是 KALLAX 的质量关卡机制，确保任务在进入下一阶段
 | 问题 | 旧框架 | KALLAX 改进 |
 |-----|------|------------|
 | 票据质量 | 低质量票据流入开发 | 强制 Gate 检查 |
-| PR 合并 | 无验证直接合并 | 4-Level 验证 |
+| PR 合并 | 无验证直接合并 | 5 levels 验证 |
 | 范围蔓延 | 无边界控制 | file_scope 强制声明 |
 
 ---
@@ -63,7 +63,7 @@ Gate Review 是 KALLAX 的质量关卡机制，确保任务在进入下一阶段
 │  ┌─────────────────────────────────────────────────────────────┐   │
 │  │  Gate 3: PR 合并关卡                                         │   │
 │  │  • CI 全部通过                                               │   │
-│  │  • 4-Level 验证通过                                          │   │
+│  │  • 5 levels 验证通过                                          │   │
 │  │  • Code Review 通过                                          │   │
 │  │  • 无未解决讨论                                              │   │
 │  └─────────────────────────────────────────────────────────────┘   │
@@ -328,7 +328,7 @@ gate3_checks:
     - all_checks_pass: true
     - no_required_check_pending: true
     
-  # 4-Level 验证
+  # 5 levels 验证
   verification:
     - level1_existence: true
     - level2_substance: true
@@ -363,7 +363,7 @@ kallax gate:check 3 --pr 42
 #   ✅ lint: pass
 #   ✅ type-check: pass
 # 
-# 4-Level Verification:
+# 5 levels Verification:
 #   ✅ Level 1: Existence - all files present
 #   ✅ Level 2: Substance - no stubs detected
 #   ✅ Level 3: Wiring - build successful

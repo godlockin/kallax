@@ -168,7 +168,7 @@ BE-10 模式: `review.sh` 之前用 `[[:space:]]` 数组模式 (bash 5.x 不兼�
 | EPIC-053-F (check-scope-creep glob) | check-scope-creep.sh 是自检对象之一, 跟 EPIC-053-F 闭环 |
 | EPIC-048 (tool-bypass-audit) | 元级自检模式 — tool-bypass-audit 检查 bypass vector, tool-self-check 检查工具自身 4 维度 |
 | BE-10 (review.sh 拒 FAIL bug) | 直接治根 — 4 维度 D2 (pattern compat) 拦截 `[[:space:]]` 数组模式 |
-| Rule 8 (4-Level Fact-Forcing) | D1=existence, D2=substance, D3/D4=data flow (跟 Rule 8 对齐) |
+| Rule 8 (5-Level Fact-Forcing) | D1=existence, D2=substance, D3/D4=data flow (跟 Rule 8 对齐) |
 | Rule 9 (KPI 精确 X/Y) | 8/8 PASS = 100.0% |
 | Rule 18 (KPI falsification 黑名单) | 不报伪 PASS, 缺 1 维度算 FAIL |
 | Rule 30/31 (独立见证) | tool-self-check 跑测试时输出 raw stdout (跟 BE-5 修复模式一致) |

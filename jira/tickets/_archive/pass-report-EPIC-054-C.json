@@ -19,7 +19,7 @@
     "check-test-case-isolation": "PASS — mktemp -d scratch + trap 'rm -rf' EXIT 自动清理, 8 case 互不干扰",
     "check-kpi-precision": "PASS — Rule 9 X/Y 精确格式: 8/8 (100.0%), 32 sub-checks 全过",
     "check-scope-creep": "PASS — file_scope 6 文件全在 includes, 0 越界 (未动 EPIC-042~047 空目录 + epic_index.json + EPIC-053/055/056)",
-    "check-fact-forcing-preflight": "PASS — 8/8 测试输出即 evidence chain, L1-L4 4-Level 验证完整",
+    "check-fact-forcing-preflight": "PASS — 8/8 测试输出即 evidence chain, L1-L4 5-Level 验证完整",
     "l3-l4-consistency": "PASS — L3 集成测试 8/8 PASS, L4 verify = test stdout 32 sub-checks (无矛盾, 跟 Rule 9 联动)",
     "kpi-evidence-chain": "PASS — test-output.txt 保存为 jira/tickets/EPIC-054-C/test-output.txt, git anchor = 862fc05",
     "tool-self-check": "PASS — cleanup-empty.sh 独立 dry-run 验证 6 空目录检测, epic-cmd.ts TypeScript 0 errors (其他文件 pre-existing 错误不在本 ticket scope)"

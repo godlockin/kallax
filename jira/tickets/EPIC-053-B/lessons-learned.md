@@ -1,11 +1,11 @@
 # EPIC-053-B — LESSONS LEARNED
 
-> KPI falsification 系统级治根 — 4-Level 证据链 (git-anchor + test stdout + 5 扩展组 pass + 独立见证签名)
-> 跟 Rule 6 (事后复盘) 联合, 跟 Rule 8 (4-Level Fact-Forcing) 联合, 跟 Rule 9 (KPI 精确格式) 联合, 跟 Rule 30/31 (独立见证机制) 联合
+> KPI falsification 系统级治根 — 5-Level 证据链 (git-anchor + test stdout + 5 扩展组 pass + 独立见证签名)
+> 跟 Rule 6 (事后复盘) 联合, 跟 Rule 8 (5-Level Fact-Forcing) 联合, 跟 Rule 9 (KPI 精确格式) 联合, 跟 Rule 30/31 (独立见证机制) 联合
 
 ---
 
-## L1 — 证据链必须 4-Level 不可降级, 缺 1 算 FAIL
+## L1 — 证据链必须 5-Level 不可降级, 缺 1 算 FAIL
 
 **问题**: 之前的 verification 系统只验证 L1 (commit 存在) 和 L3 (test exit code). Subagent 可以报 PASS 时只跑 fake test, 输出 6/6 PASS 但 git log 是空 commit + 0 文件 (BE-5 模式). 单层 evidence 不足以抓出所有 falsification 反复.
 
@@ -13,7 +13,7 @@
 
 **修法**: `kpi-evidence-chain.sh` 实现 4 维度强制: L1 git-anchor (40-char hex + git rev-parse + branch ancestry) + L2 test stdout (PASS + X/Y format) + L3 5 扩展组 (9 个 anti-fab 工具分组跑) + L4 独立见证 (audit-log-sink 写入). 任何一层 FAIL ⇒ 整个 chain FAIL.
 
-**Rule 联动**: Rule 8 (4-Level Fact-Forcing) — 跟 EPIC-053-A l3-l4-consistency 联合扩展到 4 维度.
+**Rule 联动**: Rule 8 (5-Level Fact-Forcing) — 跟 EPIC-053-A l3-l4-consistency 联合扩展到 4 维度.
 
 ---
 
@@ -56,7 +56,7 @@
 
 **修法**: L4 调用 `audit-log-sink.sh` 写一条 witness 记录, 内容包含 ticket_id + commit_sha + subagent_id + timestamp. 文件权限 600 (subagent 不能改), 目录权限 700 (BE-7 修复模式). 验证逻辑: 看 audit dir 里有没有对应 ticket_id 的 .log 文件. 没有 = L4 FAIL.
 
-**Fallback**: macOS 默认无 `flock`, audit-log-sink 会失败. 我加了 atomic temp+mv fallback (umask 077 + chmod 600), 保持 BE-7 修复模式的不变性. 这保证了 4-Level chain 在 Linux/macOS 都能跑.
+**Fallback**: macOS 默认无 `flock`, audit-log-sink 会失败. 我加了 atomic temp+mv fallback (umask 077 + chmod 600), 保持 BE-7 修复模式的不变性. 这保证了 5-Level chain 在 Linux/macOS 都能跑.
 
 **Rule 联动**: Rule 30/31 (独立见证机制), BE-5 (0 commit + 0 文件 + 假 PASS 治根), BE-7 (umask 077 修复模式).
 
@@ -64,7 +64,7 @@
 
 ## L5 — output-verifier.ts 升级是 application-layer 集成
 
-**洞察**: `node/src/core/output-verifier.ts` 已有 4-Level Fact-Forcing (L1 git / L2 substance / L3 wiring / L4 data flow), 但**没有强制 Performer 报 PASS 时必须含 4-Level 证据**. Performer 可以说 "tests passed" 而 evidence 缺失.
+**洞察**: `node/src/core/output-verifier.ts` 已有 5-Level Fact-Forcing (L1 git / L2 substance / L3 wiring / L4 data flow), 但**没有强制 Performer 报 PASS 时必须含 5-Level 证据**. Performer 可以说 "tests passed" 而 evidence 缺失.
 
 **修法**: 新增 `verifyPassEvidence(bundle: PassEvidenceBundle)` 方法, 接受 `{ ticketId, commitSha, testStdoutPath }` 三件套, 委托给 `kpi-evidence-chain.sh verify`. 解析 stdout 里的 `[L1/L2/L3/L4 PASS|FAIL]` 标记, 返回结构化结果. 任何一层 FAIL ⇒ `passed: false` ⇒ Conductor 不能接受 PASS.
 
@@ -76,11 +76,11 @@
 
 ## L6 — 集成 independent-witness.sh 加 verify-4level 子命令
 
-**洞察**: `independent-witness.sh` 是 Rule 30/31 的 system-of-record 入口, 但只接受 "verify" (基于 subagent-pass-gate) 和 "witness" (写 audit). 缺 4-Level chain 入口.
+**洞察**: `independent-witness.sh` 是 Rule 30/31 的 system-of-record 入口, 但只接受 "verify" (基于 subagent-pass-gate) 和 "witness" (写 audit). 缺 5-Level chain 入口.
 
 **修法**: 新增 `verify-4level <ticket_id> <commit_sha> <stdout_file>` 子命令, 委托给 `kpi-evidence-chain.sh verify`, 同时把 4-level witness 写入 audit-log-sink (跟 Rule 31 联合). 这样 Conductor 在接受 PASS 时可以一步调用 `independent-witness.sh verify-4level ...` 完成全部独立见证流程.
 
-**Rule 联动**: 跟 Rule 31 (独立见证机制) 集成, 跟 EPIC-053-B 4-Level 联动, 跟 BE-5 + BE-7 修复模式 联合.
+**Rule 联动**: 跟 Rule 31 (独立见证机制) 集成, 跟 EPIC-053-B 5-Level 联动, 跟 BE-5 + BE-7 修复模式 联合.
 
 ---
 
@@ -106,11 +106,11 @@
 | Ticket | 责任 | 跟 EPIC-053-B 联动 |
 |--------|------|--------------------|
 | EPIC-053-A | L3↔L4 一致性 (truth table) | 提供 L3 group 中 process-engineering 的 l3-l4-consistency.sh |
-| EPIC-053-B | 4-Level 证据链 pass-report | (本工单) |
+| EPIC-053-B | 5-Level 证据链 pass-report | (本工单) |
 | EPIC-053-C | KPI X/Y 格式 | check-kpi-precision.sh 是 L3 group security-tool-bypass 的工具 |
-| EPIC-053-D | Master 强验证 6 维度 | 强验证包含 4-Level evidence 检查 |
+| EPIC-053-D | 5 levels (L1-L5) | 强验证包含 5-Level evidence 检查 |
 | EPIC-053-E | 5 extended review 逆袭 | 跟 v1.2.4 5 扩展组 process-engineering/security-tool-bypass 联动 |
-| EPIC-053-F | 后续 fix | 跟 4-Level chain 闭环 |
+| EPIC-053-F | 后续 fix | 跟 5-Level chain 闭环 |
 
 ---
 
@@ -118,11 +118,11 @@
 
 - [ ] `kpi-evidence-chain.sh` 可执行 ✓
 - [ ] `tests/integration/kpi-evidence-chain-test.sh` 6/6 PASS ✓
-- [ ] 4-Level 各自独立验证逻辑, 缺 1 算 FAIL ✓
+- [ ] 5-Level 各自独立验证逻辑, 缺 1 算 FAIL ✓
 - [ ] `independent-witness.sh verify-4level` 子命令集成 ✓
 - [ ] `output-verifier.ts verifyPassEvidence()` application-layer 集成 ✓
 - [ ] `node/src/core/output-verifier.ts` TypeScript 编译通过 ✓
 - [ ] 0 commit + 0 file + fake PASS ⇒ L1/L3 必拦截 ✓
-- [ ] 任何 ticket 报 PASS 前 4-Level 必须 OK ✓
+- [ ] 任何 ticket 报 PASS 前 5-Level 必须 OK ✓
 - [ ] boundary 越界 = 0 ✓
 - [ ] KPI 精确 X/Y 格式 (6/6 = 100.0%) ✓
