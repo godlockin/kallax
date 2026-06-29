@@ -1104,7 +1104,7 @@ git commit --allow-empty -m "merge: testing → miao (EPIC-029 3 模式决策权
 - §8 落地位置 → Task 1-7 全部覆盖
 - §9 状态机 → Task 8 E2E 验证
 - §10 风险 → Task 9 Rule 13 红线
-- §11 4-Level 验收 → Task 8 E2E (L4 数据流动) + 各 task L1/L2/L3 自检
+- §11 5-Level 验收 → Task 8 E2E (L4 数据流动) + 各 task L1/L2/L3 自检
 
 **Placeholder scan**: 0 TBD/TODO, 所有 code 完整, 无 "similar to task N"
 

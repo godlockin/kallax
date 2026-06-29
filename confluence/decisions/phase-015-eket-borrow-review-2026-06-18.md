@@ -17,7 +17,7 @@
 主公 2026-06-18 '需要都建卡并行处理' + '直接启动开工' 派单 联合 (跟"独立" 拍 explicit 联合):
 
 - **A. EPIC-059 8 票 闭环 (1 ticket 1 subagent 串行 8 轮, 跟 BE-14 联合)**:
-  - ✅ EPIC-059-A 9 Hard Rules 简化 (5/5 PASS, commit 7ca58a5, 跟 v2.4.1 反思 + eket MASTER-RULES.md §6 联合)
+  - ✅ EPIC-059-A 5 levels 简化 (5/5 PASS, commit 7ca58a5, 跟 v2.4.1 反思 + eket MASTER-RULES.md §6 联合)
   - ✅ EPIC-059-B Rule of 500 (16/6 PASS, commit fc1cbb4, 跟 eket MASTER-RULES.md §6 Rule 8 联合)
   - ✅ EPIC-059-C PR ~100 行上限 (21/5 PASS, commit b1ad90c, 跟 eket MASTER-RULES.md §6 Rule 9 联合)
   - ✅ EPIC-059-D Fact-Forcing 原则 (3 文件, commit 0b394f5, 跟 eket MASTER-RULES.md §2 联合, 跟 Master 6 维 L6 诚实 联合)
@@ -35,9 +35,9 @@
 
 ### 1.1 8 票 落地 详情
 
-| # | 票 ID | 主题 | 4-Level 验证 | Commit | 跟"借方法论 不借代码" 联合 |
+| # | 票 ID | 主题 | 5-Level 验证 | Commit | 跟"借方法论 不借代码" 联合 |
 |---|-------|------|--------------|--------|-----------------------------|
-| 1 | EPIC-059-A | 9 Hard Rules 简化 | 5/5 PASS | `7ca58a5` | eket MASTER-RULES.md §6 9 Hard Rules 模式 升级 22 Rule → 9 类别 group 索引 |
+| 1 | EPIC-059-A | 5 levels 简化 | 5/5 PASS | `7ca58a5` | eket MASTER-RULES.md §6 5 levels 模式 升级 22 Rule → 9 类别 group 索引 |
 | 2 | EPIC-059-B | Rule of 500 | 16/6 PASS | `fc1cbb4` | eket MASTER-RULES.md §6 Rule 8 净变更 4 档分级 |
 | 3 | EPIC-059-C | PR ~100 行上限 | 21/5 PASS | `b1ad90c` | eket MASTER-RULES.md §6 Rule 9 PR 4 档分级 (跟 B 互为 互补) |
 | 4 | EPIC-059-D | Fact-Forcing 原则 | 3 文件 + 21 assertions | `0b394f5` | eket MASTER-RULES.md §2 3 原则 + 7 反例 + 7 正例 + 5+5 |
@@ -72,7 +72,7 @@
 
 | 票 | 主题 | 问题匹配 | 可移植 | 可验证 | 范围 | 可撤销 | 总分 | 落地 |
 |----|------|----------|--------|--------|------|--------|------|------|
-| A | 9 Hard Rules 简化 | 5 | 5 | 5 | 5 | 5 | 25/25 | ✅ done |
+| A | 5 levels 简化 | 5 | 5 | 5 | 5 | 5 | 25/25 | ✅ done |
 | B | Rule of 500 | 4 | 5 | 5 | 5 | 5 | 24/25 | ✅ done |
 | C | PR ~100 行上限 | 4 | 5 | 5 | 5 | 5 | 24/25 | ✅ done |
 | D | Fact-Forcing 原则 | 4 | 5 | 5 | 5 | 5 | 24/25 | ✅ done |
@@ -125,7 +125,7 @@
 ### 3.3 22 Rule 保持 (跟 v2.4.1 还原 联合, 跟 KALLAX-GLOSSARY §11.1 联合)
 
 跟 v2.4.1 revert 闭环 联合, 22 Rule 保持 (跟 v2.3.0 稳定 一致):
-- EPIC-059-A 9 Hard Rules 简化 是 group 索引 (0 删 Rule, 0 增 Rule)
+- EPIC-059-A 5 levels 简化 是 group 索引 (0 删 Rule, 0 增 Rule)
 - EPIC-059-B/C Rule of 500 + PR ~100 行 是 Rule 8/9 升级 (0 增 Rule)
 - EPIC-059-D/E/F/G/H 是 新章节 + 新文件 + 新脚本 (0 增 Rule)
 - 0 增 Rule 累计 8 票, 跟"翻篇&精进" + "诚实修正" 战略 一致
@@ -135,7 +135,7 @@
 跟 v2.5.0 PHASE-014 60 术语 联合, v2.7.0 PHASE-015 加 5 术语:
 - **§12.1 Fact-Forcing 原则** (跟 eket MASTER-RULES.md §2 联合, 跟 Master 6 维 L6 诚实 联合, 跟"诚实修正" 战略 一致)
 - **§12.4 L0-L4 多级记忆分层** (跟 eket confluence/memory/ + ~/.claude/knowledge L0-L4 联合, 跟"反哺框架" 战略 一致)
-- **§11.1 闭环段** (跟 EPIC-059-A 9 Hard Rules 简化 联合, 跟 v2.4.1 revert 闭环)
+- **§11.1 闭环段** (跟 EPIC-059-A 5 levels 简化 联合, 跟 v2.4.1 revert 闭环)
 - **§12.2 §12.3 5 反例 + 5 正例** (跟 EPIC-059-D Fact-Forcing 联合, 跟 v2.0.2/v2.4.0/v2.4.1 实证 联合)
 - **§12.2 §12.4 5 触发 + 5 升级** (跟 EPIC-059-H L0-L4 联合)
 
@@ -167,7 +167,7 @@
 
 跟 v2.4.0 反思 + v2.4.1 revert 联合 (file:line confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md + §11.1-11.6 6 反思 联合):
 
-- **§11.1 闭环**: EPIC-059-A 9 Hard Rules 简化 跟 v2.4.1 revert 联合, 22 Rule 保持, 0 增 Rule 治根 "Rule 数通胀" 迷信
+- **§11.1 闭环**: EPIC-059-A 5 levels 简化 跟 v2.4.1 revert 联合, 22 Rule 保持, 0 增 Rule 治根 "Rule 数通胀" 迷信
 - **§11.2 闭环**: EPIC-059-B/C Rule of 500 + PR ~100 联合, 阈值 15 是 迷信, KALLAX 2 档 互为 互补 治根
 - **§11.3 闭环**: EPIC-059 8 票 净价值 持平 0 实际变化, 跟"翻篇&精进" 战略 一致, 跟"诚实修正" 联合
 - **§11.4 闭环**: EPIC-059-E Post-Process 11 步骤 标准化 跨 release 跟单 ticket 时间维度 失焦

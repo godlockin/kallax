@@ -198,7 +198,7 @@ KALLAX 框架能力: 85.5%
 - 检查 6 维度自验证结果
 
 **Rule 28: Master 强验证 0 维度 (KALLAX P0)**
-- Master 强验证 6 维度 (跟 Rule 11 v2.1 一致)
+- 5 levels (L1-L5) (跟 Rule 11 v2.1 一致)
 - L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实
 - 任一 FAIL → 报 FAIL + ticket 状态自动同步 + 留 boundary event
 

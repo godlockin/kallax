@@ -181,7 +181,7 @@ exec "$SCRIPT_DIR/decision-gate.sh" "$@"
 
 ---
 
-## 5. 测试设计 (跟 4-Level Fact-Forcing L1-L4 联合)
+## 5. 测试设计 (跟 5-Level Fact-Forcing L1-L4 联合)
 
 ### 5.1 L1 存在性
 

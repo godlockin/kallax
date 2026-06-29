@@ -48,7 +48,7 @@
 | `kallax-rebuild-lessons.md` | 重建经验 | KALLAX 框架级 lessons | ACTIVE |
 | `multi-agent-collab-failures.md` | 多 Agent 协作失败 | 并行冲突 / 工件覆盖 | ACTIVE |
 | `project-level-data-isolation.md` | 数据隔离 | Worktree 隔离 + 跨实例防混 | ACTIVE |
-| `verification-matters-2026-06-19.md` | 验证重要性 | 4-Level Fact-Forcing 来源 | ACTIVE |
+| `verification-matters-2026-06-19.md` | 验证重要性 | 5-Level Fact-Forcing 来源 | ACTIVE |
 | `cross-epic-kpi-falsification-evolution-2026-06-19.md` | KPI falsification 4 次演化 + 安全审查 3 轮 + Token Plan 撞墙 + 派发权让渡 | 综合 4 主题, 单一入口 (PHASE-005升级 3) | ACTIVE |
 | `three-modes-decision-authority.md` | 3 模式决策权 | EPIC-029 3 模式 | ARCHIVED → cross-epic-kpi-falsification-evolution-2026-06-19.md |
 | `security-hardening-iterations-2026-06-19.md` | 安全审查 3 轮叠加 | EPIC-029/030 20 issue | ARCHIVED → cross-epic-kpi-falsification-evolution-2026-06-19.md |
@@ -89,7 +89,7 @@
 - **Tool1 [NEW]**: `check-test-case-isolation.sh` (verbatim 防御)
 - **Tool2 [NEW]**: `check-kpi-precision.sh` (估数防御)
 - **Tool3 [NEW]**: `check-scope-creep.sh` (file_scope 防御)
-- **Tool4 [EXISTING]**: `check-fact-forcing-preflight.sh` (4-Level 强制)
+- **Tool4 [EXISTING]**: `check-fact-forcing-preflight.sh` (5-Level 强制)
 
 ## 4. KPI falsification 案例 (3 次, 留教训)
 

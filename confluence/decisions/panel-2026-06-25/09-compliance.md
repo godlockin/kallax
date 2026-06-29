@@ -18,23 +18,23 @@
 
 ### 1.2 Rule 索引 file:line 失准 (实测 跟 声称 偏差)
 
-| 声称 (CLAUDE.md 9 Hard Rules 表) | 实测 (file:line 验证) | 偏差 |
+| 声称 (CLAUDE.md 5 levels 表) | 实测 (file:line 验证) | 偏差 |
 |-------------------------------|------------------------|------|
 | Rule 30 @ `CLAUDE.md:641` | 实际 `CLAUDE.md:654` (### 30. 工具不可绕过) | -13 行 |
 | Rule 31 @ `CLAUDE.md:647` | 实际 `CLAUDE.md:660` (### 31. 独立见证机制) | -13 行 |
 | Rule 12 扩展 @ `CLAUDE.md:617` | 实际 `CLAUDE.md:678` (#### Rule 14 Extension) | -61 行 |
 
-**file:line 索引 失准**: 9 Hard Rules 表 file:line 链接 跟 实际 位置 偏差 13-61 行 (跨 EPIC-058-E 合并 + v2.7.0 整理 release 累计 漂移). 检查 5/5 PASS 验证 需 跨 release 重新校准.
+**file:line 索引 失准**: 5 levels 表 file:line 链接 跟 实际 位置 偏差 13-61 行 (跨 EPIC-058-E 合并 + v2.7.0 整理 release 累计 漂移). 检查 5/5 PASS 验证 需 跨 release 重新校准.
 
-### 1.3 9 Hard Rules 索引 跟 docs/process/9-hard-rules.md 不一致
+### 1.3 5 levels 索引 跟 docs/process/9-hard-rules.md 不一致
 
 | 项 | `CLAUDE.md:572-585` 9 类别 表 | `docs/process/9-hard-rules.md:24-36` 9 条 简表 | 不一致 |
 |----|----------------------------|---------------------------------------------|--------|
 | 9 条 主题 | 隔离/错误处理/资源/类型/经验/角色/决策/流程/标签 | outbox/反向引用/Slaver 超时/负载分担/分配前确认/文档卫生/新建前先想/Rule 500/PR 100 | **0 主题 1:1 映射** |
-| Rule 数 | 20 Rule → 9 类别 group | 22 Rule → 9 Hard Rules | 22 vs 20 (合并不一致) |
+| Rule 数 | 20 Rule → 9 类别 group | 22 Rule → 5 levels | 22 vs 20 (合并不一致) |
 | 索引 类型 | 类别 group 索引 (file:line 1:1) | eket §6 模式 1:1 复刻 | 借方法论 vs 1:1 |
 
-**2 套 9 Hard Rules 模式 并行存在**: CLAUDE.md 用 "9 类别 group 索引" 模式 (适配 22→20 Rule), 9-hard-rules.md 用 "eket §6 模式 1:1 复刻" (适配 22 Rule 还原), 0 主题 1:1 映射. 跟 "借方法论 不借代码" 战略 矛盾 (借方法论 应该 1 套, 不 2 套).
+**2 套 5 levels 模式 并行存在**: CLAUDE.md 用 "9 类别 group 索引" 模式 (适配 22→20 Rule), 9-hard-rules.md 用 "eket §6 模式 1:1 复刻" (适配 22 Rule 还原), 0 主题 1:1 映射. 跟 "借方法论 不借代码" 战略 矛盾 (借方法论 应该 1 套, 不 2 套).
 
 ### 1.4 Slash 命令 数量 跨文档 不一致
 
@@ -56,13 +56,13 @@
 
 `CLAUDE.md:594` 声称 20 Rule (active, EPIC-058-E 22→20 合并落地), `docs/process/9-hard-rules.md:12,206` 全篇 声称 22 Rule (v2.4.1 还原 跟 v2.3.0 一致). **未跟踪 EPIC-058-E v2.7.5 22→20 合并落地**. 跨 release 留待 治根, 跟 "诚实修正" 战略 联合, 0 隐藏 debt 文档化 即可. **检查脚本**: `bash scripts/check-9-hard-rules.sh --self-test` 应 FAIL (CLAUDE.md 20 vs 9-hard-rules.md 22 差 2).
 
-### R2: 9 Hard Rules file:line 索引 失准 13-61 行
+### R2: 5 levels file:line 索引 失准 13-61 行
 
 CLAUDE.md:572-585 9 类别 group 索引 表 file:line 链接 跟 实际 Rule 位置 偏差 13-61 行. 跨 release 累计 漂移 (EPIC-058-E 合并 + v2.7.0 整理 release). 检查脚本 `bash scripts/check-9-hard-rules.sh --self-test` 5/5 PASS 验证 失真. **0 强制 拍板** 治根, 跨 release 留待 master explicit 拍 "1 主题 1 commit 重构 file:line 索引".
 
-### R3: 2 套 9 Hard Rules 模式 并行 存在 借方法论 失焦
+### R3: 2 套 5 levels 模式 并行 存在 借方法论 失焦
 
-CLAUDE.md 9 类别 group 索引 (file:line 1:1 适配 20 Rule) + docs/process/9-hard-rules.md eket §6 模式 1:1 复刻 (适配 22 Rule) — 0 主题 1:1 映射. 跟 "借方法论 不借代码" 战略 矛盾 (借方法论 应 1 套, 不 2 套). 跨 release 留待 master explicit 拍 "1 套 9 Hard Rules 模式 + 1 套 20 Rule 索引" 收口.
+CLAUDE.md 9 类别 group 索引 (file:line 1:1 适配 20 Rule) + docs/process/9-hard-rules.md eket §6 模式 1:1 复刻 (适配 22 Rule) — 0 主题 1:1 映射. 跟 "借方法论 不借代码" 战略 矛盾 (借方法论 应 1 套, 不 2 套). 跨 release 留待 master explicit 拍 "1 套 5 levels 模式 + 1 套 20 Rule 索引" 收口.
 
 ### R4: Slash 命令 速查 (9) 跟 SKILL.md (26+) 数量 gap 用户认知
 
@@ -91,7 +91,7 @@ CLAUDE.md 命令速查 列 9 命令 (用户 入口), SKILL.md 描述 26+ 命令.
 - 0 增 Rule, 0 删 Rule, 0 净价值 损失 (纯 索引 修正)
 - 1 主题 1 commit (跟 "PR ~100 行" Rule 7 联合, file:line 变更 估计 < 50 行)
 
-### Rec 3: 2 套 9 Hard Rules 模式 收口 1 套 (跨 release 留待 master 拍)
+### Rec 3: 2 套 5 levels 模式 收口 1 套 (跨 release 留待 master 拍)
 
 跨 release 留待 master explicit 拍 治理 模式:
 - 选项 A: 留 CLAUDE.md 9 类别 group 索引 (file:line 1:1, 跟 EPIC-058-E 合并 落地 一致), docs/process/9-hard-rules.md 转为 "9 类别 group 索引 详细 解释" (借方法论, 0 eket §6 1:1 复刻)
@@ -118,7 +118,7 @@ CLAUDE.md 命令速查 列 9 命令 (用户 入口), SKILL.md 描述 26+ 命令.
 
 - **0 增 Rule**: CLAUDE.md 20 Rule 跟 docs/process/9-hard-rules.md 22 Rule 不一致 = debt 文档化, 0 增 Rule 治根 (跟 "翻篇&精进" 战略 一致)
 - **0 增 命令**: Slash 命令 速查 9 跟 SKILL.md 26+ gap = 用户 认知 债务, 0 增 命令 治根 (互为 互补 标记 即可)
-- **0 强制 拍板**: 2 套 9 Hard Rules 模式 + file:line 失准 + 速查 vs 完整 跨 release 留待 master explicit 拍, 跟 "独立" 战略 联合 0 跨 session 拍板
+- **0 强制 拍板**: 2 套 5 levels 模式 + file:line 失准 + 速查 vs 完整 跨 release 留待 master explicit 拍, 跟 "独立" 战略 联合 0 跨 session 拍板
 - **0 删 Rule 持平**: EPIC-058-E v2.7.5 22→20 合并 落地, docs/process/9-hard-rules.md 全篇 未跟踪 = 文档化 debt 跨 release 留待 1 commit 1 文件 治根
 - **0 净价值 损失**: 全部 5 推荐 实施 0 净价值 变化 (跟 v2.4.0 反思 revert 教训 一致), 净价值 67.0% 持平
 
@@ -127,7 +127,7 @@ CLAUDE.md 命令速查 列 9 命令 (用户 入口), SKILL.md 描述 26+ 命令.
 | KPI | X/Y 格式 | 阈值 | file:line 验证 |
 |-----|---------|------|---------------|
 | **Rule 数 跨文档 一致性** | **1/3 = 33.3%** (CLAUDE.md 20 Rule 一致, 9-hard-rules.md 22 Rule 不一致 3 处) | 3/3 = 100.0% (CLAUDE.md + 9-hard-rules.md + SKILL.md) | `CLAUDE.md:594` (20) vs `docs/process/9-hard-rules.md:12,206,217` (22) |
-| **9 Hard Rules file:line 索引 准确性** | **3/18 = 16.7%** (实测 3 处 偏差, 18 处 索引) | 18/18 = 100.0% | `CLAUDE.md:579,581` 索引 vs 实际 line 13-61 偏差 |
+| **5 levels file:line 索引 准确性** | **3/18 = 16.7%** (实测 3 处 偏差, 18 处 索引) | 18/18 = 100.0% | `CLAUDE.md:579,581` 索引 vs 实际 line 13-61 偏差 |
 | **Slash 命令 文档 一致性** | **3/3 = 100.0%** (CLAUDE.md 9 速查 + SKILL.md 26+ 完整 + slash-commands.md 154 累计) | 3/3 = 100.0% | `CLAUDE.md:315-325` + `.claude/skills/kallax/SKILL.md` + `docs/reference/slash-commands-2026-06-19.md` |
 | **派遣 Checklist 11 项 落地** | **3/3 = 100.0%** (AGENTS.md 1/1 + SKILL.md 1/1 + dispatch-checklist.md 1/1) | 3/3 = 100.0% | `AGENTS.md:126-158` + `.claude/skills/kallax/SKILL.md` + `confluence/decisions/dispatch-checklist.md` |
 | **0 增 Rule 持平 跨 release 累计** | **18/18 = 100.0%** (v1.2.4 → v2.7.5 18 release 累计 0 增 Rule) | 18/18 = 100.0% | `CLAUDE.md:594-625` 合并 历史 + EPIC-058-E 净减 -2 + 0 落地脚本 变化 |

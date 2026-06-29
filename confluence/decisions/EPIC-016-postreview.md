@@ -17,7 +17,7 @@
 | **60-80% 目标 达成度** | ⚠️ partial (1/3 in band + 1/3 just below + 1/3 regressed) | token 65.9% ✅ + warm 59.6% ⚠️ + cold -23.3% ❌ |
 | **BE-23/25/26 治根** | ✅ 3/3 in place | 7347ae6 + b1b76ac + 8bdfd0e (跟 baseline 联合 0 隐藏) |
 | **10/10 AC PASS** | ✅ 100% | User AC 5 + ticket AC 5, 跟 baseline 联合 0 hidden |
-| **4-Level Fact-Forcing** | ✅ 100% | 跟 AGENTS.md 联合 0 隐藏 |
+| **5-Level Fact-Forcing** | ✅ 100% | 跟 AGENTS.md 联合 0 隐藏 |
 | **"反哺框架" 战略 联合** | ✅ 10 反馈 items | 治理 3 + 流程 3 + 后续 EPIC 4, 0 简单 记录 |
 
 **Final Decision**: **validate_with_followup** (跟 "validate_first" 共识 区别: 接受 当前 优化 with 4 跨 release 留待 items, 跟 master explicit 后续 拍 联合)

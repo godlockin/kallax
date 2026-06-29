@@ -312,7 +312,7 @@ cat .kallax/instances/master_main/handoff.json
 | `background-agent-hallucination.md` | EPIC-024 | ACTIVE | 隐患规避 (background agent 100% 失败) |
 | `multi-agent-collab-failures.md` | EPIC-024 | ACTIVE | 隐患规避 (5 parallel Performers) |
 | `project-level-data-isolation.md` | EPIC-031 | ACTIVE | 隐患规避 (worktree 隔离) |
-| `verification-matters.md` | EPIC-024 | ACTIVE | **亮点借鉴** (4-Level Fact-Forcing 表格) |
+| `verification-matters.md` | EPIC-024 | ACTIVE | **亮点借鉴** (5-Level Fact-Forcing 表格) |
 | `quality-audit-2026-06-09.md` | EPIC-024 | ACTIVE | 经验教训迁移 (5 维度 audit) |
 | `kallax-rebuild-lessons.md` | EPIC-021 | ACTIVE | **经验教训迁移** (12 共识超越点) |
 | `epic-021-2026-06-07.md` | EPIC-021 | ACTIVE | 经验教训迁移 (5 专家 panel 实战) |
@@ -331,7 +331,7 @@ cat .kallax/instances/master_main/handoff.json
 **EPIC-021 12 共识超越点** (KALLAX 领先 EKET 之处, **亮点借鉴**模板):
 1. KALLAX 7 expert 体系 vs EKET 强
 2. 2-Group review vs EKET 自审
-3. 4-Level Fact-Forcing vs EKET 2-Level
+3. 5-Level Fact-Forcing vs EKET 2-Level
 4. heartbeat 机制 vs EKET 定时
 5. file-scope 隔离 vs EKET workspace
 6. TrustScore 派发 vs EKET 轮询
@@ -421,7 +421,7 @@ cat .kallax/instances/master_main/handoff.json
 | 跨项目 / 跨 repo (EKET P2 #23) | ⏳ 6 EPIC 后拍 | 跟 Performer 持久化同步 |
 | Performer 持久化 (L3 架构) | ⏳ 6 EPIC 后拍 | 跟 Checkpoint 同步 |
 
-### 7.3 Master 强验证 6 维度 (跟 Rule 11 联动)
+### 7.3 5 levels (L1-L5) (跟 Rule 11 联动)
 
 | 维度 | 5 能力研究 |
 |---|---|
