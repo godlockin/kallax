@@ -160,6 +160,6 @@ kallax workflow start feature-development TICKET-ABC
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `KALLAX_API_KEY` | `kallax-dev-key` | API key for server auth |
+| `KALLAX_API_KEY` | `<env-required>` | API key for server auth (fail-closed, S-001) |
 | `KALLAX_LOG_LEVEL` | `info` | Log level (trace/debug/info/warn/error/fatal) |
 | `KALLAX_DATA_DIR` | `.kallax` | Data directory path |
