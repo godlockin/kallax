@@ -12,6 +12,7 @@ use super::ticket::TicketId;
 use std::path::PathBuf;
 use uuid::Uuid;
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Task {
     id: TaskId,
     ticket_id: TicketId,
