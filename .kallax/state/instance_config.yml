@@ -1,0 +1,7 @@
+# KALLAX Instance Config
+# Default values; session_start.sh overrides role/mode at session start.
+# Read by: scripts/permission/mode-set.sh + .kallax/hooks/session_start.sh
+
+role: master        # master | conductor | performer | auditor
+mode: ai-copilot    # ai-auto | ai-copilot | manual
+instance_id: conductor_default

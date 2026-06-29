@@ -26,7 +26,7 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/your-org/kallax.git
+git clone https://github.com/godlockin/kallax.git
 cd kallax
 
 # 安装依赖
@@ -230,8 +230,8 @@ cargo test
 ## 获取帮助
 
 - 查看 [文档](./docs/)
-- 搜索 [Issues](https://github.com/your-org/kallax/issues)
-- 提问 [Discussions](https://github.com/your-org/kallax/discussions)
+- 搜索 [Issues](https://github.com/godlockin/kallax/issues)
+- 提问 [Discussions](https://github.com/godlockin/kallax/discussions)
 
 ---
 

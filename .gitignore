@@ -7,7 +7,11 @@
 .kallax/logs/
 .kallax/queue/
 .kallax/instances/
-.kallax/state/
+.kallax/state/*
+# Exception: allow config templates (*.yml) in state/, but keep runtime state (*.json) ignored
+# Reason: instance_config.yml 是 config template, 新 clone 必须有; state.json / mode.json 是 runtime 不应 tracked
+!.kallax/state/*.yml
+!.kallax/state/*.yaml
 .kallax/*.db
 .kallax/inbox/*.processed
 # Same paths under node/ (跟 EPIC-053-A l3-l4-consistency.sh 落地一致, 跟 EPIC-053-B 联动)
