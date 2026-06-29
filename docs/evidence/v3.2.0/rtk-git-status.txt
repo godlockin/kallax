@@ -1,0 +1,5 @@
+* miao...origin/miao
+?? docs/evidence/
+?? docs/superpowers/plans/2026-06-28-gap6-glossary-compress.md
+?? docs/superpowers/specs/2026-06-28-gap6-glossary-compress-design.md
+?? docs/superpowers/specs/2026-06-29-rtk-caveman-kallax-integration-design.md
