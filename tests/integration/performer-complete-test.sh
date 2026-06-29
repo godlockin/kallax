@@ -4,7 +4,7 @@
 #
 # EPIC-015-G AC: 5 acceptance criteria
 #   AC #1: scripts/performer-complete.sh exists +x
-#   AC #2: Implements Performer 9 Hard Rules (跟 AGENTS.md 联合)
+#   AC #2: Implements Performer 5 levels (跟 AGENTS.md 联合)
 #   AC #3: Writes .kallax/queue/outbox/performer-{id}/pass-report-{ticket}.json
 #   AC #4: 9/9 PASS (跟 EPIC-015-G 全 AC 联合)
 #   AC #5: 跟 EPIC-059-D Fact-Forcing 1:1 验证 (raw test output 留存)
@@ -138,9 +138,9 @@ fi
 echo ""
 
 # ─────────────────────────────────────────────────────────────────────────────
-# TC2: AC #2 (part 1) — 9 Hard Rules protocol structure
+# TC2: AC #2 (part 1) — 5 levels protocol structure
 # ─────────────────────────────────────────────────────────────────────────────
-echo "── TC2: AC #2 — 9 Hard Rules protocol structure ──"
+echo "── TC2: AC #2 — 5 levels protocol structure ──"
 HARDCODED_STEPS=$(grep -cE '^echo "── Step [0-9]+/9:' "${SCRIPT}")
 if [ "${HARDCODED_STEPS}" -eq 9 ]; then
   pass 2 "9 Step protocol structure (${HARDCODED_STEPS}/9)"
@@ -235,7 +235,7 @@ else
 fi
 # Verify raw output contains expected sections
 if [ -f "${RAW_LOG_PATH}" ]; then
-  for section in "bash -n" "9 Hard Rules" "Fact-Forcing" "Hard Rule #6"; do
+  for section in "bash -n" "5 levels" "Fact-Forcing" "Hard Rule #6"; do
     if grep -qE "${section}" "${RAW_LOG_PATH}"; then
       pass 5 "raw output contains '${section}' section"
     else
@@ -358,7 +358,7 @@ echo "=========================================="
 echo "Results: PASS=${PASS_COUNT} FAIL=${FAIL_COUNT}"
 echo "AC verification:"
 echo "  AC #1 (script exists +x):       TC1=$((${TC1_PASS}+${TC1_FAIL})) checks"
-echo "  AC #2 (9 Hard Rules protocol):   TC2+TC3=$((${TC2_PASS}+${TC2_FAIL}+${TC3_PASS}+${TC3_FAIL})) checks"
+echo "  AC #2 (5 levels protocol):   TC2+TC3=$((${TC2_PASS}+${TC2_FAIL}+${TC3_PASS}+${TC3_FAIL})) checks"
 echo "  AC #3 (pass-report outbox):      TC4=$((${TC4_PASS}+${TC4_FAIL})) checks"
 echo "  AC #5 (Fact-Forcing raw output): TC5+TC6=$((${TC5_PASS}+${TC5_FAIL}+${TC6_PASS}+${TC6_FAIL})) checks"
 echo "=========================================="

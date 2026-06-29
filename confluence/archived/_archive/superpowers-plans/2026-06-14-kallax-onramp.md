@@ -13,7 +13,7 @@
 
 **Architecture:** 单脚本入口 (`scripts/kallax-onramp.sh`) + 4 lib (scan / pre-assess / recommend / route / output) + 3 templates (L1/L2/L3) + 1 集成测试. 复用现有 5 default + 5 extended = 10 skill 文档, 0 重写. 1 LLM 预审 + 1 LLM 召唤 = 2 次调用, heuristic 兜底.
 
-**Tech Stack:** Bash + jq + git + grep + wc, 0 新增依赖. 跟 KALLAX v1.2.4 (miao HEAD `5192c79`) 兼容. 跟 Rule 9 4-Level Fact-Forcing 联合. 跟对策 A+B+C 联合. 跟 Rule 31 不可篡改 audit log 联合. 跟 Rule 32 软约束升级阈值 联合 (不增加 Rule).
+**Tech Stack:** Bash + jq + git + grep + wc, 0 新增依赖. 跟 KALLAX v1.2.4 (miao HEAD `5192c79`) 兼容. 跟 Rule 9 5-Level Fact-Forcing 联合. 跟对策 A+B+C 联合. 跟 Rule 31 不可篡改 audit log 联合. 跟 Rule 32 软约束升级阈值 联合 (不增加 Rule).
 
 ---
 
@@ -30,7 +30,7 @@
 | `scripts/kallax-onramp/templates/L1-light.md` | 200-400 字符模板 | 30 | ✅ 跟"目标专家" 拍 explicit 约束 联合 |
 | `scripts/kallax-onramp/templates/L2-deep.md` | 详细拆解 + EPIC 建议 | 80 | ✅ 跟 Rule 5 DRY 联合 |
 | `scripts/kallax-onramp/templates/L3-audit.md` | 5+5 = 10 视角 + 3 件套 | 120 | ✅ 跟"guidance" 拍 explicit 约束 联合 |
-| `scripts/kallax-onramp/tests/onramp-test.sh` | 4-Level 集成测试 | 200 | ✅ 跟 Rule 9 联合 |
+| `scripts/kallax-onramp/tests/onramp-test.sh` | 5-Level 集成测试 | 200 | ✅ 跟 Rule 9 联合 |
 | `scripts/kallax-onramp/tests/fixtures/{mini,medium,large}/*` | 3 fixtures | 50 each | ✅ 跟 Rule 9 联合 |
 | `.claude/commands/kallax-onramp.md` | slash command 定义 | 30 | ✅ 跟"反讽" 联合 — 1 命令 |
 
@@ -58,7 +58,7 @@
 ```bash
 #!/usr/bin/env bash
 # KALLAX Onramp — 多层次项目分析器 (v1.3.0)
-# 跟 v1.2.4 联合, 跟 Rule 9 4-Level 联合, 跟对策 A+B+C 联合
+# 跟 v1.2.4 联合, 跟 Rule 9 5-Level 联合, 跟对策 A+B+C 联合
 
 set -euo pipefail
 
@@ -1018,7 +1018,7 @@ git commit -m "feat(onramp): Step 4 output.sh + 3 templates + audit log (BE-7 mo
 
 ---
 
-### Task 7: 4-Level Fact-Forcing 集成测试 (跟 Rule 9 联合)
+### Task 7: 5-Level Fact-Forcing 集成测试 (跟 Rule 9 联合)
 
 **Files:**
 - Create: `scripts/kallax-onramp/tests/onramp-test.sh`
@@ -1058,12 +1058,12 @@ done
 echo "# Large Project" > scripts/kallax-onramp/tests/fixtures/large-project/README.md
 ```
 
-- [ ] **Step 7.3: 写 4-Level 集成测试**
+- [ ] **Step 7.3: 写 5-Level 集成测试**
 
 `scripts/kallax-onramp/tests/onramp-test.sh`:
 ```bash
 #!/usr/bin/env bash
-# 4-Level Fact-Forcing 集成测试 (跟 Rule 9 联合, 跟"反讽" 闭环)
+# 5-Level Fact-Forcing 集成测试 (跟 Rule 9 联合, 跟"反讽" 闭环)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -1120,10 +1120,10 @@ echo "L4 PASS: medium + large 走完"
 
 # Cleanup
 rm -rf "${MOCK_DIR}"
-echo "onramp-test PASS (4-Level)"
+echo "onramp-test PASS (5-Level)"
 ```
 
-- [ ] **Step 7.4: 跑 4-Level 测试**
+- [ ] **Step 7.4: 跑 5-Level 测试**
 
 ```bash
 chmod +x scripts/kallax-onramp/tests/onramp-test.sh
@@ -1146,7 +1146,7 @@ Expected: 3 Markdown 报告 + 1 audit log 行
 
 ```bash
 git add scripts/kallax-onramp/tests/
-git commit -m "feat(onramp): 4-Level Fact-Forcing integration test (Rule 9)"
+git commit -m "feat(onramp): 5-Level Fact-Forcing integration test (Rule 9)"
 ```
 
 ---
@@ -1185,7 +1185,7 @@ git commit -m "feat(onramp): 4-Level Fact-Forcing integration test (Rule 9)"
 - 走对策 A+B+C 落地 (跟"反讽" 闭环)
 ```
 
-- [ ] **Step 8.3: 跑对策 A (subagent-pass-gate) + 对策 C (Master 强验证 6 维度)**
+- [ ] **Step 8.3: 跑对策 A (subagent-pass-gate) + 对策 C (5 levels (L1-L5))**
 
 ```bash
 # 必跑 (跟对策 A 联合)
@@ -1249,7 +1249,7 @@ git push origin miao --tags
 
 Plan complete and saved to `docs/superpowers/plans/2026-06-14-kallax-onramp.md`. Two execution options:
 
-**1. Subagent-Driven (recommended)** - 派 1 Performer subagent 走 8 任务, Master 强验证 6 维度在每 Task 后, 走对策 A+B+C
+**1. Subagent-Driven (recommended)** - 派 1 Performer subagent 走 8 任务, 5 levels (L1-L5)在每 Task 后, 走对策 A+B+C
 
 **2. Inline Execution** - 在当前 session 跑 executing-plans, 6h 一次性跑完
 

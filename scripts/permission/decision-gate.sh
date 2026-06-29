@@ -96,6 +96,17 @@ if [[ " $KNOWN_ACTIONS " != *" $ACTION "* ]]; then
   exit 2
 fi
 
+# Iter 10: 打印决策矩阵 (Q18 决策模型 5×5 = 25 cells) — opt-in via DECISION_MATRIX_PRINT=1
+# 默认不打印 (避免输出太长, 干扰 decision-gate-test.sh)
+# 设置 DECISION_MATRIX_PRINT=1 启动时打印 (帮 Conductor 知道何时该问主公)
+DECISION_MATRIX="${KALLAX_ROOT}/scripts/permission/decision-matrix.sh"
+if [[ "${DECISION_MATRIX_PRINT:-0}" == "1" && -x "$DECISION_MATRIX" ]]; then
+  echo "--- Decision Matrix (Q18 5 levels × 5 roles) ---"
+  bash "$DECISION_MATRIX" --format markdown 2>/dev/null || true
+  echo "--- End Decision Matrix ---"
+  echo ""
+fi
+
 # Issue 2 附加(a): --cmd 拒绝含换行/控制字符
 if [[ -n "$CMD" && "$CMD" =~ [[:cntrl:]] ]]; then
   echo "ERROR: --cmd cannot contain control characters" >&2
@@ -138,13 +149,24 @@ EOF
 
 # Issue 2: JSONL injection 防御 — 改用 jq -n 构建审计记录
 # Note: jq -n with object literal outputs pretty-printed JSON, pipe through jq -c for compact
+# 武器 1 (Iter 4): 用 audit-chain.sh append 替代 raw >>, 加 prev_hash + chain_hash
 AUDIT_FILE="${AUDIT_DIR}/decision-$(date -u +%Y-%m-%d).jsonl"
 REDACTED_CMD=$(redact_cmd "$CMD")
-jq -n --arg ts "$TIMESTAMP" --arg actor "$ACTOR" --arg mode "$MODE" \
+AUDIT_ENTRY=$(jq -n --arg ts "$TIMESTAMP" --arg actor "$ACTOR" --arg mode "$MODE" \
   --arg action "$ACTION" --arg cmd "$REDACTED_CMD" --argjson ctx "$CONTEXT" \
   '{timestamp:$ts, actor:$actor, mode:$mode, action:$action, cmd:$cmd, context:$ctx}' \
-  | jq -c \
-  >> "$AUDIT_FILE"
+  | jq -c)
+AUDIT_CHAIN="${KALLAX_ROOT}/scripts/audit/audit-chain.sh"
+if [[ -x "$AUDIT_CHAIN" ]]; then
+    bash "$AUDIT_CHAIN" append "$AUDIT_FILE" "$AUDIT_ENTRY" || {
+        echo "WARN: audit-chain append failed, falling back to raw write" >&2
+        echo "$AUDIT_ENTRY" >> "$AUDIT_FILE"
+        chmod 600 "$AUDIT_FILE" 2>/dev/null || true
+    }
+else
+    echo "$AUDIT_ENTRY" >> "$AUDIT_FILE"
+    chmod 600 "$AUDIT_FILE" 2>/dev/null || true
+fi
 
 echo "ASK: action=$ACTION mode=$MODE → wrote $ASK_FILE"
 exit 2

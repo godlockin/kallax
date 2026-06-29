@@ -22,7 +22,7 @@ review:
     - "文档已更新"
     - "CI 全部通过"
 
-# 4-Level Fact-Forcing 验证
+# 5-Level Fact-Forcing 验证
 fact_forcing:
   enabled: true
 

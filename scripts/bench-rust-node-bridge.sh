@@ -12,7 +12,7 @@ OUT_JSON="${OUT_DIR}/rust-node-bridge-results.json"
 TMP_DIR="$(mktemp -d -t bench-rust-node-bridge.XXXXXX)"
 trap 'rm -rf "$TMP_DIR"' EXIT
 
-# 命名常量 (9 Hard Rules §4, 0 magic numbers)
+# 命名常量 (5 levels §4, 0 magic numbers)
 readonly BENCHMARK_ITERATIONS_FAST=1000
 readonly BENCHMARK_ITERATIONS_MEDIUM=500
 readonly BENCHMARK_ITERATIONS_SLOW=100

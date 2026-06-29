@@ -1,10 +1,14 @@
 // 跟 v2.7.4 D4.5 联合, 跟 Rule 8 联合. Split from main.rs.
 
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
 
-use crate::types::{Priority, Scope};
+use kallax_core::types::Priority;
+
+use crate::sub_enums::{
+    ConductorAction, IsolationAction, KnowledgeAction, PerformerAction, SystemAction,
+    TaskAction, VerifyAction,
+};
 
 // ---------------------------------------------------------------------------
 // OutputFormat
@@ -31,7 +35,7 @@ impl std::str::FromStr for OutputFormat {
 }
 
 // ---------------------------------------------------------------------------
-// Top-level Commands enum
+// Top-level Cli (flat subcommand structure for clap 4 nested support)
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Parser)]
@@ -41,11 +45,71 @@ pub struct Cli {
     pub output: OutputFormat,
     #[arg(long, short = 'v')]
     pub verbose: bool,
-    #[arg(subcommand)]
+    #[command(subcommand)]
     pub command: Commands,
 }
 
-#[derive(Debug, clap::Subcommand)]
+// Manual Args impl: clap 4.6.1 Subcommand derive only impls Subcommand trait,
+// not Args. For nested subcommand variants, the inner type must also impl Args.
+// We provide a manual impl that delegates to Subcommand.
+impl clap::Args for TaskAction {
+    fn augment_args<'b>(__clap_app: clap::Command) -> clap::Command {
+        <Self as clap::Subcommand>::augment_subcommands(__clap_app)
+    }
+    fn augment_args_for_update<'b>(__clap_app: clap::Command) -> clap::Command {
+        <Self as clap::Subcommand>::augment_subcommands_for_update(__clap_app)
+    }
+}
+impl clap::Args for ConductorAction {
+    fn augment_args<'b>(__clap_app: clap::Command) -> clap::Command {
+        <Self as clap::Subcommand>::augment_subcommands(__clap_app)
+    }
+    fn augment_args_for_update<'b>(__clap_app: clap::Command) -> clap::Command {
+        <Self as clap::Subcommand>::augment_subcommands_for_update(__clap_app)
+    }
+}
+impl clap::Args for PerformerAction {
+    fn augment_args<'b>(__clap_app: clap::Command) -> clap::Command {
+        <Self as clap::Subcommand>::augment_subcommands(__clap_app)
+    }
+    fn augment_args_for_update<'b>(__clap_app: clap::Command) -> clap::Command {
+        <Self as clap::Subcommand>::augment_subcommands_for_update(__clap_app)
+    }
+}
+impl clap::Args for KnowledgeAction {
+    fn augment_args<'b>(__clap_app: clap::Command) -> clap::Command {
+        <Self as clap::Subcommand>::augment_subcommands(__clap_app)
+    }
+    fn augment_args_for_update<'b>(__clap_app: clap::Command) -> clap::Command {
+        <Self as clap::Subcommand>::augment_subcommands_for_update(__clap_app)
+    }
+}
+impl clap::Args for SystemAction {
+    fn augment_args<'b>(__clap_app: clap::Command) -> clap::Command {
+        <Self as clap::Subcommand>::augment_subcommands(__clap_app)
+    }
+    fn augment_args_for_update<'b>(__clap_app: clap::Command) -> clap::Command {
+        <Self as clap::Subcommand>::augment_subcommands_for_update(__clap_app)
+    }
+}
+impl clap::Args for IsolationAction {
+    fn augment_args<'b>(__clap_app: clap::Command) -> clap::Command {
+        <Self as clap::Subcommand>::augment_subcommands(__clap_app)
+    }
+    fn augment_args_for_update<'b>(__clap_app: clap::Command) -> clap::Command {
+        <Self as clap::Subcommand>::augment_subcommands_for_update(__clap_app)
+    }
+}
+impl clap::Args for VerifyAction {
+    fn augment_args<'b>(__clap_app: clap::Command) -> clap::Command {
+        <Self as clap::Subcommand>::augment_subcommands(__clap_app)
+    }
+    fn augment_args_for_update<'b>(__clap_app: clap::Command) -> clap::Command {
+        <Self as clap::Subcommand>::augment_subcommands_for_update(__clap_app)
+    }
+}
+
+#[derive(Debug, Subcommand)]
 pub enum Commands {
     /// Task management subcommands
     Task(TaskAction),
@@ -59,6 +123,6 @@ pub enum Commands {
     System(SystemAction),
     /// Isolation checking subcommands
     Isolation(IsolationAction),
-    /// Verification subcommands (4-Level Fact-Forcing)
+    /// Verification subcommands (5-Level Fact-Forcing)
     Verify(VerifyAction),
 }

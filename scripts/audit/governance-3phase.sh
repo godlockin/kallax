@@ -89,7 +89,7 @@ phase3_master_arbitration() {
     echo "Phase 3: Master 仲裁 — ${epic_id}"
     echo "  master_arbitration: Master 收 ${report_count} 份报告 → 合并去重 → 仲裁冲突 → 出汇总"
     echo "  aggregated: ${report_count} reports merged"
-    echo "  rule_11_v2_1: Master 强验证 6 维度 (跟 Rule 11 v2.1 联合)"
+    echo "  rule_11_v2_1: 5 levels (L1-L5) (跟 Rule 11 v2.1 联合)"
     echo "  fail_action: FAIL → 退回 Performer 修 (跟 v1.2.4 流程 一致)"
     echo "PHASE3_ARBITRATION_PASS"
 }

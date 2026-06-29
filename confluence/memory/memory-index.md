@@ -36,7 +36,7 @@
 
 ### 我需要审核 PR
 1. 阅读 [Fact-Forcing 协议](../../template/docs/GATE-REVIEW-PROTOCOL.md)
-2. 执行 4-Level 验证
+2. 执行 5-Level 验证
 3. 运行 `kallax verify:output TASK-NNN`
 
 ### 我遇到了并行冲突

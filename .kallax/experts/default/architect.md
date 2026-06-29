@@ -138,9 +138,9 @@ architect_review:
 
 ## Fact-Forcing Compliance
 
-> **跟 EPIC-059-D Fact-Forcing 1:1 验证 (file:line `CLAUDE.md:236-240` 联合, 跟 `docs/process/fact-forcing.md` 联合, 跟 EPIC-053-B 4-Level 证据链 1:1 映射)**
+> **跟 EPIC-059-D Fact-Forcing 1:1 验证 (file:line `CLAUDE.md:236-240` 联合, 跟 `docs/process/fact-forcing.md` 联合, 跟 EPIC-053-B 5 levels 证据链 1:1 映射)**
 
-Performer 在 `task:complete <TICKET>` 前**必须勾选 4 项** (跟 EPIC-053-B 4-Level 证据链 1:1 映射):
+Performer 在 `task:complete <TICKET>` 前**必须勾选 4 项** (跟 EPIC-053-B 5 levels 证据链 1:1 映射):
 
 - [ ] L1_git-anchor: 文件存在 + `git log --oneline -1` 验证 commit anchor 可追溯
 - [ ] L2_test_stdout: 真实 raw stdout, 不接受 "should work" / "looks correct" / silent
@@ -151,8 +151,8 @@ Performer 在 `task:complete <TICKET>` 前**必须勾选 4 项** (跟 EPIC-053-B
 
 ## Verification
 
-> **Note**: 以下 4-Level bash 命令是**文档**,不是强制执行. master 在 review 时手动运行验证 Performer 真实性. 见 [[Fact-Forcing Compliance]] 节.
-> **跟 EPIC-053-B 4-Level 证据链 1:1 映射 (L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证, file:line `CLAUDE.md:236-240` 联合, 跟 EPIC-059-D Fact-Forcing 联合)**
+> **Note**: 以下 5 levels bash 命令是**文档**,不是强制执行. master 在 review 时手动运行验证 Performer 真实性. 见 [[Fact-Forcing Compliance]] 节.
+> **跟 EPIC-053-B 5 levels 证据链 1:1 映射 (L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证, file:line `CLAUDE.md:236-240` 联合, 跟 EPIC-059-D Fact-Forcing 联合)**
 
 执行顺序: L1 → L2 → L3 → L4, 任一失败 = ticket not done.
 

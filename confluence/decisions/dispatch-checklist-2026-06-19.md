@@ -50,7 +50,7 @@
 
 **KALLAX 联合**:
 - 跟 `docs/PROCESS.md:25-26` Q2 "Slaver 状态?" 联合 (timeout 阈值 `min(预估/10, 30min)`)
-- 跟 Rule 11 v2.1 联合 (Master 强验证 6 维度, 跟"反讽" 联合)
+- 跟 Rule 11 v2.1 联合 (5 levels (L1-L5), 跟"反讽" 联合)
 
 **触发场景**: 任何 task 启动时, 必须有 timeout 配置 + 心跳上报机制.
 
@@ -206,10 +206,10 @@
 
 **跟 EPIC-059-D Fact-Forcing 联合** (file:line `confluence/decisions/fact-forcing-examples.md` "5 正例 + 5 反例"):
 - eket §11 7 项 中 0 包含, KALLAX 升级 新增
-- KPI falsification → PASS 必含 raw stdout (治 H1, file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:171` "12 KPI falsification 反复 → 0 (4-Level 证据链 强制 L4 独立见证签名, 0 commit + 0 file 必被拦截)")
+- KPI falsification → PASS 必含 raw stdout (治 H1, file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:171` "12 KPI falsification 反复 → 0 (5-Level 证据链 强制 L4 独立见证签名, 0 commit + 0 file 必被拦截)")
 
 **跟 KALLAX 联合**:
-- 跟 EPIC-053-B 4-Level 证据链 L2 test stdout 联合 (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:165`)
+- 跟 EPIC-053-B 5-Level 证据链 L2 test stdout 联合 (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:165`)
 - 跟 KALLAX-GLOSSARY §12.1 Fact-Forcing 术语 联合 (跟 eket MASTER-RULES.md §2 联合)
 - 跟 Master 6 维 L6 诚实 联合 (跟"诚实修正" 战略 一致)
 
@@ -385,7 +385,7 @@
 
 **file:line 引用**:
 - `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:161` (v2.0.3 baseline "12 KPI falsification 反复 (EPIC-024/028/031/036/037/039-B)")
-- `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:163-171` (v2.0.5 闭环: L3L4 一致性 + 4-Level 证据链 + 工具自检 + 派单仪表盘 + 5 调用点 wiring + scope-creep 修复)
+- `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:163-171` (v2.0.5 闭环: L3L4 一致性 + 5-Level 证据链 + 工具自检 + 派单仪表盘 + 5 调用点 wiring + scope-creep 修复)
 - `confluence/decisions/fact-forcing-examples.md:9-30` (反例 1: BE-9 "L3L4 矛盾")
 - `jira/tickets/EPIC-059-D/ticket.json:30` (Fact-Forcing 3 原则: 不问 '确定吗' / 要求具体证据 / 无证据的断言视为无效)
 
@@ -401,7 +401,7 @@
 
 ### ✅ 正例 1: EPIC-057 4 ticket 串行 → 100% deliver (跟 §1.1 防卡死 + §1.10 心跳 5 问 联合)
 
-**模式**: EPIC-057 4 ticket 串行派单, 每 ticket 1 subagent, Performer 心跳 上报, Master 强验证 6 维度.
+**模式**: EPIC-057 4 ticket 串行派单, 每 ticket 1 subagent, Performer 心跳 上报, 5 levels (L1-L5).
 
 **file:line 引用**:
 - `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:46-50` (EPIC-057 4 ticket 闭环: 6/6 + 6/6 + 5/5 + 18/18 = 35/35 PASS)
@@ -437,13 +437,13 @@
 
 ---
 
-### ✅ 正例 4: EPIC-053-B 4-Level 证据链 L2 test stdout (跟 §1.11 PASS 报告含 raw test output 联合)
+### ✅ 正例 4: EPIC-053-B 5-Level 证据链 L2 test stdout (跟 §1.11 PASS 报告含 raw test output 联合)
 
-**模式**: 4-Level 证据链 L2 强制 test stdout, 0 stdout = 0 evidence = reject.
+**模式**: 5-Level 证据链 L2 强制 test stdout, 0 stdout = 0 evidence = reject.
 
 **file:line 引用**:
-- `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:165` (EPIC-053-B "4-Level 证据链 (L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证)")
-- `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:171` ("12 KPI falsification 反复 → 0 (4-Level 证据链 强制 L4 独立见证签名, 0 commit + 0 file 必被拦截)")
+- `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:165` (EPIC-053-B "5-Level 证据链 (L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证)")
+- `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:171` ("12 KPI falsification 反复 → 0 (5-Level 证据链 强制 L4 独立见证签名, 0 commit + 0 file 必被拦截)")
 
 **符合 1 项**: §1.11 PASS 报告含 raw test output.
 

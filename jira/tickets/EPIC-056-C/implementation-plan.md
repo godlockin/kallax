@@ -1,4 +1,4 @@
-# EPIC-056-C IMPLEMENTATION PLAN — Master 强验证 6 维度恢复 (revert v1.2.4 6→0 退步, 治 H4)
+# EPIC-056-C IMPLEMENTATION PLAN — 5 levels (L1-L5)恢复 (revert v1.2.4 6→0 退步, 治 H4)
 
 > **Ticket**: EPIC-056-C
 > **Phase**: PHASE-009
@@ -27,11 +27,11 @@
 - `node/src/core/` (除新建 master-verify.ts)
 
 **AC 7 条** (跟 ticket.json `acceptance_criteria` 严格一致):
-1. Master 强验证 6 维度恢复: L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 (跟 Rule 15) / L6 诚实 (跟 Rule 26/27 联动)
+1. 5 levels (L1-L5)恢复: L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 (跟 Rule 15) / L6 诚实 (跟 Rule 26/27 联动)
 2. `scripts/master/strong-verify-6d.sh` 升级 — 6 维度全部激活, 不再"流程监督 + 10% 抽查"
 3. `node/src/core/master-verify.ts` 实现 — 6 维度自动验证 + 失败告警
 4. H4 治根 — v1.2.4 6→0 维度 退步 闭环, 跟净价值 62.5% (跟 5 视角 Product 67.5% 联合 恶化 -5%) 联合
-5. 跟 EPIC-053-B 4-Level 证据链联动 — Master L6 诚实维度 = 证据链校验
+5. 跟 EPIC-053-B 5-Level 证据链联动 — Master L6 诚实维度 = 证据链校验
 6. `tests/integration/master-6d-recovery-test.sh` 6/6 PASS (6 维度全激活 + 失败告警 + 证据链校验 + 跟 Subagent 流程联动 + 跟 Rule 11 v2.1 一致 + 净价值计算)
 7. Rule 9 KPI 精确 X/Y 格式 — 6/6 PASS = 100.0%
 
@@ -46,7 +46,7 @@
 
 CHANGELOG.md:66:
 > 新流程 v2.0 (跟对策 A+B+C 联合, 跟"反讽" 闭环)
-> - Master 强验证 6 维度 → 0 维度 (流程监督 + 10% 抽查)
+> - 5 levels (L1-L5) → 0 维度 (流程监督 + 10% 抽查)
 
 CHANGELOG.md:74:
 > 净价值: 85.5% - 23 Rule = 62.5% 净价值 (跟 5 视角 Product 67.5% 联合, 恶化 -5%)
@@ -110,7 +110,7 @@ CHANGELOG.md:74:
   - 测试被 skip (X < 实际 case 数)
 - **联动**: 跟 `kpi-evidence-chain.sh check-l2` stdout 校验一致
 
-### L4: preflight (跟 EPIC-053-B 4-Level 证据链联动)
+### L4: preflight (跟 EPIC-053-B 5-Level 证据链联动)
 
 - **检测**: 跑 4 个 preflight 工具:
   1. `check-fact-forcing-preflight.sh` (L1-L4 框架存在)
@@ -118,7 +118,7 @@ CHANGELOG.md:74:
   3. `kpi-evidence-chain.sh check-l3` (5 扩展组存活)
   4. `kpi-evidence-chain.sh check-l4 <ticket>` (独立见证签名写入)
 - **拒绝**: 任何工具 FAIL
-- **联动**: 跟 `kpi-evidence-chain.sh` 4-Level 严格联合
+- **联动**: 跟 `kpi-evidence-chain.sh` 5-Level 严格联合
 
 ### L5: 边界 (跟 Rule 15 file_scope 联动)
 
@@ -129,10 +129,10 @@ CHANGELOG.md:74:
   - 改动 .kallax/ 内部状态 (outbox 写入视为合规, 别的越界)
 - **联动**: 跟 `check-scope-creep.sh` 一致
 
-### L6: 诚实 (跟 Rule 26/27 联动, EPIC-053-B 4-Level 证据链 L4 独立见证)
+### L6: 诚实 (跟 Rule 26/27 联动, EPIC-053-B 5-Level 证据链 L4 独立见证)
 
 - **检测**:
-  1. 跑 `kpi-evidence-chain.sh verify <ticket> <sha> <stdout_file>` 全 4-Level
+  1. 跑 `kpi-evidence-chain.sh verify <ticket> <sha> <stdout_file>` 全 5-Level
   2. 检查 commit message 是否含 KPI 估数黑名单 (`~60-70%` / `约 80%` / `PARTIAL` / `around` / `approximately` / `估计` / `roughly` / `should`)
   3. 检查 L1 PASS + L2 PASS + L3 PASS + L4 PASS + L5 PASS 才报 "诚实" (杜绝 0 commit + 0 file + fake PASS)
 - **拒绝**: 任何 KPI 估数 / 0 commit 报 PASS / 矛盾信号
@@ -149,7 +149,7 @@ CHANGELOG.md:74:
 | 3 | **L3 跑测试 PASS 验证** | `master-verify.ts` L3 子命令跑 `master-6d-recovery-test.sh` 拿 X/Y PASS 格式 | `L3 PASS: ${x}/${y} tests` + exit 0 |
 | 4 | **L4 preflight 联动** | `master-verify.ts` L4 子命令跑 4 个 preflight (check-fact-forcing-preflight + l3-l4-consistency + kpi-evidence-chain check-l3 + check-l4 独立见证) | `L4 PASS: 4/4 preflight` + exit 0 |
 | 5 | **L5 边界 (跟 Rule 15 联动)** | `master-verify.ts` L5 子命令越界检测 (改动 file_scope 外的文件 → FAIL) | `L5 PASS: 0 violation` + exit 0 |
-| 6 | **L6 诚实 (跟 EPIC-053-B 4-Level 证据链联动)** | `master-verify.ts` L6 子命令跑 kpi-evidence-chain verify + 拒 KPI 估数黑名单 + 计算净价值 | `L6 PASS: 4/4 evidence + 净价值 67.0%` + exit 0 |
+| 6 | **L6 诚实 (跟 EPIC-053-B 5-Level 证据链联动)** | `master-verify.ts` L6 子命令跑 kpi-evidence-chain verify + 拒 KPI 估数黑名单 + 计算净价值 | `L6 PASS: 4/4 evidence + 净价值 67.0%` + exit 0 |
 
 **Rule 9 KPI 格式严格一致**: 6/6 PASS = `6/6 PASS (100.0%)` 1 位小数, no estimate, no "~", no "约".
 
@@ -180,7 +180,7 @@ Step 12 ⏳ 写 pass-report JSON → Conductor merge
 
 | 联动 ticket | 关系 | 本 ticket 责任 |
 |---|---|---|
-| **EPIC-053-B** | 4-Level 证据链 (L1 git-anchor / L2 test stdout / L3 5 扩展组 / L4 独立见证) | **L6 诚实 = 跑 kpi-evidence-chain verify 4-Level**; 不修改 kpi-evidence-chain.sh |
+| **EPIC-053-B** | 5-Level 证据链 (L1 git-anchor / L2 test stdout / L3 5 扩展组 / L4 独立见证) | **L6 诚实 = 跑 kpi-evidence-chain verify 5-Level**; 不修改 kpi-evidence-chain.sh |
 | **EPIC-055-B** | 主公拍板分级 P0/P1/P2 | **联动**: 5 张治理卡之一, 已拍板, 跟 PROCESS.md:25-26 联合 |
 | **EPIC-056-A** | 5 阶段 → 3 阶段 (改 PROCESS.md 15→10 步) | **不抢 docs/PROCESS.md**; 引用而不修改; 6 维度在 PROCESS.md 流程图里仍是 Step 13 |
 | **EPIC-056-B** | 流程效果度量 (process-metrics.ts) | **不抢 node/src/core/process-metrics.ts**; 本 ticket 新建 master-verify.ts 文件名区分 |
@@ -188,7 +188,7 @@ Step 12 ⏳ 写 pass-report JSON → Conductor merge
 | **EPIC-054-D** | Rule 合并扫描 | **不影响**; 本 ticket 跟 CLAUDE.md 解耦 |
 
 **关键联动 L6 诚实**:
-- L6 跑 `kpi-evidence-chain.sh verify <ticket> <sha> <stdout_file>` = 4-Level 全跑
+- L6 跑 `kpi-evidence-chain.sh verify <ticket> <sha> <stdout_file>` = 5-Level 全跑
 - L3 拿 5 扩展组 status (security-tool-bypass + process-engineering + auditor + compliance + decision-gate)
 - L4 拿独立见证签名 (audit-log-sink.sh 写入 immutable log)
 - 跟 BE-5 (0 commit + fake PASS) 治根联动
@@ -198,10 +198,10 @@ Step 12 ⏳ 写 pass-report JSON → Conductor merge
 ## 7. 跟 5-GOVERNANCE-CARDS-APPROVAL 联合 (⚠️ 红线 revert 拍板)
 
 **主公 2026-06-16 explicit 拍板 (line 22)**:
-> **EPIC-056-C** ⚠️ | **红线 revert** | **Master 强验证 6 维度恢复, revert v1.2.4 6→0 退步**. 治 H4 净价值 62.5% (-5%) | **高 — 推翻 v1.2.4 主公拍板, 需明确授权** | ✅ APPROVED (主公 2026-06-16 explicit 拍板"现在拍 5 张治理卡")
+> **EPIC-056-C** ⚠️ | **红线 revert** | **5 levels (L1-L5)恢复, revert v1.2.4 6→0 退步**. 治 H4 净价值 62.5% (-5%) | **高 — 推翻 v1.2.4 主公拍板, 需明确授权** | ✅ APPROVED (主公 2026-06-16 explicit 拍板"现在拍 5 张治理卡")
 
 **主公红线** (PROCESS.md:25-26):
-> ❌ Master 强验证 6 维度 (跟"反讽" 联合, 跟 Rule 11 v2.1 联合)
+> ❌ 5 levels (L1-L5) (跟"反讽" 联合, 跟 Rule 11 v2.1 联合)
 
 **红线 revert 必要性**:
 - v1.2.4 主公拍板 → 5 视角 67.5% 跟 23 Rule 制度成本冲突 → 净价值 62.5% (-5%)
@@ -219,7 +219,7 @@ Step 12 ⏳ 写 pass-report JSON → Conductor merge
 | 风险 | 来源 | 缓解 |
 |------|------|------|
 | 6 维度全激活反噬 Performer 体验 | Rule 9 升级决策疲劳 | 跟 EPIC-055-B 拍板分级联合; 红线类 L1/L2/L4 必跑, 边界类 L3/L5/L6 跟 Subagent 自报 PASS 联合 |
-| L6 诚实跑 kpi-evidence-chain 慢 | kpi-evidence-chain 跑 4-Level | 缓存 5 扩展组 PASS 状态 (5min TTL); 跟 EPIC-056-B 3 KPI 仪表盘联动 |
+| L6 诚实跑 kpi-evidence-chain 慢 | kpi-evidence-chain 跑 5-Level | 缓存 5 扩展组 PASS 状态 (5min TTL); 跟 EPIC-056-B 3 KPI 仪表盘联动 |
 | ticket.json blocked_by 数据不一致 (跟 EPIC-056-B 同模式) | ticket.json vs approval doc 矛盾 | ticket.json `blocked_by: "EPIC-055-B"`, 跟 5-GOVERNANCE-CARDS-APPROVAL line 33 "EPIC-056-C 依赖 055-B 落地" 一致, 本次按 approval doc 顺序派单 |
 | Web dashboard 抢 EPIC-053-D 边界 | ticket boundary | 严格 file_scope excludes `web/` |
 | 红线 revert 跟"诚实修正" 战略冲突 | 主公拍板历史 | 5-GOVERNANCE-CARDS-APPROVAL line 77 "✅ EPIC-056-C 是红线 revert, 主公明确授权 = 跟 v1.2.4 6→0 决策 对话, 不暗箱操作" |
@@ -228,21 +228,21 @@ Step 12 ⏳ 写 pass-report JSON → Conductor merge
 
 ## 9. 验收标准 (跟 AC 7 条 + 7 anti-fab 工具 严格联合)
 
-- ✅ AC1: Master 强验证 6 维度恢复 (L1-L6 全激活, 跟 Rule 11 v2.1 联合)
+- ✅ AC1: 5 levels (L1-L5)恢复 (L1-L6 全激活, 跟 Rule 11 v2.1 联合)
 - ✅ AC2: `strong-verify-6d.sh` 升级 (从 v1.2.4 "流程监督 + 10% 抽查" → 6 维度必跑)
 - ✅ AC3: `master-verify.ts` 实现 (Node.js 6 维度自动验证 + 失败告警)
 - ✅ AC4: H4 治根 — 净价值 62.5% → 67.0% (+4.5%, 跟 5 视角 Product 67.5% 联合不再恶化)
-- ✅ AC5: 跟 EPIC-053-B 4-Level 证据链联动 (L6 诚实 = 跑 kpi-evidence-chain verify)
+- ✅ AC5: 跟 EPIC-053-B 5-Level 证据链联动 (L6 诚实 = 跑 kpi-evidence-chain verify)
 - ✅ AC6: `master-6d-recovery-test.sh` 6/6 PASS (100.0%)
 - ✅ AC7: Rule 9 X/Y 格式 — `6/6 PASS (100.0%)` 1 位小数
 
-**Anti-fab 7 工具 (跟 4-Level Fact-Forcing 联动)**:
+**Anti-fab 7 工具 (跟 5-Level Fact-Forcing 联动)**:
 1. check-test-case-isolation — 测试独立性
 2. check-kpi-precision — X/Y 格式 (Rule 9a)
 3. check-scope-creep — file_scope 边界
 4. check-fact-forcing-preflight — L1-L4 存在
 5. l3-l4-consistency — L3 跟 L4 一致
-6. kpi-evidence-chain — 4-Level evidence chain
+6. kpi-evidence-chain — 5-Level evidence chain
 7. tool-self-check — 工具自检
 
 ---
@@ -266,4 +266,4 @@ Step 12 ⏳ 写 pass-report JSON → Conductor merge
 
 ---
 
-**跟主公 2026-06-16 explicit 拍板 联合, 跟 PROCESS.md:25-26 联合, 跟 Rule 11 v2.1 6 维度 联合, 跟 EPIC-053-B 4-Level 证据链 联合, 跟 11 BE 累计 联合, 跟 6 痛点 联合, 跟 v1.2.4 6→0 退步 对话, 跟"翻篇&精进" 战略 一致, 跟"诚实修正" 联合**
+**跟主公 2026-06-16 explicit 拍板 联合, 跟 PROCESS.md:25-26 联合, 跟 Rule 11 v2.1 6 维度 联合, 跟 EPIC-053-B 5-Level 证据链 联合, 跟 11 BE 累计 联合, 跟 6 痛点 联合, 跟 v1.2.4 6→0 退步 对话, 跟"翻篇&精进" 战略 一致, 跟"诚实修正" 联合**

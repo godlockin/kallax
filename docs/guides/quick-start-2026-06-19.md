@@ -29,7 +29,7 @@ npm run build
 
 ```bash
 # Verify everything is in order
-kallax system:doctor
+kallax system doctor
 
 # Check configuration
 ls .kallax/config.yml
@@ -52,7 +52,7 @@ Expected output:
 
 ```bash
 # Create a ticket (CLI)
-kallax ticket:create "Implement login form" \
+kallax ticket create "Implement login form" \
   --description "Add email/password login" \
   --priority P1 \
   --scope "src/auth/,src/components/Login.tsx"
@@ -76,7 +76,7 @@ kallax start --role conductor
 # KALLAX conductor started - instance: inst_xxx
 
 # Run heartbeat (5-question health check)
-kallax conductor:heartbeat
+kallax conductor heartbeat
 ```
 
 The conductor instance registers itself and begins monitoring. Heartbeat shows priority queue, performer status, progress, blockers, and messages.
@@ -87,13 +87,13 @@ The conductor instance registers itself and begins monitoring. Heartbeat shows p
 
 ```bash
 # Create a task from the ticket
-kallax task:create TICKET-XXX --type development
+kallax task create TICKET-XXX --type development
 
 # Start as performer (in a separate terminal)
 kallax start --role performer
 
 # Claim the task
-kallax task:claim TASK-XXX
+kallax task claim TASK-XXX
 ```
 
 When a performer claims a task:
@@ -108,10 +108,10 @@ When a performer claims a task:
 
 ```bash
 # Update progress while working
-kallax task:progress TASK-XXX 50 --message "Auth logic done, UI in progress"
+kallax task progress TASK-XXX 50 --message "Auth logic done, UI in progress"
 
 # Complete the task (Saga 5-step)
-kallax task:complete TASK-XXX --level 4
+kallax task complete TASK-XXX --level 4
 ```
 
 The completion process:
@@ -132,10 +132,10 @@ Task completed           ✓ commit=abc123 pr=42
 
 ```bash
 # Show task status
-kallax task:status TASK-XXX
+kallax task status TASK-XXX
 
 # Verify output (Fact-Forcing 4-level)
-kallax verify:output TASK-XXX
+kallax verify output TASK-XXX
 ```
 
 ---
@@ -156,22 +156,22 @@ kallax verify:output TASK-XXX
 
 ```bash
 # Tickets
-kallax ticket:create TITLE               # Create ticket
-kallax task:create TICKET-ID             # Create task from ticket
+kallax ticket create TITLE               # Create ticket
+kallax task create TICKET-ID             # Create task from ticket
 
 # Lifecycle
 kallax start --role conductor            # Start as conductor
 kallax start --role performer            # Start as performer
-kallax task:claim TASK-ID                # Claim and worktree
-kallax task:progress TASK-ID 0-100       # Update progress
-kallax task:complete TASK-ID             # Complete via saga
+kallax task claim TASK-ID                # Claim and worktree
+kallax task progress TASK-ID 0-100       # Update progress
+kallax task complete TASK-ID             # Complete via saga
 
 # Monitoring
-kallax system:doctor                     # Full diagnostics
-kallax conductor:heartbeat               # 5-question check
-kallax system:degradation                # Tier status
-kallax verify:output TASK-ID             # Fact-Forcing check
+kallax system doctor                     # Full diagnostics
+kallax conductor heartbeat               # 5-question check
+kallax system degradation                # Tier status
+kallax verify output TASK-ID             # Fact-Forcing check
 
 # Isolation
-kallax isolation:check TASK-A TASK-B     # File overlap check
+kallax isolation check TASK-A TASK-B     # File overlap check
 ```

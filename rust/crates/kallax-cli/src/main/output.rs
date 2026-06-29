@@ -1,7 +1,7 @@
 // 跟 v2.7.4 D4.5 联合, 跟 Rule 8 联合. Split from main.rs.
 // Output formatting: text + JSON + YAML.
 
-use crate::main::OutputFormat;
+use crate::enums::OutputFormat;
 use serde_json::Value;
 
 pub fn output_result(format: OutputFormat, action: &str, data: serde_json::Value) {

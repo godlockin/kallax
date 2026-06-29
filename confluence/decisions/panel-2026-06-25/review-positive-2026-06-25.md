@@ -39,7 +39,7 @@
 
 ### 1.4 0 假 PASS 校验 100% (跟 EPIC-059-D Fact-Forcing 联合)
 
-5 specific findings (跟 4-Level Fact-Forcing 联合, raw file:line 全部 留存):
+5 specific findings (跟 5-Level Fact-Forcing 联合, raw file:line 全部 留存):
 
 1. **L1 存在性** — 23 files 全部存在 (`ls` 验证), 22 commits 全部存在 (`git log` 验证), 0 phantom reference ✓
 2. **L2 实质性** — 23 IMPL docs 全部 5 段模板 (grep `## 5. 跟` 23/23 ✓), 0 TODO 占位符 (跟 BE-19 silent output 治根 联合)

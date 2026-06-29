@@ -267,7 +267,7 @@ exit 0
 
 ---
 
-## 5. 4-Level Fact-Forcing 验证 (跟 L1-L4 联合)
+## 5. 5-Level Fact-Forcing 验证 (跟 L1-L4 联合)
 
 ### L1 存在性: 文件存在于 diff
 

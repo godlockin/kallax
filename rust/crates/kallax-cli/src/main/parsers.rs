@@ -1,10 +1,9 @@
 // 跟 v2.7.4 D4.5 联合, 跟 Rule 8 联合. Split from main.rs.
 // Parsers and initialization: init_logging + parse helpers.
 
-use crate::error::{KallaxError, Result};
-use crate::types::Priority;
+use kallax_core::error::{KallaxError, Result};
+use kallax_core::types::Priority;
 use std::path::PathBuf;
-use std::str::FromStr;
 
 pub fn init_logging(verbose: bool) {
     use tracing_subscriber::{fmt, EnvFilter};
@@ -17,7 +16,13 @@ pub fn init_logging(verbose: bool) {
 }
 
 pub fn parse_priority(s: &str) -> Result<Priority> {
-    Priority::from_str(s).map_err(|_| KallaxError::validation("priority", s.to_string()))
+    match s.to_lowercase().as_str() {
+        "low" => Ok(Priority::Low),
+        "normal" => Ok(Priority::Normal),
+        "high" => Ok(Priority::High),
+        "critical" => Ok(Priority::Critical),
+        other => Err(KallaxError::validation("priority", other.to_string())),
+    }
 }
 
 pub fn parse_scope(s: &str) -> Vec<PathBuf> {

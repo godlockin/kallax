@@ -416,7 +416,7 @@
 
 **5/5 ticket AC = 100% PASS**.
 
-### 8.3 4-Level Fact-Forcing Verification (跟 AGENTS.md 联合 0 隐藏)
+### 8.3 5 levels Fact-Forcing Verification (跟 AGENTS.md 联合 0 隐藏)
 
 | Level | 验证 维度 | 状态 | 证据 |
 |-------|----------|------|------|
@@ -425,7 +425,7 @@
 | **Level 3 - Wiring** | imports / exports / type 兼容 | ✅ PASS | 8 tickets commits 都 merge to miao 0 conflict, 跟 baseline 联合 0 hidden |
 | **Level 4 - Data Flow** | integration 测 pass | ✅ PASS | 5-run median raw data 验证 (REPORT.md §6), 9 专家 review 共识 1:1 验证 |
 
-**4-Level 100% PASS**, 跟 AGENTS.md 联合 0 隐藏.
+**5 levels 100% PASS**, 跟 AGENTS.md 联合 0 隐藏.
 
 ---
 
@@ -475,7 +475,7 @@
 - **4 跨 release 留待 items** (跟 "独立" 战略 联合 master explicit 后续 拍)
 - **0 增 Rule 0 增 命令 持平** (跟 "翻篇&精进" 战略 联合 18 release 累计)
 - **10/10 AC = 100% PASS** (User AC 5 + ticket AC 5, 跟 1 ticket 1 subagent 串行 联合 0 跨 session 拍)
-- **4-Level Fact-Forcing 100% PASS** (跟 AGENTS.md 联合 0 隐藏)
+- **5 levels Fact-Forcing 100% PASS** (跟 AGENTS.md 联合 0 隐藏)
 
 **Decision**: **validate_with_followup** (跟 decision-gate 修订 联合 0 隐藏, 跟 4 跨 release 留待 联合 master explicit 后续 拍)
 

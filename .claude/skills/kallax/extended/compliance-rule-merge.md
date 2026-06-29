@@ -39,7 +39,7 @@ filePath: /path/to/kallax/.claude/skills/kallax/extended/compliance-rule-merge.m
 
 - `docs/process/COMPLIANCE-DESIGN.md` (263 lines): 4 方案对比
 - `scripts/audit/rule-redundancy-audit.sh` (4391 bytes): 撤销冗余 Rule 定期扫描
-- `tests/integration/compliance-test.sh` (214 lines): 4-Level 集成测试
+- `tests/integration/compliance-test.sh` (214 lines): 5 levels 集成测试
 - CLAUDE.md Rule 32: 软约束升级阈值 (KALLAX P0)
 
 ## 跟对策 C 联合 (跟"诚实修正" 联合, 跟主公"同意" explicit 授权 联合)

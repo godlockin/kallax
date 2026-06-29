@@ -1,7 +1,7 @@
 # EPIC-053-C — LESSONS LEARNED
 
 > Tool self-check 系统级治根 — review.sh / check-kpi-precision.sh 工具自检, 治 BE-10 模式
-> 跟 Rule 8 (4-Level Fact-Forcing) 联合, 跟 Rule 9 (KPI 精确格式) 联合, 跟 EPIC-053-A/B/E/F 联合, 跟 EPIC-048 tool-bypass-audit 联合
+> 跟 Rule 8 (5-Level Fact-Forcing) 联合, 跟 Rule 9 (KPI 精确格式) 联合, 跟 EPIC-053-A/B/E/F 联合, 跟 EPIC-048 tool-bypass-audit 联合
 
 ---
 
@@ -27,9 +27,9 @@
 
 **修法**: 移除 `--` 分隔符 — `git log -1 --pretty=%B "$TARGET"`. 验证: 修前 `~70%` 提交检查返回 PASS (BUG), 修后返回 FAIL (正确).
 
-**洞察**: 这就是 EPIC-053-B 4-Level 证据链 + EPIC-053-A l3-l4-consistency + EPIC-053-C tool-self-check 的价值 — **system-level meta-tools catch bugs that humans miss**. 如果没有 tool-self-check.sh 的 D4 (true-fail detection), 这个 bug 会永远藏在"tool 通过了" 的表象下.
+**洞察**: 这就是 EPIC-053-B 5-Level 证据链 + EPIC-053-A l3-l4-consistency + EPIC-053-C tool-self-check 的价值 — **system-level meta-tools catch bugs that humans miss**. 如果没有 tool-self-check.sh 的 D4 (true-fail detection), 这个 bug 会永远藏在"tool 通过了" 的表象下.
 
-**Rule 联动**: BE-10 治根, BE-5 (0 commit + 0 file + fake PASS — 但这次是"MSG 空 + fake PASS"), Rule 8 (4-Level Fact-Forcing — D1/D2 是 existence/substance, D3/D4 是 data flow — 4 维度覆盖了 4 个 L 维度).
+**Rule 联动**: BE-10 治根, BE-5 (0 commit + 0 file + fake PASS — 但这次是"MSG 空 + fake PASS"), Rule 8 (5-Level Fact-Forcing — D1/D2 是 existence/substance, D3/D4 是 data flow — 4 维度覆盖了 4 个 L 维度).
 
 ---
 
@@ -46,7 +46,7 @@ tool-self-check.sh 检查这 4 工具, 而 tool-self-check.sh **自己**也跑 s
 
 **修法**: tool-self-check.sh 顶部有 ~15 行 self-guard (跟 review.sh / check-kpi-precision.sh 同样的 guard). 任何对 tool-self-check.sh 的修改如果引入 `[[:space:]]` 数组模式, 立刻被自身 fail-fast. 这形成 3 层防护: (1) tool-self-check 检查 4 工具, (2) self-guard 内嵌在每个 verify 脚本, (3) 跟 kpi-evidence-chain L3 联动形成证据链.
 
-**Rule 联动**: 跟 EPIC-053-B (kpi-evidence-chain.sh L3 核心 tools 是自检对象), 跟 EPIC-048 (meta-tool 模式 一致), Rule 8 (4-Level Fact-Forcing — tool-self-check 的 4 维度对应 4 个 L 维度).
+**Rule 联动**: 跟 EPIC-053-B (kpi-evidence-chain.sh L3 核心 tools 是自检对象), 跟 EPIC-048 (meta-tool 模式 一致), Rule 8 (5-Level Fact-Forcing — tool-self-check 的 4 维度对应 4 个 L 维度).
 
 ---
 
@@ -70,8 +70,8 @@ tool-self-check.sh 检查这 4 工具, 而 tool-self-check.sh **自己**也跑 s
 | Ticket | 责任 | 跟 EPIC-053-C 联动 |
 |--------|------|--------------------|
 | EPIC-053-A | L3↔L4 一致性 (truth table) | tool-self-check 的 D3/D4 = truth table 思想 (真值自检) |
-| EPIC-053-B | 4-Level 证据链 | tool-self-check.sh 检查的 4 工具正是 L3 核心 tools |
-| EPIC-053-D | Master 强验证 6 维度 | 强验证包含 tool-self-check 跑通 (新增维度) |
+| EPIC-053-B | 5-Level 证据链 | tool-self-check.sh 检查的 4 工具正是 L3 核心 tools |
+| EPIC-053-D | 5 levels (L1-L5) | 强验证包含 tool-self-check 跑通 (新增维度) |
 | EPIC-053-E | 5 extended review 逆袭 | check-scope-creep glob 修复让 scope-creep true-pass scenario 可行 |
 | EPIC-053-F | scope-creep glob 修 | check-scope-creep.sh 是自检对象之一 |
 
@@ -122,7 +122,7 @@ tool-self-check.sh 检查这 4 工具, 而 tool-self-check.sh **自己**也跑 s
 
 ```
 EPIC-053-A l3-l4-consistency ──┐
-                                ├──> tool-self-check.sh 4 维度 = 4-Level Fact-Forcing
+                                ├──> tool-self-check.sh 4 维度 = 5-Level Fact-Forcing
 EPIC-053-B kpi-evidence-chain ─┤    (D1=L1 existence, D2=L2 substance, D3/L3 data flow, D4=L4 anti-pattern)
    L3 检查 4 工具 ──────────────┘    tool-self-check 检查 4 工具 = L3 核心 tools
                                        │

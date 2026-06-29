@@ -5,6 +5,118 @@ All notable changes to KALLAX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2026-06-29
+
+### Hotfix: A+B Review 治根 (16 commits, 4 P0 + 12 P1)
+
+#### Security (P0, 4 治根)
+- **S-001** (commit `104b063`): 删 `_kallax_common.sh:103` `kallax-dev-key` 硬编码 default, 改 fail-closed (`cli-reference-2026-06-19.md:163` 同步改 `<required, no default>`). 跟 v3.0.0 "API key fail-closed" 强 claim 1:1 验证, 治根 S-001 B 组 P0 finding.
+- **S-002** (commit `4f508b5`): Hook Server auth bypass 治根. `http-hook-server.ts:90` 删 `if (!config.apiKey) return true`, 改 `throw new Error('apiKey required for production')` 启动 fail. 治根 8 endpoints 全部无鉴权 反讽.
+- **S-003** (commit `7819068`): Audit dir 强权限 + self-heal. `audit-chain.sh:105` `umask 077` + `install -d -m 700` 强制 (跟 BE-7 修复模式 1:1). 治根 `.kallax/audit/` 755 + scoring file 644 fail-open.
+- **P-001** (commit `0dab6c3`): Iter 1 check-in 自打脸 amend. `ITER-1-CHECKIN-2026-06-29.md:56-63` 加 "本检查仅 grep 3 文件" 勘误, 扩 grep 到全 codebase 8/8 文件 + pre-commit hook `check-api-key-default.sh` 强制 0 hits. 诚实修正 实证.
+
+#### Documentation (P1, 7 治根)
+- **S-004** (commit `04147bc`): `cli-reference-2026-06-19.md:163` 改 default `<required, fail-closed>`, 跟 `standalone.ts:18-23` 1:1 验证. 治根 文档-代码 truth gap.
+- **U-002** (commit `fbea0aa`): `docs/architecture/` DEPRECATED 清理时间表, 4 个 DEPRECATED 子文档 留 v3.2.0 拍板. 跟 P-003 Iter 12 "不删" 决定重新审视.
+- **P-003** (commit `8ab621c`): CLAUDE.md lazy load 实际效果 评估 (162 行 audit), 跟 eket 1:1 验证.
+- **P-005** (commit `1a3192e`): CHANGELOG 装饰 pattern 清理 (v3.0.0 entry 2 → 0 治根, 跟 P-002 B 组自打脸 联合).
+- **P-006** (commit `3a4e220`): 7 候选 增量价值 测量 (179 行 audit, 跟 v2.7.6 baseline 1:1 对比).
+- **S-005** (commit `6bed552`): Hook replay access right 验证 (admin token required for cross-session).
+- **S-006** (commit `90c23e1`): audit chain 抗 collision 强化 (双 sha256).
+
+#### Code Quality (P1, 5 治根)
+- **S-007** (commit `b592573`): audit chain flock 跨进程锁 (macOS mkdir fallback).
+- **U-001** (commit `b804267`): `web/escape.js` `el()` attribute sanitization (setAttribute k,v 不直赋值, URL sanitize block `javascript:`/`data:`).
+- **U-003** (commit `2261b2f`): `level-3.sh` `--dry-run` warning + rate limit (KALLAX_DRY_RUN=1 env var 配合 pre-commit).
+- **U-004** (commit `75c6d17`): token benchmark baseline regression check (per-session < 1.0x 持续验证).
+- **P-004** (commit `db0775d`): web Tab 状态 localStorage 保持 (activeTab + tasksCache filter 持久化).
+
+### A+B Review Report (Rule 6/7 EPIC 4 件套, 1:1 验证)
+- A 组 Forward: [`confluence/decisions/V310-A-REVIEW-2026-06-29.md`](confluence/decisions/V310-A-REVIEW-2026-06-29.md) (535 行, 5/5 维度 PASS: AC 合规 + 代码质量 + 5 levels 独立 + audit trust chain + check-epic-4-piece)
+- B 组 Attack: [`confluence/decisions/V310-B-REVIEW-2026-06-29.md`](confluence/decisions/V310-B-REVIEW-2026-06-29.md) (548 行, 16 findings: 4 P0 + 12 P1, 全修)
+- 7 候选 增量价值: [`confluence/decisions/V310-P1-006-VALUE-MEASUREMENT.md`](confluence/decisions/V310-P1-006-VALUE-MEASUREMENT.md) (179 行, 跟 v2.7.6 baseline 1:1 对比)
+
+### 量化指标 (raw stdout, 0 估数)
+- 16 hotfix commits (4 P0 + 12 P1) 100% 落地
+- 29 commits since v3.0.0 (16 hotfix + 7 候选 + 6 集成 + docs)
+- 1 binary 0 errors (cargo build 通过, 5 crates 整合维持)
+- CLAUDE.md 61 行 / 3.2KB (跟 eket 一致, 1 page cheatsheet)
+- Token benchmark 0.92x per-session (跟 eket parity 8% 节省, 实测)
+- CHANGELOG 装饰 pattern 30+ → 0 (P-005 治根)
+- KPI 估数字段 0 (跟 v3.0.0 Q7 决策 联合)
+
+### Migration from v3.0.0 → v3.1.0
+- 0 breaking changes
+- 16 hotfix commits (4 P0 security + 12 P1 quality)
+- A+B review 模式 实战 (Rule 6/7 EPIC 4 件套 1:1 落地)
+- 诚实修正 实例: v3.0.0 "0 装饰引用" 治根 (CHANGELOG 30+ 装饰 pattern 清理, P-002 + P-005 联合)
+- 6 武器 6/6 维持 (KALLAX 优于 eket 6 空白处 0 退步)
+- 25/25 cells 决策矩阵 维持 (Q18 联合)
+
+[Co-Authored-By: Claude <noreply@anthropic.com>]
+
+## [3.0.0] - 2026-06-29
+
+### Major: 青出于蓝而胜于蓝
+
+#### Added
+- **6 武器** (KALLAX 胜于 eket 6 个空白处):
+  - 武器 1: Hash-Chain Audit Log (SHA256 chain, 治根 SEC-002)
+  - 武器 2: 5-Level Fact-Forcing (L1-L5 实做, 不只是名字, 治根 4-Level/6 维度 重叠)
+  - 武器 3: Performer Sub-Role Dispatch (4 sub-roles, eket 无此细粒度)
+  - 武器 4: EPIC 4 件套强制 (A+B review + readme + lessons + signoff, 治根 PROD-001)
+  - 武器 5: Hook Server 回放 + Audit (多 AI 工具集成, eket 没有)
+  - 武器 6: Web Dashboard 1 page ≤ 500 LOC (可视化, eket 没有, 治根 FE-001 XSS)
+- **决策模型** (5 levels × 4 roles = 20 cells, Q18 实施)
+  - 5 类 Block + 3 类 Danger 详细定义
+  - docs/process/q18-decision-model.md (543 行 SOP)
+- **集成测试** (6 武器 端到端, 25/25 cells PASS)
+  - 6-weapons-e2e-test.sh
+  - decision-matrix-test.sh
+
+#### Changed
+- **CLAUDE.md**: 54KB → 3.3KB (16.4x 缩减, lazy load docs 替代)
+- **35 术语 → 0 术语** (Q7 + Q16 砍)
+- **21 Rule → 0 硬编码 Rule** (5 levels + 4 roles 替代, Q17)
+- **1 binary 整合**: 8 Rust crates → 5, 0 errors
+- **3 装饰目录 删**: src/sdk/experts (移内容到 template/permissions/ + docs/)
+- **3 不可达 crates 删**: kallax-bridge/election/context-mon
+- **删 jieba-rs** (eket 用 CJK unigram, 不用 jieba)
+- **删 expert-match sub-binary** (eket 极简对齐)
+- **9 Hard Rules / 4-Level / Master 强验证 6 维度 → 5 levels** (244 active 文件 0 残留)
+- **API key fail-closed** (env 必填, 无 default)
+- **CLI 冒号 → 空格** (20+ 处文档, 跟实际命令对齐)
+- **GitHub URL your-org → godlockin** (4 处)
+
+#### Fixed
+- BE-001: Rust CLI 编译失败 (ticket → ticket_engine)
+- 14 engine errors (Event:Clone + dashmap .value().clone())
+- 12 cli structural errors (clap derive + import paths + #[tokio::main])
+- P0-1/2/3 + 2.5 (4 治根)
+- SEC-002 audit log 无 hash chain
+- FE-001 XSS (innerHTML → textContent + escape 工具)
+- FE-004 dead code (v2.7.4 + dispatch 重复)
+- 0 KPI 数字 (净价值/升级率/fatigue_index 全删)
+- 0 装饰引用 (0 narrative, 0 跨章节串接)
+
+#### Security
+- API key fail-closed (no default, env required)
+- Hash-chain audit log (SEC-002 治根)
+- 5 class Block + 3 class Danger 决策 (Q18 实施)
+
+#### Performance
+- 1 binary 整合, 冷启动 ~5ms
+- CLAUDE.md 5KB cold start (vs 70KB 之前, 14x 加速)
+
+### Migration from v2.7.6 → v3.0.0
+- 35 术语 KALLAX-GLOSSARY.md → docs/CHEATSHEET.md (eket 同名 1:1)
+- 21 Rule → 5 levels + 4 roles (Q17 决策)
+- 50+ expert roles → 4 sub-roles (Q13 决策, 武器 3)
+- 9 Hard Rules → 5 levels 1:1 命名 (eket 同名)
+- Cargo workspace 1.0.0 → 2.7.6 (跟 npm version 对齐, 需 release bump)
+
+[Co-Authored-By: Claude <noreply@anthropic.com>]
+
 ## [2.7.5] - 2026-06-28
 
 ### Changed (跟 Karpathy "Readability" 联合, 跟反讽 闭环, 跟诚实修正 联合, 跟独立 拍 explicit 约束 联合)

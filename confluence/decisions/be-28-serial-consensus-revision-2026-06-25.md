@@ -52,7 +52,7 @@
 > - 1 ticket 1 worktree 隔离 (跟 EPIC-054-A 模式 一致)
 > - TDD (test first) 跟 v2.7.1 整理 release 联合
 > - 1 PR 跟 raw test output 100% (跟 EPIC-059-D Fact-Forcing 联合)
-> - 4-Level Fact-Forcing 跟 Master 6 维 L1-L6 联合
+> - 5-Level Fact-Forcing 跟 Master 6 维 L1-L6 联合
 > - **预期 100% deliver rate** (跟 strict baseline 1:1 验证, 跟 EPIC-057 18/18 PASS 100% 模式 一致)
 
 ### 2.2 新 共识 (BE-28 修订, 跟 3 batchs 80% deliver rate baseline 联合 1:1 验证)
@@ -62,7 +62,7 @@
 > - 1 ticket 1 worktree 隔离 (跟 EPIC-054-A 模式 一致)
 > - TDD (test first) 跟 v2.7.1 整理 release 联合
 > - 1 PR 跟 raw test output 100% (跟 EPIC-059-D Fact-Forcing 联合)
-> - 4-Level Fact-Forcing 跟 Master 6 维 L1-L6 联合
+> - 5-Level Fact-Forcing 跟 Master 6 维 L1-L6 联合
 > - **预期 80-100% deliver rate** (跟 3 batchs baseline 联合 1:1 验证, 跟"反讽" 战略 联合 0 隐藏)
 > - **预期 6.7% BE-9 silent rate** (跟 3 batchs baseline 联合 0 复发)
 > - **预期 6.7% BE-22 staged rate** (跟 3 batchs baseline 联合 0 完整, 跟 c091d92 模式 区别 0 隐藏)

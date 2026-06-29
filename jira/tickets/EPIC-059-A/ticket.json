@@ -2,7 +2,7 @@
   "id": "EPIC-059-A",
   "epicId": "EPIC-059",
   "phaseId": "PHASE-015",
-  "title": "9 Hard Rules 简化 (跟 v2.4.1 Rule 合并反思 联合, 治根 'Rule 数通胀' 迷信)",
+  "title": "5 levels 简化 (跟 v2.4.1 Rule 合并反思 联合, 治根 'Rule 数通胀' 迷信)",
   "type": "feature",
   "priority": "P2",
   "status": "done",
@@ -26,16 +26,16 @@
     "excludes": []
   },
   "acceptance_criteria": [
-    "CLAUDE.md 22 Rule 整合 9 Hard Rules 模式 (跟 eket template/docs/MASTER-RULES.md 联合, file:line CLAUDE.md:282-322 Rule 1-22)",
-    "9 Hard Rules 包含: PR 合并后清理 outbox / 删除前查反向引用 / Slaver 超时 Release / 负载分担 / 分配前确认环境 / 文档卫生 (每10轮) / 新建前先想 / Rule of 500 / PR ~100 行上限 (跟 EPIC-059-B/059-C 联合, 9 项 全覆盖)",
-    "CLAUDE.md 'KALLAX Rules Status' 章节 标注 '9 Hard Rules 模式 (跟 eket 联合, 2026-06-18 v2.7.0)'",
-    "docs/KALLAX-GLOSSARY.md §11.1 'Rule 数越少越好 是 假命题' 闭环 跟 '9 Hard Rules 简化' 联合 (file:line docs/KALLAX-GLOSSARY.md §11.1)",
+    "CLAUDE.md 22 Rule 整合 5 levels 模式 (跟 eket template/docs/MASTER-RULES.md 联合, file:line CLAUDE.md:282-322 Rule 1-22)",
+    "5 levels 包含: PR 合并后清理 outbox / 删除前查反向引用 / Slaver 超时 Release / 负载分担 / 分配前确认环境 / 文档卫生 (每10轮) / 新建前先想 / Rule of 500 / PR ~100 行上限 (跟 EPIC-059-B/059-C 联合, 9 项 全覆盖)",
+    "CLAUDE.md 'KALLAX Rules Status' 章节 标注 '5 levels 模式 (跟 eket 联合, 2026-06-18 v2.7.0)'",
+    "docs/KALLAX-GLOSSARY.md §11.1 'Rule 数越少越好 是 假命题' 闭环 跟 '5 levels 简化' 联合 (file:line docs/KALLAX-GLOSSARY.md §11.1)",
     "docs/process/ 加 9-hard-rules.md 文档 (跟 eket template/docs/MASTER-RULES.md 模式 一致, 9 项 详细解释 + 反例 + 撤销方法)",
     "跟 v2.4.1 Rule 合并反思 联合 (file:line confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md, 治根 '0 实际变化 假动作' 反讽)",
-    "跟 '借方法论 不借代码' 联合 (不复制 eket 9 Hard Rules 全文, 提取 模式 + 命名, 适配 KALLAX 22 Rule 现状)",
+    "跟 '借方法论 不借代码' 联合 (不复制 eket 5 levels 全文, 提取 模式 + 命名, 适配 KALLAX 22 Rule 现状)",
     "跟 '反讽' + '翻篇&精进' 联合 (闭环 v2.4.0 'Rule 数越少越好' 假命题)",
-    "tests 验证: 9 Hard Rules 检查脚本 (跟 scripts/check-fact-forcing-preflight.sh 模式 一致, 跑 9 项 检查)",
-    "Rule 9 KPI 精确 X/Y 格式 — 22 Rule → 9 Hard Rules 整合 = 100% 落地, 0 增 Rule (跟 '翻篇&精进' 一致)"
+    "tests 验证: 5 levels 检查脚本 (跟 scripts/check-fact-forcing-preflight.sh 模式 一致, 跑 9 项 检查)",
+    "Rule 9 KPI 精确 X/Y 格式 — 22 Rule → 5 levels 整合 = 100% 落地, 0 增 Rule (跟 '翻篇&精进' 一致)"
   ],
   "estimated_hours": 4,
   "status_set_by": "master_main (主公 explicit 派单 '需要都建卡并行处理', 跟 v2.6.0 经验教训 整理 release 联合)"

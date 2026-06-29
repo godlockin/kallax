@@ -119,7 +119,7 @@ best_matching_slaver() {
 5. 跑测试, 确认 PASS
 6. Commit: `feat(EPIC-030-A): TrustScore + 3 层匹配算法骨架`
 
-**4-Level AC**:
+**5-Level AC**:
 - L1: 2 脚本 + 1 测试存在
 - L2: 真实 TrustScore 4 因子 + 3 层匹配
 - L3: jq 合法, 算法骨架 + "算法建议 + 人工拍板" 出口
@@ -157,7 +157,7 @@ append_scoring_trace() {
 
 **TDD**: 1 写 + 1 读 + 跨日轮转 (改 date) → 3 测试 PASS
 
-**4-Level AC**:
+**5-Level AC**:
 - L1: 1 脚本 + 1 测试存在
 - L2: 真实 jq -n 写 JSONL (跟 EPIC-029 决策门一致, 防 JSON injection)
 - L3: jq 合法, 跟 A 配合 (A 调用时记录)
@@ -214,7 +214,7 @@ get_priority_waiting() {
 
 **TDD**: 匹配失败触发 + 写 JSON + 写 inbox + 重试优先 → 4 测试 PASS
 
-**4-Level AC**:
+**5-Level AC**:
 - L1: 1 脚本 + 1 测试存在
 - L2: 真实写 2 文件 + 重试计数
 - L3: jq + bash 兼容
@@ -270,7 +270,7 @@ bash "${KALLAX_ROOT}/.kallax/hooks/hook-profile.sh" || exit 1
 
 **TDD**: 3 档 env var + 默认 standard + 不破坏现有 → 5 测试 PASS
 
-**4-Level AC**:
+**5-Level AC**:
 - L1: 1 脚本 + 1 测试 + pre-commit 改
 - L2: 真实 case-based profile 选择
 - L3: env var 兼容, 不破坏现有串联
@@ -333,7 +333,7 @@ self_test() {
 ]
 ```
 
-**4-Level AC**:
+**5-Level AC**:
 - L1: 1 脚本 + fixture + test 存在
 - L2: 真实 self-test + 5 case
 - L3: jq + bash 兼容
@@ -381,7 +381,7 @@ fi
 
 **TDD**: 3 状态 (healthy/degraded/unhealthy) + level 1/2/3 + 旧文本兼容 → 6 测试 PASS
 
-**4-Level AC**:
+**5-Level AC**:
 - L1: 1 脚本 + 1 测试
 - L2: 真实 --json + --text 2 模式
 - L3: jq 合法, 兼容旧用法
@@ -438,7 +438,7 @@ EOF
 
 **TDD**: 建表 + 写 1 条 + 查 + 跨多 command 写多 → 4 测试 PASS
 
-**4-Level AC**:
+**5-Level AC**:
 - L1: 2 脚本 + 1 测试
 - L2: 真实 SQLite 建表 + 写查
 - L3: sqlite3 CLI 合法, 新独立 DB 不污染
@@ -481,7 +481,7 @@ domain: ...
 
 **TDD**: 跑 `expert-quality-audit.py --enforce-tier-domain` 验证 7/7 PASS
 
-**4-Level AC**:
+**5-Level AC**:
 - L1: 7 文件 frontmatter 加字段
 - L2: 真实 worktree_role / tickets_served / review_group / version / last_reviewed
 - L3: frontmatter 合法, 跟现有 trigger/tier/domain 不冲突
@@ -520,7 +520,7 @@ exit 0
 
 **TDD**: 有 brief_inference (PASS) + 无 (FAIL exit 1) → 2 测试 PASS
 
-**4-Level AC**:
+**5-Level AC**:
 - L1: 1 脚本 + 1 测试
 - L2: 真实 jq -e 验证, 缺字段 exit 1 拒绝
 - L3: jq 合法, 跟 task:claim 流程兼容

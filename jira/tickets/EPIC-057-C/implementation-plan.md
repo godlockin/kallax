@@ -139,7 +139,7 @@ tests/integration/
 
 ---
 
-## 4. TDD Strategy (Rule 9 4-Level, 跟 EPIC-053-B 4-Level 证据链 联合)
+## 4. TDD Strategy (Rule 9 5-Level, 跟 EPIC-053-B 5-Level 证据链 联合)
 
 ### 4.1 测试设计 (5 case)
 
@@ -222,7 +222,7 @@ bash tests/integration/docs-link-check-test.sh
 
 ---
 
-## 7. Verification (Rule 9 4-Level, 跟 EPIC-053-B 4-Level 证据链 联合)
+## 7. Verification (Rule 9 5-Level, 跟 EPIC-053-B 5-Level 证据链 联合)
 
 ### 7.1 L1 Existence (文件存在)
 
@@ -269,4 +269,4 @@ bash tests/integration/docs-link-check-test.sh
 
 ---
 
-**跟主公 2026-06-17 'B' explicit 拍板 联合 (file:line confluence/decisions/14-ISSUES-INTAKE-2026-06-16.md:106-133 模式, 主公 explicit 派单), 跟 EPIC-057 4 ticket 联合 (file:line jira/epics/EPIC-057/epic.json:21-26), 跟 v2.0.2 '跨平台 fix' 反讽 闭环 (file:line CHANGELOG.md:647-661 vs scripts/install.sh:52-53 baseline gap), 跟"诚实修正" 战略 一致 (file:line docs/KALLAX-GLOSSARY.md:40-47), 跟"翻篇&精进" 战略 一致 (file:line docs/KALLAX-GLOSSARY.md:108-112), 跟 EPIC-055-C 5 标签 SOP 联动 (file:line docs/process/tag-sop.md:64-78), 跟 Rule 5 DRY 联动, 跟 Rule 9 4-Level Fact-Forcing 联合 (file:line docs/PROCESS.md:36-51), 跟 EPIC-053-B 4-Level 证据链 联合, 跟 EPIC-056-A 3 阶段治理 联合, 跟 EPIC-054-D Rule 合并 提案 一致 (0 Rule 增加)**
+**跟主公 2026-06-17 'B' explicit 拍板 联合 (file:line confluence/decisions/14-ISSUES-INTAKE-2026-06-16.md:106-133 模式, 主公 explicit 派单), 跟 EPIC-057 4 ticket 联合 (file:line jira/epics/EPIC-057/epic.json:21-26), 跟 v2.0.2 '跨平台 fix' 反讽 闭环 (file:line CHANGELOG.md:647-661 vs scripts/install.sh:52-53 baseline gap), 跟"诚实修正" 战略 一致 (file:line docs/KALLAX-GLOSSARY.md:40-47), 跟"翻篇&精进" 战略 一致 (file:line docs/KALLAX-GLOSSARY.md:108-112), 跟 EPIC-055-C 5 标签 SOP 联动 (file:line docs/process/tag-sop.md:64-78), 跟 Rule 5 DRY 联动, 跟 Rule 9 5-Level Fact-Forcing 联合 (file:line docs/PROCESS.md:36-51), 跟 EPIC-053-B 5-Level 证据链 联合, 跟 EPIC-056-A 3 阶段治理 联合, 跟 EPIC-054-D Rule 合并 提案 一致 (0 Rule 增加)**

@@ -36,11 +36,11 @@
 - **阻塞**: 无 (可立即派单)
 - **Phase**: PHASE-009
 
-### EPIC-053-B: KPI falsification 系统级治根 — 4-Level 证据链 (治 H1)
+### EPIC-053-B: KPI falsification 系统级治根 — 5-Level 证据链 (治 H1)
 - **优先级**: P0
 - **估时**: 12h
 - **file_scope**: `scripts/verify/kpi-evidence-chain.sh` + `node/src/core/output-verifier.ts` + 5 扩展组 集成
-- **AC**: 4-Level 证据链 (git-anchor + test stdout + 5 扩展组 pass + 独立见证签名), 12 KPI falsification 反复 治根
+- **AC**: 5-Level 证据链 (git-anchor + test stdout + 5 扩展组 pass + 独立见证签名), 12 KPI falsification 反复 治根
 - **阻塞**: EPIC-053-A
 - **Phase**: PHASE-009
 
@@ -154,7 +154,7 @@
 - **Phase**: PHASE-009
 - **⚠️ 需主公拍板**: 治理升级
 
-### EPIC-056-C: Master 强验证 6 维度恢复 (治 H4, revert v1.2.4 6→0 退步)
+### EPIC-056-C: 5 levels (L1-L5)恢复 (治 H4, revert v1.2.4 6→0 退步)
 - **优先级**: P2
 - **估时**: 8h
 - **file_scope**: `scripts/master/strong-verify-6d.sh` + `node/src/core/master-verify.ts` + `docs/PROCESS.md`
@@ -191,7 +191,7 @@ EPIC-056-A (P2) ──→ EPIC-056-B (P2) ──→ EPIC-056-C (P2)
 | 主 EPIC | 联动 | 原因 |
 |---|---|---|
 | **053-D** (派单仪表盘) | 054-A (worktree 统一) | 仪表盘数据源依赖 worktree 统一 |
-| **053-B** (4-Level 证据链) | 056-C (Master L6 诚实) | L6 诚实 = 证据链校验 |
+| **053-B** (5-Level 证据链) | 056-C (Master L6 诚实) | L6 诚实 = 证据链校验 |
 | **054-D** (Rule 合并扫描) | 055-B (主公拍板分级) | Rule 撤销/合并 需拍板分级落地 |
 | **055-C** (标签 SOP) | 055-B (主公拍板分级) | 标签 SOP 引用 拍板分级 流程 |
 | **056-A** (5→3 阶段) | 055-B (主公拍板分级) | 阶段简化依赖 拍板分级 |
@@ -218,7 +218,7 @@ EPIC-056-A (P2) ──→ EPIC-056-B (P2) ──→ EPIC-056-C (P2)
 
 ## Part 8: 验证清单 (跟 Rule 6 EPIC 交付四件套 联合)
 
-### Master 强验证 6 维度 (跟 v1.2.4 退步前 一致, 跟 EPIC-056-C 联动)
+### 5 levels (L1-L5) (跟 v1.2.4 退步前 一致, 跟 EPIC-056-C 联动)
 
 - [ ] L1 git log: 18 个新文件 (4 epic.json + 14 ticket.json) 创建, 0 commit
 - [ ] L2 git show: 文件内容检查, epic.json schema 跟 EPIC-039/041 一致, ticket.json schema 跟 EPIC-041-B 一致

@@ -25,7 +25,7 @@ let dbPath: string;
 let server: ApiServer;
 let baseUrl: string;
 const PORT = 19878;
-const API_KEY = 'kallax-dev-key';
+const API_KEY = 'kallax-test-key-0123456789abcdef0123';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 

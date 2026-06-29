@@ -10,6 +10,11 @@ import type {
   Hook, HookContext, HookResult, HookPhase,
   CheckRule, CheckRegistry, HookDispatcher, HookStats,
 } from './types.js';
+import {
+  appendHookEvent,
+  createHookEventsStore,
+  type HookEventsStore,
+} from './hook-events-store.js';
 
 // ── CheckRegistry ──────────────────────────────────────────────────────────
 
@@ -41,11 +46,39 @@ export function createCheckRegistry(): CheckRegistry {
 
 // ── HookDispatcher ─────────────────────────────────────────────────────────
 
-export function createHookDispatcher(checkRegistry?: CheckRegistry): HookDispatcher {
+export function createHookDispatcher(
+  checkRegistry?: CheckRegistry,
+  auditStore?: HookEventsStore,
+): HookDispatcher {
   const hooks = new Map<string, Hook>();
   const recentResults: HookStats['recentResults'] = [];
   const MAX_RECENT = 50;
   const checkReg = checkRegistry ?? createCheckRegistry();
+  const audit = auditStore ?? null; // default: no audit (opt-in by caller via http-hook-server)
+
+  function recordAudit(
+    ctx: HookContext,
+    resultCode: 'allow' | 'block' | 'error',
+    reason?: string,
+  ): void {
+    if (!audit) return;
+    // Fire-and-forget; failures must not break hook execution
+    appendHookEvent(audit, {
+      sessionId: ctx.sessionId ?? 'unknown',
+      hookType: ctx.phase,
+      toolName: ctx.toolName,
+      resultCode,
+      reason,
+      ticketId: ctx.ticketId,
+      performerId: ctx.performerId,
+      metadata: ctx.metadata,
+    }).catch((err: unknown) => {
+      logger.warn({
+        error: err instanceof Error ? err.message : String(err),
+        phase: ctx.phase,
+      }, 'hook audit append failed');
+    });
+  }
 
   function recordResult(hook: string, phase: HookPhase, allowed: boolean): void {
     recentResults.push({ hook, phase, allowed, timestamp: Date.now() });
@@ -110,9 +143,11 @@ export function createHookDispatcher(checkRegistry?: CheckRegistry): HookDispatc
       // Phase 1: Run check rules first (fail-fast on errors)
       const checkResult = await runChecks(ctx);
       if (checkResult.isErr()) {
+        recordAudit(ctx, 'error', checkResult.error.message);
         return checkResult;
       }
       if (!checkResult.value.allowed) {
+        recordAudit(ctx, 'block', checkResult.value.reason);
         return checkResult;
       }
 
@@ -138,9 +173,11 @@ export function createHookDispatcher(checkRegistry?: CheckRegistry): HookDispatc
           if (result.isErr()) {
             logger.error({ hookName: hook.name, error: result.error.message }, 'hook execution failed');
             recordResult(hook.name, ctx.phase, false);
+            const reason = `${hook.name}: ${result.error.message}`;
+            recordAudit(ctx, 'error', reason);
             return ok({
               allowed: false,
-              reason: `${hook.name}: ${result.error.message}`,
+              reason,
               warnings: allWarnings,
             });
           }
@@ -148,9 +185,11 @@ export function createHookDispatcher(checkRegistry?: CheckRegistry): HookDispatc
           const hr = result.value;
           if (!hr.allowed) {
             recordResult(hook.name, ctx.phase, false);
+            const reason = hr.reason ?? `${hook.name}: blocked`;
+            recordAudit(ctx, 'block', reason);
             return ok({
               allowed: false,
-              reason: hr.reason ?? `${hook.name}: blocked`,
+              reason,
               warnings: [...allWarnings, ...(hr.warnings ?? [])],
             });
           }
@@ -171,20 +210,24 @@ export function createHookDispatcher(checkRegistry?: CheckRegistry): HookDispatc
           const msg = error instanceof Error ? error.message : String(error);
           logger.error({ hookName: hook.name, error: msg }, 'hook threw unhandled error');
           recordResult(hook.name, ctx.phase, false);
+          const reason = `${hook.name}: ${msg}`;
+          recordAudit(ctx, 'error', reason);
           return ok({
             allowed: false,
-            reason: `${hook.name}: ${msg}`,
+            reason,
             warnings: allWarnings,
           });
         }
       }
 
-      return ok({
+      const finalResult: HookResult = {
         allowed: true,
         modifiedParams: currentParams,
         warnings: allWarnings.length > 0 ? allWarnings : undefined,
         metadata: Object.keys(mergedMetadata).length > 0 ? mergedMetadata : undefined,
-      });
+      };
+      recordAudit(ctx, 'allow', undefined);
+      return ok(finalResult);
     },
 
     getHooks(phase: HookPhase): Hook[] {

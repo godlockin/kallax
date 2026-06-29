@@ -37,7 +37,7 @@ filePath: /path/to/kallax/.claude/skills/kallax/extended/auditor-independent-wit
 
 - `scripts/audit/audit-log-sink.sh` (5833 bytes): 不可篡改 audit log sink (BE-7 修复模式 umask 077 + install -d -m 700 + flock + atomic write + chmod 600)
 - `scripts/audit/independent-witness.sh` (5722 bytes): 独立见证机制 (L1 subagent-pass-gate output + L2 PASS + L3 git SHA + L4 audit-log-sink)
-- `tests/integration/independent-witness-test.sh` (248 lines): 4-Level Fact-Forcing 集成测试
+- `tests/integration/independent-witness-test.sh` (248 lines): 5 levels Fact-Forcing 集成测试
 - CLAUDE.md Rule 31: 独立见证机制 (KALLAX P0)
 
 ## 跟对策 C 联合 (跟"诚实修正" 联合, 跟主公"同意" explicit 授权 联合)

@@ -23,7 +23,7 @@
 - 原则 3: 缺 evidence 视为 OK = silent output 0 deliver
 
 **治根** (跟 v2.0.4 EPIC-053-A truth-table 联合):
-- `docs/KALLAX-GLOSSARY.md:641-651` (§9.4 4-Level Fact-Forcing)
+- `docs/KALLAX-GLOSSARY.md:641-651` (§9.4 5-Level Fact-Forcing)
 - `tests/integration/master-6d-recovery-test.sh:150` (L4 preflight 强制 raw stdout/stderr)
 
 **跟 KALLAX-GLOSSARY §11.3 联合**: "L4 verify PASS" 命名 ≠ reality (silent output) = "0 实际变化 假动作"

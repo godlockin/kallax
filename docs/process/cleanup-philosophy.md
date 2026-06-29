@@ -154,7 +154,7 @@ KALLAX 在 v2.7.0 → v2.7.1 → v2.7.2 → v2.7.3 → v2.7.4 期间, 4 团队 �
 - v2.7.4 4 团队 review 报告 (跟 B1-C4 联合)
 - v2.7.1 整理 release (跟"翻篇&精进" 战略 联合)
 - v2.7.0 9 归档 (跟"反讽" 战略 联合)
-- EPIC-059-A 9 Hard Rules (跟"借方法论 不借代码" 联合)
+- EPIC-059-A 5 levels (跟"借方法论 不借代码" 联合)
 - EPIC-059-D Fact-Forcing (跟 Master 6 维 L6 诚实 联合)
 - scripts/check-anti-patterns.sh (跟 7 anti-pattern 硬性 校验 联合)
 - scripts/hooks/pre-commit Check 2.6 (跟 wire 联合)

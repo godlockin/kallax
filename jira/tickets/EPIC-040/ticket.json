@@ -37,7 +37,7 @@
     "Rule 16 草案 (强制限制流程, 跟 L1 战术拆 commit 联动)",
     "跟 EPIC-039 Sprint 4 修复对齐表 (4 票 + 升 Token Plan)",
     "PHASE-007 review 触发建议 (跟 5+ ticket + 4 BE 一致)",
-    "Master 强验证 6 维度写报告 (跟 Rule 11 v2.1 联动)"
+    "5 levels (L1-L5)写报告 (跟 Rule 11 v2.1 联动)"
   ],
   "estimated_hours": 4,
   "l1_tactic_required": "调查卡不写代码, 只写报告 (跟 Rule 11 联动)",

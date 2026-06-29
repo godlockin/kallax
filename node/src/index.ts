@@ -43,6 +43,7 @@ import { registerInitCommands } from './commands/init.js';
 
 import { registerRouteCommands } from './commands/route-cmd.js';
 import { registerRoleCommands } from './commands/role-cmd.js';
+import { registerLoadCommands } from './commands/load-cmd.js';
 function findProjectRoot(): string {
   let dir = process.cwd();
   while (dir !== '/') {
@@ -96,6 +97,7 @@ registerEpicCommands(program, ctx);
 registerBranchCommands(program);
 registerRouteCommands(program);
 registerInitCommands(program);
+registerLoadCommands(program, ctx);
 registerRoleCommands(program, ctx);
 
 program.parseAsync(process.argv).catch((error: unknown) => {

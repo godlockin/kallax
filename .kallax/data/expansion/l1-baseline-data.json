@@ -926,8 +926,8 @@
       "治理",
       "链路"
     ],
-    "title": "Fact-Forcing 4-Level 嵌入 (7 文件)",
-    "description": "7 文件的 `Verification` 节升级为 4-Level Fact-Forcing (L1 存在性 / L2 实质性 / L3 接线正确 / L4 数据流动) | 每级含 1 个具体 bash 命令 (e.g. L1: `git diff --name-only`, L2: `wc -c` diff 字节数, L3: `tsc --noEmit` / `cargo check`, L4: `npm test` / `cargo test`) | 新增 `Fact-Forcing Compliance` 节在 `Verification` 上方, 含 4 个强制 checkbox | 末尾留空 [Fact-Forcing Compliance] 块, 由 Performer 在 ticket close 时勾选 | L4 集成测试命令参考 EPIC-016 中真实跑过的 (e.g. `bash scripts/test-no-hang.sh`, `bash scripts/test-performer-onboarding.sh`) | check-skill-anatomy.sh (E ticket) 增加 'fact_forcing_4_level' 校验项 | EKET Verification 只有 L1/L2 级 (L1 文件存在, L2 bash 命令). KALLAX Fact-Forcing 4-Level 是 KALLAX 5 维独有优势之一, 跟 worktree/heartbeat 配套, 不可伪造.",
+    "title": "Fact-Forcing 5-Level 嵌入 (7 文件)",
+    "description": "7 文件的 `Verification` 节升级为 5-Level Fact-Forcing (L1 存在性 / L2 实质性 / L3 接线正确 / L4 数据流动) | 每级含 1 个具体 bash 命令 (e.g. L1: `git diff --name-only`, L2: `wc -c` diff 字节数, L3: `tsc --noEmit` / `cargo check`, L4: `npm test` / `cargo test`) | 新增 `Fact-Forcing Compliance` 节在 `Verification` 上方, 含 4 个强制 checkbox | 末尾留空 [Fact-Forcing Compliance] 块, 由 Performer 在 ticket close 时勾选 | L4 集成测试命令参考 EPIC-016 中真实跑过的 (e.g. `bash scripts/test-no-hang.sh`, `bash scripts/test-performer-onboarding.sh`) | check-skill-anatomy.sh (E ticket) 增加 'fact_forcing_4_level' 校验项 | EKET Verification 只有 L1/L2 级 (L1 文件存在, L2 bash 命令). KALLAX Fact-Forcing 5-Level 是 KALLAX 5 维独有优势之一, 跟 worktree/heartbeat 配套, 不可伪造.",
     "actual_expert": null
   },
   {

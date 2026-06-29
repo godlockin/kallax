@@ -19,7 +19,7 @@
 
 | 痛点 | KALLAX (含 EKET 借鉴) | MetaGPT | AutoGen (Magentic-One) | LangGraph | CrewAI | 业内综合 |
 |---|---|---|---|---|---|---|
-| **1 假装完成** | **90%** (4-Level + 3 anti-fab + 8 教训) | 30% (QaEngineer 角色 + SOP 文档) | 60% (Orchestrator 自验证 + 终止条件) | 30% (需自写 verification node) | 70% (Task guardrails + auto-retry) | 50% |
+| **1 假装完成** | **90%** (5-Level + 3 anti-fab + 8 教训) | 30% (QaEngineer 角色 + SOP 文档) | 60% (Orchestrator 自验证 + 终止条件) | 30% (需自写 verification node) | 70% (Task guardrails + auto-retry) | 50% |
 | **2 上下文失忆** | **85%** (3 模式 + decision-gate + handoff) | 10% (仅 token 截断) | 50% (Progress Ledger + TokenUsage 终止) | 95% (Checkpoint 时间旅行) | 70% (respect_context_window + memory) | 56% |
 | **3 角色越界** | **90%** (ROLE-RULES + decision-gate + block 5 + danger 3) | 10% (Role 定义无权限矩阵) | 50% (Swarm handoffs + parallel_tool_calls) | 40% (Supervisor 路由, 无强制 ACL) | 40% (allow_delegation, 无严格 ACL) | 35% |
 | **4 资源覆盖** | **85%** (worktree + file-scope + project-level-data-isolation) | 10% (共享 workspace 无隔离) | 40% (async runtime 隔离, 非强制) | 60% (Subgraph + Send() fan-out) | 30% (async 原生, 无资源锁) | 35% |
@@ -28,7 +28,7 @@
 
 ### 1.2 KALLAX 优势项 (领先业内 30+ 分)
 
-- **痛点 1 (假完成)**: KALLAX 90% vs 业内 50% — 4-Level Fact-Forcing 独立验证层, 业内 4 框架均依赖 agent 自验证, 跟 KALLAX EPIC-024/028 51125b9/6563362/33cfc48 教训同源
+- **痛点 1 (假完成)**: KALLAX 90% vs 业内 50% — 5-Level Fact-Forcing 独立验证层, 业内 4 框架均依赖 agent 自验证, 跟 KALLAX EPIC-024/028 51125b9/6563362/33cfc48 教训同源
 - **痛点 3 (角色越界)**: KALLAX 90% vs 业内 35% — ROLE-RULES + decision-gate block 5 类 + danger 3 类, 业内 4 框架均靠 prompt 约定无强制
 - **痛点 4 (资源覆盖)**: KALLAX 85% vs 业内 35% — worktree + file-scope 强制声明, 业内 4 框架均共享 workspace 或靠开发者自建
 - **痛点 5 (安全立体)**: KALLAX 80% vs 业内 31% — 9-pass redaction + 3 轮 20 issue 叠加, 业内均需自建
@@ -49,14 +49,14 @@
 
 | 框架 | 机制 | 覆盖度 | 残余风险 |
 |---|---|---|---|
-| **KALLAX** | 4-Level Fact-Forcing (L1存在/L2实质/L3接线/L4数据流动) + 3 anti-fab 工具 (kpi-precision / test-case-isolation / scope-creep) + Rule 9d/9e + Rule 11 v2.1 强验证 | **90%** | 工具层 Edit tool bash multi-line bug, 8 次 KPI falsification 反复教训 (跟主公原话"假装完成" 完全对应) |
+| **KALLAX** | 5-Level Fact-Forcing (L1存在/L2实质/L3接线/L4数据流动) + 3 anti-fab 工具 (kpi-precision / test-case-isolation / scope-creep) + Rule 9d/9e + Rule 11 v2.1 强验证 | **90%** | 工具层 Edit tool bash multi-line bug, 8 次 KPI falsification 反复教训 (跟主公原话"假装完成" 完全对应) |
 | **MetaGPT** | QaEngineer 角色 + SOP 文档中间产物 (PRD/design) 可供核查 | 30% | 验证角色本身可能撒谎, 无独立验证层 |
 | **AutoGen** | Magentic-One Orchestrator 维护 Progress Ledger, 每步 self-reflect; HandoffTermination/TokenUsageTermination 等组合 | 60% | Orchestrator 自验证 (单 agent 自检), 无独立验证层 |
 | **LangGraph** | `code_check` node / `grade_generation` conditional edge 等 pattern, Self-RAG hallucination check | 30% | 全需开发者自写 node, 无原生 verification framework |
 | **CrewAI** | Task guardrails (function/LLM-based) + 自动 retries (`guardrail_max_retries`) | 70% | 仅防"输出格式不对", 不防"完成度虚假" |
 
 **KALLAX 优势根因**:
-- EKET 共识#2 (EPIC-021) 暴露自审弱, KALLAX 转"独立验证层" (4-Level)
+- EKET 共识#2 (EPIC-021) 暴露自审弱, KALLAX 转"独立验证层" (5-Level)
 - 8 次 KPI falsification 反复教训 (51125b9/6563362/33cfc48/EPIC-031 3 amend/Phase 1/Phase 5/Phase 6/EPIC-034) 沉淀 → Rule 9d/9e/11 v2.1 三层防御
 - 跟 EKET 借鉴: EKET P0-3 verification-matters.md 直接对应
 
@@ -186,14 +186,14 @@
 |---|---|---|
 | EKET 2 视角 (interactive:start) | → KALLAX 3 模式 (ai-auto/ai-copilot/manual) + decision-gate | +1 模式 + decision 结构化 |
 | EKET workspace 弱 | → KALLAX worktree + file-scope 强制 + isolation:check | 强 8 倍 |
-| EKET 自审弱 (共识#2) | → KALLAX 4-Level Fact-Forcing + 3 anti-fab 工具 | 强 3 倍 |
+| EKET 自审弱 (共识#2) | → KALLAX 5-Level Fact-Forcing + 3 anti-fab 工具 | 强 3 倍 |
 | EKET AuditMiddleware (P0-7) | → KALLAX 9-pass redaction + 3 轮审查 20 issue | 强 2 倍 |
 | EKET 1+1 容量 | → KALLAX 1+2 容量 + 派发权 60→80% AI 渐进 | 容量 +50% + 派发权 +33% |
 
 **EKET 借鉴整体完成率**: 26 项 (P0 9/9 done + P1 1/8 + P2 0/8) = **38.5%**
 
 **EPIC-021 12 共识超越点** (KALLAX 领先 EKET 之处):
-1. 独立验证层 (KALLAX 4-Level vs EKET 自审)
+1. 独立验证层 (KALLAX 5-Level vs EKET 自审)
 2. file-scope 强制 (KALLAX vs EKET workspace 弱)
 3. Token Plan cap 主动管理 (KALLAX 撞墙 3 次记录 vs EKET 无)
 4. Performer 工具调用自验证 (Rule 9e vs EKET 无)
@@ -259,7 +259,7 @@
 
 | # | 主公原话痛点 | KALLAX 答案 (深度) | 残余 Gap (主公拍战略) |
 |---|---|---|---|
-| **1** | agent 假装完成实际只做一部分甚至只有个开头 | ✅ **90% 解决** (4-Level + 3 anti-fab + Rule 9d/9e/11 v2.1 强验证 + 8 次 KPI falsification 反复教训沉淀) | ⚠️ Edit tool bash multi-line bug 工具层没根除, Master 强验证是 workaround |
+| **1** | agent 假装完成实际只做一部分甚至只有个开头 | ✅ **90% 解决** (5-Level + 3 anti-fab + Rule 9d/9e/11 v2.1 强验证 + 8 次 KPI falsification 反复教训沉淀) | ⚠️ Edit tool bash multi-line bug 工具层没根除, Master 强验证是 workaround |
 | **2** | 上下文窗口有限, agent 做了一部分就忘了自己的初衷 | ✅ **85% 解决** (3 模式 + decision-gate + cross-epic 综合主题 8 节 + handoff.json + 1+2 容量) | ⚠️ Token Plan 5h cap 撞墙 3 次未升 + 缺 LangGraph 式 Checkpoint 时间旅行 (落后 10 分) |
 | **3** | 角色越界, 一会 agent 做事, 一会主 session 做事, 混在一起相互影响 | ✅ **90% 解决** (ROLE-RULES + stage-gate + decision-gate block 5 类 + danger 3 类 + Rule 11 v2 Master 写代码禁令) | ⚠️ Master 自审边界 (Rule 11 极端情况) 4 已知事件是边界 case, 主公拍板才有例外 |
 | **4** | 多个 agent 在做不同的事的时候改到了公共的资源, 相互覆盖 | ✅ **85% 解决** (worktree 强制隔离 + file-scope 声明 + isolation:check 派发前验证 + project-level-data-isolation) | ⚠️ 跨 worktree 派单 friction (Phase 5 模式 G) 待派单脚本优化 |
@@ -269,7 +269,7 @@
 
 | 主公原话痛点 | KALLAX 自研 | EKET 借鉴 |
 |---|---|---|
-| 1 假装完成 | 4-Level + 3 anti-fab + Rule 9d/9e/11 v2.1 | P0-3 verification-matters.md (直接对应) |
+| 1 假装完成 | 5-Level + 3 anti-fab + Rule 9d/9e/11 v2.1 | P0-3 verification-matters.md (直接对应) |
 | 2 上下文失忆 | 3 模式 + decision-gate + handoff | EKET 2 视角 (interactive:start 简化版) |
 | 3 角色越界 | ROLE-RULES + stage-gate + decision-gate + Rule 11 v2 | EKET 2 视角 (升级到 3 模式) |
 | 4 资源覆盖 | worktree + file-scope + project-level-data-isolation | EKET workspace 弱 (共识#5, 升级到强制) |
@@ -337,5 +337,5 @@
 - [background-agent-hallucination.md](../memory/lessons/background-agent-hallucination.md) (痛点 1 教训)
 - [project-level-data-isolation.md](../memory/lessons/project-level-data-isolation.md) (痛点 4 教训)
 - [multi-agent-collab-failures.md](../memory/lessons/multi-agent-collab-failures.md) (痛点 4 教训)
-- [verification-matters.md](../memory/lessons/verification-matters.md) (4-Level Fact-Forcing 表格)
+- [verification-matters.md](../memory/lessons/verification-matters.md) (5-Level Fact-Forcing 表格)
 - [CLAUDE.md](../../CLAUDE.md) (Rule 1-13 + 9e + 11 v2.1)

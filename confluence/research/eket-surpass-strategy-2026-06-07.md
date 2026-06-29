@@ -25,12 +25,12 @@
 
 ## 1. 战略核心 (1 句话)
 
-> **KALLAX = Persona × Multi-Agent Runtime × Fact-Forcing 4-Level**
+> **KALLAX = Persona × Multi-Agent Runtime × Fact-Forcing 5-Level**
 >
 > EKET 是 **「声明式 persona」(写好配置文件就完事)**, KALLAX 是 **「执行式 persona」(persona 嵌入运行时 — worktree/ticket/heartbeat/2-Group review/4 级验证)**
 >
 > EKET 的护城河是工程化质量门禁 (anatomy check + codemod),
-> KALLAX 的护城河是 **运行时约束 (worktree + heartbeat + 4-Level Fact-Forcing + 2-Group review)** — 静态文档无法伪造"已验证"。
+> KALLAX 的护城河是 **运行时约束 (worktree + heartbeat + 5-Level Fact-Forcing + 2-Group review)** — 静态文档无法伪造"已验证"。
 
 **用户决策 (2026-06-07 拍板)**:
 - **专家数量 = 7** (非 5): 5 现有 + Security (系统风险) + PM/Conductor (任务规划+ensuring). 7 维覆盖: 业务价值/技术实现/风险和漏洞/交互和使用/可实现性/任务规划+ensuring/前端实现
@@ -49,7 +49,7 @@
 | **Worktree 隔离** | 无此概念 | `.kallax/worktrees/performer-<TICKET>` | persona 文件的 `worktree_path` + `isolation_domain` |
 | **Ticket-Driven Scope** | persona 不知道自己负责哪段代码 | `jira/tickets/EPIC-XXX/expert.yaml` | persona ↔ ticket 双向引用, file_scope 写死边界 |
 | **2-Group Review** | 无 review 机制, 靠自觉 | A (forward) + B (attack) + master 仲裁 | persona 文件 `review_group: A\|B\|AB` 字段, 强制双 review |
-| **Fact-Forcing 4-Level** | 只有 L1/L2 bash 命令 | L1存在/L2实质/L3接线/L4数据流 | persona 文件嵌入 `Fact-Forcing Compliance` 4 checkbox 节 |
+| **Fact-Forcing 5-Level** | 只有 L1/L2 bash 命令 | L1存在/L2实质/L3接线/L4数据流 | persona 文件嵌入 `Fact-Forcing Compliance` 4 checkbox 节 |
 
 **关键洞察**: EKET 的 5 个弱项(决策树/北极星/version/output_format 不一致/200+ 无 review), 加上 KALLAX 这 5 维 = 10 个维度, 才是 KALLAX 真正的"超越空间"。
 
@@ -120,9 +120,9 @@ output_format: |
 
 **超越点**: KALLAX 4 节统一 = Master 拿到任何专家输出 = 期望格式一致 = 汇总成本低 50%。
 
-#### 4. Fact-Forcing 4-Level 嵌入 persona (Architect 独家)
+#### 4. Fact-Forcing 5-Level 嵌入 persona (Architect 独家)
 
-EKET 只有 bash Verification (L1/L2 级)。KALLAX 嵌入 4-Level:
+EKET 只有 bash Verification (L1/L2 级)。KALLAX 嵌入 5-Level:
 
 ```yaml
 # .kallax/experts/default/performer.md 新增节
@@ -133,7 +133,7 @@ EKET 只有 bash Verification (L1/L2 级)。KALLAX 嵌入 4-Level:
 - [ ] L4_数据流动: 集成测试 npm test 通过, 覆盖率不下降
 ```
 
-**超越点**: EKET Verification = 静态命令; KALLAX 4-Level = 完整 4 层事实证据, **不可伪造**。
+**超越点**: EKET Verification = 静态命令; KALLAX 5-Level = 完整 4 层事实证据, **不可伪造**。
 
 #### 5. anatomy check 自动化 (Backend 独家)
 
@@ -271,7 +271,7 @@ Layer 1 (Sprint 4, 本周, 6h)
 ├─ #1 KALLAX 专属字段 (写 5 persona 文件)
 ├─ #2 症状决策树 (新 INDEX.md)
 ├─ #3 output_format 4 节统一
-├─ #4 Fact-Forcing 4-Level 嵌入
+├─ #4 Fact-Forcing 5-Level 嵌入
 ├─ #5 anatomy check 脚本
 └─ #6 Heartbeat expert_invocations 扩展
 
@@ -297,7 +297,7 @@ Layer 3 (Sprint 10+, 1 月, 8h)
 | **EPIC-021-A** `experts/default/{architect,backend,frontend,ux,product,security,pm}.md` **7** 文件, KALLAX 专属字段 | 新建 7 文件 | 1.8h | 无 |
 | **EPIC-021-B** `experts/INDEX.md` 症状决策树 + 10 emoji (7 核心 + 3 治理) | 新建 1 文件 | 0.5h | A |
 | **EPIC-021-C** output_format 4 节统一 (改 A 7 文件) | 改 7 文件 | 0.4h | A |
-| **EPIC-021-D** Fact-Forcing 4-Level 嵌入 (改 A 7 文件) | 改 7 文件 | 0.4h | A |
+| **EPIC-021-D** Fact-Forcing 5-Level 嵌入 (改 A 7 文件) | 改 7 文件 | 0.4h | A |
 | **EPIC-021-E** `scripts/check-skill-anatomy.sh` KALLAX 专属 6+ 项校验 | 新建 1 脚本 | 0.6h | A |
 | **EPIC-021-F** `state.json` expert_invocations + 降级链 (Redis→SQLite→file) | 改 state.json + heartbeat-daemon + new queue 脚本 | 1.5h | 无 |
 

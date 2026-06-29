@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# tests/integration/decision-gate-test.sh — decision-gate 复杂才问 4-Level 测试
+# tests/integration/decision-gate-test.sh — decision-gate 复杂才问 5 levels 测试
 # 跟 Rule 33 联合 (decision-gate 复杂才问 软限制落地)
-# 跟 4-Level Fact-Forcing L1-L4 联合
+# 跟 5 levels Fact-Forcing L1-L4 联合
 
 set -euo pipefail
 
@@ -13,7 +13,7 @@ STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
 TEST_DIR="${KALLAX_ROOT}/.kallax/audit/test.$$"
 
 echo "=========================================="
-echo "Decision-Gate Complex-Only Test (4-Level)"
+echo "Decision-Gate Complex-Only Test (5 levels)"
 echo "=========================================="
 
 # Setup

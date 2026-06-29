@@ -132,11 +132,11 @@
 - **9-hard-rules.md 同文档 4 处 自相矛盾** (line 12 "20" vs 14 "22" vs 19 "22" vs 17 "20")
 - 跟 9-compliance.md R1-R3 联合 (file:line `9-compliance.md:55-69`) — 1/3 = 33.3% 跨文档 一致性 (FAIL)
 - file:line 索引 失准 13-61 行 (3/18 = 16.7% 准确率, FAIL)
-- 2 套 9 Hard Rules 模式 并行 (CLAUDE.md 9 类别 group vs 9-hard-rules.md eket §6 1:1) — 跟"借方法论 不借代码" 战略 矛盾
+- 2 套 5 levels 模式 并行 (CLAUDE.md 9 类别 group vs 9-hard-rules.md eket §6 1:1) — 跟"借方法论 不借代码" 战略 矛盾
 
 ### 5.3 治根
 - 跟"诚实修正" 战略 联合 0 隐藏 — 跨 release 留待 文档化 (跟 9-compliance.md Rec 1-5 联合)
-- 跟"独立" 战略 联合 master explicit 后续 拍 "1 套 9 Hard Rules 模式 + 1 套 20 Rule 索引" 收口
+- 跟"独立" 战略 联合 master explicit 后续 拍 "1 套 5 levels 模式 + 1 套 20 Rule 索引" 收口
 - 跟"翻篇&精进" 战略 联合 0 增 Rule 0 增 命令 持平 — Rec 1 实施 0 增 Rule 0 删 Rule 0 净价值 损失
 
 ---
@@ -192,7 +192,7 @@
 - **`docs/process/9-hard-rules.md:14`**: "**22 Rule** 现状" ← **同 doc line 12 vs 14 自相矛盾 (差 2 行)**
 - **`docs/process/9-hard-rules.md:17`**: "**20 Rule** 联合" (跟 12 一致)
 - **`docs/process/9-hard-rules.md:19`**: "**22 Rule** → 9 类别" ← **同 doc line 17 vs 19 自相矛盾 (差 2 行)**
-- **`docs/process/9-hard-rules.md:187`**: "9 Hard Rules 跟 KALLAX **22 Rule** 不再 1:1 适配"
+- **`docs/process/9-hard-rules.md:187`**: "5 levels 跟 KALLAX **22 Rule** 不再 1:1 适配"
 - **`docs/process/9-hard-rules.md:206`**: "**22 Rule → 9 类别 group 整合 = 22/22 = 100.0%**"
 - **`docs/process/9-hard-rules.md:219`**: "**22 Rule** 仍 落地"
 - **`docs/process/9-hard-rules.md:223`**: "**22 Rule → 9 类别 group = 22/22 = 100.0%**"

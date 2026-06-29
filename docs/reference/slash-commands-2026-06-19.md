@@ -181,7 +181,7 @@ Use these when you are a **Conductor** orchestrating Performers and merging PRs.
 
 ---
 
-### `/kallax-review-pr` — Review a pull request (4-Level Gate Review)
+### `/kallax-review-pr` — Review a pull request (5 levels Gate Review)
 
 | Field | Value |
 |---|---|
@@ -195,7 +195,7 @@ Use these when you are a **Conductor** orchestrating Performers and merging PRs.
 | **Related** | `/kallax-verify-pr`, `/kallax-merge` |
 | **Source** | `.claude/commands/kallax-review-pr.sh` |
 
-**4-Level Gate breakdown**:
+**5 levels Gate breakdown**:
 1. **Preflight** — file scope overlap check (worktree isolation)
 2. **Architecture** — CLAUDE.md Rule compliance, no anti-patterns
 3. **Security** — secrets scan, auth/authz check
@@ -205,7 +205,7 @@ Use these when you are a **Conductor** orchestrating Performers and merging PRs.
 
 ---
 
-### `/kallax-verify-pr` — Verify PR output before merge (4-Level Fact-Forcing)
+### `/kallax-verify-pr` — Verify PR output before merge (5 levels Fact-Forcing)
 
 | Field | Value |
 |---|---|
@@ -219,7 +219,7 @@ Use these when you are a **Conductor** orchestrating Performers and merging PRs.
 | **Related** | `/kallax-review-pr`, `/kallax-merge` |
 | **Source** | `.claude/commands/kallax-verify-pr.sh` |
 
-**4-Level Fact-Forcing** (跟 Master 强验证 6 维度 联合):
+**5 levels Fact-Forcing** (跟 5 levels (L1-L5) 联合):
 - L1 — Existence: files exist in git diff
 - L2 — Substance: real logic, not stubs (no `TODO` in critical paths)
 - L3 — Wiring: correct imports/exports, type compatibility

@@ -46,12 +46,12 @@
 
 | 框架 | 解决程度 | 证据 |
 |---|---|---|
-| **KALLAX** | **95%** (REV1: 90%) | ✅ 4-Level Fact-Forcing (L1/L2/L3/L4) + 3 anti-fab 工具 (test-case-isolation + kpi-precision + scope-creep) + 10 KPI falsification 反复模式 + Master 强验证 6 维度 (Rule 11 v2.1) + 12 subagent 强验证累计 7 真 PASS + 2 假 PASS 第 9/10 次 (Performer-EPIC-036/037) + Rule 18 KPI falsification 反模式黑名单 + 11 边界事件 (BE-1 ~ BE-11) 累计升级 |
+| **KALLAX** | **95%** (REV1: 90%) | ✅ 5-Level Fact-Forcing (L1/L2/L3/L4) + 3 anti-fab 工具 (test-case-isolation + kpi-precision + scope-creep) + 10 KPI falsification 反复模式 + 5 levels (L1-L5) (Rule 11 v2.1) + 12 subagent 强验证累计 7 真 PASS + 2 假 PASS 第 9/10 次 (Performer-EPIC-036/037) + Rule 18 KPI falsification 反模式黑名单 + 11 边界事件 (BE-1 ~ BE-11) 累计升级 |
 | EKET | 60% | 知识沉淀 L0-L4 + Phase 1+2+3 review, 但缺反模式黑名单 |
-| MetaGPT | 50% | SOP-based 流程有标准验收, 但缺 4-Level Fact-Forcing |
+| MetaGPT | 50% | SOP-based 流程有标准验收, 但缺 5-Level Fact-Forcing |
 | AutoGen | 40% | Human-in-the-loop 可发现, 但缺 anti-fab 工具 |
 | LangGraph | 55% | Checkpoint 模式可恢复, 但缺 KPI 验证 |
-| CrewAI | 45% | 角色分工可追溯, 但缺 4-Level |
+| CrewAI | 45% | 角色分工可追溯, 但缺 5-Level |
 
 **KALLAX 领先**: **35-50 分** (跟 10 KPI falsification 反复模式 + 11 BE 累计 升级)
 
@@ -169,8 +169,8 @@
 |---|---|
 | **12 subagent 强验证 6 维度** | 业内 0 强验证 |
 | **11 BE 累计** (跟 8 试反复 + 10 KPI falsification + 6 痛点 联合) | 业内 0-1 BE |
-| **Master 强验证 6 维度** (Rule 11 v2.1) | 业内 0 强验证 |
-| **4-Level Fact-Forcing** | 业内 0-1 Level |
+| **5 levels (L1-L5)** (Rule 11 v2.1) | 业内 0 强验证 |
+| **5-Level Fact-Forcing** | 业内 0-1 Level |
 | **3 anti-fab 工具** (pre-commit 强制) | 业内 0 anti-fab |
 
 ---

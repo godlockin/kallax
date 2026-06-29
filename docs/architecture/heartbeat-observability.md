@@ -16,7 +16,7 @@ Heartbeat 是 KALLAX 协作体系的**生命体征**。它不止于"实例还活
 1. **心跳 5 问** — Master / Conductor / Performer 每个节点必须主动应答的 5 个状态问题 (跟 `docs/PROCESS.md:25-26` 联合, 跟 AGENTS.md `Heartbeat Protocol (5 Questions)` 联合)
 2. **Observability 3 层** — Span 记录 → 持久化 → 实时推送 (跟 CLAUDE.md §8 "Observable by Design" 联合, 0 简单 console.log)
 
-跟"反哺框架"战略 联合: 不是把观察结果**简单记录**, 而是让其**回流到框架** — 5 问的答案写入派遣 Checklist, 3 层输出写入 Rule 9 4-Level Fact-Forcing, 0 沉睡文档.
+跟"反哺框架"战略 联合: 不是把观察结果**简单记录**, 而是让其**回流到框架** — 5 问的答案写入派遣 Checklist, 3 层输出写入 Rule 9 5 levels Fact-Forcing, 0 沉睡文档.
 
 ---
 

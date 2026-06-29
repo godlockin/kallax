@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # /kallax-review-pr — Review a pull request (Conductor only).
-# Runs the 4-Level Gate Review: preflight (file scope) -> architecture
+# Runs the 5 levels Gate Review: preflight (file scope) -> architecture
 # (CLAUDE.md Rule compliance) -> security (secrets / authz) ->
 # performance (N+1 / premature optimization). Then prompts the
 # Conductor to choose approve / comment / request changes / reject.
@@ -11,7 +11,7 @@ source "${SCRIPT_DIR}/_kallax_common.sh"
 
 if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
   show_help <<'EOF'
-/kallax-review-pr — Review a pull request (4-Level Gate Review)
+/kallax-review-pr — Review a pull request (5 levels Gate Review)
 
 USAGE:
   /kallax-review-pr [PR_NUMBER] [BASE_BRANCH]
@@ -21,7 +21,7 @@ ARGS:
   BASE_BRANCH       Target branch (default: main).
 
 DESCRIPTION:
-  Runs the 4-Level Gate Review: preflight (file scope) -> architecture
+  Runs the 5 levels Gate Review: preflight (file scope) -> architecture
   (CLAUDE.md Rule compliance) -> security (secrets / authz) ->
   performance (N+1 / premature optimization). Then prompts the
   Conductor to choose approve / comment / request changes / reject

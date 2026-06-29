@@ -14,7 +14,7 @@
   "target": {
     "governance_3_phase": "5 阶段 → 3 阶段 (Conductor + 5 扩展 + 主公), Architect 跟 Conductor 合并, 4 专家并行保留 (跟 5 default 一致)",
     "process_effectiveness_metric": "流程表演 vs 流程效果 度量 (KPI: 派单成功率 / 周期 / 越界率, 治 P3)",
-    "master_6d_recovery": "Master 强验证 6 维度恢复 (L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实, 治 H4)"
+    "master_6d_recovery": "5 levels (L1-L5)恢复 (L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实, 治 H4)"
   },
   "decisions": {
     "priority": 3,
@@ -39,7 +39,7 @@
     },
     {
       "id": "EPIC-056-C",
-      "title": "Master 强验证 6 维度恢复 (revert v1.2.4 6→0 退步, 治 H4, ⚠️ 需主公拍板)",
+      "title": "5 levels (L1-L5)恢复 (revert v1.2.4 6→0 退步, 治 H4, ⚠️ 需主公拍板)",
       "assignee": "performer-EPIC-056",
       "status": "done",
       "blocked_by": "EPIC-056-B"

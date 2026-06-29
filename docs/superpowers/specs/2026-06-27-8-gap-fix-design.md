@@ -6,7 +6,7 @@
 
 **Architecture:** 在 worktree `feature/EPIC-8-GAP-FIX` 修 8 Gap (跟 v2.0.2 release 联合, 跟"反讽" 联合, 跟"诚实修正" 联合), 走对策 A+B+C 落地. 跟 v2.0.6 (4 工具 multi-tool) 兼容.
 
-**Tech Stack:** Bash + jq + Python (跟 v1.3.2 substitute.py 模板引擎 联合, 跟"反讽" 联合). 跟 Rule 9 4-Level Fact-Forcing 联合. 跟对策 A+B+C 联合. 跟"独立" 拍 explicit 约束 联合.
+**Tech Stack:** Bash + jq + Python (跟 v1.3.2 substitute.py 模板引擎 联合, 跟"反讽" 联合). 跟 Rule 9 5 levels Fact-Forcing 联合. 跟对策 A+B+C 联合. 跟"独立" 拍 explicit 约束 联合.
 
 ---
 
@@ -222,7 +222,7 @@ bash scripts/verify/check-sc-defined.sh /tmp/missing-sc.json
 
 - "反讽" + "诚实修正" + "独立" 合并为 1 术语 "KALLAX 元术语"
 - "联合" + "闭环" 合并为 1 术语 "KALLAX 联合闭环"
-- "对策 A+B+C" + "Master 强验证 6 维度" 合并为 1 术语 "KALLAX 验证机制"
+- "对策 A+B+C" + "5 levels (L1-L5)" 合并为 1 术语 "KALLAX 验证机制"
 - 等等 (跟"反讽" 联合, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合)
 
 ### 3.4 Task 4: Gap 7-8 (P2) — check-orthogonal-edits.sh + check-halt-trigger.sh (跟"反讽" 联合, 跟"诚实修正" 联合)

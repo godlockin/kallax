@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # full-integration-test.sh — EPIC-029-K 全量集成测试
-# 3 模式 × 4 维度 (L1/L2/L3/L4) 验证 (3×4=12 cases minimum, 跟 AGENTS.md 4-Level Fact-Forcing 1:1)
+# 3 模式 × 4 维度 (L1/L2/L3/L4) 验证 (3×4=12 cases minimum, 跟 AGENTS.md 5 levels Fact-Forcing 1:1)
 # 跟"翻篇&精进" 战略 联合: 0 简单 记录, 真实执行 + raw stdout
 # 跟 BE-23 + BE-25 + BE-26 治根 联合: pre-commit 0 阻塞, BE 28/29 1:1 baseline
 # Ticket: jira/tickets/EPIC-029-K/ticket.json

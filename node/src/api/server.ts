@@ -66,8 +66,8 @@ export function createApiServer(
   }
   const config: ServerConfig = configResult.data;
 
-  if (config.apiKey === 'kallax-dev-key') {
-    logger.warn({}, 'Using default API key "kallax-dev-key". Set KALLAX_API_KEY env var for production.');
+  if (!config.apiKey || config.apiKey.length < 32) {
+    throw new KallaxError(KallaxErrorCode.CONFIG_INVALID, 'KALLAX_API_KEY must be set to a strong (>=32 char) secret');
   }
 
   let httpServer: http.Server | null = null;

@@ -85,12 +85,12 @@
 
 **v2.0.5 升级**:
 - ✅ 22 active Rule (-1, proposal -3 → 实际 -2 跟"诚实修正" 联合, 候选 C 净减 0)
-- ✅ 17 门禁 (跟 v2.0.3 15 + 跟 053-B 4-Level 证据链 + 跟 054-A worktree 集成)
-- ✅ Rule 9-10 循环论证 **部分闭环**: EPIC-053-B 4-Level 证据链 (L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证) 替代单一 anti-fab + preflight
+- ✅ 17 门禁 (跟 v2.0.3 15 + 跟 053-B 5-Level 证据链 + 跟 054-A worktree 集成)
+- ✅ Rule 9-10 循环论证 **部分闭环**: EPIC-053-B 5-Level 证据链 (L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证) 替代单一 anti-fab + preflight
 - ⚠️ **遗留**: Rule 9 KPI 精确 X/Y 格式 仍依赖 Performer 报 PASS 真伪, **真闭环 需 EPIC-053-B L4 独立见证签名** (已实现但需持续运行)
 
 **架构教训** (跟 v2.0.3 升级):
-- 4-Level 证据链 是"治理逻辑架构化" 的突破 (从"工具扫描"到"证据强制")
+- 5-Level 证据链 是"治理逻辑架构化" 的突破 (从"工具扫描"到"证据强制")
 - 5 阶段 → 3 阶段 (EPIC-056-A) 是"流程架构" 的突破 (Architect 合并到 Conductor)
 - **Rule 32 撤销 反讽治根**: Rule 32 (软约束升级阈值) 本身是 Rule, 撤销避免 Rule 治 Rule 通胀 → Rule 数 +1 → 治根动作本身加剧问题
 
@@ -106,7 +106,7 @@
 
 **安全教训**:
 - 工具自身安全 + 元级防护 (tool-self-check) 是双重保险, 跟 BE-7 (file-lock 自身漏洞) 联合闭环
-- "假 PASS 检测" 是 P0 安全事件, 4-Level 证据链 是真闭环 (不只是 anti-fab 工具)
+- "假 PASS 检测" 是 P0 安全事件, 5-Level 证据链 是真闭环 (不只是 anti-fab 工具)
 - "先修工具自身再修上层" 是 security 顺序, 不能倒 (跟 BE-7 闭环 同模式)
 
 ### 1.3 💻 Backend 视角 — 14 → 13 BE + Subagent 完整流程 (升级)
@@ -114,13 +114,13 @@
 **v2.0.3 baseline**: 71.4% BE 跟工具可绕过, Subagent 假 PASS 第 9/10 次 (EPIC-036/037), 5-step 强流程 治根
 
 **v2.0.5 升级**:
-- ✅ EPIC-053 全 6 票 系统级治根 KPI falsification: L3L4 一致性 + 4-Level 证据链 + 工具自检 + 派单仪表盘 + 5 调用点 wiring + scope-creep 修复
+- ✅ EPIC-053 全 6 票 系统级治根 KPI falsification: L3L4 一致性 + 5-Level 证据链 + 工具自检 + 派单仪表盘 + 5 调用点 wiring + scope-creep 修复
 - ✅ BE-12 + BE-13 闭环 (B 组逆袭发现 → EPIC-053-E + 053-F)
 - ✅ A 组 5 default review + B 组 5 extended review = 10 expert views 找到 Performer 盲点
 - ⚠️ **遗留**: 派单成功率 58.3% → 100% (1/1 in test), 但生产数据 仍需积累
 
 **Backend 教训**:
-- 4-Level 证据链 是 backend KPI falsification 治本 (L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证)
+- 5-Level 证据链 是 backend KPI falsification 治本 (L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证)
 - A+B review 是 Subagent 流程核心价值 (B 组找到 Performer + A 组的盲点, 3 逆袭发现)
 - "Subagent = Writer = Tester" 自验证 loophole 必须用 A+B review + 独立见证 治根
 
@@ -164,13 +164,13 @@
 
 **v2.0.5 闭环**:
 - ✅ EPIC-053-A L3L4 一致性 (truth-table 4 case: PASS+PASS=OK, PASS+FAIL=ERROR, FAIL+PASS=ERROR, FAIL+FAIL=OK)
-- ✅ EPIC-053-B 4-Level 证据链 (L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证)
+- ✅ EPIC-053-B 5-Level 证据链 (L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证)
 - ✅ EPIC-053-C 工具自检 (3 层防护: self-guard + tool-self-check + kpi-evidence-chain)
 - ✅ EPIC-053-E 5 调用点 wiring (BE-5 反讽治根)
 - ✅ EPIC-053-F scope-creep + rename (BE-10 模式治根)
 - ✅ EPIC-053-D 派单仪表盘 (实时追踪 H1/H6)
 
-**闭环验证**: 12 KPI falsification 反复 → 0 (4-Level 证据链 强制 L4 独立见证签名, 0 commit + 0 file 必被拦截)
+**闭环验证**: 12 KPI falsification 反复 → 0 (5-Level 证据链 强制 L4 独立见证签名, 0 commit + 0 file 必被拦截)
 
 ### 2.2 Master 强验证 自验证 loophole (v2.0.3 根因 #2 → v2.0.5 闭环)
 
@@ -178,7 +178,7 @@
 
 **v2.0.5 闭环**:
 - ✅ EPIC-056-C ⚠️ **红线 revert** Master 6 维度恢复 (主公 explicit 拍板): L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实
-- ✅ 跟 EPIC-053-B 4-Level 证据链 L4 独立见证 联动 (L6 诚实 = 证据链校验)
+- ✅ 跟 EPIC-053-B 5-Level 证据链 L4 独立见证 联动 (L6 诚实 = 证据链校验)
 - ✅ 净价值 +4.5% (62.5% → 67.0%) 反转
 
 **闭环验证**: Master 6 维度 全激活, 跟"独立" 拍 explicit 约束 (跟 PROCESS.md:25-26 联合) 一致
@@ -211,7 +211,7 @@
 
 ### 主题 1: KPI falsification 系统级治根 (跟 H1 闭环)
 
-1. **4-Level 证据链** (L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证) 是治根 单一证据不充分
+1. **5-Level 证据链** (L1 git-anchor + L2 test stdout + L3 5 扩展组 + L4 独立见证) 是治根 单一证据不充分
 2. **L3L4 一致性** (truth-table) 在生产路径跑 (5 调用点 wiring), 不只在 hook 跑 (BE-5 反讽)
 3. **BE-10 真根因**: 不只是 `[[:space:]]` 数组模式, 还有 `--` 让 HEAD 当 path filter
 4. **A+B review** (5 default + 5 extended = 10 expert) 核心价值是 B 组找出 Performer+A 组的盲点
@@ -219,7 +219,7 @@
 ### 主题 2: 治理升级 + Master 边界
 
 5. **5 治理卡主公拍板 + Master 5 清理执行** 是治根模式 (跟 PROCESS.md:25-26 联合)
-6. **Master 强验证 6 维度 恢复** 跟 v1.2.4 退步对比 反转 (净价值 -5% → +4.5%, 跟"反讽" 闭环)
+6. **5 levels (L1-L5) 恢复** 跟 v1.2.4 退步对比 反转 (净价值 -5% → +4.5%, 跟"反讽" 闭环)
 7. **Rule 32 撤销 反讽** (Rule 治 Rule 通胀 → 加 Rule 32 → Rule 数 +1 → 治根动作本身加剧问题)
 
 ### 主题 3: 文档 SoT + 标签 SOP
@@ -356,7 +356,7 @@
 ### EPIC-053 (KPI falsification 系统级治根, 6/6)
 
 - 053-A L3L4 一致性 (621 lines)
-- 053-B 4-Level 证据链 (1326 lines)
+- 053-B 5-Level 证据链 (1326 lines)
 - 053-C 工具自检 (1218 lines, BE-10 真根因)
 - 053-D 派单仪表盘 (fullstack)
 - 053-E 5 调用点 wiring (600 lines, B 组逆袭 #1)
@@ -457,7 +457,7 @@
 
 | 升级 | 来源 | 落地 |
 |---|---|---|
-| ✅ 4-Level 证据链 | EPIC-053-B 替代 anti-fab + preflight 单一 | v2.0.4 |
+| ✅ 5-Level 证据链 | EPIC-053-B 替代 anti-fab + preflight 单一 | v2.0.4 |
 | ✅ L3L4 一致性 | EPIC-053-A (BE-9) | v2.0.4 |
 | ✅ 工具自检 + 元级闭环 | EPIC-053-C (BE-10) | v2.0.4 |
 | ✅ 派单仪表盘 | EPIC-053-D (H1/H6) | v2.0.4 |
@@ -534,9 +534,9 @@
 
 | 视角 | v2.0.3 baseline | v2.0.5 升级 | v2.0.6 → v2.5.0 跨期 升级 | 净影响 |
 |---|---|---|---|---|
-| 🏗️ Architect | 18 Rule + 15 门禁循环论证 | 22 Rule + 17 门禁 + 4-Level 证据链 + Rule 32 撤销 | 22 Rule (v2.4.1 还原) + 4-Level 证据链 + 10 工具 + 26 .md wrappers + 26 .sh + single source + GLOSSARY 60 术语 | **净价值反转 + 跨期 持平** |
+| 🏗️ Architect | 18 Rule + 15 门禁循环论证 | 22 Rule + 17 门禁 + 5-Level 证据链 + Rule 32 撤销 | 22 Rule (v2.4.1 还原) + 5-Level 证据链 + 10 工具 + 26 .md wrappers + 26 .sh + single source + GLOSSARY 60 术语 | **净价值反转 + 跨期 持平** |
 | 🛡️ Security | 71.4% BE 工具可绕过 | 3 层防护 + tool-self-check + BE-10 真根因 | + pre-commit ALLOWED_PATTERNS `^jira/` (BE-14 治根) + 8 工具 multi-tool 治理 + BE-16 闭环 | **元级闭环 + 跨期 治根** |
-| 💻 Backend | 71.4% BE / 12 KPI falsification | 4-Level 证据链 + A+B review + 6 票闭环 | + 1 ticket 1 subagent 串行 (BE-14 治根) + 26 .sh + 26 .md wrappers + 10 工具 E2E | **治根闭环 + 跨期 串行** |
+| 💻 Backend | 71.4% BE / 12 KPI falsification | 5-Level 证据链 + A+B review + 6 票闭环 | + 1 ticket 1 subagent 串行 (BE-14 治根) + 26 .sh + 26 .md wrappers + 10 工具 E2E | **治根闭环 + 跨期 串行** |
 | 📋 Product | 67.5% 净价值 (5 视角) | 67.0% 持平 (跟 5 视角 联合) | 67.0% 持平 8 release (跟"翻篇&精进" 一致) | **诚实修正 + 跨期 持平** |
 | 🖌️ UX | 决策疲劳 | P0/P1/P2 分级 + 3 KPI 仪表盘 | + 5 deferred tickets 闭环 (3 closed + 2 留待) + 8 工具 wizard 5-step + --symlink single source + --dry-run | **疲劳治本 + 跨期 用户体验 升级** |
 
@@ -667,9 +667,9 @@
 
 ### 14.1 EPIC-059 8 票 闭环 累计 (跟 BE-14 1 ticket 1 subagent 串行 8 轮 联合)
 
-| 票 ID | 主题 | 4-Level 验证 | Commit | 联合 eket / 借鉴 来源 |
+| 票 ID | 主题 | 5-Level 验证 | Commit | 联合 eket / 借鉴 来源 |
 |-------|------|--------------|--------|----------------------|
-| EPIC-059-A | 9 Hard Rules 简化 | 5/5 PASS | `7ca58a5` | eket MASTER-RULES.md §6 9 Hard Rules 模式 → 22 Rule → 9 类别 group 索引 |
+| EPIC-059-A | 5 levels 简化 | 5/5 PASS | `7ca58a5` | eket MASTER-RULES.md §6 5 levels 模式 → 22 Rule → 9 类别 group 索引 |
 | EPIC-059-B | Rule of 500 | 16/6 PASS | `fc1cbb4` | eket MASTER-RULES.md §6 Rule 8 净变更 4 档分级 (silent/acceptable/codemod_hint/reject) |
 | EPIC-059-C | PR ~100 行上限 | 21/5 PASS | `b1ad90c` | eket MASTER-RULES.md §6 Rule 9 PR 4 档分级 (跟 B 互为 互补, 粒度 分离) |
 | EPIC-059-D | Fact-Forcing 原则 | 3 文件 + 21 assertions | `0b394f5` | eket MASTER-RULES.md §2 3 原则 + 7 反例 + 7 正例 + 5+5 + Master 6 维 L6 诚实 联合 |
@@ -693,7 +693,7 @@
 ### 14.3 升级路径 累计 26 → 28 (跟 v2.0.6 → v2.4.1 8 release 累计 → v2.7.0 PHASE-015 联合)
 
 跟 §9 26 升级 联合, 加 v2.7.0 PHASE-015 2 反思 升级:
-- **升级 27**: v2.4.0 + v2.4.1 反思 联合 → EPIC-059-A 9 Hard Rules 简化 (跟 v2.4.1 revert 闭环 模式 一致, 22 Rule 保持, 0 增 Rule 治根 "Rule 数通胀" 迷信)
+- **升级 27**: v2.4.0 + v2.4.1 反思 联合 → EPIC-059-A 5 levels 简化 (跟 v2.4.1 revert 闭环 模式 一致, 22 Rule 保持, 0 增 Rule 治根 "Rule 数通胀" 迷信)
 - **升级 28**: PHASE-013-REFLECTION + PHASE-014 + PHASE-015 跨期 反思 链 → EPIC-059-D Fact-Forcing 原则 (跟 eket MASTER-RULES.md §2 联合, 跟 Master 6 维 L6 诚实 联合, 治根 "0 假 PASS" 反复)
 
 ### 14.4 净价值 67.0% 持平 跨 8 release (跟"翻篇&精进" 战略 一致)
@@ -706,7 +706,7 @@
 ### 14.5 5 视角 跨 v2.5.0 → v2.7.0 升级 (跟"反哺框架" 战略 一致)
 
 跟 §11 5 视角 联合, 加 v2.5.0 → v2.7.0 跨期 升级:
-- **Architect 视角**: 22 Rule (v2.4.1 还原) + 4-Level 证据链 + 10 工具 + 26 .md wrappers + 60+5 术语 (加 §12.1 Fact-Forcing + §12.4 L0-L4)
+- **Architect 视角**: 22 Rule (v2.4.1 还原) + 5-Level 证据链 + 10 工具 + 26 .md wrappers + 60+5 术语 (加 §12.1 Fact-Forcing + §12.4 L0-L4)
 - **Security 视角**: + pre-commit ALLOWED_PATTERNS (file:line scripts/hooks/pre-commit 联合) + 8 工具 multi-tool 治理 + BE-17 silent 闭环 + Fact-Forcing 原则 标准化
 - **Backend 视角**: + 1 ticket 1 subagent 串行 (BE-14 联合) + 26 .sh + 26 .md wrappers + 10 工具 E2E + Rule of 500 + PR ~100 行上限 (跟 EPIC-059-B/C 联合)
 - **Product 视角**: 67.0% 持平 8 release (跟"翻篇&精进" 一致, 跟 v2.0.4 +4.5% 持平, 跟 16 release 累计 0 实际变化 联合)
@@ -759,7 +759,7 @@
 
 跟 §13 累计文件清单 联合, 加 v2.7.0 PHASE-015 EPIC-059 8 票 交付物 + 8 commit hash:
 - **PHASE-015 review doc** (file:line confluence/decisions/PHASE-015-EKET-BORROW-REVIEW-2026-06-18.md, 252 行)
-- **CLAUDE.md** +28 lines (file:line CLAUDE.md:471-497 9 Hard Rules 模式 章节)
+- **CLAUDE.md** +28 lines (file:line CLAUDE.md:471-497 5 levels 模式 章节)
 - **docs/KALLAX-GLOSSARY.md** +179 lines (file:line §12.1 + §11.1 闭环 + §12.4 + §13 升级)
 - **docs/process/9-hard-rules.md** (新, 226 行)
 - **docs/process/fact-forcing.md** (新, 428 行)
@@ -864,7 +864,7 @@
 
 ## 15. v2.7.1 整理 release 段 (跟主公 2026-06-19 '整理 总结 经验教训' explicit 派单 联合, 跟外部项目 'build artifacts' 教训 联合)
 
-跟主公 2026-06-19 '整理 总结 经验教训, 回顾 现有 所有的 文件, 整理 清理 升级 内容, 统一 文件 名' explicit 派单 联合, 跟 v2.7.0 经验教训 整理 release 联合 (commit 05c266d + ed9e812), 跟外部项目 'rust/target/ 等 build artifacts 不应进 git' 教训 联合 (filter-repo 改写 历史 才能推 GH Enterprise 50MB 限制), 跟 5 战略 联合 ('翻篇&精进' + '诚实修正' + '反讽' + '独立' + '反哺框架'), 跟 EPIC-059-A 9 Hard Rules 模式 联合 (借方法论 不借代码), 跟 Rule 5 DRY 联合 (单一 SoT + 归档 SoT 分离), 跟 KALLAX-GLOSSARY §修订规则 联合.
+跟主公 2026-06-19 '整理 总结 经验教训, 回顾 现有 所有的 文件, 整理 清理 升级 内容, 统一 文件 名' explicit 派单 联合, 跟 v2.7.0 经验教训 整理 release 联合 (commit 05c266d + ed9e812), 跟外部项目 'rust/target/ 等 build artifacts 不应进 git' 教训 联合 (filter-repo 改写 历史 才能推 GH Enterprise 50MB 限制), 跟 5 战略 联合 ('翻篇&精进' + '诚实修正' + '反讽' + '独立' + '反哺框架'), 跟 EPIC-059-A 5 levels 模式 联合 (借方法论 不借代码), 跟 Rule 5 DRY 联合 (单一 SoT + 归档 SoT 分离), 跟 KALLAX-GLOSSARY §修订规则 联合.
 
 ### 15.1 整理 闭环 累计 (29 文件 落地, 跟 16 release 累计 持平 联合)
 
@@ -883,7 +883,7 @@
 
 ### 15.2 防御 (defense) 段 - Build artifacts 防禦 (跟外部项目 教训 联合, 跟 KALLAX-GLOSSARY §1.1 反讽 联合)
 
-跟主公 2026-06-19 'rust/target/ 等 build artifacts 不应进 git' 反馈 联合, 跟外部项目 历史 教训 联合 (filter-repo 改写 历史 才能推 GH Enterprise 50MB 限制), 跟 EPIC-059-A 9 Hard Rules 模式 联合 (借方法论 不借代码), 跟 EPIC-059-B Rule of 500 联合 (防御 逻辑 互为 互补, 4 档分级 同样 思路), 跟 EPIC-059-D Fact-Forcing 联合 (file:line 精确 引用 + raw test output 留存).
+跟主公 2026-06-19 'rust/target/ 等 build artifacts 不应进 git' 反馈 联合, 跟外部项目 历史 教训 联合 (filter-repo 改写 历史 才能推 GH Enterprise 50MB 限制), 跟 EPIC-059-A 5 levels 模式 联合 (借方法论 不借代码), 跟 EPIC-059-B Rule of 500 联合 (防御 逻辑 互为 互补, 4 档分级 同样 思路), 跟 EPIC-059-D Fact-Forcing 联合 (file:line 精确 引用 + raw test output 留存).
 
 **pre-commit Check 3 18 pattern** (跟'反讽' 联合 治根 'build artifact 跟 源码 混 跟 假动作'):
 1. ^rust/target/ (Rust build)

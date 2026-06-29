@@ -57,7 +57,7 @@
 2. **worktree**: 1 ticket 1 worktree 跨 release 累计 (跟 EPIC-054-A 模式 一致)
 3. **develop**: TDD (test first) 跟 v2.7.1 整理 release 联合
 4. **submit**: 1 PR 跟 raw test output 100% 联合 (跟 EPIC-059-D Fact-Forcing 联合)
-5. **review**: 4-Level Fact-Forcing 跟 Master 6 维 L1-L6 联合
+5. **review**: 5-Level Fact-Forcing 跟 Master 6 维 L1-L6 联合
 
 ### 2.3 心跳 5 问 (跟 PROCESS.md:25-26 联合, 跟"独立" 战略 联合 0 跨 session 拍板)
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # tests/integration/check-rule-of-500-test.sh — TDD tests for Rule of 500 (EPIC-059-B)
 # 跟 eket template/docs/MASTER-RULES.md §6 Rule 8 (Rule of 500) + Rule 9 (PR ~100 行) 联合
-# 借方法论 不借代码 (跟 EPIC-059-A 9 Hard Rules 模式 一致)
+# 借方法论 不借代码 (跟 EPIC-059-A 5 levels 模式 一致)
 #
 # Test cases (5):
 #   TC1: 净变更 100 行 → PASS (跟 EPIC-059-C PR ~100 行 联合, 期望 0 100 行 silent pass)

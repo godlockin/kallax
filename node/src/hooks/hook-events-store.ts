@@ -1,0 +1,256 @@
+/**
+ * KALLAX Hook Events Store — append-only audit log for hook executions.
+ *
+ * Writes hook events to .kallax/audit/hook-events.jsonl (one JSON object per line).
+ * Each entry contains a hash-chain compatible with Track A 武器 1 audit log sink.
+ *
+ * Format (JSONL, one entry per line):
+ *   {
+ *     "ts": "2026-06-29T12:00:00.000Z",
+ *     "seq": 42,                         // monotonic sequence number
+ *     "prevHash": "sha256:...",          // hash of previous entry (hash-chain)
+ *     "hash": "sha256:...",              // hash of this entry
+ *     "sessionId": "session-abc",
+ *     "hookType": "pre-tool-use",
+ *     "toolName": "Bash",
+ *     "resultCode": "allow|block|error",
+ *     "reason": "optional",
+ *     "ticketId": "optional",
+ *     "performerId": "optional",
+ *     "metadata": { ... }
+ *   }
+ *
+ * The store is process-local and uses an in-process mutex to serialize writes.
+ * Cross-process coordination is delegated to scripts/audit/audit-log-sink.sh
+ * (Track A 武器 1) which writes to .kallax/audit/sink/*.log.
+ *
+ * 这里 we write to .kallax/audit/hook-events.jsonl (NOT .kallax/audit/sink/)
+ * to avoid coupling. Track A 武器 1 owns the sink/ directory.
+ */
+
+import { createHash } from 'node:crypto';
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  appendFileSync,
+} from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { logger } from '../utils/logger.js';
+
+export interface HookEventEntry {
+  readonly ts: string;
+  readonly seq: number;
+  readonly prevHash: string;
+  readonly hash: string;
+  readonly sessionId: string;
+  readonly hookType: string;
+  readonly toolName?: string;
+  readonly resultCode: 'allow' | 'block' | 'error';
+  readonly reason?: string;
+  readonly ticketId?: string;
+  readonly performerId?: string;
+  readonly metadata?: Record<string, unknown>;
+}
+
+export interface HookEventInput {
+  readonly sessionId: string;
+  readonly hookType: string;
+  readonly toolName?: string;
+  readonly resultCode: 'allow' | 'block' | 'error';
+  readonly reason?: string;
+  readonly ticketId?: string;
+  readonly performerId?: string;
+  readonly metadata?: Record<string, unknown>;
+}
+
+export interface ReplayQuery {
+  readonly sessionId?: string;
+  readonly fromTimestamp?: number; // ms epoch
+  readonly toTimestamp?: number; // ms epoch
+  readonly hookType?: string;
+}
+
+export interface HookEventsStore {
+  append: (input: HookEventInput) => HookEventEntry;
+  query: (q: ReplayQuery) => HookEventEntry[];
+  size: () => number;
+  path: () => string;
+}
+
+const DEFAULT_REL_PATH = '.kallax/audit/hook-events.jsonl';
+
+// In-process mutex (single Node process). For multi-process safety, callers
+// should use scripts/io/file-lock.sh externally — kept simple here to avoid
+// coupling with Track A / B deliverables.
+let writeLock: Promise<void> = Promise.resolve();
+
+function sha256(input: string): string {
+  return 'sha256:' + createHash('sha256').update(input).digest('hex');
+}
+
+function canonicalize(entry: Record<string, unknown>): string {
+  // Stable JSON for hashing (sort keys at all levels)
+  const keys = Object.keys(entry).sort();
+  const sorted: Record<string, unknown> = {};
+  for (const k of keys) {
+    const v = entry[k];
+    if (v && typeof v === 'object' && !Array.isArray(v)) {
+      sorted[k] = JSON.parse(canonicalize(v as Record<string, unknown>));
+    } else {
+      sorted[k] = v;
+    }
+  }
+  return JSON.stringify(sorted);
+}
+
+function readLastEntry(filePath: string): { seq: number; hash: string } | null {
+  if (!existsSync(filePath)) return null;
+  const content = readFileSync(filePath, 'utf-8');
+  const lines = content.split('\n').filter((l) => l.trim().length > 0);
+  if (lines.length === 0) return null;
+  const last = lines[lines.length - 1];
+  if (!last) return null;
+  try {
+    const parsed = JSON.parse(last) as { seq: number; hash: string };
+    return { seq: parsed.seq, hash: parsed.hash };
+  } catch {
+    return null;
+  }
+}
+
+function readAllEntries(filePath: string): HookEventEntry[] {
+  if (!existsSync(filePath)) return [];
+  const content = readFileSync(filePath, 'utf-8');
+  const lines = content.split('\n').filter((l) => l.trim().length > 0);
+  const out: HookEventEntry[] = [];
+  for (const line of lines) {
+    try {
+      out.push(JSON.parse(line) as HookEventEntry);
+    } catch {
+      // skip malformed line (should not happen if we only append valid JSON)
+      logger.warn({ line: line.slice(0, 80) }, 'hook events store: skip malformed line');
+    }
+  }
+  return out;
+}
+
+export function createHookEventsStore(
+  options: { filePath?: string; projectRoot?: string } = {},
+): HookEventsStore {
+  const projectRoot = options.projectRoot ?? process.cwd();
+  const filePath = resolve(
+    projectRoot,
+    options.filePath ?? DEFAULT_REL_PATH,
+  );
+
+  function ensureDir(): void {
+    const dir = dirname(filePath);
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true, mode: 0o700 });
+    }
+  }
+
+  async function withLock<T>(fn: () => T): Promise<T> {
+    const prev = writeLock;
+    let release!: () => void;
+    writeLock = new Promise<void>((r) => { release = r; });
+    await prev;
+    try {
+      return fn();
+    } finally {
+      release();
+    }
+  }
+
+  return {
+    append(input: HookEventInput): HookEventEntry {
+      // Synchronous append within mutex (we await externally)
+      const last = readLastEntry(filePath);
+      const seq = last ? last.seq + 1 : 1;
+      const prevHash = last ? last.hash : 'sha256:genesis';
+      const ts = new Date().toISOString();
+
+      const partial: Record<string, unknown> = {
+        ts,
+        seq,
+        prevHash,
+        sessionId: input.sessionId,
+        hookType: input.hookType,
+        toolName: input.toolName,
+        resultCode: input.resultCode,
+        reason: input.reason,
+        ticketId: input.ticketId,
+        performerId: input.performerId,
+        metadata: input.metadata,
+      };
+
+      const hashInput = canonicalize({ ...partial, hash: undefined });
+      const hash = sha256(`${prevHash}|${seq}|${hashInput}`);
+
+      const entry = {
+        ts: partial['ts'] as string,
+        seq: partial['seq'] as number,
+        prevHash: partial['prevHash'] as string,
+        sessionId: partial['sessionId'] as string,
+        hookType: partial['hookType'] as string,
+        toolName: partial['toolName'] as string | undefined,
+        resultCode: partial['resultCode'] as 'allow' | 'block' | 'error',
+        reason: partial['reason'] as string | undefined,
+        ticketId: partial['ticketId'] as string | undefined,
+        performerId: partial['performerId'] as string | undefined,
+        metadata: partial['metadata'] as Record<string, unknown> | undefined,
+        hash,
+      } satisfies HookEventEntry;
+
+      ensureDir();
+      appendFileSync(filePath, JSON.stringify(entry) + '\n', { mode: 0o600 });
+
+      return entry;
+    },
+
+    query(q: ReplayQuery): HookEventEntry[] {
+      const all = readAllEntries(filePath);
+      return all.filter((e) => {
+        if (q.sessionId && e.sessionId !== q.sessionId) return false;
+        if (q.hookType && e.hookType !== q.hookType) return false;
+        const tsMs = Date.parse(e.ts);
+        if (q.fromTimestamp !== undefined && tsMs < q.fromTimestamp) return false;
+        if (q.toTimestamp !== undefined && tsMs > q.toTimestamp) return false;
+        return true;
+      });
+    },
+
+    size(): number {
+      return readAllEntries(filePath).length;
+    },
+
+    path(): string {
+      return filePath;
+    },
+  };
+}
+
+/**
+ * Async wrapper around append() that respects the in-process mutex.
+ * Use this from async hooks to avoid interleaved writes.
+ */
+export async function appendHookEvent(
+  store: HookEventsStore,
+  input: HookEventInput,
+): Promise<HookEventEntry> {
+  const prev = writeLock;
+  let release!: () => void;
+  writeLock = new Promise<void>((r) => { release = r; });
+  await prev;
+  try {
+    return store.append(input);
+  } finally {
+    release();
+  }
+}
+
+export const HOOK_EVENTS_DEFAULT_PATH = DEFAULT_REL_PATH;
+
+// Re-export join for tests that want to construct sibling paths
+export { join };

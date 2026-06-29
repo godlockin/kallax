@@ -1,4 +1,8 @@
-# KALLAX 验证协议
+# KALLAX 验证协议 (DEPRECATED — 整合到 docs/ARCHITECTURE.md)
+
+> **DEPRECATED (v3.1.0)**: 本文档跟主文档 [../../docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md) §6 (5 levels 验证) + §11 (集成测试) 重复, 跟 [../../docs/5-levels.md](../../docs/5-levels.md) 也重复. 内容已整合到主文档. 请阅读主文档 + 5-levels.md 替代本文档.
+>
+> **保留原因**: 历史 reference, 不删 (硬约束).
 
 > 解决 Agent 幻觉产出问题
 
@@ -33,11 +37,11 @@ Conductor: "好的，合并" (未验证)
 
 ---
 
-## 2. KALLAX 4-Level Fact-Forcing
+## 2. KALLAX 5 levels Fact-Forcing
 
 ### 2.1 概览
 
-     4-Level Fact-Forcing                              │
+     5 levels Fact-Forcing                              │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                      │
 │  Level 1: 存在性验证 (Existence)                                    │
@@ -313,7 +317,7 @@ echo "✅ Level 4 PASSED: Data flow verified"
 │     └───────────────────────────────────────────────────────────┘  │
 │                          │                                          │
 │                          ▼                                          │
-│  3. Conductor 4-Level 验证                                         │
+│  3. Conductor 5 levels 验证                                         │
 │     ┌───────────────────────────────────────────────────────────┐  │
 │     │ Level 1: 存在性验证                                        │  │
 │     │   $ git diff --name-only                                   │  │
@@ -745,7 +749,7 @@ kallax self-check
 
 ### Automated Verification
 - [ ] CI pipeline green
-- [ ] 4-Level verification passed
+- [ ] 5 levels verification passed
 
 ### Manual Review
 - [ ] Logic correctness

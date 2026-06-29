@@ -98,9 +98,13 @@ KALLAX_API="${KALLAX_API:-http://127.0.0.1:9877}"
 KALLAX_SERVER_PID_FILE="${KALLAX_STATE}/server.pid"
 
 ensure_server_running() {
-  # Set API key from config or default
+  # ⚠️ S-001 治根: API key 必须 env 注入, 0 default 兜底
   local api_key
-  api_key="${KALLAX_API_KEY:-$(get_config 'apiKey' 'kallax-dev-key')}"
+  api_key="${KALLAX_API_KEY:-}"
+  if [[ -z "$api_key" ]]; then
+    log_fatal "KALLAX_API_KEY required (fail-closed, S-001)"
+    return 1
+  fi
   export KALLAX_API_KEY="$api_key"
 
   # Check if server already running via /live (no auth, simple liveness)

@@ -1,7 +1,7 @@
 # EPIC-053-E — LESSONS LEARNED
 
 > 5 调用点接入 l3-l4-consistency.sh (治 BE-5 反讽, B 组 5 extended 逆袭发现 #1)
-> 跟 Rule 6 (事后复盘) 联合, 跟 Rule 8 (4-Level Fact-Forcing) 联合, 跟"诚实修正" 联合
+> 跟 Rule 6 (事后复盘) 联合, 跟 Rule 8 (5-Level Fact-Forcing) 联合, 跟"诚实修正" 联合
 
 ---
 
@@ -13,7 +13,7 @@
 
 **修法**: 把 `l3-l4-consistency.sh` 接入 5 个调用点 (1 已有 by EPIC-053-A + 4 新加), 让它在 ticket close 链全程跑 (subagent 自检 → conductor 接收 → master 强验证 → conductor review → preflight).
 
-**Rule 联动**: Rule 8 (4-Level Fact-Forcing), Rule 18 (黑名单 — 自检漏洞).
+**Rule 联动**: Rule 8 (5-Level Fact-Forcing), Rule 18 (黑名单 — 自检漏洞).
 
 ---
 
@@ -65,13 +65,13 @@ bash l3-l4-consistency.sh --l3-status=PASS --l4-status=FAIL  # expect exit 1 (ER
 
 ---
 
-## L5 — 跟 EPIC-053-B (4-Level 证据链) 联动: pass-report 信号互证
+## L5 — 跟 EPIC-053-B (5-Level 证据链) 联动: pass-report 信号互证
 
 **联动**: EPIC-053-B 用 l3-l4-consistency 验证 pass-report 信号 (PASS/PASS = OK, PASS/FAIL = ERROR). 本工单接入的 5 调用点恰好是 pass-report 信号采集的关键 gate — subagent 自报 PASS → conductor 验证 PASS → master 强验证 PASS → conductor review PASS → preflight PASS. 每一步 PASS 都跑 l3-l4-consistency, 形成 pass-report 信号的 L3↔L4 互证.
 
 **应用**: 任何 ticket close 必须先过 5 调用点 + l3-l4-consistency PASS/PASS 一致, 否则 ticket REJECT.
 
-**Rule 联动**: Rule 8 (4-Level) + Rule 16 (5 步 close 链).
+**Rule 联动**: Rule 8 (5-Level) + Rule 16 (5 步 close 链).
 
 ---
 
@@ -103,9 +103,9 @@ bash l3-l4-consistency.sh --l3-status=PASS --l4-status=FAIL  # expect exit 1 (ER
 | Ticket | 责任 | 跟 EPIC-053-E 联动 |
 |--------|------|--------------------|
 | EPIC-053-A | 治 BE-9 (l3-l4-consistency 实现 + preflight 联动) | 本工单 verify-only, 不重复改 |
-| EPIC-053-B | 4-Level 证据链 pass-report | 用 5 调用点 验证信号 |
+| EPIC-053-B | 5-Level 证据链 pass-report | 用 5 调用点 验证信号 |
 | EPIC-053-C | KPI X/Y 格式 | 6/6 PASS = 100.0% 精确格式 |
-| EPIC-053-D | Master 强验证 6 维度 | strong-verify-6d L4 加 l3-l4-consistency |
+| EPIC-053-D | 5 levels (L1-L5) | strong-verify-6d L4 加 l3-l4-consistency |
 | EPIC-053-F | check-scope-creep glob bug fix + test 重命名 | 本工单 L6 引用其 fix |
 
 ---

@@ -35,7 +35,7 @@ KALLAX-GLOSSARY 34 术语 是"术语定义" 不是"文档简约指南" (跟"反�
 | 5 | **Success Criteria 定义滞后** (跟"反讽" 联合) | Goal-Driven Execution | AC 在 ticket 创建时定, 事后常发现不对 (跟"诚实修正" 联合) | 跟"反讽" 联合: 定 AC 时信息不足 (跟"独立" 拍 explicit 约束 联合) |
 | 6 | **34 术语 增加认知负担, 违背 Readability** (跟"反讽" 联合) | Simplicity First | KALLAX-GLOSSARY 62 反讽引用 (跟"诚实修正" 联合) | 新人 first-day context cost 高 (跟"翻篇&精进" 战略 一致) |
 | 7 | **无 "Orthogonal Edits" 强制检查** (跟"反讽" 联合) | Surgical Changes | scope creep 检查存在, 但非 orthogonal 检测 (跟"诚实修正" 联合) | Rule 9c check-scope-creep.sh 只管文件,不管临边改动 (跟"独立" 拍 explicit 约束 联合) |
-| 8 | **无 "When Confused, Stop" L4 脚本** (跟"反讽" 联合) | Think Before Coding | L4 独立见证 存在, 但无 halt 触发 (跟"诚实修正" 联合) | 4-Level 验证是事后, 不是事前 (跟"翻篇&精进" 战略 一致) |
+| 8 | **无 "When Confused, Stop" L4 脚本** (跟"反讽" 联合) | Think Before Coding | L4 独立见证 存在, 但无 halt 触发 (跟"诚实修正" 联合) | 5 levels 验证是事后, 不是事前 (跟"翻篇&精进" 战略 一致) |
 
 ## 3. 修复建议 (跟"反讽" 联合, 跟"翻篇&精进" + "流程逻辑 > 扩充配置" 战略 一致, 跟"独立" 拍 explicit 约束 联合)
 

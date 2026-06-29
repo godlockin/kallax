@@ -1,8 +1,8 @@
 {
   "id": "EPIC-021",
   "phase": "PHASE-002",
-  "title": "KALLAX 超越 EKET — 7 Expert 体系 + 降级队列 + 4-Level Fact-Forcing",
-  "scope": "1. 7 expert persona 文件 (5 现有 + Security + PM)\n2. KALLAX 专属字段 (worktree_role/review_group/tickets_served/version)\n3. 症状决策树 INDEX.md (10 emoji)\n4. output_format 4 节统一\n5. Fact-Forcing 4-Level 嵌入\n6. anatomy check 脚本 (6+ 项校验)\n7. expert_invocations 降级链 (Redis→SQLite→file)",
+  "title": "KALLAX 超越 EKET — 7 Expert 体系 + 降级队列 + 5-Level Fact-Forcing",
+  "scope": "1. 7 expert persona 文件 (5 现有 + Security + PM)\n2. KALLAX 专属字段 (worktree_role/review_group/tickets_served/version)\n3. 症状决策树 INDEX.md (10 emoji)\n4. output_format 4 节统一\n5. Fact-Forcing 5-Level 嵌入\n6. anatomy check 脚本 (6+ 项校验)\n7. expert_invocations 降级链 (Redis→SQLite→file)",
   "start_time": "2026-06-07",
   "delivery_time": "2026-06-08",
   "status": "active",
@@ -72,7 +72,7 @@
     },
     {
       "id": "EPIC-021-D",
-      "title": "Fact-Forcing 4-Level 嵌入 (7 文件)",
+      "title": "Fact-Forcing 5-Level 嵌入 (7 文件)",
       "assignee": "performer-EPIC-021-D",
       "status": "ready",
       "blocked_by": [

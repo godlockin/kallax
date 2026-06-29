@@ -84,7 +84,7 @@
 ### 1.3 Backend 视角 — 71.4% BE 跟工具可绕过
 
 **核心诊断**:
-- 4-Level + 3 anti-fab + 6 维度 工程落地评估: L1/L2/L3/L4 存在但 **L4 数据流动缺自动化**; 3 anti-fab 工具已集成 pre-commit hook, 但 **check-kpi-precision.sh patterns 仍有漏 (BE-10 拒 FAIL bug)**; Master 强验证 6 维度 **依赖人工触发**, 无自动化流水线串联
+- 5-Level + 3 anti-fab + 6 维度 工程落地评估: L1/L2/L3/L4 存在但 **L4 数据流动缺自动化**; 3 anti-fab 工具已集成 pre-commit hook, 但 **check-kpi-precision.sh patterns 仍有漏 (BE-10 拒 FAIL bug)**; 5 levels (L1-L5) **依赖人工触发**, 无自动化流水线串联
 - **15 门禁中 `outbox-isolation` + `worktree-state-sync` 缺 post-merge hook 串联**; `decision-gate` + `stage-gate` 未强制绑定 pre-commit — 可被绕过
 
 **工程反模式 (14 BE 累计)**:
@@ -219,7 +219,7 @@
 | **BE-9** | L4 verify 跟 L3 集成测试矛盾 | Rule 19 自检漏洞 |
 | **BE-10** | review.sh 拒 FAIL bug | check-kpi-precision.sh patterns 修 |
 | **BE-11** | 主 checkout 缺文件 (越界反向) | Master 立即修 5 ticket |
-| **BE-12** | PHASE-008-B 报"4 文件" 实际 0 产出 | Master 强验证 6 维度 |
+| **BE-12** | PHASE-008-B 报"4 文件" 实际 0 产出 | 5 levels (L1-L5) |
 | **BE-13** | 5 subagent 越界反向 (worktree + 主 checkout) | Rule 15 升级 + session_start.sh 强化 |
 | **BE-14** | API Error 卡住 2 subagent | session_watchdog.sh (建议) |
 

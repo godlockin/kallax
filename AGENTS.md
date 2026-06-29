@@ -28,7 +28,7 @@ KALLAX (Knowledge-Augmented Leveraged Learning Agent eXecutor) implements a **Co
 - Analyze requirements from `inbox/human_input.md`
 - Decompose EPICs into actionable Tickets
 - Dispatch tasks to Performers based on skills
-- Review PRs with 4-Level verification
+- Review PRs with 5 levels verification
 - Merge approved changes to main branch
 - Maintain project documentation in Confluence
 
@@ -53,7 +53,7 @@ Q5: Queue Processing - Handle shared/message_queue messages
 **Identity**: Specialized executor who implements assigned tasks.
 
 **Responsibilities**:
-- Claim tasks atomically via `kallax task:claim`
+- Claim tasks atomically via `kallax task claim`
 - Develop in isolated worktree
 - Follow TDD (test first)
 - Submit PRs with real test output
@@ -160,7 +160,7 @@ progress_update, status_change → pubsub (broadcast)
 
 ## Verification Protocol
 
-### 4-Level Fact-Forcing
+### 5 levels Fact-Forcing
 
 ```
 Level 1 - Existence:
@@ -202,11 +202,11 @@ Level 4 - Data Flow:
 
 ```bash
 # Performer claims task → automatic worktree creation
-kallax task:claim TASK-001
+kallax task claim TASK-001
 # Creates: .claude/worktrees/TASK-001/
 
 # Conductor verifies isolation before dispatch
-kallax isolation:check TASK-001 TASK-002
+kallax isolation check TASK-001 TASK-002
 # Fails if file scopes overlap
 ```
 

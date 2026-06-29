@@ -1,7 +1,11 @@
-# KALLAX 框架白皮书
+# KALLAX 框架白皮书 (DEPRECATED — 整合到 docs/ARCHITECTURE.md)
+
+> **DEPRECATED (v3.1.0)**: 本文档是 v2.7.6 旧版架构, 已整合到主文档 [../../docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md). 请阅读主文档 §3.1 (顶层架构图) + §9 (3 层降级) 替代本文档. 主文档已 1:1 验证 11 章节 × 14 子文档.
+>
+> **保留原因**: 历史 reference, 不删 (硬约束). 内容已过时, 不建议作为实施参考.
 
 > **K**nowledge-**A**ugmented **L**everaged **L**earning **A**gent e**X**ecutor
-> 
+>
 > Version 1.0.0 | 生产级多智能体协作框架
 
 ---
@@ -53,7 +57,7 @@ KALLAX 基于以下核心信念构建：
 │  │  职责:                                                │   │
 │  │  ✓ 需求分析与任务拆解                                │   │
 │  │  ✓ 任务派发与进度追踪                                │   │
-│  │  ✓ PR 审核 (4-Level Fact-Forcing)                    │   │
+│  │  ✓ PR 审核 (5 levels Fact-Forcing)                    │   │
 │  │  ✓ 合并到 main 分支                                  │   │
 │  │  ✓ 知识库维护                                        │   │
 │  │                                                       │   │
@@ -102,7 +106,7 @@ KALLAX 基于以下核心信念构建：
 |-----|----------|----------|------------|
 | 命名 | Master/Performer | 敏感词汇 | Conductor/Performer |
 | 并行隔离 | 可选 worktree | 文件冲突频发 | 强制 worktree + 文件范围 |
-| 验证机制 | 信任 Agent 报告 | 幻觉产出 | 4-Level Fact-Forcing |
+| 验证机制 | 信任 Agent 报告 | 幻觉产出 | 5 levels Fact-Forcing |
 | 错误处理 | `expect()`/`panic!()` | 生产崩溃 | 强制 `Result<T, E>` |
 
 ---
@@ -488,7 +492,7 @@ async function checkFileOverlap(
 - 代码为 stub
 - 测试未实际运行
 
-### 7.2 4-Level Fact-Forcing
+### 7.2 5 levels Fact-Forcing
 
 ```
 ┌─────────────────────────────────────────────────────────────┐

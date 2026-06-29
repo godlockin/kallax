@@ -113,7 +113,7 @@ Conductor 定期执行的检查循环，包含 5 个问题：
 - 文件范围声明
 
 ### Fact-Forcing (事实强制)
-4-Level 验证协议：
+5-Level 验证协议：
 1. 存在性 - 文件存在于 diff
 2. 实质性 - 真实逻辑，非 stub
 3. 接线正确 - 正确 import/export
@@ -159,7 +159,7 @@ task:complete 使用 Saga 5步：
 
 ## 验证与质量术语
 
-### 4-Level Fact-Forcing
+### 5-Level Fact-Forcing
 KALLAX 的产出验证协议，包含 4 个验证级别:
 
 | Level | 名称 | 验证内容 |
@@ -209,7 +209,7 @@ KALLAX 的产出验证协议，包含 4 个验证级别:
 | any 类型 | unknown + 类型守卫 | 类型安全改进 |
 | 无 TTL 缓存 | LRU + TTL | 资源管理改进 |
 | 静默降级 | 显式降级 + 日志 | 可观测性改进 |
-| 信任 Agent 报告 | 4-Level Fact-Forcing | 验证机制改进 |
+| 信任 Agent 报告 | 5-Level Fact-Forcing | 验证机制改进 |
 | 共享工作区 | Worktree 强制隔离 | 并行隔离改进 |
 
 ---

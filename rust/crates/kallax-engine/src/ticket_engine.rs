@@ -64,7 +64,7 @@ impl TicketEngine {
     pub fn get_ticket(&self, ticket_id: &str) -> Result<Ticket> {
         self.tickets
             .get(ticket_id)
-            .map(|t| t.clone())
+            .map(|t| t.value().clone())
             .ok_or_else(|| KallaxError::not_found("ticket", ticket_id))
     }
 
@@ -73,7 +73,7 @@ impl TicketEngine {
         self.tickets
             .iter()
             .filter(|t| status.map_or(true, |s| t.status() == s))
-            .map(|t| t.clone())
+            .map(|t| (*t.value()).clone())
             .collect()
     }
 
@@ -167,7 +167,7 @@ impl TicketEngine {
     pub fn get_task(&self, task_id: &str) -> Result<Task> {
         self.tasks
             .get(task_id)
-            .map(|t| t.clone())
+            .map(|t| t.value().clone())
             .ok_or_else(|| KallaxError::not_found("task", task_id))
     }
 
@@ -176,7 +176,7 @@ impl TicketEngine {
         self.tasks
             .iter()
             .filter(|t| t.ticket_id().as_str() == ticket_id)
-            .map(|t| t.clone())
+            .map(|t| (*t.value()).clone())
             .collect()
     }
 
@@ -230,7 +230,7 @@ impl TicketEngine {
                         .unwrap_or(false)
                 })
             })
-            .map(|t| t.clone())
+            .map(|t| (*t.value()).clone())
             .next()
     }
 
@@ -266,13 +266,13 @@ impl TicketEngine {
     pub fn get_performer(&self, performer_id: &str) -> Result<Performer> {
         self.performers
             .get(performer_id)
-            .map(|p| p.clone())
+            .map(|p| p.value().clone())
             .ok_or_else(|| KallaxError::not_found("performer", performer_id))
     }
 
     /// List all performers
     pub fn list_performers(&self) -> Vec<Performer> {
-        self.performers.iter().map(|p| p.clone()).collect()
+        self.performers.iter().map(|p| (*p.value()).clone()).collect()
     }
 
     /// Update performer heartbeat

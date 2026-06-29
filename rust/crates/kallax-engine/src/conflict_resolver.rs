@@ -203,7 +203,7 @@ impl ConflictResolver {
 
     /// Get a conflict by ID
     pub fn get_conflict(&self, conflict_id: &str) -> Option<Conflict> {
-        self.conflicts.get(conflict_id).map(|c| c.clone())
+        self.conflicts.get(conflict_id).map(|c| c.value().clone())
     }
 
     /// Get all active (unresolved) conflicts
@@ -211,7 +211,7 @@ impl ConflictResolver {
         self.conflicts
             .iter()
             .filter(|c| c.status != ConflictStatus::Resolved)
-            .map(|c| c.clone())
+            .map(|c| (*c.value()).clone())
             .collect()
     }
 
@@ -221,7 +221,7 @@ impl ConflictResolver {
         self.conflicts
             .iter()
             .filter(|c| c.performer_a.as_str() == id || c.performer_b.as_str() == id)
-            .map(|c| c.clone())
+            .map(|c| (*c.value()).clone())
             .collect()
     }
 
@@ -232,7 +232,7 @@ impl ConflictResolver {
 
     /// Get lock holder for a resource
     pub fn get_lock_holder(&self, resource: &str) -> Option<PerformerId> {
-        self.locks.get(resource).map(|l| l.performer_id.clone())
+        self.locks.get(resource).map(|l| l.value().performer_id.clone())
     }
 }
 

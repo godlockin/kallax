@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# /kallax-verify-pr — Verify PR output before merge (4-Level Fact-Forcing).
+# /kallax-verify-pr — Verify PR output before merge (5 levels Fact-Forcing).
 # Runs L1 existence (files in diff) -> L2 substance (no TODO in critical
 # paths) -> L3 wiring (no @ts-ignore or :any escapes) -> L4 data flow
 # (CI green). Use this to confirm a PR passes the fact check before
@@ -10,7 +10,7 @@ source "${SCRIPT_DIR}/_kallax_common.sh"
 
 if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
   show_help <<'EOF'
-/kallax-verify-pr — Verify PR output before merge (4-Level Fact-Forcing)
+/kallax-verify-pr — Verify PR output before merge (5 levels Fact-Forcing)
 
 USAGE:
   /kallax-verify-pr [PR_NUMBER]
@@ -19,7 +19,7 @@ ARGS:
   PR_NUMBER         PR number to verify (prompts if missing).
 
 DESCRIPTION:
-  Runs the 4-Level Fact-Forcing checks: L1 existence (files in diff) ->
+  Runs the 5 levels Fact-Forcing checks: L1 existence (files in diff) ->
   L2 substance (no TODO in critical paths) -> L3 wiring (no @ts-ignore
   or :any escapes) -> L4 data flow (CI green). Prints pass/warn per
   level and a final verdict.

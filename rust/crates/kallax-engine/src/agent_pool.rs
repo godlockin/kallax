@@ -79,7 +79,7 @@ impl AgentPool {
 
     /// Get a performer by ID
     pub fn get(&self, performer_id: &str) -> Option<Performer> {
-        self.performers.get(performer_id).map(|p| p.clone())
+        self.performers.get(performer_id).map(|p| p.value().clone())
     }
 
     /// Update performer heartbeat
@@ -97,7 +97,7 @@ impl AgentPool {
         self.performers
             .iter()
             .filter(|p| p.status() == PerformerStatus::Idle)
-            .map(|p| p.clone())
+            .map(|p| (*p.value()).clone())
             .collect()
     }
 
@@ -110,7 +110,7 @@ impl AgentPool {
                 });
                 if has_all_caps || required_capabilities.is_empty() {
                     entry.assign_task(TaskId::from_str("reserved"));
-                    let mut p = entry.clone();
+                    let mut p = entry.value().clone();
                     p.release_task();
                     return Some(p);
                 }
@@ -159,7 +159,7 @@ impl AgentPool {
 
     /// List all performers
     pub fn list(&self) -> Vec<Performer> {
-        self.performers.iter().map(|p| p.clone()).collect()
+        self.performers.iter().map(|p| (*p.value()).clone()).collect()
     }
 }
 

@@ -4,18 +4,16 @@ members = [
     "crates/kallax-engine",
     "crates/kallax-cli",
     "crates/kallax-server",
-    "crates/context-mon",
     "crates/kallax-bench",
-    "crates/kallax-bridge",
-    "crates/kallax-election",
 ]
 default-members = ["crates/kallax-core"]
 # EPIC-060-B Phase 2: 主用 crate 拍板 (方案 B, 1 主用 4 备 渐进)
-# EPIC-060-B Phase 3: 加入 kallax-bridge (napi-rs Node.js ↔ Rust bridge scaffold)
+# Iter 3: drop 3 unreachable crates (kallax-bridge/kallax-election/context-mon).
+# The Node.js side reimplements election/event-bus/data-adapter without Rust deps.
 resolver = "2"
 
 [workspace.package]
-version = "1.0.0"
+version = "2.7.6"
 edition = "2021"
 authors = ["KALLAX Team"]
 license = "MIT"
@@ -67,11 +65,6 @@ sha2 = "0.10"
 # Internal crates
 kallax-core = { path = "crates/kallax-core" }
 kallax-engine = { path = "crates/kallax-engine" }
-kallax-bridge = { path = "crates/kallax-bridge" }
-
-# napi-rs (Node.js ↔ Rust FFI bridge, EPIC-060-B Phase 3)
-napi = "2.16"
-napi-derive = "2.16"
 
 [profile.release]
 lto = true
