@@ -1,205 +1,202 @@
-# KALLAX
+# KALLAX v3.0.0
 
 > **K**nowledge-**A**ugmented **L**everaged **L**earning **A**gent e**X**ecutor
 
-**v1.0.0** | Multi-Agent Collaboration Framework for AI-Driven Development
+**v3.0.0** | 借鉴 eket 极简哲学, 青出于蓝而胜于蓝 | 6 武器 + 决策模型 + 集成测试 ALL DONE
 
 ---
 
 ## 概述
 
-KALLAX 是一个**生产级多智能体协作框架**，专为 AI 驱动的软件开发设计。基于 Conductor-Performer 协作模型，支持 1-5 个人类管理者 + N 个 AI 智能体高效协作。
+KALLAX v3.0.0 是一个**生产级多智能体协作框架**, 借鉴 [eket](https://github.com/godlockin/kallax) 极简哲学, 在其基础上补齐 **6 个空白处** (6 武器), 形成"青出于蓝而胜于蓝"的差异化定位。
 
 ### 核心特性
 
-- **三级降级架构**: Rust (8ms) → Node.js (400ms) → Shell (基础)
-- **三仓库分离**: Confluence (知识) + Jira (任务) + Code (代码)
-- **Conductor-Performer 模型**: 统一协议，支持多实例并发
-- **专家组系统**: 默认 5 人核心专家 + 50+ 扩展角色
-- **DAG 调度器**: 关键路径分析 + 多任务并行
-- **防幻觉机制**: Fact-Forcing + 5 levels 验证
-- **并行隔离强制**: Worktree + 文件范围预分配
+- **三级降级架构**: Rust (~5ms) → Node.js → Shell
+- **1 binary 整合**: 8 Rust crates → 5 crates, 0 errors
+- **6 武器** (KALLAX 独有): Hash-Chain Audit / 5-Level Fact-Forcing / Sub-Role Dispatch / EPIC 4 件套 / Hook Server / Dashboard
+- **决策模型** (Q18): 5 levels × 4 roles = 25 cells (自主 12 + 推荐 8 + 主公拍 5)
+- **集成测试 25/25 cells PASS**: 6-weapons-e2e + decision-matrix
 
 ---
 
-## 核心设计
+## 6 武器 速查 (跟 eket 对比)
 
-KALLAX 基于多 Agent 协作的最佳实践：
+| 武器 | 名称 | KALLAX v3.0.0 | eket | 治根 |
+|------|------|---------------|------|------|
+| **武器 1** | Hash-Chain Audit Log | SHA256 chain 实做 | 无 | SEC-002 (audit log 无 hash chain) |
+| **武器 2** | 5-Level Fact-Forcing | L1-L5 实做 (5 独立脚本) | 名字 only | 4-Level / 6 维度 重叠 |
+| **武器 3** | Sub-Role Dispatch | 4 sub-roles (coder/reviewer/tester/docs) | 无 (单 role) | Performer 产能 Gap 40% |
+| **武器 4** | EPIC 4 件套 | A+B review + readme + lessons + signoff | 无 (文档散落) | PROD-001 (EPIC 交付缺失) |
+| **武器 5** | Hook Server 回放 + Audit | 多 AI 工具集成 + replay endpoints | 无 | 多 AI 工具协同缺口 |
+| **武器 6** | Web Dashboard | 1 page ≤ 500 LOC | 无 | FE-001 XSS |
 
-| 问题领域 | 旧模式风险 | KALLAX 方案 |
-|---------|-----------|------------|
-| **并行隔离** | 多 Agent 文件冲突 | 强制 git worktree + 文件范围预划分 |
-| **错误处理** | `expect()`/`panic!()` | 生产代码禁用，强制 `Result<T, E>` |
-| **Agent 验证** | background 模式幻觉 | foreground 强制 + Conductor 核查 |
-| **资源管理** | 无 TTL 内存泄漏 | 所有缓存/连接必配 TTL |
-| **类型安全** | `any` 类型泛滥 | CI 禁用 `any`/`@ts-ignore` |
-| **测试质量** | 内联复制测试 | mutation testing 验证 |
-| **命名** | 敏感术语 | Conductor/Performer |
+**6 武器 1:1 验证**:
+- 武器 1: `scripts/verify/hash-chain.sh` + `audit:verify` CLI 命令
+- 武器 2: `scripts/verify/level-{1..5}.sh` 5 独立脚本
+- 武器 3: `scripts/conductor/dispatch.sh --sub-role=coder|reviewer|tester|docs`
+- 武器 4: `scripts/verify/check-epic-4-piece.sh` + `epic:close` CLI
+- 武器 5: `node/src/hooks/hook-events-store.ts` + `/hooks/replay` + `/hooks/audit` endpoints
+- 武器 6: `node/src/web/dashboard.tsx` (≤ 500 LOC, textContent + escape)
+
+---
+
+## 跟 eket 互补 (Q11 实施)
+
+> **独立项目, 互取所长**: KALLAX 实做 5 levels + 6 武器, eket 借 multi-agent 概念
+
+| 维度 | KALLAX v3.0.0 | eket | 关系 |
+|------|---------------|------|------|
+| **架构** | Rust + Node.js + Shell (3 层降级) | Node.js ≥20 (单层) | KALLAX 更深 |
+| **Multi-agent** | Conductor + Performer + Sub-roles (1+4) | Master + Slaver | 概念同源, 命名不同 |
+| **Fact-Forcing** | 5-Level (L1-L5 实做, 5 独立脚本) | 9 Hard Rules (规则 only) | KALLAX 实做, eket 名字 |
+| **决策模型** | Q18 (5×4=20 cells, 25/25 PASS) | decision-gate (block/danger 触发) | 互补 |
+| **Cargo workspace** | 2.7.6 (跟 npm 对齐, release bump) | 无 (Node.js only) | KALLAX 多语言 |
+| **极简** | CLAUDE.md 3.3KB + 5KB cold start | CLAUDE.md 精简 | 一致 |
+| **术语** | 0 术语 (1 page cheatsheet + lazy load) | 0 术语 | 一致 |
+| **Audit** | Hash-Chain SHA256 | 无 | KALLAX 独有 |
+| **Dashboard** | 1 page ≤ 500 LOC (XSS 治根) | 无 | KALLAX 独有 |
+
+---
+
+## 5 Levels × 4 Roles 决策矩阵 (Q18)
+
+> **25 cells**: 自主 12 + 推荐 8 + 主公拍 5 = 25 cells (跟 decision-matrix.sh --self-test 1:1 验证)
+
+| Role \ Level | L1 git | L2 stdout | L3 4-expert | L4 independent | L5 boundary |
+|--------------|--------|-----------|-------------|----------------|-------------|
+| **Conductor** | 自主 | 自主 | 推荐 | 主公拍 | 推荐 |
+| **Performer/coder** | 自主 | 自主 | 推荐 | **主公拍** | 推荐 |
+| **Performer/reviewer** | 自主 | 自主 | 自主 | **主公拍** | 推荐 |
+| **Performer/tester** | 自主 | 自主 | 自主 | **主公拍** | 推荐 |
+| **Performer/docs** | 自主 | 自主 | 推荐 | **主公拍** | 推荐 |
+
+**主公拍 cells** (5 cells, 不可 AI 自主): L4 全部 4 个 Performer sub-roles + L4 Conductor (跨 subagent 独立)
+
+**详细 SOP**: [docs/process/q18-decision-model.md](docs/process/q18-decision-model.md) (543 行)
+
+---
+
+## 5 Levels 验证
+
+```
+L1 git log SHA 真变
+L2 test stdout 实质 (raw stdout, 不接受 "should work")
+L3 4-expert 接线 (coder/reviewer/tester/docs)
+L4 independent witness (主公拍, 跨 subagent)
+L5 boundary 边界 (Conductor 推荐)
+```
+
+**实施**: `bash scripts/verify/level-{1..5}.sh TICKET-XXX` (5 独立脚本) + `kallax verify all TICKET-XXX` (wrapper)
+
+---
+
+## 4 Roles
+
+```
+Conductor (分析/拆解/审核/合并/发布)
+Performer (coder/reviewer/tester/docs, 1+4 容量)
+```
+
+---
+
+## 30 命令速查 (跟 eket 1:1)
+
+**Subagent (3)**: `kallax subagent:register` · `kallax subagent:list` · `kallax subagent:deregister`
+
+**Ticket (8)**: `kallax ticket:create` · `kallax ticket:claim` · `kallax ticket:list` · `kallax ticket:show` · `kallax ticket:complete` · `kallax ticket:assign` · `kallax ticket:transition` · `kallax ticket:history`
+
+**EPIC (4)**: `kallax epic:create` · `kallax epic:add-ticket` · `kallax epic:close` · `kallax epic:status`
+
+**Verify (6)**: `kallax verify l1 TICKET` · `kallax verify l2 TICKET` · `kallax verify l3 TICKET` · `kallax verify l4 TICKET` · `kallax verify l5 TICKET` · `kallax verify all TICKET`
+
+**Audit/Export (5)**: `kallax audit:show` · `kallax audit:verify` · `kallax export:report` · `kallax export:dashboard` · `kallax system:doctor`
+
+**Misc (4)**: `kallax mode:set` · `kallax role:switch` · `kallax worktree:create` · `kallax skill:list`
+
+---
+
+## 快速开始
+
+### 安装
+
+```bash
+git clone https://github.com/godlockin/kallax.git
+cd kallax
+cargo build --release  # 1 binary 整合, 5 crates
+```
+
+### 基本工作流
+
+```bash
+# 1. 创建 ticket
+kallax ticket:create "实现 Redis 缓存层" --type feature --priority P1
+
+# 2. claim ticket (atomic)
+kallax ticket:claim TICKET-001
+
+# 3. 开发 + commit (in worktree, Performer sub-role=coder)
+cd .worktrees/TICKET-001
+# ... 写代码 + commit ...
+
+# 4. 跑 5-Level 验证
+kallax verify l1 TICKET-001  # git log SHA
+kallax verify l2 TICKET-001  # raw test stdout
+kallax verify l3 TICKET-001  # 4-expert 接线
+kallax verify l4 TICKET-001  # 主公拍 (跨 subagent)
+kallax verify l5 TICKET-001  # boundary 边界
+
+# 5. 完成 ticket
+kallax ticket:complete TICKET-001
+```
 
 ---
 
 ## 架构
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Human-AI Coordination Layer                   │
-│  ┌───────────────┐  ┌──────────────┐  ┌───────────────────────┐│
-│  │  Conductor UI │  │  Skills Hub  │  │  Expert Panel Control ││
-│  │  (Claude Code)│  │  (50+ roles) │  │  (5-phase workflow)   ││
-│  └───────────────┘  └──────────────┘  └───────────────────────┘│
-└─────────────────────────────────────────────────────────────────┘
-                               │
-                   ┌───────────┼───────────┐
-                   ▼           ▼           ▼
-┌──────────────┐ ┌──────────────┐ ┌──────────────┐
-│ Conductor    │ │ Performer #1 │ │ Performer #N │
-│ Instance     │ │ (frontend)   │ │ (backend)    │
-│              │ │              │ │              │
-│ • Heartbeat  │ │ • claim      │ │ • claim      │
-│ • Decompose  │ │ • develop    │ │ • develop    │
-│ • PR Review  │ │ • test       │ │ • test       │
-│ • Merge      │ │ • PR submit  │ │ • PR submit  │
-└──────────────┘ └──────────────┘ └──────────────┘
-       │                 │               │
-       │   ┌─────────────┼───────────────┘
-       │   │
-       ▼   ▼
-   ┌────────────────────────────────────────┐
-   │    Rust Core (Level 1)                 │
-   │  ┌──────────────────────────────────┐  │
-   │  │ Event Bus | DAG Scheduler        │  │
-   │  │ Knowledge Base | Ticket Engine   │  │
-   │  │ Agent Pool | Mailbox             │  │
-   │  │ Axum HTTP API (:9877)            │  │
-   │  └──────────────────────────────────┘  │
-   │           ~8ms startup                 │
-   │           ~12MB memory                │
-   └────────────────────────────────────────┘
-       ↓ (fallback)
-   ┌────────────────────────────────────────┐
-   │    Node.js Layer (Level 2)             │
-   │  ┌──────────────────────────────────┐  │
-   │  │ Message Queue (Redis/File)       │  │
-   │  │ SQLite Manager | Cache Layer     │  │
-   │  │ Web Dashboard | WebSocket        │  │
-   │  │ Skills System | Type Safety      │  │
-   │  └──────────────────────────────────┘  │
-   │           ~400ms startup              │
-   │           ~120MB memory               │
-   └────────────────────────────────────────┘
-       ↓ (fallback)
-   ┌────────────────────────────────────────┐
-   │    Shell Layer (Level 0)               │
-   │  ┌──────────────────────────────────┐  │
-   │  │ Pure Bash + File Queue           │  │
-   │  │ Basic heartbeat + message passing│  │
-   │  └──────────────────────────────────┘  │
-   └────────────────────────────────────────┘
-```
-
----
-
-## 快速开始
-
-### 安装 (v2.0.6 — 4 工具支持: Claude Code / opencode / Codex / Gemini)
-
-```bash
-# 克隆仓库
-git clone https://github.com/godlockin/kallax.git
-cd kallax
-
-# 默认 --target=auto 检测 (Claude Code 优先, 跟 EPIC-057-B AC #3 一致)
-./scripts/install.sh
-
-# 显式单工具
-./scripts/install.sh --target=claude
-./scripts/install.sh --target=opencode
-./scripts/install.sh --target=codex
-./scripts/install.sh --target=gemini
-
-# 多工具 (逗号分隔)
-./scripts/install.sh --target=claude,opencode
-
-# 强制全装 (4 工具)
-./scripts/install.sh --target=all
-
-# 详细 4 工具 install guide + 路径映射表 + 故障排查
-# 见 docs/guides/INSTALL-MULTI-TOOL.md (跟 EPIC-057-A/B 契约 一致, 治 v2.0.2 跨平台 fix 反讽)
-
-# 或手动安装 (Rust + Node.js)
-./scripts/quick-setup.sh
-npm install
-cd rust && cargo build --release
-```
-
-### 初始化项目
-
-```bash
-# 在目标项目中初始化 KALLAX
-kallax init
-
-# 启动 Conductor 或 Performer
-kallax start --role conductor
-kallax start --role performer --specialty backend
-```
-
-### 基本工作流
-
-```bash
-# Conductor: 创建任务
-kallax task create "实现用户登录功能" --type feature --priority P1
-
-# Performer: 领取任务
-kallax task claim TASK-001
-
-# Performer: 完成任务
-kallax task complete TASK-001
-
-# Conductor: 审核 PR
-kallax pr review --pr 42
-```
-
----
-
-## 命令索引
-
-### 任务管理
-```bash
-kallax task create "title"          # 创建票据
-kallax task claim [TASK-NNN]        # 原子领取任务
-kallax task complete TASK-NNN       # Saga 5步完成
-kallax task status TASK-NNN         # 查看状态
-kallax task progress                # DAG 进度 + 关键路径
-kallax task resume TASK-NNN         # checkpoint 恢复
-```
-
-### Conductor 操作
-```bash
-kallax conductor heartbeat          # 心跳检查（5 问）
-kallax conductor poll               # 处理 Performer 上报
-kallax conductor delegate           # 委派给助理
-```
-
-### Performer 操作
-```bash
-kallax performer register --role backend   # 注册 Performer
-kallax performer poll                      # 长轮询邮箱
-kallax performer resume TASK-NNN           # 恢复执行
-```
-
-### 知识库
-```bash
-kallax knowledge index --dir jira/  # 构建 FTS 索引
-kallax knowledge search "keyword"   # 全文搜索
-kallax recommend TASK-NNN           # TF-IDF 推荐
-```
-
-### 系统管理
-```bash
-kallax system doctor                # 系统诊断
-kallax team status                  # 团队状态
-kallax server --port 9877           # 启动 HTTP API
-kallax web --port 3000              # Web Dashboard
+┌─────────────────────────────────────────────────────────────┐
+│              KALLAX v3.0.0 Multi-Agent Layer                │
+│  ┌──────────────┐  ┌──────────────┐  ┌────────────────────┐ │
+│  │  Conductor   │  │ Performer    │  │ Sub-Role Dispatch  │ │
+│  │  (协调/审核)  │  │ (coder/      │  │ (4 sub-roles)      │ │
+│  │              │  │  reviewer/   │  │                    │ │
+│  │              │  │  tester/     │  │                    │ │
+│  │              │  │  docs)       │  │                    │ │
+│  └──────────────┘  └──────────────┘  └────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  6 武器 Layer                                │
+│  武器 1: Hash-Chain Audit Log                                │
+│  武器 2: 5-Level Fact-Forcing                                │
+│  武器 3: Sub-Role Dispatch                                   │
+│  武器 4: EPIC 4 件套                                         │
+│  武器 5: Hook Server 回放 + Audit                            │
+│  武器 6: Web Dashboard 1 page ≤ 500 LOC                     │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│            Rust Core (Level 1, ~5ms startup)                │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │ Event Bus | DAG Scheduler | Ticket Engine            │  │
+│  │ Agent Pool | Mailbox | Hook Server                   │  │
+│  │ Axum HTTP API (:9877)                                │  │
+│  └──────────────────────────────────────────────────────┘  │
+│           ~5ms startup (跟 eket 一致)                       │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼ (fallback)
+┌─────────────────────────────────────────────────────────────┐
+│           Node.js Layer (Level 2, ~400ms startup)            │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │ Web Dashboard | Hook Events Store                    │  │
+│  │ 5-Level Scripts | Decision Matrix                    │  │
+│  │ Sub-Role Dispatcher | EPIC 4-Piece Checker           │  │
+│  └──────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -208,39 +205,34 @@ kallax web --port 3000              # Web Dashboard
 
 ```
 kallax/
-├── rust/                    # Rust 高性能核心
-│   └── crates/
-│       ├── kallax-core/     # 类型系统 + 中间件
-│       ├── kallax-engine/   # 执行引擎 + DAG
-│       ├── kallax-cli/      # CLI 入口
-│       ├── kallax-server/   # HTTP API
-│       └── context-mon/     # 上下文监控
+├── rust/                    # Rust 高性能核心 (5 crates 整合)
+│   ├── core/                # 类型系统 + 中间件
+│   ├── engine/              # 执行引擎 + DAG
+│   ├── cli/                 # CLI 入口
+│   ├── server/              # HTTP API
+│   └── ticket-engine/       # ticket 引擎
 ├── node/                    # Node.js 增强层
 │   └── src/
-│       ├── commands/        # 40+ 命令实现
+│       ├── commands/        # 命令实现
 │       ├── core/            # 消息队列、缓存
-│       ├── api/             # HTTP/WebSocket
+│       ├── hooks/           # Hook Server (武器 5)
+│       ├── web/             # Dashboard (武器 6)
 │       └── skills/          # Skills 系统
-├── .claude/                 # Claude Code 工具目录 (跟 EPIC-057-A AC #3 一致)
-│   ├── commands/            # Claude Code slash commands (30 文件)
-│   └── skills/kallax/       # Claude Code skills (89 文件)
-├── .opencode/               # opencode 工具目录 (跟 EPIC-057-A AC #3 一致, v2.0.2 mirror)
-│   └── command/             # opencode slash commands mirror (singular, 30 文件, 跟 .claude/commands/ 一致)
-├── confluence/              # 知识库仓库
-├── jira/                    # 任务管理仓库
 ├── docs/                    # 架构文档
-│   ├── guides/
-│   │   ├── INSTALL-MULTI-TOOL.md  # 4 工具 install guide (v2.0.6 新增)
-│   │   ├── quick-start.md
-│   │   └── ...
-│   ├── PROCESS.md           # 流程文档
-│   ├── STRUCTURE.md         # 结构文档
-│   └── KALLAX-GLOSSARY.md   # 术语 SoT
+│   ├── CHEATSHEET.md        # 1 页 cheatsheet (30 行)
+│   ├── 5-levels.md          # 5 levels 实做
+│   ├── 4-roles.md           # 4 roles (Conductor + 4 sub-roles)
+│   └── process/q18-decision-model.md  # Q18 决策模型 (543 行)
 ├── template/                # 外部项目模板
 ├── scripts/                 # 运维脚本
-│   ├── install.sh           # 4 工具 install (v2.0.6 --target=auto|all|specific)
-│   └── kallax-onramp.sh     # 项目分析入口 (v2.0.6 tool detection)
-└── .kallax/                 # 系统数据目录
+│   ├── verify/              # 5 level scripts + decision-matrix
+│   ├── permission/          # decision-gate (block + danger)
+│   ├── conductor/           # dispatch (sub-role)
+│   └── io/                  # file-lock + atomic-write
+├── confluence/              # 知识库
+│   └── decisions/           # EPIC + PHASE + RELEASE
+├── jira/                    # 任务管理
+└── CLAUDE.md                # 3.3KB cold start (16.4x 缩减)
 ```
 
 ---
@@ -250,37 +242,86 @@ kallax/
 ### 主配置 (.kallax/config.yml)
 
 ```yaml
-version: "1.0.0"
+version: "3.0.0"
 mode: "claude_code"              # claude_code | copilot | gemini
-profile: "standard"              # lightweight | standard | enterprise
 
-# Conductor 白名单
-conductor_emails:
-  - admin@example.com
+# 4 sub-roles 配置
+performer_sub_roles:
+  - coder
+  - reviewer
+  - tester
+  - docs
 
-# 三仓库路径
-repositories:
-  confluence: "./confluence"
-  jira: "./jira"
-  code: "./"
+# 5 levels 验证
+fact_forcing:
+  levels: 5
+  hash_chain: true
+  independent_witness: true
 
-# 降级策略
-degradation:
-  mode: auto                     # auto | rust | node | shell
-  redis_timeout: 5000            # ms
-  
-# 并行隔离策略 (KALLAX 新增)
-isolation:
-  enforce_worktree: true         # 强制 worktree 隔离
-  file_scope_check: true         # 文件范围检查
-  max_parallel_performers: 5
+# 6 武器
+weapons:
+  hash_chain_audit: true
+  level_scripts: true
+  sub_role_dispatch: true
+  epic_4_piece: true
+  hook_server: true
+  dashboard: true
 
-# 资源管理 (KALLAX 改进)
-resources:
-  cache_ttl: 300000              # 5 分钟 TTL
-  connection_pool_max: 10
-  connection_pool_timeout: 30000
+# 决策模型
+decision_model:
+  type: q18
+  cells: 25
+  block_classes: 5
+  danger_classes: 3
 ```
+
+---
+
+## KPI (跟 v2.7.6 对比)
+
+| 指标 | v2.7.6 | v3.0.0 | 变化 |
+|------|--------|--------|------|
+| CLAUDE.md size | 54KB | 3.3KB | **16.4x 缩减** |
+| 术语数 | 35 | 0 (cheatsheet + lazy load) | 100% 砍 |
+| Rule 数 | 21 | 0 硬编码 (5 levels + 4 roles 替代) | 100% 替代 |
+| Rust crates | 8 | 5 | 整合 3 |
+| 冷启动 | ~8ms | ~5ms | 1.6x 加速 |
+| 6 武器 | 0/6 | 6/6 | 100% done |
+| 集成测试 | - | 25/25 cells PASS | 100% pass |
+| Binary 数 | 2 (kallax + expert-match) | 1 (kallax) | 50% 整合 |
+
+---
+
+## 集成测试 25/25 PASS
+
+```bash
+# 6 武器 端到端
+bash tests/integration/6-weapons-e2e-test.sh
+# → 6/6 PASS
+
+# 决策矩阵 25 cells
+bash tests/integration/decision-matrix-test.sh
+# → 25/25 cells PASS
+
+# Lazy load 验证
+bash tests/integration/lazy-load-test.sh
+# → PASS
+
+# 5 levels 验证
+bash tests/integration/5-levels-test.sh
+# → PASS
+```
+
+---
+
+## 详细文档
+
+- [1 页 Cheatsheet](docs/CHEATSHEET.md)
+- [Q18 决策模型 (543 行 SOP)](docs/process/q18-decision-model.md)
+- [CLAUDE.md (3.3KB cold start)](CLAUDE.md)
+- [AGENTS.md](AGENTS.md)
+- [KALLAX v3.0.0 Release Notes](confluence/decisions/RELEASE-v3.0.0-2026-06-29.md)
+- [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
