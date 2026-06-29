@@ -24,7 +24,7 @@
     "scripts/verify/l3-l4-consistency.sh 实现 — L3 集成测试通过 = L4 verify 自动通过, 不许矛盾",
     "tests/integration/l3-l4-consistency-test.sh 4/4 PASS (L3 pass + L4 fail = ERROR, L3 fail + L4 pass = ERROR, L3 pass + L4 pass = OK, L3 fail + L4 fail = OK)",
     "BE-9 (L3L4 矛盾, 防御体系自检漏洞) 治根闭环",
-    "Rule 8 (4-Level Fact-Forcing) 强约束 — L3 L4 不许矛盾",
+    "Rule 8 (5-Level Fact-Forcing) 强约束 — L3 L4 不许矛盾",
     "跟 check-fact-forcing-preflight.sh 联动, 把 L3L4 一致性检查加到 preflight",
     "Rule 9 KPI 精确 X/Y 格式 — 4/4 PASS = 100.0% (跟 EPIC-041-B 一致)"
   ],

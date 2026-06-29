@@ -131,7 +131,7 @@
   - 修复: dispatch.sh 读 env var, 默认 80
   - 防范: 任何可动态调整的参数用 env var, 不写死 config
 
-- **A3 [MEDIUM]**: dispatch.sh 是 Conductor 核心, 任何修改需要 4-Level 验证
+- **A3 [MEDIUM]**: dispatch.sh 是 Conductor 核心, 任何修改需要 5-Level 验证
   - 现象: dispatch.sh 负责派发决策, 是 Conductor 核心依赖
   - 根因: dispatch.sh 坏 → 整个派发系统坏
   - 修复: dispatch.sh 修改后跑全量 E2E + check-commit-amend-verify.sh

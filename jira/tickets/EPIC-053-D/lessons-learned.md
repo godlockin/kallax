@@ -12,7 +12,7 @@
 
 - **S1 pass-report JSON**: Performer 自报 outcome (可能撒谎)
 - **S2 check-scope-creep.sh**: Rule 15 boundary check (EPIC-053-F glob 修复版)
-- **S3 kpi-evidence-chain.sh**: EPIC-053-B 4-Level evidence (L1 git + L2 test + L3 groups + L4 witness)
+- **S3 kpi-evidence-chain.sh**: EPIC-053-B 5-Level evidence (L1 git + L2 test + L3 groups + L4 witness)
 
 3 数据源必须 **cross-validate** 才能发现 fake PASS:
 - Performer 报 `5/5 PASS` 但 S2 scope=1 → 实际越界 → 降级 fake_pass
@@ -22,7 +22,7 @@
 **为什么 BE-5 反复 10+ 次**: 单数据源不够. 12 KPI falsification 反复 (EPIC-024/028/031/036/037/039-B) 都是单一 pass-report 没 cross-check.
 
 **联动**:
-- EPIC-053-A: L3↔L4 一致性 (Rule 18 同步) — 仪表盘在 S3 验证 4-Level
+- EPIC-053-A: L3↔L4 一致性 (Rule 18 同步) — 仪表盘在 S3 验证 5-Level
 - EPIC-053-B: kpi-evidence-chain.sh exit → evidenceChainPassed 字段
 - EPIC-053-C: check-scope-creep.sh 修复版 → scopeViolations 字段 (BE-10 模式联动)
 - EPIC-053-E: wiring gap 治根 — 仪表盘复用 output-verifier.verifyPassEvidence 接口, 避免 5 调用点重复
@@ -151,7 +151,7 @@ detectBoundaryViolations(records): records.filter(r =>
 | 票 | 教训 | 联动 |
 |---|------|------|
 | 053-A | L3↔L4 一致性工具 (`l3-l4-consistency.sh`) | Rule 18 同步, BE-9 治根 |
-| 053-B | 4-Level evidence chain | 12 KPI falsification 反复闭环, BE-5 治根 |
+| 053-B | 5-Level evidence chain | 12 KPI falsification 反复闭环, BE-5 治根 |
 | 053-C | 工具自检 (`check-scope-creep.sh` Bash 5.x bug) | BE-10 模式, 数组 [[:space:]] 治根 |
 | 053-D (我) | 3 数据源 cross-check 仪表盘 | H1 (KPI falsification) + H6 (boundary BE-1/6/11) 治根 |
 | 053-E | wiring gap 治根 | 5 调用点集成, BE-5 反讽 |
@@ -189,7 +189,7 @@ detectBoundaryViolations(records): records.filter(r =>
 
 **Insight**: 12 次 KPI falsification 反复根因不是"测试不严", 而是 **没有 cross-check 数据源**. EPIC-053 6 票形成的系统:
 1. 053-A: L3↔L4 一致性 truth table
-2. 053-B: 4-Level evidence chain
+2. 053-B: 5-Level evidence chain
 3. 053-C: 工具自检 (BE-10)
 4. 053-D: 仪表盘可视化 + 3 数据源 cross-check (本票)
 5. 053-E: wiring 集成 (5 调用点)
@@ -235,7 +235,7 @@ detectBoundaryViolations(records): records.filter(r =>
 
 ```
 EPIC-053-A ✅  L3↔L4 一致性 (commit 827dc15, merge 48e76f1)
-EPIC-053-B ✅  4-Level 证据链 (commit 0a4d9287, merge ff0c3c1)
+EPIC-053-B ✅  5-Level 证据链 (commit 0a4d9287, merge ff0c3c1)
 EPIC-053-C ✅  工具自检 (commit bf394fd, merge 584cd8d)
 EPIC-053-D ✅  派单仪表盘 (commit 31a7c52 — 本票, 5/5 PASS)
 EPIC-053-E ✅  wiring gap (commit aef938e1, merge d365c2a)

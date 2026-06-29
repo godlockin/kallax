@@ -31,7 +31,7 @@
     "GitHub Actions workflow 加 PR size check (file:line .github/workflows/ 加 pr-size-check.yml, 跟 26 .sh wrapper install 模式 一致)",
     "tests/integration/check-pr-100-test.sh 5/5 PASS (mock PR 50/100/200/400/600 行, 验证 4 档分级行为)",
     "PR template 加 'Size Check' 段 (跟 CONTRIBUTING.md 模式 一致, 提示 主公 explicit 拍板 >500 需 codemod)",
-    "跟 CLAUDE.md PR ~100 行上限 联合 (file:line CLAUDE.md:282-322, 跟 EPIC-059-A 9 Hard Rules 联合, Rule 9 落地)",
+    "跟 CLAUDE.md PR ~100 行上限 联合 (file:line CLAUDE.md:282-322, 跟 EPIC-059-A 5 levels 联合, Rule 9 落地)",
     "跟 '翻篇&精进' 战略 一致 (跟 v2.4.0+v2.4.1 8 release 累计 跟单 ticket 跨 release 失焦 联合, 治根 '0 实际变化 假动作' 反讽)",
     "跟 EPIC-059-B Rule of 500 互为 互补 (PR 100 行 是 单 PR 粒度, Rule of 500 是 净变更 粒度, 2 档 不冲突)",
     "Rule 9 KPI 精确 X/Y 格式 — check-pr-size.sh 升级 1/1 完成, GitHub Actions 1/1 完成, integration test 5/5 PASS = 100.0%"

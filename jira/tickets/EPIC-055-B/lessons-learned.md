@@ -76,7 +76,7 @@ EPIC-055-B (本 ticket — P0/P1/P2 分级机制)
        └── EPIC-056-C (Master 6 维恢复, P0 必拍) — 推翻 v1.2.4 6→0 退步
 ```
 
-**EPIC-056-C 特殊**: 是 5 治理卡 唯一 **红线 revert** (推翻 v1.2.4 主公 prior 拍板, 恢复 Master 强验证 6 维度). 需主公 **明确授权** (跟 PROCESS.md:25-26 + "独立" 拍 explicit 约束 联合).
+**EPIC-056-C 特殊**: 是 5 治理卡 唯一 **红线 revert** (推翻 v1.2.4 主公 prior 拍板, 恢复 5 levels (L1-L5)). 需主公 **明确授权** (跟 PROCESS.md:25-26 + "独立" 拍 explicit 约束 联合).
 
 **主公 2026-06-16 explicit 拍板记录** (5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md):
 - ✅ 5/5 APPROVED
@@ -103,9 +103,9 @@ EPIC-055-B (本 ticket — P0/P1/P2 分级机制)
 
 ---
 
-## 跟 Rule 11 v2.1 Master 强验证 6 维度 联合
+## 跟 Rule 11 v2.1 5 levels (L1-L5) 联合
 
-本 ticket 通过 Master 强验证 6 维度 (7 anti-fab tools 跑过):
+本 ticket 通过 5 levels (L1-L5) (7 anti-fab tools 跑过):
 1. ✅ check-test-case-isolation: 0/50 test cases leaked into trigger fields
 2. ✅ check-kpi-precision: 0 estimate patterns in commit message
 3. ✅ check-scope-creep: all 5 changed files within ticket scope (0 越界)

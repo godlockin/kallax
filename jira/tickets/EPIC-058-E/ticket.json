@@ -28,5 +28,5 @@
   "master_decision": "A: 22→20 合并 2 处 (4h 实施 ticket 留待 跨期)",
   "decision_doc": "confluence/decisions/EPIC-058-E-DECISION-2026-06-19.md",
   "completion_time": "2026-06-25T00:00:00Z",
-  "kpi": "1 doc + CLAUDE.md 20 Rule 验证 + 9-hard-rules.md 9 Rule 同步 + 1 commit landed (跟 4-Level Fact-Forcing 联合 0 假 PASS)"
+  "kpi": "1 doc + CLAUDE.md 20 Rule 验证 + 9-hard-rules.md 9 Rule 同步 + 1 commit landed (跟 5-Level Fact-Forcing 联合 0 假 PASS)"
 }

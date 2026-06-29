@@ -171,7 +171,7 @@
     "❌ 文档膨胀 (跟'翻篇&精进' 联合, README 增量改 2 段, INSTALL-MULTI-TOOL 222 行 跟 PROCESS.md 风格 一致)",
     "❌ 简化 5/5 PASS (raw test output 存 jira/tickets/EPIC-057-C/test-output.log)",
     "❌ merge to miao (Performer 硬红线, Rule 1, Conductor 联合)",
-    "❌ 自审 (Conductor 4-Level 联合)",
+    "❌ 自审 (Conductor 5-Level 联合)",
     "❌ silent output (主公拍 D 后第 1 次重试, 不能再 silent, 本次显式报 raw output + commit SHA)"
   ],
   "strategic_alignment": {

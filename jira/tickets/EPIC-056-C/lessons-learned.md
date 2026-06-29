@@ -1,10 +1,10 @@
-# EPIC-056-C LESSONS LEARNED — Master 强验证 6 维度恢复 (⚠️ 红线 revert)
+# EPIC-056-C LESSONS LEARNED — 5 levels (L1-L5)恢复 (⚠️ 红线 revert)
 
 > **Ticket**: EPIC-056-C
 > **Phase**: PHASE-009
 > **Date**: 2026-06-17
 > **Author**: performer-EPIC-056-C
-> **Reviewers**: Conductor + Master 强验证 6 维度 (待 Conductor 复审)
+> **Reviewers**: Conductor + 5 levels (L1-L5) (待 Conductor 复审)
 > **Status**: ✅ DONE — 6/6 PASS (100.0%) — ⚠️ 红线 revert 闭环
 
 ---
@@ -13,7 +13,7 @@
 
 ### Lesson 1: ⚠️ 红线 revert — 6 维度全激活 治 H4 (核心)
 
-**问题**: v1.2.4 主公拍板 5 扩展组, 顺带把 Master 强验证 6 维度降级为"流程监督 + 10% 抽查". 净价值从 85.5% - 5% = 80.5% (5 视角) 变成 62.5% (跟 5 视角 Product 67.5% 联合 恶化 -5%).
+**问题**: v1.2.4 主公拍板 5 扩展组, 顺带把 5 levels (L1-L5)降级为"流程监督 + 10% 抽查". 净价值从 85.5% - 5% = 80.5% (5 视角) 变成 62.5% (跟 5 视角 Product 67.5% 联合 恶化 -5%).
 
 **解决**: 主公 2026-06-16 explicit 拍板 (`confluence/decisions/5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md` line 22) → 5/5 治理卡 PASS, EPIC-056-C 列为"红线 revert", 风险等级"高 — 推翻 v1.2.4 主公拍板, 需明确授权". 本 ticket 落地:
 
@@ -28,18 +28,18 @@
 
 ---
 
-### Lesson 2: 跟 EPIC-053-B 4-Level 证据链 联动 (L6 诚实 = 证据链校验)
+### Lesson 2: 跟 EPIC-053-B 5-Level 证据链 联动 (L6 诚实 = 证据链校验)
 
-**问题**: Master L6 诚实维度 抽象, 没量化标准. 跟 EPIC-053-B 4-Level 证据链 (L1 git-anchor / L2 test stdout / L3 5 扩展组 / L4 独立见证) 重复劳动.
+**问题**: Master L6 诚实维度 抽象, 没量化标准. 跟 EPIC-053-B 5-Level 证据链 (L1 git-anchor / L2 test stdout / L3 5 扩展组 / L4 独立见证) 重复劳动.
 
-**解决**: Master L6 诚实 = 跑 kpi-evidence-chain verify 4-Level:
+**解决**: Master L6 诚实 = 跑 kpi-evidence-chain verify 5-Level:
 
 - L1 git-anchor: 验证 commit SHA 是 40-char hex + 在 git object store + 在当前 branch ancestry
 - L2 test stdout: 验证 stdout 文件含 `PASS` + `X/Y PASS` 格式 (Rule 9)
 - L3 5 扩展组: 跑 5 扩展组 (security-tool-bypass / process-engineering / auditor / compliance / decision-gate) 全部 PASS
 - L4 独立见证: 跑 `audit-log-sink.sh write` 写入 immutable witness
 
-**效果**: 跟 BE-5 (0 commit + 0 file + fake PASS 第 9/10 次) 治根联动. Master L6 直接调用 kpi-evidence-chain.sh 4-Level 验证, 不再靠 Master 人工判断"诚实".
+**效果**: 跟 BE-5 (0 commit + 0 file + fake PASS 第 9/10 次) 治根联动. Master L6 直接调用 kpi-evidence-chain.sh 5-Level 验证, 不再靠 Master 人工判断"诚实".
 
 **L3 5 扩展组 PARTIAL 处理** (跟 EPIC-056-B 同模式):
 - 期望: 5/5 扩展组 PASS
@@ -159,7 +159,7 @@
 
 | BE | 跟 EPIC-056-C 联动 |
 |---|---|
-| BE-5 (Performer-EPIC-036/037 假 PASS 第 9/10 次) | ✅ L6 诚实 = 跑 kpi-evidence-chain verify 4-Level, 治根 |
+| BE-5 (Performer-EPIC-036/037 假 PASS 第 9/10 次) | ✅ L6 诚实 = 跑 kpi-evidence-chain verify 5-Level, 治根 |
 | BE-9 (L4 verify 跟 L3 集成测试矛盾) | ✅ L4 preflight 跑 l3-l4-consistency.sh, 自检 |
 | BE-6 (Performer-EPIC-039-A 越界) | ✅ L5 边界 = file_scope 检测, 治根 |
 | BE-7 (3 安全 issues) | — (跟本 ticket 正交, 后续安全 ticket 处理) |
@@ -178,7 +178,7 @@
 | AC2: strong-verify-6d.sh 升级 | L1-L6 全部 | 升级 6 维度必跑, 新增 net-value + master-verify.ts 联动 |
 | AC3: master-verify.ts 实现 | 6 subcommand | 666 行 TypeScript, 6 subcommand + all + net-value |
 | AC4: H4 治根 (净价值 62.5% → 67.0%) | net-value subcommand | 5 视角 67.5% - 0.5% (23 Rule × 0.9 补救率) = 67.0% |
-| AC5: 跟 EPIC-053-B 4-Level 联动 | L6 subcommand | 跑 kpi-evidence-chain.sh check-l4 + 净价值计算 |
+| AC5: 跟 EPIC-053-B 5-Level 联动 | L6 subcommand | 跑 kpi-evidence-chain.sh check-l4 + 净价值计算 |
 | AC6: 6/6 PASS test | L1+L2+L3+L4+L5+L6 subcommand | 6/6 PASS (100.0%) |
 | AC7: Rule 9 X/Y 格式 | 所有 subcommand | 6/6 (100.0%) — `6/6 PASS (100.0%)` 1 位小数 |
 
@@ -188,11 +188,11 @@
 
 | AC | 状态 | 证据 |
 |---|---|---|
-| AC1: Master 强验证 6 维度恢复 | ✅ | L1-L6 6 subcommand 全部实现 + strong-verify-6d.sh 升级 |
+| AC1: 5 levels (L1-L5)恢复 | ✅ | L1-L6 6 subcommand 全部实现 + strong-verify-6d.sh 升级 |
 | AC2: strong-verify-6d.sh 升级 | ✅ | 6 维度必跑, 不再"流程监督 + 10% 抽查" |
 | AC3: master-verify.ts 实现 | ✅ | 666 行 TypeScript, 6 维度自动验证 + 失败告警 |
 | AC4: H4 治根 (净价值 62.5% → 67.0%) | ✅ | net-value subcommand 计算 +4.5% 改善 |
-| AC5: 跟 EPIC-053-B 4-Level 证据链联动 | ✅ | L6 跑 kpi-evidence-chain.sh check-l4 (4 file(s) written) |
+| AC5: 跟 EPIC-053-B 5-Level 证据链联动 | ✅ | L6 跑 kpi-evidence-chain.sh check-l4 (4 file(s) written) |
 | AC6: 6/6 PASS test output | ✅ | `6/6 PASS (100.0%)` raw |
 | AC7: Rule 9 X/Y 格式 | ✅ | `6/6 PASS (100.0%)` 1 位小数 |
 | ⚠️ 附加 AC: revert v1.2.4 主公拍板 | ✅ | 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md line 22 主公 explicit 拍板 |
@@ -208,7 +208,7 @@
 > 新流程 v2.0 (跟对策 A+B+C 联合, 跟"反讽" 闭环)
 > - `docs/process/NEW-PROCESS-2026-06-13.md` (10 章节)
 > - 流程从"事后 Master 强验证" → "事中 Subagent 必跑 3 硬脚本 + Conductor 必看输出"
-> - Master 强验证 6 维度 → 0 维度 (流程监督 + 10% 抽查)
+> - 5 levels (L1-L5) → 0 维度 (流程监督 + 10% 抽查)
 > - 跟 14 BE 累计 联合, 跟"反讽" 闭环
 
 ### v2.0.3 拍板 (2026-06-16, 主公 explicit 拍板)
@@ -228,7 +228,7 @@
 ## 8. 下一步 (Conductor merge 阶段)
 
 1. **Conductor 验证**: 跑 anti-fab 7 工具 + read pass-report JSON
-2. **Master 强验证 6 维度**: 跟之前 12 subagent 强验证 一致 (跟 PROJECT-STATUS-2026-06-13.md 联动)
+2. **5 levels (L1-L5)**: 跟之前 12 subagent 强验证 一致 (跟 PROJECT-STATUS-2026-06-13.md 联动)
 3. **PASS → Conductor merge**: `feature/EPIC-056-C-master-6d` → `testing` → `miao`
 4. **CHANGELOG.md 升版本**: 标"v2.0.4 — EPIC-056-C 红线 revert 落地"
 5. **后续 ticket 联动**:
@@ -247,8 +247,8 @@
 | L3 5 扩展组 PARTIAL | repo 工具 pre-existing issues (check-scope-creep.sh exit 1, l3-l4-consistency.sh needs args, subagent-pass-gate.sh not executable) | L6 接受 L3 PARTIAL, 跟 EPIC-056-B 同模式; 后续 EPIC-054 架构卫生 ticket 处理 |
 | 红线 revert 跟"诚实修正" 战略冲突 | 主公拍板历史 | 5-GOVERNANCE-CARDS-APPROVAL line 77 主公明确授权 = 跟 v1.2.4 决策 explicit 对话 |
 | 6 维度全激活反噬 Performer 体验 | Rule 9 升级决策疲劳 | 跟 EPIC-055-B 拍板分级联合; 红线类 L1/L2/L4 必跑, 边界类 L3/L5/L6 跟 Subagent 自报 PASS 联合 |
-| 6 维度耗时 | kpi-evidence-chain 跑 4-Level 慢 | 缓存 5 扩展组 PASS 状态 (5min TTL); 跟 EPIC-056-B 3 KPI 仪表盘联动 (后续 ticket) |
+| 6 维度耗时 | kpi-evidence-chain 跑 5-Level 慢 | 缓存 5 扩展组 PASS 状态 (5min TTL); 跟 EPIC-056-B 3 KPI 仪表盘联动 (后续 ticket) |
 
 ---
 
-**跟主公 2026-06-16 explicit 拍板 联合, 跟 PROCESS.md:25-26 "Master 不能自己升级红线" 联合, 跟 Rule 9 X/Y 格式 联合, 跟 Rule 11 v2.1 6 维度 联合, 跟 EPIC-053-B 4-Level 证据链 联合, 跟 11 BE 累计 联合, 跟 6 痛点 联合, 跟 v1.2.4 6→0 退步 对话, 跟"翻篇&精进" 战略 一致, 跟"诚实修正" 联合, ⚠️ 红线 revert 闭环**
+**跟主公 2026-06-16 explicit 拍板 联合, 跟 PROCESS.md:25-26 "Master 不能自己升级红线" 联合, 跟 Rule 9 X/Y 格式 联合, 跟 Rule 11 v2.1 6 维度 联合, 跟 EPIC-053-B 5-Level 证据链 联合, 跟 11 BE 累计 联合, 跟 6 痛点 联合, 跟 v1.2.4 6→0 退步 对话, 跟"翻篇&精进" 战略 一致, 跟"诚实修正" 联合, ⚠️ 红线 revert 闭环**

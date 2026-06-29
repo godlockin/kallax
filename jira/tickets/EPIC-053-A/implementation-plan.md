@@ -15,7 +15,7 @@
 | AC1 | `l3-l4-consistency.sh` 实现 — L3 pass ⇒ L4 pass | 单元 + 集成测试 |
 | AC2 | 4 case 全 PASS | 跑 `tests/integration/l3-l4-consistency-test.sh` |
 | AC3 | BE-9 治根闭环 | 一致性强制: 矛盾 ⇒ 退出非零 |
-| AC4 | Rule 8 4-Level Fact-Forcing 强约束 | L3 + L4 必须并行跑, 不可单边报 |
+| AC4 | Rule 8 5-Level Fact-Forcing 强约束 | L3 + L4 必须并行跑, 不可单边报 |
 | AC5 | 跟 preflight 联动 | `check-fact-forcing-preflight.sh` 调用 l3-l4-consistency |
 | AC6 | KPI X/Y 格式 (4/4 = 100.0%) | 测试报告 X/Y 格式精确数字 |
 

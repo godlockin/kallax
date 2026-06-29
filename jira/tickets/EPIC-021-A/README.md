@@ -61,7 +61,7 @@ tickets_served: []              # NEW: 反向索引, EPIC 关闭时自动追加
 - `When NOT to Use` (3 行, security.md 必带合规/法律/业务边界)
 - `Process` (5 步流程)
 - `Red Flags` (>=5 条)
-- `Verification` (3 checkbox, 末尾强制, D ticket 完成后填 4-Level)
+- `Verification` (3 checkbox, 末尾强制, D ticket 完成后填 5-Level)
 
 ## security.md When NOT to Use 强制边界
 

@@ -56,7 +56,7 @@ KALLAX 规则 (Rule 1-18 + 29-33) 的唯一真相来源 → [CLAUDE.md](../CLAUD
 
 **实施**: 用形式 2 (Rule 编号 + 短描述 + 链) — 让 grep "Rule 11" 能找到, 又不强制 anchor 必须匹配 (避免 anchor 链接失效).
 
-**应用**: 后续 Subagent 5 步 文档 / A+B review 模板 / Master 强验证 文档 都用形式 2 引用. 跟 Rule 11 v2.1 Master 强验证 6 维度 联合 (L2 git show 看内容真改).
+**应用**: 后续 Subagent 5 步 文档 / A+B review 模板 / Master 强验证 文档 都用形式 2 引用. 跟 Rule 11 v2.1 5 levels (L1-L5) 联合 (L2 git show 看内容真改).
 
 ---
 
@@ -98,7 +98,7 @@ KALLAX 规则 (Rule 1-18 + 29-33) 的唯一真相来源 → [CLAUDE.md](../CLAUD
 
 **实测反讽**: 写 TC4 时, 我误把 `TC4_PASS=$((TC1_PASS))` 当 placeholder 留在代码里, 导致 TC4 计数 +1 来自 TC1. 写测试时跑 5/6 = 83.3%, 跟"诚实修正" 战略 联合 — **不能跳过这个 bug**, 改完跑 6/6 = 100.0%. 跟 Rule 9e (Performer 工具调用自验证 = FAIL) 联合, 自验证重要.
 
-**应用**: 后续 ticket 测试设计 都用 "边界 + 完整性 + 效果 + 唯一性 + 死链 + 一致性" 6 维度闭环. 跟 Rule 9 4-Level Fact-Forcing 联合 (L1 存在 → L2 实质 → L3 接线 → L4 数据流).
+**应用**: 后续 ticket 测试设计 都用 "边界 + 完整性 + 效果 + 唯一性 + 死链 + 一致性" 6 维度闭环. 跟 Rule 9 5-Level Fact-Forcing 联合 (L1 存在 → L2 实质 → L3 接线 → L4 数据流).
 
 ---
 
@@ -107,7 +107,7 @@ KALLAX 规则 (Rule 1-18 + 29-33) 的唯一真相来源 → [CLAUDE.md](../CLAUD
 **洞察**: 目标 -50% (CLAUDE.md + GLOSSARY ≤ 35000 bytes from 70035). 实际 -51.5% (34001 bytes). 表面看"超额完成", 实际有反讽:
 
 1. **GLOSSARY 减幅 (-59.2%) 远大于 CLAUDE.md (-46.0%)**: 因为 GLOSSARY 大量 `跟 X 联合` inline 解释, 改 Rule 引用后变很短. CLAUDE.md Rule 定义本身不能大幅压缩, 只能去 inline noise.
-2. **CLAUDE.md 仍有 22130 bytes**: 含 23 Rule + 顶部 SoT 章节 + 命令速查 + 工作流 + 4-Level, 这些不能减. Rule 5 (类型安全) / Rule 6 (经验沉淀) / Rule 11 (Master 禁令) / Rule 14-18 (R-NEW) / Rule 29-33 (5 扩展组) 都是 KALLAX 核心, 不能砍.
+2. **CLAUDE.md 仍有 22130 bytes**: 含 23 Rule + 顶部 SoT 章节 + 命令速查 + 工作流 + 5-Level, 这些不能减. Rule 5 (类型安全) / Rule 6 (经验沉淀) / Rule 11 (Master 禁令) / Rule 14-18 (R-NEW) / Rule 29-33 (5 扩展组) 都是 KALLAX 核心, 不能砍.
 3. **下一步优化空间**: 跟 EPIC-054-D 候选 B 合并 Rule 32 → Rule 5 后, CLAUDE.md 可能再减 300-500 bytes (-2%). 但本 ticket 不动 (跟 PROCESS.md:25-26 Master 不能自己升级红线 联合).
 
 **应用**: 后续 ticket 不要再追求 "更小" — -51.5% 已经达上限. 优化方向应转向 "SoT 边界更清晰" (e.g. PHASE-INDEX vs ACCUMULATED-LESSONS-2026-06-13.md 是否重复).
