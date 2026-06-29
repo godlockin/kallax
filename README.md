@@ -105,7 +105,7 @@ KALLAX 基于多 Agent 协作的最佳实践：
 
 ```bash
 # 克隆仓库
-git clone https://github.com/your-org/kallax.git
+git clone https://github.com/godlockin/kallax.git
 cd kallax
 
 # 默认 --target=auto 检测 (Claude Code 优先, 跟 EPIC-057-B AC #3 一致)
@@ -147,16 +147,16 @@ kallax start --role performer --specialty backend
 
 ```bash
 # Conductor: 创建任务
-kallax task:create "实现用户登录功能" --type feature --priority P1
+kallax task create "实现用户登录功能" --type feature --priority P1
 
 # Performer: 领取任务
-kallax task:claim TASK-001
+kallax task claim TASK-001
 
 # Performer: 完成任务
-kallax task:complete TASK-001
+kallax task complete TASK-001
 
 # Conductor: 审核 PR
-kallax pr:review --pr 42
+kallax pr review --pr 42
 ```
 
 ---
@@ -165,39 +165,39 @@ kallax pr:review --pr 42
 
 ### 任务管理
 ```bash
-kallax task:create "title"          # 创建票据
-kallax task:claim [TASK-NNN]        # 原子领取任务
-kallax task:complete TASK-NNN       # Saga 5步完成
-kallax task:status TASK-NNN         # 查看状态
-kallax task:progress                # DAG 进度 + 关键路径
-kallax task:resume TASK-NNN         # checkpoint 恢复
+kallax task create "title"          # 创建票据
+kallax task claim [TASK-NNN]        # 原子领取任务
+kallax task complete TASK-NNN       # Saga 5步完成
+kallax task status TASK-NNN         # 查看状态
+kallax task progress                # DAG 进度 + 关键路径
+kallax task resume TASK-NNN         # checkpoint 恢复
 ```
 
 ### Conductor 操作
 ```bash
-kallax conductor:heartbeat          # 心跳检查（5 问）
-kallax conductor:poll               # 处理 Performer 上报
-kallax conductor:delegate           # 委派给助理
+kallax conductor heartbeat          # 心跳检查（5 问）
+kallax conductor poll               # 处理 Performer 上报
+kallax conductor delegate           # 委派给助理
 ```
 
 ### Performer 操作
 ```bash
-kallax performer:register --role backend   # 注册 Performer
-kallax performer:poll                      # 长轮询邮箱
-kallax performer:resume TASK-NNN           # 恢复执行
+kallax performer register --role backend   # 注册 Performer
+kallax performer poll                      # 长轮询邮箱
+kallax performer resume TASK-NNN           # 恢复执行
 ```
 
 ### 知识库
 ```bash
-kallax knowledge:index --dir jira/  # 构建 FTS 索引
-kallax knowledge:search "keyword"   # 全文搜索
+kallax knowledge index --dir jira/  # 构建 FTS 索引
+kallax knowledge search "keyword"   # 全文搜索
 kallax recommend TASK-NNN           # TF-IDF 推荐
 ```
 
 ### 系统管理
 ```bash
-kallax system:doctor                # 系统诊断
-kallax team:status                  # 团队状态
+kallax system doctor                # 系统诊断
+kallax team status                  # 团队状态
 kallax server --port 9877           # 启动 HTTP API
 kallax web --port 3000              # Web Dashboard
 ```

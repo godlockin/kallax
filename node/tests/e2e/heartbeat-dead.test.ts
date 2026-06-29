@@ -36,7 +36,7 @@ let server: ApiServer;
 let baseUrl: string;
 
 let PORT = 19878;
-const API_KEY = 'kallax-dev-key';
+const API_KEY = 'kallax-test-key-0123456789abcdef0123';
 
 // Port counter incremented each time a server is started to avoid TIME_WAIT conflicts
 let portCounter = 0;

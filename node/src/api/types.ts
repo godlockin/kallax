@@ -60,7 +60,7 @@ export interface PaginatedResponse<T> {
 export const ServerConfigSchema = z.object({
   port: z.number().default(9877),
   host: z.string().default('127.0.0.1'),
-  apiKey: z.string().default('kallax-dev-key'),
+  apiKey: z.string().min(32, 'KALLAX_API_KEY must be at least 32 chars'),
   corsOrigins: z.array(z.string()).default(['*']),
   rateLimit: z.object({
     windowMs: z.number().default(60000),

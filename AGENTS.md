@@ -53,7 +53,7 @@ Q5: Queue Processing - Handle shared/message_queue messages
 **Identity**: Specialized executor who implements assigned tasks.
 
 **Responsibilities**:
-- Claim tasks atomically via `kallax task:claim`
+- Claim tasks atomically via `kallax task claim`
 - Develop in isolated worktree
 - Follow TDD (test first)
 - Submit PRs with real test output
@@ -202,11 +202,11 @@ Level 4 - Data Flow:
 
 ```bash
 # Performer claims task → automatic worktree creation
-kallax task:claim TASK-001
+kallax task claim TASK-001
 # Creates: .claude/worktrees/TASK-001/
 
 # Conductor verifies isolation before dispatch
-kallax isolation:check TASK-001 TASK-002
+kallax isolation check TASK-001 TASK-002
 # Fails if file scopes overlap
 ```
 
