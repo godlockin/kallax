@@ -19,3 +19,15 @@ export { createPreBashSecurityHook, registerSecurityHooks } from './pre-bash-dis
 
 export { createHookServer } from './http-hook-server.js';
 export type { HookServerConfig, HookServer } from './http-hook-server.js';
+
+export {
+  createHookEventsStore,
+  appendHookEvent,
+  HOOK_EVENTS_DEFAULT_PATH,
+} from './hook-events-store.js';
+export type {
+  HookEventEntry,
+  HookEventInput,
+  HookEventsStore,
+  ReplayQuery,
+} from './hook-events-store.js';
