@@ -1,4 +1,8 @@
-# KALLAX 验证协议
+# KALLAX 验证协议 (DEPRECATED — 整合到 docs/ARCHITECTURE.md)
+
+> **DEPRECATED (v3.1.0)**: 本文档跟主文档 [../../docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md) §6 (5 levels 验证) + §11 (集成测试) 重复, 跟 [../../docs/5-levels.md](../../docs/5-levels.md) 也重复. 内容已整合到主文档. 请阅读主文档 + 5-levels.md 替代本文档.
+>
+> **保留原因**: 历史 reference, 不删 (硬约束).
 
 > 解决 Agent 幻觉产出问题
 

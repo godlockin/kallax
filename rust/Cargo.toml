@@ -13,7 +13,7 @@ default-members = ["crates/kallax-core"]
 resolver = "2"
 
 [workspace.package]
-version = "1.0.0"
+version = "2.7.6"
 edition = "2021"
 authors = ["KALLAX Team"]
 license = "MIT"
