@@ -11,6 +11,7 @@ use std::path::PathBuf;
 use super::task::TaskId;
 use uuid::Uuid;
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Performer {
     id: PerformerId,
     name: String,

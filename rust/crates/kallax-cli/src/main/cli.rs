@@ -19,14 +19,16 @@ use output::output_result;
 use parsers::init_logging;
 
 use kallax_core::error::Result;
-use kallax_engine::ticket::TicketEngine;
+use kallax_engine::event_bus::EventBus;
+use kallax_engine::ticket_engine::TicketEngine;
 
 #[tokio::main]
 async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
     init_logging(cli.verbose);
     let format = cli.output;
-    let engine = Arc::new(TicketEngine::new()?);
+    let event_bus = Arc::new(EventBus::new(1024));
+    let engine = Arc::new(TicketEngine::new(event_bus));
 
     let result = match cli.command {
         Commands::Task(action) => handle_task_action(action, &engine, format).await,
