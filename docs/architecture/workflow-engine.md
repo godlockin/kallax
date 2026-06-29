@@ -1,4 +1,8 @@
-# Workflow Engine
+# Workflow Engine (DEPRECATED — 整合到 docs/ARCHITECTURE.md)
+
+> **DEPRECATED (v3.1.0)**: 本文档跟主文档 [../../docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md) §5 (W3 sub-role) + §8 (Q18 决策模型) 重复. 内容已整合到主文档. 请阅读主文档替代本文档.
+>
+> **保留原因**: 历史 reference, 不删 (硬约束).
 
 > Design document for the KALLAX workflow lifecycle management system.
 
