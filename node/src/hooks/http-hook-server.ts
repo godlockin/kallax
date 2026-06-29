@@ -8,6 +8,8 @@
  *   POST /hooks/permission
  *   POST /hooks/session-start
  *   POST /hooks/session-end
+ *   POST /hooks/replay      (Iter 8 武器 5: replay historical events to target session)
+ *   GET  /hooks/audit       (Iter 8 武器 5: query the audit log with filters)
  */
 
 import { createServer, type IncomingMessage, type ServerResponse, type Server } from 'node:http';
@@ -16,11 +18,16 @@ import type { KallaxResult } from '../types/index.js';
 import { KallaxError, KallaxErrorCode } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import type { HookContext, HookPhase, HookDispatcher } from './types.js';
+import {
+  createHookEventsStore,
+  type HookEventsStore,
+} from './hook-events-store.js';
 
 export interface HookServerConfig {
   readonly port: number;
   readonly host?: string;
   readonly apiKey?: string;
+  readonly auditStore?: HookEventsStore;
 }
 
 export interface HookServer {
@@ -76,19 +83,159 @@ export function createHookServer(
 ): HookServer {
   let server: Server | null = null;
   let running = false;
+  let boundPort = config.port;
+  const auditStore: HookEventsStore | null = config.auditStore ?? null;
+
+  function isAuthorized(req: IncomingMessage): boolean {
+    if (!config.apiKey) return true;
+    const auth = req.headers['authorization'] ?? '';
+    const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+    return token === config.apiKey;
+  }
+
+  async function handleReplay(req: IncomingMessage, res: ServerResponse): Promise<void> {
+    if (!auditStore) {
+      sendJson(res, 503, { error: 'audit store not configured' });
+      return;
+    }
+    let body: Record<string, unknown>;
+    try {
+      body = await parseBody(req);
+    } catch (error: unknown) {
+      sendJson(res, 400, { error: error instanceof Error ? error.message : String(error) });
+      return;
+    }
+
+    const targetSessionId = body['targetSessionId'] as string | undefined;
+    const sourceSessionId = body['sessionId'] as string | undefined;
+    const fromTimestamp = typeof body['fromTimestamp'] === 'number' ? body['fromTimestamp'] : undefined;
+    const toTimestamp = typeof body['toTimestamp'] === 'number' ? body['toTimestamp'] : undefined;
+
+    if (!targetSessionId) {
+      sendJson(res, 400, { error: 'targetSessionId is required' });
+      return;
+    }
+
+    const events = auditStore.query({
+      sessionId: sourceSessionId,
+      fromTimestamp,
+      toTimestamp,
+    });
+
+    const replayResults: Array<{
+      originalSeq: number;
+      hookType: string;
+      toolName?: string;
+      allowed: boolean;
+      reason?: string;
+    }> = [];
+
+    for (const event of events) {
+      const ctx: HookContext = {
+        phase: event.hookType as HookPhase,
+        toolName: event.toolName,
+        toolParams: (event.metadata?.['toolParams'] as Record<string, unknown> | undefined) ?? undefined,
+        ticketId: event.ticketId,
+        performerId: event.performerId,
+        sessionId: targetSessionId,
+        metadata: {
+          ...(event.metadata ?? {}),
+          replay: {
+            sourceSessionId: event.sessionId,
+            sourceSeq: event.seq,
+            sourceTs: event.ts,
+            originalResultCode: event.resultCode,
+            originalReason: event.reason,
+          },
+        },
+      };
+
+      const result = await dispatcher.execute(ctx);
+      if (result.isErr()) {
+        replayResults.push({
+          originalSeq: event.seq,
+          hookType: event.hookType,
+          toolName: event.toolName,
+          allowed: false,
+          reason: `dispatch error: ${result.error.message}`,
+        });
+        continue;
+      }
+      replayResults.push({
+        originalSeq: event.seq,
+        hookType: event.hookType,
+        toolName: event.toolName,
+        allowed: result.value.allowed,
+        reason: result.value.reason,
+      });
+    }
+
+    sendJson(res, 200, {
+      targetSessionId,
+      sourceSessionId: sourceSessionId ?? null,
+      totalEvents: events.length,
+      replayed: replayResults.length,
+      results: replayResults,
+    });
+  }
+
+  async function handleAuditQuery(req: IncomingMessage, res: ServerResponse): Promise<void> {
+    if (!auditStore) {
+      sendJson(res, 503, { error: 'audit store not configured' });
+      return;
+    }
+    const url = new URL(req.url ?? '/', 'http://localhost');
+    const sessionId = url.searchParams.get('sessionId') ?? undefined;
+    const hookType = url.searchParams.get('hookType') ?? undefined;
+    const fromStr = url.searchParams.get('fromTimestamp');
+    const toStr = url.searchParams.get('toTimestamp');
+    const limitStr = url.searchParams.get('limit');
+
+    const fromTimestamp = fromStr ? Number(fromStr) : undefined;
+    const toTimestamp = toStr ? Number(toStr) : undefined;
+    const limit = limitStr ? Number(limitStr) : undefined;
+
+    let events = auditStore.query({ sessionId, hookType, fromTimestamp, toTimestamp });
+    if (typeof limit === 'number' && limit > 0) {
+      events = events.slice(-limit);
+    }
+
+    sendJson(res, 200, {
+      path: auditStore.path(),
+      total: events.length,
+      events,
+    });
+  }
 
   async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
     // Auth check
-    if (config.apiKey) {
-      const auth = req.headers['authorization'] ?? '';
-      const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
-      if (token !== config.apiKey) {
-        sendJson(res, 401, { error: 'Unauthorized' });
-        return;
-      }
+    if (!isAuthorized(req)) {
+      sendJson(res, 401, { error: 'Unauthorized' });
+      return;
     }
 
-    const phase = extractPhase(req.url ?? '/');
+    const url = req.url ?? '/';
+    const path = url.split('?')[0] ?? '';
+
+    // Iter 8 武器 5: /hooks/replay + /hooks/audit (non-phase endpoints)
+    if (path.endsWith('/hooks/replay')) {
+      if (req.method !== 'POST') {
+        sendJson(res, 405, { error: 'Method not allowed' });
+        return;
+      }
+      await handleReplay(req, res);
+      return;
+    }
+    if (path.endsWith('/hooks/audit')) {
+      if (req.method !== 'GET') {
+        sendJson(res, 405, { error: 'Method not allowed' });
+        return;
+      }
+      await handleAuditQuery(req, res);
+      return;
+    }
+
+    const phase = extractPhase(url);
     if (!phase) {
       sendJson(res, 404, { error: `Unknown hook endpoint: ${req.url}` });
       return;
@@ -166,7 +313,13 @@ export function createHookServer(
 
         server.listen(config.port, config.host ?? '127.0.0.1', () => {
           running = true;
-          logger.info({ port: config.port, endpoints: Object.keys(PHASE_MAP).length }, 'hook server started');
+          // Capture the actual bound port (in case caller passed 0 for OS-assigned)
+          const addr = server!.address();
+          if (addr && typeof addr === 'object' && typeof addr.port === 'number') {
+            boundPort = addr.port;
+          }
+          const endpoints = Object.keys(PHASE_MAP).length + (auditStore ? 2 : 0);
+          logger.info({ port: boundPort, endpoints, auditEnabled: auditStore !== null }, 'hook server started');
           resolve(ok(undefined));
         });
       });
@@ -193,7 +346,7 @@ export function createHookServer(
     },
 
     getPort(): number {
-      return config.port;
+      return boundPort;
     },
 
     isRunning(): boolean {
