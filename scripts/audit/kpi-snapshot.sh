@@ -23,6 +23,14 @@ set -uo pipefail
 REPO_ROOT="${REPO_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 cd "$REPO_ROOT" || exit 1
 
+BUILD_ONLY=0
+for arg in "$@"; do
+  case "$arg" in
+    --build-only) BUILD_ONLY=1 ;;
+    *) echo "Unknown arg: $arg" >&2; exit 2 ;;
+  esac
+done
+
 timestamp() {
   date -u +"%Y-%m-%dT%H:%M:%SZ"
 }
@@ -84,8 +92,23 @@ node_package_version() {
   fi
 }
 
+# Build artifact count: node/dist + rust/target (Q2 决策: build-relevant KPI)
+build_artifact_count() {
+  local total=0
+  if [[ -d node/dist ]]; then
+    total=$((total + $(find node/dist -type f 2>/dev/null | wc -l | tr -d ' ')))
+  fi
+  if [[ -d rust/target/release ]]; then
+    total=$((total + $(find rust/target/release -maxdepth 1 -type f -executable 2>/dev/null | wc -l | tr -d ' ')))
+  fi
+  if [[ -d rust/target/debug ]]; then
+    total=$((total + $(find rust/target/debug -maxdepth 1 -type f -executable 2>/dev/null | wc -l | tr -d ' ')))
+  fi
+  echo "$total"
+}
+
 main() {
-  local ts rc gc wfc rcc rwv npv
+  local ts rc gc wfc rcc rwv npv bac
   ts=$(timestamp)
   rc=$(rule_count)
   gc=$(glossary_term_count)
@@ -93,6 +116,21 @@ main() {
   rcc=$(rust_crate_count)
   rwv=$(rust_workspace_version)
   npv=$(node_package_version)
+  bac=$(build_artifact_count)
+
+  if [[ "$BUILD_ONLY" == "1" ]]; then
+    cat <<EOF
+{
+  "mode": "build-only",
+  "rule_count": ${rc},
+  "rust_crate_count": ${rcc},
+  "build_artifact_count": ${bac},
+  "rust_workspace_version": "${rwv}",
+  "node_package_version": "${npv}"
+}
+EOF
+    return 0
+  fi
 
   cat <<EOF
 {
@@ -103,6 +141,7 @@ main() {
   "rust_crate_count": ${rcc},
   "rust_workspace_version": "${rwv}",
   "node_package_version": "${npv}",
+  "build_artifact_count": ${bac},
   "net_value": "deprecated (Q7 决策: 砍 35 術语后 0 KPI 数字)",
   "upgrade_rate": "deprecated (Q7 决策)",
   "fatigue_index": "deprecated (Q7 决策)"
