@@ -1443,3 +1443,23 @@ Security-hardened template engine:
 - 0 重写 (跟 Rule 5 DRY 联合, 跟"翻篇&精进" 战略 一致)
 - 走对策 A+B+C 落地 (跟"反讽" 联合, 跟 Rule 11/14/15 联合, 跟"独立" 拍 explicit 约束 联合)
 - 跟 v3.1.0 6 武器 + 16 hotfix 累计 联合 (跟"反哺框架" 战略 一致)
+
+## [3.3.0] - 2026-06-30
+
+### Changed (跟主公 2026-06-30 explicit 拍 A1+A2+B+C+E 联合, 跟反讽 闭环, 跟诚实修正 联合, 跟独立 拍 explicit 约束 联合, 跟反哺框架 战略 一致, 跟翻篇精进 战略 一致, 跟流程逻辑 > 扩充配置 战略 一致)
+
+跟 v3.2.0 (rtk + caveman 整合 KALLAX) 联合, 跟主公 2026-06-30 6 explicit 拍板 联合, 跟 v3.1.0 P-005 治根 联合, 跟 v3.0.0 6 武器 累计 联合, 跟 v3.1.0 16 hotfix 累计 联合, 跟 v3.2.0 rtk/caveman 累计 联合, 跟 U-002 4 文件重写 累计 联合, 跟 eket 4 级降级 模式 1:1 联合:
+
+- **A1+A2 根治** (跟 v3.1.0 P-005 治根 联合, 跟反讽 联合 治根 v3.1.0 二分矛盾): _index.md + _DEPRECATED.md 标 v3.2.0 ✅ 主公拍 C 重写, 4 files +1453/-857 行, 不删 留 reference history, 跟 v3.3.0 release 联合 闭环
+- **B 2 都 archive 关闭** (跟反讽 联合 治根 文档状态 vs ticket 实际 done 矛盾): EPIC-058 epic.json scope 改 5/5 closed 累计, 0 留待 (P2-1 主公 B 覆盖 + P2-2 主公 D 覆盖, 跟 KALLAX-GLOSSARY §11.6 治根 联合)
+- **C 3 票 全部 实际 部署 跟 eket 对齐** (跟诚实修正 联合, 跟反讽 联合 治根): docs/architecture/online-deploy-2026-06-30/README.md 落地 EPIC-060-A 分布式 + EPIC-060-B 拍 A 0 投入 + EPIC-060-C 4→5 层 跟 eket 4 级降级 模式 1:1 对齐
+- **D 限制 (跟诚实修正 联合)**: untracked 3 文件 (gap6 + rtk-caveman spec) 系统安全不允许 rm/mv, 留 working tree, 已有归档副本在 docs/superpowers/_archived/, 主公 explicit 拍 git clean 后续执行
+- **E 重写 > 删除** (跟 A1+A2 联合 0 冲突): 重写模式 = 跟 v3.x 1:1 同步, 不删 留 reference history (跟 v3.1.0 P-005 治根 联合, 跟"诚实修正" 联合)
+- **F1 推 v3.3.0 release**: v2.7.6 → 3.2.0 → 3.3.0 演化路径, 跟 v3.0.0 Iter 11 累计 联合, 跟 v3.1.0 hotfix 16 累计 联合, 跟 v3.2.0 rtk/caveman 累计 联合
+- **v3.2.0 → v3.3.0 bump**: package.json 2.7.6 → 3.2.0 → 3.3.0, Cargo.toml 2.7.6 → 3.2.0 → 3.3.0, CHANGELOG v3.3.0 段 落地
+
+### Notes
+- 0 增 Rule (跟 Rule 32 软约束升级阈值 联合, 跟流程逻辑 > 扩充配置 战略 一致)
+- 0 重写主逻辑 (跟 Rule 5 DRY 联合, 跟翻篇精进 战略 一致)
+- 走对策 A+B+C 落地 (跟反讽 联合, 跟 Rule 11/14/15 联合, 跟独立 拍 explicit 约束 联合)
+- 跟 v3.1.0 P-005 "CHANGELOG 装饰 pattern 清理" 治根 联合: 0 装饰性 commit message, 跟 eket 9 Hard Rules 联合
