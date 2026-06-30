@@ -6,6 +6,7 @@ import { ok, err } from 'neverthrow';
 import type { KallaxResult } from '../types/index.js';
 import { KallaxError, KallaxErrorCode } from '../types/index.js';
 import { logger } from '../utils/logger.js';
+import { registerCleanupHandler } from '../utils/process-cleanup.js';
 import type { Redis } from 'ioredis';
 
 export type ElectionLevel = 1 | 2 | 3;
@@ -26,6 +27,12 @@ async function getRedis(redisUrl: string): Promise<Redis | null> {
   try {
     let redis = redisPool.get(redisUrl);
     if (redis && redis.status === 'ready') return redis;
+    // v3.5.0 hotfix (跟 B 组 S-005 治根 联合): overwrite 旧 connection 前先 quit (防 fd leak)
+    if (redis && redis.status !== 'ready') {
+      try { await redis.quit(); } catch { /* ignore, fd may already be closed */ }
+      redisPool.delete(redisUrl);
+      redis = undefined;
+    }
     // Create or recreate
     const { Redis: IORedis } = await import('ioredis');
     redis = new IORedis(redisUrl, {
@@ -41,6 +48,15 @@ async function getRedis(redisUrl: string): Promise<Redis | null> {
     return null;
   }
 }
+
+// v3.5.0 hotfix (跟 B 组 S-005 治根 联合): Node.js exit 时 close 全部 redisPool 连接 (跟 redis-pubsub.ts:144 模式 1:1)
+registerCleanupHandler('redis-election-pool', async () => {
+  const conns = Array.from(redisPool.values());
+  redisPool.clear();
+  for (const conn of conns) {
+    try { await conn.quit(); } catch { /* ignore */ }
+  }
+});
 
 export interface ElectionState {
   readonly isMaster: boolean;
