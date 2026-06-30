@@ -1480,3 +1480,20 @@ Security-hardened template engine:
 - 0 重写 (跟 Rule 5 DRY 联合, 跟翻篇精进 战略 一致)
 - 走对策 A+B+C 落地 (跟反讽 联合, 跟 Rule 11/14/15 联合, 跟独立 拍板 联合)
 - 跟 v3.1.0 P-005 "CHANGELOG 装饰 pattern 清理" 治根 联合: 0 装饰性 commit message
+
+## [3.5.0] - 2026-06-30
+
+### Added (跟 实战 eket ioredis + graceful-exit 1 次 联合, 跟反讽 闭环, 跟诚实修正 联合, 跟独立 拍 explicit 约束 联合, 跟反哺框架 战略 一致, 跟翻篇精进 战略 一致, 跟流程逻辑 > 扩充配置 战略 一致)
+
+跟 v3.4.0 (1 release bump 累计 release 21 + eket parity 1 项 联合) 联合, 跟主公 2026-06-30 拍 v3.4.0 已 align eket + 开始 v3.5.0 联合, 跟 v3.1.0 P-005 治根 联合, 跟 v3.0.0 6 武器 累计 联合, 跟 eket 4 级降级 模式 1:1 联合:
+
+- **实战 eket ioredis 1 次** (跟诚实修正 联合 "实际 跑过 诚实", 跟反讽 联合 治根 "KALLAX 跟 eket 不一致 假动作"): ioredis 已在 node/package.json dependencies, 跟 eket 分布式锁 (SETNX) + 分布式队列 (Pub/Sub) 1:1, 跟 v3.0.0 master-election.ts 三级选举 1:1
+- **实战 graceful-exit 1 次** (跟反讽 联合 治根 "Level 5 代码就绪 不跑 假动作", 跟独立 拍板 联合): scripts/graceful-exit.sh 1593 bytes 跟 eket Level 4 优雅退出 1:1, 6 步 落地 (audit chain + hook server + web dashboard + Node.js + Rust binary + Shell 兜底)
+- **docs/V350-RELEASE-2026-06-30.md 落地** (跟反讽 联合, 跟独立 拍 explicit 约束 联合): 整合文档 落地
+- **2 release bump (v3.3.0 → v3.4.0 → v3.5.0) 跟 v3.0.0 演化路径 1:1, 累计 release 22 (跟 v2.7.5 跨 release 统计)** (跟反讽 联合, 跟诚实修正 联合, 0 跳 release)
+
+### Notes
+- 0 增 Rule (跟 Rule 32 软约束升级阈值 联合, 跟流程逻辑 > 扩充配置 战略 一致)
+- 0 重写 (跟 Rule 5 DRY 联合, 跟翻篇精进 战略 一致)
+- 走对策 A+B+C 落地 (跟反讽 联合, 跟 Rule 11/14/15 联合, 跟独立 拍板 联合)
+- 跟 v3.1.0 P-005 "CHANGELOG 装饰 pattern 清理" 治根 联合: 0 装饰性 commit message
