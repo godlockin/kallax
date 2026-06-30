@@ -89,7 +89,9 @@
       "Bash(bash scripts/kallax-onramp/tests/output-test.sh)",
       "Bash(bash scripts/kallax-onramp/tests/onramp-test.sh)",
       "Bash(chmod +x scripts/kallax-onramp/*.sh)",
-      "Bash(jq --version)"
+      "Bash(jq --version)",
+      "Read(//Users/chenchen/working/sourcecode/tools/dev-tools/eket/rust/**)",
+      "Read(//Users/chenchen/working/sourcecode/tools/dev-tools/eket/node/src/**)"
     ]
   }
 }
