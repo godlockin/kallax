@@ -65,7 +65,7 @@ grep '"version"' package.json rust/Cargo.toml
 - Modify: `node/src/core/master-election.ts` (单 master → multi-master 三级选举)
 
 ```bash
-# Step 1: ioredis 启用 (跟 eket parity 100% 联合)
+# Step 1: ioredis 启用 (跟 eket parity 1 项 / N 项 (~10%) 联合, 跟 v3.5.0 P-001 治根 联合)
 # 跟 v3.3.0 online-deploy-2026-06-30/README.md §1.2 1:1
 ```
 
