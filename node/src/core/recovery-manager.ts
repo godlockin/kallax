@@ -32,7 +32,7 @@ export interface DegradationState {
 }
 
 export interface RecoveryManager {
-  start: () => void;
+  start: () => Promise<void>;
   stop: () => void;
   getState: () => DegradationState;
   probeAll: () => Promise<void>;
@@ -213,16 +213,26 @@ export function createRecoveryManager(): RecoveryManager {
   }
 
   return {
-    start(): void {
+    async start(): Promise<void> {
       if (probeTimer) return;
-      // Initial probe
-      probeAll().catch((err: unknown) => {
-        logger.error({ error: err instanceof Error ? err.message : String(err) }, 'initial probe failed');
-      });
-      // Periodic probe
+      // v3.5.0 hotfix (跟 B 组 S-006 治根 联合, 跟 V310-B S-006 audit chain fire-and-forget 1:1):
+      // await 初始 probe, throw on fatal 而非 fire-and-forget 静默失败
+      try {
+        await probeAll();
+      } catch (err: unknown) {
+        logger.error(
+          { error: err instanceof Error ? err.message : String(err) },
+          'recovery: initial probe failed (caller should treat as degraded)',
+        );
+        throw err;
+      }
+      // Periodic probe 也 try/catch 而非 swallow
       probeTimer = setInterval(() => {
         probeAll().catch((err: unknown) => {
-          logger.error({ error: err instanceof Error ? err.message : String(err) }, 'periodic probe failed');
+          logger.error(
+            { error: err instanceof Error ? err.message : String(err) },
+            'recovery: periodic probe failed',
+          );
         });
       }, PROBE_INTERVAL_MS);
       logger.info({ intervalMs: PROBE_INTERVAL_MS }, 'recovery manager started');
