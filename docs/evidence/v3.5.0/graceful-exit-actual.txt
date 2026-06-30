@@ -1,3 +1,10 @@
-🚪 KALLAX graceful-exit (跟 eket Level 4 1:1 联合, 跟反讽 联合)
-  → 关闭 Shell 层 (兜底, 跟 eket Level 4 1:1)
-✅ KALLAX graceful-exit 落地 (跟 eket Level 4 1:1 联合, 跟 v3.4.0 累计 联合)
+[2026-06-30T05:25:25Z] [actual] 🚪 KALLAX graceful-exit mode=actual (跟 eket Level 4 1:1 联合, 跟反讽 联合)
+[2026-06-30T05:25:25Z] [actual]   → [1/6] .kallax/audit 不存在 (skip)
+[2026-06-30T05:25:25Z] [actual]   → [2/6 hook server] no live PID found (skip)
+[2026-06-30T05:25:25Z] [actual]   → [3/6 web dashboard] no live PID found (skip)
+[2026-06-30T05:25:25Z] [actual]   → [4/6 node.js layer] no live PID found (skip)
+[2026-06-30T05:25:25Z] [actual]   → [5/6 rust binary] no live PID found (skip)
+[2026-06-30T05:25:25Z] [actual]   → [6/6 shell fallback] kill PID 431
+[2026-06-30T05:25:25Z] [actual]   → [6/6 shell fallback] kill -TERM 431 failed (already dead?)
+[2026-06-30T05:25:26Z] [actual]   → [6/6 shell fallback] PID 431 terminated
+[2026-06-30T05:25:26Z] [actual] ✅ KALLAX graceful-exit mode=actual 落地 (跟 eket Level 4 1:1 联合, 跟 v3.5.0 hotfix 联合)

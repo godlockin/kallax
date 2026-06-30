@@ -1497,3 +1497,28 @@ Security-hardened template engine:
 - 0 重写 (跟 Rule 5 DRY 联合, 跟翻篇精进 战略 一致)
 - 走对策 A+B+C 落地 (跟反讽 联合, 跟 Rule 11/14/15 联合, 跟独立 拍板 联合)
 - 跟 v3.1.0 P-005 "CHANGELOG 装饰 pattern 清理" 治根 联合: 0 装饰性 commit message
+
+## [3.5.0-hotfix] - 2026-06-30
+
+### Hotfix: B 组 Attack Review 治根 (16 findings, 5 P0 + 8 P1 + 3 P2)
+
+跟 B 组 Attack Review (V350-B-REVIEW-2026-06-29.md, 534 行) 治根 联合, 跟 V310-B P-002 + P-005 1:1 联合, 跟"诚实修正" 战略 一致.
+
+#### Security (P0, 3 治根)
+- **S-001+S-002** (commit `6b9abff`): graceful-exit.sh 加 `--dry-run` / `--actual` flag + SIGTERM/SIGINT trap handler + pid_file 优先 + verify_killed step. 治根 "pgrep 0 命中 fake theatre" + "无 signal handler" + "pkill -f 过泛" 3 反讽. evidence 重生成: dryrun.txt (751B) ≠ actual.txt (900B) byte-diff PASS.
+- **S-003** (commit `4f00063`): ioredis password 凭据 fail-closed. 新 `node/src/utils/redact-secret.ts` (redactErrorMessage + redactRedisUrl) + redis-pubsub.ts 5 处 + master-election.ts 5 处 logger.error/warn 全部 redact. `.kallax/config.yml` 加 `redis.required_auth=true` + `redact_password=true` (跟 V310-B S-001 `kallax-dev-key` 模式 1:1). 验证: 4/4 redaction case PASS.
+
+#### Documentation (P0, 2 治根)
+- **P-001** (commit `74262d0`): "eket parity 100% 推进" 装饰反讽 治根. v340-21-release-eket-parity-2026-06-30.md §5 KPI 改 "1 项 / 估算 N 项 (N≥10) ≈ ~10% parity" (0 假装 100%); §7 拍板表 ERRATA; v340 spec line 68 改 "1 项 / N 项 (~10%)".
+- **P-002** (跟 S-001 联合 治根): "实战 1 次" 跟 evidence byte-identical 反讽 → graceful-exit.sh 重写 evidence 重生成 (751B vs 900B). V350-RELEASE-2026-06-30.md 加 ERRATA 段.
+
+#### Stability (P1, 3 治根)
+- **S-004+S-005+S-006** (commit `e45e3b9`): recovery-manager probeRedis 实际探测 'redis-cli PING' expect 'PONG' + start() 改 async + await probeAll + throw on fatal (跟 V310-B S-006 fire-and-forget 1:1). master-election.ts 加 redisPool leak 治根: overwrite 旧 connection 前 quit + registerCleanupHandler Node.js exit 时 close 全部 pool.
+
+#### Documentation (P1, 5 治根)
+- **U-001+U-002+U-003+U-004+P-003** (commit `pending`): docs/RELEASE-INDEX.md (新, 5 release 累计 入口) + V350-RELEASE-2026-06-30.md 加 ERRATA 段 + .claude/skills/caveman/README.md (新, 75% token 节省 入口) + CHANGELOG.md v3.5.0-hotfix 段 (boundary file 允许).
+
+### Notes
+- 0 估数 (跟 V310-B P-002 0 装饰引用 self-contradict 1:1 联合, 跟"诚实修正" 战略 一致)
+- 跟 V310-B hotfix 模式 1:1 联合 (诚实修正 pattern): P0 装饰 → honest ~10%, evidence fake → 重生成, fail-open → fail-closed
+- 跟 v3.1.0 P-005 "CHANGELOG 装饰 pattern 清理" 治根 联合: 0 装饰性 commit message (16 commits 全部 描述实际 fix)

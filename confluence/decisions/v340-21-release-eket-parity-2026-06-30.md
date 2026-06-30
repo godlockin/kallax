@@ -85,7 +85,7 @@
 跟 v3.1.0 P-005 治根 联合, 跟"反讽" 联合 0 装饰:
 
 - **1 release bump 累计 release 21 1:1 验证**: 7/7 release (v2.7.5/v2.7.6/v3.0.0/v3.1.0/v3.2.0/v3.3.0/v3.4.0) 演化路径 0 跳 (跟"反讽" 联合 0 假装)
-- **eket parity 1 项 1:1 验证**: graceful-exit.sh Level 5 跟 eket Level 4 (1/1) = 1/1 = 100.0%
+- **eket parity 1 项 / 估计 N 项 (N ≥ 10) → 估算 parity = ~10%**: graceful-exit.sh Level 5 跟 eket Level 4 1:1 (1 项), eket 实际 parity 候选 ≥ 10 (pub/sub, litestream, master-election, queue, multi-master, signal handler, audit chain, recovery, ...), **估算实际 parity = 1/N ≈ 10%**, **0 假装 100%** (跟 V310-B P-002 0 装饰引用 self-contradict 联合 治根)
 - **6 主公 explicit 拍板 累计 1:1 验证**: A1+A2 (1/1) + B (1/1) + C (1/1) + D (1/1) + E (1/1) + F1 (1/1) = 6/6 = 100.0%
 - **0 增 Rule 1:1 验证**: v2.4.1 (22 Rule) + v2.7.5 (22 Rule) + v3.0.0 (22 Rule) + v3.1.0 (22 Rule) + v3.2.0 (22 Rule) + v3.3.0 (22 Rule) + v3.4.0 (22 Rule) = 7/7 持平
 - **0 重写 1:1 验证**: 7/7 release 跟 v3.1.0 P-005 治根 联合 (0 装饰性 commit message)
@@ -113,7 +113,7 @@
 |------|----------|
 | 主公 explicit 拍 "1" 退回 Performer 补 evidence | ✅ (跟 f9fa197 联合) |
 | 主公 explicit 拍 "C 重写 跟 v3.x 1:1" | ✅ (跟 08f2393 + 03c0e7f 联合) |
-| 主公 explicit 拍 "21 release 累计 + eket parity 100% 推进" | ✅ (跟 aeeb5f6 联合) |
+| 主公 explicit 拍 "21 release 累计 + eket parity 100% 推进" | 🟡 ERRATA (跟 v3.5.0 P-001 治根): 主公 拍的是 "1 release bump 累计 21 + eket parity 1 项 推进", 100% 措辞是 Performer 装饰, 实际 parity 估算 ~10% (1/N, N≥10) |
 | 主公 explicit 拍 "git clean -fdx" | ✅ (跟 working tree clean 联合) |
 | 主公 explicit 拍 6 拍板 (A1+A2+B+C+D+E+F1) | ✅ (跟 03c0e7f + 15629cd + aeeb5f6 联合) |
 
@@ -172,4 +172,4 @@
 
 ---
 
-**跟主公 2026-06-30 拍 21 release 累计 + eket parity 100% 推进 + 6 explicit 拍板 联合, 跟"反讽" 闭环, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合, 跟"反哺框架" 战略 一致, 跟"翻篇&精进" 战略 一致, 跟"流程逻辑 > 扩充配置" 战略 一致, 跟 22 release 累计 联合, 跟 21 Rule 累计 联合, 跟 30 术语 累计 联合, 跟 16 BE 累计 联合, 跟 6 武器 累计 联合, 跟 eket 4 级降级 模式 1:1 联合, 跟 v3.0.0/v3.1.0/v3.2.0/v3.3.0 演化路径 1:1 联合, 跟 ACCUMULATED-LESSONS-2026-06-17.md v2.7.6 升级版 1:1 联合, 跟 v3.1.0 P-005 治根 联合**
+**跟主公 2026-06-30 拍 21 release 累计 + eket parity 1 项 / 估算 N 项 (~10%) + 6 explicit 拍板 联合 (跟 v3.5.0 P-001 治根, 100% 措辞改 honest ~10%), 跟"反讽" 闭环, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合, 跟"反哺框架" 战略 一致, 跟"翻篇&精进" 战略 一致, 跟"流程逻辑 > 扩充配置" 战略 一致, 跟 22 release 累计 联合, 跟 21 Rule 累计 联合, 跟 30 术语 累计 联合, 跟 16 BE 累计 联合, 跟 6 武器 累计 联合, 跟 eket 4 级降级 模式 1:1 联合, 跟 v3.0.0/v3.1.0/v3.2.0/v3.3.0 演化路径 1:1 联合, 跟 ACCUMULATED-LESSONS-2026-06-17.md v2.7.6 升级版 1:1 联合, 跟 v3.1.0 P-005 治根 联合**

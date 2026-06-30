@@ -13,7 +13,7 @@
 
 ---
 
-## 子文档 (14 个, v2.7.6 → v3.0.0 整合)
+## 子文档 (15 个, v2.7.6 → v3.5.0 整合)
 
 > **整合原则** (跟 Iter 12 落地 联合): 子文档内容 已整合到 `docs/ARCHITECTURE.md` 主文档 相应章节. 子文档本身 **不删** (硬约束), 仅 mark DEPRECATED 或 引用. 验证 1:1 通过 `grep -rn "ARCHITECTURE.md" docs/`.
 
@@ -31,6 +31,7 @@
 | `docs/architecture/recommender-system.md` | 引用 | §4 (跟 eket 对比 + 推荐系统) | Iter 1+11 |
 | `docs/architecture/roadmap.md` | 引用 | (v3.0.0 + v3.1.0 候选) | Iter 12 |
 | `docs/architecture/3-MODES.md` | 引用 | §8.4 (3 模式 ai-auto / ai-copilot / manual) | Iter 2+11 |
+| `docs/architecture/online-deploy-2026-06-30/README.md` | 引用 (nested dir) | §9.4 (EPIC-060-A/B/C 拍板) | v3.3.0 |
 
 ### DEPRECATED (4 个, 整合到主文档, 子文档 mark DEPRECATED 头)
 
@@ -91,3 +92,4 @@ find docs/ -name "*.md" | sort
 
 **v3.2.0 阶段**: ✅ 主公拍 **C 重写 跟 v3.x 1:1 同步** (commit `08f2393`). 跟"诚实修正" 联合 ("重写就是重写" 诚实), 跟"独立" 拍 explicit 约束 联合, 跟 v3.1.0 P-005 治根 联合.
 **v3.3.0 阶段**: 推 v3.3.0 release, 跟 A1+A2 累计 联合 闭环.
+**v3.5.0 阶段**: ✅ 加 `online-deploy-2026-06-30/README.md` (nested dir) 到 "引用" 表, 跟 B 组 U-005 + P-004 治根 联合. 内容 跟 degradation-strategy.md (16.6K) 部分 重复, 待 v3.6.0 整合 (本 hotfix 范围外).

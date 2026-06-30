@@ -34,6 +34,15 @@ degradation:
   emit_metrics: true             # 降级时必须发送指标
 
 # ============================================================
+# Redis 配置 (v3.5.0 hotfix 跟 B 组 S-003 fail-closed 联合, 跟 V310-B S-001 1:1)
+# ============================================================
+redis:
+  required_auth: true            # 生产必设 requirepass, KALLAX 启动时 verify AUTH 成功
+  redact_password: true          # logger.error / logger.warn 输出前 mask 凭据 (跟 redact-secret.ts 1:1)
+  connect_timeout_ms: 5000       # 连接超时 (跟 redis_timeout 一致)
+  command_timeout_ms: 3000       # 命令超时
+
+# ============================================================
 # 并行隔离策略
 # ============================================================
 isolation:

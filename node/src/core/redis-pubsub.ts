@@ -14,6 +14,7 @@
 
 import { logger } from '../utils/logger.js';
 import { registerCleanupHandler } from '../utils/process-cleanup.js';
+import { redactErrorMessage } from '../utils/redact-secret.js';
 import { Redis } from 'ioredis';
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -96,7 +97,7 @@ export function createRedisPubSubBus(config: RedisPubSubConfig): PubSubBus {
       logger.error(
         {
           channel,
-          error: parseError instanceof Error ? parseError.message : String(parseError),
+          error: redactErrorMessage(parseError instanceof Error ? parseError.message : String(parseError)),
         },
         'redis-pubsub failed to parse message',
       );
@@ -110,7 +111,7 @@ export function createRedisPubSubBus(config: RedisPubSubConfig): PubSubBus {
             logger.error(
               {
                 channel,
-                error: error instanceof Error ? error.message : String(error),
+                error: redactErrorMessage(error instanceof Error ? error.message : String(error)),
               },
               'redis-pubsub handler rejected',
             );
@@ -120,7 +121,7 @@ export function createRedisPubSubBus(config: RedisPubSubConfig): PubSubBus {
         logger.error(
           {
             channel,
-            error: error instanceof Error ? error.message : String(error),
+            error: redactErrorMessage(error instanceof Error ? error.message : String(error)),
           },
           'redis-pubsub handler threw synchronously',
         );
@@ -130,13 +131,13 @@ export function createRedisPubSubBus(config: RedisPubSubConfig): PubSubBus {
 
   publisher.on('error', (error: Error) => {
     logger.error(
-      { error: error.message, host: config.host, port: config.port },
+      { error: redactErrorMessage(error.message), host: config.host, port: config.port },
       'redis-pubsub publisher error',
     );
   });
   subscriber.on('error', (error: Error) => {
     logger.error(
-      { error: error.message, host: config.host, port: config.port },
+      { error: redactErrorMessage(error.message), host: config.host, port: config.port },
       'redis-pubsub subscriber error',
     );
   });
@@ -146,7 +147,7 @@ export function createRedisPubSubBus(config: RedisPubSubConfig): PubSubBus {
       await publisher.quit();
     } catch (error: unknown) {
       logger.warn(
-        { error: error instanceof Error ? error.message : String(error) },
+        { error: redactErrorMessage(error instanceof Error ? error.message : String(error)) },
         'redis-pubsub publisher quit failed',
       );
     }
@@ -154,7 +155,7 @@ export function createRedisPubSubBus(config: RedisPubSubConfig): PubSubBus {
       await subscriber.quit();
     } catch (error: unknown) {
       logger.warn(
-        { error: error instanceof Error ? error.message : String(error) },
+        { error: redactErrorMessage(error instanceof Error ? error.message : String(error)) },
         'redis-pubsub subscriber quit failed',
       );
     }
