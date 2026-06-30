@@ -85,7 +85,12 @@ async function probeSQLite(): Promise<boolean> {
 
 async function probeRedis(): Promise<boolean> {
   try {
-    return true; // Redis probe requires active election config — skip for now
+    // v3.5.0 hotfix (跟 B 组 S-004 治根 联合): 实际探测 Redis PING (跟 probeNode 模式 1:1)
+    const { execFile } = await import('node:child_process');
+    const { promisify } = await import('node:util');
+    const execFileAsync = promisify(execFile);
+    const { stdout } = await execFileAsync('redis-cli', ['-u', 'redis://localhost:6379', 'PING'], { timeout: 3000 });
+    return stdout.trim() === 'PONG';
   } catch {
     return false;
   }
@@ -160,6 +165,10 @@ export function createRecoveryManager(): RecoveryManager {
     // Probe shell fallback
     const fileQOk = await probeFileQueue();
     updateTierStatus(1, fileQOk);
+
+    // v3.5.0 hotfix (跟 B 组 S-004 治根 联合): Redis 加到 probeAll + Tier 1 跟 Redis 选举层 联合
+    const redisOk = await probeRedis();
+    updateTierStatus(1, fileQOk && redisOk);
 
     emitMetrics();
 
