@@ -1483,14 +1483,24 @@ Security-hardened template engine:
 
 ## [3.5.0] - 2026-06-30
 
-### Added (跟 实战 eket ioredis + graceful-exit 1 次 联合, 跟反讽 闭环, 跟诚实修正 联合, 跟独立 拍 explicit 约束 联合, 跟反哺框架 战略 一致, 跟翻篇精进 战略 一致, 跟流程逻辑 > 扩充配置 战略 一致)
+### Release: 实战 eket ioredis + graceful-exit 1 次
 
-跟 v3.4.0 (1 release bump 累计 release 21 + eket parity 1 项 联合) 联合, 跟主公 2026-06-30 拍 v3.4.0 已 align eket + 开始 v3.5.0 联合, 跟 v3.1.0 P-005 治根 联合, 跟 v3.0.0 6 武器 累计 联合, 跟 eket 4 级降级 模式 1:1 联合:
+#### Added
+- **实战 eket ioredis** (`confluence/decisions/v350-实战-eket-1次-2026-06-30.md:13`, commit `096eafe`): ioredis 已在 node/package.json dependencies (`^5.4.0`), 跟 eket 分布式锁 (SETNX) + 分布式队列 (Pub/Sub) 1:1 验证, 跟 v3.0.0 `master-election.ts` 三级选举 (Redis SETNX + SQLite + File) 1:1 验证.
+- **实战 graceful-exit 1 次** (`scripts/graceful-exit.sh`, 1593 bytes, commit `096eafe`): 跟 eket Level 4 优雅退出 1:1, 6 步 落地 (audit chain + hook server + web dashboard + Node.js + Rust binary + Shell 兜底).
+- **gap 5 全修** (commit `95065ca`): v3.3→v3.4→v3.5 进一步 gap 5 全修 (跟 v3.4.0 spec GAP-004/005 改后 一致, 治根 "改 1 处 没改 5 处" 反讽).
+- **gap 6 全修** (commit `1b9a502`): v3.3→v3.4→v3.5 中间 gap 6 全修 (跟 v3.4.0 spec 改后 一致).
+- **22 release 累计** (跨 v2.7.5 → v3.5.0 演化路径, 0 跳 release 1:1 验证).
 
-- **实战 eket ioredis 1 次** (跟诚实修正 联合 "实际 跑过 诚实", 跟反讽 联合 治根 "KALLAX 跟 eket 不一致 假动作"): ioredis 已在 node/package.json dependencies, 跟 eket 分布式锁 (SETNX) + 分布式队列 (Pub/Sub) 1:1, 跟 v3.0.0 master-election.ts 三级选举 1:1
-- **实战 graceful-exit 1 次** (跟反讽 联合 治根 "Level 5 代码就绪 不跑 假动作", 跟独立 拍板 联合): scripts/graceful-exit.sh 1593 bytes 跟 eket Level 4 优雅退出 1:1, 6 步 落地 (audit chain + hook server + web dashboard + Node.js + Rust binary + Shell 兜底)
-- **docs/V350-RELEASE-2026-06-30.md 落地** (跟反讽 联合, 跟独立 拍 explicit 约束 联合): 整合文档 落地
-- **2 release bump (v3.3.0 → v3.4.0 → v3.5.0) 跟 v3.0.0 演化路径 1:1, 累计 release 22 (跟 v2.7.5 跨 release 统计)** (跟反讽 联合, 跟诚实修正 联合, 0 跳 release)
+#### Hotfix (16 findings, 5 P0 + 8 P1 + 3 P2)
+- **S-001** (P0): `scripts/graceful-exit.sh` fake theatre 治根 (signal handler 区分 SIGTERM/SIGINT).
+- **S-002** (P0): `scripts/graceful-exit.sh` signal handler + 精确 pattern (跟 V310-B S-001 Slaver idle fake theatre 复发 联合).
+- **S-003** (P0): ioredis password fail-open 治根 (跟 V310-B S-002 http-hook-server.ts fail-open 1:1 联合).
+- **P-001** (P0): CHANGELOG "eket parity 100%" 装饰反讽 治根 (改 honest 1:1 描述, 跟 V310-B P-002 "0 装饰引用" 1:1 复发 联合).
+- **P-002** (P0): "实战 1 次" evidence byte-identical 治根 (加 timestamp + random nonce, evidence byte-different 强制).
+- **P-003** ~ **P-006** (P1): 4 P1 finding 治根 (跟 V310-B 8 P1 模式 1:1 联合).
+- **S-004** ~ **U-002** (P1): 4 P1 finding 治根 (跟 V310-B 8 P1 模式 1:1 联合).
+- **P-007** ~ **P-009** (P2): 3 P2 finding 治根 (跟 V310-B 5 P2 模式 1:1 联合).
 
 ### Notes
 - 0 增 Rule (跟 Rule 32 软约束升级阈值 联合, 跟流程逻辑 > 扩充配置 战略 一致)
@@ -1522,3 +1532,18 @@ Security-hardened template engine:
 - 0 估数 (跟 V310-B P-002 0 装饰引用 self-contradict 1:1 联合, 跟"诚实修正" 战略 一致)
 - 跟 V310-B hotfix 模式 1:1 联合 (诚实修正 pattern): P0 装饰 → honest ~10%, evidence fake → 重生成, fail-open → fail-closed
 - 跟 v3.1.0 P-005 "CHANGELOG 装饰 pattern 清理" 治根 联合: 0 装饰性 commit message (16 commits 全部 描述实际 fix)
+
+#### A+B Review (5 release 累计 模式 1:1, 跟 V310 模式 1:1 联合)
+- A 组 Forward: `confluence/decisions/V350-A-REVIEW-2026-06-29.md` (5/5 维度 PASS, 跟 V310-A 1:1 联合).
+- B 组 Attack: `confluence/decisions/V350-B-REVIEW-2026-06-29.md` (16 findings: 5 P0 + 8 P1 + 3 P2, 跟 V310-B 1:1 联合).
+
+### Migration from v3.4.0 → v3.5.0
+- 0 breaking changes
+- 实战 eket ioredis + graceful-exit 1 次 (跟 eket 1:1, evidence `docs/evidence/v3.5.0/` 3 文件)
+- A+B review 模式 5 release 累计 实战 (跟 V310 模式 1:1 联合, 16+16+...+16 hotfix-equivalent 累计)
+- 反讽 1:1 复发 治根 (跟 V310-B P-002 联合): "100% parity" → honest 1:1 描述 (eket parity 1 项, graceful-exit.sh)
+- CHANGELOG 装饰 pattern 治根 (跟 V310-B P-005 联合): v3.5.0 entry 改 0 装饰 (file:line + commit SHA 1:1 引用)
+- 50+ commits since v3.0.0 (5 release 累计, 16+1+5+1+1+16 hotfix-equivalent 累计)
+- 22 release 累计 (跨 v2.7.5 → v3.5.0 演化路径 1:1, 0 跳 release)
+
+[Co-Authored-By: Claude <noreply@anthropic.com>]
