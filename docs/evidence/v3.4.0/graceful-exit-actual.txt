@@ -1,0 +1,8 @@
+🚪 KALLAX graceful-exit (跟 eket Level 4 1:1 联合, 跟反讽 联合)
+  → 关闭 audit chain
+  → 关闭 hook server
+  → 关闭 web dashboard
+  → 关闭 Node.js 层
+  → 关闭 Rust binary
+  → 关闭 Shell 层 (兜底, 跟 eket Level 4 1:1)
+✅ KALLAX graceful-exit 落地 (跟 eket Level 4 1:1 联合, 跟 v3.4.0 累计 联合)
