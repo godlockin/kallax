@@ -32,7 +32,7 @@ export interface DegradationState {
 }
 
 export interface RecoveryManager {
-  start: () => void;
+  start: () => Promise<void>;
   stop: () => void;
   getState: () => DegradationState;
   probeAll: () => Promise<void>;
@@ -85,7 +85,12 @@ async function probeSQLite(): Promise<boolean> {
 
 async function probeRedis(): Promise<boolean> {
   try {
-    return true; // Redis probe requires active election config — skip for now
+    // v3.5.0 hotfix (跟 B 组 S-004 治根 联合): 实际探测 Redis PING (跟 probeNode 模式 1:1)
+    const { execFile } = await import('node:child_process');
+    const { promisify } = await import('node:util');
+    const execFileAsync = promisify(execFile);
+    const { stdout } = await execFileAsync('redis-cli', ['-u', 'redis://localhost:6379', 'PING'], { timeout: 3000 });
+    return stdout.trim() === 'PONG';
   } catch {
     return false;
   }
@@ -161,6 +166,10 @@ export function createRecoveryManager(): RecoveryManager {
     const fileQOk = await probeFileQueue();
     updateTierStatus(1, fileQOk);
 
+    // v3.5.0 hotfix (跟 B 组 S-004 治根 联合): Redis 加到 probeAll + Tier 1 跟 Redis 选举层 联合
+    const redisOk = await probeRedis();
+    updateTierStatus(1, fileQOk && redisOk);
+
     emitMetrics();
 
     // Auto-upgrade if target > current
@@ -204,16 +213,26 @@ export function createRecoveryManager(): RecoveryManager {
   }
 
   return {
-    start(): void {
+    async start(): Promise<void> {
       if (probeTimer) return;
-      // Initial probe
-      probeAll().catch((err: unknown) => {
-        logger.error({ error: err instanceof Error ? err.message : String(err) }, 'initial probe failed');
-      });
-      // Periodic probe
+      // v3.5.0 hotfix (跟 B 组 S-006 治根 联合, 跟 V310-B S-006 audit chain fire-and-forget 1:1):
+      // await 初始 probe, throw on fatal 而非 fire-and-forget 静默失败
+      try {
+        await probeAll();
+      } catch (err: unknown) {
+        logger.error(
+          { error: err instanceof Error ? err.message : String(err) },
+          'recovery: initial probe failed (caller should treat as degraded)',
+        );
+        throw err;
+      }
+      // Periodic probe 也 try/catch 而非 swallow
       probeTimer = setInterval(() => {
         probeAll().catch((err: unknown) => {
-          logger.error({ error: err instanceof Error ? err.message : String(err) }, 'periodic probe failed');
+          logger.error(
+            { error: err instanceof Error ? err.message : String(err) },
+            'recovery: periodic probe failed',
+          );
         });
       }, PROBE_INTERVAL_MS);
       logger.info({ intervalMs: PROBE_INTERVAL_MS }, 'recovery manager started');
