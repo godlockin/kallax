@@ -65,32 +65,29 @@ find docs/ -name "*.md" | sort
 
 ---
 
-## DEPRECATED 清理时间表 (V310 hotfix U-002)
+## DEPRECATED 状态同步 (v3.2.0 主公拍 C 重写 落地, 跟"反讽" 联合 治根)
 
 > **来源**: B 组 review `confluence/decisions/V310-B-REVIEW-2026-06-29.md` U-002 (P-003) P1
-> **当前状态**: 4 个 DEPRECATED 子文档 仍 tracked, 内容已 100% 整合到主文档, 子文档本身 是 0 信息增量的 reference 副本.
+> **当前状态**: ✅ **v3.2.0 主公拍 C 覆盖重写 4 文件 跟 v3.x 1:1 同步** (commit `08f2393`, 4 files +1453/-857 行). 不删, 留 reference history. 跟 E "重写 > 删除" 联合, 跟 v3.1.0 P-005 治根 联合, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合.
 
-### 计划
+### 累计状态 (跟"反讽" 联合 治根 v3.1.0 二分矛盾)
 
-| 版本 | 动作 | 详情 |
-|------|------|------|
-| **v3.1.0 (当前)** | ✅ 标记 DEPRECATED + 加清理时间表 | 本文档 + `_DEPRECATED.md` |
-| **v3.2.0** | 🟡 评估期 (主公拍) | 主公审查 4 个 DEPRECATED 内容, 决定留 / 删 |
-| **v3.3.0** | 🟢 删 4 个 DEPRECATED 子文档 (跟主公拍板 联合) | framework.md / three-repo-architecture.md / workflow-engine.md / verification-protocol.md |
+| 版本 | 动作 | 详情 | 跟"独立" 拍板 联合 |
+|------|------|------|-----------------|
+| **v3.1.0** | ✅ 标记 DEPRECATED + 加清理时间表 (留/删 二分) | 本文档 + `_DEPRECATED.md` | ✅ 跟 v3.1.0 P-005 联合 |
+| **v3.2.0** | ✅ **主公拍 C 覆盖重写** (4 文件 跟 v3.x 1:1 同步) | commit `08f2393` | ✅ 跟"独立" 拍 explicit 约束 联合 |
+| **v3.3.0** | 🟢 累计 release (跟 A1+A2 联合 闭环) | F1 推 v3.3.0 | ✅ 跟"反讽" 闭环 |
 
-### 删除前 1:1 验证
+### 跟 v3.x 1:1 同步 验证 (跟"诚实修正" 联合)
 
-```bash
-# 1. 4 个待删文档 content 跟主文档对应章节 diff (期望 = 0 实质 增量)
-diff <(grep -E '^##' docs/architecture/framework.md) <(grep -E '^##' docs/ARCHITECTURE.md)
+| 重写文件 | 跟 v3.x 1:1 同步 (跟"反讽" 联合) | 跟"诚实修正" 联合 |
+|---------|------------------------------|---------------|
+| `framework.md` | 跟 v3.0.0 6 武器 + Iter 3 binary 整合 + 5-Level + EPIC-038-A sub-role 1:1 | ✅ |
+| `three-repo-architecture.md` | 跟 v3.x L0-L4 记忆分层 (EPIC-059-H) + sub-role 4 schema 1:1 | ✅ |
+| `workflow-engine.md` | 跟 v3.x 4 sub-roles (coder/reviewer/tester/docs) + Q18 + 7 templates 1:1 | ✅ |
+| `verification-protocol.md` | 跟 v3.x 5-Level (Level 5 边界: U-002/scope creep/KPI 估数) + 6 武器 1:1 | ✅ |
 
-# 2. 4 个待删文档 0 active 引用 (除 _index.md 自己)
-grep -rln "architecture/framework\|architecture/three-repo\|architecture/workflow\|architecture/verification" docs/ confluence/ scripts/
+### 主公拍 决策 (跟"独立" 拍 explicit 约束 联合)
 
-# 3. 主公拍板 (confluence/decisions/) 跟踪
-```
-
-### 主公拍 决策
-
-**v3.1.0 阶段**: 保留 4 个 DEPRECATED 子文档 (跟 Iter 12 "不删" 决定 一致), 加 时间表 + `_DEPRECATED.md` 说明.
-**v3.2.0 阶段**: 主公 拍 "是 删 4 DEPRECATED 还是 留做 reference history".
+**v3.2.0 阶段**: ✅ 主公拍 **C 重写 跟 v3.x 1:1 同步** (commit `08f2393`). 跟"诚实修正" 联合 ("重写就是重写" 诚实), 跟"独立" 拍 explicit 约束 联合, 跟 v3.1.0 P-005 治根 联合.
+**v3.3.0 阶段**: 推 v3.3.0 release, 跟 A1+A2 累计 联合 闭环.

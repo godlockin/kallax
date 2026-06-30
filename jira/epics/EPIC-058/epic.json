@@ -1,8 +1,8 @@
 {
   "id": "EPIC-058",
   "phase": "PHASE-011",
-  "title": "PHASE-011 跨期 review 入口 (5 遗留 P1/P2/P3 deferred tickets, 跟 v2.0.6 release + 主公'B'+'D' explicit 跳过 联合)",
-  "scope": "1. 主公 2026-06-17 explicit 拍 A: 启动 PHASE-011 跨期 review 入口, 跟主公'B'+'D' explicit 跳过 联合 (web dashboard 部署 + 69 remote DB cleanup 跳过, 留待后续拍板)\n2. PHASE-011-REVIEW-2026-06-17.md 跨期 review doc (5 遗留 P1/P2/P3 入口, 0 执行, 0 派单, 0 ticket claim)\n3. 5 遗留 deferred tickets: P1-1 jira/ pre-commit 治根 + P1-2 worktree/branch 清理 + P2-1 web dashboard 部署 (主公 B 跳过) + P2-2 69 remote DB cleanup (主公 D 跳过) + P3-1 Rule 22 进一步合并\n4. 跟 KALLAX-GLOSSARY v2.0.6 升级版 联合 (Section 8.6-8.10 4 工具 multi-tool 术语)\n5. 跟'翻篇&精进' 战略 一致 (入口沉淀, 0 增 ticket 0 增 Rule 0 重写, 跟'反讽' 联合)\n6. 跟 v2.0.6 EPIC-057 4 ticket 闭环 + v2.0.7 跨期 todo 闭环 release 联合",
+  "title": "PHASE-011 跨期 review 入口 (5 遗留 P1/P2/P3 deferred tickets, 跟 v2.0.6 release + 主公'B'+'D' explicit 跳过 联合, 跟 v3.3.0 5/5 closed 累计 联合)",
+  "scope": "1. 主公 2026-06-17 explicit 拍 A: 启动 PHASE-011 跨期 review 入口, 跟主公'B'+'D' explicit 跳过 联合 (web dashboard 部署 + 69 remote DB cleanup 跳过, 留待后续拍板)\n2. PHASE-011-REVIEW-2026-06-17.md 跨期 review doc (5 遗留 P1/P2/P3 入口, 0 执行, 0 派单, 0 ticket claim)\n3. **v3.3.0 累计 (跟主公 2026-06-30 explicit 拍 B 联合, 跟'反讽' 联合 治根)**: 5/5 closed 累计 (P1-1 v2.3.0 done + P1-2 v2.4.0 done + **P2-1 v2.0.6 done (主公 B 覆盖)** + **P2-2 v2.0.6 done (主公 D 覆盖)** + P3-1 v2.4.1 done revert). 实际 0 留待 (跟 v2.0.6 EPIC-058-C/D 状态 done 1:1 验证)\n4. 跟 KALLAX-GLOSSARY v2.0.6 升级版 联合 (Section 8.6-8.10 4 工具 multi-tool 术语) + KALLAX-GLOSSARY §11.6 'P2-1 P2-2 留待' 文档状态 跟 ticket done 矛盾 治根 (跟'反讽' 联合)\n5. 跟'翻篇&精进' 战略 一致 (入口沉淀, 0 增 ticket 0 增 Rule 0 重写, 跟'反讽' 联合)\n6. 跟 v2.0.6 EPIC-057 4 ticket 闭环 + v2.0.7 跨期 todo 闭环 release 联合 + v3.3.0 5/5 closed 闭环 联合",
   "start_time": "2026-06-17",
   "delivery_time": "2026-06-19",
   "completion_time": "2026-06-19",
