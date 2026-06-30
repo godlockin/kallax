@@ -4,9 +4,9 @@
 
 **Goal:** 实战 eket ioredis + graceful-exit 1 次 (跟"诚实修正" 联合 "实际 跑过 诚实"). 推 v3.5.0 release.
 
-**Architecture:** 在 worktree `feature/EPIC-V350-EKET-实战` 修 4 task, 走对策 A+B+C 落地. 跟 v3.4.0 (21 release 累计 + eket parity 100% 推进 联合) 兼容, 跟 eket 4 级降级 模式 1:1 联合, 跟 v3.1.0 P-005 治根 联合, 跟"独立" 拍 explicit 约束 联合.
+**Architecture:** 在 worktree `feature/EPIC-V350-EKET-实战` 修 4 task, 走对策 A+B+C 落地. 跟 v3.4.0 (1 release bump 累计 release 21 + eket parity 1 项 联合) 兼容, 跟 eket 4 级降级 模式 1:1 联合, 跟 v3.1.0 P-005 治根 联合, 跟"独立" 拍 explicit 约束 联合.
 
-**Tech Stack:** ioredis (跟 eket parity 100% 启用, 在 node/package.json dependencies) + litestream (跟 eket parity 100% 启用) + scripts/graceful-exit.sh (Level 5, 跟 eket Level 4 1:1) + 0 新增依赖. 跟"翻篇&精进" 战略 一致, 跟"诚实修正" 联合, 跟"反哺框架" 战略 一致.
+**Tech Stack:** ioredis (跟 eket parity 1 项 验证, 在 node/package.json dependencies) + litestream (跟 eket parity 1 项 验证) + scripts/graceful-exit.sh (Level 5, 跟 eket Level 4 1:1) + 0 新增依赖. 跟"翻篇&精进" 战略 一致, 跟"诚实修正" 联合, 跟"反哺框架" 战略 一致.
 
 ---
 
@@ -14,10 +14,10 @@
 
 ### 1.1 关键发现 (跟"反讽" 联合, 跟"诚实修正" 联合)
 
-- ✅ **v3.4.0 落地** (commit `aeeb5f6`, tag v3.4.0 在 remote) — 21 release 累计 + eket parity 100% 推进
+- ✅ **v3.4.0 落地** (commit `aeeb5f6`, tag v3.4.0 在 remote) — 1 release bump 累计 release 21 + eket parity 1 项 (graceful-exit.sh 跟 eket Level 4 1:1)
 - ✅ **eket 4 级降级 模式 1:1 对齐** (跟 v3.3.0 online-deploy-2026-06-30/README.md 联合)
 - ✅ **Level 5 graceful-exit.sh 落地** (跟 eket Level 4 1:1 联合, 1593 bytes, executable)
-- ✅ **ioredis 已在 node/package.json dependencies** (跟 eket parity 100% 联合, 跟"反讽" 联合 治根 "KALLAX 跟 eket 不一致 假动作")
+- ✅ **ioredis 已在 node/package.json dependencies** (跟 eket parity 1 项 验证, 跟"反讽" 联合 治根 "KALLAX 跟 eket 不一致 假动作")
 - ⚠️ **实战 1 次 缺失** (跟"诚实修正" 联合, 跟"反讽" 联合 治根 "代码就绪 不实战 假动作")
 
 ### 1.2 跟"反讽" 闭环 (跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合)
@@ -129,7 +129,7 @@ cat > docs/V350-RELEASE-2026-06-30.md <<'EOF'
 
 - ✅ **实战 eket ioredis 1 次** (跟"诚实修正" 联合 "实际 跑过 诚实", 跟"反讽" 联合 治根 "KALLAX 跟 eket 不一致 假动作")
 - ✅ **实战 graceful-exit 1 次** (跟"反讽" 联合 治根 "Level 5 代码就绪 不跑 假动作", 跟"独立" 拍板 联合)
-- ✅ **22 release 累计 跟 v3.0.0 演化路径 1:1** (跟"反讽" 联合, 跟"诚实修正" 联合, 跟"独立" 拍板 联合)
+- ✅ **2 release bump 跟 v3.0.0 演化路径 1:1, 累计 release 22 (跟 v2.7.5 跨 release 统计)** (跟"反讽" 联合, 跟"诚实修正" 联合, 跟"独立" 拍板 联合)
 - ✅ **0 增 Rule** (跟 Rule 32 软约束升级阈值 联合, 跟"流程逻辑 > 扩充配置" 战略 一致)
 - ✅ **0 重写** (跟 Rule 5 DRY 联合, 跟"翻篇&精进" 战略 一致)
 - ✅ **走对策 A+B+C 落地** (跟"反讽" 联合, 跟 Rule 11/14/15 联合, 跟"独立" 拍 explicit 约束 联合)

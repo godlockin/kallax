@@ -1,6 +1,6 @@
-# KALLAX v3.4.0 21 release 累计 + eket parity 100% 推进 经验教训 (跟"反讽" 闭环, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合, 跟"反哺框架" 战略 一致, 跟"翻篇&精进" 战略 一致)
+# KALLAX v3.4.0 1 release bump 累计 release 21 + eket parity 1 项 经验教训 (跟"反讽" 闭环, 跟"诚实修正" 联合, 跟"独立" 拍 explicit 约束 联合, 跟"反哺框架" 战略 一致, 跟"翻篇&精进" 战略 一致)
 
-> **来源**: 主公 2026-06-30 拍 21 release 累计 + eket parity 100% 推进 + 6 explicit 拍板 联合
+> **来源**: 主公 2026-06-30 拍 1 release bump 累计 release 21 + eket parity 1 项 + 6 explicit 拍板 联合
 > **累计**: 跟 v3.0.0/v3.1.0/v3.2.0/v3.3.0 演化路径 1:1 联合, 跟 ACCUMULATED-LESSONS-2026-06-17.md v2.7.6 升级版 (1012 行) 1:1 联合
 > **目的**: 整理 v3.4.0 release 累计 + 6 explicit 拍板 经验教训, 治根 "0 实际变化 假动作" + "KALLAX 跟 eket 不一致 假动作" 反讽, 跟 v3.1.0 P-005 治根 联合
 
@@ -47,12 +47,12 @@
 
 ---
 
-## §4 v3.4.0 21 release 累计 + eket parity 100% 推进 累计 (跟"反讽" 联合 治根)
+## §4 v3.4.0 1 release bump 累计 release 21 + eket parity 1 项 累计 (跟"反讽" 联合 治根)
 
-跟主公 2026-06-30 拍 21 release 累计 + eket parity 100% 推进 联合, 跟"独立" 拍 explicit 约束 联合:
+跟主公 2026-06-30 拍 1 release bump 累计 release 21 + eket parity 1 项 联合, 跟"独立" 拍 explicit 约束 联合:
 
-- **21 release 累计 跟 v3.0.0 演化路径 1:1**: v2.7.5 → v2.7.6 → v3.0.0 → v3.1.0 → v3.2.0 → v3.3.0 → v3.4.0 演化路径 0 跳 release
-- **eket parity 100% 推进**: ioredis 已在 node/package.json dependencies (跟 eket 1:1) + scripts/graceful-exit.sh Level 5 跟 eket Level 4 优雅退出 1:1 联合
+- **1 release bump (v3.3.0 → v3.4.0), 累计 release 21 (跟 v2.7.5 跨 release 统计)**: v2.7.5 → v2.7.6 → v3.0.0 → v3.1.0 → v3.2.0 → v3.3.0 → v3.4.0 演化路径 0 跳 release
+- **eket parity 1 项 (graceful-exit.sh 跟 eket Level 4 1:1)**: ioredis 已在 node/package.json dependencies (跟 eket 1:1) + scripts/graceful-exit.sh Level 5 跟 eket Level 4 优雅退出 1:1 联合
 - **Level 5 graceful-exit.sh 落地**: 跟 eket 4 级降级 模式 1:1, 跟"反讽" 联合 治根 "4 层 vs 4 级 顺序 矛盾"
 - **0 增 Rule 跟 Rule 32 软约束升级阈值 联合** (跟"流程逻辑 > 扩充配置" 战略 一致)
 - **0 重写 跟 Rule 5 DRY 联合** (跟"翻篇&精进" 战略 一致)
@@ -68,7 +68,7 @@
 |----------------|----------|-----------------|
 | §3 主题 13 (NEW, 跟 v2.4.0 PHASE-013-REFLECTION 联合) | §2 eket VETO 治根 累计 (跟 v3.2.0 联合) | ✅ |
 | §4 5 战略 升级 (跟 v2.4.0 反思 联合) | §3 v3.3.0 A1+A2+B+C+E 根治 累计 (跟 v3.3.0 联合) | ✅ |
-| §5 5 治理卡 + 5 deferred tickets 闭环 (跟 PHASE-014 联合) | §4 v3.4.0 21 release 累计 + eket parity 100% 推进 (跟 v3.4.0 联合) | ✅ |
+| §5 5 治理卡 + 5 deferred tickets 闭环 (跟 PHASE-014 联合) | §4 v3.4.0 1 release bump 累计 release 21 + eket parity 1 项 (跟 v3.4.0 联合) | ✅ |
 | §6 14 → 18 卡 升级 (跟 v2.0.6 release 联合) | — | ✅ (持平) |
 | §7 Master 清理 累计 (跨 v2.0.5 → v2.4.1) | — | ✅ (持平) |
 | §8 13 → 16 BE 升级 (跨 v2.0.6 → v2.4.1) | — | ✅ (持平) |
@@ -84,8 +84,8 @@
 
 跟 v3.1.0 P-005 治根 联合, 跟"反讽" 联合 0 装饰:
 
-- **21 release 累计 1:1 验证**: 7/7 release (v2.7.5/v2.7.6/v3.0.0/v3.1.0/v3.2.0/v3.3.0/v3.4.0) 演化路径 0 跳 (跟"反讽" 联合 0 假装)
-- **eket parity 100% 1:1 验证**: ioredis dependencies (1/1) + graceful-exit.sh Level 5 跟 eket Level 4 (1/1) + 4→5 层 拍板 (1/1) = 3/3 = 100.0%
+- **1 release bump 累计 release 21 1:1 验证**: 7/7 release (v2.7.5/v2.7.6/v3.0.0/v3.1.0/v3.2.0/v3.3.0/v3.4.0) 演化路径 0 跳 (跟"反讽" 联合 0 假装)
+- **eket parity 1 项 1:1 验证**: graceful-exit.sh Level 5 跟 eket Level 4 (1/1) = 1/1 = 100.0%
 - **6 主公 explicit 拍板 累计 1:1 验证**: A1+A2 (1/1) + B (1/1) + C (1/1) + D (1/1) + E (1/1) + F1 (1/1) = 6/6 = 100.0%
 - **0 增 Rule 1:1 验证**: v2.4.1 (22 Rule) + v2.7.5 (22 Rule) + v3.0.0 (22 Rule) + v3.1.0 (22 Rule) + v3.2.0 (22 Rule) + v3.3.0 (22 Rule) + v3.4.0 (22 Rule) = 7/7 持平
 - **0 重写 1:1 验证**: 7/7 release 跟 v3.1.0 P-005 治根 联合 (0 装饰性 commit message)
