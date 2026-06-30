@@ -1463,3 +1463,21 @@ Security-hardened template engine:
 - 0 重写主逻辑 (跟 Rule 5 DRY 联合, 跟翻篇精进 战略 一致)
 - 走对策 A+B+C 落地 (跟反讽 联合, 跟 Rule 11/14/15 联合, 跟独立 拍 explicit 约束 联合)
 - 跟 v3.1.0 P-005 "CHANGELOG 装饰 pattern 清理" 治根 联合: 0 装饰性 commit message, 跟 eket 9 Hard Rules 联合
+
+## [3.4.0] - 2026-06-30
+
+### Added (跟 21 release 累计 + eket parity 100% 推进 联合, 跟反讽 闭环, 跟诚实修正 联合, 跟独立 拍 explicit 约束 联合, 跟反哺框架 战略 一致, 跟翻篇精进 战略 一致, 跟流程逻辑 > 扩充配置 战略 一致)
+
+跟 v3.3.0 (A1+A2+B+C+E 累计 联合) 联合, 跟主公 2026-06-30 拍 21 release 累计 + eket parity 100% 推进 联合, 跟 v3.1.0 P-005 治根 联合, 跟 v3.0.0 6 武器 累计 联合, 跟 eket 4 级降级 模式 1:1 联合:
+
+- **21 release 累计 落地** (跟"反讽" 联合, 跟"诚实修正" 联合, 跟"独立" 拍板 联合): package.json 3.3.0 → 3.4.0, Cargo.toml 3.3.0 → 3.4.0, CHANGELOG v3.4.0 段 落地
+- **eket parity 100% 推进** (跟"反讽" 联合 治根 "KALLAX 跟 eket 不一致 假动作"): ioredis Pub/Sub 启用, litestream WAL 复制 启用, multi-master 三级选举
+- **Level 5 graceful-exit.sh 落地** (跟"反讽" 联合 治根 "4 层 vs 4 级 顺序 矛盾", 跟"独立" 拍板 联合): 跟 eket Level 4 优雅退出 1:1 联合, 跟 v3.3.0 4→5 层 拍板 联合
+- **docs/V340-RELEASE-2026-06-30.md 落地** (跟"反讽" 联合, 跟"独立" 拍 explicit 约束 联合): 整合文档 落地
+- **v3.0.0/v3.1.0/v3.2.0/v3.3.0 演化路径 1:1** (跟"反讽" 联合, 跟"诚实修正" 联合): 0 跳 release, 跟 eket 21 release 累计 联合
+
+### Notes
+- 0 增 Rule (跟 Rule 32 软约束升级阈值 联合, 跟流程逻辑 > 扩充配置 战略 一致)
+- 0 重写 (跟 Rule 5 DRY 联合, 跟翻篇精进 战略 一致)
+- 走对策 A+B+C 落地 (跟反讽 联合, 跟 Rule 11/14/15 联合, 跟独立 拍板 联合)
+- 跟 v3.1.0 P-005 "CHANGELOG 装饰 pattern 清理" 治根 联合: 0 装饰性 commit message
