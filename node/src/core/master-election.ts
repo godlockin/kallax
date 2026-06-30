@@ -7,6 +7,7 @@ import type { KallaxResult } from '../types/index.js';
 import { KallaxError, KallaxErrorCode } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import { registerCleanupHandler } from '../utils/process-cleanup.js';
+import { redactErrorMessage, redactRedisUrl } from '../utils/redact-secret.js';
 import type { Redis } from 'ioredis';
 
 export type ElectionLevel = 1 | 2 | 3;
@@ -44,7 +45,13 @@ async function getRedis(redisUrl: string): Promise<Redis | null> {
     redisPool.set(redisUrl, redis);
     return redis;
   } catch (error: unknown) {
-    logger.warn({ error: error instanceof Error ? error.message : String(error), redisUrl }, 'redis connect failed');
+    logger.warn(
+      {
+        error: redactErrorMessage(error instanceof Error ? error.message : String(error)),
+        redisUrl: redactRedisUrl(redisUrl),
+      },
+      'redis connect failed',
+    );
     return null;
   }
 }
@@ -174,7 +181,7 @@ async function sqliteCampaign(_sqlitePath: string, instanceId: string): Promise<
     }
     return false;
   } catch (error: unknown) {
-    logger.warn({ error: error instanceof Error ? error.message : String(error) }, 'SQLite election failed');
+    logger.warn({ error: redactErrorMessage(error instanceof Error ? error.message : String(error)) }, 'SQLite election failed');
     return false;
   }
 }
@@ -210,7 +217,7 @@ async function redisCampaign(redisUrl: string, instanceId: string, ttlMs: number
     const result = await redis.set('kallax:master:lock', instanceId, 'PX', ttlMs, 'NX');
     return result === 'OK';
   } catch (error: unknown) {
-    logger.warn({ error: error instanceof Error ? error.message : String(error) }, 'redis campaign failed');
+    logger.warn({ error: redactErrorMessage(error instanceof Error ? error.message : String(error)) }, 'redis campaign failed');
     return false;
   }
 }
@@ -230,7 +237,7 @@ async function redisRenew(redisUrl: string, instanceId: string, ttlMs: number): 
     const result = await redis.eval(lua, 1, 'kallax:master:lock', instanceId, String(ttlMs));
     return (result as number) === 1;
   } catch (error: unknown) {
-    logger.warn({ error: error instanceof Error ? error.message : String(error) }, 'redis renew failed');
+    logger.warn({ error: redactErrorMessage(error instanceof Error ? error.message : String(error)) }, 'redis renew failed');
     return false;
   }
 }
@@ -249,7 +256,7 @@ async function redisResign(redisUrl: string, instanceId: string): Promise<void> 
     `;
     await redis.eval(lua, 1, 'kallax:master:lock', instanceId);
   } catch (error: unknown) {
-    logger.warn({ error: error instanceof Error ? error.message : String(error) }, 'redis resign failed');
+    logger.warn({ error: redactErrorMessage(error instanceof Error ? error.message : String(error)) }, 'redis resign failed');
   }
 }
 
