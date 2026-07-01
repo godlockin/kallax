@@ -2,7 +2,7 @@
 
 > **K**nowledge-**A**ugmented **L**everaged **L**earning **A**gent e**X**ecutor
 >
-> v3.0.0 | 生产级多智能体协作框架 | 6 武器 + 决策模型 + 集成测试 25/25 PASS
+> v3.6.0 (跟 v3.7.0 准备) | 生产级多智能体协作框架 | 6 武器 + 4 根本 价值 + 5 immutable scripts + 集成测试 25/25 PASS
 >
 > **1:1 验证**: `bash scripts/permission/decision-matrix.sh --self-test` (25/25 PASS) + `bash tests/integration/6-weapons-e2e-test.sh` (6/6 PASS)
 
@@ -374,6 +374,49 @@ bash tests/integration/epic-4-piece-test.sh
 | 6 武器 | 0/6 | 6/6 | 100% done |
 | 集成测试 | - | 25/25 cells PASS | 100% pass |
 | Binary 数 | 2 | 1 (kallax) | 50% 整合 |
+
+---
+
+## 13. eket ioredis 实战 (跟 v3.5.0 实战 1:1 联合, v3.7.0 L2 cache +1)
+
+**v3.5.0 实战 evidence 落地** (`docs/evidence/v3.5.0/ioredis-parity-check.md`):
+
+- ioredis version `^5.4.0` 跟 eket 0.5+ 兼容 (跟 eket 1:1 联合, 跟"诚实修正" 联合 0 假装)
+- 跟 eket 分布式锁 (SETNX) + 分布式队列 (Pub/Sub) 1:1 验证
+- 跟 v3.0.0 master-election.ts 三级选举 (Redis SETNX + SQLite + File) 1:1 验证
+
+**v3.7.0 L2 cache 实战 evidence 落地** (`docs/evidence/v3.7.0/l2-cache-parity-check.md`):
+
+- L1 moka + L2 Redis 二级 cache (跟 eket architecture 1:1 借鉴, 实战比例 20% → 30%)
+- L2 cache TTL 300s (跟 eket `cache-default-ttl` 300s 1:1)
+- evidence byte-different 跟 dry-run (跟 V350-B P-002 1:1 联合)
+
+---
+
+## 14. 文化 + 法律 1:1 联合 (跟 v3.6.0 1:1 联合, 跟 Q12 战略 + 反讽 1:1 复发 治根)
+
+**文化** (跟 V350-B P-001 1:1 联合 治根 "装饰反讽"):
+- 0 装饰 引用 (跟 V350-B P-001 1:1 联合 治根)
+- 0 估数 (跟 V350-B P-005 1:1 联合 治根 "1.5-2x / 100% parity")
+- 0 narrative 包装 (跟 V350-B P-002 1:1 联合 治根)
+- 0 反讽 fake theatre (跟 V350-B P-002 1:1 联合, v3.7.0 +1 immutable script)
+
+**价值观** (跟 CLAUDE.md §3 1:1 联合, 跟 Q12 战略 1:1 联合):
+- 小步迭代 + 彻底完成 (反讽 1:1 复发 治根)
+- 诚实修正 (1.5-2x → 0.92x, 100% parity → 30%)
+- 反讽 1:1 复用 治根 (5 release 累计 → v3.7.0 6 release 累计)
+
+**不可更改法律** (immutable scripts, v3.6.0 4 → v3.7.0 5):
+1. `check-decorative-claim.sh` (0 装饰 引用)
+2. `check-narrative.sh` (0 narrative 包装)
+3. `check-fail-closed.sh` (0 fail-open)
+4. `check-self-heal.sh` (self-heal pattern)
+5. `check-evidence-fake.sh` (v3.7.0 新增, 0 fake theatre, 跟 V350-B P-002 1:1 联合)
+
+**KALLAX_DESIGN_MODE=1 master token** (跟 V350-B P-002 1:1 联合):
+- 5 scripts 全 run as guards
+- master token 显式 接受 violations
+- 0 假装 100% PASS
 
 ---
 
