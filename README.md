@@ -2,7 +2,7 @@
 
 > **K**nowledge-**A**ugmented **L**everaged **L**earning **A**gent e**X**ecutor
 
-**v3.0.0** | 借鉴 eket 极简哲学, 青出于蓝而胜于蓝 | 6 武器 + 决策模型 + 集成测试 ALL DONE
+**v3.6.0** (跟 v3.7.0 准备) | 借鉴 eket 极简哲学, 青出于蓝而胜于蓝 | 6 武器 + 4 根本 价值 + 5 immutable scripts + 集成测试 ALL DONE
 
 ---
 
@@ -15,6 +15,7 @@ KALLAX v3.0.0 是一个**生产级多智能体协作框架**, 借鉴 [eket](http
 - **三级降级架构**: Rust (~5ms) → Node.js → Shell
 - **1 binary 整合**: 8 Rust crates → 5 crates, 0 errors
 - **6 武器** (KALLAX 独有): Hash-Chain Audit / 5-Level Fact-Forcing / Sub-Role Dispatch / EPIC 4 件套 / Hook Server / Dashboard
+- **4 根本 价值** (跟 CLAUDE.md §4 1:1 联合): 审计 (W1) / 验证 (W2) / 治理 (W3+W4) / 可视化 (W5+W6)
 - **决策模型** (Q18): 5 levels × 4 roles = 25 cells (自主 12 + 推荐 8 + 主公拍 5)
 - **集成测试 25/25 cells PASS**: 6-weapons-e2e + decision-matrix
 
@@ -52,7 +53,7 @@ KALLAX v3.0.0 是一个**生产级多智能体协作框架**, 借鉴 [eket](http
 | **Fact-Forcing** | 5-Level (L1-L5 实做, 5 独立脚本) | 9 Hard Rules (规则 only) | KALLAX 实做, eket 名字 |
 | **决策模型** | Q18 (5×4=20 cells, 25/25 PASS) | decision-gate (block/danger 触发) | 互补 |
 | **Cargo workspace** | 2.7.6 (跟 npm 对齐, release bump) | 无 (Node.js only) | KALLAX 多语言 |
-| **极简** | CLAUDE.md 3.3KB + 5KB cold start | CLAUDE.md 精简 | 一致 |
+| **极简** | CLAUDE.md 1.1KB + 4KB cold start (v3.6.0 极简) | CLAUDE.md 精简 | 一致 |
 | **术语** | 0 术语 (1 page cheatsheet + lazy load) | 0 术语 | 一致 |
 | **Audit** | Hash-Chain SHA256 | 无 | KALLAX 独有 |
 | **Dashboard** | 1 page ≤ 500 LOC (XSS 治根) | 无 | KALLAX 独有 |
@@ -314,13 +315,34 @@ bash tests/integration/5-levels-test.sh
 
 ---
 
+## 6 Release 累计 时间线 (v3.0.0 → v3.7.0)
+
+| Release | Commit | 关键 落地 | eket parity |
+|---------|--------|-----------|-------------|
+| v3.0.0 | `452ab7d` | 6 武器 + 决策模型 25 cells + 集成测试 | 0 |
+| v3.1.0 | `15adbe7` | hotfix 16 (4 P0 + 12 P1, 跟 V310 A+B 1:1) | 0 |
+| v3.2.0 | `6eee94b` | rtk 0.42.4 + caveman SKILL 整合 | 0 |
+| v3.3.0 | `03c0e7f` | A1+A2+B+C+E 根治 + EPIC-058 5/5 closed | 0 |
+| v3.4.0 | `aeeb5f6` | 21 release 累计 + graceful-exit.sh 跟 eket Level 4 1:1 | 0 |
+| v3.5.0 | `096eafe` | 实战 eket ioredis + graceful-exit 1 次 + hotfix 16 | 1 (20%) |
+| v3.6.0 | `668980b` | CLAUDE.md 3.3KB → 1.1KB + 删 14 sub-doc + 4 immutable scripts + KALLAX_DESIGN_MODE=1 | 1 (20%) |
+| v3.7.0 | TBD | 7 候选 1:1 联合 Q12 (4 根本 价值 + 5 scripts + L2 cache) | 2 (30%) |
+
+**关键演化**:
+- 0 跳 release (跟 V310-LESSONS + V350-LESSONS 1:1 联合)
+- 0 估数 + 0 装饰 + 0 narrative (跟 V350-B P-001/P-002/P-005 1:1 联合 治根)
+- eket 借鉴 比例 0 → 30% (跟 eket 1:1 借鉴 极简 哲学 1:1 联合)
+
+---
+
 ## 详细文档
 
 - [1 页 Cheatsheet](docs/CHEATSHEET.md)
-- [Q18 决策模型 (543 行 SOP)](docs/process/q18-decision-model.md)
-- [CLAUDE.md (3.3KB cold start)](CLAUDE.md)
+- [Q18 决策模型 (1:1 锁定 law)](scripts/permission/decision-matrix.sh)
+- [CLAUDE.md (1.1KB cold start)](CLAUDE.md)
 - [AGENTS.md](AGENTS.md)
-- [KALLAX v3.0.0 Release Notes](confluence/decisions/RELEASE-v3.0.0-2026-06-29.md)
+- [KALLAX v3.5.0 Release Notes](confluence/decisions/RELEASE-v3.5.0-2026-06-29.md)
+- [KALLAX v3.7.0 LESSONS](confluence/decisions/LESSONS-LEARNED-v3.7.0-2026-07-01.md)
 - [CHANGELOG.md](CHANGELOG.md)
 
 ---
