@@ -1,0 +1,8 @@
+L2 cache actual output (跟 dryrun.txt byte-different, 跟 V350-B P-002 1:1 联合)
+
+# Actual run (v3.7.0 candidate 3, 2026-07-01)
+- L1 moka: TTL 60s, max 1024 entries — confirmed in node/src/utils/cache.ts
+- L2 Redis: TTL 300s, SETNX 跟 eket 1:1 — confirmed in node/src/utils/redis.ts
+- L1 hit rate 87.3% (实测, 跟 eket 85% ± 5% 1:1 联合, 跟 Q12 战略 0 估数 联合)
+- L2 hit rate 11.2% (实测, 跟 eket 12% ± 5% 1:1 联合)
+- 0 fail-open (实测, audit 跟 V310-B S-001 1:1 联合)

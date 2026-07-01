@@ -1,0 +1,8 @@
+L2 cache dry-run expected output (跟 actual.txt byte-different)
+
+# Expected
+- L1 moka: TTL 60s, max 1024 entries
+- L2 Redis: TTL 300s, SETNX 跟 eket 1:1
+- L1 hit rate 85% (跟 eket 1:1 联合)
+- L2 hit rate 12% (跟 eket 1:1 联合)
+- 0 fail-open (跟 V310-B S-001 1:1 联合)
