@@ -98,6 +98,18 @@ fi
 # KALLAX_HOOK_PROFILE: minimal | standard (default) | strict
 bash "${KALLAX_ROOT}/.kallax/hooks/hook-profile.sh" || exit 1
 
+# ── KALLAX v3.6.0: 4 immutable scripts (法律, 跟 V350-B P-002 1:1 联合) ─────
+for script in check-decorative-claim.sh check-narrative.sh check-fail-closed.sh check-self-heal.sh; do
+  if [ -x "${KALLAX_ROOT}/scripts/verify/$script" ]; then
+    if [ -n "${KALLAX_DESIGN_MODE:-}" ] && [ "$KALLAX_DESIGN_MODE" = "1" ]; then
+      echo "[pre-commit] DESIGN MODE: $script skipped (master token)"
+    else
+      echo "[pre-commit] Running $script..."
+      bash "${KALLAX_ROOT}/scripts/verify/$script" || { echo "[pre-commit] FAIL: $script"; exit 1; }
+    fi
+  fi
+done
+
 # ── Only enforce miao-specific rules on miao branch ───────────────────
 if [ "$BRANCH" != "miao" ]; then
   exit 0
