@@ -3,6 +3,51 @@
 All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+
+## [3.6.0] - 2026-07-01
+
+### Release: 文化 + 法律 1:1 联合 (跟 理论 1:1 验证)
+
+#### 文化 (CLAUDE.md 3.3KB → 1.5KB)
+- 35 行 / 1173 bytes (55% 缩减)
+- 3 根本 价值观 (Q12 战略): 小步迭代 + 彻底完成 / 诚实修正 / 反讽 1:1 复用 治根
+- 4 根本 价值 (从 6 武器 整合): 审计 / 验证 / 治理 / 可视化
+- 0 估数 + 0 装饰 + 0 narrative (跟 Q12 战略 1:1 联合)
+
+#### 法律 (4 immutable scripts)
+- `check-decorative-claim.sh` (0 装饰 引用, 跟 V350-B P-001 1:1 联合)
+- `check-narrative.sh` (0 narrative 包装 + 0 KPI 估数, 跟 V350-B P-001 1:1 联合)
+- `check-fail-closed.sh` (0 fail-open, 跟 V310-B S-001 + V350-B S-003 1:1 联合) - PASS 0 (已治根)
+- `check-self-heal.sh` (self-heal pattern, 跟 V310-B S-003 + V350-B S-005/S-006 1:1 联合)
+- `.kallax/hooks/pre-commit` 集成 4 scripts 跟 authz + decision-gate 流程 并行
+
+#### KALLAX_DESIGN_MODE=1 master token
+- 跟 check-scope-creep.sh design mode 1:1 联合
+- 跟 V350-B P-002 evidence byte-different 1:1 联合
+- 0 假装 100% PASS (scripts FAIL 是 设计意图, 0 估数)
+
+#### 文档 简化
+- `docs/process/q18-decision-model.md` 543 行 → `docs/process/q18-decision.md` 1.2KB (1:1 索引 law)
+- 14 `docs/architecture/` 子文档 → `_index.md` 1.0KB (1 主 + 0 sub-doc sprawl)
+- 总删除: 543 + 5201 = 5744 行 (跟 5 release 累计 1:1 联合, 0 跳 release 演化)
+
+#### 理论 1:1 联合
+- 文化 (CLAUDE.md) + 价值观 (3 根本) + 不可更改法律 (4 immutable scripts)
+- 跟 Agent 治理 理论 1:1 验证: 根本价值观 + 反馈 (5 levels + A+B review) + 自愈 (4 scripts + check-scope-creep.sh)
+
+### Migration from v3.5.0-hotfix1 → v3.6.0
+- 0 breaking changes
+- CLAUDE.md 1.5KB 极简 (从 21 Rule 演化 6 release 累计)
+- 4 immutable scripts 可选 run (跟 eket 1:1 借鉴 极简)
+- KALLAX_DESIGN_MODE=1 master token 显式 接受 violations (跟 V350-B P-002 1:1 联合)
+
+[Co-Authored-By: Claude <noreply@anthropic.com>]
+
+## [3.5.0-hotfix1] - 2026-06-30
+
+### Hotfix: B 组 Attack Review 治根 (16 findings, 5 P0 + 8 P1 + 3 P2)
+
+跟 B 组 Attack Review (V350-B-REVIEW-2026-06-29.md, 534 行) 治根 联合, 跟 V310-B P-002 + P-005 1:1 联合, 跟"诚实修正" 战略 一致.
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [3.1.0] - 2026-06-29
