@@ -4,6 +4,43 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.7.0] - 2026-07-02
+
+### Release: 7 候选 1:1 联合 Q12 (跟 v3.1.0 7 候选 模式 1:1)
+
+#### Added
+- **6 武器 → 4 根本 价值 整合** (CLAUDE.md 1.5KB 1:1 联合):
+  - `scripts/kallax-audit.sh` (W1 审计)
+  - `scripts/kallax-verify.sh` (W2 验证)
+  - `scripts/kallax-govern.sh` (W3+W4 治理)
+  - `scripts/kallax-visualize.sh` (W5+W6 可视化)
+- **第 5 immutable script**: `scripts/verify/check-evidence-fake.sh` (跟 V350-B P-002 1:1 联合, 实战 N 次 fake theatre 检测)
+- **实战 eket L2 cache 借鉴**: `docs/evidence/v3.7.0/l2-cache-{dryrun,actual,parity-check}` (3 file, evidence byte-different 500B ≠ 278B ≠ byte-identical)
+- **CLAUDE.md lazy load 实战 验证**: `tests/benchmark/kallax-vs-eket-token-v3.7.0.md` (149 行, 0.86x total honest)
+- **P-004 ERRATA 选项 C 实施**: `docs/architecture/online-deploy-2026-06-30/P-004-DECISION.md` (42 行, 保留 nested dir)
+- **6 release 累计 LESSONS update**: `confluence/decisions/LESSONS-LEARNED-v3.7.0-2026-07-01.md` (221 行, 8 章节 + 加 1 章节)
+- **README + ARCHITECTURE 同步 v3.6.0**: 6 release 累计 + 跟 4 根本 价值 1:1 联合 (ARCHITECTURE.md 12 → 14 章节)
+
+#### Changed
+- 4 root commands 替代 6 separate (kallax audit/verify/govern/visualize)
+- scripts 重组 (4 根目录 替代 6 sub-dir)
+- 5 immutable scripts 集成 `.kallax/hooks/pre-commit` (跟 authz + decision-gate 流程 并行)
+- ARCHITECTURE.md 14 章节 (12 → 14, 加 §13 eket 实战 + §14 文化+法律)
+
+#### Documentation
+- LESSONS-LEARNED-v3.7.0-2026-07-01.md (221 行)
+- README.md 6 release 累计 时间线
+- ARCHITECTURE.md 14 章节
+
+### Migration from v3.6.0 → v3.7.0
+- 0 breaking changes
+- 4 root commands 替代 6 separate (backward compat: 旧 commands 别名)
+- 5 immutable scripts 集成 (跟 KALLAX_DESIGN_MODE=1 master token 1:1 联合)
+- 实战 eket L2 cache 借鉴 (~20% → ~25% 比例)
+- 0 估数 + 0 装饰 + 0 narrative (跟 Q12 战略 1:1 联合)
+
+[Co-Authored-By: Claude <noreply@anthropic.com>]
+
 ## [3.6.0] - 2026-07-01
 
 ### Release: 文化 + 法律 1:1 联合 (跟 理论 1:1 验证)
