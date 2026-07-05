@@ -91,7 +91,15 @@
       "Bash(chmod +x scripts/kallax-onramp/*.sh)",
       "Bash(jq --version)",
       "Read(//Users/chenchen/working/sourcecode/tools/dev-tools/eket/rust/**)",
-      "Read(//Users/chenchen/working/sourcecode/tools/dev-tools/eket/node/src/**)"
+      "Read(//Users/chenchen/working/sourcecode/tools/dev-tools/eket/node/src/**)",
+      "mcp__plugin_claude-mem_mcp-search__search",
+      "Bash(zsh --version)",
+      "Bash(perl -i -pe 's/\\\\$\\\\{AVLE_TOOL_PATH\\\\[\\([a-z]+\\)\\\\]:-\\\\}/$1 \\\\/_avle_tool_path $1/g' scripts/rust-accel.sh)",
+      "Bash(chmod +x /Users/chenchen/.claude/verify-rule.sh)",
+      "Bash(bash -n /Users/chenchen/.claude/verify-rule.sh)",
+      "Read(//private/tmp/research-repos/**)",
+      "Read(//private/tmp/research-repos/eket-experts-extended/**)",
+      "Read(//private/tmp/research-repos/agency-agents/**)"
     ]
   }
 }

@@ -1,0 +1,136 @@
+# kallax Experts Index / 倒排索引
+#
+# 用法:
+#   bash scripts/expert-search.sh <keyword>     # 搜索专家
+#   bash scripts/expert-arena.sh <keyword>     # 竞技场(多专家对比)
+#
+# Token 优化:70 tokens 索引,搜索 O(1)
+# vs MD 全表 2100 tokens
+
+meta:
+  version: "1.0.0"
+  total: 5
+  default_path: "kallax/.claude/commands/kallax/experts/"
+  extended_path: "kallax/experts/extended/"  # 外部库
+  search_cmd: "bash scripts/expert-search.sh '<keyword>'"
+  arena_cmd: "bash scripts/expert-arena.sh '<keyword>'"
+  last_updated: "2026-07-05"
+
+# ===== 1. Built-in (kallax 框架自带,5 个 default) =====
+builtin:
+  - {id: architect, name: 架构师, file: architect.md, emoji: "🏗️"}
+  - {id: developer, name: 后端工程师, file: developer.md, emoji: "💻"}
+  - {id: product, name: 产品经理, file: product.md, emoji: "🎨"}
+  - {id: auditor, name: 审计员, file: auditor.md, emoji: "🔍"}
+  - {id: researcher, name: 研究员, file: researcher.md, emoji: "📚"}
+
+# ===== 2. Extended (外部库引用) =====
+# 注:外部库 git clone 后路径 ~/.claude/experts-extended/<lib>/<file>
+extended:
+  - {lib: eket, repo: "https://github.com/godlockin/eket-experts-extended", count: 70, domains: 11}
+  - {lib: agency-agents, repo: "https://github.com/msitarzewski/agency-agents", count: 280, divisions: 17}
+
+# ===== 3. Triggers(关键词 → 专家,倒排索引) =====
+# 设计:支持中英文,优先 builtin,fallback extended
+triggers:
+  # ===== 架构/技术选型 =====
+  架构: [architect]
+  架构设计: [architect]
+  系统设计: [architect]
+  微服务: [architect]
+  选型: [architect]
+  architecture: [architect]
+  system-design: [architect]
+  microservice: [architect]
+
+  # ===== 后端/API/数据库 =====
+  后端: [developer]
+  API: [developer]
+  数据库: [developer]
+  DB: [developer]
+  性能: [developer]
+  测试: [developer]
+  backend: [developer]
+  database: [developer]
+  performance: [developer]
+  testing: [developer]
+  # eket 补充(已匹配 builtin 但显示 eket 来源)
+  DBA: [dba, developer]  # eket 有专门 DBA
+  数据库优化: [dba, developer]
+  性能优化: [performance, developer]
+  压测: [performance, developer]
+
+  # ===== 产品/用户/UX =====
+  产品: [product]
+  用户: [product]
+  UX: [product]
+  需求: [product]
+  product: [product]
+  UX-research: [ux-research, product]  # eket 有专门 UX-research
+
+  # ===== 审计/风险/合规 =====
+  审计: [auditor]
+  风险: [auditor]
+  合规: [auditor]
+  安全: [auditor]  # agency 有专门 security
+  audit: [auditor]
+  security: [security, auditor]  # agency 有专门 security
+
+  # ===== 研究/文档/社区 =====
+  研究: [researcher]
+  文档: [researcher]
+  调研: [researcher]
+  research: [researcher]
+  docs: [researcher]
+
+  # ===== AI/ML =====
+  LLM: [aiml, developer]
+  RAG: [aiml, developer]
+  机器学习: [ml, developer]
+  AI: [aiml, developer]
+  ML: [ml, developer]
+
+  # ===== 业务/金融/法律 =====
+  商业: [business, product]
+  金融: [finance, business]
+  财务: [finance, business]
+  法律: [legal, business]
+  finance: [finance, business]
+  legal: [legal, business]
+
+  # ===== 营销/PR/HR =====
+  营销: [marketing, product]
+  growth: [growth, marketing, product]  # eket 有 growth
+  PR: [pr-manager, marketing, product]
+  HR: [hr, business]
+  招聘: [recruiter, hr, business]
+
+# ===== 4. Divisional Mapping(对照 agency-agents) =====
+# 用于跨库引用时识别
+divisions:
+  academic: [researcher]
+  design: [product]
+  engineering: [developer, architect]
+  finance: [researcher]
+  marketing: [product]
+  product: [product]
+  security: [auditor]
+  testing: [auditor]
+  project-management: [auditor]
+  # 等等
+
+# ===== 5. 角色分类(从 eket 学习) =====
+# 用于 .md frontmatter 标准化
+schema:
+  - field: name          # 中文名
+  - field: emoji         # 视觉标识
+  - field: role          # role ID
+  - field: scope         # 关注点列表
+  - field: tools         # 工具列表
+  - field: triggers      # 关键词(与 YAML 倒排同步)
+  - field: tokens        # 估计 token 量(< 1000)
+
+# ===== 6. Token 优化 =====
+# 索引本身: ~150 tokens(替代 MD ~2100 tokens, 节省 93%)
+# 触发搜索: O(1) - 哈希查表
+# 专家加载: 按需 Read,永远不全部加载
