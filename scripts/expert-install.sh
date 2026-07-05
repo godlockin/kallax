@@ -22,6 +22,8 @@ trap "rm -rf '$LIBS_DIR'" EXIT
 # 格式: <url>|<count>|<domains>|<features>
 echo "https://github.com/godlockin/eket-experts-extended.git|70个专家|11个domain|YAML倒排索引+CLI搜索" > "$LIBS_DIR/eket"
 echo "https://github.com/msitarzewski/agency-agents.git|280个agent|17个division|frontmatter metadata" > "$LIBS_DIR/agency-agents"
+# kallax-experts(融合 eket + agency 的统一索引)
+echo "https://github.com/godlockin/kallax-experts.git|350+专家|28个domain|统一索引+frontmatter+跨库引用" > "$LIBS_DIR/kallax-experts"
 
 # 帮助
 show_help() {
@@ -129,7 +131,7 @@ case "${1:-}" in
   --help|-h) show_help; exit 0 ;;
   --list) list_libs ;;
   --update) update_libs ;;
-  eket|agency) install_lib "$1" ;;
+  eket|agency|kallax-experts) install_lib "$1" ;;
   "") install_lib eket; install_lib agency ;;
   *) echo "❌ 未知: $1" >&2; show_help; exit 2 ;;
 esac
