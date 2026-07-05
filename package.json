@@ -26,7 +26,12 @@
     "lint": "npm run lint -w node",
     "clean": "rm -rf node/dist rust/target",
     "start": "npm run start -w node",
-    "web": "npm run web -w node"
+    "web": "npm run web -w node",
+    "cli-rule": "bash scripts/cli-rule \"$@\"",
+    "cli-rule:setup": "bash scripts/cli-rule setup",
+    "cli-rule:install": "bash scripts/cli-rule install --non-interactive",
+    "cli-rule:verify": "bash scripts/cli-rule verify",
+    "cli-rule:uninstall": "bash scripts/cli-rule uninstall --backup"
   },
   "keywords": [
     "ai",

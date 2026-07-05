@@ -1,0 +1,569 @@
+#!/usr/bin/env bash
+# kallax cli-rule - CLI Rule 管理命令
+#
+# 用法:
+#   kallax cli-rule setup               # 交互式引导安装
+#   kallax cli-rule install             # 非交互安装(全默认)
+#   kallax cli-rule verify              # 验证 4 层防护完整性
+#   kallax cli-rule uninstall           # 卸载(清理 ~/.claude/)
+#   kallax cli-rule update              # 更新 hook 脚本到最新
+#   kallax cli-rule help                # 帮助
+#
+# 选项:
+#   --home DIR          自定义安装目录(默认 ~/.claude/)
+#   --non-interactive   非交互模式,全默认
+#   --force             强制覆盖(默认:有冲突就问)
+#   --verbose           显示详情
+#   --no-verify         安装后不跑 verify
+#   --no-backup         卸载前不备份
+#
+# 设计原则:
+# - 零依赖(只用 bash + 标准 unix 工具)
+# - 跨平台(macOS / Linux 兼容,GNU/BSD coreutils 都行)
+# - 幂等(可重复运行,自动跳过已存在步骤)
+# - 安全(任何破坏性操作先确认 + 备份)
+#
+# 退出码:
+#   0  成功
+#   1  一般错误
+#   2  参数错误
+#   3  用户取消
+#   4  系统状态异常(如非 macOS/Linux)
+
+set -uo pipefail
+
+KALLAX_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+VERSION="1.0.0"
+
+# 默认配置
+HOME_DIR="$HOME/.claude"
+NON_INTERACTIVE=0
+FORCE=0
+VERBOSE=0
+NO_VERIFY=0
+NO_BACKUP=0
+SUBCOMMAND=""
+
+# 颜色
+if [[ -t 1 ]]; then
+  RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[0;33m'
+  BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
+else
+  RED=''; GREEN=''; YELLOW=''; BLUE=''; CYAN=''; BOLD=''; NC=''
+fi
+
+# 路径
+SCRIPT_DIR="$KALLAX_ROOT/hooks"
+SOURCE_EXEC_TASK="$SCRIPT_DIR/exec-task.sh"
+SOURCE_HOOK="$SCRIPT_DIR/bash-rule-enforcer.sh"
+SOURCE_VERIFY="$SCRIPT_DIR/verify-rule.sh"
+SOURCE_DOC_RULE="$KALLAX_ROOT/docs/cli-rule.md"
+
+# 平台检查
+check_platform() {
+  local uname_out
+  uname_out=$(uname -s)
+  case "$uname_out" in
+    Darwin|Linux) return 0 ;;
+    *) echo "❌ 仅支持 macOS / Linux,当前: $uname_out" >&2; return 4 ;;
+  esac
+}
+
+# 帮助
+show_help() {
+  cat <<EOF
+${BOLD}kallax cli-rule v${VERSION}${NC} - CLI Rule 管理命令
+
+${BOLD}用法:${NC}
+  kallax cli-rule <subcommand> [options]
+
+${BOLD}子命令:${NC}
+  ${GREEN}setup${NC}       交互式引导安装(推荐第一次跑)
+  ${GREEN}install${NC}     非交互安装(全默认)
+  ${GREEN}verify${NC}      验证 4 层防护完整性
+  ${GREEN}uninstall${NC}   卸载(清理 ~/.claude/)
+  ${GREEN}update${NC}      更新 hook 脚本到最新版本
+  ${GREEN}help${NC}        显示帮助
+
+${BOLD}选项:${NC}
+  --home DIR          自定义安装目录(默认 ~/.claude/)
+  --non-interactive   非交互模式,全默认
+  --force             强制覆盖(默认:有冲突就问)
+  --verbose           显示详情
+  --no-verify         安装后不跑 verify
+  --no-backup         卸载前不备份
+
+${BOLD}示例:${NC}
+  # 第一次安装
+  kallax cli-rule setup
+
+  # CI / 脚本里装
+  kallax cli-rule install --non-interactive
+
+  # 验证
+  kallax cli-rule verify
+
+  # 自定义安装位置
+  kallax cli-rule install --home /opt/shared-claude
+
+  # 卸载
+  kallax cli-rule uninstall
+
+${BOLD}4 层防护:${NC}
+  1. PreToolUse hook(拦截日志监控命令)
+  2. exec-task.sh 自校验 marker
+  3. verify-rule.sh 一键验证
+  4. CLAUDE.md 规则文档
+
+详见: docs/cli-rule.md
+EOF
+}
+
+# 工具函数
+log_info()  { echo -e "${BLUE}ℹ${NC}  $*" >&2; }
+log_ok()    { echo -e "${GREEN}✓${NC}  $*" >&2; }
+log_warn()  { echo -e "${YELLOW}⚠${NC}  $*" >&2; }
+log_err()   { echo -e "${RED}✗${NC}  $*" >&2; }
+log_verb()  { [[ $VERBOSE -eq 1 ]] && echo -e "${CYAN}  ${NC}$*" >&2 || true; }
+
+ask_yn() {
+  # ask_yn "问题" "默认(y/n)" → ANSWER_YN (1/0)
+  local prompt="$1" default="${2:-y}"
+  local label
+  case "$default" in
+    y|Y) label="Y/n" ;;
+    n|N) label="y/N" ;;
+    *)   label="y/n" ;;
+  esac
+  local answer
+  if [[ $NON_INTERACTIVE -eq 1 ]]; then
+    answer="$default"
+  else
+    read -rp "$(printf "${CYAN}?${NC} %s [%s]: " "$prompt" "$label")" answer
+    answer="${answer:-$default}"
+  fi
+  case "$answer" in
+    y|Y|yes|YES) ANSWER_YN=1 ;;
+    *)           ANSWER_YN=0 ;;
+  esac
+}
+
+# 检测平台差异
+is_macos() { [[ "$(uname)" == "Darwin" ]]; }
+
+# 备份
+backup_file() {
+  local f="$1"
+  if [[ -f "$f" ]]; then
+    local backup_dir="$HOME/.claude/backups/cli-rule-$(date +%Y%m%d-%H%M%S)"
+    mkdir -p "$backup_dir"
+    cp -p "$f" "$backup_dir/$(basename "$f")"
+    log_verb "备份: $f → $backup_dir/"
+    echo "$backup_dir"
+  fi
+}
+
+# ====================================================
+# setup - 交互式引导安装
+# ====================================================
+cmd_setup() {
+  echo -e "${BOLD}${BLUE}"
+  echo "╔══════════════════════════════════════════════╗"
+  echo "║                                              ║"
+  echo "║   🛡️  kallax CLI Rule 引导安装                ║"
+  echo "║                                              ║"
+  echo "║   v${VERSION}                                       ║"
+  echo "║                                              ║"
+  echo "╚══════════════════════════════════════════════╝"
+  echo -e "${NC}"
+
+  # Step 0: 平台检查
+  check_platform || return $?
+
+  # Step 1: 检查现有
+  echo -e "${BOLD}Step 1/${NC} 检查现有安装"
+  local has_installed=0
+  [[ -f "$HOME_DIR/exec-task.sh" ]] && has_installed=1 && log_info "已存在: $HOME_DIR/exec-task.sh"
+  [[ -f "$HOME_DIR/hooks/bash-rule-enforcer.sh" ]] && has_installed=1 && log_info "已存在: $HOME_DIR/hooks/bash-rule-enforcer.sh"
+  [[ -f "$HOME_DIR/verify-rule.sh" ]] && has_installed=1 && log_info "已存在: $HOME_DIR/verify-rule.sh"
+
+  if [[ $has_installed -eq 1 ]]; then
+    echo ""
+    ask_yn "检测到已有安装,是否覆盖?" "n"
+    if [[ $ANSWER_YN -eq 0 ]]; then
+      log_info "切换到 verify 模式"
+      cmd_verify
+      return $?
+    fi
+    FORCE=1
+  fi
+
+  # Step 2: 安装位置
+  echo ""
+  echo -e "${BOLD}Step 2/${NC} 安装位置"
+  echo "默认: $HOME_DIR"
+  ask_yn "使用默认位置?" "y"
+  if [[ $ANSWER_YN -eq 0 ]]; then
+    ask "请输入安装路径" "$HOME_DIR"
+    HOME_DIR="$ANSWER"
+  fi
+
+  # Step 3: 安装选项
+  echo ""
+  echo -e "${BOLD}Step 3/${NC} 安装选项"
+  ask_yn "安装到 CLAUDE.md 第 9 章规则?" "y"
+  INSTALL_CLAUDE_MD=$ANSWER_YN
+
+  ask_yn "配置 PreToolUse hook 到 settings.json?" "y"
+  INSTALL_HOOK=$ANSWER_YN
+
+  ask_yn "立即跑 verify 验证?" "y"
+  RUN_VERIFY=$ANSWER_YN
+
+  # Step 4: 执行
+  echo ""
+  echo -e "${BOLD}Step 4/${NC} 开始安装..."
+  echo ""
+
+  do_install "$INSTALL_CLAUDE_MD" "$INSTALL_HOOK" || return $?
+
+  # Step 5: 验证
+  if [[ $RUN_VERIFY -eq 1 ]]; then
+    echo ""
+    echo -e "${BOLD}Step 5/${NC} 验证"
+    cmd_verify
+    return $?
+  fi
+
+  echo ""
+  log_ok "安装完成!"
+  echo ""
+  echo -e "${BOLD}下一步:${NC}"
+  echo "  - 跑: bash $HOME_DIR/exec-task.sh test 'echo hi'"
+  echo "  - 验证: kallax cli-rule verify"
+  echo "  - 文档: cat $HOME_DIR/CLAUDE.md | grep -A50 'CLI 任务执行规范'"
+}
+
+# ====================================================
+# install - 非交互安装
+# ====================================================
+cmd_install() {
+  check_platform || return $?
+
+  echo -e "${BOLD}安装 kallax CLI Rule 到: $HOME_DIR${NC}"
+  echo ""
+
+  do_install 1 1 || return $?
+
+  if [[ $NO_VERIFY -eq 0 ]]; then
+    echo ""
+    cmd_verify
+    return $?
+  fi
+
+  echo ""
+  log_ok "安装完成"
+}
+
+# 实际安装逻辑
+do_install() {
+  local with_claude_md="${1:-1}"
+  local with_hook="${2:-1}"
+
+  # 0. 准备目录
+  mkdir -p "$HOME_DIR/hooks"
+  log_ok "目录: $HOME_DIR/hooks/"
+
+  # 1. 复制 exec-task.sh
+  if [[ ! -f "$SOURCE_EXEC_TASK" ]]; then
+    log_err "源文件不存在: $SOURCE_EXEC_TASK"
+    return 1
+  fi
+
+  if [[ -f "$HOME_DIR/exec-task.sh" && $FORCE -eq 0 ]]; then
+    log_warn "已存在: $HOME_DIR/exec-task.sh(用 --force 覆盖)"
+  else
+    [[ -f "$HOME_DIR/exec-task.sh" ]] && backup_file "$HOME_DIR/exec-task.sh" >/dev/null
+    cp "$SOURCE_EXEC_TASK" "$HOME_DIR/exec-task.sh"
+    chmod +x "$HOME_DIR/exec-task.sh"
+    log_ok "已安装: $HOME_DIR/exec-task.sh"
+  fi
+
+  # 2. 复制 hook
+  if [[ ! -f "$SOURCE_HOOK" ]]; then
+    log_err "源文件不存在: $SOURCE_HOOK"
+    return 1
+  fi
+
+  if [[ -f "$HOME_DIR/hooks/bash-rule-enforcer.sh" && $FORCE -eq 0 ]]; then
+    log_warn "已存在: $HOME_DIR/hooks/bash-rule-enforcer.sh"
+  else
+    [[ -f "$HOME_DIR/hooks/bash-rule-enforcer.sh" ]] && backup_file "$HOME_DIR/hooks/bash-rule-enforcer.sh" >/dev/null
+    cp "$SOURCE_HOOK" "$HOME_DIR/hooks/bash-rule-enforcer.sh"
+    chmod +x "$HOME_DIR/hooks/bash-rule-enforcer.sh"
+    log_ok "已安装: $HOME_DIR/hooks/bash-rule-enforcer.sh"
+  fi
+
+  # 3. 复制 verify
+  if [[ ! -f "$SOURCE_VERIFY" ]]; then
+    log_err "源文件不存在: $SOURCE_VERIFY"
+    return 1
+  fi
+
+  if [[ -f "$HOME_DIR/verify-rule.sh" && $FORCE -eq 0 ]]; then
+    log_warn "已存在: $HOME_DIR/verify-rule.sh"
+  else
+    [[ -f "$HOME_DIR/verify-rule.sh" ]] && backup_file "$HOME_DIR/verify-rule.sh" >/dev/null
+    cp "$SOURCE_VERIFY" "$HOME_DIR/verify-rule.sh"
+    chmod +x "$HOME_DIR/verify-rule.sh"
+    log_ok "已安装: $HOME_DIR/verify-rule.sh"
+  fi
+
+  # 4. CLAUDE.md 规则段
+  if [[ $with_claude_md -eq 1 ]]; then
+    if [[ -f "$HOME_DIR/CLAUDE.md" ]]; then
+      if grep -qF "CLI Task Execution Rule\|CLI 任务执行规范" "$HOME_DIR/CLAUDE.md"; then
+        log_warn "CLAUDE.md 第 9 章已存在"
+      else
+        log_info "CLAUDE.md 存在,但缺第 9 章规则"
+        log_info "请手动复制 docs/cli-rule.md 的'核心原则'+'5 条规则'两段"
+      fi
+    else
+      log_info "CLAUDE.md 不存在,跳过(用户可手动复制 docs/cli-rule.md)"
+    fi
+  fi
+
+  # 5. settings.json PreToolUse hook
+  if [[ $with_hook -eq 1 ]]; then
+    if [[ -f "$HOME_DIR/settings.json" ]]; then
+      local needs_add=1
+      if python3 -c "
+import json, sys
+try:
+    with open('$HOME_DIR/settings.json') as f:
+        s = json.load(f)
+    hooks = s.get('hooks', {}).get('PreToolUse', [])
+    for h in hooks:
+        if h.get('matcher') == 'Bash':
+            for cmd in h.get('hooks', []):
+                if 'bash-rule-enforcer' in cmd.get('command', ''):
+                    sys.exit(0)
+    sys.exit(1)
+except Exception:
+    sys.exit(1)
+" 2>/dev/null; then
+        needs_add=0
+        log_warn "settings.json 已含 Bash + bash-rule-enforcer hook"
+      fi
+
+      if [[ $needs_add -eq 1 ]]; then
+        log_info "settings.json 未含 hook,请手动添加:"
+        cat <<'EOF' | sed 's/^/  /' >&2
+
+"hooks": {
+  "PreToolUse": [{
+    "matcher": "Bash",
+    "hooks": [{
+      "type": "command",
+      "command": "~/.claude/hooks/bash-rule-enforcer.sh"
+    }]
+  }]
+}
+
+EOF
+      fi
+    else
+      log_info "settings.json 不存在,请创建并加 hook 配置"
+    fi
+  fi
+
+  return 0
+}
+
+# ====================================================
+# verify - 验证 4 层防护
+# ====================================================
+cmd_verify() {
+  check_platform || return $?
+
+  if [[ ! -x "$HOME_DIR/verify-rule.sh" ]]; then
+    log_err "未安装 verify-rule.sh,跑: kallax cli-rule install"
+    return 1
+  fi
+
+  echo -e "${BOLD}验证 CLI Rule 完整性${NC}"
+  echo ""
+  AVLE_CLAUDE_DIR="$HOME_DIR" bash "$HOME_DIR/verify-rule.sh" verify
+}
+
+# ====================================================
+# uninstall - 卸载
+# ====================================================
+cmd_uninstall() {
+  check_platform || return $?
+
+  echo -e "${BOLD}${YELLOW}"
+  echo "╔══════════════════════════════════════════════╗"
+  echo "║                                              ║"
+  echo "║   ⚠️  卸载 kallax CLI Rule                    ║"
+  echo "║                                              ║"
+  echo "║   将删除以下文件:                            ║"
+  echo "║   - $HOME_DIR/exec-task.sh                  ║"
+  echo "║   - $HOME_DIR/hooks/bash-rule-enforcer.sh   ║"
+  echo "║   - $HOME_DIR/verify-rule.sh                 ║"
+  echo "║                                              ║"
+  echo "╚══════════════════════════════════════════════╝"
+  echo -e "${NC}"
+
+  if [[ $NON_INTERACTIVE -eq 0 ]]; then
+    ask_yn "确认删除?" "n"
+    [[ $ANSWER_YN -eq 0 ]] && log_info "已取消" && return 3
+  fi
+
+  # 备份(除非 --no-backup)
+  local backup_dir=""
+  if [[ $NO_BACKUP -eq 0 ]]; then
+    backup_dir="$HOME/.claude/backups/cli-rule-uninstall-$(date +%Y%m%d-%H%M%S)"
+    mkdir -p "$backup_dir"
+    log_ok "备份目录: $backup_dir"
+  fi
+
+  # 删除
+  local files=(
+    "$HOME_DIR/exec-task.sh"
+    "$HOME_DIR/hooks/bash-rule-enforcer.sh"
+    "$HOME_DIR/verify-rule.sh"
+  )
+
+  for f in "${files[@]}"; do
+    if [[ -f "$f" ]]; then
+      if [[ -n "$backup_dir" ]]; then
+        # 保留目录结构
+        local rel="${f#$HOME_DIR/}"
+        mkdir -p "$backup_dir/$(dirname "$rel")"
+        cp -p "$f" "$backup_dir/$rel"
+      fi
+      rm -f "$f"
+      log_ok "已删除: $f"
+    fi
+  done
+
+  # CLAUDE.md 规则段(可选删除)
+  if [[ -f "$HOME_DIR/CLAUDE.md" ]] && \
+     grep -qF "CLI Task Execution Rule\|CLI 任务执行规范" "$HOME_DIR/CLAUDE.md"; then
+    if [[ $NON_INTERACTIVE -eq 0 ]]; then
+      ask_yn "也从 CLAUDE.md 移除第 9 章规则段?" "n"
+      if [[ $ANSWER_YN -eq 1 ]]; then
+        # 用 Python 删除"## ⚙️ The Immutable Rule: CLI 任务执行规范"段
+        python3 <<PYEOF
+import re
+path = '$HOME_DIR/CLAUDE.md'
+with open(path) as f:
+    content = f.read()
+
+# 找到 "## ⚙️ The Immutable Rule: ..." 段到下一个 "## " 开头(不含子级 ###)
+pattern = re.compile(
+    r'## ⚙️ The Immutable Rule: CLI 任务执行规范.*?(?=\n## |\Z)',
+    re.DOTALL
+)
+new_content = pattern.sub('', content)
+with open(path, 'w') as f:
+    f.write(new_content)
+print("✅ CLAUDE.md 第 9 章已删除")
+PYEOF
+      fi
+    fi
+  fi
+
+  # settings.json hook
+  if [[ -f "$HOME_DIR/settings.json" ]] && [[ $NON_INTERACTIVE -eq 0 ]]; then
+    ask_yn "也从 settings.json 移除 Bash hook 配置?" "n"
+    if [[ $ANSWER_YN -eq 1 ]]; then
+      python3 <<PYEOF
+import json
+path = '$HOME_DIR/settings.json'
+with open(path) as f:
+    s = json.load(f)
+hooks = s.get('hooks', {}).get('PreToolUse', [])
+new_hooks = []
+for h in hooks:
+    if h.get('matcher') == 'Bash':
+        h_copy = dict(h)
+        h_copy['hooks'] = [
+            cmd for cmd in h.get('hooks', [])
+            if 'bash-rule-enforcer' not in cmd.get('command', '')
+        ]
+        if h_copy['hooks']:
+            new_hooks.append(h_copy)
+    else:
+        new_hooks.append(h)
+if 'hooks' in s and 'PreToolUse' in s['hooks']:
+    s['hooks']['PreToolUse'] = new_hooks
+with open(path, 'w') as f:
+    json.dump(s, f, indent=2, ensure_ascii=False)
+print("✅ settings.json bash-rule-enforcer hook 已移除")
+PYEOF
+    fi
+  fi
+
+  echo ""
+  log_ok "卸载完成"
+  if [[ -n "$backup_dir" ]]; then
+    log_info "备份: $backup_dir"
+  fi
+}
+
+# ====================================================
+# update - 更新到最新
+# ====================================================
+cmd_update() {
+  check_platform || return $?
+
+  log_info "从 kallax 仓库更新到: $KALLAX_ROOT"
+
+  if [[ ! -f "$SOURCE_EXEC_TASK" ]] || [[ ! -f "$SOURCE_HOOK" ]] || [[ ! -f "$SOURCE_VERIFY" ]]; then
+    log_err "kallax 仓库文件缺失,无法更新"
+    return 1
+  fi
+
+  FORCE=1  # update 强制覆盖
+  do_install 0 0 || return $?
+
+  echo ""
+  log_ok "更新完成"
+  cmd_verify
+}
+
+# ====================================================
+# 解析参数
+# ====================================================
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    setup|install|verify|uninstall|update) SUBCOMMAND="$1"; shift;;
+    help|--help|-h) show_help; exit 0;;
+    --home) HOME_DIR="$2"; shift 2;;
+    --non-interactive) NON_INTERACTIVE=1; shift;;
+    --force) FORCE=1; shift;;
+    --verbose) VERBOSE=1; shift;;
+    --no-verify) NO_VERIFY=1; shift;;
+    --no-backup) NO_BACKUP=1; shift;;
+    --version|-v) echo "kallax cli-rule v${VERSION}"; exit 0;;
+    -*) echo "未知参数: $1" >&2; show_help; exit 2;;
+    *) echo "未知子命令: $1" >&2; show_help; exit 2;;
+  esac
+done
+
+# 默认 setup
+if [[ -z "$SUBCOMMAND" ]]; then
+  SUBCOMMAND="setup"
+fi
+
+# 执行
+case "$SUBCOMMAND" in
+  setup)      cmd_setup ;;
+  install)    cmd_install ;;
+  verify)     cmd_verify ;;
+  uninstall)  cmd_uninstall ;;
+  update)     cmd_update ;;
+  *) echo "Unknown: $SUBCOMMAND" >&2; exit 2 ;;
+esac
