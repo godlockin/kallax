@@ -30,6 +30,7 @@ set -uo pipefail
 
 # ============ 默认值 ============
 KALLAX_REPO="${KALLAX_REPO:-your-org/kallax}"
+INIT_SUBCMD=""
 HOME_DIR="${KALLAX_HOME_DIR:-$HOME/.claude}"
 NON_INTERACTIVE="${KALLAX_NON_INTERACTIVE:-0}"
 FORCE="${KALLAX_FORCE:-0}"
@@ -47,12 +48,17 @@ while [[ $# -gt 0 ]]; do
     --force)      FORCE=1; shift;;
     --no-verify)  NO_VERIFY=1; shift;;
     --local)      LOCAL_ROOT="$2"; shift 2;;  # 内部用
+    init)         INIT_SUBCMD="$2"; shift 2;;  # 项目级初始化
     -h|--help)
       cat <<'EOF'
 kallax CLI Rule 一行安装
 
 用法:
   bash setup.sh [options]
+
+子命令:
+  install      默认(用户级安装)
+  init <path>  项目级初始化(转 init-project.sh)
 
 选项:
   --release TAG       从 GitHub Release 下载 TAG 版(默认:本地仓库)
@@ -190,9 +196,22 @@ if [[ "$SOURCE_KIND" == "release" && -n "$RELEASE_TAG" ]]; then
   trap 'rm -rf "$CLEANUP_DIR"' EXIT
 fi
 
-# ============ 跑 cli-rule install ============
+# ============ 跑 cli-rule install(默认) 或 init-project(init 子命令) ============
 echo "🚀 开始安装..."
 echo ""
+
+# 检测 init 子命令(参数解析时已存到 INIT_SUBCMD)
+INIT_PATH="$INIT_SUBCMD"
+
+if [[ -n "$INIT_PATH" ]]; then
+  # init 子命令:转 init-project.sh
+  echo "ℹ️  转 init-project.sh(项目级初始化)"
+  exec "$KALLAX_ROOT/scripts/init-project.sh" "$INIT_PATH" \
+    $([[ $NON_INTERACTIVE -eq 1 ]] && echo "--non-interactive") \
+    $([[ $FORCE -eq 1 ]] && echo "--force") \
+    --template="${TEMPLATE:-minimal}" \
+    --hooks --rules --git
+fi
 
 exec "$KALLAX_ROOT/scripts/cli-rule" install \
   --home "$HOME_DIR" \
