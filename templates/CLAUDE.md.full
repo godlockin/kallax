@@ -1,0 +1,139 @@
+# CLAUDE.md (FULL — 200 行)
+
+> **kallax 框架** | 用户级规则 | 高级用户/复杂项目
+> **包含**:MINIMAL + STANDARD + 实战场景 + 角色特定
+
+## 🎯 核心原则 / Core Principles
+
+```
+1. 功能完整 > 技术完备 (出问题时简单能跑 > 复杂不能用)
+2. 单次输出最大化信息密度
+3. 工具输出预过滤(head/tail/jq,不是 cat/diff/grep -r)
+4. 不重复路径(批量 + 缓存)
+5. 上下文主动压缩(50+ 调用后 /compact)
+```
+
+## 📚 规则文件 (按需加载)
+
+| 文件 | 何时 Read | 触发场景 |
+|------|----------|----------|
+| `rules/cli-rule.md` | 跑长命令前 | 构建/测试/扫描 |
+| `rules/token-economy.md` | 文件/搜索操作前 | cat / find / grep |
+| `rules/commit-message.md` | 写 commit 前 | 提交代码 |
+| `rules/role-backend.md` | 后端任务 | API / DB / 缓存 |
+| `rules/role-frontend.md` | 前端任务 | UI / 组件 / 状态 |
+| `rules/role-devops.md` | 运维任务 | CI/CD / 部署 |
+
+**自动加载**:
+- `~/.claude/CLAUDE.md` — **永远**
+- 项目根 `CLAUDE.md` — 项目目录
+- 子目录 `CLAUDE.md` — 子目录
+
+## ⚙️ 5 条 CLI 规则
+
+| # | 规则 | 实现 |
+|---|------|------|
+| 1 | **后台执行** | `run_in_background: true` |
+| 2 | **日志到 /tmp** | `/tmp/claude-tasks/<name>-<ts>.log` |
+| 3 | **check exit code** | `$?` / `$EXIT_CODE` |
+| 4 | **OK success / FAILED + 自动 tail 10** | `~/.claude/exec-task.sh` |
+| 5 | **不监控日志** | 禁 tail -f / less +F / watch |
+
+## ⚡ Token Economy 5 原则
+
+1. **预过滤**:`head/tail/jq/--stat` 不是 `cat/diff/grep -r`
+2. **批量**:1 个 bash 多命令
+3. **不重复**:同命令不跑 2 次,缓存到 `/tmp/`
+4. **/compact**:50+ 调用后
+5. **紧凑**:数字 / --stat / 摘要
+
+## ⚙️ 4 层防护 (硬约束)
+
+```
+1. bash-rule-enforcer.sh    exit 2 拦截 tail -f / cat .log
+2. token-economy-enforcer.sh  exit 2 拦截 cat >50KB / find 无 max-depth
+3. verify-rule.sh          34 项完整性检查
+4. cli-rule install        一行安装全部
+```
+
+**修改任何 rule** → `bash ~/.claude/verify-rule.sh verify`
+
+## 🛠️ 工具栈
+
+| 工具 | 替代 | 加速 |
+|------|------|------|
+| `fd` | find | 15x |
+| `rg` | grep | 5-20x |
+| `jq` | text-grep json | 90% |
+| `bat` | cat | 语法高亮 |
+| `eza` | ls | 简洁 |
+| `delta` | diff | 视觉 |
+| `dust` | du | 可视化 |
+| `procs` | ps | 视觉 |
+
+## 🚀 实战场景 / Common Workflows
+
+### 场景 1:长跑命令
+```bash
+bash ~/.claude/exec-task.sh "build" "cargo build --release"
+# 成功 → OK success,删日志
+# 失败 → FAILED + 末尾 10 行
+```
+
+### 场景 2:扫描大目录
+```bash
+bash ~/.claude/exec-task.sh "scan" "fd --type f --max-depth 4 . /path | wc -l"
+```
+
+### 场景 3:查 git 历史
+```bash
+git log --oneline -20  # 不要 git log --all
+git diff --stat        # 不要 git diff
+```
+
+### 场景 4:JSON/YAML 处理
+```bash
+curl -s api | jq '.data[] | {id, name}'  # 不要 cat | grep
+yq '.spec.template.spec.containers[0].image' file.yaml
+```
+
+### 场景 5:批量 grep
+```bash
+rg --files-with-matches PATTERN src/  # 哪些文件含
+rg PATTERN src/ --max-count 20        # 前 20 个匹配
+```
+
+## 🎬 角色特定规则(可选)
+
+### Backend
+- API → OpenAPI 文档必填
+- DB migration → 反向兼容检查
+- Cache invalidation → 显式
+
+### Frontend
+- 组件 → props 必填 + 类型
+- State → 不可变更新
+- Bundle size → 单文件 < 100KB
+
+### DevOps
+- Pipeline → idempotent
+- Secret → env 注入,不硬编码
+- Health check → 必填
+
+## 📋 1 行原则
+
+> **Read 规则前问"我需要吗?",不需要就不读;Read 后用 1 个命令做多件事。**
+
+---
+
+**完整规则见**:
+- `rules/cli-rule.md` — CLI 执行规范
+- `rules/token-economy.md` — Token 精简策略
+- `rules/commit-message.md` — Commit 规范
+- `rules/role-*.md` — 角色特定
+- `docs/cli-rule.md` — 完整参考(150+ 行)
+- `docs/token-economy.md` — 完整参考(290 行)
+
+**生成**:kallax `templates/CLAUDE.md.full`
+**降级**:MINIMAL (50 行) / STANDARD (150 行)
+**其他模板**:见 `kallax/templates/` 目录

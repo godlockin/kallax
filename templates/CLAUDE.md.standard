@@ -1,0 +1,98 @@
+# CLAUDE.md (STANDARD — 150 行)
+
+> **kallax 框架** | 用户级规则 | 项目通用模板
+> **比 MINIMAL 多**:核心原则详解 + 5 条规则 + CLI Rule 摘要
+
+## 🎯 核心原则 / Core Principles
+
+```
+1. 功能完整 > 技术完备 (出问题时简单能跑 > 复杂不能用)
+2. 单次输出最大化信息密度(避免 tail -f,避免 cat 大文件)
+3. 工具输出预过滤(head/tail/jq,不是 cat/diff/grep -r)
+4. 不重复路径(批量 + 缓存,同命令不跑 2 次)
+5. 上下文主动压缩(50+ 调用后 /compact)
+```
+
+## 📚 规则文件 (按需加载)
+
+| 文件 | 何时 Read | 触发场景 |
+|------|----------|----------|
+| `rules/cli-rule.md` | 跑长命令前 | 构建/测试/扫描 |
+| `rules/token-economy.md` | 文件/搜索操作前 | cat / find / grep |
+| `rules/commit-message.md` | 写 commit 前 | 提交代码 |
+
+**自动加载**:
+- 根目录 `~/.claude/CLAUDE.md` — **永远加载**
+- 项目根 `CLAUDE.md` — 在该目录工作时自动加载
+- 子目录 `CLAUDE.md` — 在该子目录工作时自动加载
+
+## ⚙️ 5 条 CLI 规则(摘要)
+
+| # | 规则 | 失败时 |
+|---|------|--------|
+| 1 | **后台执行** | 不阻塞主 shell |
+| 2 | **日志到 /tmp** | `/tmp/claude-tasks/<name>-<ts>.log` |
+| 3 | **check exit code** | 不假设成功 |
+| 4 | **OK success / FAILED + 自动 tail 10** | 失败时显示末尾 10 行 |
+| 5 | **不监控日志** | 禁 tail -f / less +F / watch |
+
+**详细**:Read `rules/cli-rule.md`
+
+## ⚡ Token Economy 5 原则(摘要)
+
+1. **预过滤输出**:`head -n 50` / `jq '.field'` / `git --stat`
+2. **批量调用**:1 个 bash 多命令
+3. **不重复**:同 grep 不跑 2 次
+4. **/compact**:50+ 调用后压缩
+5. **紧凑格式**:数字 / --stat / 摘要
+
+**详细**:Read `rules/token-economy.md`
+
+## ⚙️ 4 层防护 (硬约束)
+
+```
+1. bash-rule-enforcer.sh    拦截 tail -f / cat .log(日志监控)
+2. token-economy-enforcer.sh 拦截 cat >50KB / find 无 max-depth
+3. verify-rule.sh          34 项完整性检查
+4. cli-rule install        一行安装全部
+```
+
+**修改任何 rule** → `bash ~/.claude/verify-rule.sh verify`
+
+## 🛠️ 工具栈速查
+
+| 工具 | 替代 | 加速 |
+|------|------|------|
+| `fd` | find | 15x |
+| `rg` | grep | 5-20x |
+| `jq` | text-grep json | 90% 输出减 |
+| `bat` | cat | 语法高亮 |
+| `eza` | ls | 简洁 |
+
+## 🚀 CLI 任务标准用法
+
+```bash
+# 长任务用 exec-task.sh wrapper
+bash ~/.claude/exec-task.sh "scan" "bash scripts/storage-evidence-scanner.sh"
+
+# 输出:
+# OK success → 删除日志
+# FAILED exit=N → 末尾 10 行 + hint 追加
+```
+
+## 📋 1 行原则
+
+> **Read 规则前问"我需要吗?",不需要就不读;Read 后用 1 个命令做多件事。**
+
+---
+
+**完整规则见**:
+- `rules/cli-rule.md` — CLI 执行规范
+- `rules/token-economy.md` — Token 精简策略
+- `rules/commit-message.md` — Commit 规范
+- `docs/cli-rule.md` — 完整参考(150+ 行)
+- `docs/token-economy.md` — 完整参考(290 行)
+
+**生成**:kallax `templates/CLAUDE.md.standard`
+**降级到 MINIMAL**:删除 "5 条 CLI 规则" 和 "Token Economy 5 原则" 摘要段
+**升级到 FULL**:包含 docs/cli-rule.md + token-economy.md 全文

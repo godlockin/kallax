@@ -1,0 +1,64 @@
+# CLAUDE.md (MINIMAL — 50 行)
+
+> **kallax 框架** | 用户级规则 — 永远加载 | 详情见 `rules/`
+> **精简原则**:只放必须知道的,详情按需 Read
+
+## 🎯 核心原则 / Core Principles
+
+```
+1. 功能完整 > 技术完备 (出问题时简单能跑 > 复杂不能用)
+2. 单次输出最大化信息密度(避免 tail -f,避免 cat 大文件)
+3. 工具输出预过滤(head/tail/jq,不是 cat/diff/grep -r)
+4. 不重复路径(批量 + 缓存,同命令不跑 2 次)
+5. 上下文主动压缩(50+ 调用后 /compact)
+```
+
+## 📚 规则文件 (按需加载)
+
+| 文件 | 何时 Read | 触发场景 |
+|------|----------|----------|
+| `rules/cli-rule.md` | 跑长命令前 | 构建/测试/扫描 |
+| `rules/token-economy.md` | 文件/搜索操作前 | cat / find / grep |
+| `rules/commit-message.md` | 写 commit 前 | 提交代码 |
+| `rules/<role-specific>.md` | 进入项目目录 | 项目级规则 |
+
+**自动加载**:
+- 根目录 `~/.claude/CLAUDE.md` — **永远加载**(你正在读)
+- 项目根 `CLAUDE.md` — 在该目录工作时自动加载
+- 子目录 `CLAUDE.md` — 在该子目录工作时自动加载
+
+## ⚙️ 4 层防护 (硬约束)
+
+```
+1. bash-rule-enforcer.sh    拦截 tail -f / cat .log(日志监控)
+2. token-economy-enforcer.sh 拦截 cat >50KB / find 无 max-depth
+3. verify-rule.sh          34 项完整性检查
+4. cli-rule install        一行安装全部
+```
+
+**修改任何 rule** → `bash ~/.claude/verify-rule.sh verify`
+
+## 🛠️ 工具栈速查
+
+| 工具 | 替代 | 加速 |
+|------|------|------|
+| `fd` | find | 15x |
+| `rg` | grep | 5-20x |
+| `jq` | text-grep json | 90% 输出减 |
+| `bat` | cat | 语法高亮 |
+| `eza` | ls | 简洁 |
+
+## 📋 1 行原则
+
+> **Read 规则前问"我需要吗?",不需要就不读;Read 后用 1 个命令做多件事。**
+
+---
+
+**完整规则见**:
+- `rules/cli-rule.md` — CLI 执行规范(后台/不监控/返回值校验)
+- `rules/token-economy.md` — Token 精简策略
+- `rules/commit-message.md` — Commit 规范
+
+**生成**:kallax `templates/CLAUDE.md.minimal` (50 行)
+**升级到 STANDARD**:追加 rules/cli-rule.md 等
+**升级到 FULL**:详见 kallax `docs/cli-rule.md`

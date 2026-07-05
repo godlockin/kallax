@@ -42,6 +42,7 @@ FORCE=0
 VERBOSE=0
 NO_VERIFY=0
 NO_BACKUP=0
+TEMPLATE="minimal"
 SUBCOMMAND=""
 
 # 颜色
@@ -93,6 +94,7 @@ ${BOLD}选项:${NC}
   --verbose           显示详情
   --no-verify         安装后不跑 verify
   --no-backup         卸载前不备份
+  --template NAME     CLAUDE.md 模板(minimal|standard|full,默认 minimal)
 
 ${BOLD}示例:${NC}
   # 第一次安装
@@ -332,17 +334,30 @@ do_install() {
     fi
   fi
 
-  # 4. CLAUDE.md 规则段
+  # 4. CLAUDE.md 规则段(支持 --template)
   if [[ $with_claude_md -eq 1 ]]; then
+    local template_file="$KALLAX_ROOT/templates/CLAUDE.md.${TEMPLATE}"
+    if [[ ! -f "$template_file" ]]; then
+      log_warn "模板不存在: $template_file,fallback 到 minimal"
+      template_file="$KALLAX_ROOT/templates/CLAUDE.md.minimal"
+    fi
+
     if [[ -f "$HOME_DIR/CLAUDE.md" ]]; then
+      # 已存在 — 检查关键章节
       if grep -qF "CLI Task Execution Rule\|CLI 任务执行规范" "$HOME_DIR/CLAUDE.md"; then
-        log_warn "CLAUDE.md 第 9 章已存在"
+        log_warn "CLAUDE.md 第 9 章已存在(未覆盖)"
+      elif [[ $FORCE -eq 1 ]]; then
+        log_info "强制覆盖 CLAUDE.md 用模板 $TEMPLATE"
+        cp "$template_file" "$HOME_DIR/CLAUDE.md"
+        log_ok "已覆盖: $HOME_DIR/CLAUDE.md"
       else
         log_info "CLAUDE.md 存在,但缺第 9 章规则"
-        log_info "请手动复制 docs/cli-rule.md 的'核心原则'+'5 条规则'两段"
+        log_info "  建议:cp $template_file $HOME_DIR/CLAUDE.md"
       fi
     else
-      log_info "CLAUDE.md 不存在,跳过(用户可手动复制 docs/cli-rule.md)"
+      # 不存在 — 创建
+      cp "$template_file" "$HOME_DIR/CLAUDE.md"
+      log_ok "已创建 CLAUDE.md(模板: $TEMPLATE)"
     fi
   fi
 
@@ -562,6 +577,7 @@ while [[ $# -gt 0 ]]; do
     --verbose) VERBOSE=1; shift;;
     --no-verify) NO_VERIFY=1; shift;;
     --no-backup) NO_BACKUP=1; shift;;
+    --template) TEMPLATE="$2"; shift 2;;
     --version|-v) echo "kallax cli-rule v${VERSION}"; exit 0;;
     -*) echo "未知参数: $1" >&2; show_help; exit 2;;
     *) echo "未知子命令: $1" >&2; show_help; exit 2;;
