@@ -57,6 +57,7 @@ SCRIPT_DIR="$KALLAX_ROOT/hooks"
 SOURCE_EXEC_TASK="$SCRIPT_DIR/exec-task.sh"
 SOURCE_HOOK="$SCRIPT_DIR/bash-rule-enforcer.sh"
 SOURCE_VERIFY="$SCRIPT_DIR/verify-rule.sh"
+SOURCE_TOKEN_HOOK="$SCRIPT_DIR/token-economy-enforcer.sh"
 SOURCE_DOC_RULE="$KALLAX_ROOT/docs/cli-rule.md"
 
 # 平台检查
@@ -319,6 +320,18 @@ do_install() {
     log_ok "已安装: $HOME_DIR/verify-rule.sh"
   fi
 
+  # 3.5 复制 token-economy hook
+  if [[ -f "$SOURCE_TOKEN_HOOK" ]]; then
+    if [[ -f "$HOME_DIR/hooks/token-economy-enforcer.sh" && $FORCE -eq 0 ]]; then
+      log_warn "已存在: $HOME_DIR/hooks/token-economy-enforcer.sh"
+    else
+      [[ -f "$HOME_DIR/hooks/token-economy-enforcer.sh" ]] && backup_file "$HOME_DIR/hooks/token-economy-enforcer.sh" >/dev/null
+      cp "$SOURCE_TOKEN_HOOK" "$HOME_DIR/hooks/token-economy-enforcer.sh"
+      chmod +x "$HOME_DIR/hooks/token-economy-enforcer.sh"
+      log_ok "已安装: $HOME_DIR/hooks/token-economy-enforcer.sh"
+    fi
+  fi
+
   # 4. CLAUDE.md 规则段
   if [[ $with_claude_md -eq 1 ]]; then
     if [[ -f "$HOME_DIR/CLAUDE.md" ]]; then
@@ -347,6 +360,8 @@ try:
         if h.get('matcher') == 'Bash':
             for cmd in h.get('hooks', []):
                 if 'bash-rule-enforcer' in cmd.get('command', ''):
+                    sys.exit(0)
+        if 'token-economy-enforcer' in cmd.get('command', ''):
                     sys.exit(0)
     sys.exit(1)
 except Exception:

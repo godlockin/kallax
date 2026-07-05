@@ -128,6 +128,59 @@ check_hook() {
   fi
 }
 
+# === 检查 3.5: token-economy-enforcer.sh ===
+check_token_economy() {
+  echo ""
+  echo "═══ [3.5/5] hooks/token-economy-enforcer.sh ═══"
+  local TE_HOOK="$CLAUDE_DIR/hooks/token-economy-enforcer.sh"
+
+  if [[ ! -f "$TE_HOOK" ]]; then
+    fail "token-economy hook 不存在: $TE_HOOK"
+    return
+  fi
+  ok "token-economy hook 存在"
+
+  if [[ -x "$TE_HOOK" ]]; then
+    ok "token-economy hook 可执行"
+  else
+    fail "token-economy hook 不可执行"
+  fi
+
+  # 测 hook:用一个大文件喂 > 50KB
+  local TEST_BIG="/tmp/avle-verify-big.txt"
+  dd if=/dev/zero of="$TEST_BIG" bs=1024 count=60 2>/dev/null
+  if [[ -f "$TEST_BIG" ]]; then
+    local TE_RC=$(echo "{\"tool_name\":\"Bash\",\"tool_input\":{\"command\":\"cat \$TEST_BIG\"}}" | bash "$TE_HOOK" >/dev/null 2>&1; echo $?)
+    if [[ "$TE_RC" -eq 2 ]]; then
+      ok "hook 正确拒绝 cat >50KB (exit=2)"
+    else
+      fail "hook 未拒绝 cat >50KB (exit=$TE_RC)"
+    fi
+    rm -f "$TEST_BIG"
+  fi
+
+  # 测 hook:小文件 cat 放行
+  local TEST_SMALL="/tmp/avle-verify-small.txt"
+  echo "tiny" > "$TEST_SMALL"
+  if [[ -f "$TEST_SMALL" ]]; then
+    local TE_RC2=$(echo "{\"tool_name\":\"Bash\",\"tool_input\":{\"command\":\"cat \$TEST_SMALL\"}}" | bash "$TE_HOOK" >/dev/null 2>&1; echo $?)
+    if [[ "$TE_RC2" -eq 0 ]]; then
+      ok "hook 正确放行 cat 小文件 (exit=0)"
+    else
+      fail "hook 误拦截 cat 小文件 (exit=$TE_RC2)"
+    fi
+    rm -f "$TEST_SMALL"
+  fi
+
+  # 测 hook:合规命令放行
+  local TE_RC3=$(echo '{"tool_name":"Bash","tool_input":{"command":"git status"}}' | bash "$TE_HOOK" >/dev/null 2>&1; echo $?)
+  if [[ "$TE_RC3" -eq 0 ]]; then
+    ok "hook 正确放行 git status (exit=0)"
+  else
+    fail "hook 误拦截 git status (exit=$TE_RC3)"
+  fi
+}
+
 # === 检查 4: settings.json hook 配置 ===
 check_settings() {
   echo ""
@@ -223,6 +276,7 @@ case "${1:-verify}" in
     check_claude_md
     check_exec_task
     check_hook
+    check_token_economy
     check_settings
     check_violations
 
