@@ -23,3 +23,5 @@ pub use cache::Cache;
 pub use middleware::MiddlewarePipeline;
 pub use registry::Registry;
 pub use isolation::IsolationScope;
+// EPIC-095: re-export db types (跟 ticket_engine.rs EPIC-075/079 联合, 治 E0432)
+pub use db::{SqliteClient, TicketFilter};
