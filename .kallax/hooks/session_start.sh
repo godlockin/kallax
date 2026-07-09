@@ -191,6 +191,9 @@ fi
 
 # Create directories
 # ============================================================
+# EPIC-068-A: 9 authz scripts read .kallax/state/state.json (统一入口)
+# Old INSTANCES_DIR path kept for historical/audit compat (双写)
+mkdir -p "${KALLAX_ROOT}/.kallax/state"
 mkdir -p "${INSTANCES_DIR}/${INSTANCE_ID}"
 mkdir -p "${INBOX_DIR}/${INSTANCE_ID}"
 mkdir -p "${KALLAX_ROOT}/queue/outbox/${INSTANCE_ID}"
@@ -257,6 +260,38 @@ cat > "${INSTANCES_DIR}/${INSTANCE_ID}/state.json" << STATE
   }
 }
 STATE
+
+# EPIC-068-A: Also write authz-readable path (.kallax/state/state.json)
+# Atomic via tmp + mv (防 partial read). 9 authz scripts read this path.
+_STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
+_STATE_TMP="${_STATE_FILE}.tmp.$$"
+cp "${INSTANCES_DIR}/${INSTANCE_ID}/state.json" "${_STATE_TMP}" 2>/dev/null \
+  || cat > "${_STATE_TMP}" << STATE_PRIMARY
+{
+  "instance_id": "${INSTANCE_ID}",
+  "role": "${ROLE}",
+  "pid": ${PID},
+  "status": "ACTIVE",
+  "branch": "${BRANCH}",
+  "cwd": "${CWD}",
+  "in_worktree": ${IN_WORKTREE},
+  "worktree_path": ${WORKTREE_PATH},
+  "created_at": "${NOW}",
+  "started_at": "${NOW}",
+  "heartbeat": {
+    "interval_seconds": 60,
+    "last_beat": "${NOW}",
+    "missed_count": 0
+  },
+  "current_task": {
+    "ticket_id": null,
+    "worktree_path": null,
+    "progress_pct": null
+  }
+}
+STATE_PRIMARY
+mv -f "${_STATE_TMP}" "${_STATE_FILE}"
+unset _STATE_FILE _STATE_TMP
 
 # ============================================================
 # EPIC-016-O: Stale heartbeat daemon cleanup — prevent accumulation
