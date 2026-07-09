@@ -166,8 +166,13 @@ file_lock_release() {
 
   _file_lock_init
 
+  # EPIC-086 P1-4: 用统一 _file_lock_path 路径 (跟 acquire 1:1, 治 P1-4 错路径)
+  # 原: 临时变量 lock_file 用 key-based 路径, 后续覆盖 — owner check 用了错路径
+  # 修: 一次 lock_file 用 _file_lock_path
+  local lock_file
+  lock_file="$(_file_lock_path "$file_path")"
+
   # Issue 2 fix (MEDIUM unauthorized release): ownership check
-  local lock_file="$FILE_LOCK_DIR/${file_path//\//_}"
   if [[ -f "$lock_file.owner" ]]; then
     local owner_pid
     owner_pid=$(cat "$lock_file.owner" 2>/dev/null || echo "0")
@@ -176,9 +181,6 @@ file_lock_release() {
       return 1
     fi
   fi
-
-  local lock_file
-  lock_file="$(_file_lock_path "$file_path")"
 
   # 如果没有提供 fd, 尝试找到对应的锁文件
   if [[ -z "$fd" ]]; then
