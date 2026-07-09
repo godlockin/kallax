@@ -4,6 +4,29 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.8.2] - 2026-07-09
+
+### Release: EPIC-070 (6 致命安全修复, Sprint 4 续)
+
+#### Security Fixed (治 v3.8.0 red-blue review 6 项致命安全)
+
+- **EPIC-070-B1**: `/hooks/audit` 强制 sessionId scope (无 admin → 403)
+  - raw output: `vitest run tests/hook-replay.test.ts` → **20 passed (was 19, 加 B1 scope guard test)**
+- **EPIC-070-B2**: 删 eval (环境注入即 RCE), 改 `bash -c "..."` 单引号包裹
+  - 位置: `scripts/supervisor.sh:71`, `scripts/heartbeat-monitor.sh:52`
+- **EPIC-070-B4**: AbortController 每次请求新建 (避免一次超时永久失效)
+  - 位置: `node/src/core/rust-bridge.ts:39` (原闭包外) → 函数内
+- **EPIC-070-B5**: writeLock 跨进程 atomic rename (tmp + rename 替换 appendFile)
+  - 位置: `node/src/hooks/hook-events-store.ts:206` 原 appendFileSync → writeFileSync(tmp) + renameSync
+- **EPIC-070-B6**: AgentPool.acquire_performer 真正 reserve (去克隆悖论)
+  - 位置: `rust/crates/kallax-engine/src/agent_pool.rs:105` 原 assign_task + clone + release_task → 真 reserve
+- **EPIC-070-P1-9**: CORS 显式白名单 (生产拒绝 wildcard `*`)
+  - 位置: `node/src/api/server.ts:80` 生产抛错, dev/test 仍允许
+
+raw output: `cargo test --release` → **74 passed; 0 failed**
+raw output: `vitest run hook-replay` → **20 passed (20)**
+raw output: `git log --oneline miao..HEAD` (6 commit + 1 merge)
+
 ## [3.8.1] - 2026-07-09
 
 ### Release: EPIC-069 (red-blue review 真相层, Sprint 4)
