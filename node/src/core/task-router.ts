@@ -38,7 +38,16 @@ export interface ExpertPanelComposition {
 export type RouteDecision = DirectRoute | PanelRoute;
 
 export interface RouteResult {
-  readonly decision: RouteDecision; readonly requirement: string; readonly confidence: number;
+  readonly decision: RouteDecision;
+  readonly requirement: string;
+  readonly confidence: number;
+  /**
+   * EPIC-064-5: Auto-dispatch hints for subagent consumption.
+   * - direct: single `kallax <verb> <args>` to invoke
+   * - panel: list of `kallax <verb> <args>` to invoke sequentially
+   * Empty when no confident mapping (caller falls back to human decision).
+   */
+  readonly dispatch: ReadonlyArray<{ readonly verb: string; readonly args: readonly string[]; readonly reason: string }>;
 }
 
 const DOMAIN_EXPERT_MAP: Record<string, string[]> = {
@@ -102,8 +111,24 @@ export function routeTask(requirement: string): KallaxResult<RouteResult> {
       recommendation: `Simple (${complexity.mode}, score ${complexity.score}). Create ticket, summon ${[...new Set(caps)].join('+') || 'general'} Performer, start.`,
       suggestedPerformer: { capabilities: [...new Set(caps)], domain: caps[0] },
     };
+
+    // EPIC-064-5: auto-dispatch hints
+    const dispatchHints: Array<{ verb: string; args: string[]; reason: string }> = [];
+    if (caps.includes('backend') || caps.includes('frontend') || caps.includes('fullstack')) {
+      dispatchHints.push({
+        verb: 'epic', args: ['create', 'AUTO', requirement.slice(0, 60)],
+        reason: 'Complex enough to warrant EPIC tracking',
+      });
+    } else {
+      dispatchHints.push({
+        verb: 'task', args: ['create', 'AUTO', requirement.slice(0, 60)],
+        reason: 'Single subtask → task ticket',
+      });
+    }
+    dispatchHints.push({ verb: 'load', args: ['all'], reason: 'Pre-load context (cheatsheet + 5-levels + 4-roles)' });
+
     logger.info({ strategy: 'direct', score: complexity.score }, 'task routed: direct');
-    return ok({ decision, requirement, confidence: decomposition.confidence });
+    return ok({ decision, requirement, confidence: decomposition.confidence, dispatch: dispatchHints });
   }
 
   const panel = pickExpertPanel(decomposition, complexity);
@@ -113,8 +138,16 @@ export function routeTask(requirement: string): KallaxResult<RouteResult> {
     recommendation: `Complex (${complexity.mode}, score ${complexity.score}). Panel: ${panel.required.join(', ')}. ~${estimatedRounds} rounds.`,
     panel, estimatedRounds,
   };
+
+  // EPIC-064-5: panel dispatch
+  const dispatchHints: Array<{ verb: string; args: string[]; reason: string }> = [
+    { verb: 'epic', args: ['create', 'PANEL', requirement.slice(0, 60)], reason: `Complex task → EPIC for panel decomposition (score ${complexity.score})` },
+    { verb: 'load', args: ['all'], reason: `Pre-load context for ${panel.required.length} panel members` },
+    { verb: 'route', args: [requirement.slice(0, 80)], reason: 'Recurse sub-tasks through route' },
+  ];
+
   logger.info({ strategy: 'panel', score: complexity.score, panelRoles: panel.required }, 'task routed: panel');
-  return ok({ decision, requirement, confidence: decomposition.confidence });
+  return ok({ decision, requirement, confidence: decomposition.confidence, dispatch: dispatchHints });
 }
 
 export function getComplexityThreshold(): number {

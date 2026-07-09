@@ -133,4 +133,48 @@ export function registerKnowledgeCommands(program: Command, _ctx: AppContext): v
         process.exit(1);
       }
     });
+
+  // review — staleness audit (merged from memory:review, EPIC-064-3)
+  knowledge
+    .command('review')
+    .description('Review knowledge entries — staleness audit (fresh vs stale)')
+    .option('-s, --stale <days>', 'Entries older than N days are stale', '30')
+    .option('-n, --limit <limit>', 'Max entries shown per bucket', '50')
+    .action(async (opts?: { stale?: string; limit?: string }) => {
+      try {
+        const { getKnowledgeBase } = await import('../core/knowledge-base.js');
+        const kb = getKnowledgeBase();
+
+        const staleDays = parseInt(opts?.['stale'] ?? '30', 10);
+        const limit = parseInt(opts?.['limit'] ?? '50', 10);
+
+        const allResult = kb.list({ limit: 1000 });
+        if (allResult.isErr()) throw allResult.error;
+
+        const stats = kb.getStats();
+        const stale: Array<{ id: string; title: string; ageDays: number; tags: string[] }> = [];
+        const fresh: Array<{ id: string; title: string; tags: string[] }> = [];
+
+        for (const entry of allResult.value) {
+          const ageDays = (Date.now() - entry.updatedAt) / 86400_000;
+          if (ageDays > staleDays) {
+            stale.push({ id: entry.id, title: entry.title, ageDays: Math.round(ageDays), tags: [...entry.tags] });
+          } else {
+            fresh.push({ id: entry.id, title: entry.title, tags: [...entry.tags] });
+          }
+        }
+
+        stale.sort((a, b) => b.ageDays - a.ageDays);
+
+        process.stdout.write(JSON.stringify({
+          stats: { total: stats.totalEntries, words: stats.totalWords },
+          stale: stale.slice(0, limit),
+          fresh: fresh.slice(0, limit),
+          summary: `${stale.length} stale entries (>${staleDays}d), ${fresh.length} fresh entries`,
+        }, null, 2) + '\n');
+      } catch (error: unknown) {
+        logger.kallaxError(KallaxError.fromUnknown(error));
+        process.exit(1);
+      }
+    });
 }

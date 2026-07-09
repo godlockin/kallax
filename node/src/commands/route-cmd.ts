@@ -19,10 +19,10 @@ export function registerRouteCommands(program: Command): void {
         process.exit(1);
       }
 
-      const { decision, confidence } = result.value;
+      const { decision, confidence, dispatch } = result.value;
 
       if (opts.json) {
-        logger.info({}, JSON.stringify({ decision, confidence, requirement }, null, 2));
+        logger.info({}, JSON.stringify({ decision, confidence, requirement, dispatch }, null, 2));
         return;
       }
 
