@@ -105,19 +105,44 @@ function canonicalize(entry: Record<string, unknown>): string {
   return JSON.stringify(sorted);
 }
 
+// EPIC-082 Perf-1: 缓存最后一条 entry (避免每次 append 都 readFileSync 整个 .jsonl)
+// key: filePath → last entry (seq + hash)
+const lastEntryCache = new Map<string, { seq: number; hash: string } | null>();
+
 function readLastEntry(filePath: string): { seq: number; hash: string } | null {
-  if (!existsSync(filePath)) return null;
-  const content = readFileSync(filePath, 'utf-8');
-  const lines = content.split('\n').filter((l) => l.trim().length > 0);
-  if (lines.length === 0) return null;
-  const last = lines[lines.length - 1];
-  if (!last) return null;
-  try {
-    const parsed = JSON.parse(last) as { seq: number; hash: string };
-    return { seq: parsed.seq, hash: parsed.hash };
-  } catch {
+  // 缓存命中直接返回 (O(1))
+  if (lastEntryCache.has(filePath)) {
+    return lastEntryCache.get(filePath) ?? null;
+  }
+  // 缓存 miss → 读盘 + 解析 (O(N), 仅首次)
+  if (!existsSync(filePath)) {
+    lastEntryCache.set(filePath, null);
     return null;
   }
+  const content = readFileSync(filePath, 'utf-8');
+  const lines = content.split('\n').filter((l) => l.trim().length > 0);
+  if (lines.length === 0) {
+    lastEntryCache.set(filePath, null);
+    return null;
+  }
+  const last = lines[lines.length - 1];
+  if (!last) {
+    lastEntryCache.set(filePath, null);
+    return null;
+  }
+  try {
+    const parsed = JSON.parse(last) as { seq: number; hash: string };
+    const result = { seq: parsed.seq, hash: parsed.hash };
+    lastEntryCache.set(filePath, result);
+    return result;
+  } catch {
+    lastEntryCache.set(filePath, null);
+    return null;
+  }
+}
+
+function updateLastEntryCache(filePath: string, entry: { seq: number; hash: string }): void {
+  lastEntryCache.set(filePath, entry);
 }
 
 function readAllEntries(filePath: string): HookEventEntry[] {
@@ -210,6 +235,8 @@ export function createHookEventsStore(
       const tmpPath = `${filePath}.tmp.${process.pid}.${Date.now()}`;
       const existing = existsSync(filePath) ? readFileSync(filePath, 'utf-8') : '';
       writeFileSync(tmpPath, existing + JSON.stringify(entry) + '\n', { mode: 0o600 });
+      // EPIC-082 Perf-1: 更新 last entry 缓存 (避免下次 append O(N) 读盘)
+      updateLastEntryCache(filePath, { seq: entry.seq, hash: entry.hash });
       renameSync(tmpPath, filePath);
 
       return entry;
