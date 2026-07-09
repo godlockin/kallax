@@ -280,8 +280,16 @@ export async function appendHookEvent(
 ): Promise<HookEventEntry> {
   const prev = writeLock;
   let release!: () => void;
+  // EPIC-085 P1-3: writeLock rejection 死锁治根 — 用 try/finally 包 prev await
+  // 原: await prev 抛错 → writeLock 已设 → 后续 append 等不到 release 死锁
+  // 修: try/finally 确保 release() 一定调用
   writeLock = new Promise<void>((r) => { release = r; });
-  await prev;
+  try {
+    await prev;
+  } catch (err: unknown) {
+    release();
+    throw err;
+  }
   try {
     return store._appendInternal(input);
   } finally {
