@@ -4,11 +4,22 @@
 
 use super::super::types::{Symbol, SymbolKind};
 use regex::Regex;
+use std::sync::OnceLock;
+
+// EPIC-091 P1-5: OnceLock compile regex once
+fn func_re() -> &'static Regex {
+    static R: OnceLock<Regex> = OnceLock::new();
+    R.get_or_init(|| Regex::new(r"(?:async\s+)?def\s+(\w+)").expect("valid regex"))
+}
+fn class_re() -> &'static Regex {
+    static R: OnceLock<Regex> = OnceLock::new();
+    R.get_or_init(|| Regex::new(r"class\s+(\w+)").expect("valid regex"))
+}
 
 /// Extract symbols from Python source code
 pub fn extract(content: &str) -> Vec<Symbol> {
-    let func_re = Regex::new(r"(?:async\s+)?def\s+(\w+)").unwrap();
-    let class_re = Regex::new(r"class\s+(\w+)").unwrap();
+    let func_re = func_re();
+    let class_re = class_re();
 
     let mut symbols = Vec::new();
 
