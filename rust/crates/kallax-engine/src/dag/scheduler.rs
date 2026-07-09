@@ -54,10 +54,22 @@ impl DagScheduler {
 
     pub fn get_ready_tasks(&mut self) -> Vec<TaskId> {
         let mut result = Vec::new();
-        while let Some((_, Reverse(task_id))) = self.ready_heap.pop() {
+        // EPIC-092 P1-6: 不 pop 消费, 而是先 peek 收集
+        // 原: pop 后若 in_degree > 0 则 task 从 heap 永远消失 (任务丢失)
+        // 修: 用 std::mem::take 替换 heap, 重建保留 ready + 还原非 ready
+        let old_heap = std::mem::take(&mut self.ready_heap);
+        let mut ready: Vec<String> = Vec::new();
+        for (priority, Reverse(task_id)) in old_heap.into_iter() {
             if self.in_degree.get(&task_id).map_or(false, |&d| d == 0) {
-                result.push(TaskId::from_str(&task_id));
+                ready.push(task_id);
+            } else {
+                // EPIC-092 治根: 非 ready task 放回 heap (防丢失)
+                let p = self.priorities.get(&task_id).copied().unwrap_or(priority);
+                self.ready_heap.push((p, Reverse(task_id)));
             }
+        }
+        for id in &ready {
+            result.push(TaskId::from_str(id));
         }
         result
     }
