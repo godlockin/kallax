@@ -4,6 +4,25 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.9.0] - 2026-07-09
+
+### Release: EPIC-071 (A4 TierRouter + A5 db 接线, Sprint 5 接线)
+
+#### Changed (治 v3.8.0 red-blue review A4 + A5)
+
+- **EPIC-071-A4**: 三级降级接线 — 新增 `TierRouter` facade (`node/src/core/tier-router.ts`)
+  - 强制所有跨层操作走 `tierRouter.execute(op, payload, { preferTier })`
+  - v3.9.0 落地架构契约 + Node tier stub, 后续 sprint 接线 Rust/Shells
+  - raw output: `vitest run tests/tier-router.test.ts` → **4 passed (4)**
+- **EPIC-071-A5**: Rust 持久化接线 — `TicketEngine::with_db(event_bus, Option<Arc<SqliteClient>>)`
+  - `create_ticket` 写入时 db=Some 同步 `db.insert_ticket` 到 SQLite
+  - 后向兼容: `db=None` 保持 v3.8.x in-memory 行为
+  - raw output: `cargo test --release` → **74 passed; 0 failed**
+
+#### Honest (仍 partial, 后续 sprint 续)
+- A4 TierRouter 0/1/3 tier 执行未实现 (v3.9.0 只 stub 决策)
+- A5 持久化只覆盖 create_ticket, get_ticket 等读取路径未走 db (后续 EPIC)
+
 ## [3.8.2] - 2026-07-09
 
 ### Release: EPIC-070 (6 致命安全修复, Sprint 4 续)
