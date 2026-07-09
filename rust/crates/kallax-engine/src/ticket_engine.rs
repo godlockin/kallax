@@ -3,8 +3,8 @@
 //! Manages ticket lifecycle, task creation, and performer assignment.
 
 use kallax_core::{
-    Event, EventType, KallaxError, Performer, PerformerId, Result, Task, TaskId, TaskStatus,
-    TaskType, Ticket, TicketId, TicketStatus,
+    Event, EventType, KallaxError, Performer, PerformerId, Result, SqliteClient, Task, TaskId,
+    TaskStatus, TaskType, Ticket, TicketId, TicketStatus,
 };
 use dashmap::DashMap;
 use std::sync::Arc;
@@ -12,22 +12,34 @@ use tracing::{info, warn};
 
 use crate::EventBus;
 
-/// Ticket engine manages the orchestration lifecycle
+/// Ticket engine manages the orchestration lifecycle.
+///
+/// EPIC-071-A5: 接线可选 SqliteClient 让 ticket 持久化 (v3.8.0 之前全 DashMap 重启丢票).
+/// db 为 None 时回退到 in-memory only (保持向后兼容, 默认 v3.8.x 行为).
 pub struct TicketEngine {
     tickets: DashMap<String, Ticket>,
     tasks: DashMap<String, Task>,
     performers: DashMap<String, Performer>,
     event_bus: Arc<EventBus>,
+    /// Optional SQLite persistence layer. If Some, ticket/task writes are mirrored.
+    db: Option<Arc<SqliteClient>>,
 }
 
 impl TicketEngine {
-    /// Create a new ticket engine
+    /// Create a new ticket engine (in-memory only, legacy behavior).
     pub fn new(event_bus: Arc<EventBus>) -> Self {
+        Self::with_db(event_bus, None)
+    }
+
+    /// EPIC-071-A5: 创建带持久化的 ticket engine. db=Some 时 ticket/task 写入同步到 SQLite,
+    /// 进程重启可恢复 (治 A5 重启丢票).
+    pub fn with_db(event_bus: Arc<EventBus>, db: Option<Arc<SqliteClient>>) -> Self {
         Self {
             tickets: DashMap::new(),
             tasks: DashMap::new(),
             performers: DashMap::new(),
             event_bus,
+            db,
         }
     }
 
@@ -45,6 +57,14 @@ impl TicketEngine {
                 entity_type: "ticket",
                 entity_id: id_str,
             });
+        }
+
+        // EPIC-071-A5: 持久化到 SQLite (如果 db 已接线)
+        if let Some(db) = &self.db {
+            db.insert_ticket(&ticket).map_err(|e| {
+                warn!(ticket_id = %id_str, error = %e, "db.insert_ticket failed; ticket still in memory");
+                e
+            })?;
         }
 
         self.tickets.insert(id_str.clone(), ticket);
