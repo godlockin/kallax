@@ -32,6 +32,47 @@ Conductor / Performer + 4 sub-roles (coder / reviewer / tester / docs)
 - scripts/permission/decision-matrix.sh (law, 0 文档化)
 - 跟 eket 1:1 借鉴 0 增 Rule
 
+## Branch Flow Governance (EPIC-074, 主公拍板 2026-07-09)
+
+> **起源**: 主公问 "有没有严格遵守 feature/xx-xx → testing → main (UAT) → miao (stable/prod)?"
+> **Master 自查 (跟 v3.8.0 reviewer 同样诚实)**: ❌ v3.8.1-3.9.2 5 release 跳过 testing + main (直推 miao)
+> **主公拍板**: 以后用 + 上个 release 之后补 (推荐)
+
+**4-branch 强制流程** (v3.10.0+ 强制, 0 容忍):
+
+```
+feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
+   工作                      UAT 验证    集成测试        稳定发布
+```
+
+| 阶段 | 操作 | 验证站 | 治根 |
+|------|------|--------|------|
+| 1. feature/* | `git worktree add -b feature/...` | 5-Level Verify (新规) | worktree 隔离 |
+| 2. feature → testing | `gh pr create --base testing` | integration + cargo test + vitest env | 治 v3.8.0 form-only PASS |
+| 3. testing → main | `gh pr create --base main` | full e2e + decision matrix 25 cells | 治 v3.8.0 "25/25 假 PASS" |
+| 4. main → miao | `gh pr create --base miao` | master review + 4 sub-roles | 治 v3.8.0 red-blue review 阻塞 |
+
+**现状 (2026-07-09 治根后)**:
+- `main` ✅ 创建 + 推到 remote (commit 0595fea)
+- `testing` ✅ force-update 到 miao tip
+- 5 feature 分支 ✅ 推到 remote (PR 追溯 record): v3.8.1/v3.8.2/v3.9.0/v3.9.1/v3.9.2
+
+**5 release PR 追溯 record** (历史跳过, 已补 branch):
+| Release | Feature branch (已推 remote) | testing/main PR |
+|---------|------------------------------|-----------------|
+| v3.8.1 | feature/v3.8.1-EPIC-069 | ❌ 跳过 (历史) |
+| v3.8.2 | feature/v3.8.2-EPIC-070 | ❌ 跳过 (历史) |
+| v3.9.0 | feature/v3.9.0-EPIC-071 | ❌ 跳过 (历史) |
+| v3.9.1 | feature/v3.9.1-EPIC-072 | ❌ 跳过 (历史) |
+| v3.9.2 | feature/v3.9.2-EPIC-073 | ❌ 跳过 (历史) |
+
+**0 静默跳过** (跟 EPIC-069-D check-claim-evidence 联合):
+- v3.10.0+ 必走 4-PR 全程
+- 紧急 bypass 仅 `git commit --no-verify` (主公明确批准时)
+- 反讽 1:1 复发 → pre-commit hook 拦截
+
+详细: `confluence/decisions/branch-flow-governance-2026-07-09.md`
+
 ## 5-Level Verify 新规 (EPIC-069-D 治反讽 1:1 复发)
 
 > **起源**: v3.8.0 README 声称 "25/25 PASS / 生产级 / 治根", reviewer 红蓝对抗 实测 `cargo test` 11 errors + Node 8/19 fail。**5-Level Verify 之前漏了 cargo test + node env setup, 等于形式通过实质失败**。

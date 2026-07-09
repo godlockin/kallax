@@ -80,21 +80,58 @@ impl TicketEngine {
         Ok(id)
     }
 
-    /// Get a ticket by ID
+    /// Get a ticket by ID — EPIC-075: 优先内存, miss 时 fallback 到 db
     pub fn get_ticket(&self, ticket_id: &str) -> Result<Ticket> {
-        self.tickets
-            .get(ticket_id)
-            .map(|t| t.value().clone())
-            .ok_or_else(|| KallaxError::not_found("ticket", ticket_id))
+        if let Some(t) = self.tickets.get(ticket_id) {
+            return Ok(t.value().clone());
+        }
+        // EPIC-075: 内存 miss → db 查 (持久化路径), 实现 A5 完整闭环
+        if let Some(db) = &self.db {
+            match db.get_ticket(ticket_id) {
+                Ok(ticket) => {
+                    // 加载到内存 (cache)
+                    self.tickets.insert(ticket_id.to_string(), ticket.clone());
+                    return Ok(ticket);
+                }
+                Err(e) => {
+                    warn!(ticket_id, error = %e, "db.get_ticket fallback failed");
+                }
+            }
+        }
+        Err(KallaxError::not_found("ticket", ticket_id))
     }
 
-    /// List all tickets with optional status filter
+    /// List all tickets with optional status filter — EPIC-075: 内存 + db 合并
     pub fn list_tickets(&self, status: Option<TicketStatus>) -> Vec<Ticket> {
-        self.tickets
+        use kallax_core::TicketFilter;
+        use std::collections::HashSet;
+        let mut seen: HashSet<String> = self.tickets.iter().map(|t| t.key().clone()).collect();
+        let mut out: Vec<Ticket> = self.tickets
             .iter()
             .filter(|t| status.map_or(true, |s| t.status() == s))
             .map(|t| (*t.value()).clone())
-            .collect()
+            .collect();
+
+        // EPIC-075: 补充 db 中未在内存的 (跨重启场景)
+        if let Some(db) = &self.db {
+            let filter = TicketFilter {
+                status,
+                priority: None,
+                assigned_to: None,
+                limit: None,
+                offset: None,
+            };
+            if let Ok(db_tickets) = db.list_tickets(&filter) {
+                for t in db_tickets {
+                    let id_str = t.id().as_str().to_string();
+                    if seen.insert(id_str.clone()) {
+                        out.push(t);
+                    }
+                }
+            }
+        }
+
+        out
     }
 
     /// Claim a ticket for a performer
