@@ -221,7 +221,8 @@ export function createWaitingForExpert(options: WaitingForExpertOptions = {}): W
   };
 
   const writeState = (state: Record<string, WaitingExpertEntry>): void => {
-    const tmpPath = `${stateFile}.tmp`;
+    // EPIC-076 P1-10: TOCTOU 治根 — tmp 用 PID+timestamp 防并发写碰撞
+    const tmpPath = `${stateFile}.tmp.${process.pid}.${Date.now()}`;
     try {
       fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2) + '\n');
       fs.renameSync(tmpPath, stateFile);
