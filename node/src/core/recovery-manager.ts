@@ -4,6 +4,8 @@
  * Tiers: L3=Rust, L2=Node.js, L1=Shell fallback, L0=Degraded
  * Probes every 60s, auto-upgrades when higher tiers recover.
  */
+import { existsSync, readFileSync, writeFileSync, mkdirSync, renameSync } from 'node:fs';
+import { dirname } from 'node:path';
 
 import { logger } from '../utils/logger.js';
 import { createMasterElection } from './master-election.js';
@@ -48,16 +50,41 @@ const DEGRADE_THRESHOLD = 2; // consecutive failures to degrade
 const CRASH_LIMIT = 5; // crashes within window → force degrade
 const CRASH_WINDOW_MS = 300_000; // 5 min crash window
 
-// EPIC-088 Perf-2: tier 1 探针去重 — 跨进程共享 timestamp
+// EPIC-088 + EPIC-098 Perf-2: tier 1 探针去重 — 双层 (in-process + 跨进程)
+// 跨进程: state.json 共享 timestamp (atomic via tmp+mv)
+// in-process: module-level cache (EPIC-088 已有)
 const TIER1_PROBE_DEBOUNCE_MS = 5_000; // 5s 内跳过 tier 1 (其他进程已 probe)
 let lastTier1ProbeAt = 0;
+const TIER1_PROBE_STATE_PATH = `${process.cwd()}/.kallax/state/tier1-probe.json`;
 
 function shouldProbeTier1(now: number): boolean {
+  // EPIC-098: 跨进程检查 state.json timestamp
+  try {
+    if (existsSync(TIER1_PROBE_STATE_PATH)) {
+      const raw = readFileSync(TIER1_PROBE_STATE_PATH, 'utf-8');
+      const { ts } = JSON.parse(raw) as { ts: number };
+      if (now - ts < TIER1_PROBE_DEBOUNCE_MS) {
+        return false; // 跨进程: 其他进程最近 probe 过
+      }
+    }
+  } catch {
+    // state.json 损坏, fallback to in-process
+  }
   return now - lastTier1ProbeAt >= TIER1_PROBE_DEBOUNCE_MS;
 }
 
 function recordTier1Probe(now: number): void {
   lastTier1ProbeAt = now;
+  // EPIC-098: 持久化到 state.json (跨进程)
+  try {
+    const dir = dirname(TIER1_PROBE_STATE_PATH);
+    if (!existsSync(dir)) mkdirSync(dir, { recursive: true, mode: 0o700 });
+    const tmp = `${TIER1_PROBE_STATE_PATH}.tmp.${process.pid}.${Date.now()}`;
+    writeFileSync(tmp, JSON.stringify({ ts: now, pid: process.pid }), { mode: 0o600 });
+    renameSync(tmp, TIER1_PROBE_STATE_PATH);
+  } catch {
+    // best-effort, 不阻塞
+  }
 }
 
 // ── Probe implementations ──────────────────────────────────────────────────
