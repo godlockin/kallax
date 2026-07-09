@@ -191,6 +191,18 @@ export function createWaitingForExpert(options: WaitingForExpertOptions = {}): W
   const inboxPrefix = options.inboxPrefix ?? DEFAULT_INBOX_PREFIX;
   const now = options.now ?? ((): Date => new Date());
 
+  // EPIC-094 P1-10: symlink 防护 — 拒绝 stateFile 已是 symlink
+  // 原: writeState 走 tmp + rename, 但若 stateFile 本身是 symlink → 写入跟到外部
+  // 修: lstatSync (不 follow), 如 symlink 抛错
+  if (fs.existsSync(stateFile)) {
+    const lst = fs.lstatSync(stateFile);
+    if (lst.isSymbolicLink()) {
+      throw new Error(
+        `stateFile is a symlink (refuse overwrite): ${stateFile} → ${fs.readlinkSync(stateFile)}`,
+      );
+    }
+  }
+
   ensureDir(path.dirname(stateFile));
   ensureDir(inboxDir);
 
