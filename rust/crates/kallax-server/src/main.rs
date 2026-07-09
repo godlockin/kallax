@@ -418,27 +418,20 @@ async fn bridge_ticket_create(
 ) -> Result<Json<serde_json::Value>, AppError> {
     let title = payload.get("title").and_then(|v| v.as_str()).unwrap_or("untitled");
     let desc = payload.get("description").and_then(|v| v.as_str()).unwrap_or("");
-    let mut engine = state.engine.lock().map_err(|e| {
-        AppError(kallax_core::error::KallaxError::lock_poisoned(
-            "bridge_ticket_create",
-            format!("engine mutex poisoned: {}", e),
-        ))
-    })?;
+    // EPIC-101: 治 EPIC-079 copy-paste bug — engine 是 Arc<TicketEngine> (immutable methods)
+    // 错: state.engine.lock() — Arc 没 lock()
+    // 对: 直接用 &engine 调方法 (不需要 lock 因为方法内部用 DashMap)
     let ticket = kallax_core::Ticket::new(title, desc);
-    let id = engine.create_ticket(ticket).map_err(AppError)?;
+    let id = state.engine.create_ticket(ticket).map_err(AppError)?;
     Ok(Json(serde_json::json!({ "ticket_id": id.as_str() })))
 }
 
 async fn bridge_ticket_list(
     State(state): State<AppState>,
 ) -> Result<Json<serde_json::Value>, AppError> {
-    let engine = state.engine.lock().map_err(|e| {
-        AppError(kallax_core::error::KallaxError::lock_poisoned(
-            "bridge_ticket_list",
-            format!("engine mutex poisoned: {}", e),
-        ))
-    })?;
-    let tickets: Vec<_> = engine
+    // EPIC-101: engine immutable (Arc<TicketEngine>), no lock needed
+    let tickets: Vec<_> = state
+        .engine
         .list_tickets(None)
         .into_iter()
         .map(|t| serde_json::json!({ "id": t.id().as_str(), "title": t.title() }))
@@ -453,17 +446,14 @@ async fn bridge_task_assign(
     let ticket_id = payload.get("ticket_id").and_then(|v| v.as_str()).unwrap_or("");
     let performer_id_str = payload.get("performer_id").and_then(|v| v.as_str()).unwrap_or("");
     let performer_id = kallax_core::PerformerId::from_str(performer_id_str);
-    let mut engine = state.engine.lock().map_err(|e| {
-        AppError(kallax_core::error::KallaxError::lock_poisoned(
-            "bridge_task_assign",
-            format!("engine mutex poisoned: {}", e),
-        ))
-    })?;
-    let task_id = engine
-        .assign_ticket(ticket_id, &performer_id)
+    // EPIC-101: 改用真 API claim_ticket (engine immutable, returns Result<()>)
+    // 原 EPIC-079 用错 API assign_ticket (不存在, 治跟 v3.8.0 reviewer 1:1 联合)
+    state
+        .engine
+        .claim_ticket(ticket_id, &performer_id)
         .map_err(AppError)?;
     Ok(Json(serde_json::json!({
-        "task_id": task_id.as_str(),
+        "task_id": ticket_id,  // claim_ticket 不返 TaskId, 用 ticket_id 替代
         "performer_id": performer_id_str
     })))
 }
@@ -473,13 +463,8 @@ async fn bridge_task_complete(
     Json(payload): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, AppError> {
     let ticket_id = payload.get("ticket_id").and_then(|v| v.as_str()).unwrap_or("");
-    let mut engine = state.engine.lock().map_err(|e| {
-        AppError(kallax_core::error::KallaxError::lock_poisoned(
-            "bridge_task_complete",
-            format!("engine mutex poisoned: {}", e),
-        ))
-    })?;
-    engine.complete_ticket(ticket_id).map_err(AppError)?;
+    // EPIC-101: engine immutable
+    state.engine.complete_ticket(ticket_id).map_err(AppError)?;
     Ok(Json(serde_json::json!({
         "task_id": ticket_id,
         "status": "completed"

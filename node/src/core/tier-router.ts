@@ -127,6 +127,13 @@ class TierRouter {
 
     for (let step = 0; step <= maxDegradation; step++) {
       const tierStatus = state.tiers[actualTier];
+      // EPIC-101: caller explicit preferTier, 跳过 health check (直接探)
+      // 治 v3.8.0 red-blue review: stub PASS + 实际 fail
+      // recover-manager state 可能 stale (没 probe 过), 显式 preferTier 应该优先
+      const explicitPrefer = opts.preferTier !== undefined;
+      if (explicitPrefer && step === 0) {
+        break; // 用 caller 选的 tier, 不被 recovery manager state 阻止
+      }
       if (tierStatus && tierStatus.healthy) {
         if (step > 0) degradedFrom = startTier;
         break;
