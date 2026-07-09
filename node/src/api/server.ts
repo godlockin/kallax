@@ -75,7 +75,22 @@ export function createApiServer(
   let isShuttingDown = false;
   const app: Express = express();
 
-  app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+  // EPIC-081 P1-9: 启用 CSP (v3.8.0 review 显式关闭, 治 XSS 攻击面)
+  // script-src 'self' + unsafe-inline (helmet 默认会强制, 这里保留 inline 给 SSR 兼容性)
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+      },
+    },
+    crossOriginResourcePolicy: { policy: 'same-origin' },
+  }));
 
   // EPIC-070-P1-9: 显式拒绝 wildcard '*' — fail-closed 默认白名单
   // 配置必须显式列出允许的 origin, '*' 拒绝 (XSS + CSRF 攻击面)
