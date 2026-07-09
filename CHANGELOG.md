@@ -4,6 +4,26 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.9.2] - 2026-07-09
+
+### Release: EPIC-073 (漂移修复 C1+C2 治根)
+
+#### Fixed (治 v3.8.0 red-blue review C1+C2)
+
+- **EPIC-073-C1**: 删 5 个 orphan binary wrappers (binary 早 drop, shell 仍引用)
+  - `scripts/expert-match.sh` (DEPRECATED wrapper)
+  - `scripts/expert-quality-audit.py` (引用 `kallax-expert-match`)
+  - `scripts/verify/expert-match-{perf,m1-v3}.sh` (M1 + perf 测试)
+  - `scripts/bench-data-adapter-bridge.sh` (引用 `kallax-data-adapter`)
+- **EPIC-073-C1**: 新增 `scripts/verify/check-binary-refs.sh` 反引用扫描
+  - 扫 scripts/ 下 rust/target/release/<name> 引用, 跟 Cargo.toml [[bin]] 比对
+  - 防止未来 binary drop 但 shell wrapper 残留
+  - `.git/hooks/pre-commit` 自动跑 (跟 EPIC-069-D check-claim-evidence 联合)
+- **EPIC-073-C2**: state.json 路径 (authz 读 + write) — EPIC-068-A 已修, 散点验证通过
+  - 仅 `scripts/init-project.sh:381` 出现 `.claude/state.json` (gitignore entry, 非路径用法)
+
+raw output: `bash scripts/verify/check-binary-refs.sh` → **PASS (2 references valid)**
+
 ## [3.9.1] - 2026-07-09
 
 ### Release: EPIC-072 (Hash-Chain 真锚点, 治 A1+A2+A3 治根)
