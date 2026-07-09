@@ -8,11 +8,11 @@
 
 ## 概述
 
-KALLAX v3.0.0 是一个**生产级多智能体协作框架**, 借鉴 [eket](https://github.com/godlockin/kallax) 极简哲学, 在其基础上补齐 **6 个空白处** (6 武器), 形成"青出于蓝而胜于蓝"的差异化定位。
+KALLAX v3.0.0 是一个**多智能体协作框架 (持续演进中, v3.8.1 部分覆盖生产需求, 详见 §集成测试)**, 借鉴 [eket](https://github.com/godlockin/kallax) 极简哲学, 在其基础上补齐 **6 个空白处** (6 武器), 形成"青出于蓝而胜于蓝"的差异化定位。
 
 ### 核心特性
 
-- **三级降级架构**: Rust (~5ms) → Node.js → Shell
+- **三级降级架构 (实作中)**: Rust (~5ms, 仅观测) → Node.js → Shell
 - **1 binary 整合**: 8 Rust crates → 5 crates, 0 errors
 - **6 武器** (KALLAX 独有): Hash-Chain Audit / 5-Level Fact-Forcing / Sub-Role Dispatch / EPIC 4 件套 / Hook Server / Dashboard
 - **4 根本 价值** (跟 CLAUDE.md §4 1:1 联合): 审计 (W1) / 验证 (W2) / 治理 (W3+W4) / 可视化 (W5+W6)
@@ -293,25 +293,34 @@ decision_model:
 
 ---
 
-## 集成测试 25/25 PASS
+## 集成测试 (v3.8.1 EPIC-069 真相化, 跟 v3.8.0 red-blue review 1:1 联合)
+
+> **诚实修正**: v3.8.0 README 声称 "25/25 PASS / 生产级 / 治根",但 reviewer 红蓝对抗
+> 实测发现:`cargo test` 11 errors + Node hook-replay 8/19 fail + Hash-Chain 防篡改=0。
+> v3.8.1 (本 release) 真测试结果如下,所有数字来自本机 `cargo test` / `vitest run` raw output:
 
 ```bash
-# 6 武器 端到端
+# Rust 全 workspace (EPIC-069-A 修复后实测)
+cd rust && cargo test --release
+# → test result: ok. 74 passed; 0 failed (kallax-core lib)
+
+# Node hook-replay (EPIC-069-B 修复后实测)
+cd node && KALLAX_HOOK_API_KEY=test-... npx vitest run tests/hook-replay.test.ts
+# → Test Files  1 passed (1) | Tests  19 passed (19)
+
+# 6 武器端到端 (历史脚本,实测验证如下)
 bash tests/integration/6-weapons-e2e-test.sh
-# → 6/6 PASS
+# → 实测 6/6 PASS (raw output: /tmp/claude-tasks/kallax-tests-20260709-*.log)
 
 # 决策矩阵 25 cells
 bash tests/integration/decision-matrix-test.sh
-# → 25/25 cells PASS
-
-# Lazy load 验证
-bash tests/integration/lazy-load-test.sh
-# → PASS
-
-# 5 levels 验证
-bash tests/integration/5-levels-test.sh
-# → PASS
+# → 实测 25/25 PASS
 ```
+
+**未覆盖项**(诚实声明,不放任 PR):
+- A4 三级降级: `recovery-manager` 存在但仅观测,未接线 (EPIC-071 决定)
+- A5 Rust 持久化: 全 DashMap, 重启丢票 (EPIC-071 决定)
+- A1+A2+A3 Hash-Chain 锚点: 算法公开 + 全零种子 + 空文件 PASS (EPIC-072 治根)
 
 ---
 
@@ -330,7 +339,7 @@ bash tests/integration/5-levels-test.sh
 
 **关键演化**:
 - 0 跳 release (跟 V310-LESSONS + V350-LESSONS 1:1 联合)
-- 0 估数 + 0 装饰 + 0 narrative (跟 V350-B P-001/P-002/P-005 1:1 联合 治根)
+- 0 估数 + 0 装饰 + 0 narrative (跟 V350-B P-001/P-002/P-005 1:1 联合; v3.8.1 起: README 数字必须来自 raw test output, 治反讽 1:1 复发)
 - eket 借鉴 比例 0 → 30% (跟 eket 1:1 借鉴 极简 哲学 1:1 联合)
 
 ---

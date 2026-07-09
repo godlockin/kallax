@@ -65,6 +65,7 @@ pub enum EventType {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{Ticket, TicketId, TicketStatus, PerformerId, Task, TaskType};
 
     #[test]
     fn ticket_state_transitions() {
