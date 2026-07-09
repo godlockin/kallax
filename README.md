@@ -336,6 +336,7 @@ bash tests/integration/decision-matrix-test.sh
 | v3.5.0 | `096eafe` | 实战 eket ioredis + graceful-exit 1 次 + hotfix 16 | 1 (20%) |
 | v3.6.0 | `668980b` | CLAUDE.md 3.3KB → 1.1KB + 删 14 sub-doc + 4 immutable scripts + KALLAX_DESIGN_MODE=1 | 1 (20%) |
 | v3.7.0 | TBD | 7 候选 1:1 联合 Q12 (4 根本 价值 + 5 scripts + L2 cache) | 2 (30%) |
+| v3.10.0 | `753f7c9` | Sprint 6: A4/A5 闭环 + P1 滚动 + eket 借鉴 (check-pr-size) + 4-PR 流程新规首次 | 3 (35%) |
 
 **关键演化**:
 - 0 跳 release (跟 V310-LESSONS + V350-LESSONS 1:1 联合)
