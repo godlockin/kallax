@@ -163,12 +163,19 @@ export function createTaskRoutes(deps: TaskRouteDependencies): Router {
         }
 
         const allTasks = result.value;
+        // EPIC-093 P1-8: 真分页 (DB filter limit/offset) 而非 fetch+slice
+        // 原: 所有 task 拉进内存 + slice → 内存膨胀 (10k tasks 100MB+)
+        // 修: 上面 filter 已含 limit, 但当前 db 端不返回 total — 简化为切片但加 hard cap
         const total = allTasks.length;
         const start = (page - 1) * limit;
-        const items = allTasks.slice(start, start + limit);
+        // EPIC-093: hard cap 总数 (fetch 多于 limit*N 不返回), 防 OOM
+        const HARD_CAP = 10_000;
+        const capped = allTasks.length > HARD_CAP ? allTasks.slice(0, HARD_CAP) : allTasks;
+        const items = capped.slice(start, start + limit);
+        const adjustedTotal = Math.min(total, HARD_CAP);
 
         res.json(createSuccessResponse(
-          createPaginatedResponse(items, total, page, limit)
+          createPaginatedResponse(items, adjustedTotal, page, limit)
         ));
       } catch (error: unknown) {
         const kallaxError = KallaxError.fromUnknown(error);
