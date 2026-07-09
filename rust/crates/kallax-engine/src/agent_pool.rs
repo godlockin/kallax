@@ -102,6 +102,11 @@ impl AgentPool {
     }
 
     /// Get an idle performer with required capabilities
+    ///
+    /// EPIC-070-B6: 修复 reserve 悖论 — 原实现 assign_task + clone + release_task 等于"只查询",
+    /// pool 状态没真正改变, 多并发场景会反复分配同一 performer。
+    /// 新语义: 真正 reserve (assign_task), 返回时 caller 必须显式 release (acquired.release_task())
+    /// 或 commit_task 才会永久占用。
     pub fn acquire_performer(&self, required_capabilities: &[String]) -> Option<Performer> {
         for mut entry in self.performers.iter_mut() {
             if entry.status() == PerformerStatus::Idle {
@@ -109,10 +114,9 @@ impl AgentPool {
                     entry.capabilities().contains(cap)
                 });
                 if has_all_caps || required_capabilities.is_empty() {
+                    // 真正 reserve — 在 pool 标记为 Busy, caller 必须 release/commit_task
                     entry.assign_task(TaskId::from_str("reserved"));
-                    let mut p = entry.value().clone();
-                    p.release_task();
-                    return Some(p);
+                    return Some(entry.value().clone());
                 }
             }
         }

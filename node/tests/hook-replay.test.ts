@@ -298,7 +298,10 @@ describe('HTTP Hook Server: /hooks/replay + /hooks/audit (武器 5)', () => {
     }
     await new Promise((r) => setTimeout(r, 30));
 
-    const res = await fetch(`${baseUrl}/hooks/audit`, { headers: authHeaders() });
+    // EPIC-070-B1: 全量导出需要 admin token (无 sessionId scope)
+    const res = await fetch(`${baseUrl}/hooks/audit`, {
+      headers: { authorization: `Bearer test-admin-api-key-admin12345678`, 'content-type': 'application/json' },
+    });
     expect(res.status).toBe(200);
     const body = await res.json() as { total: number; events: unknown[]; path: string };
     expect(body.total).toBeGreaterThanOrEqual(3);
@@ -402,6 +405,12 @@ describe('HTTP Hook Server: /hooks/replay + /hooks/audit (武器 5)', () => {
   it('POST /hooks/replay is rejected with wrong method (GET)', async () => {
     const res = await fetch(`${baseUrl}/hooks/replay`, { method: 'GET', headers: authHeaders() });
     expect(res.status).toBe(405);
+  });
+
+  // EPIC-070-B1: 无 sessionId 无 admin token → 403 (防全量审计数据外泄)
+  it('GET /hooks/audit without sessionId and without admin returns 403 (B1 scope guard)', async () => {
+    const res = await fetch(`${baseUrl}/hooks/audit`, { headers: authHeaders() });
+    expect(res.status).toBe(403);
   });
 
   it('GET /hooks/audit is rejected with wrong method (POST)', async () => {

@@ -36,9 +36,10 @@ const DEFAULT_CONFIG: RustBridgeConfig = {
 
 export function createRustBridge(config?: Partial<RustBridgeConfig>): RustBridge {
   const cfg = { ...DEFAULT_CONFIG, ...config };
-  const controller = new AbortController();
 
   async function fetchJson<T>(path: string): Promise<KallaxResult<T>> {
+    // EPIC-070-B4: 每次请求新建 AbortController, 避免闭包共享导致一次超时永久失效
+    const controller = new AbortController();
     try {
       const timeout = setTimeout(() => controller.abort(), cfg.timeoutMs);
       const resp = await fetch(`${cfg.baseUrl}${path}`, {

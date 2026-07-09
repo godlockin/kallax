@@ -77,12 +77,20 @@ export function createApiServer(
 
   app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
+  // EPIC-070-P1-9: 显式拒绝 wildcard '*' — fail-closed 默认白名单
+  // 配置必须显式列出允许的 origin, '*' 拒绝 (XSS + CSRF 攻击面)
   const isWildcardOrigin = config.corsOrigins.includes('*');
+  if (isWildcardOrigin && process.env['NODE_ENV'] === 'production') {
+    throw new Error('CORS wildcard "*" not allowed in production (EPIC-070-P1-9)');
+  }
+  const allowedOrigins = isWildcardOrigin
+    ? config.corsOrigins.filter((o) => o !== '*')
+    : config.corsOrigins;
   app.use(cors({
-    origin: isWildcardOrigin ? '*' : config.corsOrigins,
+    origin: allowedOrigins.length > 0 ? allowedOrigins : false, // false = 拒绝所有 CORS
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'X-KALLAX-API-Key', 'X-KALLAX-Role'],
-    credentials: !isWildcardOrigin,
+    credentials: true,
   }));
 
   app.use(express.json({ limit: config.bodyLimit }));

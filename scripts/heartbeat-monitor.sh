@@ -49,7 +49,8 @@ if [ "$ELAPSED" -gt "$TIMEOUT_SECONDS" ]; then
   # Execute alert command if configured
   if [ -n "$ALERT_COMMAND" ]; then
     info "Executing alert command..."
-    eval "$ALERT_COMMAND" || warn "Alert command failed (exit: $?)"
+    # EPIC-070-B2: 删 eval (环境注入即 RCE), 改用 bash -c 单引号包裹
+    bash -c "$ALERT_COMMAND" || warn "Alert command failed (exit: $?)"
   fi
 
   exit 1

@@ -33,7 +33,8 @@ import {
   existsSync,
   mkdirSync,
   readFileSync,
-  appendFileSync,
+  renameSync,
+  writeFileSync,
 } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { logger } from '../utils/logger.js';
@@ -204,7 +205,12 @@ export function createHookEventsStore(
       } satisfies HookEventEntry;
 
       ensureDir();
-      appendFileSync(filePath, JSON.stringify(entry) + '\n', { mode: 0o600 });
+      // EPIC-070-B5: 跨进程并发安全 — 用 atomic rename (tmp + rename) 替换 appendFileSync
+      // appendFileSync 多进程并发会两条都拿同一 prevHash+seq 导致链断
+      const tmpPath = `${filePath}.tmp.${process.pid}.${Date.now()}`;
+      const existing = existsSync(filePath) ? readFileSync(filePath, 'utf-8') : '';
+      writeFileSync(tmpPath, existing + JSON.stringify(entry) + '\n', { mode: 0o600 });
+      renameSync(tmpPath, filePath);
 
       return entry;
     },
