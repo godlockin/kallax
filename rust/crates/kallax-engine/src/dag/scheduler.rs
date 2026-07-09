@@ -68,6 +68,12 @@ impl DagScheduler {
                 self.ready_heap.push((p, Reverse(task_id)));
             }
         }
+        // EPIC-101: sort by priority desc (Critical first) — heap Reverse gives asc, 显式反序
+        ready.sort_by(|a, b| {
+            let pa = self.priorities.get(a).copied().unwrap_or(Priority::Normal);
+            let pb = self.priorities.get(b).copied().unwrap_or(Priority::Normal);
+            pb.cmp(&pa) // desc
+        });
         for id in &ready {
             result.push(TaskId::from_str(id));
         }
@@ -203,6 +209,9 @@ mod tests {
     use super::*;
 
     #[test] fn ready_no_deps() { let mut s = DagScheduler::new(); s.add_task(TaskId::from_str("A"), &[], Priority::Normal).unwrap(); s.add_task(TaskId::from_str("B"), &[], Priority::Normal).unwrap(); assert_eq!(s.get_ready_tasks().len(), 2); }
+    // EPIC-101: 验证 heap 实际行为 — high priority first
+    // (BinaryHeap max-heap by default + Reverse wrapper = min-heap, 但 Priority enum 高 = 大)
+    // 实际: C (Critical) > H (High) > L (Low), 跟原测试期望一致
     #[test] fn priority_order() { let mut s = DagScheduler::new(); s.add_task(TaskId::from_str("L"), &[], Priority::Low).unwrap(); s.add_task(TaskId::from_str("H"), &[], Priority::High).unwrap(); s.add_task(TaskId::from_str("C"), &[], Priority::Critical).unwrap(); let r = s.get_ready_tasks(); assert_eq!(r[0].as_str(), "C"); assert_eq!(r[1].as_str(), "H"); }
     #[test] fn critical_diamond() { let mut s = DagScheduler::new(); let a=TaskId::from_str("A");let b=TaskId::from_str("B");let c=TaskId::from_str("C");let d=TaskId::from_str("D"); s.add_task(a.clone(),&[],Priority::Normal).unwrap(); s.add_task(b.clone(),&[a.clone()],Priority::Normal).unwrap(); s.add_task(c.clone(),&[a.clone()],Priority::Normal).unwrap(); s.add_task(d.clone(),&[b.clone(),c.clone()],Priority::Normal).unwrap(); let p=s.critical_path(); assert_eq!(p.len(),3); assert_eq!(p[0].as_str(),"A"); assert_eq!(p[2].as_str(),"D"); }
     #[test] fn parallel_count() { let mut s = DagScheduler::new(); let a=TaskId::from_str("A");let b=TaskId::from_str("B");let c=TaskId::from_str("C");let d=TaskId::from_str("D"); s.add_task(a.clone(),&[],Priority::Normal).unwrap(); s.add_task(b.clone(),&[a.clone()],Priority::Normal).unwrap(); s.add_task(c.clone(),&[a.clone()],Priority::Normal).unwrap(); s.add_task(d.clone(),&[b.clone(),c.clone()],Priority::Normal).unwrap(); assert_eq!(s.parallel_paths(),1); }

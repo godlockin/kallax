@@ -301,7 +301,8 @@ mod tests {
             worktrees.insert(
                 "existing".to_string(),
                 Worktree {
-                    path: PathBuf::from("/tmp/test"),
+                    // EPIC-101: 用 /tmp 真实存在的 path, 避免被 EPIC-087 prune() 当 stale 删除
+                    path: PathBuf::from("/tmp"),
                     branch: "test".to_string(),
                     performer_id: PerformerId::from_str("existing"),
                     created_at: chrono::Utc::now(),
