@@ -263,12 +263,22 @@ describe('HTTP Hook Server: /hooks/replay + /hooks/audit (武器 5)', () => {
     server = createHookServer(dispatcher, {
       port: 0, // OS-assigned
       auditStore: store,
+      apiKey: process.env['KALLAX_HOOK_API_KEY'] ?? 'test-kallax-hook-api-key-12345678',
+      adminApiKey: 'test-admin-api-key-admin12345678',
     });
     const startResult = await server.start();
     expect(startResult.isOk()).toBe(true);
     port = server.getPort();
     baseUrl = `http://127.0.0.1:${port}`;
   });
+
+  // EPIC-069-B: helper that attaches Authorization header for S-002 fail-closed API key
+  function authHeaders(): Record<string, string> {
+    return {
+      authorization: `Bearer ${process.env['KALLAX_HOOK_API_KEY'] ?? 'test-kallax-hook-api-key-12345678'}`,
+      'content-type': 'application/json',
+    };
+  }
 
   afterEach(async () => {
     await server.stop();
@@ -282,13 +292,13 @@ describe('HTTP Hook Server: /hooks/replay + /hooks/audit (武器 5)', () => {
     for (const phase of ['session-start', 'pre-tool-use', 'post-tool-use']) {
       await fetch(`${baseUrl}/hooks/${phase}`, {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify({ sessionId: 'seed-s', toolName: 'Bash' }),
       });
     }
     await new Promise((r) => setTimeout(r, 30));
 
-    const res = await fetch(`${baseUrl}/hooks/audit`);
+    const res = await fetch(`${baseUrl}/hooks/audit`, { headers: authHeaders() });
     expect(res.status).toBe(200);
     const body = await res.json() as { total: number; events: unknown[]; path: string };
     expect(body.total).toBeGreaterThanOrEqual(3);
@@ -299,17 +309,17 @@ describe('HTTP Hook Server: /hooks/replay + /hooks/audit (武器 5)', () => {
   it('GET /hooks/audit filters by sessionId', async () => {
     await fetch(`${baseUrl}/hooks/pre-tool-use`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: authHeaders(),
       body: JSON.stringify({ sessionId: 'alice' }),
     });
     await fetch(`${baseUrl}/hooks/pre-tool-use`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: authHeaders(),
       body: JSON.stringify({ sessionId: 'bob' }),
     });
     await new Promise((r) => setTimeout(r, 30));
 
-    const res = await fetch(`${baseUrl}/hooks/audit?sessionId=alice`);
+    const res = await fetch(`${baseUrl}/hooks/audit?sessionId=alice`, { headers: authHeaders() });
     const body = await res.json() as { total: number; events: Array<{ sessionId: string }> };
     expect(body.events.every((e) => e.sessionId === 'alice')).toBe(true);
     expect(body.total).toBeGreaterThanOrEqual(1);
@@ -320,7 +330,7 @@ describe('HTTP Hook Server: /hooks/replay + /hooks/audit (武器 5)', () => {
     for (let i = 0; i < 3; i++) {
       await fetch(`${baseUrl}/hooks/pre-tool-use`, {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify({ sessionId: 'old-session', toolName: 'Bash', metadata: { toolParams: { command: `echo ${i}` } } }),
       });
     }
@@ -329,9 +339,13 @@ describe('HTTP Hook Server: /hooks/replay + /hooks/audit (武器 5)', () => {
     const beforeCount = store.query({ sessionId: 'new-session' }).length;
 
     // Replay all 3 events from old-session to new-session
+    // S-005: cross-session replay requires admin token (adminApiKey) since sessions differ
     const res = await fetch(`${baseUrl}/hooks/replay`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        authorization: `Bearer test-admin-api-key-admin12345678`,
+        'content-type': 'application/json',
+      },
       body: JSON.stringify({
         sessionId: 'old-session',
         targetSessionId: 'new-session',
@@ -353,16 +367,20 @@ describe('HTTP Hook Server: /hooks/replay + /hooks/audit (武器 5)', () => {
   it('POST /hooks/replay returns 400 when targetSessionId missing', async () => {
     const res = await fetch(`${baseUrl}/hooks/replay`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: authHeaders(),
       body: JSON.stringify({}),
     });
     expect(res.status).toBe(400);
   });
 
   it('POST /hooks/replay returns empty results when no source events match', async () => {
+    // Cross-session replay → admin token required
     const res = await fetch(`${baseUrl}/hooks/replay`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        authorization: `Bearer test-admin-api-key-admin12345678`,
+        'content-type': 'application/json',
+      },
       body: JSON.stringify({
         sessionId: 'nonexistent',
         targetSessionId: 'target',
@@ -376,18 +394,18 @@ describe('HTTP Hook Server: /hooks/replay + /hooks/audit (武器 5)', () => {
 
   it('6 phase endpoints remain POST-only (backward compat)', async () => {
     for (const endpoint of ['pre-tool-use', 'post-tool-use', 'compact', 'permission', 'session-start', 'session-end']) {
-      const getRes = await fetch(`${baseUrl}/hooks/${endpoint}`, { method: 'GET' });
+      const getRes = await fetch(`${baseUrl}/hooks/${endpoint}`, { method: 'GET', headers: authHeaders() });
       expect(getRes.status).toBe(405);
     }
   });
 
   it('POST /hooks/replay is rejected with wrong method (GET)', async () => {
-    const res = await fetch(`${baseUrl}/hooks/replay`, { method: 'GET' });
+    const res = await fetch(`${baseUrl}/hooks/replay`, { method: 'GET', headers: authHeaders() });
     expect(res.status).toBe(405);
   });
 
   it('GET /hooks/audit is rejected with wrong method (POST)', async () => {
-    const res = await fetch(`${baseUrl}/hooks/audit`, { method: 'POST' });
+    const res = await fetch(`${baseUrl}/hooks/audit`, { method: 'POST', headers: authHeaders() });
     expect(res.status).toBe(405);
   });
 });

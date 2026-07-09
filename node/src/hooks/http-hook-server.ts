@@ -96,6 +96,8 @@ export function createHookServer(
     }
     const auth = req.headers['authorization'] ?? '';
     const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+    // EPIC-069-B: adminApiKey bypasses isAuthorized so handleReplay can perform cross-session replay
+    if (config.adminApiKey !== undefined && token === config.adminApiKey) return true;
     return token === config.apiKey;
   }
 
