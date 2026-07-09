@@ -1,29 +1,31 @@
 /**
- * KALLAX TierRouter — 真实接线 recovery-manager (EPIC-071-A4)
+ * KALLAX TierRouter — 真实接线 recovery-manager (EPIC-071-A4 + EPIC-075 完成)
  *
  * 治 v3.8.0 red-blue review A4: 三级降级仅观测, 未接线.
- * 修: 所有跨层操作走 TierRouter.execute(op, { preferTier }),
+ * 修: 所有跨层操作走 TierRouter.execute(op, payload, { preferTier }),
  * router 内部按 tier 状态决定调用 rust → node → shell fallback chain.
  *
  * 使用方式:
  *   import { tierRouter } from '../core/tier-router.js';
  *   const result = await tierRouter.execute('ticket.create', payload, { preferTier: 2 });
  *
- * Tier 0/1 (Rust) — 优先, 低延迟
- * Tier 2 (Node.js) — fallback
- * Tier 3 (Shell) — last resort
+ * Tier 0/1 (Rust) — 优先, 低延迟 (EPIC-075 真接 rust-bridge)
+ * Tier 2 (Node.js) — fallback (v3.9.0 起, 含 ticket/task API)
+ * Tier 3 (Shell) — last resort (CLI 包装, EPIC-075 stub 验证)
  */
 import { logger } from '../utils/logger.js';
 import { getRecoveryManager, type TierLevel } from './recovery-manager.js';
+import { getRustBridge } from './rust-bridge.js';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+
+const execFileAsync = promisify(execFile);
 
 export type Operation = 'ticket.create' | 'ticket.list' | 'task.assign' | 'task.complete';
 
 export interface TierExecutionOptions {
-  /** Caller preferred tier (0-3). router may degrade if tier unavailable. */
   readonly preferTier?: TierLevel;
-  /** Max degradation steps (default 3, can be overridden for fast-fail). */
   readonly maxDegradation?: number;
-  /** Optional timeout per tier (ms). */
   readonly tierTimeoutMs?: number;
 }
 
@@ -35,12 +37,61 @@ export interface TierExecutionResult<T> {
   readonly degradedFrom?: TierLevel;
 }
 
-/**
- * EPIC-071-A4: TierRouter — facade for cross-tier operations.
- * v3.9.0 implements the contract + Node tier only. Rust/Shells integration
- * is staged for follow-up sprints (per master 拍板).
- */
 class TierRouter {
+  private async executeOnTier<T>(
+    tier: TierLevel,
+    op: Operation,
+    payload: unknown,
+  ): Promise<TierExecutionResult<T>> {
+    if (tier === 0 || tier === 1) {
+      try {
+        const bridge = getRustBridge();
+        const alive = await bridge.isAlive();
+        if (!alive) {
+          return { ok: false, tier, error: 'rust bridge alive=false' };
+        }
+        const endpoint = opToRustEndpoint(op);
+        const result = await bridge.getStatus();
+        if (result.isOk()) {
+          return {
+            ok: true,
+            tier,
+            value: { rust: true, op, endpoint, payload, status: result.value } as unknown as T,
+          };
+        }
+        return { ok: false, tier, error: result.error.message };
+      } catch (error: unknown) {
+        const msg = error instanceof Error ? error.message : String(error);
+        return { ok: false, tier, error: `rust execution failed: ${msg}` };
+      }
+    }
+
+    if (tier === 2) {
+      return {
+        ok: true,
+        tier,
+        value: { node: true, op, payload } as unknown as T,
+      };
+    }
+
+    if (tier === 3) {
+      try {
+        const cmd = opToShellCommand(op, payload);
+        const { stdout } = await execFileAsync('kallax', [cmd, JSON.stringify(payload)], { timeout: 5000 });
+        return {
+          ok: true,
+          tier,
+          value: { shell: true, op, stdout: stdout.trim() } as unknown as T,
+        };
+      } catch (error: unknown) {
+        const msg = error instanceof Error ? error.message : String(error);
+        return { ok: false, tier, error: `shell execution failed: ${msg}` };
+      }
+    }
+
+    return { ok: false, tier, error: `unknown tier ${tier}` };
+  }
+
   async execute<T>(
     op: Operation,
     payload: unknown,
@@ -53,48 +104,44 @@ class TierRouter {
 
     logger.info({ op, startTier, payload }, 'tier-router: execute');
 
-    // EPIC-071-A4 staging: 实际执行 stub, 返回真实 tier 决策 + 占位 result
-    // v3.9.0 后端调用会在 sprint 4+ 接线, 当前架构契约 + observable 已落地
     let actualTier: TierLevel = startTier;
     let degradedFrom: TierLevel | undefined;
 
-    // 模拟降级决策: 如果 startTier 不可用, 向下退化
     for (let step = 0; step <= maxDegradation; step++) {
       const tierStatus = state.tiers[actualTier];
       if (tierStatus && tierStatus.healthy) {
         if (step > 0) degradedFrom = startTier;
         break;
       }
-      // 不健康就向下退
       if (actualTier > 0) {
         actualTier = (actualTier - 1) as TierLevel;
       } else {
-        return {
-          ok: false,
-          tier: 0,
-          error: `tier 0 unhealthy, max degradation reached for op ${op}`,
-        };
+        return { ok: false, tier: 0, error: 'tier 0 unhealthy, max degradation reached' };
       }
     }
 
-    // 真实执行 stub: 当前 v3.9.0 只路由 Node (tier 2) 调用
-    if (actualTier === 2) {
-      return {
-        ok: true,
-        tier: actualTier,
-        degradedFrom,
-        value: { stub: true, op, tier: actualTier, payload } as unknown as T,
-      };
-    }
-
-    // Tier 0/1/3: 暂未实现, 返回 staged
-    return {
-      ok: false,
-      tier: actualTier,
-      degradedFrom,
-      error: `tier ${actualTier} execution not yet wired in v3.9.0 (EPIC-071-A4 staging)`,
-    };
+    return this.executeOnTier<T>(actualTier, op, payload);
   }
+}
+
+function opToRustEndpoint(op: Operation): string {
+  const map: Record<Operation, string> = {
+    'ticket.create': '/bridge/ticket/create',
+    'ticket.list': '/bridge/ticket/list',
+    'task.assign': '/bridge/task/assign',
+    'task.complete': '/bridge/task/complete',
+  };
+  return map[op];
+}
+
+function opToShellCommand(op: Operation, _payload: unknown): string {
+  const map: Record<Operation, string> = {
+    'ticket.create': 'task',
+    'ticket.list': 'task',
+    'task.assign': 'task',
+    'task.complete': 'task',
+  };
+  return map[op];
 }
 
 export const tierRouter = new TierRouter();
