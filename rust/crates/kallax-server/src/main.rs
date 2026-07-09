@@ -363,6 +363,11 @@ fn create_router(state: AppState) -> Router {
         // Bridge status — proves Rust engine is alive and responsive
         .route("/bridge/status", get(bridge_status))
         .route("/bridge/scheduler", get(scheduler_status))
+        // EPIC-079: TierRouter 端到端 — 4 op 真接 (跟 node tier-router.ts 联合)
+        .route("/bridge/ticket/create", post(bridge_ticket_create))
+        .route("/bridge/ticket/list", get(bridge_ticket_list))
+        .route("/bridge/task/assign", post(bridge_task_assign))
+        .route("/bridge/task/complete", post(bridge_task_complete))
         // (duplicate stats removed)
         // Middleware
         .layer(TraceLayer::new_for_http())
@@ -403,6 +408,81 @@ async fn scheduler_status(State(state): State<AppState>) -> Result<Json<serde_js
     Ok(Json(serde_json::json!({
         "ready_tasks": ready.len(),
         "critical_path_length": critical.len(),
+    })))
+}
+
+// EPIC-079: TierRouter 0/1 端到端 — 4 op handler, 走现有 TicketEngine
+async fn bridge_ticket_create(
+    State(state): State<AppState>,
+    Json(payload): Json<serde_json::Value>,
+) -> Result<Json<serde_json::Value>, AppError> {
+    let title = payload.get("title").and_then(|v| v.as_str()).unwrap_or("untitled");
+    let desc = payload.get("description").and_then(|v| v.as_str()).unwrap_or("");
+    let mut engine = state.engine.lock().map_err(|e| {
+        AppError(kallax_core::error::KallaxError::lock_poisoned(
+            "bridge_ticket_create",
+            format!("engine mutex poisoned: {}", e),
+        ))
+    })?;
+    let ticket = kallax_core::Ticket::new(title, desc);
+    let id = engine.create_ticket(ticket).map_err(AppError)?;
+    Ok(Json(serde_json::json!({ "ticket_id": id.as_str() })))
+}
+
+async fn bridge_ticket_list(
+    State(state): State<AppState>,
+) -> Result<Json<serde_json::Value>, AppError> {
+    let engine = state.engine.lock().map_err(|e| {
+        AppError(kallax_core::error::KallaxError::lock_poisoned(
+            "bridge_ticket_list",
+            format!("engine mutex poisoned: {}", e),
+        ))
+    })?;
+    let tickets: Vec<_> = engine
+        .list_tickets(None)
+        .into_iter()
+        .map(|t| serde_json::json!({ "id": t.id().as_str(), "title": t.title() }))
+        .collect();
+    Ok(Json(serde_json::json!({ "tickets": tickets })))
+}
+
+async fn bridge_task_assign(
+    State(state): State<AppState>,
+    Json(payload): Json<serde_json::Value>,
+) -> Result<Json<serde_json::Value>, AppError> {
+    let ticket_id = payload.get("ticket_id").and_then(|v| v.as_str()).unwrap_or("");
+    let performer_id_str = payload.get("performer_id").and_then(|v| v.as_str()).unwrap_or("");
+    let performer_id = kallax_core::PerformerId::from_str(performer_id_str);
+    let mut engine = state.engine.lock().map_err(|e| {
+        AppError(kallax_core::error::KallaxError::lock_poisoned(
+            "bridge_task_assign",
+            format!("engine mutex poisoned: {}", e),
+        ))
+    })?;
+    let task_id = engine
+        .assign_ticket(ticket_id, &performer_id)
+        .map_err(AppError)?;
+    Ok(Json(serde_json::json!({
+        "task_id": task_id.as_str(),
+        "performer_id": performer_id_str
+    })))
+}
+
+async fn bridge_task_complete(
+    State(state): State<AppState>,
+    Json(payload): Json<serde_json::Value>,
+) -> Result<Json<serde_json::Value>, AppError> {
+    let ticket_id = payload.get("ticket_id").and_then(|v| v.as_str()).unwrap_or("");
+    let mut engine = state.engine.lock().map_err(|e| {
+        AppError(kallax_core::error::KallaxError::lock_poisoned(
+            "bridge_task_complete",
+            format!("engine mutex poisoned: {}", e),
+        ))
+    })?;
+    engine.complete_ticket(ticket_id).map_err(AppError)?;
+    Ok(Json(serde_json::json!({
+        "task_id": ticket_id,
+        "status": "completed"
     })))
 }
 

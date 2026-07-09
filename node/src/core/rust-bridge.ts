@@ -27,6 +27,14 @@ export interface RustBridge {
   getSchedulerStatus: () => Promise<KallaxResult<{ ready_tasks: number; critical_path_length: number }>>;
   /** Check if bridge is alive (lightweight ping). */
   isAlive: () => Promise<boolean>;
+  /** EPIC-079: ticket create via Rust engine */
+  createTicket: (payload: unknown) => Promise<KallaxResult<{ ticket_id: string }>>;
+  /** EPIC-079: ticket list via Rust engine */
+  listTickets: (filter?: unknown) => Promise<KallaxResult<{ tickets: unknown[] }>>;
+  /** EPIC-079: task assign via Rust engine */
+  assignTask: (payload: unknown) => Promise<KallaxResult<{ task_id: string; performer_id: string }>>;
+  /** EPIC-079: task complete via Rust engine */
+  completeTask: (payload: unknown) => Promise<KallaxResult<{ task_id: string; status: string }>>;
 }
 
 const DEFAULT_CONFIG: RustBridgeConfig = {
@@ -37,14 +45,19 @@ const DEFAULT_CONFIG: RustBridgeConfig = {
 export function createRustBridge(config?: Partial<RustBridgeConfig>): RustBridge {
   const cfg = { ...DEFAULT_CONFIG, ...config };
 
-  async function fetchJson<T>(path: string): Promise<KallaxResult<T>> {
+  async function fetchJson<T>(path: string, init?: RequestInit): Promise<KallaxResult<T>> {
     // EPIC-070-B4: 每次请求新建 AbortController, 避免闭包共享导致一次超时永久失效
     const controller = new AbortController();
     try {
       const timeout = setTimeout(() => controller.abort(), cfg.timeoutMs);
       const resp = await fetch(`${cfg.baseUrl}${path}`, {
+        ...init,
         signal: controller.signal,
-        headers: { 'Accept': 'application/json' },
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          ...(init?.headers ?? {}),
+        },
       });
       clearTimeout(timeout);
 
@@ -80,6 +93,32 @@ export function createRustBridge(config?: Partial<RustBridgeConfig>): RustBridge
     async isAlive(): Promise<boolean> {
       const result = await fetchJson<BridgeStatus>('/bridge/status');
       return result.isOk() && result.value.status === 'ok';
+    },
+
+    async createTicket(payload: unknown): Promise<KallaxResult<{ ticket_id: string }>> {
+      return fetchJson<{ ticket_id: string }>('/bridge/ticket/create', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    },
+
+    async listTickets(filter?: unknown): Promise<KallaxResult<{ tickets: unknown[] }>> {
+      const query = filter ? `?${new URLSearchParams(filter as Record<string, string>).toString()}` : '';
+      return fetchJson<{ tickets: unknown[] }>(`/bridge/ticket/list${query}`);
+    },
+
+    async assignTask(payload: unknown): Promise<KallaxResult<{ task_id: string; performer_id: string }>> {
+      return fetchJson<{ task_id: string; performer_id: string }>('/bridge/task/assign', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    },
+
+    async completeTask(payload: unknown): Promise<KallaxResult<{ task_id: string; status: string }>> {
+      return fetchJson<{ task_id: string; status: string }>('/bridge/task/complete', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
     },
   };
 }

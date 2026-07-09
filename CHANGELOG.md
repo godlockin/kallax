@@ -4,6 +4,32 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.10.0] - 2026-07-09
+
+### Release: Sprint 6 v3.10.0 (EPIC-075/076/077 + 4-PR 流程新规首次)
+
+#### Added (治 v3.9.0 stub + 借鉴 eket)
+
+- **EPIC-075**: A4/A5 完成闭环
+  - `tier-router.ts`: tier 0/1 真接 rust-bridge, tier 3 execFile 包装 kallax CLI
+  - `ticket_engine.rs`: get_ticket / list_tickets 走 db 持久化 (跨重启不丢票)
+- **EPIC-076**: P1 滚动治根
+  - `master-election.ts`: filesystem lock TTL grace 60s→45s + unlink EEXIST 重试 (治 split-brain)
+  - `waiting-for-expert.ts`: writeState tmpPath 用 PID+timestamp 后缀 (治 TOCTOU)
+- **EPIC-077**: 借鉴 eket check-pr-size.sh (Rule of 500 自动化)
+  - WARN > 100 lines, FAIL > 500 lines 需 Approved-Large-PR-By trailer
+  - 自动检测 base branch + pre-commit hook 跑
+
+#### Changed (governance)
+
+- **EPIC-074**: 4-PR 流程新规首次实战
+  - 5 PRs 走 feature → testing → main → miao 全程
+  - PR #14-22: feature/v3.10.0-EPIC-{075,076,077} 全程
+
+raw output: `cargo test --release` → **74 passed**
+raw output: `vitest run tier-router + hook-replay` → **25 passed**
+raw output: `git log --oneline miao..HEAD` (3 PRs 4-PR 全程)
+
 ## [3.9.2] - 2026-07-09
 
 ### Release: EPIC-073 (漂移修复 C1+C2 治根)
