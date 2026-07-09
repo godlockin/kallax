@@ -50,13 +50,19 @@ class TierRouter {
         if (!alive) {
           return { ok: false, tier, error: 'rust bridge alive=false' };
         }
-        const endpoint = opToRustEndpoint(op);
-        const result = await bridge.getStatus();
+        // EPIC-079: 4 op 真实调用, 不再 stub
+        let result;
+        switch (op) {
+          case 'ticket.create': result = await bridge.createTicket(payload); break;
+          case 'ticket.list':   result = await bridge.listTickets(payload);   break;
+          case 'task.assign':   result = await bridge.assignTask(payload);   break;
+          case 'task.complete': result = await bridge.completeTask(payload); break;
+        }
         if (result.isOk()) {
           return {
             ok: true,
             tier,
-            value: { rust: true, op, endpoint, payload, status: result.value } as unknown as T,
+            value: { rust: true, op, ...result.value } as unknown as T,
           };
         }
         return { ok: false, tier, error: result.error.message };
@@ -125,6 +131,7 @@ class TierRouter {
 }
 
 function opToRustEndpoint(op: Operation): string {
+  // EPIC-079: 保留以备脚本调试 (实际调用在 executeOnTier switch)
   const map: Record<Operation, string> = {
     'ticket.create': '/bridge/ticket/create',
     'ticket.list': '/bridge/ticket/list',
