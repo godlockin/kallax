@@ -4,6 +4,35 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.11.0] - 2026-07-09
+
+### Release: Sprint 7 v3.11.0 (EPIC-079/080/081/082, TierRouter 端到端)
+
+#### Added (治 v3.10.0 stub + 4-PR 流程持续)
+
+- **EPIC-079**: TierRouter 0/1/3 端到端 (rust-bridge 4 op + server endpoints)
+  - `node/src/core/rust-bridge.ts`: createTicket / listTickets / assignTask / completeTask
+  - `rust/crates/kallax-server/src/main.rs`: /bridge/{ticket/{create,list},task/{assign,complete}}
+  - `tests/rust-bridge.test.ts`: 7 tests (含 graceful unreachable)
+- **EPIC-080**: 借鉴 eket 40% parity
+  - `scripts/verify/check-debrief.sh`: ticket 关闭前检查 confluence lessons
+  - `scripts/verify/count-tokens.sh`: session 加载 token 估算
+- **EPIC-081**: P1-9 CSP 启用
+  - `node/src/api/server.ts`: helmet contentSecurityPolicy default-src 'self'
+  - crossOriginResourcePolicy: same-origin (治 COEP)
+- **EPIC-082**: Perf-1 hook O(N²)→O(1)
+  - `node/src/hooks/hook-events-store.ts`: lastEntryCache (filePath → {seq, hash})
+  - 50k entries × ~500B = 25MB 每次读 → 0 (缓存命中)
+
+#### 4-PR 流程 (Sprint 7, 12 PRs 全程)
+- PR #23-25: EPIC-079 (feature → testing → main → miao)
+- PR #26-28: EPIC-080
+- PR #29-31: EPIC-081
+- PR #32-34: EPIC-082
+
+raw output: `cargo build --release` → **0 errors**
+raw output: `vitest run tier-router + hook-replay + rust-bridge` → **28 passed (28)**
+
 ## [3.10.0] - 2026-07-09
 
 ### Release: Sprint 6 v3.10.0 (EPIC-075/076/077 + 4-PR 流程新规首次)
