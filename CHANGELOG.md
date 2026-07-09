@@ -4,6 +4,21 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.9.1] - 2026-07-09
+
+### Release: EPIC-072 (Hash-Chain 真锚点, 治 A1+A2+A3 治根)
+
+#### Security Fixed (治 v3.8.0 red-blue review hash-chain 3 项弱点)
+
+- **EPIC-072-A1**: 链种子从 `'0'*64` 改为 `sha256("audit:anchor:" + git rev-parse HEAD)`
+  - 攻击者无法重算整链 (需伪造 git history)
+- **EPIC-072-A2**: legacy entry (无 `chain_hash`) 从 skip 改为 fail-closed
+  - 治反讽 1:1 复发: 伪造条目省略 chain_hash 字段绕过
+- **EPIC-072-A3**: 空文件 / 缺文件从 PASS 改为 FAIL (跟 hook fail-closed 1:1)
+- `read_last_chain_hash` + `migrate` 同步 git anchor (3 处)
+
+raw output: `bash tests/integration/audit-chain-epic-072.sh` → **5 passed; 0 failed**
+
 ## [3.9.0] - 2026-07-09
 
 ### Release: EPIC-071 (A4 TierRouter + A5 db 接线, Sprint 5 接线)
