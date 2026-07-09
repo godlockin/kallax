@@ -73,7 +73,12 @@ export interface ReplayQuery {
 }
 
 export interface HookEventsStore {
-  append: (input: HookEventInput) => HookEventEntry;
+  /**
+   * EPIC-084 P1-2: append 不再 export 公开
+   * 公开 API 走 appendHookEvent (带 withLock 互斥)
+   * 这里保留 type-level 仅给内部实现
+   */
+  readonly _appendInternal: (input: HookEventInput) => HookEventEntry;
   query: (q: ReplayQuery) => HookEventEntry[];
   size: () => number;
   path: () => string;
@@ -190,7 +195,8 @@ export function createHookEventsStore(
   }
 
   return {
-    append(input: HookEventInput): HookEventEntry {
+    // EPIC-084 P1-2: 改名为 _appendInternal, 外部必须走 appendHookEvent (带 withLock 互斥)
+    _appendInternal(input: HookEventInput): HookEventEntry {
       // Synchronous append within mutex (we await externally)
       const last = readLastEntry(filePath);
       const seq = last ? last.seq + 1 : 1;
@@ -277,7 +283,7 @@ export async function appendHookEvent(
   writeLock = new Promise<void>((r) => { release = r; });
   await prev;
   try {
-    return store.append(input);
+    return store._appendInternal(input);
   } finally {
     release();
   }
