@@ -4,6 +4,36 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.8.1] - 2026-07-09
+
+### Release: EPIC-069 (red-blue review 真相层, Sprint 4)
+
+#### Fixed (治 v3.8.0 red-blue review 4 项红线)
+
+- **EPIC-069-A**: `cargo test --release` 11 errors 修复 (test module 加 `use crate::{Ticket, ...}`)
+  - raw output: `cargo test --release -p kallax-core` → **74 passed; 0 failed** (0.11s)
+- **EPIC-069-B**: `hook-replay.test.ts` 8/19 fail 修复 (env + adminApiKey)
+  - raw output: `KALLAX_HOOK_API_KEY=test-... npx vitest run tests/hook-replay.test.ts` → **19 passed (19)**
+- **EPIC-069-C**: README §集成测试 真相化 (raw test output 引用 + 未覆盖项诚实声明)
+- **EPIC-069-D**: 5-Level Verify 新规 + `check-claim-evidence.sh` pre-commit hook
+
+#### Changed
+- CLAUDE.md 升级 v3.6.0 → v3.8.1, 加 5-Level Verify 新规 (L2=cargo test 不是 build)
+- README.md 改"生产级 / 25/25 PASS / 治根" → "部分覆盖 / 实作中 / 持续演进"
+
+#### Security (新增法律)
+- pre-commit hook: `scripts/hooks/check-claim-evidence.sh` 拦截无 raw output 引用的 X/Y PASS 数字
+- 5-Level Verify L2 强制 `cargo test --release` (而非 `cargo build`)
+- 5-Level Verify L5 强制 `check-claim-evidence.sh` 扫 README/CHANGELOG
+
+#### Honest (未覆盖, 待续)
+- A4 三级降级 仅观测未接线 (EPIC-071)
+- A5 Rust 持久化 全 DashMap 重启丢票 (EPIC-071)
+- A1+A2+A3 Hash-Chain 防篡改 弱 (EPIC-072)
+- B1-B6 6 致命安全 (EPIC-070)
+
+raw output: `git log --oneline miao..HEAD` (本 release 4 commit + 1 merge)
+
 ## [3.8.0] - 2026-07-09
 
 ### Release: EPIC-068 + EPIC-064 (Master APPROVE, 5-Level PASS)

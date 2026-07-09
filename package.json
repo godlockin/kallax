@@ -1,6 +1,6 @@
 {
   "name": "kallax",
-  "version": "3.8.0",
+  "version": "3.8.1",
   "description": "KALLAX - Knowledge-Augmented Leveraged Learning Agent eXecutor - Multi-Agent Collaboration Framework",
   "private": true,
   "type": "module",
