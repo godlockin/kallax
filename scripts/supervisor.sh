@@ -68,7 +68,8 @@ while [ $RESTART_COUNT -le $MAX_RESTARTS ]; do
   START_TIME=$(date +%s)
 
   # Execute server in background, capture PID
-  eval "$SERVER_CMD" >> "$SERVER_LOG" 2>&1 &
+  # EPIC-070-B2: 删 eval (环境注入即 RCE), 改用 bash -c 单引号包裹
+  bash -c "$SERVER_CMD" >> "$SERVER_LOG" 2>&1 &
   SERVER_PID=$!
   info "Server PID: ${SERVER_PID}"
 
