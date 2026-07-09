@@ -22,8 +22,11 @@ set -euo pipefail
 umask 077
 
 # 默认配置
-FILE_LOCK_TIMEOUT="${FILE_LOCK_TIMEOUT:-10}"
+# EPIC-089 Perf-3: 默认 timeout 10s → 3s, 防 dispatch 密集级联阻塞
+FILE_LOCK_TIMEOUT="${FILE_LOCK_TIMEOUT:-3}"
 FILE_LOCK_DIR="${FILE_LOCK_DIR:-/tmp/kallax-locks}"
+# EPIC-089: 非阻塞模式 (fail-fast), 设 FILE_LOCK_NONBLOCK=1 立即失败不阻塞
+FILE_LOCK_NONBLOCK="${FILE_LOCK_NONBLOCK:-0}"
 
 # 检测 flock 是否可用
 _has_flock() {
