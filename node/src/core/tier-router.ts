@@ -38,6 +38,10 @@ export interface TierExecutionResult<T> {
 }
 
 class TierRouter {
+  // EPIC-097: Rust server startup latency retry (生产环境 Rust 启动可能慢)
+  private static readonly RUST_STARTUP_RETRIES = 3;
+  private static readonly RUST_STARTUP_BACKOFF_MS = 500;
+
   private async executeOnTier<T>(
     tier: TierLevel,
     op: Operation,
@@ -46,7 +50,15 @@ class TierRouter {
     if (tier === 0 || tier === 1) {
       try {
         const bridge = getRustBridge();
-        const alive = await bridge.isAlive();
+        // EPIC-097: retry isAlive with backoff (Rust 启动可能慢, 第 1 次 isAlive 可能 false)
+        let alive = false;
+        for (let i = 0; i < TierRouter.RUST_STARTUP_RETRIES; i++) {
+          alive = await bridge.isAlive();
+          if (alive) break;
+          if (i < TierRouter.RUST_STARTUP_RETRIES - 1) {
+            await new Promise((r) => setTimeout(r, TierRouter.RUST_STARTUP_BACKOFF_MS * (i + 1)));
+          }
+        }
         if (!alive) {
           return { ok: false, tier, error: 'rust bridge alive=false' };
         }
