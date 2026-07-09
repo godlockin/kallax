@@ -54,4 +54,19 @@ export function registerBranchCommands(program: Command): void {
       logger.info({}, '  feature → testing:  Conductor merges (提测)');
       logger.info({}, '  testing → miao:     Master approves PR (发版)');
     });
+
+  // EPIC-074 + Sprint 6/7: 4-PR 流程新规 (feature → testing → main → miao)
+  // 跟 v3.8.0 red-blue review "miao → main 阻塞" 治根
+  branch.command('pr <feature>')
+    .description('4-PR 流程: feature/<name> → testing → main → miao (新规首次实战)')
+    .option('--skip-tests', 'Skip test verification (5-Level Verify 强制, 慎用)')
+    .option('--emergency', 'Bypass gate (主公明确批准时)')
+    .option('--dry-run', 'Preview only, do not push')
+    .action((feature: string, opts: { skipTests?: boolean; emergency?: boolean; dryRun?: boolean }) => {
+      const args: string[] = [feature];
+      if (opts.skipTests) args.push('--skip-tests');
+      if (opts.emergency) args.push('--emergency');
+      if (opts.dryRun) args.push('--dry-run');
+      runScript('branch-4pr.sh', ...args);
+    });
 }
