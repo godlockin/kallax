@@ -340,6 +340,7 @@ bash tests/integration/decision-matrix-test.sh
 | v3.11.0 | `92fe8be` | Sprint 7: TierRouter 端到端 (4 op) + eket 40% (debrief/count-tokens) + CSP 启用 + Perf-1 缓存 | 4 (40%) |
 | v3.12.0 | `520dfee` | Sprint 8: EPIC-083 retrospective + branch-4pr.sh (本地命令更新) | 4 (40%) |
 | v3.13.0 | `a1d9d99` | Sprint 9: 6 EPIC (P1-2/3/4/7 + Perf-2/3) 4-PR 全程 18 PRs | 4 (40%) |
+| v3.14.0 | `4a355e7` | Sprint 10: 5 EPIC (P1-5/6/8/10 + Rust E0432) 4-PR 全程 15 PRs | 4 (40%) |
 
 **关键演化**:
 - 0 跳 release (跟 V310-LESSONS + V350-LESSONS 1:1 联合)
