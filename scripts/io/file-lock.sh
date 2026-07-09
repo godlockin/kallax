@@ -136,11 +136,17 @@ file_lock_acquire() {
     eval "exec $fd<'$lock_file'"
 
     if ! flock -w "$FILE_LOCK_TIMEOUT" "$fd"; then
-      echo "ERROR: file-lock.sh: 锁获取超时 (${FILE_LOCK_TIMEOUT}s) - 文件被占用: $file_path" >&2
-      echo "HINT: 另一个进程正在写入此文件, 请稍后重试" >&2
-      # 跟 R2/R4/R5b hang 模式分离: 直接 STOP + 报错, 不重试
-      eval "exec $fd<&-"
-      return 1
+      # EPIC-099 Perf-3: 1 次重试 + 100ms backoff (治 cascade)
+      # 原: 失败立即返回 → dispatch 密集调用方级联失败
+      # 修: 短暂 backoff 后重试一次, 治 "另一进程刚好释放" race
+      sleep 0.1 2>/dev/null || true
+      if ! flock -w "$FILE_LOCK_TIMEOUT" "$fd"; then
+        echo "ERROR: file-lock.sh: 锁获取超时 (${FILE_LOCK_TIMEOUT}s) - 文件被占用: $file_path" >&2
+        echo "HINT: 另一个进程正在写入此文件, 请稍后重试" >&2
+        # 跟 R2/R4/R5b hang 模式分离: 直接 STOP + 报错, 不重试
+        eval "exec $fd<&-"
+        return 1
+      fi
     fi
 
     # 写入锁元信息
