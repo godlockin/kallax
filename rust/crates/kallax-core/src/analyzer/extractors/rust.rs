@@ -4,14 +4,37 @@
 
 use super::super::types::{Symbol, SymbolKind};
 use regex::Regex;
+use std::sync::OnceLock;
+
+// EPIC-091 P1-5: OnceLock compile regex once
+fn fn_re() -> &'static Regex {
+    static R: OnceLock<Regex> = OnceLock::new();
+    R.get_or_init(|| Regex::new(r"(?:pub\s+)?(?:unsafe\s+)?fn\s+(\w+)").expect("valid regex"))
+}
+fn struct_re() -> &'static Regex {
+    static R: OnceLock<Regex> = OnceLock::new();
+    R.get_or_init(|| Regex::new(r"(?:pub\s+)?struct\s+(\w+)").expect("valid regex"))
+}
+fn impl_re() -> &'static Regex {
+    static R: OnceLock<Regex> = OnceLock::new();
+    R.get_or_init(|| Regex::new(r"(?:pub\s+)?(?:unsafe\s+)?impl\s+(\w+)").expect("valid regex"))
+}
+fn trait_re() -> &'static Regex {
+    static R: OnceLock<Regex> = OnceLock::new();
+    R.get_or_init(|| Regex::new(r"(?:pub\s+)?(?:unsafe\s+)?trait\s+(\w+)").expect("valid regex"))
+}
+fn enum_re() -> &'static Regex {
+    static R: OnceLock<Regex> = OnceLock::new();
+    R.get_or_init(|| Regex::new(r"(?:pub\s+)?enum\s+(\w+)").expect("valid regex"))
+}
 
 /// Extract symbols from Rust source code
 pub fn extract(content: &str) -> Vec<Symbol> {
-    let fn_re = Regex::new(r"(?:pub\s+)?(?:unsafe\s+)?fn\s+(\w+)").unwrap();
-    let struct_re = Regex::new(r"(?:pub\s+)?struct\s+(\w+)").unwrap();
-    let impl_re = Regex::new(r"(?:pub\s+)?(?:unsafe\s+)?impl\s+(\w+)").unwrap();
-    let trait_re = Regex::new(r"(?:pub\s+)?(?:unsafe\s+)?trait\s+(\w+)").unwrap();
-    let enum_re = Regex::new(r"(?:pub\s+)?enum\s+(\w+)").unwrap();
+    let fn_re = fn_re();
+    let struct_re = struct_re();
+    let impl_re = impl_re();
+    let trait_re = trait_re();
+    let enum_re = enum_re();
 
     let mut symbols = Vec::new();
     let mut in_block_comment = false;
@@ -40,16 +63,17 @@ pub fn extract(content: &str) -> Vec<Symbol> {
         }
 
         // Try each pattern in priority order
+        // EPIC-091 P1-5: unwrap 改 if let (regex 捕获 group 1 一定存在, 但 .unwrap 仍 panic 风险)
         let kind = if let Some(caps) = fn_re.captures(trimmed) {
-            Some((caps.get(1).unwrap().as_str().to_string(), SymbolKind::Function))
+            caps.get(1).map(|m| (m.as_str().to_string(), SymbolKind::Function))
         } else if let Some(caps) = struct_re.captures(trimmed) {
-            Some((caps.get(1).unwrap().as_str().to_string(), SymbolKind::Class))
+            caps.get(1).map(|m| (m.as_str().to_string(), SymbolKind::Class))
         } else if let Some(caps) = impl_re.captures(trimmed) {
-            Some((caps.get(1).unwrap().as_str().to_string(), SymbolKind::Method))
+            caps.get(1).map(|m| (m.as_str().to_string(), SymbolKind::Method))
         } else if let Some(caps) = trait_re.captures(trimmed) {
-            Some((caps.get(1).unwrap().as_str().to_string(), SymbolKind::Interface))
+            caps.get(1).map(|m| (m.as_str().to_string(), SymbolKind::Interface))
         } else if let Some(caps) = enum_re.captures(trimmed) {
-            Some((caps.get(1).unwrap().as_str().to_string(), SymbolKind::Class))
+            caps.get(1).map(|m| (m.as_str().to_string(), SymbolKind::Class))
         } else {
             None
         };
