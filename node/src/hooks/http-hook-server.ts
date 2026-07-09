@@ -220,6 +220,18 @@ export function createHookServer(
     const toTimestamp = toStr ? Number(toStr) : undefined;
     const limit = limitStr ? Number(limitStr) : undefined;
 
+    // EPIC-070-B1: scope guard — 无 sessionId 调用需 adminApiKey, 避免全量数据外泄
+    const auth = req.headers['authorization'] ?? '';
+    const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+    const isAdmin = config.adminApiKey !== undefined && token === config.adminApiKey;
+    if (!sessionId && !isAdmin) {
+      sendJson(res, 403, {
+        error: 'sessionId required (or adminApiKey for full-export)',
+        hint: 'Pass ?sessionId=<id> for scoped query, or use adminApiKey for full audit',
+      });
+      return;
+    }
+
     let events = auditStore.query({ sessionId, hookType, fromTimestamp, toTimestamp });
     if (typeof limit === 'number' && limit > 0) {
       events = events.slice(-limit);
