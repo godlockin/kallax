@@ -107,13 +107,30 @@ async function fsCampaign(lockDir: string, instanceId: string): Promise<boolean>
         const lockFile = `${lockDir}/master.lock`;
         const st = await stat(lockFile);
         const age = Date.now() - st.mtimeMs;
-        if (age > DEFAULT_TTL_MS * 2) {
-          await unlink(lockFile);
-          await writeFile(lockFile, JSON.stringify({
-            instanceId, acquiredAt: Date.now(), term: 1,
-          }), { flag: 'wx' });
-          logger.warn({ age, instanceId }, 'took over stale filesystem lock');
-          return true;
+        // EPIC-076 P1-1 split-brain 治根: 缩 TTL grace 60s→45s, 加 EEXIST 重试防 unlink 失败
+        // 原来: DEFAULT_TTL_MS * 2 = 60s grace (过长, Redis 抖动 3s 后 lock 残留)
+        // 修: DEFAULT_TTL_MS + DEFAULT_TTL_MS / 2 = 45s grace, 加快 split-brain 检测
+        if (age > DEFAULT_TTL_MS + DEFAULT_TTL_MS / 2) {
+          try {
+            await unlink(lockFile);
+          } catch (unlinkErr: unknown) {
+            // EACCES / ENOENT: lock 已被其他进程处理, 试一次 EEXIST 重新加锁
+            const uCode = (unlinkErr as { code?: string }).code;
+            if (uCode !== 'ENOENT') {
+              logger.warn({ unlinkErr: unlinkErr instanceof Error ? unlinkErr.message : String(unlinkErr) }, 'lock unlink failed');
+              return false;
+            }
+          }
+          // 重试: 写新 lock
+          try {
+            await writeFile(lockFile, JSON.stringify({
+              instanceId, acquiredAt: Date.now(), term: 1,
+            }), { flag: 'wx' });
+            logger.warn({ age, instanceId }, 'took over stale filesystem lock');
+            return true;
+          } catch {
+            return false; // 其他进程抢先, 让出
+          }
         }
       } catch (error: unknown) {
     logger.debug({ error: error instanceof Error ? error.message : String(error) }, 'non-critical election op failed');
