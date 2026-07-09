@@ -77,25 +77,28 @@ calc_chain_hash() {
     fi
 }
 
-# 读最后一条 entry 的 chain_hash; 文件不存在/空 → 返回 "0"*64
+# 读最后一条 entry 的 chain_hash; 文件不存在/空 → 返回 git anchor (跟 verify_file 1:1)
+# EPIC-072-A1: 链种子用 git HEAD commit hash 锚点 (不固定)
 read_last_chain_hash() {
     local file="$1"
+    local git_anchor
+    git_anchor=$(git rev-parse HEAD 2>/dev/null || echo "0000000000000000000000000000000000000000")
     if [[ ! -f "$file" ]] || [[ ! -s "$file" ]]; then
-        printf '%064d' 0
+        printf '%s' "audit:anchor:${git_anchor}" | sha256sum | awk '{print $1}'
         return 0
     fi
     # 取最后一行
     local last
     last=$(tail -n 1 "$file" 2>/dev/null || true)
     if [[ -z "$last" ]]; then
-        printf '%064d' 0
+        printf '%s' "audit:anchor:${git_anchor}" | sha256sum | awk '{print $1}'
         return 0
     fi
     # 提取 chain_hash (如果有)
     local h
     h=$(echo "$last" | jq -r '.chain_hash // empty' 2>/dev/null || true)
     if [[ -z "$h" ]]; then
-        printf '%064d' 0
+        printf '%s' "audit:anchor:${git_anchor}" | sha256sum | awk '{print $1}'
         return 0
     fi
     echo "$h"
@@ -232,16 +235,16 @@ verify_file() {
     local fail_count=0
     local line_count=0
 
-    # 文件不存在
+    # EPIC-072-A3: fail-closed — 文件不存在 = FAIL (不是 INFO), 跟 hook fail-closed 1:1
     if [[ ! -f "$file" ]]; then
-        echo "INFO: $file does not exist (no audit log to verify)"
-        return 0
+        echo "FAIL: $file does not exist (audit log missing, fail-closed per EPIC-072)"
+        return 1
     fi
 
-    # 文件存在但为空
+    # EPIC-072-A3: fail-closed — 空文件 = FAIL (不是 INFO)
     if [[ ! -s "$file" ]]; then
-        echo "INFO: $file is empty"
-        return 0
+        echo "FAIL: $file is empty (audit log present but no entries, fail-closed per EPIC-072)"
+        return 1
     fi
 
     # 1. 校验文件权限 (跟 BE-7 模式 一致)
@@ -252,9 +255,13 @@ verify_file() {
         fail_count=$((fail_count + 1))
     fi
 
-    # 2. 逐行校验 hash chain
+    # EPIC-072-A1: 外部锚点 — 链种子用 git HEAD commit hash (不固定)
+    # 算法: sha256("audit:anchor:" + git rev-parse HEAD)
+    # 这让攻击者无法重算整链 (需伪造 git history)
     local prev_hash
-    prev_hash=$(printf '%064d' 0)
+    local git_anchor
+    git_anchor=$(git rev-parse HEAD 2>/dev/null || echo "0000000000000000000000000000000000000000")
+    prev_hash=$(printf '%s' "audit:anchor:${git_anchor}" | sha256sum | awk '{print $1}')
     local line_num=0
 
     while IFS= read -r line; do
@@ -278,9 +285,11 @@ verify_file() {
         entry_chain=$(echo "$line" | jq -r '.chain_hash // empty' 2>/dev/null)
         entry_algo=$(echo "$line" | jq -r '.chain_algo // "sha256-v1"' 2>/dev/null)
 
-        # legacy entry (无 hash 字段) → 跳过 (向后兼容)
+        # EPIC-072-A2: legacy entry (无 chain_hash) 现在 FAIL 而非 skip
+        # 治反讽 1:1 复发: 伪造条目省略 chain_hash 字段绕过
         if [[ -z "$entry_chain" ]]; then
-            echo "INFO: $file:$line_num legacy entry (no chain_hash), skipping"
+            echo "FAIL: $file:$line_num legacy entry without chain_hash (fail-closed per EPIC-072-A2)"
+            fail_count=$((fail_count + 1))
             continue
         fi
 
@@ -357,7 +366,9 @@ migrate_file() {
 
     local tmp="${file}.migrate.$$"
     local prev_hash
-    prev_hash=$(printf '%064d' 0)
+    local git_anchor
+    git_anchor=$(git rev-parse HEAD 2>/dev/null || echo "0000000000000000000000000000000000000000")
+    prev_hash=$(printf '%s' "audit:anchor:${git_anchor}" | sha256sum | awk '{print $1}')
     local migrated_count=0
     local skipped_count=0
 
