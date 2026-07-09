@@ -51,6 +51,13 @@ impl WorktreeManager {
         branch_name: &str,
         base_ref: Option<&str>,
     ) -> Result<Worktree> {
+        // EPIC-087 P1-7: worktree 泄漏治根 — create 前自动 prune stale
+        // 原: 仅显式 prune() 调用, 永不触发 → 泄漏
+        // 修: 每次 create 前调 self.prune() (best-effort, 失败不阻塞)
+        if let Err(e) = self.prune() {
+            warn!(error = %e, "auto-prune before create_worktree failed (continuing)");
+        }
+
         let worktrees = self.worktrees.read();
 
         // Check capacity
