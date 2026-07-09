@@ -48,6 +48,18 @@ const DEGRADE_THRESHOLD = 2; // consecutive failures to degrade
 const CRASH_LIMIT = 5; // crashes within window → force degrade
 const CRASH_WINDOW_MS = 300_000; // 5 min crash window
 
+// EPIC-088 Perf-2: tier 1 探针去重 — 跨进程共享 timestamp
+const TIER1_PROBE_DEBOUNCE_MS = 5_000; // 5s 内跳过 tier 1 (其他进程已 probe)
+let lastTier1ProbeAt = 0;
+
+function shouldProbeTier1(now: number): boolean {
+  return now - lastTier1ProbeAt >= TIER1_PROBE_DEBOUNCE_MS;
+}
+
+function recordTier1Probe(now: number): void {
+  lastTier1ProbeAt = now;
+}
+
 // ── Probe implementations ──────────────────────────────────────────────────
 
 async function probeRust(): Promise<boolean> {
@@ -152,7 +164,23 @@ export function createRecoveryManager(): RecoveryManager {
     };
   }
 
-  async function probeAll(): Promise<void> {
+async function probeAll(): Promise<void> {
+    // EPIC-088 Perf-2: tier 1 (shell/redis) 探针去重 — 跨进程共享
+    // 原: N performer + 1 conductor 各自 60s probe 一次 → N+1 次 probeSQLite/Redis
+    // 修: 用 state.json 写 last_tier1_probe_at, 5s 内跳过
+    const now = Date.now();
+    if (!shouldProbeTier1(now)) {
+      logger.debug('recovery: tier 1 probe skipped (recent)');
+    } else {
+      // Probe shell fallback
+      const fileQOk = await probeFileQueue();
+      updateTierStatus(1, fileQOk);
+      // v3.5.0 hotfix (跟 B 组 S-004 治根 联合): Redis 加到 probeAll + Tier 1 跟 Redis 选举层 联合
+      const redisOk = await probeRedis();
+      updateTierStatus(1, fileQOk && redisOk);
+      recordTier1Probe(now);
+    }
+
     // Probe Rust tier
     const rustOk = await probeRust();
     updateTierStatus(3, rustOk);
@@ -161,14 +189,6 @@ export function createRecoveryManager(): RecoveryManager {
     const nodeOk = await probeNode();
     const sqliteOk = await probeSQLite();
     updateTierStatus(2, nodeOk && sqliteOk);
-
-    // Probe shell fallback
-    const fileQOk = await probeFileQueue();
-    updateTierStatus(1, fileQOk);
-
-    // v3.5.0 hotfix (跟 B 组 S-004 治根 联合): Redis 加到 probeAll + Tier 1 跟 Redis 选举层 联合
-    const redisOk = await probeRedis();
-    updateTierStatus(1, fileQOk && redisOk);
 
     emitMetrics();
 
