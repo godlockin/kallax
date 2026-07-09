@@ -4,6 +4,40 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.8.0] - 2026-07-09
+
+### Release: EPIC-068 + EPIC-064 (Master APPROVE, 5-Level PASS)
+
+#### Fixed (EPIC-068-A)
+- **authz 读路径统一** — session_start 双写到 `.kallax/state/state.json`
+  - Bug: 9 个 authz 脚本读 `.kallax/state/state.json`,session_start 写到 `instances/<id>/state.json`,导致所有 authz fail-closed
+  - Fix: session_start 双写(atomic via tmp + mv),9 个 authz 脚本不改
+  - 旧 `instances/` 路径保留作 audit 兼容
+
+#### Changed (EPIC-064 砍命令)
+- **36 → 26 命令** (-28%):
+  - 删 9 命令: alerts / dependency / expert / memory / plugin / recommend / spike / submit / ticket / workflow
+  - 保留 4 底层库: claim / complete / isolation-check / verify-output (被 task/isolation/verify 子命令复用)
+  - 主公原则 3 拍板: "没影响删 / 不确定调查 / 必须保留"
+
+#### Added (EPIC-064-5)
+- **route dispatch hints** — subagent 拿 JSON 后自动调 `kallax <verb>`
+  - `RouteResult.dispatch` field(verb + args + reason)
+  - route-cmd.ts 加 "Dispatch (EPIC-064-5): subagent consumes ↓" 段
+
+#### Changed (EPIC-064-3)
+- **memory → knowledge review** — staleness 审计并入 knowledge
+  - `memory:review` 命令消失
+  - `knowledge review` 子命令保留所有功能
+
+#### Docs (EPIC-068-C)
+- CLAUDE.md 加 state.json 路径约定 + EPIC-068-A 修复说明
+
+#### Net effect
+- 846 行删除,101 行新增
+- 主公认知命令 0 (subagent 委派)
+- 5-Level Verify 全部 PASS
+
 ## [3.7.0] - 2026-07-02
 
 ### Release: 7 候选 1:1 联合 Q12 (跟 v3.1.0 7 候选 模式 1:1)
