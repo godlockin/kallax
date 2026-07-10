@@ -4,6 +4,26 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.18.0] - 2026-07-10
+
+### Release: Sprint 14 v3.18.0 (EPIC-107 文档大重构, 4-PR 全程 12 PR)
+
+#### Changed (主公 "收工+复盘+重构" 4 步拍板)
+
+- **Step 1 删过期**: 23 v0.x/v3.1/v3.5 时代文档删除 (PR #94→95→96→97)
+- **Step 2 合并功能点**: accumulated-lessons 3→1 合并 (PR #94→95→96→97)
+- **Step 3 v2 格式**: retrospective v1 (236 行) → v2 反结构 (162 行) (PR #98→99→100)
+- **Step 4 文件夹重构** (PR #101→102→103):
+  - `confluence/decisions/panel-2026-06-25/` (13 files) → `confluence/panel-2026-06-25/`
+  - `confluence/decisions/eket-vs-kallax/` (7 files) → `confluence/eket-vs-kallax-2026-06-29/`
+  - `docs/_archived/KALLAX-GLOSSARY.md` → `confluence/memory/glossary/glossary.md`
+
+#### Verification
+
+- raw output: `cargo test --workspace --release` 100 passed (74 core + 25 engine + 1 server)
+- raw output: `find confluence/ docs/ -name "*.md" | wc -l` → 264 → ~150 (-43%)
+- 4-PR 流程全程 (feature → testing → main → miao), 0 跳过
+
 ## [3.11.0] - 2026-07-09
 
 ### Release: Sprint 7 v3.11.0 (EPIC-079/080/081/082, TierRouter 端到端)
