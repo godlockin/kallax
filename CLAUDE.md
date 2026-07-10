@@ -82,8 +82,8 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 | Level | 之前 | 之后 (v3.8.1+) |
 |-------|------|---------------|
 | L1 git | commit + push | + raw test output 在 PR 描述 (file path + size) |
-| L2 stdout | `cargo build` 通过 | **`cargo test --release` 0 errors (不是 build)** + workspace 全跑 |
-| L3 4-expert | master review APPROVE | + 至少 1 个 expert 提供 raw `cargo test` / `vitest run` 输出 |
+| L2 stdout | `cargo build` 通过 | **`cargo test --workspace --release` 0 errors (不是 build)** + workspace 全跑 (EPIC-102 升级: 必加 `--workspace` 字面) |
+| L3 4-expert | master review APPROVE | + 至少 1 个 expert 提供 raw `cargo test --workspace` / `vitest run` 输出 |
 | L4 independent | 5-Level Verify 脚本 | + verify 脚本**真跑** (cache 失效, 不复用上次) |
 | L5 boundary | CLAUDE.md Rule check | + **check-claim-evidence.sh** 扫 README/CHANGELOG 数字 |
 
