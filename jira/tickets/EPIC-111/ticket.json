@@ -1,0 +1,24 @@
+{
+  "ticket_id": "EPIC-111",
+  "title": "拍板点协议 — epic-schema checkin_points + create 强制 + 4-expert review",
+  "status": "in_progress",
+  "created_at": "2026-07-10",
+  "epic": "EPIC-111",
+  "sprint": "Sprint 15",
+  "release": "v3.20.0",
+  "description": "Add checkin_points field to epic-schema.json (min 1). New scripts/epic/epic-create.sh CLI enforces checkin_points >= 1 at creation. New scripts/verify/check-checkin-points.sh validator for pre-close gate + 4-expert review hook. Prevents EPIC from starting without explicit decision gates.",
+  "file_scope": {
+    "includes": [
+      "jira/schemas/epic-schema.json",
+      "scripts/epic/epic-create.sh",
+      "scripts/verify/check-checkin-points.sh",
+      "jira/tickets/EPIC-111/"
+    ]
+  },
+  "sub_tasks": [
+    "111-A: epic-schema.json add checkin_points array field",
+    "111-B: scripts/epic/epic-create.sh new CLI with --checkin-point flag",
+    "111-C: scripts/verify/check-checkin-points.sh validator (>=1)",
+    "111-D: smoke test create with 0 / 1 / N checkin points"
+  ]
+}

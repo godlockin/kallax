@@ -16,6 +16,25 @@ cleanup() {
 }
 trap cleanup SIGTERM
 
+# ── EPIC-110: exemption 三档 (bypass 4 immutable-law hooks) ─────────
+# 1. KALLAX_HOOK_BYPASS=1  主公明确批准
+# 2. CI=1                  CI 环境跑
+# 3. commit message 以 "WIP" 开头   work-in-progress
+HOOK_BYPASS=0
+if [[ "${KALLAX_HOOK_BYPASS:-0}" == "1" ]]; then
+  echo "WARN: pre-commit bypass via KALLAX_HOOK_BYPASS=1" >&2
+  HOOK_BYPASS=1
+elif [[ "${CI:-0}" == "1" || "${CI:-}" == "true" ]]; then
+  echo "WARN: pre-commit bypass via CI=1" >&2
+  HOOK_BYPASS=1
+elif [[ -n "${COMMIT_MSG_FILE:-}" && -f "${COMMIT_MSG_FILE:-}" ]]; then
+  _first_line="$(head -1 "$COMMIT_MSG_FILE" 2>/dev/null || echo '')"
+  if [[ "$_first_line" =~ ^WIP ]]; then
+    echo "WARN: pre-commit bypass via WIP commit" >&2
+    HOOK_BYPASS=1
+  fi
+fi
+
 BRANCH="$(git branch --show-current)"
 ROLE_FILE=".kallax/state/instance_config.yml"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -185,6 +204,28 @@ for _tool in check-test-case-isolation check-kpi-precision check-scope-creep; do
 done
 if [[ "$ANTIFAB_FAILED" -eq 1 ]]; then
   exit 1
+fi
+
+# ── EPIC-110: 4 immutable-law checks (decorative/narrative/fail-closed/self-heal) ──
+# CLAUDE.md "4 不可更改 法律" — v3.6.0 起 script 存在, EPIC-110 接进 pre-commit hook
+if [[ "$HOOK_BYPASS" -eq 0 ]]; then
+  LAW_FAILED=0
+  for _law in check-decorative-claim check-narrative check-fail-closed check-self-heal; do
+    _law_path="${KALLAX_ROOT}/scripts/verify/${_law}.sh"
+    if [[ -x "$_law_path" ]]; then
+      if ! KALLAX_STAGED_ONLY=1 bash "$_law_path" >/dev/null 2>&1; then
+        echo "╔══════════════════════════════════════════════════════════════╗"
+        echo "║  BLOCKED: $_law violation                    ║"
+        echo "║  Run: bash scripts/verify/${_law}.sh          ║"
+        echo "║  Bypass (主公 approval): KALLAX_HOOK_BYPASS=1 git commit ...  ║"
+        echo "╚══════════════════════════════════════════════════════════════╝"
+        LAW_FAILED=1
+      fi
+    fi
+  done
+  if [[ "$LAW_FAILED" -eq 1 ]]; then
+    exit 1
+  fi
 fi
 
 # ── Only enforce miao-specific rules on miao branch ───────────────────

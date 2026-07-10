@@ -1,0 +1,27 @@
+{
+  "ticket_id": "EPIC-110",
+  "title": "4 immutable-law hook + exemption + staged-only",
+  "status": "in_progress",
+  "created_at": "2026-07-10",
+  "epic": "EPIC-110",
+  "sprint": "Sprint 15",
+  "release": "v3.20.0",
+  "description": "Wire the 4 immutable-law scripts (decorative/narrative/fail-closed/self-heal) into pre-commit hook with 3-level exemption (KALLAX_HOOK_BYPASS / CI / WIP commit). Refactor scripts to support KALLAX_STAGED_ONLY=1 mode so pre-commit only gates newly-introduced violations, not legacy.",
+  "file_scope": {
+    "includes": [
+      "scripts/hooks/pre-commit",
+      "scripts/verify/check-decorative-claim.sh",
+      "scripts/verify/check-narrative.sh",
+      "scripts/verify/check-fail-closed.sh",
+      "scripts/verify/check-self-heal.sh",
+      "jira/tickets/EPIC-110/"
+    ]
+  },
+  "sub_tasks": [
+    "110-A: pre-commit wire check-decorative-claim",
+    "110-B: pre-commit wire check-narrative",
+    "110-C: pre-commit wire check-fail-closed + staged-only refactor",
+    "110-D: pre-commit wire check-self-heal + staged-only refactor",
+    "110-E: 3-level exemption (KALLAX_HOOK_BYPASS / CI / WIP)"
+  ]
+}

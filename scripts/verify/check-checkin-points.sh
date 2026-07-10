@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# scripts/verify/check-checkin-points.sh — 拍板点验证 (EPIC-111)
+#
+# 责任:
+#   1. 读 jira/epics/<EPIC_ID>/epic.json
+#   2. 强制 checkin_points 数组存在 + length >= 1
+#   3. --require-passed 模式: 所有 checkin_points 必须 status="passed"
+#
+# Usage:
+#   bash scripts/verify/check-checkin-points.sh <EPIC_ID>
+#   bash scripts/verify/check-checkin-points.sh --require-passed <EPIC_ID>
+#
+# Exit:
+#   0 = pass
+#   1 = fail (missing / <1 / has pending when --require-passed)
+#   2 = error (missing file / bad json / bad args)
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+cd "$REPO_ROOT"
+
+REQUIRE_PASSED=0
+EPIC_ID=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --require-passed) REQUIRE_PASSED=1; shift ;;
+        -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
+        -*) echo "ERROR: unknown flag: $1" >&2; exit 2 ;;
+        *) EPIC_ID="$1"; shift ;;
+    esac
+done
+
+if [[ -z "$EPIC_ID" ]]; then
+    echo "ERROR: EPIC_ID required" >&2
+    echo "Usage: $0 [--require-passed] <EPIC_ID>" >&2
+    exit 2
+fi
+
+EPIC_JSON="jira/epics/$EPIC_ID/epic.json"
+if [[ ! -f "$EPIC_JSON" ]]; then
+    echo "ERROR: $EPIC_JSON not found" >&2
+    exit 2
+fi
+
+echo "=========================================="
+echo "Checkin Points Check — $EPIC_ID"
+echo "=========================================="
+
+python3 - "$EPIC_JSON" "$REQUIRE_PASSED" <<'PYEOF'
+import json, sys
+path, require_passed = sys.argv[1], sys.argv[2] == "1"
+try:
+    with open(path) as f:
+        d = json.load(f)
+except Exception as e:
+    print(f"ERROR: parse fail: {e}", file=sys.stderr)
+    sys.exit(2)
+
+cps = d.get("checkin_points", [])
+if not isinstance(cps, list) or len(cps) < 1:
+    print(f"FAIL: checkin_points missing or empty (need >=1)")
+    print(f"  found: {cps!r}")
+    print(f"REQUIREMENT: EPIC must declare >=1 checkin_point at create (EPIC-111)")
+    sys.exit(1)
+
+print(f"checkin_points: {len(cps)}")
+for cp in cps:
+    name = cp.get("name", "?")
+    gate = cp.get("gate", "?")
+    status = cp.get("status", "pending")
+    marker = {"pending":"[ ]", "passed":"[x]", "failed":"[!]"}.get(status, "[?]")
+    print(f"  {marker} {name} [{gate}] status={status}")
+
+if require_passed:
+    unpassed = [cp for cp in cps if cp.get("status") != "passed"]
+    if unpassed:
+        print(f"")
+        print(f"FAIL: --require-passed but {len(unpassed)} checkin_points not passed")
+        for cp in unpassed:
+            print(f"  - {cp.get('name')} status={cp.get('status', 'pending')}")
+        sys.exit(1)
+
+print("")
+print("PASS: checkin_points requirement met")
+PYEOF
