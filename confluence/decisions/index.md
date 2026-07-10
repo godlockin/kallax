@@ -79,7 +79,7 @@ EPIC-022 ticket 结构 (待建)
 
 **CLAUDE.md 配套规则** (在 `/CLAUDE.md`):
 - Rule 6: EPIC 交付三件套 (A+B review + 文档更新 + 经验总结)
-- Rule 7: PHASE 完整完成 review (4-Group 升级, 决策者审批)
+- Rule 7: PHASE 完整完成 review (4-Group 升级, 项目负责人审批)
 
 ---
 
@@ -121,7 +121,7 @@ EPIC-022 ticket 结构 (待建)
 | PHASE-REVIEW-TEMPLATE.md | ✅ v1 | PHASE 完整完成 review (4-Group) |
 | AB-REVIEW-TEMPLATE.md | ✅ v1 | A+B 2-Group review 记录 |
 
-### 7.3 Phase 002 review 候选升级项 (待决策者审批)
+### 7.3 Phase 002 review 候选升级项 (待项目负责人审批)
 
 来自 EPIC-021 LESSONS-LEARNED §8.3:
 - **UP-1**: Rule 8 "L4 脚本必须存在, 否则 ticket 不 close"
