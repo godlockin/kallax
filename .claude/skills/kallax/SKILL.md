@@ -93,7 +93,6 @@ triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专�
 ### §联动 (跟 "反讽" + "诚实修正" 战略 联合 0 隐藏)
 
 - 跟 **EPIC-056-A 3 阶段治理** 1:1 (file:line `docs/process.md:36-51`): 15 步 → 10 步, 净价值 62.5% → 65% (+2.5%), 治 A4 协调开销
-- 跟 **/kallax-panel 9 专家** 联合 (file:line `confluence/decisions/panel-2026-06-25/phase-1-conductor-scan.md:176`): 4 default + 5 extended = 9 专家 并行 0 增 0 删
 - 跟 **BE-23 + BE-25 + BE-26 治根** 联合 0 隐藏 governance gap (file:line `confluence/decisions/be-28-serial-consensus-revision-2026-06-25.md:100-113`): trigger 行只在合规路径生效, 0 silent fallback
 - 跟 **"反讽"** 战略 联合 0 隐藏 反复: 1 ticket 1 subagent 串行 共识 跟 strict 100% baseline 失一致 -20%, trigger 行 不掩盖 漏洞
 - 跟 **"诚实修正"** 战略 联合 0 隐藏: BE 累计 22 → 24 (+2 BE-28 + BE-29) 联合 0 隐藏, 0 假 PASS
