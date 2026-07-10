@@ -49,6 +49,12 @@
         "tickets": {
           "type": "array",
           "items": { "$ref": "#/definitions/epicTicketRef" }
+        },
+        "checkin_points": {
+          "type": "array",
+          "description": "EPIC-111: explicit decision gates (>=1 required at create). Each item names a review/approve point where master signoff or 4-expert consensus is needed before proceeding.",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/checkinPoint" }
         }
       },
       "additionalProperties": true
@@ -114,6 +120,26 @@
         "status": {
           "$ref": "state-schema.json#/definitions/ticketStatus"
         }
+      },
+      "additionalProperties": true
+    },
+    "checkinPoint": {
+      "type": "object",
+      "required": ["name", "gate"],
+      "description": "EPIC-111: single decision gate. name=short label; gate=master-signoff|4-expert|main-review|smoke-test; status=pending|passed|failed.",
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "gate": {
+          "type": "string",
+          "enum": ["master-signoff", "4-expert", "main-review", "smoke-test"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "passed", "failed"],
+          "default": "pending"
+        },
+        "reviewed_at": { "type": "string" },
+        "reviewer": { "type": "string" }
       },
       "additionalProperties": true
     }

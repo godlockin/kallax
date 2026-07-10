@@ -1,0 +1,22 @@
+{
+  "ticket_id": "EPIC-112",
+  "title": "跨 EPIC 验证 + 收尾 — release gate report",
+  "status": "in_progress",
+  "created_at": "2026-07-10",
+  "epic": "EPIC-112",
+  "sprint": "Sprint 15",
+  "release": "v3.20.0",
+  "description": "新 scripts/verify/release-gate.sh 综合验证器: 汇总 4 法律 (EPIC-110) + checkin_points (EPIC-111) + 现有 verify 脚本状态,输出 release gate report (PASS/FAIL 每项 + 总结)。用于 Sprint 15 收尾 + 后续 release 前的最后一道门。",
+  "file_scope": {
+    "includes": [
+      "scripts/verify/release-gate.sh",
+      "jira/tickets/EPIC-112/"
+    ]
+  },
+  "sub_tasks": [
+    "112-A: scripts/verify/release-gate.sh 汇总 5 项 (4 法律 + checkin)",
+    "112-B: --epic <ID> 定 scope, 缺省全 repo",
+    "112-C: JSON 输出 (LLM 可解析) + human 输出",
+    "112-D: smoke test 3 场景 (all pass / partial fail / no epic)"
+  ]
+}

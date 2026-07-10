@@ -43,6 +43,33 @@ for dir in "${SCAN_DIRS[@]}"; do
   done < <(find "$dir" -type f \( -name "*.ts" -o -name "*.js" -o -name "*.md" -o -name "*.sh" \) 2>/dev/null)
 done
 
+# EPIC-110-C: KALLAX_STAGED_ONLY=1 → filter to staged files under SCAN_DIRS
+if [ -n "${KALLAX_STAGED_ONLY:-}" ] && [ "$KALLAX_STAGED_ONLY" = "1" ]; then
+  STAGED=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || echo "")
+  if [ -z "$STAGED" ]; then
+    echo "KALLAX_STAGED_ONLY=1: no staged files, skip"
+    exit 0
+  fi
+  FILTERED=()
+  for f in $STAGED; do
+    for dir in "${SCAN_DIRS[@]}"; do
+      case "$f" in
+        "${dir}"*)
+          case "$f" in
+            *.ts|*.js|*.md|*.sh)
+              [ -f "$f" ] && FILTERED+=("$f") ;;
+          esac
+          break ;;
+      esac
+    done
+  done
+  if [ ${#FILTERED[@]} -eq 0 ]; then
+    echo "KALLAX_STAGED_ONLY=1: no staged files match scan scope, skip"
+    exit 0
+  fi
+  SCAN_FILES=("${FILTERED[@]}")
+fi
+
 if [ ${#SCAN_FILES[@]} -eq 0 ]; then
   echo "=========================================="
   echo "Fail-Closed Check (Security Law)"
