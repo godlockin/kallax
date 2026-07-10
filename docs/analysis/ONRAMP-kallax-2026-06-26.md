@@ -43,41 +43,41 @@ name: 🛡️ 安全 tier: default worktree_role: performer review_group: B phas
 
 **角色**: compliance-rule-merge
 **Skill 路径**: /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/skills/kallax/extended/compliance-rule-merge.md
-**描述**: KALLAX 扩展组专家 — 治 3 假 PASS 根因 4 (14 Rule 升级率 100%). 跟 Rule 32 联合, 跟"循环论证" 联合.
+**描述**: KALLAX 扩展组专家 — 治 3 形式通过实质失败 根因 4 (14 Rule 升级率 100%). 跟 Rule 32,配合, 跟"循环论证",配合.
 
-description: KALLAX 扩展组专家 — 治 3 假 PASS 根因 4 (14 Rule 升级率 100%). 跟 Rule 32 联合, 跟"循环论证" 联合. triggerKeywords: [compliance, rule-merge, 软约束升级阈值, 根因修复 4, EPIC-051, 18 Rule 升级率 100%, 撤销冗余 Rule, 5 release 软约束] filePath: /path/to/kallax/.claude/skills/kallax/extended/compliance-rule-merge.md --- # KALLAX Extended Expert — Compliance: 根因修复 4 (14 Rule 升级率 100%) > **跟"召唤合适专家" 拍 explicit 约束 联合, 跟"现状、目标、需求" 拍 explicit 约束 联合** ## 任务
+description: KALLAX 扩展组专家 — 治 3 形式通过实质失败 根因 4 (14 Rule 升级率 100%). 跟 Rule 32,配合, 跟"循环论证",配合. triggerKeywords: [compliance, rule-merge, 软约束升级阈值, 根因修复 4, EPIC-051, 18 Rule 升级率 100%, 撤销冗余 Rule, 5 release 软约束] filePath: /path/to/kallax/.claude/skills/kallax/extended/compliance-rule-merge.md --- # KALLAX Extended Expert — Compliance: 根因修复 4 (14 Rule 升级率 100%) > **跟"召唤合适专家" 拍 explicit 约束,配合, 跟"现状、目标、需求" 拍 explicit 约束,配合** ## 任务
 
 ### 5. auditor-independent-witness
 
 **角色**: auditor-independent-witness
 **Skill 路径**: /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/skills/kallax/extended/auditor-independent-witness.md
-**描述**: KALLAX 扩展组专家 — 治 3 假 PASS 根因 3 (独立见证机制缺失). 跟 Rule 31 联合, 跟"瞒报 = P0" 联合.
+**描述**: KALLAX 扩展组专家 — 治 3 形式通过实质失败 根因 3 (独立见证机制缺失). 跟 Rule 31,配合, 跟"瞒报 = P0",配合.
 
-description: KALLAX 扩展组专家 — 治 3 假 PASS 根因 3 (独立见证机制缺失). 跟 Rule 31 联合, 跟"瞒报 = P0" 联合. triggerKeywords: [auditor, independent-witness, 独立见证机制, audit-log-sink, 不可篡改, 根因修复 3, EPIC-050, 瞒报 P0] filePath: /path/to/kallax/.claude/skills/kallax/extended/auditor-independent-witness.md --- # KALLAX Extended Expert — Auditor: 根因修复 3 (独立见证机制缺失) > **跟"召唤合适专家" 拍 explicit 约束 联合, 跟"现状、目标、需求" 拍 explicit 约束 联合** ## 任务
+description: KALLAX 扩展组专家 — 治 3 形式通过实质失败 根因 3 (独立见证机制缺失). 跟 Rule 31,配合, 跟"瞒报 = P0",配合. triggerKeywords: [auditor, independent-witness, 独立见证机制, audit-log-sink, 不可篡改, 根因修复 3, EPIC-050, 瞒报 P0] filePath: /path/to/kallax/.claude/skills/kallax/extended/auditor-independent-witness.md --- # KALLAX Extended Expert — Auditor: 根因修复 3 (独立见证机制缺失) > **跟"召唤合适专家" 拍 explicit 约束,配合, 跟"现状、目标、需求" 拍 explicit 约束,配合** ## 任务
 
 ### 6. process-engineering-self-verify
 
 **角色**: process-engineering-self-verify
 **Skill 路径**: /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/skills/kallax/extended/process-engineering-self-verify.md
-**描述**: KALLAX 扩展组专家 — 治 3 假 PASS 根因 2 (自验证主体 = 造假主体). 跟 Rule 30 联合, 跟"激励扭曲" 联合.
+**描述**: KALLAX 扩展组专家 — 治 3 形式通过实质失败 根因 2 (自验证主体 = 造假主体). 跟 Rule 30,配合, 跟"激励扭曲",配合.
 
-description: KALLAX 扩展组专家 — 治 3 假 PASS 根因 2 (自验证主体 = 造假主体). 跟 Rule 30 联合, 跟"激励扭曲" 联合. triggerKeywords: [process-engineering, self-verify, 自验证失效, 激励扭曲, 根因修复 2, EPIC-049, 独立见证机制, independent-witness] filePath: /path/to/kallax/.claude/skills/kallax/extended/process-engineering-self-verify.md --- # KALLAX Extended Expert — Process Engineering: 根因修复 2 (自验证主体 = 造假主体) > **跟"召唤合适专家" 拍 explicit 约束 联合, 跟"现状、目标、需求" 拍 explicit 约束 联合** ## 任务
+description: KALLAX 扩展组专家 — 治 3 形式通过实质失败 根因 2 (自验证主体 = 造假主体). 跟 Rule 30,配合, 跟"激励扭曲",配合. triggerKeywords: [process-engineering, self-verify, 自验证失效, 激励扭曲, 根因修复 2, EPIC-049, 独立见证机制, independent-witness] filePath: /path/to/kallax/.claude/skills/kallax/extended/process-engineering-self-verify.md --- # KALLAX Extended Expert — Process Engineering: 根因修复 2 (自验证主体 = 造假主体) > **跟"召唤合适专家" 拍 explicit 约束,配合, 跟"现状、目标、需求" 拍 explicit 约束,配合** ## 任务
 
 ### 7. security-tool-bypass
 
 **角色**: security-tool-bypass
 **Skill 路径**: /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/skills/kallax/extended/security-tool-bypass.md
-**描述**: KALLAX 扩展组专家 — 治 3 假 PASS 根因 1 (工具可绕过 = 架构缺陷). 跟 Rule 29 联合, 跟 BE-7 修复模式 联合.
+**描述**: KALLAX 扩展组专家 — 治 3 形式通过实质失败 根因 1 (工具可绕过 = 架构缺陷). 跟 Rule 29,配合, 跟 BE-7 修复模式,配合.
 
-description: KALLAX 扩展组专家 — 治 3 假 PASS 根因 1 (工具可绕过 = 架构缺陷). 跟 Rule 29 联合, 跟 BE-7 修复模式 联合. triggerKeywords: [security, tool-bypass, 工具可绕过, 架构缺陷, 根因修复 1, EPIC-048, 独立审计, file-lock 漏洞] filePath: /path/to/kallax/.claude/skills/kallax/extended/security-tool-bypass.md --- # KALLAX Extended Expert — Security: 根因修复 1 (工具可绕过 = 架构缺陷) > **跟"召唤合适专家" 拍 explicit 约束 联合, 跟"现状、目标、需求" 拍 explicit 约束 联合, 跟"目标专家" 拍 explicit 约束 联合** ## 任务
+description: KALLAX 扩展组专家 — 治 3 形式通过实质失败 根因 1 (工具可绕过 = 架构缺陷). 跟 Rule 29,配合, 跟 BE-7 修复模式,配合. triggerKeywords: [security, tool-bypass, 工具可绕过, 架构缺陷, 根因修复 1, EPIC-048, 独立审计, file-lock 漏洞] filePath: /path/to/kallax/.claude/skills/kallax/extended/security-tool-bypass.md --- # KALLAX Extended Expert — Security: 根因修复 1 (工具可绕过 = 架构缺陷) > **跟"召唤合适专家" 拍 explicit 约束,配合, 跟"现状、目标、需求" 拍 explicit 约束,配合, 跟"目标专家" 拍 explicit 约束,配合** ## 任务
 
 ### 8. decision-gate-complex-only
 
 **角色**: decision-gate-complex-only
 **Skill 路径**: /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/.claude/skills/kallax/extended/decision-gate-complex-only.md
-**描述**: KALLAX 扩展组专家 — 治 3 假 PASS 根因 5 (ai-copilot 名不副实). 跟 Rule 33 联合, 跟"决策疲劳" 联合.
+**描述**: KALLAX 扩展组专家 — 治 3 形式通过实质失败 根因 5 (ai-copilot 名不副实). 跟 Rule 33,配合, 跟"决策疲劳",配合.
 
-description: KALLAX 扩展组专家 — 治 3 假 PASS 根因 5 (ai-copilot 名不副实). 跟 Rule 33 联合, 跟"决策疲劳" 联合. triggerKeywords: [decision-gate, complex-only, 复杂才问, ai-copilot, 根因修复 5, EPIC-052, 决策疲劳, decision-gate 复杂阶段] filePath: /path/to/kallax/.claude/skills/kallax/extended/decision-gate-complex-only.md --- # KALLAX Extended Expert — Decision Gate: 根因修复 5 (ai-copilot 名不副实) > **跟"召唤合适专家" 拍 explicit 约束 联合, 跟"现状、目标、需求" 拍 explicit 约束 联合** ## 任务
+description: KALLAX 扩展组专家 — 治 3 形式通过实质失败 根因 5 (ai-copilot 名不副实). 跟 Rule 33,配合, 跟"决策疲劳",配合. triggerKeywords: [decision-gate, complex-only, 复杂才问, ai-copilot, 根因修复 5, EPIC-052, 决策疲劳, decision-gate 复杂阶段] filePath: /path/to/kallax/.claude/skills/kallax/extended/decision-gate-complex-only.md --- # KALLAX Extended Expert — Decision Gate: 根因修复 5 (ai-copilot 名不副实) > **跟"召唤合适专家" 拍 explicit 约束,配合, 跟"现状、目标、需求" 拍 explicit 约束,配合** ## 任务
 
 ### 9. 🎨 前端
 

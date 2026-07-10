@@ -1,8 +1,8 @@
 # KALLAX 记忆分层 (Memory Layering) — L0-L4
 
-> **EPIC-059-H** (2026-06-18) | 跟 eket `confluence/memory/` 多级记忆 模式 联合, 跟 `~/.claude/knowledge/core/patterns/knowledge-system.md` L0-L4 分层架构 联合
-> **借方法论 不借代码** (跟 EPIC-059-A 9-hard-rules.md §1 联合) — 提取分层模式, 适配 KALLAX 实际目录结构
-> **0 增 Rule, 0 重写** (跟 Rule 5 DRY 联合, 加分层标记不删已有 26 files)
+> **EPIC-059-H** (2026-06-18) | 跟 eket `confluence/memory/` 多级记忆 模式,配合, 跟 `~/.claude/knowledge/core/patterns/knowledge-system.md` L0-L4 分层架构,配合
+> **借鉴方法论而非直接复制代码** (配合 EPIC-059-A 9-hard-rules.md §1,配合) — 提取分层模式, 适配 KALLAX 实际目录结构
+> **0 增 Rule, 0 重写** (跟 Rule 5 DRY,配合, 加分层标记不删已有 26 files)
 
 ---
 
@@ -18,7 +18,7 @@ KALLAX 知识库按 5 层分层, 每层有明确的存储位置、生命周期�
 | **L3** | 全局模式 (Global Patterns) | `confluence/memory/patterns/` | 长期 (跨项目) | 跨项目复用 | 2 files (`isolation-strategy.md` / `rust-node-bridge.md`) |
 | **L4** | 全局知识库 (Global Knowledge) | `confluence/memory/research/` | 长期 (跨项目) | 跨项目复用 | 2 files (`anti-hallucination.md` / `architecture-lessons-learned.md`) |
 
-**目录对应** (跟"借方法论 不借代码" 联合):
+**目录对应** (跟"借鉴方法论而非直接复制代码",配合):
 
 | Layer | eket 借鉴 | ~/.claude/knowledge 借鉴 | KALLAX 落地 |
 |---|---|---|---|
@@ -29,27 +29,27 @@ KALLAX 知识库按 5 层分层, 每层有明确的存储位置、生命周期�
 | L4 | global knowledge | `research/` | `confluence/memory/research/` (2 files) |
 
 **辅助层** (不属 L0-L4 主分层, 但相关):
-- `confluence/memory/solutions/` (2 files) — 跨项目 solution 库, 跟 L3 模式 联合
-- `confluence/memory/guides/` (1 file: `branch-strategy.md`) — 跨项目 guide 库, 跟 L3 模式 联合
-- `confluence/memory/glossary/terms.md` — 跨项目术语表, 跟 L4 知识库 联合
-- `confluence/memory/architecture-decisions.md` — 跨项目 ADR summary, 跟 L1/L2 联合
-- `confluence/memory/memory-index.md` — L0-L4 入口索引, 跟 L4 知识库 联合
+- `confluence/memory/solutions/` (2 files) — 跨项目 solution 库, 跟 L3 模式,配合
+- `confluence/memory/guides/` (1 file: `branch-strategy.md`) — 跨项目 guide 库, 跟 L3 模式,配合
+- `confluence/memory/glossary/terms.md` — 跨项目术语表, 跟 L4 知识库,配合
+- `confluence/memory/architecture-decisions.md` — 跨项目 ADR summary, 跟 L1/L2,配合
+- `confluence/memory/memory-index.md` — L0-L4 入口索引, 跟 L4 知识库,配合
 
 ---
 
 ## 2. 5 触发条件 (5 Trigger Conditions)
 
-每层升级有明确的触发条件 (跟"诚实修正" 联合, 不模糊):
+每层升级有明确的触发条件 (跟"诚实修正评估",配合, 不模糊):
 
 | 触发 # | 条件 | From → To | 典型场景 |
 |---|---|---|---|
 | **1** | 任务完成 (Performer 完工) | L0 → L1 | ticket claim → PR merge, session 状态写入 `confluence/decisions/` |
-| **2** | EPIC 完成 (闭环) | L1 → L2 | EPIC 所有 ticket 完工 → EPIC lessons-learned 写入 `confluence/memory/lessons/` |
+| **2** | EPIC 完成 (完整完成) | L1 → L2 | EPIC 所有 ticket 完工 → EPIC lessons-learned 写入 `confluence/memory/lessons/` |
 | **3** | 跨 release 累计 (复用 ≥ 3 次) | L2 → L3 | lessons 跨 ≥ 3 release 复用 → 升级为全局 pattern, 写入 `confluence/memory/patterns/` |
-| **4** | PHASE review (战略级闭环) | L3 → L4 | PHASE-XXX-REVIEW → patterns 升级为全局 knowledge, 写入 `confluence/memory/research/` |
+| **4** | PHASE review (战略级完整完成) | L3 → L4 | PHASE-XXX-REVIEW → patterns 升级为全局 knowledge, 写入 `confluence/memory/research/` |
 | **5** | 借鉴外部项目 (eket / industry) | L4 沉淀 | eket / industry 模式 → 落地 KALLAX 知识库, 写入 L1-L4 适配层 |
 
-**触发判据** (跟"反讽" 从根源修复 联合, 不模糊):
+**触发判据** (跟"同类症状" 从根源修复,配合, 不模糊):
 - 触发 1: `kallax task:merge` 成功 → 写入 `state.json` L0 状态 → 沉淀到 `confluence/decisions/<ticket>.md`
 - 触发 2: EPIC 状态 = `closed` + 全部 ticket 完工 → 写 `confluence/memory/lessons/epic-{ID}-{date}.md`
 - 触发 3: 同一 lessons 跨 ≥ 3 release 引用 → 评估升级, 写 `confluence/memory/patterns/{pattern-name}.md`
@@ -75,7 +75,7 @@ kallax task:merge TASK-001
 ### Path 2: L1 → L2 (EPIC 完工 → 项目知识)
 
 ```bash
-# 触发: EPIC 闭环
+# 触发: EPIC 完整完成
 EPIC_ID=EPIC-031
 test -f "confluence/memory/lessons/epic-${EPIC_ID,,}-$(date +%Y-%m-%d).md"
 ```
@@ -111,26 +111,26 @@ bash scripts/eket-lessons-import.sh  # 已存在
 
 ---
 
-## 4. 反模式 / 边界 (跟"反讽" + "诚实修正" 联合)
+## 4. 反模式 / 边界 (跟"同类症状" + "诚实修正评估",配合)
 
 ### ❌ 反模式 1: 跨层写入 (skip layer)
 
 - 模式: 直接写 L4 跳过 L1-L3 → **L0→L4 跨级 = 失序**
-- 从根源修复: 强制 L0→L1→L2→L3→L4 顺序, 跳级需 Master 拍板 (跟 PROCESS.md:25-26 联合)
+- 从根源修复: 强制 L0→L1→L2→L3→L4 顺序, 跳级需 Master 拍板 (跟 PROCESS.md:25-26,配合)
 
 ### ❌ 反模式 2: 倒序沉淀 (reverse promotion)
 
-- 模式: L4 → L3 倒序写 → **降级 = 反讽**
+- 模式: L4 → L3 倒序写 → **降级 = 同类症状**
 - 从根源修复: scripts/memory-promote.sh 拒绝逆向 transition, exit 1
 
 ### ❌ 反模式 3: L0 长期累积 (cache bloating)
 
-- 模式: `.kallax/state/` 累积 > 1GB → **L0 失活 = 反讽**
-- 从根源修复: L0 TTL = session 级别, session 退出清理 (跟 LRU 模式 联合)
+- 模式: `.kallax/state/` 累积 > 1GB → **L0 失活 = 同类症状**
+- 从根源修复: L0 TTL = session 级别, session 退出清理 (跟 LRU 模式,配合)
 
 ### ❌ 反模式 4: L4 假沉淀 (fake global)
 
-- 模式: 写 `confluence/memory/research/` 但缺跨 release 引用 → **空 L4 = 反讽**
+- 模式: 写 `confluence/memory/research/` 但缺跨 release 引用 → **空 L4 = 同类症状**
 - 从根源修复: research 文档必含 ≥ 3 PHASE 引用, 否则不算 L4
 
 ### ❌ 反模式 5: 分层标记 跟 实际 失配 (label drift)
@@ -140,7 +140,7 @@ bash scripts/eket-lessons-import.sh  # 已存在
 
 ---
 
-## 5. 自动化工具 (跟"借方法论 不借代码" 联合)
+## 5. 自动化工具 (跟"借鉴方法论而非直接复制代码",配合)
 
 **新增**: `scripts/memory-promote.sh` (跟 26 .sh wrapper 模式 一致)
 
@@ -152,7 +152,7 @@ bash scripts/eket-lessons-import.sh  # 已存在
 **测试**: `tests/integration/memory-l0-l4-test.sh` — 5 mock 场景, 5/5 PASS
 
 **Rule 引用**: Rule 5 (DRY) + Rule 6 (经验沉淀) + Rule 11 (Master 6 维) + Rule 18 (KPI Falsification 黑名单) — [CLAUDE.md](../../CLAUDE.md)
-**联合**: 跟 KALLAX-GLOSSARY §12.4 (EPIC-059-H 新增) 联合, 跟 eket `confluence/memory/` 模式 + `~/.claude/knowledge` L0-L4 架构 联合.
+**联合**: 跟 KALLAX-GLOSSARY §12.4 (EPIC-059-H 新增),配合, 跟 eket `confluence/memory/` 模式 + `~/.claude/knowledge` L0-L4 架构,配合.
 
 ---
 

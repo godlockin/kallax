@@ -11,8 +11,8 @@
 > 长期生效的架构决策, 跨 EPIC 不变.
 
 - [ADR-001: Three-Tier Degradation (Redis → SQLite → Filesystem)](../docs/adr/ADR-001-degradation-strategy.md) — Accepted 2026-01
-- **ADR-002: Conductor-Performer over Master-Slaver** (跟 v2.0.0 一致, file:line docs/architecture/THREE_REPO_ARCHITECTURE.md) — Accepted 2026-01 (跟 ADR-001 同源, 共享 文档)
-- **ADR-003: Saga Compensation over Simple Rollback** (跟 v2.0.0 一致, file:line node/src/core/saga-executor.ts) — Accepted 2026-01 (跟 ADR-001 同源, 共享 文档)
+- **ADR-002: Conductor-Performer over Master-Slaver** (配合 v2.0.0 一致, file:line docs/architecture/THREE_REPO_ARCHITECTURE.md) — Accepted 2026-01 (跟 ADR-001 同源, 共享 文档)
+- **ADR-003: Saga Compensation over Simple Rollback** (配合 v2.0.0 一致, file:line node/src/core/saga-executor.ts) — Accepted 2026-01 (跟 ADR-001 同源, 共享 文档)
 
 ---
 
@@ -70,22 +70,22 @@ EPIC-022 ticket 结构 (待建)
 
 ## 4. Workflow 规则 (CLAUDE.md Rule 6+7 配套)
 
-> 经验沉淀强制化, EPIC 交付 + PHASE 闭环 review 机制.
+> 经验沉淀强制化, EPIC 交付 + PHASE 完整完成 review 机制.
 
 - [WORKFLOW-RULES-2026-06-07.md](./WORKFLOW-RULES-2026-06-07.md) — 详细 workflow + 3 模板说明 + 触发节奏
 - [EPIC-LESSONS-LEARNED-TEMPLATE.md](../templates/EPIC-LESSONS-LEARNED-TEMPLATE.md) — EPIC 经验教训模板
-- [PHASE-REVIEW-TEMPLATE.md](../templates/PHASE-REVIEW-TEMPLATE.md) — PHASE 闭环 review 模板
+- [PHASE-REVIEW-TEMPLATE.md](../templates/PHASE-REVIEW-TEMPLATE.md) — PHASE 完整完成 review 模板
 - [AB-REVIEW-TEMPLATE.md](../templates/AB-REVIEW-TEMPLATE.md) — A+B 2-Group review 记录模板
 
 **CLAUDE.md 配套规则** (在 `/CLAUDE.md`):
 - Rule 6: EPIC 交付三件套 (A+B review + 文档更新 + 经验总结)
-- Rule 7: PHASE 闭环 review (4-Group 升级, 主公审批)
+- Rule 7: PHASE 完整完成 review (4-Group 升级, 决策者审批)
 
 ---
 
 ## 5. 实施复盘 (Postmortem)
 
-> EPIC 完成后 24h 内的复盘, 跟 EPIC 实施 commit 同一 PR.
+> EPIC 完成后 24h 内的复盘, 配合 EPIC 实施 commit 同一 PR.
 
 - [EPIC-016-POSTMORTEM-2026-06-07.md](./EPIC-016-POSTMORTEM-2026-06-07.md) — Init 性能 19 ticket 复盘, 7 lessons learned
 - [REVIEW-016-postresult-hang.md](./REVIEW-016-postresult-hang.md) — Q ticket 深度调研 (post-result hang)
@@ -98,7 +98,7 @@ EPIC-022 ticket 结构 (待建)
 > 未实施但已规划的扩展.
 
 - [EXPERT-EXTENSION-SCHEME-2026-06-07.md](./EXPERT-EXTENSION-SCHEME-2026-06-07.md) — Expert 体系扩展 (新增 expert 类型流程)
-- (待建) [PHASE-002-REVIEW-2026MMDD.md](./) — Phase 002 闭环 review (3rd EPIC 后触发)
+- (待建) [PHASE-002-REVIEW-2026MMDD.md](./) — Phase 002 完整完成 review (3rd EPIC 后触发)
 
 ---
 
@@ -118,10 +118,10 @@ EPIC-022 ticket 结构 (待建)
 | 模板 | 状态 | 用途 |
 |---|---|---|
 | EPIC-LESSONS-LEARNED-TEMPLATE.md | ✅ v1 | EPIC 经验教训 (8 节) |
-| PHASE-REVIEW-TEMPLATE.md | ✅ v1 | PHASE 闭环 review (4-Group) |
+| PHASE-REVIEW-TEMPLATE.md | ✅ v1 | PHASE 完整完成 review (4-Group) |
 | AB-REVIEW-TEMPLATE.md | ✅ v1 | A+B 2-Group review 记录 |
 
-### 7.3 Phase 002 review 候选升级项 (待主公审批)
+### 7.3 Phase 002 review 候选升级项 (待决策者审批)
 
 来自 EPIC-021 LESSONS-LEARNED §8.3:
 - **UP-1**: Rule 8 "L4 脚本必须存在, 否则 ticket 不 close"

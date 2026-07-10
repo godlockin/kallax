@@ -2,7 +2,7 @@
 
 > **K**nowledge-**A**ugmented **L**everaged **L**earning **A**gent e**X**ecutor
 >
-> v3.6.0 (跟 v3.7.0 准备) | 生产级多智能体协作框架 | 6 武器 + 4 根本 价值 + 5 immutable scripts + 集成测试 25/25 PASS
+> v3.6.0 (配合 v3.7.0 准备) | 生产级多智能体协作框架 | 6 武器 + 4 根本 价值 + 5 immutable scripts + 集成测试 25/25 PASS
 >
 > **对照验证**: `bash scripts/permission/decision-matrix.sh --self-test` (25/25 PASS) + `bash tests/integration/6-weapons-e2e-test.sh` (6/6 PASS)
 
@@ -21,13 +21,13 @@ KALLAX 解决 6 个 eket 跟历史项目 未覆盖的反模式, 形成 6 武器 
 | 武器 | 从根源修复反模式 | KALLAX 实施 | eket 状态 |
 |------|-----------|-------------|----------|
 | **W1** Hash-Chain Audit Log | SEC-002 (audit log 无 hash chain) | SHA256 chain + `audit:verify` CLI | 无 |
-| **W2** 5-Level Fact-Forcing | 4-Level/6 维度重叠 (跟 Rule 8 联合) | L1-L5 5 独立脚本 (`scripts/verify/level-{1..5}.sh`) | 名字 only |
+| **W2** 5-Level Fact-Forcing | 4-Level/6 维度重叠 (跟 Rule 8,配合) | L1-L5 5 独立脚本 (`scripts/verify/level-{1..5}.sh`) | 名字 only |
 | **W3** Sub-Role Dispatch | Performer 产能 Gap 40% | 4 sub-roles (coder/reviewer/tester/docs) | 无 (单 role) |
 | **W4** EPIC 4 件套 | PROD-001 (EPIC 交付缺失) | A+B review + readme + lessons + signoff | 无 |
 | **W5** Hook Server 回放 + Audit | 多 AI 工具协同缺口 | `/hooks/replay` + `/hooks/audit` endpoints | 无 |
 | **W6** Web Dashboard | FE-001 XSS | 1 page ≤ 500 LOC (textContent + escape) | 无 |
 
-**6 武器 对照验证** (跟 README §"6 武器 对照验证" 联合):
+**6 武器 对照验证** (跟 README §"6 武器 对照验证",配合):
 
 | 武器 | 实施位置 | 验证命令 |
 |------|---------|----------|
@@ -79,7 +79,7 @@ KALLAX 解决 6 个 eket 跟历史项目 未覆盖的反模式, 形成 6 武器 
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### 3.2 5 levels (跟 `docs/5-levels.md` 联合)
+### 3.2 5 levels (跟 `docs/5-levels.md`,配合)
 
 | Level | 名称 | 验证 | 命令 | 反模式 |
 |-------|------|------|------|--------|
@@ -91,7 +91,7 @@ KALLAX 解决 6 个 eket 跟历史项目 未覆盖的反模式, 形成 6 武器 
 
 **实施**: `bash scripts/verify/level-{1..5}.sh TICKET-XXX` + `kallax verify all TICKET-XXX`
 
-### 3.3 4 roles + 4 sub-roles (跟 `docs/4-roles.md` 联合)
+### 3.3 4 roles + 4 sub-roles (跟 `docs/4-roles.md`,配合)
 
 **2 主角色** + **4 sub-roles** (1+4 容量):
 
@@ -102,13 +102,13 @@ KALLAX 解决 6 个 eket 跟历史项目 未覆盖的反模式, 形成 6 武器 
   - **tester**: 写测试 + raw stdout (Rule 9 anti-fab + L2/L4 强制 stdout)
   - **docs**: 写 .md + cheatsheet 对照验证 (Rule 5 DRY + Rule 19 标签 SOP)
 
-### 3.4 Q18 决策模型 (跟 `docs/process/q18-decision-model.md` 联合)
+### 3.4 Q18 决策模型 (跟 `docs/process/q18-decision-model.md`,配合)
 
-**25 cells** = 5 levels × 4 roles (Conductor + Performer×3, 实际是 5 roles 但 docs 合并 Conductor + Performer 成 4 行主表): 自主 12 + 推荐 8 + **主公拍 5** (L4 全部 4 sub-roles + L4 Conductor 跨 subagent 独立).
+**25 cells** = 5 levels × 4 roles (Conductor + Performer×3, 实际是 5 roles 但 docs 合并 Conductor + Performer 成 4 行主表): 自主 12 + 推荐 8 + **决策者拍 5** (L4 全部 4 sub-roles + L4 Conductor 跨 subagent 独立).
 
-**3 模式 × 4 维度** (跟 Rule 12 联合):
-- `ai-auto` (AI 自主) / `ai-copilot` (默认) / `manual` (主公确认每阶段)
-- Block 5 类 + Danger 3 类: 3 模式都停下问主公 (不可 AI 自主决定)
+**3 模式 × 4 维度** (跟 Rule 12,配合):
+- `ai-auto` (AI 自主) / `ai-copilot` (默认) / `manual` (决策者确认每阶段)
+- Block 5 类 + Danger 3 类: 3 模式都停下问决策者 (不可 AI 自主决定)
 
 ---
 
@@ -128,7 +128,7 @@ KALLAX 解决 6 个 eket 跟历史项目 未覆盖的反模式, 形成 6 武器 
 | **Audit** | Hash-Chain SHA256 | 无 | KALLAX 独有 |
 | **Dashboard** | 1 page ≤ 500 LOC (XSS 从根源修复) | 无 | KALLAX 独有 |
 
-**Q11 实施总结**: 6 武器 KALLAX 胜 (W1-W6 全部 KALLAX 独有), eket 借 multi-agent 概念, 跟 eket MASTER-RULES.md §6 联合 ("借方法论 不借代码").
+**Q11 实施总结**: 6 武器 KALLAX 胜 (W1-W6 全部 KALLAX 独有), eket 借 multi-agent 概念, 跟 eket MASTER-RULES.md §6,配合 ("借鉴方法论而非直接复制代码").
 
 ---
 
@@ -164,7 +164,7 @@ kallax audit:verify  # exit 0 = chain intact, exit 1 = broken
 
 ### W3: Sub-Role Dispatch
 
-**目的**: Performer 产能 Gap 40% (跟主公 Q4 报告 联合)
+**目的**: Performer 产能 Gap 40% (跟决策者 Q4 报告,配合)
 
 **实施**:
 ```bash
@@ -184,7 +184,7 @@ bash scripts/conductor/dispatch.sh --sub-role=coder TICKET-001 accept
 
 **目的**: 反 EPIC 交付缺失 (PROD-001)
 
-**4 件套**: A+B review + README + LESSONS-LEARNED + signoff (跟 `docs/process/fact-forcing.md` §"EPIC 4 件套" 联合)
+**4 件套**: A+B review + README + LESSONS-LEARNED + signoff (跟 `docs/process/fact-forcing.md` §"EPIC 4 件套",配合)
 
 **实施**: `scripts/verify/check-epic-4-piece.sh` + `kallax epic:close EPIC-XXX` (强制 4 件套通过才能 close).
 
@@ -196,8 +196,8 @@ bash scripts/conductor/dispatch.sh --sub-role=coder TICKET-001 accept
 
 **实施**:
 - `node/src/hooks/hook-events-store.ts`: 持久化 hook events
-- `POST /hooks/replay`: 重放历史 events (跟 Conductor 决策 联合)
-- `GET /hooks/audit`: 审计 trail (跟 W1 联合)
+- `POST /hooks/replay`: 重放历史 events (跟 Conductor 决策,配合)
+- `GET /hooks/audit`: 审计 trail (跟 W1,配合)
 
 **跟 eket 对比**: eket 单 AI 工具, KALLAX W5 多 AI 工具集成.
 
@@ -211,9 +211,9 @@ bash scripts/conductor/dispatch.sh --sub-role=coder TICKET-001 accept
 
 ---
 
-## 6. 5 levels 验证 (跟 README §"5 Levels 验证" 联合)
+## 6. 5 levels 验证 (跟 README §"5 Levels 验证",配合)
 
-**实施位置**: `scripts/verify/level-{1..5}.sh` (5 独立脚本, 跟 W2 联合)
+**实施位置**: `scripts/verify/level-{1..5}.sh` (5 独立脚本, 跟 W2,配合)
 
 **L1 (存在性)**: `git log --oneline -1` 看 HEAD SHA + `git diff HEAD~1 --stat` 看变更文件 ≥ 1.
 **L2 (实质性)**: `cargo test --all --no-fail-fast 2>&1 | tee /tmp/stdout.log` + grep `test result:` 行.
@@ -225,7 +225,7 @@ bash scripts/conductor/dispatch.sh --sub-role=coder TICKET-001 accept
 
 ---
 
-## 7. 4 roles + 4 sub-roles (跟 README §"4 Roles" + `docs/4-roles.md` 联合)
+## 7. 4 roles + 4 sub-roles (跟 README §"4 Roles" + `docs/4-roles.md`,配合)
 
 **2 主角色**:
 - **Conductor**: 分析/拆解/审核/合并/发布, 写代码 ❌ (Rule 13 红线)
@@ -258,19 +258,19 @@ bash scripts/conductor/dispatch.sh --sub-role=coder TICKET-001 accept
 
 - **自主** (12 cells): AI 自主决定, Performer self-attest
 - **推荐** (8 cells): Conductor 派 expert 评审, AI 跟
-- **主公拍** (5 cells): 不可 AI 自主, 必须主公拍 (L4 全部 4 Performer sub-roles + L4 Conductor)
+- **决策者拍** (5 cells): 不可 AI 自主, 必须决策者拍 (L4 全部 4 Performer sub-roles + L4 Conductor)
 
 ### 8.2 决策矩阵 (5×4 = 20 cells in master table, 实际 25 cells 跨 5 roles)
 
 | Role \ Level | L1 git | L2 stdout | L3 4-expert | L4 independent | L5 boundary |
 |--------------|--------|-----------|-------------|----------------|-------------|
-| **Conductor** | 自主 | 自主 | 推荐 | **主公拍** | 推荐 |
-| **Performer/coder** | 自主 | 自主 | 推荐 | **主公拍** | 推荐 |
-| **Performer/reviewer** | 自主 | 自主 | 自主 | **主公拍** | 推荐 |
-| **Performer/tester** | 自主 | 自主 | 自主 | **主公拍** | 推荐 |
-| **Performer/docs** | 自主 | 自主 | 推荐 | **主公拍** | 推荐 |
+| **Conductor** | 自主 | 自主 | 推荐 | **决策者拍** | 推荐 |
+| **Performer/coder** | 自主 | 自主 | 推荐 | **决策者拍** | 推荐 |
+| **Performer/reviewer** | 自主 | 自主 | 自主 | **决策者拍** | 推荐 |
+| **Performer/tester** | 自主 | 自主 | 自主 | **决策者拍** | 推荐 |
+| **Performer/docs** | 自主 | 自主 | 推荐 | **决策者拍** | 推荐 |
 
-### 8.3 Block (5 类) + Danger (3 类) — 全部停下问主公
+### 8.3 Block (5 类) + Danger (3 类) — 全部停下问决策者
 
 **5 类 Block** (3 模式都触发):
 1. `block.ambiguous_options` — 多选项无最优 (AC 模糊 / 选型争议)
@@ -284,19 +284,19 @@ bash scripts/conductor/dispatch.sh --sub-role=coder TICKET-001 accept
 2. `danger.security_failing` — pre-commit FAIL / 凭据变动 / XSS
 3. `danger.data_destruction` — rm -rf / reset --hard / push --force / db drop
 
-### 8.4 3 模式 (跟 Rule 12 联合)
+### 8.4 3 模式 (跟 Rule 12,配合)
 
 | 模式 | 行为 | 触发 |
 |------|------|------|
 | `ai-auto` | AI 全自主, block/danger 停下问 | AI 高信任 |
 | `ai-copilot` (默认) | 简单自主 + 复杂协商 | 普通场景 |
-| `manual` | 主公确认每阶段 | 高风险 / 监管场景 |
+| `manual` | 决策者确认每阶段 | 高风险 / 监管场景 |
 
 ---
 
-## 9. 3 层降级架构 (跟 `docs/architecture/degradation-strategy.md` 联合)
+## 9. 3 层降级架构 (跟 `docs/architecture/degradation-strategy.md`,配合)
 
-**3 层降级** (跟 README §"三级降级架构" 联合):
+**3 层降级** (跟 README §"三级降级架构",配合):
 
 | Level | 实施 | 启动时间 | 能力 | Fallback 触发 |
 |-------|------|----------|------|---------------|
@@ -304,13 +304,13 @@ bash scripts/conductor/dispatch.sh --sub-role=coder TICKET-001 accept
 | **L2 Node.js** | 0.16+ | ~400ms | Web Dashboard / Hook Events Store / 5-Level Scripts / Decision Matrix / Sub-Role Dispatcher / EPIC 4-Piece | node_not_found / npm_modules_missing / startup_timeout 10s / crash × 5 |
 | **L3 Shell** | bash + git | ~50ms | 心跳检查 / 文件队列 / git commit+push / ticket 状态读取 | (无 fallback, 不可降级) |
 
-**显式降级日志** (跟 `degradation-strategy.md` §"KALLAX 改进" 联合): `logger.warn({event: 'degradation_triggered', from, to, reason, timestamp})` + `metrics.increment('kallax.degradation', {from, to})`.
+**显式降级日志** (跟 `degradation-strategy.md` §"KALLAX 改进",配合): `logger.warn({event: 'degradation_triggered', from, to, reason, timestamp})` + `metrics.increment('kallax.degradation', {from, to})`.
 
 ---
 
 ## 10. 冷启动路径 (CLAUDE.md 3.3KB + lazy load docs)
 
-**CLAUDE.md** (3.3KB, 16.4x 缩减 跟 v2.7.6 联合) — cold start 入口, 必读.
+**CLAUDE.md** (3.3KB, 16.4x 缩减 配合 v2.7.6,配合) — cold start 入口, 必读.
 
 **Lazy load docs** (按需打开, 不在 CLAUDE.md 必读):
 
@@ -334,7 +334,7 @@ kallax status (运行时)
 
 ## 11. 集成测试路径 (6 武器 端到端 + decision-matrix 25 cells)
 
-**对照验证** (跟 README §"集成测试 25/25 PASS" 联合):
+**对照验证** (跟 README §"集成测试 25/25 PASS",配合):
 
 ```bash
 # 6 武器 端到端 (跟 W1-W6 1:1)
@@ -362,7 +362,7 @@ bash tests/integration/epic-4-piece-test.sh
 # → PASS (A+B review + readme + lessons + signoff)
 ```
 
-**KPI 累计** (跟 README §"KPI" 联合):
+**KPI 累计** (跟 README §"KPI",配合):
 
 | 指标 | v2.7.6 | v3.0.0 | 变化 |
 |------|--------|--------|------|
@@ -377,13 +377,13 @@ bash tests/integration/epic-4-piece-test.sh
 
 ---
 
-## 13. eket ioredis 实战 (跟 v3.5.0 实战 配合, v3.7.0 L2 cache +1)
+## 13. eket ioredis 实战 (配合 v3.5.0 实战 配合, v3.7.0 L2 cache +1)
 
 **v3.5.0 实战 evidence 落地** (`docs/evidence/v3.5.0/ioredis-parity-check.md`):
 
-- ioredis version `^5.4.0` 跟 eket 0.5+ 兼容 (跟 eket 配合, 跟"诚实修正" 联合 0 假装)
+- ioredis version `^5.4.0` 跟 eket 0.5+ 兼容 (跟 eket 配合, 跟"诚实修正评估",0 假装)
 - 跟 eket 分布式锁 (SETNX) + 分布式队列 (Pub/Sub) 对照验证
-- 跟 v3.0.0 master-election.ts 三级选举 (Redis SETNX + SQLite + File) 对照验证
+- 配合 v3.0.0 master-election.ts 三级选举 (Redis SETNX + SQLite + File) 对照验证
 
 **v3.7.0 L2 cache 实战 evidence 落地** (`docs/evidence/v3.7.0/l2-cache-parity-check.md`):
 
@@ -393,21 +393,21 @@ bash tests/integration/epic-4-piece-test.sh
 
 ---
 
-## 14. 文化 + 法律 配合 (跟 v3.6.0 配合, 跟 Q12 战略 + 假 PASS 症状复发 从根源修复)
+## 14. 文化 + 法律 配合 (配合 v3.6.0 配合, 跟 Q12 战略 + 形式通过实质失败症状再次出现 从根源修复)
 
-**文化** (跟 V350-B P-001 配合 从根源修复 "装饰反讽"):
-- 0 装饰 引用 (跟 V350-B P-001 配合 从根源修复)
+**文化** (跟 V350-B P-001 配合 从根源修复 "装饰同类症状"):
+- 0 装饰性引用 (跟 V350-B P-001 配合 从根源修复)
 - 0 估数 (跟 V350-B P-005 配合 从根源修复 "1.5-2x / 100% parity")
 - 0 narrative 包装 (跟 V350-B P-002 配合 从根源修复)
-- 0 反讽 fake theatre (跟 V350-B P-002 配合, v3.7.0 +1 immutable script)
+- 0 同类症状 fake theatre (跟 V350-B P-002 配合, v3.7.0 +1 immutable script)
 
 **价值观** (跟 CLAUDE.md §3 配合, 跟 Q12 战略 配合):
-- 小步迭代 + 彻底完成 (假 PASS 症状复发 从根源修复)
-- 诚实修正 (1.5-2x → 0.92x, 100% parity → 30%)
+- 小步迭代 + 彻底完成 (形式通过实质失败症状再次出现 从根源修复)
+- 诚实修正评估 (1.5-2x → 0.92x, 100% parity → 30%)
 - 复用同类症状,从根源修复 从根源修复 (5 release 累计 → v3.7.0 6 release 累计)
 
 **不可更改法律** (immutable scripts, v3.6.0 4 → v3.7.0 5):
-1. `check-decorative-claim.sh` (0 装饰 引用)
+1. `check-decorative-claim.sh` (0 装饰性引用)
 2. `check-narrative.sh` (0 narrative 包装)
 3. `check-fail-closed.sh` (0 fail-open)
 4. `check-self-heal.sh` (self-heal pattern)
@@ -437,7 +437,7 @@ bash tests/integration/epic-4-piece-test.sh
 | `docs/architecture/degradation-strategy.md` | 引用 | §9 (3 层降级) |
 | `docs/architecture/agent-protocol.md` | 引用 | §7 (4 roles) |
 | `docs/architecture/dag-scheduler.md` | 引用 | §3.1 (顶层架构图, W3 sub-role) |
-| `docs/architecture/election-system.md` | 引用 | (Iter 3 整合, 主公拍板) |
+| `docs/architecture/election-system.md` | 引用 | (Iter 3 整合, 决策者拍板) |
 | `docs/architecture/heartbeat-observability.md` | 引用 | §8 (Q18 决策模型 + heartbeat) |
 | `docs/architecture/hook-pipeline.md` | 引用 | §5 (W5 Hook Server) |
 | `docs/architecture/isolation-strategy.md` | 引用 | §7 (worktree 隔离, Iter 1) |

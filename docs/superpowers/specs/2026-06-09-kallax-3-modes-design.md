@@ -1,19 +1,19 @@
 # KALLAX 3 模式决策权分配设计
 
 > **日期**: 2026-06-09
-> **作者**: master (主公 2026-06-09 拍板)
+> **作者**: master (决策者 2026-06-09 拍板)
 > **状态**: Approved — 待 writing-plans
-> **关联**: EKET `interactive:start` 借鉴 (UX §5.1 + 主公原话)
+> **关联**: EKET `interactive:start` 借鉴 (UX §5.1 + 决策者原话)
 
 ---
 
 ## 1. 背景与目标
 
-主公 2026-06-09 原话: **"任务 Drive 的时候分 ai-auto (由 ai 做绝大部分决策, 只在 block 决策、危险操作的时候询问我)、ai-copilot (简单任务由 ai 决策, 复杂的任务和我协商决策)、manual (大部分场景 ai 提案+执行, 我来确认每一步要不要做)"**
+决策者 2026-06-09 原话: **"任务 Drive 的时候分 ai-auto (由 ai 做绝大部分决策, 只在 block 决策、危险操作的时候询问我)、ai-copilot (简单任务由 ai 决策, 复杂的任务和我协商决策)、manual (大部分场景 ai 提案+执行, 我来确认每一步要不要做)"**
 
 **目标**: 把 Conductor + Performer 的"决策权分配"显式建模为 3 个 session-level 模式, 解决:
-- 日常开发主公想"放手让 AI 干"
-- 高风险操作主公想"每步确认"
+- 日常开发决策者想"放手让 AI 干"
+- 高风险操作决策者想"每步确认"
 - 中间状态用"协商"模式
 
 ---
@@ -23,8 +23,8 @@
 | 模式 | 决策权分配 | 触发场景 | 启用频率 |
 |---|---|---|---|
 | **ai-auto** | AI 决策所有事, 仅"block 决策 + 危险操作"停下问 | 任务明确 / 低风险 / 批量 | 低 (跑 Sprint 3 之类) |
-| **ai-copilot** | AI 决策"简单"阶段, 跟主公协商"复杂"阶段 | 默认模式, 日常开发 | 高 (主公多数场景) |
-| **manual** | AI 提案 + 执行, 主公确认**每阶段** | 高风险 / 新领域 / 学习 | 中 (新 EPIC 设计) |
+| **ai-copilot** | AI 决策"简单"阶段, 跟决策者协商"复杂"阶段 | 默认模式, 日常开发 | 高 (决策者多数场景) |
+| **manual** | AI 提案 + 执行, 决策者确认**每阶段** | 高风险 / 新领域 / 学习 | 中 (新 EPIC 设计) |
 
 ---
 
@@ -35,7 +35,7 @@
 | **Block 决策** | 停下问 | 停下问 | 停下问 |
 | **危险操作** | 停下问 (3 类) | 停下问 (3 类) | 停下问 (3 类) |
 | **Performer 失败/超时** | 停下问 (重试/换人/接管) | 停下问 | 停下问 |
-| **Performer 5 阶段切换** | AI 自主 | AI 决策"简单"阶段, 协商"复杂"阶段 | **主公确认每阶段** |
+| **Performer 5 阶段切换** | AI 自主 | AI 决策"简单"阶段, 协商"复杂"阶段 | **决策者确认每阶段** |
 
 ---
 
@@ -43,9 +43,9 @@
 
 1. **多个选项无明显最优** (AC 模糊/选型争议/多种实现路径, TrustScore 无法选)
 2. **Performer 失败/超时** (API error/3 次 retry fail/30min 超时)
-3. **规则冲突/Exception 请求** (跟 Rule 1-12 冲突需主公拍)
+3. **规则冲突/Exception 请求** (跟 Rule 1-12 冲突需决策者拍)
 4. **EPIC 交付关键节点** (PHASE review/Rule 升级/EPIC close)
-5. **可能有重大影响/风险** (主公原话新增, 兜底类)
+5. **可能有重大影响/风险** (决策者原话新增, 兜底类)
 
 ---
 
@@ -53,7 +53,7 @@
 
 | # | 危险操作 | 来源 |
 |---|---|---|
-| 1 | 修改 miao 分支 (commit/push/merge) | Rule 1 + 主公 2026-06-09 |
+| 1 | 修改 miao 分支 (commit/push/merge) | Rule 1 + 决策者 2026-06-09 |
 | 2 | 安全相关 (pre-commit FAIL/anti-fab FAIL/5 levels FAIL/凭据变动) | Rule 9/10 |
 | 3 | 删除/恢复数据 (rm -rf/reset --hard/push --force/worktree drop/db drop) | 通用红线 |
 
@@ -105,7 +105,7 @@
 
 | 改动 | 位置 | 借鉴 |
 |---|---|---|
-| session_start.sh 加 MODE 选择 | `.kallax/hooks/session_start.sh` | UX §5.1 interactive:start + 主公 3 模式 |
+| session_start.sh 加 MODE 选择 | `.kallax/hooks/session_start.sh` | UX §5.1 interactive:start + 决策者 3 模式 |
 | state.json 加 `mode` + `mode_lock` 字段 | `.kallax/state/state.json` schema | EPIC-021 §3.1 (state 字段) |
 | 5 阶段 AI-copilot 协商检查 | `scripts/performer/stage-gate.sh` (新) | Performer §2.2 5 阶段 |
 | 危险操作 / Block 决策统一检查 | `scripts/permission/decision-gate.sh` (新) | Conductor §5.3 waiting-for-expert + Security §4 |
@@ -127,9 +127,9 @@
     │
     ├─→ 普通操作 ──→ AI 自主
     │
-    ├─→ Block 决策 (5 类) ──→ decision-gate.sh ──→ 停下问主公
+    ├─→ Block 决策 (5 类) ──→ decision-gate.sh ──→ 停下问决策者
     │
-    ├─→ 危险操作 (3 类) ──→ decision-gate.sh ──→ 停下问主公
+    ├─→ 危险操作 (3 类) ──→ decision-gate.sh ──→ 停下问决策者
     │
     └─→ Performer 5 阶段切换
          │
@@ -138,8 +138,8 @@
          └─→ analysis / test / review (复杂) ──→ 模式分流
               │
               ├─→ ai-auto ──→ AI 自主
-              ├─→ ai-copilot ──→ 停下问主公
-              └─→ manual ──→ 停下问主公
+              ├─→ ai-copilot ──→ 停下问决策者
+              └─→ manual ──→ 停下问决策者
 ```
 
 ---
@@ -149,7 +149,7 @@
 | 风险 | 概率 | 影响 | 缓解 |
 |---|---|---|---|
 | ai-auto 模式 "危险操作" 漏判 | 中 | HIGH | pre-commit hook 加 `decision-gate.sh` 调用, 强制询问 |
-| manual 模式主公疲劳 | 高 | 中 | 每阶段提示包含 1 句 TL;DR, 主公可 `approve all` |
+| manual 模式决策者疲劳 | 高 | 中 | 每阶段提示包含 1 句 TL;DR, 决策者可 `approve all` |
 | mode 状态被多 session 改冲突 | 中 | 中 | mode_lock 文件, session 启动时检测冲突 |
 | Performer 5 阶段"复杂"判定不一致 | 中 | 中 | stage-gate.sh 维护判定规则版本, 跟 KALLAX 升级一起发版 |
 | Block 决策被 AI 自决 | 中 | HIGH | decision-gate.sh 维护 block 决策 whitelist, 强制 exit 1 |
@@ -193,9 +193,9 @@
 
 ## 13. 下一步
 
-主公拍板"同意, 开干" → 下一步是 **writing-plans skill 写实施计划** → 派 Performer 拆 ticket 开干 (跟 EPIC-029 EKET 借鉴合并落地, 3 模式作为 P0 优先级)。
+决策者拍板"同意, 开干" → 下一步是 **writing-plans skill 写实施计划** → 派 Performer 拆 ticket 开干 (配合 EPIC-029 EKET 借鉴合并落地, 3 模式作为 P0 优先级)。
 
 ---
 
-**维护者**: master (主公拍板 2026-06-09)
+**维护者**: master (决策者拍板 2026-06-09)
 **下次 review**: 落地完成后 PHASE review

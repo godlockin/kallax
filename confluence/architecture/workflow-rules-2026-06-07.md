@@ -1,11 +1,11 @@
-# KALLAX 工作流规则 — EPIC 三件套 + PHASE 闭环 review
+# KALLAX 工作流规则 — EPIC 三件套 + PHASE 完整完成 review
 
 **Created**: 2026-06-07
-**Status**: ✅ ACTIVE — 跟 EPIC-021 同步实施
+**Status**: ✅ ACTIVE — 配合 EPIC-021 同步实施
 **Author**: master_main
 **Purpose**: 沉淀 EPIC 交付经验教训, 防止知识黑洞; PHASE 升级防止经验只沉淀不演进.
 
-**用户决策 (2026-06-07)**: 接受"EPIC 三件套 + PHASE 闭环 review"作为 KALLAX 硬规则, 写入 CLAUDE.md Rule 6 + 7.
+**用户决策 (2026-06-07)**: 接受"EPIC 三件套 + PHASE 完整完成 review"作为 KALLAX 硬规则, 写入 CLAUDE.md Rule 6 + 7.
 
 ---
 
@@ -14,12 +14,12 @@
 | # | 章节 | 内容 |
 |---|---|---|
 | 1 | EPIC 交付三件套 | A+B review + 文档更新 + 经验教训 |
-| 2 | PHASE 闭环 review | 触发 + 流程 + 产出 |
+| 2 | PHASE 完整完成 review | 触发 + 流程 + 产出 |
 | 3 | 模板清单 | 3 个新模板 (EPIC-LESSONS, PHASE-REVIEW, AB-REVIEW) |
 | 4 | 触发节奏 | Phase 002 现状 + 何时触发下次 review |
 | 5 | 责任分工 | 谁负责每步 |
 | 6 | 跟既有规则的关系 | Rule 1-5 不变, Rule 6-7 是新增 |
-| 7 | 决策点 | 等主公拍板 |
+| 7 | 决策点 | 等决策者拍板 |
 
 ---
 
@@ -43,7 +43,7 @@ EPIC 实施完成 (所有 ticket 实施 commit push)
     └──> 步骤 3: 经验教训总结 (master 主导, 模板化)
             ├──> jira/epics/EPIC-XXX/LESSONS-LEARNED.md
             ├──> 6 节必填 (量化/事件/教训/AB review/评估/下一步)
-            └──> 跟 EPIC 实施 commit 同一 PR 提交
+            └──> 配合 EPIC 实施 commit 同一 PR 提交
 ```
 
 ### 1.2 关键约束
@@ -64,13 +64,13 @@ EPIC 实施完成 (所有 ticket 实施 commit push)
 
 ---
 
-## 2. PHASE 闭环 review (CLAUDE.md Rule 7)
+## 2. PHASE 完整完成 review (CLAUDE.md Rule 7)
 
 ### 2.1 触发条件
 
 - **主触发**: 完成 3-5 个 EPIC (master 决定)
 - **次触发**: 阶段目标达成 (e.g. "v1.0 准备好发布")
-- **强制触发**: 主公指令 ("做 phase review")
+- **强制触发**: 决策者指令 ("做 phase review")
 
 ### 2.2 4-Group 流程 (跟 EKET Phase 1+2+3 借鉴, KALLAX 加 4)
 
@@ -93,15 +93,15 @@ Phase 3 (Master 仲裁 + 升级):
    - 归纳合并: 跨 EPIC 相似教训合并
    - 升级: 沉淀到 CLAUDE.md / architecture/
 
-Phase 4 (主公审批):
-   - 升级项需主公决策
+Phase 4 (决策者审批):
+   - 升级项需决策者决策
    - master 不能自升级红线规则
 ```
 
 ### 2.3 产出物
 
 - `confluence/decisions/PHASE-XXX-REVIEW-YYYYMMDD.md` (用 PHASE-REVIEW-TEMPLATE.md 模板)
-- `CLAUDE.md` 修订 (如适用, 需主公批准)
+- `CLAUDE.md` 修订 (如适用, 需决策者批准)
 - `confluence/architecture/` 新文档 (如适用)
 
 ### 2.4 跟 EKET 对比
@@ -109,8 +109,8 @@ Phase 4 (主公审批):
 | 维度 | EKET | KALLAX |
 |---|---|---|
 | 跨阶段 review | 无 | 必走 (Rule 7) |
-| 4-Group (加主公审批) | 3-Group | 4-Group (Phase 4 是 gate) |
-| 升级机制 | 无明确路径 | "升级项" 清单 + 主公审批 |
+| 4-Group (加决策者审批) | 3-Group | 4-Group (Phase 4 是 gate) |
+| 升级机制 | 无明确路径 | "升级项" 清单 + 决策者审批 |
 | 经验量化 | 无 | 跨 Phase 对比表 (改善/退步) |
 
 ---
@@ -120,7 +120,7 @@ Phase 4 (主公审批):
 | 路径 | 用途 | 何时用 |
 |---|---|---|
 | `confluence/templates/EPIC-LESSONS-LEARNED-TEMPLATE.md` | EPIC 经验教训文档 | 每个 EPIC 交付时 |
-| `confluence/templates/PHASE-REVIEW-TEMPLATE.md` | PHASE 闭环 review 文档 | 每 3-5 个 EPIC 后 |
+| `confluence/templates/PHASE-REVIEW-TEMPLATE.md` | PHASE 完整完成 review 文档 | 每 3-5 个 EPIC 后 |
 | `confluence/templates/AB-REVIEW-TEMPLATE.md` | A+B review 记录 | 每个 ticket close 时 |
 
 **3 模板配套实施**: 跟 CLAUDE.md Rule 6+7 同步发布.
@@ -139,13 +139,13 @@ Phase 4 (主公审批):
 ### 4.2 下次 PHASE review 触发
 
 **Phase 002 候选 EPIC** (从 EKET 战略报告和待办):
-- EPIC-022: Permission Model (主公已决策, scope 缩到 v1)
+- EPIC-022: Permission Model (决策者已决策, scope 缩到 v1)
 - EPIC-018: O 安全 review 5 issue 修复
 - EPIC-023/024/025: 3 治理预留 (DevOps/Data/Test) 启用
 
 **触发时机**:
 - 默认: 完成 EPIC-022 后 (3rd EPIC of Phase 002) → Phase 002 review
-- 提前: 主公指令
+- 提前: 决策者指令
 - 推迟: 4-5 个 EPIC 后 (但不超过 5)
 
 ### 4.3 EPIC-021 经验教训 (回填)
@@ -166,12 +166,12 @@ Phase 4 (主公审批):
 | 文档更新 | master | Performer (填内容) | sub-agent (无 context) |
 | LESSONS-LEARNED | master | 5 专家 panel (review) | Performer (没全局视野) |
 | PHASE review 派发 | master | 5 专家 panel | sub-agent (单点视角) |
-| 升级 CLAUDE.md | master | 主公审批 | sub-agent (无审批权) |
+| 升级 CLAUDE.md | master | 决策者审批 | sub-agent (无审批权) |
 
 **红线**:
 - ❌ master 自己写代码 (CLAUDE.md Conductor 禁止 #1)
 - ❌ Performer 自我审查 (EPIC-016 Performer 禁止 #1)
-- ❌ master 自升级红线规则 (需主公审批)
+- ❌ master 自升级红线规则 (需决策者审批)
 
 ---
 
@@ -185,7 +185,7 @@ Phase 4 (主公审批):
 | 4. 资源管理 | 缓存 TTL | 不变 |
 | 5. 类型安全 | 禁 any / @ts-ignore | 不变 |
 | **6. 经验沉淀** | **EPIC 三件套** | **新增 (本规则)** |
-| **7. PHASE 闭环** | **跨 EPIC 升级** | **新增 (本规则)** |
+| **7. PHASE 完整完成** | **跨 EPIC 升级** | **新增 (本规则)** |
 
 **Rule 6+7 强化**:
 - Rule 3 (产出验证): 之前 master 验证代码真实性, 现在加上 review + 经验沉淀
@@ -193,18 +193,18 @@ Phase 4 (主公审批):
 
 ---
 
-## 7. 决策点 (主公审批)
+## 7. 决策点 (决策者审批)
 
 | # | 决策 | 默认建议 |
 |---|---|---|
 | 1 | 接受 Rule 6 (EPIC 三件套) 为硬规则? | ✅ 接受 (用户已确认) |
-| 2 | 接受 Rule 7 (PHASE 闭环 review) 为硬规则? | ✅ 接受 (用户已确认) |
+| 2 | 接受 Rule 7 (PHASE 完整完成 review) 为硬规则? | ✅ 接受 (用户已确认) |
 | 3 | Phase 002 何时触发 review? | EPIC-022 后 (3rd EPIC) |
 | 4 | EPIC-021 现在回填 LESSONS-LEARNED? | ✅ 立刻 (master 主导) |
 | 5 | 3 模板 (EPIC/PHASE/AB) 配套发布? | ✅ 同步 (本 PR 包含) |
 | 6 | Rule 6+7 写入 CLAUDE.md 还是另设? | CLAUDE.md 核心原则 (跟 Rule 1-5 同区) |
 
-**默认 plan**: 全部接受, 立刻实施. 等待主公最终拍板.
+**默认 plan**: 全部接受, 立刻实施. 等待决策者最终拍板.
 
 ---
 
@@ -232,4 +232,4 @@ Phase 4 (主公审批):
 
 **Reviewer(s)**: master_main (基于 EPIC-016 + EPIC-021 经验沉淀)
 **Last updated**: 2026-06-07
-**Status**: ✅ ACTIVE — 3 模板 + 2 规则同步发布, 等待主公最终拍板
+**Status**: ✅ ACTIVE — 3 模板 + 2 规则同步发布, 等待决策者最终拍板

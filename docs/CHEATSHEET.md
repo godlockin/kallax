@@ -21,7 +21,7 @@ Conductor (分析/拆解/审核/合并/发布) · Performer (coder/reviewer/test
 1. **Hash-Chain Audit Log** · 2. **5-Level Fact-Forcing** · 3. **Sub-Role Dispatch** · 4. **EPIC 4 件套** · 5. **Hook Server** · 6. **Dashboard**
 
 ## Q18 决策模型
-KALLAX 评估+建议, 重大主公拍 (3 模式: ai-auto / ai-copilot / manual)
+KALLAX 评估+建议, 重大决策者拍 (3 模式: ai-auto / ai-copilot / manual)
 
 ## KALLAX vs eket
 独立项目, 互取所长 (eket 借 multi-agent 概念, KALLAX 实做 5 levels + 6 武器)

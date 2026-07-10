@@ -124,7 +124,7 @@ kallax performer:claim TICKET-001 --sub-role=tester
 **关键约束**:
 - Rule 5 DRY (Single Source of Truth)
 - Rule 19 5 类标签 SOP (引用带证据链)
-- 0 装饰引用 (无 evidence-chain 装饰)
+- 0 装饰性引用 (无 evidence-chain 装饰)
 
 **入口命令**:
 ```bash

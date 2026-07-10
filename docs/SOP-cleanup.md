@@ -191,9 +191,9 @@ du -sh .kallax/instances/.archive/
 find .kallax/instances/.archive/ -maxdepth 2 -type d -size +100M
 ```
 
-## 6. 联合模式（0 NEW）
+## 6.,配合模式（0 NEW）
 
-| 联合项 | 来源 | 复用方式 |
+|,配合项 | 来源 | 复用方式 |
 |--------|------|----------|
 | EPIC-027-A (Phase 0.1 tracking) | jira/tickets/EPIC-027-A | ticket 结构 + status metadata 已落地，本 SOP 是实施层 |
 | 48 worktree cleanup 模式 | v2.4.0 P1-2 (commit fd9d0d9) | archive-not-delete 哲学复用（保留 .archive/ 30d 可回滚） |
@@ -256,8 +256,8 @@ bash scripts/kallax-cleanup.sh --include-status ZOMBIE
 - [x] AC1: `scripts/kallax-cleanup.sh` supports pre-clean for 21 CLOSING instances
 - [x] AC2: Phase 0.3 identifies CLOSING instances older than 30 days
 - [x] AC3: Phase 0.4 rollback SOP documented in `docs/SOP-cleanup.md` (this file)
-- [x] AC4: 跟 EPIC-027-A 跟踪 (Phase 0.1) 联合（ticket 结构 + estimated_hours metadata 已落地）
-- [x] AC5: 跟 48 worktree cleanup 模式 联合 0 NEW（archive-not-delete 哲学复用）
+- [x] AC4: 配合 EPIC-027-A 跟踪 (Phase 0.1),配合（ticket 结构 + estimated_hours metadata 已落地）
+- [x] AC5: 跟 48 worktree cleanup 模式,0 NEW（archive-not-delete 哲学复用）
 
 ---
 

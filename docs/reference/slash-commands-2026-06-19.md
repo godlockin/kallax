@@ -219,7 +219,7 @@ Use these when you are a **Conductor** orchestrating Performers and merging PRs.
 | **Related** | `/kallax-review-pr`, `/kallax-merge` |
 | **Source** | `.claude/commands/kallax-verify-pr.sh` |
 
-**5 levels Fact-Forcing** (跟 5 levels (L1-L5) 联合):
+**5 levels Fact-Forcing** (跟 5 levels (L1-L5),配合):
 - L1 — Existence: files exist in git diff
 - L2 — Substance: real logic, not stubs (no `TODO` in critical paths)
 - L3 — Wiring: correct imports/exports, type compatibility
@@ -333,7 +333,7 @@ These commands help with **thinking, designing, and getting expert opinions** be
 | **Related** | `/kallax-expert`, `/kallax-panel` |
 | **Source** | `.claude/commands/kallax-ask.sh` |
 
-**Keyword routing map** (跟 KALLAX-GLOSSARY.md §8 联合):
+**Keyword routing map** (跟 KALLAX-GLOSSARY.md §8,配合):
 - `architect|design|system|structure|pattern` → `architect`
 - `api|backend|database|data|server|endpoint` → `backend`
 - `frontend|ui|component|react|vue|css|style` → `frontend`
@@ -449,7 +449,7 @@ If no keyword matches, defaults to `architect backend ux product` (core 4).
 | **Related** | `/kallax-panel`, `/kallax-analyze` |
 | **Source** | `.claude/commands/kallax-office-hours.sh` |
 
-**6 forcing questions** (跟 YC Office Hours 联合):
+**6 forcing questions** (跟 YC Office Hours,配合):
 1. **Demand reality** — Who specifically needs this? How often? What pain?
 2. **Status quo** — What do they do today? How painful is it?
 3. **Desperate specificity** — Give one named example of a user with this pain
@@ -621,7 +621,7 @@ RELATED:
 
 ## Appendix B: Cross-Tool Compatibility (v2.0.6 4 工具 multi-tool)
 
-跟 KALLAX-GLOSSARY §8.6-8.10 联合, all 26 slash commands are mirrored across 4 tools:
+跟 KALLAX-GLOSSARY §8.6-8.10,配合, all 26 slash commands are mirrored across 4 tools:
 
 | Tool | Path | Format | Invocation |
 |---|---|---|---|
@@ -630,9 +630,9 @@ RELATED:
 | Codex | `~/.codex/prompts/` | `.md` | `/kallax-ask "..."` |
 | Gemini | `~/.gemini/commands/` | `.md` | `/kallax-ask "..."` |
 
-**Naming 反讽**: opencode uses `command/` (singular!) — see [KALLAX-GLOSSARY.md §8.7](../KALLAX-GLOSSARY.md#87-skillscommands-paths4-工具-路径映射-skillscommands-path-mapping).
+**Naming 同类症状**: opencode uses `command/` (singular!) — see [KALLAX-GLOSSARY.md §8.7](../KALLAX-GLOSSARY.md#87-skillscommands-paths4-工具-路径映射-skillscommands-path-mapping).
 
-**Auto-detect priority** (跟 `install.sh --target=auto` 联合): `claude` > `opencode` > `codex` > `gemini`.
+**Auto-detect priority** (跟 `install.sh --target=auto`,配合): `claude` > `opencode` > `codex` > `gemini`.
 
 ---
 
@@ -640,13 +640,13 @@ RELATED:
 
 - [cli-reference.md](cli-reference.md) — 12 CLI commands (`kallax task claim`, `kallax conductor heartbeat`, etc.)
 - [INSTALL-MULTI-TOOL.md](../guides/INSTALL-MULTI-TOOL.md) — 4-tool install guide (v2.0.6+)
-- [KALLAX-GLOSSARY.md](../KALLAX-GLOSSARY.md) — 39 terms (8.6-8.10 multi-tool 联合)
+- [KALLAX-GLOSSARY.md](../KALLAX-GLOSSARY.md) — 39 terms (8.6-8.10 multi-tool,配合)
 - [AGENTS.md](../../AGENTS.md) — Role definitions + hard rules
-- [PROCESS.md](../../PROCESS.md) — Master 不能自己升级红线 (跟"独立" 拍 explicit 联合)
+- [PROCESS.md](../../PROCESS.md) — Master 不能自己升级红线 (跟"独立" 拍 explicit,配合)
 
 ---
 
-**跟主公 2026-06-17 'C' explicit 派单 联合 (跟'独立' 拍板 explicit 联合, 跟 PROCESS.md:25-26 联合)**
-**跟 v2.0.6 4 工具 multi-tool 联合 (跟 INSTALL-MULTI-TOOL.md §1.1 反讽从根源修复段 互链)**
-**跟 KALLAX-GLOSSARY §8.6-8.10 联合 (4 工具术语 SoT)**
+**跟决策者 2026-06-17 'C' explicit 派单,配合 (跟'独立' 拍板 explicit,配合, 跟 PROCESS.md:25-26,配合)**
+**配合 v2.0.6 4 工具 multi-tool,配合 (跟 INSTALL-MULTI-TOOL.md §1.1 同类症状从根源修复段 互链)**
+**跟 KALLAX-GLOSSARY §8.6-8.10,配合 (4 工具术语 SoT)**
 **跟"翻篇&精进" 战略 一致 (0 增命令 0 增 Rule, 文档补全不引入新功能)**

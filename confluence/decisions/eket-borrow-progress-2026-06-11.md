@@ -2,7 +2,7 @@
 
 > **目的**: EKET 5 视角对比报告 P0/P1/P2 26 项借鉴落地进度追踪
 > **日期**: 2026-06-11
-> **来源**: PHASE-005 升级 4 (主公 2026-06-11 拍"补落地")
+> **来源**: PHASE-005 升级 4 (决策者 2026-06-11 拍"补落地")
 > **作者**: master (Phase 5 review)
 > **状态**: ACTIVE
 
@@ -85,7 +85,7 @@ EPIC-021 5 专家 panel 分析 EKET, 12 共识点:
 | 25 | workspace isolation v2 (immutable record) | EPIC-022 | — | — | — | ⏳ postponed |
 | 26 | cross-role audit (F5) | EPIC-022 | — | — | — | ⏳ postponed |
 
-**P2 总结**: 0/8 done, 全部推迟到主公战略决策
+**P2 总结**: 0/8 done, 全部推迟到决策者战略决策
 
 ---
 
@@ -105,20 +105,20 @@ EPIC-021 5 专家 panel 分析 EKET, 12 共识点:
 
 | 产出 | 描述 | 关联 |
 |---|---|---|
-| PHASE-005-REVIEW-2026-06-11.md | Phase 5 闭环 review | §1-§16 |
+| PHASE-005-REVIEW-2026-06-11.md | Phase 5 完整完成 review | §1-§16 |
 | cross-epic-kpi-falsification-evolution.md | 综合主题 | 整合 4 主题 |
 | EKET-BORROW-PROGRESS-2026-06-11.md | 借鉴进度表 | 本文件 |
 
 ---
 
-## §4 下一步 (主公拍)
+## §4 下一步 (决策者拍)
 
 ### 4.1 P1 7剩项处理
 
 | # | 剩项 | 建议 EPIC | 估时 | 优先级 |
 |---|---|---|---|---|
 | 10 | M1 co-evolution 50 test case | EPIC-032 | 1d | P0 |
-| 12 | Ekalax Token Plan 升级 | 主公战略 | TBD | P1 |
+| 12 | Ekalax Token Plan 升级 | 决策者战略 | TBD | P1 |
 | 14 | Performer 5 阶段协商 | EPIC-029 收口 | 0.5d | P0 |
 | 15 | 危险操作统一检查 | EPIC-029 收口 | 0.5d | P0 |
 | 16 | worktree_role 强制绑定 | 新 EPIC |0.5d | P1 |
@@ -134,19 +134,19 @@ EPIC-021 5 专家 panel 分析 EKET, 12 共识点:
 | 19 | 3 模式 6 衍生 | 推迟, EPIC-032 |
 | 20 | M1 扩 200+ test case | 推迟, Phase 6 |
 | 21 | 90 extended expert | 推迟, 用到时再完善 |
-| 22 | Redis-less降级链 | 推迟, 主公战略 |
+| 22 | Redis-less降级链 | 推迟, 决策者战略 |
 | 23 | cross-repo migration | 推迟, Security review |
 | 24 | audit append-only | 推迟, EPIC-022 |
 | 25-26 | workspace isolation v2 / cross-role audit | 推迟, EPIC-022 |
 
-**建议**: P2 8 项全推迟到主公战略决策, 不进飞轮"迭代"
+**建议**: P2 8 项全推迟到决策者战略决策, 不进飞轮"迭代"
 
-### 4.3 主公决策点
+### 4.3 决策者决策点
 
 | 决策点 | 选项 |
 |---|---|
-| P1 7 剩项何时落地 | A. EPIC-033/034 串行; B. 跟 EPIC-032 并行; C. 推迟 |
-| P2 8 项处理 | A. 全推迟; B. 部分提前; C. 主公战略决策 |
+| P1 7 剩项何时落地 | A. EPIC-033/034 串行; B. 配合 EPIC-032 并行; C. 推迟 |
+| P2 8 项处理 | A. 全推迟; B. 部分提前; C. 决策者战略决策 |
 
 ---
 
@@ -187,6 +187,6 @@ P2: [░░░░░░░░░░░░░░░░░░] 0/8 0% ⏳
 
 ---
 
-**维护者**: master (主公拍板 2026-06-11)
+**维护者**: master (决策者拍板 2026-06-11)
 **最后更新**: 2026-06-11
-**下次 review**: Phase 6 (主公拍新 EPIC 后)
+**下次 review**: Phase 6 (决策者拍新 EPIC 后)

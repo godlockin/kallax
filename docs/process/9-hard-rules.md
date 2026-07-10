@@ -1,29 +1,29 @@
 # 5 levels 模式 (KALLAX, EPIC-059-A)
 
-> **跟 eket MASTER-RULES.md §6 联合, 借方法论 不借代码**
-> **跟 PHASE-013-REFLECTION-2026-06-18.md 联合, 从根源修复 "Rule 数 通胀" 迷信**
-> **跟 KALLAX-GLOSSARY §11.1 联合, 跟 v2.4.1 revert 联合**
-> **跟"翻篇&精进" 战略 一致, 跟"诚实修正" + "反讽" 战略 联合**
+> **跟 eket MASTER-RULES.md §6,配合, 借鉴方法论而非直接复制代码**
+> **跟 PHASE-013-REFLECTION-2026-06-18.md,配合, 从根源修复 "Rule 数 通胀" 迷信**
+> **跟 KALLAX-GLOSSARY §11.1,配合, 配合 v2.4.1 revert,配合**
+> **跟"翻篇&精进" 战略 一致, 跟"诚实修正评估" + "同类症状" 战略,配合**
 
 ---
 
 ## 1. 背景与定位
 
-**问题**: KALLAX 当前 **20 Rule** (跟 CLAUDE.md 实际 1-18 + 30-31 一致, v2.7.4 D1 拍板 A 22→20 跨 release 留待 4h 实施). Rule 数 多 跟 "治理完成" 不是 因果关系 — v2.4.0 4 合并 (22 → 18) 跟 v2.4.1 revert 实证 净价值 持平 67.0%, 0 实际变化, 从根源修复 "0 实际改变 假动作" 反讽.
+**问题**: KALLAX 当前 **20 Rule** (跟 CLAUDE.md 实际 1-18 + 30-31 一致, v2.7.4 D1 拍板 A 22→20 跨 release 留待 4h 实施). Rule 数 多 跟 "治理完成" 不是 因果关系 — v2.4.0 4 合并 (22 → 18) 配合 v2.4.1 revert 实证 净价值 持平 67.0%, 0 实际变化, 从根源修复 "0 实际改变 假动作" 同类症状.
 
 **方法**: 借 eket `template/docs/MASTER-RULES.md` §6 模式 — 9 条 Hard Rules 简表 + 反例 + 撤销方法 — **不复制 eket 5 levels 全文**, 提取 模式 + 命名, 适配 KALLAX 20 Rule 现状 (Conductor/Performer + outbox-isolation + tag-sop + ...).
 
 **约束**:
-- 0 增 Rule (跟"翻篇&精进" 战略 一致, 跟 v2.4.1 还原 20 Rule 联合, 跟 v2.7.4 D1 拍板 A 22→20 联合)
-- 0 重写 (跟 Rule 5 DRY 联合)
+- 0 增 Rule (跟"翻篇&精进" 战略 一致, 配合 v2.4.1 还原 20 Rule,配合, 配合 v2.7.4 D1 拍板 A 22→20,配合)
+- 0 重写 (跟 Rule 5 DRY,配合)
 - 20 Rule → 9 类别 group 索引 (file:line 1:1 映射, 不删)
-- 借方法论 不借代码 (不复制 eket 5 levels 全文)
+- 借鉴方法论而非直接复制代码 (不复制 eket 5 levels 全文)
 
 ---
 
 ## 2. 5 levels 简表 (跟 eket §6 模式 一致)
 
-| # | 规则 | 要点 | 联合 KALLAX Rule |
+| # | 规则 | 要点 |,配合 KALLAX Rule |
 |---|------|------|-----------------|
 | 1 | **PR 合并后清理 outbox** | `git rm outbox/review_requests/<id>-*.md` | Rule 17 文件并发竞争 |
 | 2 | **删除前查反向引用** | `grep -rn "FILE" . --include="*.md"` | Rule 5 DRY (Single Source of Truth) |
@@ -31,9 +31,9 @@
 | 4 | **负载分担** | 并行>3 或积压>10 → 委托助理 | Rule 1 并行隔离 |
 | 5 | **分配前确认环境** | `node dist/index.js system:doctor` | Rule 8 L4 脚本必须存在 |
 | 6 | **文档卫生 (每10轮)** | 检查未追踪 md / 僵尸 ticket / 积压 review | Rule 6 经验沉淀强制 + tag-sop |
-| 7 | **新建前先想** | 是否有同类文档可更新？ | Rule 6 文档卫生 + "借方法论 不借代码" 战略 |
-| 8 | **Rule of 500** (占位) | 净变更>500行 → 必须 codemod, 或 `Approved-Large-PR-By:` | 跟 EPIC-059-B 联合 |
-| 9 | **PR ~100 行上限** (占位) | ≤100 pass, 100-500 warn, >500 fail | 跟 EPIC-059-C 联合 |
+| 7 | **新建前先想** | 是否有同类文档可更新？ | Rule 6 文档卫生 + "借鉴方法论而非直接复制代码" 战略 |
+| 8 | **Rule of 500** (占位) | 净变更>500行 → 必须 codemod, 或 `Approved-Large-PR-By:` | 配合 EPIC-059-B,配合 |
+| 9 | **PR ~100 行上限** (占位) | ≤100 pass, 100-500 warn, >500 fail | 配合 EPIC-059-C,配合 |
 
 ---
 
@@ -51,7 +51,7 @@
 ### 正例
 
 - ✅ PR merge 后 `git rm outbox/review_requests/42-*.md` + `git commit -m "chore: cleanup outbox after PR #42 merge"`
-- ✅ 跟 Rule 17 文件并发竞争 5 步强制流程 联合, outbox-isolation.sh 自检
+- ✅ 跟 Rule 17 文件并发竞争 5 步强制流程,配合, outbox-isolation.sh 自检
 
 ---
 
@@ -67,7 +67,7 @@
 ### 正例
 
 - ✅ `grep -rn "old-rule" . --include="*.md" --include="*.sh" --include="*.json"` 全查
-- ✅ 跟 Rule 5 DRY (Single Source of Truth) 联合, 反向引用 改 单一 真相来源
+- ✅ 跟 Rule 5 DRY (Single Source of Truth),配合, 反向引用 改 单一 真相来源
 
 ---
 
@@ -83,13 +83,13 @@
 ### 正例
 
 - ✅ Performer 超时 → Master 跑 `system:doctor` 诊断 → 区分 Performer (token 撞墙 / API error) 跟 任务侧 (需求 模糊)
-- ✅ Release 必带 LESSONS-LEARNED.md (跟 Rule 6 经验沉淀强制 联合, 跟 PHASE-013 反思 联合)
+- ✅ Release 必带 LESSONS-LEARNED.md (跟 Rule 6 经验沉淀强制,配合, 跟 PHASE-013 反思,配合)
 
 ---
 
 ### Rule 4: 负载分担
 
-**要点**: 并行>3 或积压>10 → 委托助理 (跟 Rule 1 并行隔离 联合).
+**要点**: 并行>3 或积压>10 → 委托助理 (跟 Rule 1 并行隔离,配合).
 
 ### 反例
 
@@ -105,23 +105,23 @@
 
 ### Rule 5: 分配前确认环境
 
-**要点**: 派 Performer 前, `node dist/index.js system:doctor` 确认环境健康 (跟 Rule 8 L4 脚本必须存在 联合).
+**要点**: 派 Performer 前, `node dist/index.js system:doctor` 确认环境健康 (跟 Rule 8 L4 脚本必须存在,配合).
 
 ### 反例
 
 - ❌ 派 Performer 后才发现 Redis down → Performer 全 FAIL, 浪费时间
-- ❌ Performer 在 worktree 跑测试发现 binary 缺 → 跟 Rule 8 L4 脚本必须存在 联合 红线
+- ❌ Performer 在 worktree 跑测试发现 binary 缺 → 跟 Rule 8 L4 脚本必须存在,配合 红线
 
 ### 正例
 
 - ✅ Master 派单前 `system:doctor` 跑通
-- ✅ Performer session_start.sh 自动 跑 system:doctor (跟 Rule 15 Performer Session 自动加载 联合)
+- ✅ Performer session_start.sh 自动 跑 system:doctor (跟 Rule 15 Performer Session 自动加载,配合)
 
 ---
 
 ### Rule 6: 文档卫生 (每10轮)
 
-**要点**: 每 10 轮 心跳, 检查未追踪 md / 僵尸 ticket / 积压 review (跟 Rule 6 经验沉淀强制 + tag-sop 联合).
+**要点**: 每 10 轮 心跳, 检查未追踪 md / 僵尸 ticket / 积压 review (跟 Rule 6 经验沉淀强制 + tag-sop,配合).
 
 ### 反例
 
@@ -137,23 +137,23 @@
 
 ### Rule 7: 新建前先想
 
-**要点**: 新建文件/章节 前, 问 "是否有 同类 文档 可更新?" (跟 Rule 5 DRY + "借方法论 不借代码" 战略 联合).
+**要点**: 新建文件/章节 前, 问 "是否有 同类 文档 可更新?" (跟 Rule 5 DRY + "借鉴方法论而非直接复制代码" 战略,配合).
 
 ### 反例
 
 - ❌ 新建 `docs/process/9-hard-rules.md` 前未查 已有 rule-merge-proposal.md, 导致 Rule 合并 主题 双文档 重复
-- ❌ 新建 eket 5 levels 复制版 → 跟"借方法论 不借代码" 战略 矛盾, 触发 反讽 从根源修复
+- ❌ 新建 eket 5 levels 复制版 → 跟"借鉴方法论而非直接复制代码" 战略 矛盾, 触发 同类症状 从根源修复
 
 ### 正例
 
 - ✅ 新建前 `grep -rn "Hard Rule" docs/`, 确认 9-hard-rules.md 是 唯一 真相来源
-- ✅ 跟 Rule 5 DRY 联合, 引用 KALLAX-GLOSSARY.md §11.1 + PHASE-013-REFLECTION 闭环
+- ✅ 跟 Rule 5 DRY,配合, 引用 KALLAX-GLOSSARY.md §11.1 + PHASE-013-REFLECTION 完整完成
 
 ---
 
 ### Rule 8: Rule of 500 (占位 EPIC-059-B)
 
-**要点**: 净变更>500行 → 必须 codemod, 或 `Approved-Large-PR-By:`. **占位** 等 EPIC-059-B 联合.
+**要点**: 净变更>500行 → 必须 codemod, 或 `Approved-Large-PR-By:`. **占位** 等 EPIC-059-B,配合.
 
 ### 反例
 
@@ -162,13 +162,13 @@
 ### 正例
 
 - ✅ 净变更 350 行 → 正常 PR
-- ✅ 净变更 800 行 → codemod + `Approved-Large-PR-By: <master_main>` (跟 EPIC-059-B 联合)
+- ✅ 净变更 800 行 → codemod + `Approved-Large-PR-By: <master_main>` (配合 EPIC-059-B,配合)
 
 ---
 
 ### Rule 9: PR ~100 行上限 (占位 EPIC-059-C)
 
-**要点**: ≤100 pass, 100-500 warn, >500 fail. **占位** 等 EPIC-059-C 联合.
+**要点**: ≤100 pass, 100-500 warn, >500 fail. **占位** 等 EPIC-059-C,配合.
 
 ### 反例
 
@@ -178,50 +178,50 @@
 ### 正例
 
 - ✅ PR 80 行 (1 AC) → PASS
-- ✅ PR 350 行 (跨 3 AC) → 拆 3 PR, 跟 Rule 5 DRY 联合
+- ✅ PR 350 行 (跨 3 AC) → 拆 3 PR, 跟 Rule 5 DRY,配合
 
 ---
 
-## 4. 撤销方法 (跟 v2.4.1 revert 联合)
+## 4. 撤销方法 (配合 v2.4.1 revert,配合)
 
 **触发**: 5 levels 跟 KALLAX 20 Rule 不再 1:1 适配 (e.g. 20 Rule 升 25, 或净价值↓).
 
-**流程** (跟 Rule 6 经验沉淀强制 + Rule 11 Master 写代码禁令 联合):
+**流程** (跟 Rule 6 经验沉淀强制 + Rule 11 Master 写代码禁令,配合):
 
 1. **Step 1**: Master 跑 `check-9-hard-rules.sh --self-test`, 收集 5 工具 输出
-2. **Step 2**: 提交 PHASE 反思 ticket (PHASE-XXX-REFLECTION), 跟 KALLAX-GLOSSARY §11.x 联合
-3. **Step 3**: 主公拍板 "撤销" 或 "修订", 跟 PROCESS.md:25-26 "Master 不能自己升级红线" 联合
-4. **Step 4**: revert 跟 v2.4.1 revert 模式 一致 — 0 落地脚本 变化, 0 净价值 损失, 跟"翻篇&精进" 一致
-5. **Step 5**: LESSONS-LEARNED.md 标 "5 levels 撤销", 跟 PHASE-013-REFLECTION 联合
+2. **Step 2**: 提交 PHASE 反思 ticket (PHASE-XXX-REFLECTION), 跟 KALLAX-GLOSSARY §11.x,配合
+3. **Step 3**: 决策者拍板 "撤销" 或 "修订", 跟 PROCESS.md:25-26 "Master 不能自己升级红线",配合
+4. **Step 4**: revert 配合 v2.4.1 revert 模式 一致 — 0 落地脚本 变化, 0 净价值 损失, 跟"翻篇&精进" 一致
+5. **Step 5**: LESSONS-LEARNED.md 标 "5 levels 撤销", 跟 PHASE-013-REFLECTION,配合
 
 **红线**:
-- ❌ 不经 主公拍板 Master 自行撤销 5 levels
+- ❌ 不经 决策者拍板 Master 自行撤销 5 levels
 - ❌ 撤销 不带 LESSONS-LEARNED
-- ❌ 撤销 不跑 PHASE 反思 (跟 KALLAX-GLOSSARY §11.1 联合 反讽 模式)
+- ❌ 撤销 不跑 PHASE 反思 (跟 KALLAX-GLOSSARY §11.1,配合 同类症状 模式)
 
 ---
 
 ## 5. KPI 精确 X/Y 格式 (Rule 9 强制)
 
 **20 Rule → 9 类别 group 整合 = 20/20 = 100.0%** (跟"翻篇&精进" 战略 一致)
-**0 增 Rule** (跟 v2.4.1 还原 20 Rule 联合, 跟 v2.7.4 D1 拍板 A 22→20 联合, 跟"诚实修正" + "反讽" 战略 一致)
+**0 增 Rule** (配合 v2.4.1 还原 20 Rule,配合, 配合 v2.7.4 D1 拍板 A 22→20,配合, 跟"诚实修正评估" + "同类症状" 战略 一致)
 
 **验证脚本**: `bash scripts/check-9-hard-rules.sh --self-test` + `bash tests/integration/check-9-hard-rules-test.sh` (5/5 PASS)
 
 ---
 
-## 6. 闭环 (跟 KALLAX-GLOSSARY §11.1 联合)
+## 6. 完整完成 (跟 KALLAX-GLOSSARY §11.1,配合)
 
 **§11.1**: "Rule 数 ≠ 治理完成" — 治理完成信号 是 净价值 持平 + 0 增命令 + 0 增 Rule, 不是 "Rule 数 ≤ 阈值 15" (迷信).
 
-**5 levels 简化 跟 §11.1 联合**:
+**5 levels 简化 跟 §11.1,配合**:
 - 5 levels 是 模式 (Pattern), 不是 Rule 数 减 13 (22 → 9)
 - 20 Rule 仍 落地 (file:line 1:1 映射), 5 levels 是 group 索引 (索引表, 不删 Rule)
-- 跟 v2.4.0 4 合并 反思 联合, 从根源修复 "0 实际改变 假动作" 反讽
-- 跟 PHASE-013-REFLECTION 联合, 跟"反讽" + "诚实修正" 战略 一致
+- 配合 v2.4.0 4 合并 反思,配合, 从根源修复 "0 实际改变 假动作" 同类症状
+- 跟 PHASE-013-REFLECTION,配合, 跟"同类症状" + "诚实修正评估" 战略 一致
 
-**闭环 KPI**: 20 Rule → 9 类别 group = 20/20 = 100.0% 落地, 0 增 Rule, 0 重写, 净价值 持平 67.0%
+**完整完成 KPI**: 20 Rule → 9 类别 group = 20/20 = 100.0% 落地, 0 增 Rule, 0 重写, 净价值 持平 67.0%
 
 ---
 
-> **来源**: EPIC-059-A (主公 2026-06-18 explicit 派单 "需要都建卡并行处理") + eket `template/docs/MASTER-RULES.md` §6 (借方法论 不借代码) + PHASE-013-REFLECTION-2026-06-18.md (跟 v2.4.1 revert 联合) + KALLAX-GLOSSARY §11.1 (跟 "Rule 数 ≠ 治理完成" 联合)
+> **来源**: EPIC-059-A (决策者 2026-06-18 explicit 派单 "需要都建卡并行处理") + eket `template/docs/MASTER-RULES.md` §6 (借鉴方法论而非直接复制代码) + PHASE-013-REFLECTION-2026-06-18.md (配合 v2.4.1 revert,配合) + KALLAX-GLOSSARY §11.1 (跟 "Rule 数 ≠ 治理完成",配合)
