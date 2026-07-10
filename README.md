@@ -342,6 +342,8 @@ bash tests/integration/decision-matrix-test.sh
 | v3.13.0 | `a1d9d99` | Sprint 9: 6 EPIC (P1-2/3/4/7 + Perf-2/3) 4-PR 全程 18 PRs | 4 (40%) |
 | v3.14.0 | `4a355e7` | Sprint 10: 5 EPIC (P1-5/6/8/10 + Rust E0432) 4-PR 全程 15 PRs | 4 (40%) |
 | v3.15.0 | `a811e20` | Sprint 11: 3 EPIC (TierRouter e2e + Perf-2/3 进一步优化) 4-PR 全程 9 PRs | 4 (40%) |
+| v3.15.1 | `dbd8e90` | EPIC-101: Rust E0432 + 2 regression + TierRouter 端到端 (workspace 100 真验) | 4 (40%) |
+| v3.16.0 | `dbd8e90` | Sprint 12: 2 EPIC (cargo test workspace + retrospective 应用) 4-PR 全程 6 PRs | 4 (40%) |
 
 **关键演化**:
 - 0 跳 release (跟 V310-LESSONS + V350-LESSONS 1:1 联合)
