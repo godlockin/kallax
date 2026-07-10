@@ -7,7 +7,7 @@
   "scope": "A (3d): 3 role definition (auditor + readonly + role binding)\nB (3d): pre-commit hook + conductor scope check (blocked by A)\nC (4d): workspace switch + read-only path\nD (3d): role transition (master/conductor/performer)\nE (5d): integration tests + 5-expert A+B review (blocked by A+B+C+D)\nTotal: 18d",
   "start_time": "2026-06-07",
   "delivery_time": "2026-06-14",
-  "status": "active",
+  "status": "delivered",
   "baseline": {
     "source": "confluence/decisions/PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md",
     "main_decision": "主公 2026-06-07 拍板: PERMISSION v1 全范围 18d (接受 2/5 专家 NO 评分), 先 P0 fix 再批 v1",
@@ -98,5 +98,6 @@
       "estimate_days": 5,
       "estimated_hours": 40
     }
-  ]
+  ],
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }

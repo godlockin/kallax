@@ -5,7 +5,7 @@
   "scope": "1. ticket.json 新增 worktree_role 字段声明 (master/conductor/performer/auditor)\n2. Conductor 派单时验证 ticket.worktree_role 跟 worktree 当前 owner 匹配\n3. isolation:check 增加 worktree_role 交叉验证\n4. 防 'Performer 拿到 Conductor ticket' / 'Auditor ticket 落到 Performer' 错配",
   "start_time": "2026-06-12",
   "delivery_time": "2026-06-13",
-  "status": "active",
+  "status": "delivered",
   "baseline": {
     "source": "EKET P1 #16 (EKET 5 专家 panel EPIC-021 治理推荐)",
     "current_state": "worktree 强制隔离已落 (Rule P0-1), 但 ticket.json 缺 role 字段声明",
@@ -38,5 +38,6 @@
       "status": "pending",
       "blocked_by": "EPIC-035-A"
     }
-  ]
+  ],
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }

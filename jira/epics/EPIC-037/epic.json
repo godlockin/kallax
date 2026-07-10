@@ -5,7 +5,7 @@
   "scope": "1. 写 scripts/audit/continuous-audit.sh 跑 9-pass redaction 验证\n2. 写 scripts/audit/kpi-audit.sh 验证 8 次 KPI falsification 反复教训 (Rule 9a)\n3. 配置 cron (或 systemd timer) 半年跑一次\n4. 失败时自动 alert (写 .kallax/audit/alert-YYYY-MM-DD.jsonl)",
   "start_time": "2026-06-12",
   "delivery_time": "2026-06-13",
-  "status": "active",
+  "status": "delivered",
   "baseline": {
     "source": "PROJECT-STATUS-AND-LESSONS-2026-06-12.md §2.4 Gap 5 (主公 2026-06-12 拍 Top 4 开工)",
     "current_state": "9-pass redaction + 3 轮审查 20 issue + AuditMiddleware 已落 (EPIC-029/030/031), 但持续 audit 机制缺",
@@ -39,5 +39,6 @@
       "status": "pending",
       "blocked_by": "EPIC-037-A"
     }
-  ]
+  ],
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }

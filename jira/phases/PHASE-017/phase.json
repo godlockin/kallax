@@ -1,0 +1,11 @@
+{
+  "id": "PHASE-017",
+  "title": "Rust core 持久层与运行时基础",
+  "scope": "1. SQLite persistence for Rust core (EPIC-008)\n2. Connection pool + 事务边界\n3. Migration 工具链 + schema 版本策略\n4. state.json / instances / audit log 持久化落地\n5. 后续 Rust 运行时演进入口 (待 v3.20+ EPIC 补挂)",
+  "epics": [
+    "EPIC-008",
+    "EPIC-113"
+  ],
+  "start_time": "2026-07-10",
+  "status": "active"
+}

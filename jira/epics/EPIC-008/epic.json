@@ -2,6 +2,9 @@
   "epicId": "EPIC-008",
   "title": "SQLite persistence for Rust core",
   "createdAt": "2026-06-03T07:08:17.734Z",
-  "status": "planning",
-  "tickets": []
+  "status": "delivered",
+  "tickets": [],
+  "id": "EPIC-008",
+  "delivery_time": "2026-07-10",
+  "closed_reason": "delivered via rust/crates/kallax-core/src/db/ (SqliteClient+r2d2+WAL+MigrationRunner+12-table schema); retro-close 2026-07-10"
 }

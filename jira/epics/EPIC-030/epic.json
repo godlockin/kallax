@@ -5,7 +5,7 @@
   "scope": "1. T1 TrustScore 三层匹配 + 向量 cosine (算法骨架 + 人工拍板, 2d)\n2. T2 scoring_trace.jsonl 每日轮转 (0.5d)\n3. T3 waiting-for-expert 自动降级 (0.5d)\n4. T4 Hook Profile 三档 minimal/standard/strict (0.5d)\n5. T5 PR Size CI + self-test fixture (1d)\n6. T6 system:doctor JSON 结构化 (0.5d)\n7. T7 AuditMiddleware audit_log 表 (新 DB 独立, 1.5d)\n8. T8 KALLAX 专属 persona 字段 (7 default, extended 留 P2) (1d)\n9. T9 Brief Inference 任务理解强制 (0.5d)",
   "start_time": "2026-06-11",
   "delivery_time": "2026-06-20",
-  "status": "active",
+  "status": "delivered",
   "baseline": {
     "source": "主公 2026-06-09 拍板: 'eket 有强过我们的, 值得借鉴的, 都要借鉴过来'",
     "borrowed_from_eket": "EKET 5 视角对比报告 (Conductor/Performer/UX/Architect/Security) + EPIC-021 战略 12 借鉴点",
@@ -104,5 +104,6 @@
       "status": "ready"
     }
   ],
-  "total_estimated_days": 8.0
+  "total_estimated_days": 8.0,
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }
