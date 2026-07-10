@@ -54,18 +54,18 @@ feature/xx-xx  →  testing  →  main (UAT)  →  miao (stable/prod)
    - 验证站: master review + 4 sub-roles (coder/reviewer/tester/docs)
    - 通过 → merge miao + tag v3.X.Y
 
-### 反讽 1:1 治根 (跟 EPIC-069-D 联合)
+### 配套 hook
 
-- 5-Level Verify L1 (git) 升级: 必须 4-PR 全程 raw test output 引用
+- 5-Level Verify L1 (git) 升级: 4-PR 全程 raw test output 引用
 - check-claim-evidence.sh 拦截 "X/Y PASS" 但无 PR link 引用
-- 0 跳过 testing/main (跟 v3.8.0 reviewer "miao → main 阻塞" 联合)
+- 禁止跳过 testing/main (v3.8.0 reviewer 阻塞点)
 
 ### 紧急 bypass 路径
 
 主公明确批准时:
 - `git commit --no-verify` (跳过 pre-commit hook)
 - `--admin` flag 跳 testing/main (1 release 0 PR 追溯)
-- 0 长期绕过, 0 静默跳过 (跟 EPIC-069-D check-claim-evidence 1:1 联合)
+- 禁止长期绕过或静默跳过 (由 check-claim-evidence.sh 拦截)
 
 ## Honest (未完全闭环, 待续)
 
