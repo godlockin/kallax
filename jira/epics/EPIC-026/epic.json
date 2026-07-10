@@ -5,7 +5,7 @@
   "scope": "1. Bash hot path FIFO/SQLite 并发 6 bug 修\n2. session_start.sh 黑洞同类风险防\n3. rollback SOP 文档 + 12 P0 fix 集成测试",
   "start_time": "2026-06-07",
   "delivery_time": "2026-06-09",
-  "status": "active",
+  "status": "delivered",
   "baseline": {
     "source": "PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §5 (12 P0 fixes)",
     "main_decision": "主公批准 v1 全范围, 但先 P0 fix"
@@ -41,5 +41,6 @@
         "EPIC-026-B"
       ]
     }
-  ]
+  ],
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }

@@ -5,7 +5,7 @@
   "scope": "1. EPIC-022 ticket 结构 + tracking (0.1)\n2. 21 CLOSING instance pre-clean (0.3)\n3. Rollback SOP 文档 (0.4)",
   "start_time": "2026-06-07",
   "delivery_time": "2026-06-08",
-  "status": "active",
+  "status": "delivered",
   "baseline": {
     "source": "PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §7 Phase 0 4 项",
     "main_decision": "主公批准全部 4 项 (0.4-0.5d)"
@@ -32,5 +32,6 @@
         "EPIC-027-A"
       ]
     }
-  ]
+  ],
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }

@@ -5,7 +5,7 @@
   "scope": "1. 4 层接手 (浅层/维护/深度重构/亮点借鉴) — Rule 15 + Performer sub-role\n2. 跟 EPIC-035-A/B/C/D 同步做 (worktree_role 4 字段 + handoff_depth 1 字段 + Auditor 角色)\n3. ticket.json schema 扩 (handoff_depth enum + Performer role sub-type)\n4. dispatch.sh 扩 4 类 Performer 派单模式 (analyst/incremental/major/auditor)\n5. 1+4 容量 (1 conductor + 4 Performer types, 动态)\n6. Auditor 角色 (新) 跟 AuditMiddleware 联动\n7. 跨项目 import 脚本 (经验教训迁移 Q5 闭环)",
   "start_time": "2026-06-12",
   "delivery_time": "2026-06-15",
-  "status": "active",
+  "status": "delivered",
   "baseline": {
     "source": "KALLAX-5-CAPABILITY-RESEARCH-2026-06-12.md §4 4 层接手 (重大 Gap 40%) + §5 经验教训迁移 (75%)",
     "current_state": "Performer 1 类 flat, 不区分 4 层接手深度, Auditor 角色未独立",
@@ -48,5 +48,6 @@
       "status": "pending",
       "blocked_by": "EPIC-038-B"
     }
-  ]
+  ],
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }

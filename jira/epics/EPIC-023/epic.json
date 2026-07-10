@@ -5,7 +5,7 @@
   "scope": "1. TS Zod schema for 7 expert persona (runtime 强类型校验)\n2. 3 阶段 Preamble + trigger 行融合 (UX friction 减少)\n3. 北极星指标 implementation (复用 F ticket 的 expert_invocations queue)\n4. Cross-epic reuse 率 + ab_hit_rate metric (Product 决策用)\n5. integration test + A+B review",
   "start_time": "2026-06-07",
   "delivery_time": "2026-06-08",
-  "status": "active",
+  "status": "delivered",
   "baseline": {
     "source": "EKET-SURPASS-STRATEGY-2026-06-07.md (Layer 1 已落地 EPIC-021)",
     "eket_zod": false,
@@ -54,5 +54,6 @@
       "status": "ready",
       "blocked_by": null
     }
-  ]
+  ],
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }

@@ -5,7 +5,7 @@
   "scope": "1. EPIC-033-A: 派发权 60→80% 升级 + Conductor 简化 (1d)\n   - scripts/conductor/dispatch.sh: 加 KALLAX_AI_DELEGATION_RATIO=80 env var, 默认 80% AI + 20% 人工 override 显式必填\n   - scripts/kallax-dispatch.sh: mode-aware 默认行为 (ai-auto 100% AI / ai-copilot 80% 默认 Accept / manual 100% 人工)\n   - docs/architecture/3-MODES.md: 加派发权让渡比例节 + 3 模式 × 3 比例矩阵 (9 场景)\n   - tests/integration/kallax-dispatch-test.sh: 加 6 场景 (3 模式 × 2 比例 60/80%)",
   "start_time": "2026-06-11",
   "delivery_time": "2026-06-11",
-  "status": "active",
+  "status": "delivered",
   "lessons_learned": "jira/epics/EPIC-033/LESSONS-LEARNED.md (24+ 子教训 + 5 关键事件 + 6 升级候选)",
   "target": {
     "tickets_total": 1,
@@ -21,7 +21,14 @@
     "override_requirement": "20% 人工 override 场景: --human-override-required flag + override_to 字段必填, Conductor 显式 override 走 audit"
   },
   "tickets": [
-    {"id": "EPIC-033-A", "title": "派发权 60→80% 升级 + Conductor 简化", "blocked_by": null, "est_days": 1.0, "status": "in_progress"}
+    {
+      "id": "EPIC-033-A",
+      "title": "派发权 60→80% 升级 + Conductor 简化",
+      "blocked_by": null,
+      "est_days": 1.0,
+      "status": "in_progress"
+    }
   ],
-  "total_estimated_days": 1.0
+  "total_estimated_days": 1.0,
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }
