@@ -25,7 +25,7 @@
 |---|------|------|------|
 | **R1** | F1 路径 缺 风险 | 跨 release 累计 P0/P1/P2 决策 0 留痕路径, EPIC-055-B LESSONS-LEARNED.md:107-115 7 anti-fab tools 跑过, 但留痕物理路径 0 创建 = 治理 留痕机制 = 纸面 闭环 | **REQUEST-P0-*.md / RECORD-P1-*.md / p2-log-*.jsonl 三路径** `mkdir -p` 落地 (跟 EPIC-055-B IMPLEMENTATION-PLAN.md:75-77 联合) |
 | **R2** | 1 主题 1 文档 留待 → 7 重复 类型 反复 | 跨 release 累计 543 docs, 7 重复类型, 1 主题 SoT 拍板 留待 master | 跟 v2.0.7 PHASE-014 模式 一致 (5 deferred → 3 closed + 2 留待, 跟 `jira/epics/EPIC-058/epic.json:4` "5 遗留 deferred tickets" 联合) |
-| **R3** | 7 命名 模式 混用 0 共识 风险 | 0 命名 共识 → 反复 rename 治根 → 主公拍板疲劳 | 跟"独立" 战略 联合, master explicit 拍 1 命名 共识 (跨 release 留待, 0 ai-auto) |
+| **R3** | 7 命名 模式 混用 0 共识 风险 | 0 命名 共识 → 反复 rename 从根源修复 → 主公拍板疲劳 | 跟"独立" 战略 联合, master explicit 拍 1 命名 共识 (跨 release 留待, 0 ai-auto) |
 | **R4** | 9 顶层 README 缺 → 新人 0 入口 | 9/10 README.md 缺 → docs/ + confluence/ + jira/ 0 顶层 导航 | 跨 release 留待 master 拍 1 README 模板 (P1 备案 留待) |
 | **R5** | 跨 release 大量 rename 链接 断 | 543 files 跨 release 累计 链接 互相 引用, rename 后 内部 link 断 | 跨 release 留待 自动 校验 script (跟 `phase-1-conductor-scan.md:138` R2 联合, 1 主题 1 commit 缓解) |
 
@@ -39,14 +39,14 @@
 
 | # | Item | 跟 EPIC-055-B 联合 | 跨 release 留待 缺口 |
 |---|------|---------------------|---------------------|
-| **P0-1** | **F1 拍板留痕 路径 落地**: `mkdir -p inbox/human_feedback/ .kallax/audit/` (跟 EPIC-055-B IMPLEMENTATION-PLAN.md:75-77 联合, 跟"反讽" 治根 "0 实际变化 假动作" 联合) | EPIC-055-B done 路径缺 (跟 LESSONS-LEARNED.md:99 "route_p0 写 REQUEST-P0-*.md 后 不执行 ticket" 联合, 但路径 0 存在) | 0 |
+| **P0-1** | **F1 拍板留痕 路径 落地**: `mkdir -p inbox/human_feedback/ .kallax/audit/` (跟 EPIC-055-B IMPLEMENTATION-PLAN.md:75-77 联合, 跟"反讽" 从根源修复 "0 实际变化 假动作" 联合) | EPIC-055-B done 路径缺 (跟 LESSONS-LEARNED.md:99 "route_p0 写 REQUEST-P0-*.md 后 不执行 ticket" 联合, 但路径 0 存在) | 0 |
 | **P0-2** | **EPIC-060-A 分布式 Phase X 启动 留待**: 5 阶段 92h (跟 `jira/epics/EPIC-060/epic.json:23-29` "master_decision: D: master explicit 拍板 启动 Phase X, 0 ai-auto" 联合) | EPIC-060-A master_explicit_decision 留待, 跟 EPIC-055-B 留待 跨 release 模式 一致 | 0 |
 
 ### 3.2 P1 流程 升级 (备案 + RECORD-P1-*.md)
 
 | # | Item | 跟 EPIC-055-B 联合 | 跨 release 留待 缺口 |
 |---|------|---------------------|---------------------|
-| **P1-1** | **F2 7 重复 类型 治根 留待 master 拍 1 SoT** (跟 `phase-1-conductor-scan.md:90-99` 联合): Glossary 单一 → `docs/KALLAX-GLOSSARY.md` (60+5 terms) + Lessons 单一 → `confluence/memory/lessons/` (17+ files) + Architecture 单一 → `docs/architecture/` (13 files) | EPIC-055-B "P1 备案 不阻塞, 留痕, 主公 review 拍" 联合 (跟 LESSONS-LEARNED.md:24 联合) | master explicit 拍 1 SoT per 重复 类型 |
+| **P1-1** | **F2 7 重复 类型 从根源修复 留待 master 拍 1 SoT** (跟 `phase-1-conductor-scan.md:90-99` 联合): Glossary 单一 → `docs/KALLAX-GLOSSARY.md` (60+5 terms) + Lessons 单一 → `confluence/memory/lessons/` (17+ files) + Architecture 单一 → `docs/architecture/` (13 files) | EPIC-055-B "P1 备案 不阻塞, 留痕, 主公 review 拍" 联合 (跟 LESSONS-LEARNED.md:24 联合) | master explicit 拍 1 SoT per 重复 类型 |
 | **P1-2** | **F3 1 命名 共识 拍板 留待 master**: 5+ 模式 → 1 (e.g. `kebab-case + YYYY-MM-DD` 单一) (跟 `phase-1-conductor-scan.md:76-85` 联合) | EPIC-055-B "P1 备案" 联合, 跟"独立" 战略 联合 master explicit 双拍 | master explicit 拍 1 命名 共识 |
 | **P1-3** | **F4 9 顶层 README 模板 拍板 留待 master**: 1 README 模板 → 9 顶层 套用 (跟 `phase-1-conductor-scan.md:118-130` 联合) | EPIC-055-B "P1 备案" 联合 | master explicit 拍 1 README 模板 |
 
@@ -55,7 +55,7 @@
 | # | Item | 跟 EPIC-055-B 联合 | 跨 release 留待 缺口 |
 |---|------|---------------------|---------------------|
 | **P2-1** | **F5 543 docs 1 主题 1 文档 留待**: 0 强制 1 主题 1 文档, 跟"翻篇&精进" 战略 联合 跨 release 累计 | EPIC-055-B "P2 放手 直接执行" 联合 (跟 LESSONS-LEARNED.md:25 联合) | 0 |
-| **P2-2** | **7 archive 路径 散乱 治根 留待**: 跟 v2.7.4 B2 模式 一致, 7 archive 路径 → 1 (跟 `phase-1-conductor-scan.md:104-114` 联合) | EPIC-055-B "P2 放手" 联合, 跟"翻篇&精进" 战略 联合 0 强制 拍板 | 0 |
+| **P2-2** | **7 archive 路径 散乱 从根源修复 留待**: 跟 v2.7.4 B2 模式 一致, 7 archive 路径 → 1 (跟 `phase-1-conductor-scan.md:104-114` 联合) | EPIC-055-B "P2 放手" 联合, 跟"翻篇&精进" 战略 联合 0 强制 拍板 | 0 |
 | **P2-3** | **0 强制 拍板 + 0 跨 session 拍板 + 0 增 ticket**: 跟 v2.0.7 PHASE-014 模式 一致 (跟 `phase-1-conductor-scan.md:198-204` 联合) | EPIC-055-B "P2 放手" 联合, 跟 EPIC-060 master_explicit_decision 联合 | 0 |
 
 **P0/P1/P2 分级 总数**: 2 P0 + 3 P1 + 3 P2 = **8 拍板 项** (跟 EPIC-055-B LESSONS-LEARNED.md:22-25 联合).

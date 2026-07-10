@@ -24,14 +24,14 @@ KALLAX v2.2.0 起, install.sh 支持 **10 工具** 统一安装 + **single sourc
 - `full` — skills + slash commands 都装 (跟现有 4 工具 一致)
 - `config` — skills 路径 reference 写进 config 文件 (因 aider/continue 没有 slash command API)
 
-### 1.1 反讽治根 — v2.0.2 → v2.0.6 → v2.1.0 渐进闭环
+### 1.1 反讽从根源修复 — v2.0.2 → v2.0.6 → v2.1.0 渐进闭环
 
 跟"反讽" 联合:
 - **证据 (v2.0.2)**: `CHANGELOG.md:647-661` (release notes 自称"跨平台 fix release", 实际只 Claude Code)
 - **证据 (v2.0.6)**: install.sh 加 `--target=auto` 检测 + 4 工具 skills/commands 路径映射 (opencode 30 文件 mirror)
 - **证据 (v2.1.0)**: install.sh 加 4 工具 (cursor/windsurf/aider/continue) + 完整 wizard (5 step) + UI 改进
 - **影响**: 命名跟实现 一致 (跟 KALLAX-GLOSSARY.md §1.1 反讽定义 联合, file:line `docs/KALLAX-GLOSSARY.md:30-36`)
-- **诚实修正**: 文档明确标注 v2.0.2 gap + v2.0.6 治根 + v2.1.0 扩 4 工具, 不模糊处理
+- **诚实修正**: 文档明确标注 v2.0.2 gap + v2.0.6 从根源修复 + v2.1.0 扩 4 工具, 不模糊处理
 
 ### 1.2 auto-detect 默认行为
 
@@ -349,8 +349,8 @@ Restart Claude Code or open a new window. Then type /kallax-start
 
 跟"翻篇&精进" 联合:
 - **证据**: 本文档 §5.2 (v2.0.2 → v2.0.6 升级) + CHANGELOG.md `[2.0.6]` entry
-- **反驳/支持**: v2.0.2 自称"跨平台" 但 install.sh 只支持 Claude Code — v2.0.6 治根, 不在 v2.0.2 命名上纠结 (跟"翻篇&精进" 战略 一致, file:line `docs/KALLAX-GLOSSARY.md:108-112`)
-- **影响**: v2.0.2 release 命名 不删 (历史 commit 不可改), v2.0.6 治根 + 文档明确标注 gap
+- **反驳/支持**: v2.0.2 自称"跨平台" 但 install.sh 只支持 Claude Code — v2.0.6 从根源修复, 不在 v2.0.2 命名上纠结 (跟"翻篇&精进" 战略 一致, file:line `docs/KALLAX-GLOSSARY.md:108-112`)
+- **影响**: v2.0.2 release 命名 不删 (历史 commit 不可改), v2.0.6 从根源修复 + 文档明确标注 gap
 
 ### 5.3 跟"翻篇&精进" 联合 — 不再加内容
 

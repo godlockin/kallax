@@ -13,7 +13,7 @@ KALLAX 在 v2.7.0 → v2.7.1 → v2.7.2 → v2.7.3 → v2.7.4 期间, 4 团队 �
 2. `.nvmrc` + `rust-toolchain.toml` (1 年 后 version pin 失焦, 0 自动化 update)
 3. `Makefile` (8 跟"0 增命令 持平" 矛盾, doc drift 风险)
 
-主公 派单 联合 5 原则, 治根 跟"诚实修正" 战略 联合:
+主公 派单 联合 5 原则, 从根源修复 跟"诚实修正" 战略 联合:
 
 ## 5 原则 (跟"翻篇&精进" 战略 联合, 跟"反哺框架" 战略 联合)
 
@@ -22,7 +22,7 @@ KALLAX 在 v2.7.0 → v2.7.1 → v2.7.2 → v2.7.3 → v2.7.4 期间, 4 团队 �
 > 牺牲 短期 efficiency 换 长期 0 debt
 
 **应用**:
-- 5 batch 中 4 batch 是 长期 debt 治根, 1 batch 是 整理 (B1 治根 5 bug, B2 治根 stale fork, B3 治根 privacy leak, B4 治根 naming inconsistency, B5 治根 misplaced content)
+- 5 batch 中 4 batch 是 长期 debt 从根源修复, 1 batch 是 整理 (B1 从根源修复 5 bug, B2 从根源修复 stale fork, B3 从根源修复 privacy leak, B4 从根源修复 naming inconsistency, B5 从根源修复 misplaced content)
 - 短期 时间 投入 (~108 min) 换 长期 0 debt (5 bugs prevented)
 - 跟"翻篇&精进" 战略 一致, 跟"诚实修正" 战略 联合
 
@@ -66,13 +66,13 @@ KALLAX 在 v2.7.0 → v2.7.1 → v2.7.2 → v2.7.3 → v2.7.4 期间, 4 团队 �
 > 用 硬性的 脚本 (hook/script 等) 对 行为 进行 校验 和 约束
 
 **应用**:
-- 7 anti-patterns 硬性 校验 (跟 v2.7.4 B1-3 治根 累计 联合, 跟 C3 联合)
+- 7 anti-patterns 硬性 校验 (跟 v2.7.4 B1-3 从根源修复 累计 联合, 跟 C3 联合)
 - pre-commit Check 2.6 wire (跟 v2.7.1 9 hard rules 模式 一致)
 - 跟 v2.7.1 9 hard rules 模式 一致, 跟 v2.7.4 整理 release 联合
 
 **反例** (3 stub verify scripts 删 联合):
 - `scripts/verify/{tickets-completed,priority,ux-flow}.sh` `exit 0` 不 验证, 跟 Rule 18 anti-fab 矛盾
-- 跟 v2.7.4 B1 治根 联合, 跟"诚实修正" 战略 联合
+- 跟 v2.7.4 B1 从根源修复 联合, 跟"诚实修正" 战略 联合
 
 ### 5. 软性 设置 (Soft settings for quality/taste)
 
@@ -86,7 +86,7 @@ KALLAX 在 v2.7.0 → v2.7.1 → v2.7.2 → v2.7.3 → v2.7.4 期间, 4 团队 �
 
 **反例** (留 5 config 删):
 - 跟"品味" 原则 不 矛盾, 但 留 永久 sync debt
-- 跟"不埋坑" 原则 矛盾, 删 是 治根
+- 跟"不埋坑" 原则 矛盾, 删 是 从根源修复
 
 ## 实践 应用 (跟 v2.7.4 整理 release 联合)
 
@@ -123,11 +123,11 @@ KALLAX 在 v2.7.0 → v2.7.1 → v2.7.2 → v2.7.3 → v2.7.4 期间, 4 团队 �
 ### C. 留待 4 项 (跟 PROCESS.md:25-26 联合, 跟"独立" 拍 explicit 联合)
 - C1: 9 console.log 改 logger (跟 v2.7.4 C3 留待, 跟 Rule 7 联合)
 
-> **跟 /kallax-panel 2026-06-25 + check-anti-patterns.sh 实证 1:1 验证 修订**: 实际 64 console.log/error/warn in 10 files (跟 baseline 联合 0 NEW, 跨 release 累计). 跟"独立" 战略 联合 0 拍 ai-auto 修订 (跟 v2.0.7 PHASE-014 模式 一致, 跨 release 留待 master explicit 后续 拍). 跟"反讽" 战略 联合 0 强制 拍 CLI output (跟 master 拍 explicit "CLI output 跟 logger 区分" 联合 0 跨 release 留待).
+> **跟 /kallax-panel 2026-06-25 + check-anti-patterns.sh 实证 对照验证 修订**: 实际 64 console.log/error/warn in 10 files (跟 baseline 联合 0 NEW, 跨 release 累计). 跟"独立" 战略 联合 0 拍 ai-auto 修订 (跟 v2.0.7 PHASE-014 模式 一致, 跨 release 留待 master explicit 后续 拍). 跟"反讽" 战略 联合 0 强制 拍 CLI output (跟 master 拍 explicit "CLI output 跟 logger 区分" 联合 0 跨 release 留待).
 - C2: 2 Rust unwrap 改 Result (跟 v2.7.4 C3 留待, 跟 Rule 8 联合)
 - C3: 5 file 500+ 行 拆 (跟 v2.7.4 C3 留待, 跟 Rule 8 联合)
 
-> **跟 /kallax-panel 2026-06-25 + check-anti-patterns.sh 实证 1:1 验证 修订**: 实际 1 file > 500 行 (`rust/crates/kallax-election/src/raft.rs` 564 lines, 跟 baseline 联合 0 NEW, 跨 release 累计). 跟"翻篇&精进" 战略 联合 0 强制 拍 ai-auto 修订 (跟 v2.0.3 EPIC-056-A 跨 release 留待 联合, master explicit 后续 拍).
+> **跟 /kallax-panel 2026-06-25 + check-anti-patterns.sh 实证 对照验证 修订**: 实际 1 file > 500 行 (`rust/crates/kallax-election/src/raft.rs` 564 lines, 跟 baseline 联合 0 NEW, 跨 release 累计). 跟"翻篇&精进" 战略 联合 0 强制 拍 ai-auto 修订 (跟 v2.0.3 EPIC-056-A 跨 release 留待 联合, master explicit 后续 拍).
 - C4: 10 hardcoded /Users/ paths 修 (跟 v2.7.4 C3 留待, 跟"反讽" 联合)
 
 > **跟 /kallax-panel 2026-06-25 + 3-frontend.md F8 + 7-process.md F8 联合 0 隐藏 修订**: 10 paths 全部 在 5 historical files (CHANGELOG.md + jira/tickets/EPIC-057-A/B/C/D/*), 跟 baseline 联合 0 NEW. 跟"翻篇&精进" 战略 联合 0 强制 拍 historical 改, 跟"独立" 战略 联合 master explicit 后续 拍 (跟 v2.0.7 PHASE-014 模式 一致, 0 拍 ai-auto 修订).
@@ -140,13 +140,13 @@ KALLAX 在 v2.7.0 → v2.7.1 → v2.7.2 → v2.7.3 → v2.7.4 期间, 4 团队 �
 
 ## 跟 v2.7.0 整理 release 累计 联合 (跟"反哺框架" 战略 联合)
 
-| Release | 累计 文件 | 治根 类别 |
+| Release | 累计 文件 | 从根源修复 类别 |
 |---------|-----------|-----------|
 | v2.7.0 | 9 归档 + 2 改名 | Outdated / Empty |
 | v2.7.1 | 19 empty + 1 dup | Cleanup |
 | v2.7.2 | 0 (跟 v2.7.0 .opencode/ 联合 累计) | DRY |
 | v2.7.3 | 0 (跟 v2.7.2 整理 release 联合 累计) | AI 工具 文档 |
-| v2.7.4 B1-C4 | 73 file + 5 anti-pattern 硬性 校验 | CRITICAL + 长期 治根 |
+| v2.7.4 B1-C4 | 73 file + 5 anti-pattern 硬性 校验 | CRITICAL + 长期 从根源修复 |
 | **总 累计** | **~125 file + 7 anti-pattern** | **跟 5 原则 联合** |
 
 ## 参考 (跟"反哺框架" 战略 联合)

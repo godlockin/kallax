@@ -4,21 +4,21 @@
 >
 > v3.6.0 (跟 v3.7.0 准备) | 生产级多智能体协作框架 | 6 武器 + 4 根本 价值 + 5 immutable scripts + 集成测试 25/25 PASS
 >
-> **1:1 验证**: `bash scripts/permission/decision-matrix.sh --self-test` (25/25 PASS) + `bash tests/integration/6-weapons-e2e-test.sh` (6/6 PASS)
+> **对照验证**: `bash scripts/permission/decision-matrix.sh --self-test` (25/25 PASS) + `bash tests/integration/6-weapons-e2e-test.sh` (6/6 PASS)
 
 ---
 
 ## 1. What — KALLAX v3.0.0 是什么
 
-KALLAX 是一个**生产级多智能体协作框架**, 借鉴 [eket](https://github.com/godlockin/eket) 极简哲学, 在其基础上补齐 6 个空白处 (6 武器), 形成"青出于蓝而胜于蓝"的差异化定位。KALLAX = Conductor + Performer (1+4 sub-roles) + 6 武器 + Q18 决策模型 (5 levels × 4 roles = 25 cells), 1 binary 整合 (5 Rust crates), 3 层降级 (Rust ~5ms → Node.js → Shell), 冷启动 3.3KB CLAUDE.md + lazy load docs。
+KALLAX 是一个**生产级多智能体协作框架**, 借鉴 [eket](https://github.com/godlockin/eket) 极简哲学, 在其基础上补齐 6 个空白处 (6 武器), 形成""的差异化定位。KALLAX = Conductor + Performer (1+4 sub-roles) + 6 武器 + Q18 决策模型 (5 levels × 4 roles = 25 cells), 1 binary 整合 (5 Rust crates), 3 层降级 (Rust ~5ms → Node.js → Shell), 冷启动 3.3KB CLAUDE.md + lazy load docs。
 
 ---
 
-## 2. Why — 为什么需要 KALLAX (历史背景, 6 武器 治根)
+## 2. Why — 为什么需要 KALLAX (历史背景, 6 武器 从根源修复)
 
 KALLAX 解决 6 个 eket 跟历史项目 未覆盖的反模式, 形成 6 武器 (W1-W6):
 
-| 武器 | 治根反模式 | KALLAX 实施 | eket 状态 |
+| 武器 | 从根源修复反模式 | KALLAX 实施 | eket 状态 |
 |------|-----------|-------------|----------|
 | **W1** Hash-Chain Audit Log | SEC-002 (audit log 无 hash chain) | SHA256 chain + `audit:verify` CLI | 无 |
 | **W2** 5-Level Fact-Forcing | 4-Level/6 维度重叠 (跟 Rule 8 联合) | L1-L5 5 独立脚本 (`scripts/verify/level-{1..5}.sh`) | 名字 only |
@@ -27,7 +27,7 @@ KALLAX 解决 6 个 eket 跟历史项目 未覆盖的反模式, 形成 6 武器 
 | **W5** Hook Server 回放 + Audit | 多 AI 工具协同缺口 | `/hooks/replay` + `/hooks/audit` endpoints | 无 |
 | **W6** Web Dashboard | FE-001 XSS | 1 page ≤ 500 LOC (textContent + escape) | 无 |
 
-**6 武器 1:1 验证** (跟 README §"6 武器 1:1 验证" 联合):
+**6 武器 对照验证** (跟 README §"6 武器 对照验证" 联合):
 
 | 武器 | 实施位置 | 验证命令 |
 |------|---------|----------|
@@ -100,7 +100,7 @@ KALLAX 解决 6 个 eket 跟历史项目 未覆盖的反模式, 形成 6 武器 
   - **coder**: 写代码 + commit (Rule 5/8 + Rule of 500 + PR ~100 行)
   - **reviewer**: A/B review + 跨 PR 验证 (Rule 8 5-Level + Rule 18 KPI)
   - **tester**: 写测试 + raw stdout (Rule 9 anti-fab + L2/L4 强制 stdout)
-  - **docs**: 写 .md + cheatsheet 1:1 验证 (Rule 5 DRY + Rule 19 标签 SOP)
+  - **docs**: 写 .md + cheatsheet 对照验证 (Rule 5 DRY + Rule 19 标签 SOP)
 
 ### 3.4 Q18 决策模型 (跟 `docs/process/q18-decision-model.md` 联合)
 
@@ -126,7 +126,7 @@ KALLAX 解决 6 个 eket 跟历史项目 未覆盖的反模式, 形成 6 武器 
 | **极简** | CLAUDE.md 3.3KB + 5KB cold start | CLAUDE.md 精简 | 一致 |
 | **术语** | 0 术语 (cheatsheet + lazy load) | 0 术语 | 一致 |
 | **Audit** | Hash-Chain SHA256 | 无 | KALLAX 独有 |
-| **Dashboard** | 1 page ≤ 500 LOC (XSS 治根) | 无 | KALLAX 独有 |
+| **Dashboard** | 1 page ≤ 500 LOC (XSS 从根源修复) | 无 | KALLAX 独有 |
 
 **Q11 实施总结**: 6 武器 KALLAX 胜 (W1-W6 全部 KALLAX 独有), eket 借 multi-agent 概念, 跟 eket MASTER-RULES.md §6 联合 ("借方法论 不借代码").
 
@@ -152,7 +152,7 @@ kallax audit:show --last 10
 kallax audit:verify  # exit 0 = chain intact, exit 1 = broken
 ```
 
-**跟 eket 对比**: eket 无 audit log hash chain, KALLAX W1 治根 SEC-002.
+**跟 eket 对比**: eket 无 audit log hash chain, KALLAX W1 从根源修复 SEC-002.
 
 ### W2: 5-Level Fact-Forcing
 
@@ -203,7 +203,7 @@ bash scripts/conductor/dispatch.sh --sub-role=coder TICKET-001 accept
 
 ### W6: Web Dashboard
 
-**目的**: 实时状态可视化 + 治根 FE-001 XSS
+**目的**: 实时状态可视化 + 从根源修复 FE-001 XSS
 
 **实施**: `node/src/web/dashboard.tsx` (1 page, ≤ 500 LOC, `textContent` + escape 强制, 0 innerHTML)
 
@@ -221,7 +221,7 @@ bash scripts/conductor/dispatch.sh --sub-role=coder TICKET-001 accept
 **L4 (独立见证)**: `kallax witness:spawn TICKET-XXX --independent` 新 session 重跑 L1-L3.
 **L5 (边界)**: `kallax test:boundary --input empty|max|unicode` + `test:exception --error-network|permission` + `test:concurrent --workers 4`.
 
-**PASS 标准**: 5/5 PASS = ticket 可 close (跟 `decision-matrix.sh --self-test` 1:1 验证).
+**PASS 标准**: 5/5 PASS = ticket 可 close (跟 `decision-matrix.sh --self-test` 对照验证).
 
 ---
 
@@ -235,7 +235,7 @@ bash scripts/conductor/dispatch.sh --sub-role=coder TICKET-001 accept
 - **coder** (默认): 写代码 + commit, Rule 5/8 + Rule of 500 + PR ~100 行
 - **reviewer**: A/B review + 跨 PR 验证, Rule 8 5-Level + Rule 18 KPI
 - **tester**: 写测试 + 集成测试 + raw stdout, Rule 9 anti-fab + L2/L4 stdout
-- **docs**: 写 .md + cheatsheet 1:1 验证, Rule 5 DRY + Rule 19 标签 SOP
+- **docs**: 写 .md + cheatsheet 对照验证, Rule 5 DRY + Rule 19 标签 SOP
 
 **分支权限**:
 
@@ -252,7 +252,7 @@ bash scripts/conductor/dispatch.sh --sub-role=coder TICKET-001 accept
 ## 8. Q18 决策模型 (5 levels × 4 roles = 25 cells)
 
 > **详细 SOP**: [docs/process/q18-decision-model.md](process/q18-decision-model.md) (543 行)
-> **1:1 验证**: `bash scripts/permission/decision-matrix.sh --self-test` → 25/25 PASS
+> **对照验证**: `bash scripts/permission/decision-matrix.sh --self-test` → 25/25 PASS
 
 ### 8.1 决策模式 三档
 
@@ -334,7 +334,7 @@ kallax status (运行时)
 
 ## 11. 集成测试路径 (6 武器 端到端 + decision-matrix 25 cells)
 
-**1:1 验证** (跟 README §"集成测试 25/25 PASS" 联合):
+**对照验证** (跟 README §"集成测试 25/25 PASS" 联合):
 
 ```bash
 # 6 武器 端到端 (跟 W1-W6 1:1)
@@ -377,43 +377,43 @@ bash tests/integration/epic-4-piece-test.sh
 
 ---
 
-## 13. eket ioredis 实战 (跟 v3.5.0 实战 1:1 联合, v3.7.0 L2 cache +1)
+## 13. eket ioredis 实战 (跟 v3.5.0 实战 配合, v3.7.0 L2 cache +1)
 
 **v3.5.0 实战 evidence 落地** (`docs/evidence/v3.5.0/ioredis-parity-check.md`):
 
-- ioredis version `^5.4.0` 跟 eket 0.5+ 兼容 (跟 eket 1:1 联合, 跟"诚实修正" 联合 0 假装)
-- 跟 eket 分布式锁 (SETNX) + 分布式队列 (Pub/Sub) 1:1 验证
-- 跟 v3.0.0 master-election.ts 三级选举 (Redis SETNX + SQLite + File) 1:1 验证
+- ioredis version `^5.4.0` 跟 eket 0.5+ 兼容 (跟 eket 配合, 跟"诚实修正" 联合 0 假装)
+- 跟 eket 分布式锁 (SETNX) + 分布式队列 (Pub/Sub) 对照验证
+- 跟 v3.0.0 master-election.ts 三级选举 (Redis SETNX + SQLite + File) 对照验证
 
 **v3.7.0 L2 cache 实战 evidence 落地** (`docs/evidence/v3.7.0/l2-cache-parity-check.md`):
 
-- L1 moka + L2 Redis 二级 cache (跟 eket architecture 1:1 借鉴, 实战比例 20% → 30%)
+- L1 moka + L2 Redis 二级 cache (跟 eket architecture 借鉴, 实战比例 20% → 30%)
 - L2 cache TTL 300s (跟 eket `cache-default-ttl` 300s 1:1)
-- evidence byte-different 跟 dry-run (跟 V350-B P-002 1:1 联合)
+- evidence byte-different 跟 dry-run (跟 V350-B P-002 配合)
 
 ---
 
-## 14. 文化 + 法律 1:1 联合 (跟 v3.6.0 1:1 联合, 跟 Q12 战略 + 反讽 1:1 复发 治根)
+## 14. 文化 + 法律 配合 (跟 v3.6.0 配合, 跟 Q12 战略 + 假 PASS 症状复发 从根源修复)
 
-**文化** (跟 V350-B P-001 1:1 联合 治根 "装饰反讽"):
-- 0 装饰 引用 (跟 V350-B P-001 1:1 联合 治根)
-- 0 估数 (跟 V350-B P-005 1:1 联合 治根 "1.5-2x / 100% parity")
-- 0 narrative 包装 (跟 V350-B P-002 1:1 联合 治根)
-- 0 反讽 fake theatre (跟 V350-B P-002 1:1 联合, v3.7.0 +1 immutable script)
+**文化** (跟 V350-B P-001 配合 从根源修复 "装饰反讽"):
+- 0 装饰 引用 (跟 V350-B P-001 配合 从根源修复)
+- 0 估数 (跟 V350-B P-005 配合 从根源修复 "1.5-2x / 100% parity")
+- 0 narrative 包装 (跟 V350-B P-002 配合 从根源修复)
+- 0 反讽 fake theatre (跟 V350-B P-002 配合, v3.7.0 +1 immutable script)
 
-**价值观** (跟 CLAUDE.md §3 1:1 联合, 跟 Q12 战略 1:1 联合):
-- 小步迭代 + 彻底完成 (反讽 1:1 复发 治根)
+**价值观** (跟 CLAUDE.md §3 配合, 跟 Q12 战略 配合):
+- 小步迭代 + 彻底完成 (假 PASS 症状复发 从根源修复)
 - 诚实修正 (1.5-2x → 0.92x, 100% parity → 30%)
-- 反讽 1:1 复用 治根 (5 release 累计 → v3.7.0 6 release 累计)
+- 复用同类症状,从根源修复 从根源修复 (5 release 累计 → v3.7.0 6 release 累计)
 
 **不可更改法律** (immutable scripts, v3.6.0 4 → v3.7.0 5):
 1. `check-decorative-claim.sh` (0 装饰 引用)
 2. `check-narrative.sh` (0 narrative 包装)
 3. `check-fail-closed.sh` (0 fail-open)
 4. `check-self-heal.sh` (self-heal pattern)
-5. `check-evidence-fake.sh` (v3.7.0 新增, 0 fake theatre, 跟 V350-B P-002 1:1 联合)
+5. `check-evidence-fake.sh` (v3.7.0 新增, 0 fake theatre, 跟 V350-B P-002 配合)
 
-**KALLAX_DESIGN_MODE=1 master token** (跟 V350-B P-002 1:1 联合):
+**KALLAX_DESIGN_MODE=1 master token** (跟 V350-B P-002 配合):
 - 5 scripts 全 run as guards
 - master token 显式 接受 violations
 - 0 假装 100% PASS
@@ -464,4 +464,4 @@ bash tests/integration/epic-4-piece-test.sh
 
 **Source**: Iter 11 (集成测试 6 武器 端到端) + Iter 12 (v3.0.0 release) + Q11 实施 (跟 eket 互补).
 **验证**: `bash tests/integration/6-weapons-e2e-test.sh` (6/6) + `bash tests/integration/decision-matrix-test.sh` (25/25) + `bash scripts/permission/decision-matrix.sh --self-test`.
-**1:1 验证**: README.md (333 行) × CHEATSHEET.md (27 行) × 5-levels.md (143 行) × 4-roles.md (181 行) × q18-decision-model.md (543 行) × 6 武器 (6) × 25 cells (5×4) × 9 KPIs (KPI 表).
+**对照验证**: README.md (333 行) × CHEATSHEET.md (27 行) × 5-levels.md (143 行) × 4-roles.md (181 行) × q18-decision-model.md (543 行) × 6 武器 (6) × 25 cells (5×4) × 9 KPIs (KPI 表).

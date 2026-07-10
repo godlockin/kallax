@@ -2,7 +2,7 @@
 
 **日期**: 2026-06-29
 **Reviewer**: Frontend (Performer/reviewer sub-role, 1 of 6 angles)
-**范围**: 组件 / 渲染 / LCP / 状态 / 包体积 (跟 v3.5.0-hotfix1 web/ 1:1 联合)
+**范围**: 组件 / 渲染 / LCP / 状态 / 包体积 (跟 v3.5.0-hotfix1 web/ 配合)
 **基线**: feature/eket-vs-kallax @ 1b9694b (v3.5.0-hotfix1) — web/ 6 files + 5 release 累计 web 改动
 
 ---
@@ -13,7 +13,7 @@
 |------|----|----|
 | KALLAX web/ 1 page 4 tab (W6 武器) | ✅ | — |
 | eket web dashboard (Express + React, 推测) | ✅ (跟 skill 文档 推断) | — |
-| V310-B P-004 (Tab 状态) + U-001 (escape) 治根 落地 | ✅ | — |
+| V310-B P-004 (Tab 状态) + U-001 (escape) 从根源修复 落地 | ✅ | — |
 | 跨 release 留待 master explicit 拍板 | ✅ | — |
 | 改 code / scripts / CLAUDE.md / docs/ | — | ❌ (跟 Iter 2 锁 联合) |
 | 重复 V310-A / V350-A / panel-2026-06-25/03-frontend.md 1:1 评价 | — | ❌ (跟本任务 联合 0 重复) |
@@ -31,7 +31,7 @@
 | **data wiring 隐式 fallback** | `fetch('/api/dispatch/dashboard.json')` (已砍, Iter 9 W6) | 推测 react-query + fallback | KALLAX 胜 (0 隐式 fallback) |
 | **组件目录** | `web/` root + `web/lib/escape.js` 1 utility (61 行) + `web/src/dashboard/tokens.css` 1 file (21 行) | 推测 `node/src/web/{components,hooks,utils}/` 多 sub-dir | KALLAX 胜 极简 (跟"反讽" 联合 0 dead code) |
 
-**引用 1:1 验证**:
+**引用 对照验证**:
 - `web/index.html` 116 行 + `web/app.js` 263 行 + `web/styles.css` 100 行 + `web/lib/escape.js` 61 行 + `web/scripts/start.sh` 69 行 = **609 行**, 跟 Iter 9 commit `df6edfe` "1 page ≤ 500 LOC 总行数 (475)" 比, 加 U-001 (escape 47 行) + P-004 (Tab 状态 8 行) 累计 = 实际 1 page ≤ 700 LOC (5 release 累计, 跟"诚实修正" 联合 0 假装 ≤ 500)
 - Iter 9 砍 `web/src/dashboard/dispatch/{index.html,dispatch.js,dispatch.css}` 150+203+150 = 503 行 (commit `df6edfe` "砍 web/src/dashboard/ (重复 dispatch, Iter 9 替代)")
 - eket skill 文档 0 提 web dashboard 体积, 推测 React + node_modules ≥ 200KB (跟 bundle size 对比 联合)
@@ -52,38 +52,38 @@
 | **总 runtime** | **~36K** | 推测 ≥ 1MB (React 估算) | KALLAX ~30x 胜 |
 | **Docker image** | `node:20-alpine + http-server` 估 ~80MB (跟 `web/Dockerfile` 2 stage build) | 推测 ≥ 300MB (Node + React build artifacts) | KALLAX ~4x 胜 |
 
-**引用 1:1 验证**:
+**引用 对照验证**:
 - `du -sh web/` → 108K (跟 `web/package-lock.json` 598 行 联合)
 - `web/index.html` 8K, `web/app.js` 16K, `web/styles.css` 8K, `web/lib/escape.js` 4K, `web/src/dashboard/tokens.css` 估 1K
-- eket skill `SKILL.md` 文档 0 提 web 体积, React 推断 ≥ 200KB (跟"反讽" 联合 治根 "React 0 必要 极简 反讽")
+- eket skill `SKILL.md` 文档 0 提 web 体积, React 推断 ≥ 200KB (跟"反讽" 联合 从根源修复 "React 0 必要 极简 反讽")
 
 **KALLAX 胜 2: 冷启动体积 30x+ 优势 (跟 eket React + webpack 推测对比)**
 
 ---
 
-## 3. XSS 治根 跟 eket (跟 V310-B P-004 / U-001 1:1 联合)
+## 3. XSS 从根源修复 跟 eket (跟 V310-B P-004 / U-001 配合)
 
 | 维度 | KALLAX v3.5.0-hotfix1 | eket (推测 React) | 评价 |
 |------|----------------------|-------------------|------|
-| **textContent vs innerHTML** | 全部 textContent (commit `df6edfe` 治根 FE-001) | React 默认 escape (jsx 文本节点) | 1:1 (跟框架 default 联合) |
+| **textContent vs innerHTML** | 全部 textContent (commit `df6edfe` 从根源修复 FE-001) | React 默认 escape (jsx 文本节点) | 1:1 (跟框架 default 联合) |
 | **attribute escape** | `web/lib/escape.js:12-14` escapeAttr + `setAttribute` (V310 U-001, commit `b804267`) | React 自动 escape string attrs | 1:1 |
 | **URL sanitization** | `web/lib/escape.js:16-23` sanitizeUrl (block javascript:/data:text/html/vbscript:) | React `dangerouslySetInnerHTML` 默认禁, 但 href 0 强制 | **KALLAX 胜** (0 user-supplied URL 入口, eket 推测 0 sanitize) |
 | **on* event handler strip** | `web/lib/escape.js:48-52` 自动 console.warn + drop | React 0 显式 on* (jsx 强制 camelCase) | 1:1 |
 | **测试 覆盖** | `web/tests/escape-attr-test.js` 84 行 7/7 PASS (V310 U-001) + `web/tests/tab-persistence-test.js` 60 行 4/4 PASS (V310 P-004) | 推测 jest + RTL 单元测试 (≥ 50 tests) | KALLAX 胜 0 装饰 (11 tests / 144 行 vs 推测 50 tests / 500+ 行) |
-| **FE-001 治根 反讽** | Iter 9 commit `df6edfe` 砍 innerHTML, 全部 textContent | 推测 React default | 1:1 (框架 1:1 借鉴) |
-| **FE-002 硬编码 URL** | `web/app.js:10-11` `window.location.origin` (Iter 9 治根) | 推测 process.env.REACT_APP_API | 1:1 |
+| **FE-001 从根源修复 反讽** | Iter 9 commit `df6edfe` 砍 innerHTML, 全部 textContent | 推测 React default | 1:1 (框架 借鉴) |
+| **FE-002 硬编码 URL** | `web/app.js:10-11` `window.location.origin` (Iter 9 从根源修复) | 推测 process.env.REACT_APP_API | 1:1 |
 
-**引用 1:1 验证**:
+**引用 对照验证**:
 - `web/lib/escape.js:48-52` on*= strip (V310 U-001 commit `b804267` 47 行新增)
 - `web/lib/escape.js:32` href/src/action/formaction URL sanitize
 - `web/tests/escape-attr-test.js` 7 cases (javascript: / data:text/html / vbscript: / & < > " ' / on*= 等)
-- eket skill 0 提 XSS 治根, 推测 React default escape (跟"反讽" 联合 0 装饰)
+- eket skill 0 提 XSS 从根源修复, 推测 React default escape (跟"反讽" 联合 0 装饰)
 
 **KALLAX 胜 3: URL sanitization 主动 (block javascript:/data:/vbscript:) 跟 eket React 默认 (无主动 sanitize) 对比 — KALLAX 0 装饰**
 
 ---
 
-## 4. Tab 状态 / i18n / Build 对比 (跟 V310-B P-004 / U-002 1:1 联合)
+## 4. Tab 状态 / i18n / Build 对比 (跟 V310-B P-004 / U-002 配合)
 
 | 维度 | KALLAX v3.5.0-hotfix1 | eket (推测) | 评价 |
 |------|----------------------|-------------|------|
@@ -95,11 +95,11 @@
 | **HMR** | 0 HMR (refresh 浏览器) | 推测 webpack HMR | eket 胜 (dev UX) |
 | **Source map** | 0 source map (生产) | 推测 production source map | 1:1 (production) |
 
-**引用 1:1 验证**:
+**引用 对照验证**:
 - `web/app.js:14-15` `let activeTab = ...localStorage.getItem('kallax.activeTab') || 'overview'` (V310 P-004)
 - `web/app.js:52-53` `localStorage.setItem('kallax.activeTab', tab)` 跟 try/catch private-mode 兼容
 - `web/tests/tab-persistence-test.js` 4/4 PASS (default + persist + reload restore + private-mode safe)
-- `web/app.js:252` `location.reload()` 切语言 (V310 U-001 review 留待 P1 治根, 状态丢)
+- `web/app.js:252` `location.reload()` 切语言 (V310 U-001 review 留待 P1 从根源修复, 状态丢)
 
 **KALLAX 胜 4: 0 build (跟 eket React + webpack 对比), 跟 V310-B U-002 "i18n 字符串抽取" 留待**
 
@@ -116,13 +116,13 @@
 | **EketError 处理** | `body.error?.message \|\| body.error?.code \|\| 'API error'` (web/app.js:36) — soft 处理 | 推测 standard error middleware | 1:1 |
 | **showError UI** | `error-banner` div + click dismiss (web/app.js:40-48) | 推测 toast / modal | KALLAX 胜 极简 (跟"品味" 联合) |
 
-**引用 1:1 验证**:
+**引用 对照验证**:
 - `web/app.js:67` SSE URL = `window.location.origin + '/events'`
 - `web/app.js:77-80` onerror + 3s reconnect (跟"反讽" 联合 "固定 3s 可能 雷暴" 留待)
 - `web/app.js:107-247` 7 个 API 集成点 (overview + tasks + agents + system 4 tab)
 - eket skill `SKILL-DETAIL.md` 提 TASK-141 "SSE 5 态事件流补完 P0 Sprint1" — 推断 eket SSE 0 完整
 
-**1:1 对齐 1: KALLAX SSE 跟 eket SSE 都 0 完整, 都 留待 (跟"独立" 拍板 联合 0 强制 拍板)**
+**对齐 1: KALLAX SSE 跟 eket SSE 都 0 完整, 都 留待 (跟"独立" 拍板 联合 0 强制 拍板)**
 
 ---
 
@@ -139,14 +139,14 @@
 | v3.1.0-hotfix U-001 | `b804267` `fix(v3.1.0-hotfix): U-001 web/escape.js el() attribute sanitization` | escape.js 24 → 61 行 (+47, escapeAttr + sanitizeUrl + on*= strip) | ~2250 |
 | v3.1.0-hotfix P-004 | `db0775d` `fix(v3.1.0-hotfix): P-004 web Tab 状态 localStorage 保持` | app.js 8 行 (localStorage init + setItem + try/catch) | **~2260** (5 release 累计, 跟"诚实修正" 联合 0 假装 ≤ 500) |
 
-**引用 1:1 验证**:
+**引用 对照验证**:
 - `git log --all --oneline -- web/` → 11 commits, 累计 web/ 总行数 `find web/ -type f \( -name "*.js" -o -name "*.css" -o -name "*.html" \) | xargs wc -l` = 116 + 100 + 263 + 84 + 60 + 61 + 21 = **705 行** (跟"诚实修正" 联合 0 假装 ≤ 500)
 - Iter 9 commit `df6edfe` 自称 "1 page ≤ 500 LOC (475)" 是 **bug-fix 前** 估算 (escape.js 24 行 + app.js 259 行 + index.html 116 行 + styles.css 100 行 = 499 行), 加 V310 2 hotfix 累计 escape.js +47 行 + app.js +8 行 = **~554 行** (跟"诚实修正" 联合 0 假装)
 - 5 release 累计 net -240 行 (砍 503 dispatch + 加 47 escape + 加 8 tab)
 
-**反讽 1:1 复发**:
+**假 PASS 症状复发**:
 - V350-B U-001 review 0 提 web/, 但 web/ 跨 release 累计 LOC 漂移 499 → 554 (跟"反讽" 联合 "claim ≤ 500 但 实际 554" 0 假装)
-- V310-B P-004 治根 (commit `db0775d`) 是 "5 release 累计" 反讽 1:1 复发 — 第 1 个 web app 0 localStorage, 第 5 release 治根
+- V310-B P-004 从根源修复 (commit `db0775d`) 是 "5 release 累计" 假 PASS 症状复发 — 第 1 个 web app 0 localStorage, 第 5 release 从根源修复
 
 **KALLAX 胜 5: 5 release 累计 web 净改动 -240 行 (砍 重复 > 加 新功能), 跟 eket "无 web dashboard" 比 是 KALLAX 独有**
 
@@ -165,21 +165,21 @@
 | `GET /health` | `web/app.js:129` `api('/health')` | KALLAX 独有 |
 | `GET /events` (SSE) | `web/app.js:67` EventSource | KALLAX 独有 (eket SSE 0 完整, 跟 TASK-141 联合) |
 
-**反讽 1:1 复发**:
+**假 PASS 症状复发**:
 - panel-2026-06-25/02-backend.md F4 (跟本文件 联合 0 重复 F4 内容): "`PUT /api/tasks/:id/claim` vs 实际 `POST /api/tasks/:id/claim`" — 跟 KALLAX web `/api/tasks` (无 /claim endpoint) 比, 0 集成
-- eket 跟 KALLAX 0 共享 API contract, 0 借鉴 web 集成层 (跟"反讽" 联合 治根 "eket 借 multi-agent 概念 0 借代码")
+- eket 跟 KALLAX 0 共享 API contract, 0 借鉴 web 集成层 (跟"反讽" 联合 从根源修复 "eket 借 multi-agent 概念 0 借代码")
 
-**1:1 对齐 2: KALLAX web/ 跟 eket HTTP API 0 1:1 借鉴 (跟 CLAUDE.md §"KALLAX vs eket" "eket 借 multi-agent 概念" 联合)**
+**对齐 2: KALLAX web/ 跟 eket HTTP API 0 借鉴 (跟 CLAUDE.md §"KALLAX vs eket" "eket 借 multi-agent 概念" 联合)**
 
 ---
 
-## 8. 关键 Gap (KALLAX v3.6.0 应 治根)
+## 8. 关键 Gap (KALLAX v3.6.0 应 从根源修复)
 
 | # | Gap | 影响 | 跟 eket 比 |
 |---|-----|------|----------|
 | **G1** | **i18n 字符串 inline 抽取** (V310 U-002 留待) | 加 ja.json / ko.json 需改 JS, 0 hot reload | eket 推测 react-intl + JSON dicts |
 | **G2** | **lang 切换 location.reload() 状态丢** (V310 U-001 review 留待) | 切语言 = 刷新页面, scroll/filter 丢 | eket 推测 react-i18next SPA 切 不重载 |
-| **G3** | **Tab 状态 仅 activeTab 持久化, filter / search 不持久** (V310 P-004 仅治根 activeTab) | refresh → search state 丢 | eket 推测 react-router + redux-persist |
+| **G3** | **Tab 状态 仅 activeTab 持久化, filter / search 不持久** (V310 P-004 仅从根源修复 activeTab) | refresh → search state 丢 | eket 推测 react-router + redux-persist |
 | **G4** | **SSE 固定 3s 重连 无指数退避** (web/app.js:80) | 服务端 restart 后 雷暴 reconnect | eket 推测 retry-after / backoff |
 | **G5** | **web README 缺失** (跟 panel-2026-06-25/03-frontend.md F4 联合, 0 重复内容) | 新人 onboarding 0 入口 | eket 推测 1 README + Storybook |
 | **G6** | **路由 /api/tasks vs eket /api/v1/tasks 不一致** | 跨项目 集成 0 1:1 | (跟 G7 backend Gap 联合) |
@@ -189,7 +189,7 @@
 
 ---
 
-## 9. 评价 综合 (KALLAX 胜 / eket 胜 / 1:1 对齐)
+## 9. 评价 综合 (KALLAX 胜 / eket 胜 / 对齐)
 
 ### KALLAX 胜 (5 项)
 
@@ -203,7 +203,7 @@
 
 1. **HMR / 开发体验**: eket 推测 webpack HMR / Vite, KALLAX refresh 浏览器 (跟"品味" 战略 联合, dev UX)
 
-### 1:1 对齐 (4 项)
+### 对齐 (4 项)
 
 1. **XSS textContent + attribute escape**: KALLAX explicit `web/lib/escape.js` 跟 eket React default escape (1:1)
 2. **SSE 实时推送**: KALLAX `EventSource('/events')` 跟 eket TASK-141 "SSE 5 态补完" (都 0 完整, 都 留待)
@@ -212,7 +212,7 @@
 
 ### 跟 eket HTTP API 集成 状态 (跟"反讽" 联合 0 估数)
 
-- **路由不一致**: eket `/api/v1/*` vs KALLAX `/api/*` (0 1:1 借鉴)
+- **路由不一致**: eket `/api/v1/*` vs KALLAX `/api/*` (0 借鉴)
 - **0 共享 API contract**: KALLAX web 0 借鉴 eket 集成层 (跟 CLAUDE.md "eket 借概念 0 借代码" 联合)
 
 ---
@@ -228,7 +228,7 @@ du -sh web/index.html web/app.js web/styles.css web/lib/escape.js web/src/dashbo
 grep -c "tab-content" web/index.html        # → 4
 grep -c "switchTab" web/app.js              # → 4 (overview/tasks/agents/system)
 
-# XSS 治根 验证 (跟 §3 联合)
+# XSS 从根源修复 验证 (跟 §3 联合)
 grep -c "textContent" web/app.js            # → 多处
 grep -c "escapeAttr\|sanitizeUrl" web/lib/escape.js  # → 多处
 grep -c "on\*\|onclick" web/lib/escape.js   # → 1 (console.warn drop)
@@ -246,29 +246,29 @@ find web/ -type f \( -name "*.js" -o -name "*.css" -o -name "*.html" \) | xargs 
 
 ---
 
-## 11. 总结 (跟 panel-2026-06-25/03-frontend.md 1:1 联合 0 重复)
+## 11. 总结 (跟 panel-2026-06-25/03-frontend.md 配合 0 重复)
 
-| 维度 | KALLAX v3.5.0-hotfix1 | eket (推测) | 1:1 验证 |
+| 维度 | KALLAX v3.5.0-hotfix1 | eket (推测) | 对照验证 |
 |------|----------------------|------------|----------|
 | 1 page ≤ 700 LOC (跟 Iter 9 + V310 累计) | ✅ 705 行 | 推测 ≥ 1MB React bundle | 30x 优势 |
 | 4 tab (Overview / Tasks / Agents / System) | ✅ | ✅ (推测) | 1:1 |
 | Vanilla JS 0 build | ✅ | ❌ (推测 React + webpack) | 0 build 优势 |
-| textContent + escape 治根 XSS | ✅ (Iter 9 + V310 U-001) | ✅ (推测 React default) | 1:1 |
+| textContent + escape 从根源修复 XSS | ✅ (Iter 9 + V310 U-001) | ✅ (推测 React default) | 1:1 |
 | localStorage Tab 状态 | ✅ (V310 P-004) | 推测 react-router | 1:1 |
 | i18n 抽取 留待 | V310 U-002 P1 | 推测 react-intl | 1:1 (留待 同) |
 | SSE EventSource | ✅ (web/app.js:67) | ❌ (TASK-141 P0 留待) | **KALLAX 略胜** |
 | 6 deploy scripts (跟 EPIC-058-C 联合) | ✅ | 推测 1 Dockerfile | KALLAX 胜 |
-| 跟 eket HTTP API 1:1 集成 | ❌ (路由 /api/ vs /api/v1/ 不一致) | — | 反讽 1:1 复发 |
+| 跟 eket HTTP API 1:1 集成 | ❌ (路由 /api/ vs /api/v1/ 不一致) | — | 假 PASS 症状复发 |
 
-**KALLAX 胜 5 · eket 胜 1 · 1:1 对齐 4** = **10 维度 评价**
+**KALLAX 胜 5 · eket 胜 1 · 对齐 4** = **10 维度 评价**
 
 **Source**:
-- KALLAX `web/` HEAD (跟 v3.5.0-hotfix1 1:1 联合)
+- KALLAX `web/` HEAD (跟 v3.5.0-hotfix1 配合)
 - eket `~/.claude/skills/eket/SKILL.md` + `SKILL-DETAIL.md` + `setup-guide.md` (跟 SKILL 1:1 推断, 0 估数)
-- panel-2026-06-25/03-frontend.md (跨 release 留待 1:1 联合 0 重复 F4 F8 内容)
-- V310-B-REVIEW-2026-06-29.md (U-001 + U-002 + P-004 + P-005 1:1 联合)
+- panel-2026-06-25/03-frontend.md (跨 release 留待 配合 0 重复 F4 F8 内容)
+- V310-B-REVIEW-2026-06-29.md (U-001 + U-002 + P-004 + P-005 配合)
 
-**跟 v3.1.0 A 组 / v3.5.0 A 组 前端 模式 1:1 联合**:
+**跟 v3.1.0 A 组 / v3.5.0 A 组 前端 模式 配合**:
 - V310-A 留待 0 单独 frontend angle (跟 V310-B U-001/U-002/P-004/P-005 1:1)
 - V350-A 留待 0 单独 frontend angle (跟 panel-2026-06-25/03-frontend.md 1:1)
-- 本文件 是 6 angles 中 第 3 angle (frontend), 跟前 2 angles (overview + backend) 1:1 联合 0 重复
+- 本文件 是 6 angles 中 第 3 angle (frontend), 跟前 2 angles (overview + backend) 配合 0 重复

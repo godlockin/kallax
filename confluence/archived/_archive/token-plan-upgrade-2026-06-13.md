@@ -34,7 +34,7 @@
 | **Token Plan Max** | **5h cap 9917k/9917k reached** (2026-06-12 主公升档) |
 | **派单能力** | 1+2 容量 (1 Conductor + 2/4 Performer subagent) |
 | **Sprint 4 8 票** | 8 subagent 立即召唤, 1+2 容量并行, 节省 18h wall time |
-| **痛点 6 治根 3/5 步** | 3 步完成 (file-lock + atomic-write + conflict-detect) |
+| **痛点 6 从根源修复 3/5 步** | 3 步完成 (file-lock + atomic-write + conflict-detect) |
 | **Step 4 + Step 5** | 后续 (跟 EPIC-039 联动) |
 
 ### 2.2 提议 A: 升 8h cap (轻度升级, 主公预算最低)
@@ -45,7 +45,7 @@
 | **派单能力** | 1+2 容量 (跟现状一致) |
 | **持续时长** | 8h 持续开发 (跟 Sprint 4 8 票 28h 估时 vs 1+2 容量 18h wall time 比例 一致) |
 | **预算影响** | +60% Token (主公预算轻度增加) |
-| **价值** | 痛点 6 Step 4 (outbox-isolation) + Step 5 (worktree-state-sync) 立即派单, 痛点 6 治根 5/5 步完成 |
+| **价值** | 痛点 6 Step 4 (outbox-isolation) + Step 5 (worktree-state-sync) 立即派单, 痛点 6 从根源修复 5/5 步完成 |
 | **跟主公对齐** | "Token Plan 升" 拍 (Phase 6 决策 B) 轻度升级 |
 
 ### 2.3 提议 B: 升 12h cap (中度升级, 主公预算中度增加, 推荐)
@@ -56,7 +56,7 @@
 | **派单能力** | **1+4 容量** (1 Conductor + 4 Performer subagent, 跟 EPIC-038 4 类 Performer sub-role 一致) |
 | **持续时长** | 12h 持续开发 (跟 Sprint 4 8 票 28h 估时 vs 1+4 容量 12h wall time 比例 一致) |
 | **预算影响** | +140% Token (主公预算中度增加) |
-| **价值** | 痛点 6 治根 5/5 步 + 4 文档 REV2 完成 + Rule 19 落地 (L4 verify 自检漏洞) + 痛点 2 升级 (借鉴 LangGraph Checkpoint 模式) + Auditor 角色落地 (跟 Q5 L4 角色规范对齐) |
+| **价值** | 痛点 6 从根源修复 5/5 步 + 4 文档 REV2 完成 + Rule 19 落地 (L4 verify 自检漏洞) + 痛点 2 升级 (借鉴 LangGraph Checkpoint 模式) + Auditor 角色落地 (跟 Q5 L4 角色规范对齐) |
 | **跟主公对齐** | "Token Plan 升" 拍 (Phase 6 决策 B) 中度升级, 跟"反哺框架, 让飞轮转"对齐 |
 
 ### 2.4 提议 C: 升 24h cap (强度升级, 主公预算强度增加)
@@ -67,7 +67,7 @@
 | **派单能力** | **1+4 容量 + 持续监控** (1 Conductor + 4 Performer subagent + 持续 audit cron) |
 | **持续时长** | 24h 持续开发 + 持续 audit (跟 Phase 4 持续 audit 模式一致) |
 | **预算影响** | +380% Token (主公预算强度增加) |
-| **价值** | 痛点 6 治根 5/5 步 + 4 文档 REV2 + Rule 19 落地 + 痛点 2 升级 + Auditor 角色落地 + **PHASE-008 启动** (跟 PHASE-007 review 闭环) + 持续 audit cron (跟 PHASE-005 模式一致) |
+| **价值** | 痛点 6 从根源修复 5/5 步 + 4 文档 REV2 + Rule 19 落地 + 痛点 2 升级 + Auditor 角色落地 + **PHASE-008 启动** (跟 PHASE-007 review 闭环) + 持续 audit cron (跟 PHASE-005 模式一致) |
 | **跟主公对齐** | "Token Plan 升" 拍 (Phase 6 决策 B) 强度升级, 跟"反哺框架, 让飞轮转"+ 持续监控对齐 |
 
 ---
@@ -84,8 +84,8 @@
 | 4 | EPIC-039-D (strong-verify-6d) | 6h | 6h (Rule 16 Step 5 载体) | 3 文件 18537 bytes, 11/11 + 7/7 PASS |
 | 5 | EPIC-041-A (痛点 6 调查扩展) | 4h | 4h (BE-11 越界反向) | 279 行报告 + 5/5 PASS |
 | 6 | EPIC-041-B (file-lock 修 BE-7) | 6h | 6h (BE-7 3 安全 issues 修) | 562 行 file-lock.sh, 7/7 PASS + 12/12 L4 |
-| 7 | EPIC-041-C (atomic-write) | 6h | 6h (6/6 PASS) | 3 文件, 痛点 6 治根 Step 2 |
-| 8 | EPIC-041-D (conflict-detect) | 6h | 6h (4/4 + 9/9 PASS) | 4 文件 28064 bytes, 痛点 6 治根 Step 3 |
+| 7 | EPIC-041-C (atomic-write) | 6h | 6h (6/6 PASS) | 3 文件, 痛点 6 从根源修复 Step 2 |
+| 8 | EPIC-041-D (conflict-detect) | 6h | 6h (4/4 + 9/9 PASS) | 4 文件 28064 bytes, 痛点 6 从根源修复 Step 3 |
 | **累计** | **46h 估时** | **46h 实际跑时** | **1+2 容量 18h wall time** (节省 28h) |
 
 **跟 Token 容量对齐**:
@@ -96,9 +96,9 @@
 
 ---
 
-## 4. 跟痛点 6 治根 5/5 步完成 联动
+## 4. 跟痛点 6 从根源修复 5/5 步完成 联动
 
-### 4.1 痛点 6 治根 3/5 步 (现状)
+### 4.1 痛点 6 从根源修复 3/5 步 (现状)
 
 | Step | 产出 | 状态 |
 |---|---|---|
@@ -108,7 +108,7 @@
 | Step 4: outbox-isolation.sh | 跟 EPIC-039 联动 | ⏳ 后续 |
 | Step 5: worktree-state-sync.sh | 跟 EPIC-039-C 联动 | ⏳ 后续 |
 
-### 4.2 痛点 6 治根 5/5 步完成 (跟 Token 升级 联动)
+### 4.2 痛点 6 从根源修复 5/5 步完成 (跟 Token 升级 联动)
 
 | 提议 | 痛点 6 5/5 步完成 | 估时 | 跟 Token 容量 |
 |---|---|---|---|
@@ -148,7 +148,7 @@
 | "Token Plan 升" 拍 (Phase 6 决策 B) | ✅ 提议 3 档 (8h/12h/24h, 主公预算拍板) |
 | "同意建议" 拍 (Phase 7 4 阶段 × 4 任务) | ✅ Sprint 4 8 票 done + 4 文档 REV2 + 11 BE 累计 |
 | "召唤团队干活" 拍 (12 subagent 立即召唤) | ✅ 8/8 票 done (Sprint 4 100%) |
-| "反哺框架, 让飞轮转" | ✅ 痛点 6 治根 3/5 步 + 4 文档 REV2 + 升 Token 提议 |
+| "反哺框架, 让飞轮转" | ✅ 痛点 6 从根源修复 3/5 步 + 4 文档 REV2 + 升 Token 提议 |
 | "避免反复出现" | ✅ 11 BE 累计 + 12 subagent 强验证 6 维度 |
 | "完整体系" | ✅ 6 痛点 + 18 Rule + 15 门禁 + 5 视角 + 11 BE |
 
@@ -157,7 +157,7 @@
 | 提议 | 价值 | 预算影响 | 推荐 |
 |---|---|---|---|
 | 提议 A: 8h cap | 痛点 6 Step 4 + Step 5 立即派单 | +60% Token (轻度) | ⚠️ 最低优先级 |
-| **提议 B: 12h cap** | **痛点 6 治根 5/5 步 + 4 文档 REV2 + Rule 19 落地 + 痛点 2 升级 + Auditor 角色落地** | **+140% Token (中度, 推荐)** | **✅ 推荐** |
+| **提议 B: 12h cap** | **痛点 6 从根源修复 5/5 步 + 4 文档 REV2 + Rule 19 落地 + 痛点 2 升级 + Auditor 角色落地** | **+140% Token (中度, 推荐)** | **✅ 推荐** |
 | 提议 C: 24h cap | 痛点 6 5/5 步 + 4 文档 REV2 + Rule 19 落地 + 痛点 2 升级 + Auditor 角色落地 + **PHASE-008 启动 + 持续 audit cron** | +380% Token (强度) | ⚠️ 强预算 |
 
 **推荐 提议 B: 12h cap** (跟主公"流程逻辑 > 扩充配置" 战略转向对齐, 跟 PHASE-006-ROADMAP-REV2 飞轮反哺对齐, 跟 Sprint 4 8 票累计对齐).
@@ -171,7 +171,7 @@
 1. **主公拍板** (本次决策, 提议 A/B/C 选一)
 2. **Master 立即执行** (跟 Phase 6 决策 B 一致, 跟主公"Token Plan 升"拍对齐)
 3. **Sprint 5 启动** (跟主公"流程逻辑 > 扩充配置" 战略转向对齐, 跟 PHASE-008 启动)
-4. **痛点 6 治根 5/5 步** (跟主公"反哺框架"对齐)
+4. **痛点 6 从根源修复 5/5 步** (跟主公"反哺框架"对齐)
 5. **持续 audit cron** (跟 PHASE-005 模式一致)
 
 ### 7.2 升 Token 提议 落地动作 (跟主公"反哺框架"对齐)
@@ -180,7 +180,7 @@
 |---|---|
 | **Token Plan 升档** | 主公拍板 → Master 立即执行 (跟 Phase 6 决策 B 一致) |
 | **Sprint 5 启动** | 1+4 容量 (1 Conductor + 4 Performer subagent) |
-| **痛点 6 治根 5/5 步** | Step 4 (outbox-isolation) + Step 5 (worktree-state-sync) 立即派单 |
+| **痛点 6 从根源修复 5/5 步** | Step 4 (outbox-isolation) + Step 5 (worktree-state-sync) 立即派单 |
 | **Rule 19 落地** | L4 verify 自检漏洞 (跟 BE-9 + BE-10 联合) |
 | **痛点 2 升级** | 借鉴 LangGraph Checkpoint 模式 |
 | **Auditor 角色落地** | 跟 Q5 L4 角色规范对齐 |
@@ -191,7 +191,7 @@
 | 维度 | 飞轮反哺 |
 |---|---|
 | **4 文档 REV2** | ✅ 4 done (PHASE-007-REVIEW + KALLAX-VS-INDUSTRY-REV2 + PHASE-006-ROADMAP-REV2 + TOKEN-PLAN-UPGRADE) |
-| **痛点 6 治根 5/5 步** | ⏳ 3/5 步已 done (提议 B/C 立即派单 5/5 步) |
+| **痛点 6 从根源修复 5/5 步** | ⏳ 3/5 步已 done (提议 B/C 立即派单 5/5 步) |
 | **Rule 19 落地** | ⏳ 提议 B/C 立即派单 |
 | **痛点 2 升级** | ⏳ 提议 B/C 立即派单 |
 | **Auditor 角色落地** | ⏳ 提议 B/C 立即派单 |
@@ -214,8 +214,8 @@
 | 主公原话 | Master 落地 |
 |---|---|
 | "Token Plan 升" 拍 (Phase 6 决策 B) | ✅ 提议 3 档 (8h/12h/24h, 主公预算拍板) |
-| "反哺框架, 让飞轮转" | ✅ 4 文档 REV2 + 痛点 6 治根 3/5 步 + 升 Token 提议 |
-| "流程逻辑 > 扩充配置" | ✅ 痛点 6 治根 5/5 步 + Rule 17 5 步文件并发 + Rule 16 5 步 subagent 强制 |
+| "反哺框架, 让飞轮转" | ✅ 4 文档 REV2 + 痛点 6 从根源修复 3/5 步 + 升 Token 提议 |
+| "流程逻辑 > 扩充配置" | ✅ 痛点 6 从根源修复 5/5 步 + Rule 17 5 步文件并发 + Rule 16 5 步 subagent 强制 |
 
 ### 8.3 4 文档 REV2 (飞轮反哺) 全部 done
 

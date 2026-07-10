@@ -11,7 +11,7 @@ master (1)
        ├── coder    (写代码 + commit)
        ├── reviewer (审 PR + A/B review + 跨 PR 验证)
        ├── tester   (写测试 + 集成测试 + raw stdout 验证)
-       └── docs     (写 .md + 跟 cheatsheet 1:1 验证)
+       └── docs     (写 .md + 跟 cheatsheet 对照验证)
 ```
 
 **容量**: 1 master 横向管 4 sub-roles (1+4 = 5 个并发 subagent)
@@ -113,11 +113,11 @@ kallax performer:claim TICKET-001 --sub-role=reviewer
 kallax performer:claim TICKET-001 --sub-role=tester
 ```
 
-#### docs (写 .md + 跟 cheatsheet 1:1 验证)
+#### docs (写 .md + 跟 cheatsheet 对照验证)
 
 **职责**:
 - 写 .md (新文档 / 更新现有文档)
-- 跟 docs/CHEATSHEET.md 1:1 验证 (反 narrative 包装)
+- 跟 docs/CHEATSHEET.md 对照验证 (反 narrative 包装)
 - docs/CHEATSHEET.md ≤ 30 行 (硬约束)
 - lazy load 文档 100-200 行 OK (5-levels / 4-roles 模式)
 

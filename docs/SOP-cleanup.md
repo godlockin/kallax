@@ -199,7 +199,7 @@ find .kallax/instances/.archive/ -maxdepth 2 -type d -size +100M
 | 48 worktree cleanup 模式 | v2.4.0 P1-2 (commit fd9d0d9) | archive-not-delete 哲学复用（保留 .archive/ 30d 可回滚） |
 | cleanup-zombies.sh 既有逻辑 | scripts/cleanup-zombies.sh | 复用 .archive/YYYYMMDD_HHMMSS_<ID>/ 命名约定 + mv + rmdir pattern |
 | Orphan heartbeat cleanup runbook | confluence/runbooks/orphan-heartbeat-cleanup.md | 复用 3 道防线叙事（session_start + cleanup.sh + audit） |
-| BE-23 治根 (commit 7347ae6) | pre-commit hook branch-aware | 本 SOP 不涉及 commit，无需 hook 联动 |
+| BE-23 从根源修复 (commit 7347ae6) | pre-commit hook branch-aware | 本 SOP 不涉及 commit，无需 hook 联动 |
 | BE-25 / BE-26 留待 | check-scope-creep TICKET_ID + staged 检测 | 本 SOP 不修改 hook，无需联动 |
 
 ## 7. 测试

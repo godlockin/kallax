@@ -4,13 +4,13 @@
 > **报告人**: master_main (调查卡不写代码, 只写报告, 跟 Rule 11 v2.1 联动)
 > **调查日期**: 2026-06-25
 > **5 levels (L1-L5)**: L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实
-> **战略对齐**: "翻篇&精进" (0 增 Rule 0 增命令) + "诚实修正" (0 隐藏 governance gap) + "反讽" (治根 反复)
+> **战略对齐**: "翻篇&精进" (0 增 Rule 0 增命令) + "诚实修正" (0 隐藏 governance gap) + "反讽" (从根源修复 反复)
 
 ---
 
 ## TL;DR (1 段话)
 
-EPIC-040 调查确认: subagent 完工后没更新文档/卡/PR **不是单一 bug**, 是 **3 层 governance gap 叠加** — **(L1) 流程层** performer-complete.sh 4 步是"软提示"(缺强制退出) + **(L2) 数据层** ticket.json status 字段由 Performer 自更新(无 Conductor verify) + **(L3) 触发层** 缺 PR submission 自动 hook(commit ≠ PR)。Master 推荐 **Rule 16 强制限制流程** (5 步硬约束 + 2 步 soft verify), 跟 BE-23/25/26 治根 联合 0 重复, 跟 EPIC-039 Sprint 4 修复 1:1 对齐, 跟 "翻篇&精进" 战略 联合 **0 增 Rule 0 增命令**。
+EPIC-040 调查确认: subagent 完工后没更新文档/卡/PR **不是单一 bug**, 是 **3 层 governance gap 叠加** — **(L1) 流程层** performer-complete.sh 4 步是"软提示"(缺强制退出) + **(L2) 数据层** ticket.json status 字段由 Performer 自更新(无 Conductor verify) + **(L3) 触发层** 缺 PR submission 自动 hook(commit ≠ PR)。Master 推荐 **Rule 16 强制限制流程** (5 步硬约束 + 2 步 soft verify), 跟 BE-23/25/26 从根源修复 联合 0 重复, 跟 EPIC-039 Sprint 4 修复 对齐, 跟 "翻篇&精进" 战略 联合 **0 增 Rule 0 增命令**。
 
 ---
 
@@ -34,11 +34,11 @@ EPIC-040 调查确认: subagent 完工后没更新文档/卡/PR **不是单一 b
 | **卡 status** | ⚠️ 软执行 (jq 改, 无 verify) | ✅ Conductor verify 后改 | 全 15 ticket 失真风险 |
 | **PR submission** | ⚠️ commit ≠ PR (commit 不自动开 PR) | ✅ 自动 `gh pr create` 触发 review | 100% 缺 |
 
-**累计 gap**: 3 维 × 15 ticket = 45 governance gap (跟"反讽" 联合 治根 反复)
+**累计 gap**: 3 维 × 15 ticket = 45 governance gap (跟"反讽" 联合 从根源修复 反复)
 
 ### 1.3 跟历史 KPI falsification 对比 (跟 baseline 联合 0 隐藏)
 
-| # | 日期 | 类型 | 根因 | 治根 commit | 联合 BE |
+| # | 日期 | 类型 | 根因 | 从根源修复 commit | 联合 BE |
 |---|------|------|------|------------|---------|
 | 1 | 2026-06-13 | ticket status 失真 (R-NEW) | PR review 缺 status check | 4e6c4ff 手动 | BE-12 |
 | 2 | 2026-06-17 | --theirs merge conflict | --theirs 无 review gate | 8e767b4 dispatch.sh | BE-20 |
@@ -85,7 +85,7 @@ Why 2: 因为 ticket.json 跟 code 一起 commit,
        但 status 字段 是"self-report" 无 Conductor verify (single source of truth 失一致)
        
 Why 3: 因为 Conductor 仅检查 inbox/ 的 review_request 文件,
-       不 read ticket.json status field 跟 inbox 1:1 验证 (验证缺失)
+       不 read ticket.json status field 跟 inbox 对照验证 (验证缺失)
        
 Why 4: 因为历史 7 次 falsification 有 4 次是 status 失真
        (commit 4e6c4ff + 62f80a5 + d09c8b5 + 860cfc7 全部人工修)
@@ -122,7 +122,7 @@ Why 5: 因为 KALLAX 把"PR 提交" 当 master responsibility,
 | 步骤 | 当前 | 缺口 | 跟 BE 联合 |
 |------|------|------|-----------|
 | Step 1 commit | ✅ add -A + commit | 0 docs/ 检查 | — |
-| Step 2 self-test | ✅ bash -n / tsc | 仅 syntax, 0 evidence | BE-25/26 治根 |
+| Step 2 self-test | ✅ bash -n / tsc | 仅 syntax, 0 evidence | BE-25/26 从根源修复 |
 | Step 3 ticket status | ⚠️ jq 改 0 verify | 0 git add ticket.json | BE-12 复发 |
 | Step 4 conductor inbox | ⚠️ 写 review_request | 0 docs/ 必填项 | — |
 | Step 5 summary | ✅ echo banner | 0 PR 提交 step | — |
@@ -179,7 +179,7 @@ Why 5: 因为 KALLAX 把"PR 提交" 当 master responsibility,
 | M4 | CI workflow | `.github/workflows/verify-pr.yml` | gh action | ⭐ |
 | M5 | Rust binary | 新建 `rust/cli/verify-delivery` | cargo test | ❌ (overkill) |
 
-**Master 推荐**: **M1** (跟 BE-23/25/26 治根 一致 shell 工具, 0 增 language 持平)
+**Master 推荐**: **M1** (跟 BE-23/25/26 从根源修复 一致 shell 工具, 0 增 language 持平)
 
 ---
 
@@ -218,9 +218,9 @@ else
 fi
 ```
 
-### 5.2 跟 BE-23/25/26 治根 联合 (0 重复)
+### 5.2 跟 BE-23/25/26 从根源修复 联合 (0 重复)
 
-| BE | 治根 commit | 联合 Rule 16 |
+| BE | 从根源修复 commit | 联合 Rule 16 |
 |----|------------|--------------|
 | BE-23 | 7347ae6 branch-aware | Rule 16 Step 1 (commit 前 branch verify) |
 | BE-25 | b1b76ac TICKET_ID detection | Rule 16 Step 3 (ticket.json 强读) |
@@ -234,7 +234,7 @@ fi
 |---------------|-----------------|
 | 4 票 dispatch.sh 升级 (BE-20/22) | ✅ Rule 16 Step 5 PR verify |
 | 升 Token Plan (gh CLI 全员) | ✅ Rule 16 Step 7 强 gh |
-| pre-commit hook 治根 (BE-23/25/26) | ✅ Rule 16 Step 1 + 3 (no rewrite) |
+| pre-commit hook 从根源修复 (BE-23/25/26) | ✅ Rule 16 Step 1 + 3 (no rewrite) |
 | Conductor verify queue (BE-12 复发) | ✅ Rule 16 Step 3 ticket status |
 
 **对齐**: **4/4 = 100%** (跟 "诚实修正" 战略 联合 0 隐藏 gap)
@@ -247,7 +247,7 @@ fi
 |------|---------------|------|
 | **"翻篇&精进"** | 0 增 Rule 0 增命令, 仅升 performer-complete.sh v1.0.0 → v1.1.0 | +30 行 shell |
 | **"诚实修正"** | 0 隐藏 docs/ 缺 + PR 缺 + status 失真 (BE-27 暴露) | 7 step 强制 |
-| **"反讽"** | 治根 "echo OK = done" 反复 (跟 7 次 KPI falsification 联合) | exit 1 enforce |
+| **"反讽"** | 从根源修复 "echo OK = done" 反复 (跟 7 次 KPI falsification 联合) | exit 1 enforce |
 | **"独立"** | 0 拍 ai-auto 决策, master_main 写报告, Master 拍板 | 调查卡不写代码 |
 | **"反哺框架"** | Rule 16 草案 → eket MASTER-RULES.md §11 借方法论 | 0 借代码 |
 
@@ -327,7 +327,7 @@ fi
 - `confluence/decisions/phase-007-review-2026-06-13.md` (PHASE-007 baseline)
 - `confluence/decisions/1-ticket-1-subagent-serial-validation-2026-06-25.md` (1 ticket 1 subagent 共识)
 - `confluence/decisions/5-subagent-parallel-validation-2026-06-25.md` (5 subagent parallel baseline)
-- `confluence/decisions/be-28-serial-consensus-revision-2026-06-25.md` (BE-23/25/26 治根 in place)
+- `confluence/decisions/be-28-serial-consensus-revision-2026-06-25.md` (BE-23/25/26 从根源修复 in place)
 - `confluence/decisions/fact-forcing-examples-2026-06-19.md` (EPIC-059-D Fact-Forcing)
 - `AGENTS.md` §派遣 Checklist 11 项 (跟 Rule 16 Step 6 raw test output 联合)
 - `scripts/performer-complete.sh` v1.1.0 (this commit, Rule 16 实施)

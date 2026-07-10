@@ -1,4 +1,4 @@
-# 主公拍板分级 P0/P1/P2 — 决策疲劳治根 (EPIC-055-B)
+# 主公拍板分级 P0/P1/P2 — 决策疲劳从根源修复 (EPIC-055-B)
 
 > **Ticket**: EPIC-055-B (5 张治理卡 核心)
 > **Date**: 2026-06-16
@@ -127,7 +127,7 @@ route_p2()  # → 直接执行 + 写 p2-log-*.jsonl (留痕)
 
 ---
 
-## 4. 拍板疲劳治根 (跟 Rule 32 联动, 跟 EPIC-054-D 联动)
+## 4. 拍板疲劳从根源修复 (跟 Rule 32 联动, 跟 EPIC-054-D 联动)
 
 ### 4.1 fatigue_index 公式
 
@@ -143,7 +143,7 @@ fatigue_index = upgrade_rate × (1/utility)
 
 (当前实测: 23 Rule, 9 升级, fatigue_index=34.8, 见 `tests/integration/approval-tiering-test.sh` TC6)
 
-### 4.2 治根策略
+### 4.2 从根源修复策略
 
 | fatigue_index | 状态 | 推荐 |
 |---|---|---|
@@ -221,7 +221,7 @@ PROCESS.md:25-26 红线: **Master 不能自己升级红线**
 | 1 | 3 级分类设计 | 本文档 §2 |
 | 2 | role-cmd.ts 升级 — 3 级路由 | 6/6 TC1-TC3 PASS |
 | 3 | scripts/audit/approval-tiering.sh | TC4-TC6 PASS |
-| 4 | P2 治根 — 拍板疲劳 闭环 | TC6 fatigue_index + recommendation |
+| 4 | P2 从根源修复 — 拍板疲劳 闭环 | TC6 fatigue_index + recommendation |
 | 5 | 6/6 PASS | 测试输出 6/6 |
 | 6 | Rule 9 KPI 精确 X/Y 格式 | 6/6 = 100.0% |
 | 7 | 跟主公拍板 联合 | 引用 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md |

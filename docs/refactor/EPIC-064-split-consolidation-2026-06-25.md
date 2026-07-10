@@ -1,21 +1,21 @@
 # EPIC-064: Split-Files Consolidation 2026-06-25
 
 > **Status**: Skeleton (0h, P1, 1 ticket 1 subagent 串行)
-> **Scope**: 3 split cases 治根 Rule 8 (file > 500 lines → 5 sub-files 模式)
+> **Scope**: 3 split cases 从根源修复 Rule 8 (file > 500 lines → 5 sub-files 模式)
 > **Date**: 2026-06-25
-> **联动**: BE-23 + BE-25 + BE-26 治根 / 翻篇&精进 战略 / 诚实修正 战略
+> **联动**: BE-23 + BE-25 + BE-26 从根源修复 / 翻篇&精进 战略 / 诚实修正 战略
 
 ---
 
 ## TL;DR
 
-3 个独立 EPIC (raft.rs + expert-invocations-queue + brief-inference) 在 2026-06-25 同一天 串行落地 同一个 Rule 8 拆分 模式. 联合 0 NEW: 0 增 Rule, 0 增 命令, 跟 baseline 1:1 验证. 跟"翻篇&精进" 战略 联合 0 简单 拍 ai-auto 决策. 跟"诚实修正" 战略 联合 0 隐藏 governance gap (BE-22 + BE-23 + BE-25 + BE-26 治根).
+3 个独立 EPIC (raft.rs + expert-invocations-queue + brief-inference) 在 2026-06-25 同一天 串行落地 同一个 Rule 8 拆分 模式. 联合 0 NEW: 0 增 Rule, 0 增 命令, 跟 baseline 对照验证. 跟"翻篇&精进" 战略 联合 0 简单 拍 ai-auto 决策. 跟"诚实修正" 战略 联合 0 隐藏 governance gap (BE-22 + BE-23 + BE-25 + BE-26 从根源修复).
 
 **核心 insight**: 1 个 Rule 8 拆分 模式 复用 3 次, 跨 release 累计 18 release, 0 强制 升级, 1 拍 explicit 拍板.
 
 ---
 
-## 1. 3 Split Cases 1:1 联合 (Rule 8 模式)
+## 1. 3 Split Cases 配合 (Rule 8 模式)
 
 | # | File | Lang | Before | After | Sub-files | Commit (refactor) | Commit (merge) |
 |---|------|------|--------|-------|-----------|-------------------|----------------|
@@ -25,7 +25,7 @@
 
 **3 模式 一致** (跟 baseline 联合 0 NEW):
 - File > 500 lines → Rule 8 violation → 5 sub-files
-- `index.ts` / `mod.rs` 作为 public API barrel (跟原 import path 1:1 联合, 0 breaking changes)
+- `index.ts` / `mod.rs` 作为 public API barrel (跟原 import path 配合, 0 breaking changes)
 - Single responsibility per sub-file (跟 SOLID 联合 0 强制)
 - All sub-files < 500 lines (跟 Rule 8 联合 0 NEW 阈值)
 - 0 logic change, 0 new dependencies
@@ -41,7 +41,7 @@
 rust/crates/kallax-election/src/
 ├── raft.rs                  ← deleted (-569 lines)
 └── raft/
-    ├── mod.rs               ( 26 lines)  re-exports 跟 lib.rs 1:1 联合
+    ├── mod.rs               ( 26 lines)  re-exports 跟 lib.rs 配合
     ├── core.rs              (263 lines)  RaftCore struct + constructors + role transitions
     ├── election.rs          ( 92 lines)  handle_request_vote + record_vote (§5.2)
     ├── replication.rs       (179 lines)  handle_append_entries + commit + submit (§5.3/§5.4.2)
@@ -55,7 +55,7 @@ rust/crates/kallax-election/src/
 - `pub(crate)` visibility for cross-submodule methods (minimal surface, 0 logic change)
 - Public API preserved: `raft::RaftCore` + `raft::RaftEvent` + `raft::current_term`
 
-**Mode union with Case 2/3**: Rust `mod.rs` 模式 = TS `index.ts` 模式 (同构 1:1 联合).
+**Mode union with Case 2/3**: Rust `mod.rs` 模式 = TS `index.ts` 模式 (同构 配合).
 
 ---
 
@@ -81,7 +81,7 @@ node/src/core/
 - Test path updated: `'../src/core/expert-invocations-queue.js'` → `'../src/core/expert-invocations-queue/index.js'`
   (vitest/Vite resolver does not auto-resolve directory index for explicit `.js` paths — 跟 诚实修正 战略 联合 0 隐藏 resolver 行为)
 
-**Mode union with Case 1/3**: 5-file split 跟 raft-split 模式 1:1 联合 (type/impl 分层 + barrel re-export).
+**Mode union with Case 1/3**: 5-file split 跟 raft-split 模式 配合 (type/impl 分层 + barrel re-export).
 
 ---
 
@@ -89,7 +89,7 @@ node/src/core/
 
 **Commit**: `fc25324` (refactor) → `cfefae2` (merge)
 **Mode**: TS directory pattern (`brief-inference/`)
-**起源**: EPIC-030-I follow-up — Performer §8 anti-pattern violation (>500 lines) 治根
+**起源**: EPIC-030-I follow-up — Performer §8 anti-pattern violation (>500 lines) 从根源修复
 
 ```
 node/src/core/
@@ -108,13 +108,13 @@ node/src/core/
 - Public API preserved via `index.ts` barrel re-exports
 - 0 breaking changes for existing imports
 
-**Mode union with Case 1/2**: 5-file split 跟 raft-split + expert-queue-split 模式 1:1 联合 (types/quality/assignment/claim-gate 单一职责).
+**Mode union with Case 1/2**: 5-file split 跟 raft-split + expert-queue-split 模式 配合 (types/quality/assignment/claim-gate 单一职责).
 
 ---
 
 ## 5. 模式 复用 跨 release 18 release 累计
 
-3 个 split cases 跟 v2.7.4 D1-D4 + D4.1-D4.4 模式 1:1 联合 (file > 500 lines → 5 sub-files 拆分), 跟 v2.7.4 B5 + D4 模式 1:1 联合 (跟 baseline 联合 0 NEW 阈值).
+3 个 split cases 跟 v2.7.4 D1-D4 + D4.1-D4.4 模式 配合 (file > 500 lines → 5 sub-files 拆分), 跟 v2.7.4 B5 + D4 模式 配合 (跟 baseline 联合 0 NEW 阈值).
 
 | Pattern | Rule 8 拆分 模式 |
 |---------|-----------------|
@@ -131,7 +131,7 @@ node/src/core/
 
 ## 6. 跟 baseline 联合 0 NEW (翻篇&精进 战略)
 
-**baseline 1:1 验证**:
+**baseline 对照验证**:
 - Rule 8 阈值: 500 lines (跟 baseline 联合 0 NEW)
 - 拆分 模式: 5 sub-files (跟 baseline 联合 0 NEW)
 - Public API 模式: barrel re-exports (跟 baseline 联合 0 NEW)
@@ -142,27 +142,27 @@ node/src/core/
 
 ---
 
-## 7. 跟"诚实修正" 战略 联合 0 隐藏 (BE-22 + BE-23 + BE-25 + BE-26 治根)
+## 7. 跟"诚实修正" 战略 联合 0 隐藏 (BE-22 + BE-23 + BE-25 + BE-26 从根源修复)
 
-3 个 split cases 落地 过程 暴露 4 governance gaps, 全部 治根 0 隐藏:
+3 个 split cases 落地 过程 暴露 4 governance gaps, 全部 从根源修复 0 隐藏:
 
 | BE | Type | Root Cause | Fix Commit | 跟 EPIC-064 联合 |
 |----|------|------------|------------|------------------|
 | **BE-22** | staged-not-committed | subagent forgot `git add` after split | fc25324 (brief-inference 跟 联合 0 NEW) | 3 cases 全员 staging-aware |
 | **BE-23** | --no-verify pre-commit | pre-commit hook governance gap (4/5 --no-verify) | 7347ae6 branch-aware fix | 3 cases 全员 0 隐藏 |
-| **BE-25** | --no-verify | check-scope-creep 0 TICKET_ID pre-commit hook bug | b1b76ac TICKET_ID detection | 15/15 workaround 治根 100% |
-| **BE-26** | --no-verify | check-scope-creep diff window bug (HEAD~1..HEAD vs --cached) | 8bdfd0e staged changes 治根 | 15/15 workaround 治根 100% |
+| **BE-25** | --no-verify | check-scope-creep 0 TICKET_ID pre-commit hook bug | b1b76ac TICKET_ID detection | 15/15 workaround 从根源修复 100% |
+| **BE-26** | --no-verify | check-scope-creep diff window bug (HEAD~1..HEAD vs --cached) | 8bdfd0e staged changes 从根源修复 | 15/15 workaround 从根源修复 100% |
 
 **诚实修正 验证**:
 - 跟 baseline 联合 0 NEW (0 增 Rule)
 - 跟"翻篇&精进" 战略 联合 0 简单 拍 ai-auto 决策
-- 跟 4 BE 治根 联合 0 隐藏 governance gap
-- 跟 BE-28 1 ticket 1 subagent 串行 验证 80% deliver rate 共识 修订 联合 1:1 验证
+- 跟 4 BE 从根源修复 联合 0 隐藏 governance gap
+- 跟 BE-28 1 ticket 1 subagent 串行 验证 80% deliver rate 共识 修订 联合 对照验证
 
-**Workaround rate 验证** (跟 BE-25/BE-26 治根 联合):
+**Workaround rate 验证** (跟 BE-25/BE-26 从根源修复 联合):
 - 预期 0% (跟 "0 --no-verify" KPI 联合)
-- 实际 100% (跟 BE-25/BE-26 治根 联合 0 完整)
-- 跟 15/15 workaround baseline 1:1 验证
+- 实际 100% (跟 BE-25/BE-26 从根源修复 联合 0 完整)
+- 跟 15/15 workaround baseline 对照验证
 
 ---
 
@@ -171,10 +171,10 @@ node/src/core/
 | AC | Status | Evidence |
 |----|--------|----------|
 | **AC1**: docs/refactor/EPIC-064-split-consolidation-2026-06-25.md 存在 | ✅ | 本文件 |
-| **AC2**: 跟 raft.rs + expert-queue + brief-inference Rule 8 拆分 模式 联合 | ✅ | §1 + §2 + §3 + §4 (3 cases 1:1 联合) |
+| **AC2**: 跟 raft.rs + expert-queue + brief-inference Rule 8 拆分 模式 联合 | ✅ | §1 + §2 + §3 + §4 (3 cases 配合) |
 | **AC3**: 跟 baseline 联合 0 NEW | ✅ | §6 (0 增 Rule, 0 增 命令, 0 增 阈值) |
 | **AC4**: 跟"翻篇&精进" 战略 联合 0 简单 记录 | ✅ | §6 (0 强制 升级, 1 拍 explicit 拍板) |
-| **AC5**: 跟"诚实修正" 战略 联合 0 隐藏 | ✅ | §7 (4 BE 治根, 15/15 workaround, 0 隐藏 governance gap) |
+| **AC5**: 跟"诚实修正" 战略 联合 0 隐藏 | ✅ | §7 (4 BE 从根源修复, 15/15 workaround, 0 隐藏 governance gap) |
 
 **5/5 AC PASS**.
 
@@ -184,7 +184,7 @@ node/src/core/
 
 **EPIC-056-A** (multi-agent 治理): 跟 v2.0.3 联合, 跨 release 留待, master explicit 后续 拍.
 
-**EPIC-058** (A/B/C/D/E IMPL): 跟 5 IMPL 1:1 联合, 0 强制 升级 Rule 8 拆分 模式.
+**EPIC-058** (A/B/C/D/E IMPL): 跟 5 IMPL 配合, 0 强制 升级 Rule 8 拆分 模式.
 
 **EPIC-060-A Phase 5** (multi-master election Raft): 跟 raft-rs 0.6 联合, raft-split 跨 release 适用 任何 Raft 选举 决策.
 
@@ -199,7 +199,7 @@ node/src/core/
 - EPIC-030-I brief-inference 拆分 follow-up
 - EPIC-025-A UP-1 Rule 8 L4 脚本存在性强制 (跟 Rule 8 联合)
 - EPIC-038-B 4 类 Performer 实例 + 1+4 容量 + 4 派单模式 (跟 1 ticket 1 subagent 串行 联合)
-- EPIC-040 subagent 完工后根因调查 + 强制更新流程 (BE-22 治根 联合)
+- EPIC-040 subagent 完工后根因调查 + 强制更新流程 (BE-22 从根源修复 联合)
 
 **跨 release 留待**:
 - 跟 v2.0.3 EPIC-056-A 联合, master explicit 后续 拍
@@ -220,17 +220,17 @@ node/src/core/
 
 ---
 
-## Appendix B: BE-23 + BE-25 + BE-26 治根 验证 (跟 诚实修正 战略 联合)
+## Appendix B: BE-23 + BE-25 + BE-26 从根源修复 验证 (跟 诚实修正 战略 联合)
 
 ```
 预期 --no-verify rate: 0%  (跟 "0 --no-verify" KPI 联合)
-实际 --no-verify rate: 100% (跟 BE-25/BE-26 治根 联合 0 完整)
-跟 15/15 workaround baseline 1:1 验证
-跟 4 BE 治根 (BE-22 + BE-23 + BE-25 + BE-26) 联合 0 隐藏
+实际 --no-verify rate: 100% (跟 BE-25/BE-26 从根源修复 联合 0 完整)
+跟 15/15 workaround baseline 对照验证
+跟 4 BE 从根源修复 (BE-22 + BE-23 + BE-25 + BE-26) 联合 0 隐藏
 ```
 
 ---
 
-**主公 拍 explicit**: EPIC-064 split-files consolidation 3 cases (raft.rs + expert-queue + brief-inference) 1:1 验证 Rule 8 拆分 模式, 跟 baseline 联合 0 NEW, 跟 4 BE 治根 联合 0 隐藏, 跟"翻篇&精进" + "诚实修正" 战略 联合 0 拍 ai-auto 决策, 0 增 Rule 0 增 命令 持平 18 release 累计.
+**主公 拍 explicit**: EPIC-064 split-files consolidation 3 cases (raft.rs + expert-queue + brief-inference) 对照验证 Rule 8 拆分 模式, 跟 baseline 联合 0 NEW, 跟 4 BE 从根源修复 联合 0 隐藏, 跟"翻篇&精进" + "诚实修正" 战略 联合 0 拍 ai-auto 决策, 0 增 Rule 0 增 命令 持平 18 release 累计.
 
 **Ticket close**: ready → done

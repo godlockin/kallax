@@ -562,7 +562,7 @@ if [[ -z "$MODE" ]] || [[ "$MODE" == "null" ]]; then
 fi
 ```
 
-在 ASCII card 模板加 `│ MODE*    ▸ $MODE` 一行 (在 `│ INSTANCE` 之后 `│ INBOX` 之前)。
+在 ASCII card 模板加 `│ MODE* ▸ $MODE` 一行 (在 `│ INSTANCE` 之后 `│ INBOX` 之前)。
 
 - [ ] **Step 5: 跑测试, 确认通过**
 
@@ -958,9 +958,9 @@ git commit -m "docs(3-modes): CLAUDE.md Rule 13 3 模式决策权分配"
 
 ```
 ┌─ KALLAX MODE ─────────────────────────────
-│ 1) ai-auto     (AI 决策, 仅 block/danger 停下问)
-│ 2) ai-copilot  (简单自主, 复杂协商) [默认]
-│ 3) manual      (每阶段主公确认)
+│ 1) ai-auto (AI 决策, 仅 block/danger 停下问)
+│ 2) ai-copilot (简单自主, 复杂协商) [默认]
+│ 3) manual (每阶段主公确认)
 └──────────────────────────────────────────
 ```
 
@@ -997,7 +997,7 @@ git commit -m "docs(3-modes): CLAUDE.md Rule 13 3 模式决策权分配"
 
 ```bash
 # 在主 session 退出后
-exit  # 或 Ctrl+D
+exit # 或 Ctrl+D
 
 # 启动新 session
 /kallax-init --mode ai-auto

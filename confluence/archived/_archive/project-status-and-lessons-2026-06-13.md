@@ -1,7 +1,7 @@
 # KALLAX 项目状态总结 + 经验教训沉淀 (2026-06-13)
 
 > **何时写**: 主公 2026-06-13 拍"整理经验教训，然后提交推送发版" 跟主公"反哺框架, 让飞轮转"对齐
-> **范围**: Sprint 4 8 票 (EPIC-039 + EPIC-041) + 4 文档 REV2 + PHASE-007 review 闭环 + 11 BE 累计 + 痛点 6 治根 3/5 步
+> **范围**: Sprint 4 8 票 (EPIC-039 + EPIC-041) + 4 文档 REV2 + PHASE-007 review 闭环 + 11 BE 累计 + 痛点 6 从根源修复 3/5 步
 > **目的**: 沉淀跨 EPIC 经验 + 跟主公原始飞轮目标对齐 + 列 Gap + 等主公战略拍 + commit + push + 升版本
 > **路径**: `confluence/decisions/PROJECT-STATUS-AND-LESSONS-2026-06-13.md`
 > **miao HEAD**: `2b2850e` (4 文档 REV2 飞轮反哺落地)
@@ -9,7 +9,7 @@
 **Date**: 2026-06-13
 **Author**: master_77704
 **Reviewers**: 主公 (战略审批) + Conductor + Performer
-**Status**: ✅ COMPLETE — 等主公拍下一步 (升 Token + 痛点 6 治根 5/5 步 + Rule 19 + Auditor 角色)
+**Status**: ✅ COMPLETE — 等主公拍下一步 (升 Token + 痛点 6 从根源修复 5/5 步 + Rule 19 + Auditor 角色)
 
 ---
 
@@ -25,8 +25,8 @@
 | 4 | EPIC-039-D (strong-verify-6d) | 痛点 1 (假完成) | 6h | 6h (Rule 16 Step 5 载体) | 3 文件 18537 bytes, 11/11 + 7/7 PASS |
 | 5 | EPIC-041-A (痛点 6 调查扩展) | 痛点 6 (并发文件竞争) | 4h | 4h (BE-11 越界反向) | 279 行报告 + 5/5 PASS |
 | 6 | EPIC-041-B (file-lock 修 BE-7) | 痛点 6 + 痛点 5 | 6h | 6h (BE-7 3 安全 issues 修) | 562 行 file-lock.sh, 7/7 PASS + 12/12 L4 |
-| 7 | EPIC-041-C (atomic-write) | 痛点 6 (并发文件竞争) | 6h | 6h (6/6 PASS) | 3 文件, 痛点 6 治根 Step 2 |
-| 8 | EPIC-041-D (conflict-detect) | 痛点 6 (并发文件竞争) | 6h | 6h (4/4 + 9/9 PASS) | 4 文件 28064 bytes, 痛点 6 治根 Step 3 |
+| 7 | EPIC-041-C (atomic-write) | 痛点 6 (并发文件竞争) | 6h | 6h (6/6 PASS) | 3 文件, 痛点 6 从根源修复 Step 2 |
+| 8 | EPIC-041-D (conflict-detect) | 痛点 6 (并发文件竞争) | 6h | 6h (4/4 + 9/9 PASS) | 4 文件 28064 bytes, 痛点 6 从根源修复 Step 3 |
 | **累计** | **8 票** | **6 痛点 100% 覆盖** | **46h 估时** | **46h 实际跑时** | **1+2 容量 18h wall time (节省 28h)** |
 
 ### 1.2 跨 Sprint 4 KPI (跟 PHASE-007-REVIEW-2026-06-13.md 一致)
@@ -38,7 +38,7 @@
 | **E2E PASS** | **63+** (11/11 + 7/7 + 6/6 + 8/8 + 5/5 + 4/4 + 9/9 + 4/4 + 5/5 + 6/6 + 7/7 + 4/4) | 12 套测试 |
 | **安全审查 issue 修** | **4** (BE-7 3 安全 issues + BE-10 1 修复) | 跟痛点 5 (安全立体) 联动 |
 | **LESSONS 子教训** | **40+** (8 票 + 11 BE + 5 痛点 + 痛点 6 + 18 Rule + 4 文档 REV2) | 跨 EPIC 累计 |
-| **主题 lessons** | **3** (KPI falsification 反复 + 痛点 6 治根 + 飞轮反哺) | 跟之前 6 主题合并 |
+| **主题 lessons** | **3** (KPI falsification 反复 + 痛点 6 从根源修复 + 飞轮反哺) | 跟之前 6 主题合并 |
 | **门禁数** | **15** (11 → 15 升级, 跟 Rule 16/17/18 联动) | 跟 PHASE-006-ROADMAP-REV2 一致 |
 | **Performer 派单成功率** | **7/12 真 PASS (58.3%)** | 跟 10 KPI falsification 反复教训 + 12 subagent 强验证 |
 | **越界事件 (BE-6/11)** | **3** (Performer-EPIC-039-A + 041-A + 039-B) | 跟痛点 3 (角色越界) 联动 |
@@ -90,11 +90,11 @@
 - "避免痛点、问题的反复出现" ✅ 12 KPI falsification 反复模式 + Rule 19 升级提议
 - "反哺框架, 让飞轮转" ✅ 跟 `performer-kpi-falsification-pattern.md` 主题联动
 
-### 主题 2: 痛点 6 治根 (REV2 新增, 跟 5 痛点 → 6 痛点 升级)
+### 主题 2: 痛点 6 从根源修复 (REV2 新增, 跟 5 痛点 → 6 痛点 升级)
 
-**痛点 6 治根 3/5 步** (跟主公"反哺框架"对齐):
+**痛点 6 从根源修复 3/5 步** (跟主公"反哺框架"对齐):
 
-| Step | 产出 | 状态 | 治根表现 | 跟痛点 4/5 联动 |
+| Step | 产出 | 状态 | 从根源修复表现 | 跟痛点 4/5 联动 |
 |---|---|---|---|---|
 | **Step 1: file-lock.sh** | EPIC-041-B 修 BE-7 (562 行) | ✅ 落地 | 痛点 6 表现 1 (文件丢失) | 跟痛点 4 (资源覆盖) + 痛点 5 (安全立体) 联动 |
 | **Step 2: atomic-write.sh** | EPIC-041-C 6/6 PASS | ✅ 落地 | 痛点 6 表现 2 (异常修改) | 跟痛点 4 (资源覆盖) 联动 |
@@ -109,8 +109,8 @@
 - ✅ `$lock_file.owner` PID 验证 + `kill -0` 活进程检查 (BE-7 修复模式)
 
 **跟主公原话对齐**:
-- "还有 1 个痛点是相互影响, 同时修改/编辑文件/文件夹引起工作文件的（不正常/始料未及地）丢失/修改" ✅ 痛点 6 治根 3/5 步落地
-- "反哺框架, 让飞轮转" ✅ 痛点 6 治根累计 + 5 Why 调查扩展 (EPIC-041-A 279 行)
+- "还有 1 个痛点是相互影响, 同时修改/编辑文件/文件夹引起工作文件的（不正常/始料未及地）丢失/修改" ✅ 痛点 6 从根源修复 3/5 步落地
+- "反哺框架, 让飞轮转" ✅ 痛点 6 从根源修复累计 + 5 Why 调查扩展 (EPIC-041-A 279 行)
 
 ### 主题 3: 飞轮反哺 (REV2 新增, 跟 4 文档 REV2 闭环)
 
@@ -125,7 +125,7 @@
 
 **飞轮反哺累计** (跟主公"反哺框架, 让飞轮转"对齐):
 - 4 文档 REV2 全部 done
-- 痛点 6 治根 3/5 步
+- 痛点 6 从根源修复 3/5 步
 - Rule 14-18 R-NEW 升级
 - 11 BE 累计
 - 12 subagent 强验证 6 维度
@@ -144,7 +144,7 @@
 | token-plan-cap-incident | ✅ REV2 提议 (8h/12h/24h, 主公预算) |
 | performer-kpi-falsification-pattern | ✅ REV2 升级 (12 试反复 + Rule 19 提议) |
 | cross-epic 综合 | ✅ REV2 升级 (11 BE 累计) |
-| 痛点 6 治根 (REV2 新增) | ✅ 3/5 步完成 |
+| 痛点 6 从根源修复 (REV2 新增) | ✅ 3/5 步完成 |
 | 飞轮反哺 (REV2 新增) | ✅ 4 文档 REV2 全部 done |
 
 ---
@@ -173,7 +173,7 @@
 | "完整体系" | 5 痛点 + 13 Rule + 11 门禁 + 5 视角 + 5 BE | **6 痛点 + 18 Rule + 15 门禁 + 5 视角 + 11 BE** |
 | "软约束+硬脚本" | Rule 1-13 软约束 + 0 硬脚本 | **Rule 1-18 软约束 + 8 硬脚本 (Sprint 4 8 票)** |
 | "避免反复出现" | 5 BE 累计 + 8 subagent 强验证 | **11 BE 累计 + 12 subagent 强验证 6 维度 + Rule 19 提议** |
-| "反哺框架, 让飞轮转" | 2 文档 (PHASE-006 + KALLAX-VS-INDUSTRY) | **4 文档 REV2 (3 done + 1 待) + 痛点 6 治根 3/5 步 + 升 Token 提议** |
+| "反哺框架, 让飞轮转" | 2 文档 (PHASE-006 + KALLAX-VS-INDUSTRY) | **4 文档 REV2 (3 done + 1 待) + 痛点 6 从根源修复 3/5 步 + 升 Token 提议** |
 
 ### 3.3 飞轮转累计 (跟 PHASE-007-REVIEW 一致)
 
@@ -192,7 +192,7 @@
 
 | Gap | REV1 状态 | REV2 状态 | 进展 |
 |---|---|---|---|
-| 痛点 6 治根 | 0 步 | **3/5 步** | ✅ 累计 (file-lock + atomic-write + conflict-detect) |
+| 痛点 6 从根源修复 | 0 步 | **3/5 步** | ✅ 累计 (file-lock + atomic-write + conflict-detect) |
 | Rule 14-18 R-NEW 升级 | 0 Rule | **5 Rule** | ✅ 累计 (跟 BE-1/6/7/8/9/10/11 闭环) |
 | 5 levels (L1-L5)透明 | 0 报告 | **12 报告** | ✅ 累计 (跟 11 BE 闭环) |
 | Auditor 角色 | 0 角色 | **0 角色 (提议)** | ⏳ 后续 (跟 Q5 L4 角色规范对齐) |
@@ -205,7 +205,7 @@
 | Gap | 提议 | 等主公拍 |
 |---|---|---|
 | **升 Token Plan 档** | 8h/12h/24h cap (跟主公预算对齐) | ⏳ 提议 B 12h cap (推荐) |
-| **痛点 6 治根 5/5 步** | Step 4 (outbox-isolation) + Step 5 (worktree-state-sync) 派单 | ⏳ 跟 Token 升档联动 |
+| **痛点 6 从根源修复 5/5 步** | Step 4 (outbox-isolation) + Step 5 (worktree-state-sync) 派单 | ⏳ 跟 Token 升档联动 |
 | **Rule 19 落地** | L4 verify 自检漏洞 (跟 BE-9 + BE-10 联合) | ⏳ 跟痛点 1 + 痛点 2 闭环 |
 | **痛点 2 升级** | 借鉴 LangGraph Checkpoint 模式 (落后 10 分) | ⏳ 跟 Token 升档联动 |
 | **Auditor 角色落地** | 跨 worktree 读 + 写 lessons (跟 Q5 L4 角色规范对齐) | ⏳ 跟 Token 升档联动 |
@@ -223,7 +223,7 @@
 | **4 文档 REV2 全部 done** | PHASE-007-REVIEW + KALLAX-VS-INDUSTRY-REV2 + PHASE-006-ROADMAP-REV2 + TOKEN-PLAN-UPGRADE |
 | **miao HEAD** | `2b2850e` (4 文档 REV2 飞轮反哺落地) |
 | **11 BE 累计** | 跟 8 试反复 + 10 KPI falsification + 6 痛点 联合 |
-| **痛点 6 治根 3/5 步** | file-lock + atomic-write + conflict-detect |
+| **痛点 6 从根源修复 3/5 步** | file-lock + atomic-write + conflict-detect |
 | **18 Rule 完整闭环** | Rule 1-13 软约束 + Rule 14-18 R-NEW 升级 |
 | **15 门禁升级** | 11 → 15 升级 |
 | **12 subagent 强验证 6 维度** | 7 真 PASS + 1 FAIL + 2 假 PASS + 3 真工作+越界 (BE-6/BE-11) + 1 真工作+真 bug+越界 (BE-10) |
@@ -241,7 +241,7 @@
 ### 5.4 发版 (跟主公"发版"对齐, 跟之前 release 模式一致)
 
 - 升版本号 (miao HEAD `2b2850e` → v1.X.X, 跟之前 release 模式一致)
-- 跟 Sprint 4 8 票 done + 4 文档 REV2 + 11 BE 累计 + 痛点 6 治根 3/5 步 同步
+- 跟 Sprint 4 8 票 done + 4 文档 REV2 + 11 BE 累计 + 痛点 6 从根源修复 3/5 步 同步
 - 跟主公"流程逻辑 > 扩充配置" 战略转向对齐
 - 跟主公"反哺框架, 让飞轮转" 对齐
 
@@ -258,7 +258,7 @@
 | 门禁 | 11 门禁 | **15 门禁** (11 → 15 升级) |
 | 视角 | 5 视角 | **5 视角** (不变) |
 | BE | 5 BE | **11 BE** (跟 8 试反复 + 10 KPI falsification + 6 痛点 联合) |
-| 痛点 6 治根 | 0 步 | **3/5 步** (file-lock + atomic-write + conflict-detect) |
+| 痛点 6 从根源修复 | 0 步 | **3/5 步** (file-lock + atomic-write + conflict-detect) |
 | 4 文档 | 2 文档 | **4 文档** (飞轮反哺全部 done) |
 | 升 Token | 5h cap | **8h/12h/24h cap 提议 (主公预算拍板)** |
 
@@ -271,13 +271,13 @@
 | "完整体系" | ✅ 6 痛点 + 18 Rule + 15 门禁 + 5 视角 + 11 BE |
 | "软约束+硬脚本" | ✅ Rule 1-18 软约束 + 8 硬脚本 (Sprint 4 8 票) 联合矩阵 |
 | "避免反复出现" | ✅ 11 BE 累计 + 12 subagent 强验证 6 维度 + 5-Level Fact-Forcing + 3 anti-fab |
-| "反哺框架, 让飞轮转" | ✅ 痛点 6 治根 3/5 步 + 4 文档 REV2 + 升 Token 提议 + 飞轮转累计 |
-| "流程逻辑 > 扩充配置" | ✅ 痛点 6 治根 5/5 步 + Rule 17 5 步文件并发 + Rule 16 5 步 subagent 强制 |
+| "反哺框架, 让飞轮转" | ✅ 痛点 6 从根源修复 3/5 步 + 4 文档 REV2 + 升 Token 提议 + 飞轮转累计 |
+| "流程逻辑 > 扩充配置" | ✅ 痛点 6 从根源修复 5/5 步 + Rule 17 5 步文件并发 + Rule 16 5 步 subagent 强制 |
 
 ### 6.3 4 主题 lessons 累计 (跟主公"反哺框架"对齐)
 
 1. **KPI falsification 反复** (REV2 升级, 12 试反复 + Rule 19 提议)
-2. **痛点 6 治根** (REV2 新增, 3/5 步完成)
+2. **痛点 6 从根源修复** (REV2 新增, 3/5 步完成)
 3. **飞轮反哺** (REV2 新增, 4 文档 REV2 全部 done)
 4. **跟之前 6 主题合并** (跨 EPIC 累计, 跟 2026-06-12 PROJECT-STATUS 一致)
 
@@ -285,4 +285,4 @@
 
 **Reviewer(s)**: master_77704
 **Last updated**: 2026-06-13
-**Status**: ✅ COMPLETE — 经验教训整理 + 提交推送发版 准备就绪, 等主公战略拍 (升 Token + 痛点 6 治根 5/5 步 + Rule 19 + Auditor 角色 + PHASE-008)
+**Status**: ✅ COMPLETE — 经验教训整理 + 提交推送发版 准备就绪, 等主公战略拍 (升 Token + 痛点 6 从根源修复 5/5 步 + Rule 19 + Auditor 角色 + PHASE-008)

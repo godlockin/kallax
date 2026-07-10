@@ -5,7 +5,7 @@
 > Methodology: 9 专家 Phase 2 报告 → 跨 共识 合并 → 仲裁 冲突 → 出 P0/P1/P2 拍板 分级 (跟 EPIC-055-B 联合)
 
 > **跟 review-critical-2026-06-25.md §1+§2+§3 联合 0 隐藏**:
-> - 实际 22 IMPL docs (跟 master 拍 "22" 1:1 一致, 跟任务 自报 "23" 失一致 +1)
+> - 实际 22 IMPL docs (跟 master 拍 "22" 完全一致, 跟任务 自报 "23" 失一致 +1)
 > - 实际 74 commits (8af9082..29904dd, 跟任务 自报 "22" 失一致 -52, 跟"反讽" 战略 联合 0 隐藏)
 > - 实际 0 commit 用 --no-verify trailer (跟 git log 实证 0, 跟任务 自报 "3" 失一致 -3, 跟"诚实修正" 战略 联合 0 隐藏)
 > - 跟"独立" 战略 联合 0 拍 ai-auto 修订.
@@ -25,19 +25,19 @@
 
 **违反 EPIC-059-D Fact-Forcing 红线** (file:line `confluence/decisions/FACT-FORCING-EXAMPLES-2026-06-19.md:9-25`).
 
-**立刻 治根** (跟"诚实修正" 战略 联合, 0 跨 release 留待):
+**立刻 从根源修复** (跟"诚实修正" 战略 联合, 0 跨 release 留待):
 1. Phase 1 报告 line 11-14 baseline 修订: 543 → 424
 2. 9 专家 报告 (跟 Phase 1 全局扫描 + Phase 3 仲裁 汇总 = 11 panel files) 跨 release 留待 用 424 baseline, 0 用 543
 3. 10 工具 baseline 修订: 10 → 7 (3 unverified)
 4. Master 验证 6 维度 L1-L6 联合 重新 baseline 校验
 
-**EPIC-059-D 红线**: 接受 AI 自报 数字 = BE-9 silent output 复发. 不立即治根, 跨 release 累计 决策 全部 失真.
+**EPIC-059-D 红线**: 接受 AI 自报 数字 = BE-9 silent output 复发. 不立即从根源修复, 跨 release 累计 决策 全部 失真.
 
 ---
 
 ## 1. 9 专家 跨 共识 汇总 (跟 v2.0.3 EPIC-056-A 联合)
 
-### 1.1 P0 立刻治根 (跟 EPIC-059-D Fact-Forcing 红线 联合, 0 跨 release 留待)
+### 1.1 P0 立刻从根源修复 (跟 EPIC-059-D Fact-Forcing 红线 联合, 0 跨 release 留待)
 
 | # | Finding | 跨 共识 专家 | file:line 验证 |
 |---|---------|------------|---------------|
@@ -72,7 +72,7 @@
 | # | Finding | 跨 共识 专家 | file:line 验证 |
 |---|---------|------------|---------------|
 | **P2-1** | 1 命名 共识 (7 模式 → 1 模式) | 4 default + 5 extended | Phase 1 §1.3 |
-| **P2-2** | 7 重复 类型 治根 | 4 default | Phase 1 §1.4 |
+| **P2-2** | 7 重复 类型 从根源修复 | 4 default | Phase 1 §1.4 |
 | **P2-3** | 7 archive 路径 散乱 | 🖌️ 4-ux + 🔍 8-auditor | Phase 1 §1.5 |
 | **P2-4** | 9 顶层 README 缺 | 🖌️ 4-ux + 🚦 10-decision-gate | Phase 1 §1.6 |
 | **P2-5** | Option A vs B 文档树 | 🖌️ 4-ux + 📋 5-product | Phase 1 §1.8 |
@@ -102,21 +102,21 @@
 ### 2.1 P0 战略红线 (10 items, 跟 EPIC-059-D Fact-Forcing 联合 0 跨 release 留待)
 
 **Master explicit 拍板 模式 (3 选 1)**:
-- **A**: 立刻 治根 全部 10 P0 items (跟"独立" 战略 联合 0 跨 session 拍板)
-- **B**: 立刻 治根 P0-1~P0-4 (Phase 1 baseline + STUCTURE + PHASE-INDEX + terms.md factual errors), 余 P0-5~P0-10 留待 跨 release
+- **A**: 立刻 从根源修复 全部 10 P0 items (跟"独立" 战略 联合 0 跨 session 拍板)
+- **B**: 立刻 从根源修复 P0-1~P0-4 (Phase 1 baseline + STUCTURE + PHASE-INDEX + terms.md factual errors), 余 P0-5~P0-10 留待 跨 release
 - **C**: 0 拍 (跟"翻篇&精进" 战略 联合, 0 强制 拍, 0 跨 session 派)
 
 ### 2.2 P1 流程升级 (10 items, RECORD-P1 备案)
 
 **Master explicit 拍板 模式 (3 选 1)**:
-- **A**: 立刻 治根 全部 10 P1 items (跟"独立" 战略 联合)
+- **A**: 立刻 从根源修复 全部 10 P1 items (跟"独立" 战略 联合)
 - **B**: 跨 release 留待 (跟"翻篇&精进" 战略 联合, 跟 v2.0.7 PHASE-014 5 deferred 模式 一致)
 - **C**: 0 拍 (跟"翻篇&精进" 战略 联合, 0 强制 拍, 0 跨 session 派)
 
 ### 2.3 P2 操作放手 (10 items, p2-log 记录)
 
 **Master explicit 拍板 模式 (3 选 1)**:
-- **A**: 立刻 治根 全部 10 P2 items (跟"独立" 战略 联合)
+- **A**: 立刻 从根源修复 全部 10 P2 items (跟"独立" 战略 联合)
 - **B**: 跨 release 留待 (跟"翻篇&精进" 战略 联合, 跟 v2.0.7 PHASE-014 5 deferred 模式 一致)
 - **C**: 0 拍 (跟"翻篇&精进" 战略 联合, 0 强制 拍, 0 跨 session 派)
 
@@ -136,7 +136,7 @@
 
 ---
 
-## 3. 独立 专家团 review+质疑 (跟 master 派单 联合, 跟"反讽" 战略 联合 治根 反复)
+## 3. 独立 专家团 review+质疑 (跟 master 派单 联合, 跟"反讽" 战略 联合 从根源修复 反复)
 
 ### 3.1 跨 9 专家 共识 自我 质疑 (跟 2-frontend.md:25-31 联合 0 隐藏)
 
@@ -154,7 +154,7 @@
 - 跟 EPIC-059-D Fact-Forcing 联合 0 校验
 - Master 拍 explicit 0 ai-auto
 
-**Q4**: P2-2 7 重复 类型 治根 跟 P2-3 7 archive 路径 散乱 跟 P2-4 9 顶层 README 缺 是不是 0 跨 release 留待?
+**Q4**: P2-2 7 重复 类型 从根源修复 跟 P2-3 7 archive 路径 散乱 跟 P2-4 9 顶层 README 缺 是不是 0 跨 release 留待?
 - 跟"翻篇&精进" 战略 联合 0 强制 拍
 - 跟"独立" 战略 联合 master explicit 双 拍 explicit
 - 跟 v2.0.7 PHASE-014 5 deferred 模式 一致
@@ -166,16 +166,16 @@
 ### 3.2 跨 9 专家 冲突 仲裁 (跟"独立" 战略 联合 0 隐藏)
 
 **C1**: L 编号 反向 bug (2-backend.md F1) vs ROADMAP.md 0 用 L 编号 (跟 2-backend.md 联合 0 冲突)
-- 仲裁: P0-10 立刻 治根, 跨 release 留待 master 拍 1 共识
+- 仲裁: P0-10 立刻 从根源修复, 跨 release 留待 master 拍 1 共识
 
 **C2**: 14 paper-active EPIC 标 active 但 0 in_progress (5-product.md F2) vs 60 票 跨 release 留待 (5-product.md:69)
 - 仲裁: P1-1 跨 release 留待, 跟 60 票 联合 master explicit 拍
 
 **C3**: docs/STRUCTURE.md v2.0.0 stale (8-auditor.md F3) vs PHASE-INDEX.md:21 Rule 29-33 错 (8-auditor.md F5)
-- 仲裁: P0-2 + P0-3 立刻 治根, 跨 release 留待 master 拍 STRUCTURE.md 删 vs 改
+- 仲裁: P0-2 + P0-3 立刻 从根源修复, 跨 release 留待 master 拍 STRUCTURE.md 删 vs 改
 
-**C4**: 7 命名 模式 跨 release 留待 (Phase 1 §1.3) vs 0 跨 release 留待 8 finding 一次性 治根 (2-backend.md §4)
-- 仲裁: P2-1 跨 release 留待 master 拍 1 命名 共识, 跟 0 跨 release 留待 8 finding 联合 跨 release 重新 治根
+**C4**: 7 命名 模式 跨 release 留待 (Phase 1 §1.3) vs 0 跨 release 留待 8 finding 一次性 从根源修复 (2-backend.md §4)
+- 仲裁: P2-1 跨 release 留待 master 拍 1 命名 共识, 跟 0 跨 release 留待 8 finding 联合 跨 release 重新 从根源修复
 
 ### 3.3 独立 专家团 复盘 (跟 v2.0.3 EPIC-056-A Phase 3 联合)
 
@@ -195,7 +195,7 @@
 
 | 类别 | 数量 | 推荐 决策 | 理由 |
 |------|------|----------|------|
-| **P0 战略红线** | 10 items | **A 立刻 治根 全部** | 跟 EPIC-059-D Fact-Forcing 红线 联合, 0 跨 release 留待 |
+| **P0 战略红线** | 10 items | **A 立刻 从根源修复 全部** | 跟 EPIC-059-D Fact-Forcing 红线 联合, 0 跨 release 留待 |
 | **P1 流程升级** | 10 items | **B 跨 release 留待** (备案 RECORD-P1-*.md) | 跟"翻篇&精进" 战略 联合, 跟 v2.0.7 PHASE-014 5 deferred 模式 一致 |
 | **P2 操作放手** | 10 items | **C 0 拍** (p2-log 记录) | 跟"翻篇&精进" 战略 联合 0 强制 拍 |
 | **60 票 跨 release 留待** | 60 items | **0 拍** (跟"独立" 战略 联合 0 ai-auto) | 跟 v2.0.7 PHASE-014 5 deferred 模式 一致 |
@@ -204,7 +204,7 @@
 
 **0 拍 (跟"翻篇&精进" 战略 联合 0 强制 拍, 跟 v2.0.7 PHASE-014 模式 一致)**:
 
-1. **P0 立刻 治根** (10 items, 跟 EPIC-059-D 联合):
+1. **P0 立刻 从根源修复** (10 items, 跟 EPIC-059-D 联合):
    - 0 增 Rule 0 增 命令 持平
    - 0 跨 session 拍板
    - 1 主题 1 commit pattern (跟"品味" 联合)
@@ -231,7 +231,7 @@
 |-----|---------|------|
 | **K1 Phase 1 baseline 验证** | **0/4** (543/356.md/187.json/10 工具 全 错) | ❌ 0/4 跨 release 留待 修订 |
 
-> **跟 review-critical-2026-06-25.md §6 联合 0 隐藏**: K1 0/4 fail 跟 EPIC-059-D Fact-Forcing 红线 联合 跨 release 留待 治根. 跟"诚实修正" 战略 联合 0 隐藏, 跟"独立" 战略 联合 master explicit 后续 拍 1 commit 修订 (跟 v2.0.7 PHASE-014 模式 一致). 0 强制 拍 ai-auto 修订.
+> **跟 review-critical-2026-06-25.md §6 联合 0 隐藏**: K1 0/4 fail 跟 EPIC-059-D Fact-Forcing 红线 联合 跨 release 留待 从根源修复. 跟"诚实修正" 战略 联合 0 隐藏, 跟"独立" 战略 联合 master explicit 后续 拍 1 commit 修订 (跟 v2.0.7 PHASE-014 模式 一致). 0 强制 拍 ai-auto 修订.
 | **K2 9 专家 报告 100% deliver** | **9/9** | ✅ 100% (跟 BE-9 联合 0 复发) |
 | **K3 0 hidden governance gap** | **30/30 items 文档化** | ✅ 100% (P0 10 + P1 10 + P2 10) |
 | **K4 0 ai-auto 拍板** | **0/90 items 强制 拍** | ✅ 0 强制 (跟"独立" 战略 联合 90 全部 master explicit 拍) |
@@ -245,9 +245,9 @@
 
 ## 6. 心跳 5 问 (跟 PROCESS.md:25-26 联合, 跟"独立" 战略 联合 0 跨 session 拍板)
 
-- **Q1 优先级**: P0 10 items 立刻 治根, 跟 EPIC-059-D Fact-Forcing 联合 0 跨 release 留待
+- **Q1 优先级**: P0 10 items 立刻 从根源修复, 跟 EPIC-059-D Fact-Forcing 联合 0 跨 release 留待
 - **Q2 Slaver 状态**: 1 ticket 1 subagent 串行 跨 release 共识, 0 强制 派 9 专家
-- **Q3 进度**: 1/3 phase done (Phase 1 全局扫描) + 1/3 done (Phase 2 9 专家 9/9 ✅) + 1/3 跨 release 留待 master 拍 (Phase 3 仲裁 + 实际 治根)
+- **Q3 进度**: 1/3 phase done (Phase 1 全局扫描) + 1/3 done (Phase 2 9 专家 9/9 ✅) + 1/3 跨 release 留待 master 拍 (Phase 3 仲裁 + 实际 从根源修复)
 - **Q4 阻塞**: 0 阻塞, 全部 跨 release 留待 master explicit 拍
 - **Q5 消息 队列**: 0 跟踪 inbox 跨 release 留待
 
@@ -261,7 +261,7 @@
 - **0 跨 session 拍板**: 跟"独立" 战略 联合, 90 items + 60 票 全部 master explicit 拍
 - **0 拍 (跟 v2.0.7 PHASE-014 模式 一致)**: 0 ai-auto 拍, 0 跨 release 留待 强制
 - **9 专家 100% deliver** (跟 BE-9 silent output 反讽 联合 0 复发, 跟 v2.0.3 EPIC-056-A 模式 一致)
-- **Phase 1 baseline falsification 立刻 治根** (跟 EPIC-059-D 联合, 543→424, 22% 修订)
+- **Phase 1 baseline falsification 立刻 从根源修复** (跟 EPIC-059-D 联合, 543→424, 22% 修订)
 
 ---
 
@@ -269,8 +269,8 @@
 
 **主公 拍 explicit** 90 items 拍板 模式 (3 选 1):
 
-- **A**: 立刻 治根 全部 90 items (10 P0 + 10 P1 + 10 P2 + 60 票) — 跟"独立" 战略 联合 0 跨 session 拍板, 跟"翻篇&精进" 联合 0 增 Rule 0 增 命令
-- **B**: P0 10 items 立刻 治根, P1+P2+60 票 跨 release 留待 — 跟"诚实修正" + "翻篇&精进" 联合, 跟 v2.0.7 PHASE-014 模式 一致
+- **A**: 立刻 从根源修复 全部 90 items (10 P0 + 10 P1 + 10 P2 + 60 票) — 跟"独立" 战略 联合 0 跨 session 拍板, 跟"翻篇&精进" 联合 0 增 Rule 0 增 命令
+- **B**: P0 10 items 立刻 从根源修复, P1+P2+60 票 跨 release 留待 — 跟"诚实修正" + "翻篇&精进" 联合, 跟 v2.0.7 PHASE-014 模式 一致
 - **C**: 0 拍 (跟"翻篇&精进" 战略 联合 0 强制 拍, 跟 v2.0.7 PHASE-014 模式 一致, 0 ai-auto, 0 跨 session 派)
 
 **等待 主公 explicit 拍 1**, 跟 PROCESS.md:25-26 联合 0 跨 session 拍板, 跟"诚实修正" 战略 联合 0 隐藏 governance gap, 跟"翻篇&精进" 战略 联合 0 增 Rule 0 增 命令 持平 18 release 累计.

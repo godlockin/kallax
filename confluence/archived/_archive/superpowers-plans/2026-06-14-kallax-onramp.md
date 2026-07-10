@@ -1233,7 +1233,7 @@ git push origin miao --tags
 
 **2. Placeholder scan**: 0 个 TBD/TODO/fill in (除占位文件外).
 
-**3. Type consistency**: 
+**3. Type consistency**:
 - `recommendation`: A/B/C ✅
 - `choice`: A/B/C/CUSTOM/CANCEL ✅
 - `expert_count`: 1/4/5/10 ✅

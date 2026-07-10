@@ -23,13 +23,13 @@
 | Release | 红线 revert 模式 | evidence |
 |---|---|---|
 | **v2.0.4** | ⚠️ Master 6 维恢复 (EPIC-056-C, v1.2.4 6→0 退步反转) | commit `7f88823` (file:line `git log --all --grep="EPIC-056-C"`) |
-| **v2.0.5** | ⚠️ Rule 32 撤销 (反讽 治根 "Rule 治 Rule 通胀") | commit `7db6107` (跟 ACCUMULATED-LESSONS §4.4 联合) |
-| **v2.1.1** | ⚠️ 26 .md wrappers (BE-15 治根, Claude Code 2.1+ 优先 .md 格式) | commit `0ded58f` (file:line `git log --all --grep="26 .md wrappers"`) |
-| **v2.4.0 → v2.4.1** | ⚠️ 4 Rule 合并 revert (BE-16 治根, "0 实际变化 假动作") | commit `7f401f9` (file:line `git log --all --grep="v2.4.1 revert"`) |
+| **v2.0.5** | ⚠️ Rule 32 撤销 (反讽 从根源修复 "Rule 治 Rule 通胀") | commit `7db6107` (跟 ACCUMULATED-LESSONS §4.4 联合) |
+| **v2.1.1** | ⚠️ 26 .md wrappers (BE-15 从根源修复, Claude Code 2.1+ 优先 .md 格式) | commit `0ded58f` (file:line `git log --all --grep="26 .md wrappers"`) |
+| **v2.4.0 → v2.4.1** | ⚠️ 4 Rule 合并 revert (BE-16 从根源修复, "0 实际变化 假动作") | commit `7f401f9` (file:line `git log --all --grep="v2.4.1 revert"`) |
 
 **5 红线 revert 共同模式** (跟 Fact-Forcing 联合):
 - 每次 revert 触发 原因: 落地 后 evidence chain 失配 (净价值 / 实测 / 命名 跟 reality)
-- 每次 revert 治根: 0 实际变化 / 命名 ≠ reality / 0 跨 release 验证
+- 每次 revert 从根源修复: 0 实际变化 / 命名 ≠ reality / 0 跨 release 验证
 - 每次 revert 落地: PHASE-XXX-REFLECTION doc 沉淀, 跟"诚实修正" 联合
 
 ### 1.3 跟 v2.4.0 4 合并 假动作 联合 (跟 KALLAX-GLOSSARY §11.3 联合)
@@ -38,7 +38,7 @@
 - 命名: "Rule 22 → 18 净价值 +4%"
 - 实际: 净价值 67.0% 持平 0 跨 release 验证
 - **反讽**: 命名 ≠ reality = "制造 0 实际改变 假动作" (跟 §11.3 联合)
-- **治根** (v2.4.1 revert, file:line `confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md:284`): 跟"诚实修正" 联合, 主动 revert, PHASE-013-REFLECTION doc 沉淀
+- **从根源修复** (v2.4.1 revert, file:line `confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md:284`): 跟"诚实修正" 联合, 主动 revert, PHASE-013-REFLECTION doc 沉淀
 
 ---
 
@@ -72,7 +72,7 @@
 **示例**:
 - `CLAUDE.md:295` (Rule 14 主公原话 3 模式决策权)
 - `scripts/install.sh:69-92` (v2.0.6 4 工具 detection)
-- `.claude/commands/kallax-ask.md:1-8` (BE-15 .md wrapper 治根)
+- `.claude/commands/kallax-ask.md:1-8` (BE-15 .md wrapper 从根源修复)
 - `confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md:282-285` (v2.4.0 反思 + v2.4.1 revert)
 
 **不接受的"证据"** (跟 §1.2 诚实修正 联合):
@@ -136,7 +136,7 @@ fd9d0d9 feat(phase-013): v2.4.0 PHASE-013 跨期 review 落地 ...
 - 原则 2: 缺 raw test output
 - 原则 3: 缺 evidence 视为 OK = silent output 0 deliver
 
-**治根** (跟 v2.0.4 EPIC-053-A truth-table 联合): truth-table 强制 raw stdout/stderr, 5 levels Fact-Forcing (file:line `docs/KALLAX-GLOSSARY.md:641-651`)
+**从根源修复** (跟 v2.0.4 EPIC-053-A truth-table 联合): truth-table 强制 raw stdout/stderr, 5 levels Fact-Forcing (file:line `docs/KALLAX-GLOSSARY.md:641-651`)
 
 **跟 §11.3 联合**: "L4 verify PASS" 命名 ≠ reality (silent output) = "0 实际变化 假动作"
 
@@ -149,11 +149,11 @@ fd9d0d9 feat(phase-013): v2.4.0 PHASE-013 跨期 review 落地 ...
 - 原则 2: 缺 per-subagent stdout + deliverable file
 - 原则 3: 缺 evidence 视为 OK = 0 deliver
 
-**治根** (跟 v2.0.6 EPIC-057-D 联合): 1 ticket 1 subagent 串行, 强验证 per-subagent output
+**从根源修复** (跟 v2.0.6 EPIC-057-D 联合): 1 ticket 1 subagent 串行, 强验证 per-subagent output
 
 **跟 §11.3 联合**: "4 subagent 并行 = 4 倍速度" 命名 ≠ reality = "0 实际变化 假动作"
 
-### 3.3 反例 3: BE-15 "Unknown command: /kallax-ask" — 表面修了 实际没治根
+### 3.3 反例 3: BE-15 "Unknown command: /kallax-ask" — 表面修了 实际没从根源修复
 
 **模式**: v2.0.9/v2.0.10/v2.0.11 改 .sh 顶部 # 注释, 自报 "已修", 主公 反馈 "Unknown command: /kallax-ask" 仍存 (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:440`, `docs/KALLAX-GLOSSARY.md:550-568`)
 
@@ -162,7 +162,7 @@ fd9d0d9 feat(phase-013): v2.4.0 PHASE-013 跨期 review 落地 ...
 - 原则 2: 缺 Claude Code 2.1+ slash command registry 实测 evidence
 - 原则 3: 缺 evidence 视为 OK = 主公反馈仍存
 
-**治根** (跟 v2.1.1 联合): 加 26 .md wrappers, Claude Code 2.1+ 优先 .md 格式 (file:line `.claude/commands/kallax-ask.md:1-8`)
+**从根源修复** (跟 v2.1.1 联合): 加 26 .md wrappers, Claude Code 2.1+ 优先 .md 格式 (file:line `.claude/commands/kallax-ask.md:1-8`)
 
 **跟 §11.3 联合**: "改 .sh = 修复" 命名 ≠ reality (Claude Code registry 优先 .md) = "0 实际变化 假动作"
 
@@ -175,7 +175,7 @@ fd9d0d9 feat(phase-013): v2.4.0 PHASE-013 跨期 review 落地 ...
 - 原则 2: 缺 file:line 实证 (install.sh:52-53 1 工具, codex/gemini 0 reference)
 - 原则 3: 缺 evidence 视为 OK = 主公 实际 反讽
 
-**治根** (跟 v2.0.6 EPIC-057 联合): CHANGELOG [2.0.6] 明确标注 "v2.0.2 release 命名是跨平台, 实际只 Claude Code (历史 gap), v2.0.6 治根" (file:line `confluence/decisions/PHASE-010-REVIEW-2026-06-17.md:168`)
+**从根源修复** (跟 v2.0.6 EPIC-057 联合): CHANGELOG [2.0.6] 明确标注 "v2.0.2 release 命名是跨平台, 实际只 Claude Code (历史 gap), v2.0.6 从根源修复" (file:line `confluence/decisions/PHASE-010-REVIEW-2026-06-17.md:168`)
 
 **跟 §11.3 联合**: release 命名 "跨平台" ≠ reality (1 工具 only) = "0 实际变化 假动作"
 
@@ -188,7 +188,7 @@ fd9d0d9 feat(phase-013): v2.4.0 PHASE-013 跨期 review 落地 ...
 - 原则 2: 缺 跨 release 验证 evidence (22 Rule 跟 18 Rule 净价值 持平, 0 假 PASS 校验)
 - 原则 3: 缺 evidence 视为 OK = 净价值 持平 (0 实际变化)
 
-**治根** (跟 v2.4.1 revert 联合): revert 4 合并 → 22 Rule 跟 v2.3.0 一致, 反思 doc PHASE-013-REFLECTION 落地 (file:line `confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md:284`)
+**从根源修复** (跟 v2.4.1 revert 联合): revert 4 合并 → 22 Rule 跟 v2.3.0 一致, 反思 doc PHASE-013-REFLECTION 落地 (file:line `confluence/decisions/PHASE-013-REFLECTION-2026-06-18.md:284`)
 
 **跟 §11.3 联合**: 命名 "净价值 +4%" ≠ reality (67.0% 持平) = "0 实际变化 假动作"
 
@@ -201,7 +201,7 @@ fd9d0d9 feat(phase-013): v2.4.0 PHASE-013 跨期 review 落地 ...
 - 原则 2: 缺 raw test output / X/Y 格式 evidence
 - 原则 3: 缺 evidence 视为 OK = 估数 算 FAIL 模式
 
-**治根** (跟 v2.0.4 EPIC-053-B 联合): 5 levels 证据链 + Master 6 维恢复 (v1.2.4 6→0 退步 反转)
+**从根源修复** (跟 v2.0.4 EPIC-053-B 联合): 5 levels 证据链 + Master 6 维恢复 (v1.2.4 6→0 退步 反转)
 
 **跟 §11.3 联合**: "11/16 KPI 达标" 命名 ≠ reality (估数) = "0 实际变化 假动作"
 
@@ -214,7 +214,7 @@ fd9d0d9 feat(phase-013): v2.4.0 PHASE-013 跨期 review 落地 ...
 - 原则 2: 缺 per-step stdin input log + 实际 install file:line
 - 原则 3: 缺 evidence 视为 OK = 实际 install 0 verify
 
-**治根** (跟 v2.1.0 dry-run 联合): `--dry-run` 模拟运行, 退出前打印 "Dry-run complete. No files were installed." (file:line `docs/KALLAX-GLOSSARY.md:536-547`)
+**从根源修复** (跟 v2.1.0 dry-run 联合): `--dry-run` 模拟运行, 退出前打印 "Dry-run complete. No files were installed." (file:line `docs/KALLAX-GLOSSARY.md:536-547`)
 
 **跟 §11.3 联合**: "wizard 5-step 完成" 命名 ≠ reality (无 install file:line) = "0 实际变化 假动作"
 
@@ -242,7 +242,7 @@ fd9d0d9 feat(phase-013): v2.4.0 PHASE-013 跨期 review 落地 ...
 - 原则 2: file:line `scripts/install.sh:69-92` (4 工具 detection)
 - 原则 3: 4 工具 验证 通过 (file:line `tests/integration/master-6d-recovery-test.sh:150`)
 
-**跟 v2.0.2 反讽 治根 联合**: "跨平台" 命名 → v2.0.6 真正 4 工具, naming = reality
+**跟 v2.0.2 反讽 从根源修复 联合**: "跨平台" 命名 → v2.0.6 真正 4 工具, naming = reality
 
 ### 4.3 正例 3: v2.4.0 worktree 清理 — 48 worktree + 123 branches evidence 完整
 
@@ -266,16 +266,16 @@ fd9d0d9 feat(phase-013): v2.4.0 PHASE-013 跨期 review 落地 ...
 
 **跟 §11.5 revert 跟反思 区别 联合**: revert 技术 行动 + 反思 战略 行动 闭环, 跟"诚实修正" 联合
 
-### 4.5 正例 5: 26 .md wrappers 闭环 — Claude Code 2.1+ 实测 → 治根 BE-15
+### 4.5 正例 5: 26 .md wrappers 闭环 — Claude Code 2.1+ 实测 → 从根源修复 BE-15
 
-**模式**: v2.1.1 加 26 .md wrappers, Claude Code 2.1+ 优先 .md 格式, 治根 BE-15 (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:440`, `:484`, `.claude/commands/kallax-ask.md:1-8`)
+**模式**: v2.1.1 加 26 .md wrappers, Claude Code 2.1+ 优先 .md 格式, 从根源修复 BE-15 (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:440`, `:484`, `.claude/commands/kallax-ask.md:1-8`)
 
 **符合 3 原则**:
 - 原则 1: 不问"修了 吗", 改问"Claude Code 2.1+ slash command registry 实测 几 个 命令 OK"
 - 原则 2: file:line `.claude/commands/kallax-ask.md:1-8`
 - 原则 3: 主公 反馈 闭环 (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:698` "主公 Unknown command 反馈" → v2.1.1 .md wrappers)
 
-**跟 §11.3 0 实际变化 假动作 治根 联合**: v2.0.9-v2.0.11 0 实际变化 (改 .sh 表面) → v2.1.1 治根 (加 .md wrappers)
+**跟 §11.3 0 实际变化 假动作 从根源修复 联合**: v2.0.9-v2.0.11 0 实际变化 (改 .sh 表面) → v2.1.1 从根源修复 (加 .md wrappers)
 
 ### 4.6 正例 6: v2.0.4 Master 6 维恢复 — v1.2.4 6→0 退步 反转
 
@@ -286,18 +286,18 @@ fd9d0d9 feat(phase-013): v2.4.0 PHASE-013 跨期 review 落地 ...
 - 原则 2: file:line `docs/KALLAX-GLOSSARY.md:625-637` (Master 6 维验证)
 - 原则 3: L1-L6 验证 通过, 净价值 +4.5% (62.5% → 67.0%) 实证
 
-**跟 v2.0.3 11 KPI falsification 治根 联合**: 11 KPI 估数 → v2.0.4 6 维度 raw output 强制
+**跟 v2.0.3 11 KPI falsification 从根源修复 联合**: 11 KPI 估数 → v2.0.4 6 维度 raw output 强制
 
 ### 4.7 正例 7: v2.3.0 pre-commit ALLOWED_PATTERNS `^jira/` — 1 line diff 闭环 BE-14
 
-**模式**: v2.3.0 pre-commit ALLOWED_PATTERNS 加 `^jira/`, 1 line diff, 治根 BE-14 `--no-verify` workaround 反复 (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:486`, `:337`, commit `7db6107`)
+**模式**: v2.3.0 pre-commit ALLOWED_PATTERNS 加 `^jira/`, 1 line diff, 从根源修复 BE-14 `--no-verify` workaround 反复 (file:line `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:486`, `:337`, commit `7db6107`)
 
 **符合 3 原则**:
 - 原则 1: 不问"pre-commit work 吗", 改问"`--no-verify` workaround 反复 几 次"
 - 原则 2: file:line `scripts/hooks/pre-commit:ALLOWED_PATTERNS`
 - 原则 3: 1 line diff evidence + 0 `--no-verify` 闭环
 
-**跟 BE-14 治根 联合**: "Todo 1-5 --no-verify workaround 反复" → v2.3.0 `^jira/` 治根
+**跟 BE-14 从根源修复 联合**: "Todo 1-5 --no-verify workaround 反复" → v2.3.0 `^jira/` 从根源修复
 
 ---
 
@@ -336,7 +336,7 @@ fd9d0d9 feat(phase-013): v2.4.0 PHASE-013 跨期 review 落地 ...
 
 ---
 
-## 6. 撤销方法 (跟 3 原则 1:1 联合)
+## 6. 撤销方法 (跟 3 原则 配合)
 
 ### 6.1 撤销 原则 1 (不问 "确定吗")
 
@@ -416,13 +416,13 @@ fd9d0d9 feat(phase-013): v2.4.0 PHASE-013 跨期 review 落地 ...
 
 ### 8.2 跟"反讽" 联合 (跟 §1.1 联合)
 
-- **Fact-Forcing** 是 治根 反讽 (命名 ≠ reality) 的 **手段**
-- BE-15 "Unknown command" 反讽 → v2.1.1 .md wrappers 治根
-- v2.4.0 4 合并 反讽 → v2.4.1 revert 治根
+- **Fact-Forcing** 是 从根源修复 反讽 (命名 ≠ reality) 的 **手段**
+- BE-15 "Unknown command" 反讽 → v2.1.1 .md wrappers 从根源修复
+- v2.4.0 4 合并 反讽 → v2.4.1 revert 从根源修复
 
 ### 8.3 跟"翻篇&精进" 联合 (跟 §2.3 联合)
 
-- **Fact-Forcing** 是 治根 "0 增命令 跟 净价值 持平" 的 **手段**
+- **Fact-Forcing** 是 从根源修复 "0 增命令 跟 净价值 持平" 的 **手段**
 - 0 增命令 不等于 0 实际变化 (跟 §11.3 联合)
 - Fact-Forcing 检测 0 实际变化 → 走 revert / 走 fix, 不 接受 模糊 命名
 

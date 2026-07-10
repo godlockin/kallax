@@ -54,11 +54,11 @@
 
 ### R1: Rule 数 跨文档 不一致 失治理权威 (CLAUDE.md 20 vs 9-hard-rules.md 22)
 
-`CLAUDE.md:594` 声称 20 Rule (active, EPIC-058-E 22→20 合并落地), `docs/process/9-hard-rules.md:12,206` 全篇 声称 22 Rule (v2.4.1 还原 跟 v2.3.0 一致). **未跟踪 EPIC-058-E v2.7.5 22→20 合并落地**. 跨 release 留待 治根, 跟 "诚实修正" 战略 联合, 0 隐藏 debt 文档化 即可. **检查脚本**: `bash scripts/check-9-hard-rules.sh --self-test` 应 FAIL (CLAUDE.md 20 vs 9-hard-rules.md 22 差 2).
+`CLAUDE.md:594` 声称 20 Rule (active, EPIC-058-E 22→20 合并落地), `docs/process/9-hard-rules.md:12,206` 全篇 声称 22 Rule (v2.4.1 还原 跟 v2.3.0 一致). **未跟踪 EPIC-058-E v2.7.5 22→20 合并落地**. 跨 release 留待 从根源修复, 跟 "诚实修正" 战略 联合, 0 隐藏 debt 文档化 即可. **检查脚本**: `bash scripts/check-9-hard-rules.sh --self-test` 应 FAIL (CLAUDE.md 20 vs 9-hard-rules.md 22 差 2).
 
 ### R2: 5 levels file:line 索引 失准 13-61 行
 
-CLAUDE.md:572-585 9 类别 group 索引 表 file:line 链接 跟 实际 Rule 位置 偏差 13-61 行. 跨 release 累计 漂移 (EPIC-058-E 合并 + v2.7.0 整理 release). 检查脚本 `bash scripts/check-9-hard-rules.sh --self-test` 5/5 PASS 验证 失真. **0 强制 拍板** 治根, 跨 release 留待 master explicit 拍 "1 主题 1 commit 重构 file:line 索引".
+CLAUDE.md:572-585 9 类别 group 索引 表 file:line 链接 跟 实际 Rule 位置 偏差 13-61 行. 跨 release 累计 漂移 (EPIC-058-E 合并 + v2.7.0 整理 release). 检查脚本 `bash scripts/check-9-hard-rules.sh --self-test` 5/5 PASS 验证 失真. **0 强制 拍板** 从根源修复, 跨 release 留待 master explicit 拍 "1 主题 1 commit 重构 file:line 索引".
 
 ### R3: 2 套 5 levels 模式 并行 存在 借方法论 失焦
 
@@ -70,7 +70,7 @@ CLAUDE.md 命令速查 列 9 命令 (用户 入口), SKILL.md 描述 26+ 命令.
 
 ### R5: fatigue_index 50.0 HIGH 阈值 触及 需 §10.3 重新审视
 
-`CLAUDE.md:597` `fatigue_index: 50.0 (HIGH 阈值 50 触及, 跟"反讽" 联合, 阈值 §10.3 需 重新审视)`. 阈值 15 (KALLAX-GLOSSARY §10.3) 跟 v2.4.0+v2.4.1 8 release 累计 不匹配. **22 Rule vs 18 Rule 净价值 持平 67.0%** 实证 "Rule 数 多 跟 治理完成 不是 因果关系". §10.3 阈值 15 需 KALLAX-GLOSSARY 11.x 扩 候选, 跨 release 留待 治根, 跟 "诚实修正" + "反讽" 战略 联合.
+`CLAUDE.md:597` `fatigue_index: 50.0 (HIGH 阈值 50 触及, 跟"反讽" 联合, 阈值 §10.3 需 重新审视)`. 阈值 15 (KALLAX-GLOSSARY §10.3) 跟 v2.4.0+v2.4.1 8 release 累计 不匹配. **22 Rule vs 18 Rule 净价值 持平 67.0%** 实证 "Rule 数 多 跟 治理完成 不是 因果关系". §10.3 阈值 15 需 KALLAX-GLOSSARY 11.x 扩 候选, 跨 release 留待 从根源修复, 跟 "诚实修正" + "反讽" 战略 联合.
 
 ## 3. 推荐 (跟"独立" 战略 联合 0 跨 session 拍板)
 
@@ -116,10 +116,10 @@ CLAUDE.md 命令速查 列 9 命令 (用户 入口), SKILL.md 描述 26+ 命令.
 
 ## 4. 跨 release 留待 (跟"翻篇&精进" 战略 联合)
 
-- **0 增 Rule**: CLAUDE.md 20 Rule 跟 docs/process/9-hard-rules.md 22 Rule 不一致 = debt 文档化, 0 增 Rule 治根 (跟 "翻篇&精进" 战略 一致)
-- **0 增 命令**: Slash 命令 速查 9 跟 SKILL.md 26+ gap = 用户 认知 债务, 0 增 命令 治根 (互为 互补 标记 即可)
+- **0 增 Rule**: CLAUDE.md 20 Rule 跟 docs/process/9-hard-rules.md 22 Rule 不一致 = debt 文档化, 0 增 Rule 从根源修复 (跟 "翻篇&精进" 战略 一致)
+- **0 增 命令**: Slash 命令 速查 9 跟 SKILL.md 26+ gap = 用户 认知 债务, 0 增 命令 从根源修复 (互为 互补 标记 即可)
 - **0 强制 拍板**: 2 套 5 levels 模式 + file:line 失准 + 速查 vs 完整 跨 release 留待 master explicit 拍, 跟 "独立" 战略 联合 0 跨 session 拍板
-- **0 删 Rule 持平**: EPIC-058-E v2.7.5 22→20 合并 落地, docs/process/9-hard-rules.md 全篇 未跟踪 = 文档化 debt 跨 release 留待 1 commit 1 文件 治根
+- **0 删 Rule 持平**: EPIC-058-E v2.7.5 22→20 合并 落地, docs/process/9-hard-rules.md 全篇 未跟踪 = 文档化 debt 跨 release 留待 1 commit 1 文件 从根源修复
 - **0 净价值 损失**: 全部 5 推荐 实施 0 净价值 变化 (跟 v2.4.0 反思 revert 教训 一致), 净价值 67.0% 持平
 
 ## 5. KPI (跟 Rule 9 X/Y 格式 联合)

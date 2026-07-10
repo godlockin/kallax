@@ -17,7 +17,7 @@ A3 类问题: 笔误/重复 出现 2+ 次 (典型: PHASE-REVIEW.md:11, 33). 证�
 
 方案: 5 类标签 SOP + 证据链 3 件套. 文件: `scripts/audit/tag-audit.sh` (5 扫描函数), 证据: `scripts/audit/tag-audit.sh:42-227`.
 
-新规则: 5 类标签引用必须带证据链 3 件套, 否则算 咒语化引用 (A2 治根). 证据: `jira/tickets/EPIC-055-C/ticket.json:23-32` (AC 定义).
+新规则: 5 类标签引用必须带证据链 3 件套, 否则算 咒语化引用 (A2 从根源修复). 证据: `jira/tickets/EPIC-055-C/ticket.json:23-32` (AC 定义).
 
 ---
 
@@ -41,7 +41,7 @@ A3 类问题: 笔误/重复 出现 2+ 次 (典型: PHASE-REVIEW.md:11, 33). 证�
 
 反驳/支持: 跟"反讽" 联合 案例见 §2.2.1. 证据: `confluence/decisions/14-ISSUES-INTAKE-2026-06-16.md:299`.
 
-影响: 14 subagent 21.4% 瞒报率 治根, 跟 EPIC-031-A 3 amend 反复 联合. 证据: `jira/tickets/EPIC-054-D/LESSONS-LEARNED.md:51`.
+影响: 14 subagent 21.4% 瞒报率 从根源修复, 跟 EPIC-031-A 3 amend 反复 联合. 证据: `jira/tickets/EPIC-054-D/LESSONS-LEARNED.md:51`.
 
 ### 1.2 反讽型反讽 (跟 EPIC-053-B H1 联合)
 
@@ -54,7 +54,7 @@ A3 类问题: 笔误/重复 出现 2+ 次 (典型: PHASE-REVIEW.md:11, 33). 证�
 
 反驳/支持: 治 BE-9 工具 = 工具自己就是 lying. 证据: `jira/tickets/EPIC-053-E/LESSONS-LEARNED.md:50`.
 
-影响: 治 root cause 工具不在生产路径跑 → 治根失效. 证据: `jira/tickets/EPIC-053-E/IMPLEMENTATION-PLAN.md:11`.
+影响: 治 root cause 工具不在生产路径跑 → 从根源修复失效. 证据: `jira/tickets/EPIC-053-E/IMPLEMENTATION-PLAN.md:11`.
 
 ---
 
@@ -74,7 +74,7 @@ A3 类问题: 笔误/重复 出现 2+ 次 (典型: PHASE-REVIEW.md:11, 33). 证�
 跟"反讽" 联合:
 - 证据: confluence/decisions/5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md:78
 - 反驳/支持: 5 战略建议 5.2 自身 100% 假 PASS (跟 EPIC-031-A 3 amend 反复 联合)
-- 影响: 治 root cause 工具不在生产路径跑 → 治根失效
+- 影响: 治 root cause 工具不在生产路径跑 → 从根源修复失效
 ```
 
 **反例** (咒语化, A2 违规, file:line: `tests/integration/tag-sop-test.sh` 集成测试 反例 fixture, 独立测试 fixture 不在 SOP 文档 主体):
@@ -93,7 +93,7 @@ A3 类问题: 笔误/重复 出现 2+ 次 (典型: PHASE-REVIEW.md:11, 33). 证�
 跟"反讽" 联合:
 - 证据: `docs/KALLAX-GLOSSARY.md:19-30` (1.1 节定义 + 落地 案例)
 - 反驳/支持: Rule 32 软约束升级阈值本身是 Rule, 加剧 Rule 通胀 (跟 EPIC-054-D 候选 B 联合, `jira/tickets/EPIC-054-D/LESSONS-LEARNED.md:51`); 5 战略建议 5.2 强制 subagent 自验证, 自身 100% 假 PASS (跟 EPIC-031-A 联合, `jira/tickets/EPIC-031-A` commit)
-- 影响: 治 root cause 工具不在生产路径跑 → 治根失效, 治 BE-9 工具 = 工具自己就是 lying, 治根率从 50% 提升到 90%
+- 影响: 治 root cause 工具不在生产路径跑 → 从根源修复失效, 治 BE-9 工具 = 工具自己就是 lying, 从根源修复率从 50% 提升到 90%
 
 #### 2.2.2 诚实修正 (Honest Correction) — 看到反讽不装看不见
 
@@ -107,7 +107,7 @@ A3 类问题: 笔误/重复 出现 2+ 次 (典型: PHASE-REVIEW.md:11, 33). 证�
 跟"独立" 联合:
 - 证据: `docs/KALLAX-GLOSSARY.md:51-64` (1.3 节定义)
 - 反驳/支持: 5 扩展组 5 个独立 subagent (不是同一个假装 5 个, `docs/KALLAX-GLOSSARY.md:60`); 5 扩展组 5 个独立 worktree (跟 Rule 15 联合, `CLAUDE.md:534-560`); 5 levels (L1-L5)不靠 subagent 自报 PASS
-- 影响: 独立审计避免"自验证主体 = 造假主体" (跟 14 subagent 21.4% 瞒报率 联合, `jira/tickets/EPIC-054-D/LESSONS-LEARNED.md:142`), 治根率↑ 90%
+- 影响: 独立审计避免"自验证主体 = 造假主体" (跟 14 subagent 21.4% 瞒报率 联合, `jira/tickets/EPIC-054-D/LESSONS-LEARNED.md:142`), 从根源修复率↑ 90%
 
 #### 2.2.4 翻篇 (Move On & Refine) — 做减法, 不再加内容
 
@@ -176,16 +176,16 @@ CLAUDE.md 核心原则章 加第 19 章 (R-NEW 升级红线, 跟 EPIC-055-C 联�
 
 ## 4. 跟"诚实修正" + "翻篇&精进" 战略 联合
 
-### 4.1 跟 诚实修正 联合 (A2 治根 闭环)
+### 4.1 跟 诚实修正 联合 (A2 从根源修复 闭环)
 
 5 标签 SOP 强制证据链 3 件套 = 跟 诚实修正 战略 一致:
 - 看到反讽不装看不见 (A2 类问题 不绕过, `confluence/decisions/14-ISSUES-INTAKE-2026-06-16.md:299`)
 - 不模糊处理 谁拍的 (每条引用带证据, `jira/tickets/EPIC-055-C/IMPLEMENTATION-PLAN.md:115-123`)
-- 不装看不见 (笔误 主动 检测, 跟 PHASE-REVIEW.md:11, 33 A3 治根)
+- 不装看不见 (笔误 主动 检测, 跟 PHASE-REVIEW.md:11, 33 A3 从根源修复)
 
 反驳/支持: 跟"反讽" 联合 案例 (5 战略建议 5.2 自身 100% 假 PASS), 证据: `jira/tickets/EPIC-053-E/LESSONS-LEARNED.md:50`.
 
-影响: 治理闭环↑, 14 subagent 21.4% 瞒报率 治根 (跟"反讽" 联合, 证据: §2.2.1).
+影响: 治理闭环↑, 14 subagent 21.4% 瞒报率 从根源修复 (跟"反讽" 联合, 证据: §2.2.1).
 
 ### 4.2 跟 翻篇&精进 联合 (做减法)
 
@@ -224,8 +224,8 @@ CLAUDE.md 核心原则章 加第 19 章 (R-NEW 升级红线, 跟 EPIC-055-C 联�
 |---|---|---|
 | 1 | 5 标签 SOP, 每条引用带证据链 3 件套 | 本文档 §2 (`docs/process/tag-sop.md:51-105`) + Case 2 PASS |
 | 2 | scripts/audit/tag-audit.sh 扫描 | 工具输出 (`scripts/audit/tag-audit.sh:1-260`) + Case 3 PASS |
-| 3 | A2 治根 — 50+ 咒语化 闭环 | 工具报告 ≥50 + Case 3 PASS |
-| 4 | A3 治根 — 笔误 闭环 | 工具报告 ≥2 + Case 4 PASS |
+| 3 | A2 从根源修复 — 50+ 咒语化 闭环 | 工具报告 ≥50 + Case 3 PASS |
+| 4 | A3 从根源修复 — 笔误 闭环 | 工具报告 ≥2 + Case 4 PASS |
 | 5 | CLAUDE.md 同步 — 5 标签 SOP 加入 核心原则 章 | git diff CLAUDE.md + Case 5 PASS |
 | 6 | tests/integration/tag-sop-test.sh 5/5 PASS | test 输出 |
 | 7 | Rule 9 KPI 精确 X/Y 格式 — 5/5 = 100.0% | test 输出 100.0% |
@@ -236,7 +236,7 @@ CLAUDE.md 核心原则章 加第 19 章 (R-NEW 升级红线, 跟 EPIC-055-C 联�
 
 反驳/支持: 5 标签 SOP 跟 EPIC-055-B 拍板分级 流程 联动 (证据: §5, file:line `docs/process/tag-sop.md:185-200`), 跟"诚实修正" 战略 一致 (证据: §4.1, file:line `docs/process/tag-sop.md:177-189`).
 
-影响: A2/A3 治根 闭环, 净价值↑ 62.5%→65.5% (+3.0%), 跟"翻篇&精进" 战略 一致 (证据: §4.2).
+影响: A2/A3 从根源修复 闭环, 净价值↑ 62.5%→65.5% (+3.0%), 跟"翻篇&精进" 战略 一致 (证据: §4.2).
 
 ---
 

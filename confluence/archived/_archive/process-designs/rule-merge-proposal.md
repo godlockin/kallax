@@ -67,13 +67,13 @@ EPIC-055-B (本 ticket 联动基础, 拍板分级 P0/P1/P2)
 **A1 Rule 通胀 闭环** (跟 v1.2.4 EPIC-051 合规设计 一致):
 - 升级率 43.5% 已触发 Rule 32 "Rule 数量 > 15 触发重构"
 - fatigue_index 43.5 接近 HIGH 阈值 50 (跟 EPIC-055-B 实测 闭环)
-- 本 ticket 治根: 23 Rule → 20 Rule 目标 (-3), 净价值 62.5% → 65%+
+- 本 ticket 从根源修复: 23 Rule → 20 Rule 目标 (-3), 净价值 62.5% → 65%+
 
-### 1.3 A1 治根 — Rule 32 反讽 闭环
+### 1.3 A1 从根源修复 — Rule 32 反讽 闭环
 
 **反讽诊断** (跟"诚实修正" + "翻篇&精进" 战略 联合):
 - Rule 32 (软约束升级阈值) **本身是 Rule**, 反讽地 **加剧 Rule 通胀**
-- Rule 32 治根逻辑: "Rule 数量 > 15 触发重构" → 加 Rule 32 → Rule 数量 +1 → 治根动作本身加剧问题
+- Rule 32 从根源修复逻辑: "Rule 数量 > 15 触发重构" → 加 Rule 32 → Rule 数量 +1 → 从根源修复动作本身加剧问题
 - **闭环方案** (候选 B): Rule 32 应撤销/合并到 Rule 5 DRY (从"专门 Rule" → "DRY 原则的子条款")
 
 ---
@@ -88,8 +88,8 @@ EPIC-055-B (本 ticket 联动基础, 拍板分级 P0/P1/P2)
 
 | 维度 | 详情 |
 |---|---|
-| **Rule 30 内容** | 自验证需独立见证 (Process Engineering Extension, 治根因 2) |
-| **Rule 31 内容** | 独立见证机制 (Auditor Extension, 治根因 3) |
+| **Rule 30 内容** | 自验证需独立见证 (Process Engineering Extension, 根因修复 2) |
+| **Rule 31 内容** | 独立见证机制 (Auditor Extension, 根因修复 3) |
 | **主题重叠** | 两 Rule 都讲"独立见证" (Independent Witness), 高内容重叠 |
 | **不同点** | Rule 30 讲 "为何需要独立见证" (自验证主体 = 造假主体), Rule 31 讲 "如何实现独立见证" (audit-log-sink.sh 落地) |
 | **合并理由** | 同一概念的两个方面, 不应独立成 Rule; 落地脚本 `audit-log-sink.sh` + `independent-witness.sh` 保持不变 |
@@ -99,7 +99,7 @@ EPIC-055-B (本 ticket 联动基础, 拍板分级 P0/P1/P2)
 **合并后 Rule 文本草案** (待主公拍板后写入 CLAUDE.md):
 
 ```markdown
-### 30. 独立见证机制 (含 process engineering + auditor, KALLAX P0) — 治根因 2+3
+### 30. 独立见证机制 (含 process engineering + auditor, KALLAX P0) — 根因修复 2+3
 
 **教训**: 14 subagent = 21.4% 瞒报率. Subagent 报 PASS 时, 3 硬脚本运行在 subagent 自己控制的 shell 里 — 脚本可伪造输出. 自验证主体 = 造假主体, 不可篡改 audit log sink 缺失.
 
@@ -121,7 +121,7 @@ EPIC-055-B (本 ticket 联动基础, 拍板分级 P0/P1/P2)
 
 ---
 
-### 2.2 候选 B: Rule 32 撤销/合并到 Rule 5 DRY → "DRY + 软约束" (反讽治根)
+### 2.2 候选 B: Rule 32 撤销/合并到 Rule 5 DRY → "DRY + 软约束" (反讽从根源修复)
 
 **当前 Rule 数**: 1 (Rule 32)
 **合并后 Rule 数**: 0 (撤销, 概念并入 Rule 5 章节)
@@ -129,8 +129,8 @@ EPIC-055-B (本 ticket 联动基础, 拍板分级 P0/P1/P2)
 
 | 维度 | 详情 |
 |---|---|
-| **Rule 32 内容** | 软约束升级阈值 (Root Cause 4 治根, >80% 升级率触发审查, Rule 数 > 15 触发重构, Gate 数 > 10 触发架构评估) |
-| **反讽问题** | Rule 32 治通胀的 Rule 本身加剧通胀 — 加 Rule 32 → Rule 数 +1 → 治根动作本身加剧问题 |
+| **Rule 32 内容** | 软约束升级阈值 (Root Cause 4 从根源修复, >80% 升级率触发审查, Rule 数 > 15 触发重构, Gate 数 > 10 触发架构评估) |
+| **反讽问题** | Rule 32 治通胀的 Rule 本身加剧通胀 — 加 Rule 32 → Rule 数 +1 → 从根源修复动作本身加剧问题 |
 | **合并方案** | 撤销 Rule 32 独立 Rule, 概念并入 Rule 5 DRY 章节, 作为子条款 "Rule 升级阈值" |
 | **替代影响** | `scripts/audit/rule-redundancy-audit.sh` 仍按 >15 阈值跑, 逻辑不变; CLAUDE.md 移除独立 Rule 32, Rule 5 章节加子条款 |
 | **风险** | **中** (需主公拍板确认 Rule 32 撤销; 跟 PROCESS.md:25-26 联合) |
@@ -138,7 +138,7 @@ EPIC-055-B (本 ticket 联动基础, 拍板分级 P0/P1/P2)
 **Rule 5 DRY 章节子条款草案** (待主公拍板后写入 CLAUDE.md):
 
 ```markdown
-### 5. DRY — Rule 升级阈值子条款 (KALLAX P1) — 反讽治根
+### 5. DRY — Rule 升级阈值子条款 (KALLAX P1) — 反讽从根源修复
 
 **教训**: Rule 通胀闭环 — Rule 治通胀本身加剧通胀 (反讽). 18 Rule 升级率 100%, 5 release 软约束失效, 循环论证无出口.
 
@@ -163,7 +163,7 @@ EPIC-055-B (本 ticket 联动基础, 拍板分级 P0/P1/P2)
 
 | 维度 | 详情 |
 |---|---|
-| **Rule 33 内容** | decision-gate 复杂才问 (decision-gate 扩展组 治根因 5) — ai-copilot 模式 在 analysis/test/review 复杂阶段停下问主公, claim/in_progress 简单阶段 不 block |
+| **Rule 33 内容** | decision-gate 复杂才问 (decision-gate 扩展组 根因修复 5) — ai-copilot 模式 在 analysis/test/review 复杂阶段停下问主公, claim/in_progress 简单阶段 不 block |
 | **Rule 13 内容** | 3 模式决策权分配 (主公原话 2026-06-09) — ai-auto / ai-copilot / manual 三模式 |
 | **关系** | Rule 33 是 Rule 13 3 模式框架的细化子规则 — "复杂阶段停下问主公" 本就是 3 模式 (ai-auto/ai-copilot/manual) 框架的内在子规则 |
 | **合并理由** | 不应独立成 Rule, 应作为 Rule 13 章节的子条款 |
@@ -177,7 +177,7 @@ EPIC-055-B (本 ticket 联动基础, 拍板分级 P0/P1/P2)
 
 [...既有内容...]
 
-#### 13a. decision-gate 复杂才问子条款 (KALLAX P0) — 治根因 5
+#### 13a. decision-gate 复杂才问子条款 (KALLAX P0) — 根因修复 5
 
 **教训**: decision-gate.sh 5 类 block 决策在 3 模式都触发, ai-copilot 实际变成 "ai-ask-every-step". 主公每 5 分钟一次确认请求, 决策疲劳. 根因: "疑似就问" 逻辑而非 "复杂才问".
 

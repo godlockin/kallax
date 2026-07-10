@@ -19,6 +19,6 @@
 - ✅ 写 `confluence/memory/research/{topic}.md` + 引用 ≥ 3 PHASE
 - ✅ 借鉴外部项目: 写 `confluence/memory/research/{external-source}-{topic}.md`
 
-**反讽 治根** (跟 KALLAX-GLOSSARY §1.1 联合): research 文档必含 ≥ 3 PHASE 引用, 否则不算 L4 (空 L4 = 反讽)
+**反讽 从根源修复** (跟 KALLAX-GLOSSARY §1.1 联合): research 文档必含 ≥ 3 PHASE 引用, 否则不算 L4 (空 L4 = 反讽)
 
 **Rule 引用**: Rule 5 (DRY) + Rule 6 (经验沉淀) + Rule 11 (Master 6 维) — [CLAUDE.md](../../CLAUDE.md)

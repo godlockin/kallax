@@ -6,7 +6,7 @@
 > **最后 更新**: 2026-06-19 v2.7.0 整理 release (跟 v2.7.1 跟 PHASE-015 review 联合)
 
 
-# Decision-Gate 重构设计 — 治根因 5: ai-copilot 名不副实
+# Decision-Gate 重构设计 — 根因修复 5: ai-copilot 名不副实
 
 > **根因 5**: ai-copilot 模式名不副实, decision-gate.sh 触发 5 类 block (疑似就问), 主公每 5 分钟一次确认请求 = 决策疲劳
 > **关联**: ACCUMULATED-LESSONS-2026-06-13.md §1.5 UX 视角 + 5 战略建议 5.1-5.5 + Rule 13
@@ -62,7 +62,7 @@
 |---|---|---|---|---|
 | **方案 1: 复杂才问** | ai-copilot 只在 analysis/test/review 阶段 block | ✅ 直接落地 | ✅ 软限制 | 低 |
 | **方案 2: decision-gate 智能分级** | P0/P1/P2 分级, P2 才 block | ✅ 间接落地 | ⚠️ 需硬脚本 | 中 |
-| **方案 3: 主公 dashboard 实时同步** | 主公看 dashboard 不被 block | ❌ 不治根 | ❌ 无关系 | 高 |
+| **方案 3: 主公 dashboard 实时同步** | 主公看 dashboard 不被 block | ❌ 不从根源修复 | ❌ 无关系 | 高 |
 | **方案 4: decision-gate 流程重构** | 重写 decision-gate.sh, mode 差异化 | ✅ 直接落地 | ✅ 硬脚本 | 高 |
 
 ### 2.2 推荐方案
@@ -221,7 +221,7 @@ exec "$SCRIPT_DIR/decision-gate.sh" "$@"
 | BE | 跟 decision-gate 联合 |
 |---|---|
 | BE-6 ~ BE-10 (越界 + KPI + bug) | decision-gate 频繁 block 加重决策疲劳 |
-| BE-11 ~ BE-14 (越界反向 + API Error) | decision-gate 治根 5/5 步 缺失 |
+| BE-11 ~ BE-14 (越界反向 + API Error) | decision-gate 从根源修复 5/5 步 缺失 |
 
 **Rule 33 防御**: decision-gate 复杂才问 → 减少主公决策疲劳 → 减少越界事件
 

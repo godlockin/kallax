@@ -1,6 +1,6 @@
-# v3.5.0 hotfix P-004 ERRATA (跟 B 组 Attack Review P-004 治根 联合)
+# v3.5.0 hotfix P-004 ERRATA (跟 B 组 Attack Review P-004 从根源修复 联合)
 
-> 跟 B 组 P-004 治根 联合, 跟 V310-B P-009 cli-reference 重复 1:1 联合, 跟 Rule 5 DRY 联合:
+> 跟 B 组 P-004 从根源修复 联合, 跟 V310-B P-009 cli-reference 重复 配合, 跟 Rule 5 DRY 联合:
 > docs/architecture/online-deploy-2026-06-30/README.md (v3.3.0 拍 C 落地) 唯一 nested dir 在 docs/architecture/
 > 内容 跟 degradation-strategy.md (16.6K) + isolation-strategy.md (18.9K) 部分 重复 (3 tier degradation)
 
@@ -14,7 +14,7 @@
 
 ## v3.3.0 "实际部署" vs "重写 README" 区分 (跟"诚实修正" 联合)
 
-跟 V350-RELEASE-2026-06-30.md ERRATA §4 1:1 联合: 主公 v3.3.0 拍 C "3 票 全部 实际 部署" — 实际是 "重写 README" 而非 "真部署". release doc 措辞 跟实现 不一致 是 反讽.
+跟 V350-RELEASE-2026-06-30.md ERRATA §4 配合: 主公 v3.3.0 拍 C "3 票 全部 实际 部署" — 实际是 "重写 README" 而非 "真部署". release doc 措辞 跟实现 不一致 是 反讽.
 
 ## 跟 v3.5.0 hotfix 范围 联合
 

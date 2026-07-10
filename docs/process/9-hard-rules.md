@@ -1,7 +1,7 @@
 # 5 levels 模式 (KALLAX, EPIC-059-A)
 
 > **跟 eket MASTER-RULES.md §6 联合, 借方法论 不借代码**
-> **跟 PHASE-013-REFLECTION-2026-06-18.md 联合, 治根 "Rule 数 通胀" 迷信**
+> **跟 PHASE-013-REFLECTION-2026-06-18.md 联合, 从根源修复 "Rule 数 通胀" 迷信**
 > **跟 KALLAX-GLOSSARY §11.1 联合, 跟 v2.4.1 revert 联合**
 > **跟"翻篇&精进" 战略 一致, 跟"诚实修正" + "反讽" 战略 联合**
 
@@ -9,7 +9,7 @@
 
 ## 1. 背景与定位
 
-**问题**: KALLAX 当前 **20 Rule** (跟 CLAUDE.md 实际 1-18 + 30-31 一致, v2.7.4 D1 拍板 A 22→20 跨 release 留待 4h 实施). Rule 数 多 跟 "治理完成" 不是 因果关系 — v2.4.0 4 合并 (22 → 18) 跟 v2.4.1 revert 实证 净价值 持平 67.0%, 0 实际变化, 治根 "0 实际改变 假动作" 反讽.
+**问题**: KALLAX 当前 **20 Rule** (跟 CLAUDE.md 实际 1-18 + 30-31 一致, v2.7.4 D1 拍板 A 22→20 跨 release 留待 4h 实施). Rule 数 多 跟 "治理完成" 不是 因果关系 — v2.4.0 4 合并 (22 → 18) 跟 v2.4.1 revert 实证 净价值 持平 67.0%, 0 实际变化, 从根源修复 "0 实际改变 假动作" 反讽.
 
 **方法**: 借 eket `template/docs/MASTER-RULES.md` §6 模式 — 9 条 Hard Rules 简表 + 反例 + 撤销方法 — **不复制 eket 5 levels 全文**, 提取 模式 + 命名, 适配 KALLAX 20 Rule 现状 (Conductor/Performer + outbox-isolation + tag-sop + ...).
 
@@ -142,7 +142,7 @@
 ### 反例
 
 - ❌ 新建 `docs/process/9-hard-rules.md` 前未查 已有 rule-merge-proposal.md, 导致 Rule 合并 主题 双文档 重复
-- ❌ 新建 eket 5 levels 复制版 → 跟"借方法论 不借代码" 战略 矛盾, 触发 反讽 治根
+- ❌ 新建 eket 5 levels 复制版 → 跟"借方法论 不借代码" 战略 矛盾, 触发 反讽 从根源修复
 
 ### 正例
 
@@ -217,7 +217,7 @@
 **5 levels 简化 跟 §11.1 联合**:
 - 5 levels 是 模式 (Pattern), 不是 Rule 数 减 13 (22 → 9)
 - 20 Rule 仍 落地 (file:line 1:1 映射), 5 levels 是 group 索引 (索引表, 不删 Rule)
-- 跟 v2.4.0 4 合并 反思 联合, 治根 "0 实际改变 假动作" 反讽
+- 跟 v2.4.0 4 合并 反思 联合, 从根源修复 "0 实际改变 假动作" 反讽
 - 跟 PHASE-013-REFLECTION 联合, 跟"反讽" + "诚实修正" 战略 一致
 
 **闭环 KPI**: 20 Rule → 9 类别 group = 20/20 = 100.0% 落地, 0 增 Rule, 0 重写, 净价值 持平 67.0%

@@ -4,7 +4,7 @@
 >
 > Source: `node/src/hooks/http-hook-server.ts` + `node/src/hooks/hook-events-store.ts`
 >
-> 跟 `tests/integration/real-claude-code-e2e.sh` 1:1 验证 (4-6 raw stdout PASS)
+> 跟 `tests/integration/real-claude-code-e2e.sh` 对照验证 (4-6 raw stdout PASS)
 
 ---
 

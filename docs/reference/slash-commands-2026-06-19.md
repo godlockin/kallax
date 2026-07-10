@@ -647,6 +647,6 @@ RELATED:
 ---
 
 **跟主公 2026-06-17 'C' explicit 派单 联合 (跟'独立' 拍板 explicit 联合, 跟 PROCESS.md:25-26 联合)**
-**跟 v2.0.6 4 工具 multi-tool 联合 (跟 INSTALL-MULTI-TOOL.md §1.1 反讽治根段 互链)**
+**跟 v2.0.6 4 工具 multi-tool 联合 (跟 INSTALL-MULTI-TOOL.md §1.1 反讽从根源修复段 互链)**
 **跟 KALLAX-GLOSSARY §8.6-8.10 联合 (4 工具术语 SoT)**
 **跟"翻篇&精进" 战略 一致 (0 增命令 0 增 Rule, 文档补全不引入新功能)**

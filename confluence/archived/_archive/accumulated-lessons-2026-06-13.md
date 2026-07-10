@@ -9,7 +9,7 @@
 
 **5 视角 Master 串场合并** (跟 PHASE-007-REVIEW + PHASE-008-REVIEW 模式 一致):
 - 🏗️ **Architect**: 18 Rule + 15 门禁 = 治理复杂度替代架构设计, 升级率 100%
-- 🛡️ **Security**: BE-7 暴露 file-lock 自身漏洞, 治根先修工具自身
+- 🛡️ **Security**: BE-7 暴露 file-lock 自身漏洞, 从根源修复先修工具自身
 - 💻 **Backend**: 71.4% BE 跟工具可绕过直接相关 (10/14)
 - 📋 **Product**: 85.5% - 18 Rule = 67.5% 净价值, 飞轮反哺边际递减
 - 🖌️ **UX**: ai-copilot 模式名不副实, 决策疲劳
@@ -18,7 +18,7 @@
 - ⚠️ Rule 9-10 跟 KPI falsification 10 次是循环论证
 - ⚠️ Rule 14/15 虽 R-NEW 升级, 但 session 边界未工程强制
 - ⚠️ 38 worktree + 1+2/1+4 容量 + Token 限撞墙 是结构性问题
-- ⚠️ 痛点 6 治根 5/5 步 中 2/5 治本 (Step 1-2), 3/5 治标 (Step 3-5)
+- ⚠️ 痛点 6 从根源修复 5/5 步 中 2/5 治本 (Step 1-2), 3/5 治标 (Step 3-5)
 
 **给 Phase 8+ 战略建议** (跟"流程逻辑 > 扩充配置" 一致):
 - 🔧 重构为 3-5 架构原则, 撤销冗余 Rule (目标 ≤10 Rule)
@@ -56,12 +56,12 @@
 
 ---
 
-### 1.2 Security 视角 — 治根先修工具自身
+### 1.2 Security 视角 — 从根源修复先修工具自身
 
 **核心诊断**:
-- 痛点 6 治根 5/5 步中, **Step 1 file-lock 和 Step 2 atomic-write 是治本** (IO 层原子性), Step 3-5 是治标 (检测+隔离)
+- 痛点 6 从根源修复 5/5 步中, **Step 1 file-lock 和 Step 2 atomic-write 是治本** (IO 层原子性), Step 3-5 是治标 (检测+隔离)
 - **BE-7 暴露 file-lock.sh 自身有 HIGH symlink 漏洞**, 修 umask 077 + install -m 700 后才治本
-- **结论**: 治根要先修工具自身安全, 再谈上层隔离
+- **结论**: 从根源修复要先修工具自身安全, 再谈上层隔离
 
 **安全反模式 (14 BE 累计)**:
 - **越权访问** (BE-1~BE-5, BE-13): Conductor/Performer 跨角色写 miao/testing, Rule 14/15 升级后仍有边界事件
@@ -193,14 +193,14 @@
 
 **结论**: **worktree 数量无上限 + 容量和隔离方案从未在真实负载下验证** = 结构性失效
 
-### 2.4 ⚠️ 痛点 6 治根 5/5 步 中 2/5 治本, 3/5 治标
+### 2.4 ⚠️ 痛点 6 从根源修复 5/5 步 中 2/5 治本, 3/5 治标
 
 **证据** (跟 Security 视角 + Architect 视角 联合):
 - Step 1 file-lock (治本) + Step 2 atomic-write (治本) = 2/5
 - Step 3 conflict-detect (治标) + Step 4 outbox-isolation (治标) + Step 5 worktree-state-sync (治标) = 3/5
-- 卡住 1 次证明 3/5 治标步未真治根
+- 卡住 1 次证明 3/5 治标步未真从根源修复
 
-**结论**: **痛点 6 治根实为 2/5 治本, 需补完 3/5 治本** (worktree pool + 强制清理 + 竞争检测)
+**结论**: **痛点 6 从根源修复实为 2/5 治本, 需补完 3/5 治本** (worktree pool + 强制清理 + 竞争检测)
 
 ---
 
@@ -393,7 +393,7 @@
 
 **5 视角 lessons 累计 落地**:
 - ✅ Architect: 18 Rule + 15 门禁 = 治理复杂度替代架构设计, 升级率 100%
-- ✅ Security: BE-7 暴露 file-lock 自身漏洞, 治根先修工具自身
+- ✅ Security: BE-7 暴露 file-lock 自身漏洞, 从根源修复先修工具自身
 - ✅ Backend: 71.4% BE 跟工具可绕过直接相关 (10/14)
 - ✅ Product: 85.5% - 18 Rule = 67.5% 净价值, 飞轮反哺边际递减
 - ✅ UX: ai-copilot 模式名不副实, 决策疲劳

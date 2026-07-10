@@ -49,7 +49,7 @@ KALLAX 知识库按 5 层分层, 每层有明确的存储位置、生命周期�
 | **4** | PHASE review (战略级闭环) | L3 → L4 | PHASE-XXX-REVIEW → patterns 升级为全局 knowledge, 写入 `confluence/memory/research/` |
 | **5** | 借鉴外部项目 (eket / industry) | L4 沉淀 | eket / industry 模式 → 落地 KALLAX 知识库, 写入 L1-L4 适配层 |
 
-**触发判据** (跟"反讽" 治根 联合, 不模糊):
+**触发判据** (跟"反讽" 从根源修复 联合, 不模糊):
 - 触发 1: `kallax task:merge` 成功 → 写入 `state.json` L0 状态 → 沉淀到 `confluence/decisions/<ticket>.md`
 - 触发 2: EPIC 状态 = `closed` + 全部 ticket 完工 → 写 `confluence/memory/lessons/epic-{ID}-{date}.md`
 - 触发 3: 同一 lessons 跨 ≥ 3 release 引用 → 评估升级, 写 `confluence/memory/patterns/{pattern-name}.md`
@@ -116,27 +116,27 @@ bash scripts/eket-lessons-import.sh  # 已存在
 ### ❌ 反模式 1: 跨层写入 (skip layer)
 
 - 模式: 直接写 L4 跳过 L1-L3 → **L0→L4 跨级 = 失序**
-- 治根: 强制 L0→L1→L2→L3→L4 顺序, 跳级需 Master 拍板 (跟 PROCESS.md:25-26 联合)
+- 从根源修复: 强制 L0→L1→L2→L3→L4 顺序, 跳级需 Master 拍板 (跟 PROCESS.md:25-26 联合)
 
 ### ❌ 反模式 2: 倒序沉淀 (reverse promotion)
 
 - 模式: L4 → L3 倒序写 → **降级 = 反讽**
-- 治根: scripts/memory-promote.sh 拒绝逆向 transition, exit 1
+- 从根源修复: scripts/memory-promote.sh 拒绝逆向 transition, exit 1
 
 ### ❌ 反模式 3: L0 长期累积 (cache bloating)
 
 - 模式: `.kallax/state/` 累积 > 1GB → **L0 失活 = 反讽**
-- 治根: L0 TTL = session 级别, session 退出清理 (跟 LRU 模式 联合)
+- 从根源修复: L0 TTL = session 级别, session 退出清理 (跟 LRU 模式 联合)
 
 ### ❌ 反模式 4: L4 假沉淀 (fake global)
 
 - 模式: 写 `confluence/memory/research/` 但缺跨 release 引用 → **空 L4 = 反讽**
-- 治根: research 文档必含 ≥ 3 PHASE 引用, 否则不算 L4
+- 从根源修复: research 文档必含 ≥ 3 PHASE 引用, 否则不算 L4
 
 ### ❌ 反模式 5: 分层标记 跟 实际 失配 (label drift)
 
 - 模式: 写 L3 (patterns/) 但内容是 L2 lessons → **标记 vs reality 失配**
-- 治根: scripts/memory-promote.sh verify-all 强制检查目录 vs 内容一致性
+- 从根源修复: scripts/memory-promote.sh verify-all 强制检查目录 vs 内容一致性
 
 ---
 

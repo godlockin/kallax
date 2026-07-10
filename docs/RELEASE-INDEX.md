@@ -1,6 +1,6 @@
-# KALLAX 5 release 累计 INDEX (跟 B 组 U-002 治根 联合)
+# KALLAX 5 release 累计 INDEX (跟 B 组 U-002 从根源修复 联合)
 
-> v3.5.0 hotfix (跟 B 组 Attack Review U-002 治根 联合, 跟 V310-B U-002 1:1 联合):
+> v3.5.0 hotfix (跟 B 组 Attack Review U-002 从根源修复 联合, 跟 V310-B U-002 配合):
 > 5 release 累计 release doc 散落 (V350 / V340 / V330 / V320 / V310 / V300), 跟踪困难.
 > 本 INDEX 给 user 1 页入口 (跟 v3.1.0 P-006 "12 Operational Summaries" 模式 1:1).
 
@@ -10,7 +10,7 @@
 |---------|---------------|------|----------------|----------|
 | **v3.5.0** (实战 eket 1 次) | [V350-RELEASE-2026-06-30.md](./V350-RELEASE-2026-06-30.md) | [spec](../docs/superpowers/specs/2026-06-30-v350-eket-parity-实战-design.md) | [v350-实战-eket-1次-2026-06-30.md](../confluence/decisions/v350-实战-eket-1次-2026-06-30.md) | [evidence/v3.5.0/](../evidence/v3.5.0/) |
 | **v3.4.0** (21 release 累计 + eket parity 1 项) | (v340-21-release-eket-parity-2026-06-30.md 在 confluence/) | [v340 spec](../docs/superpowers/specs/2026-06-30-v340-21-release-eket-parity-design.md) | [v340 LESSONS](../confluence/decisions/v340-21-release-eket-parity-2026-06-30.md) | [evidence/v3.4.0/](../evidence/v3.4.0/) |
-| **v3.3.0** (A1+A2+B+C+E 根治 + eket 1:1 对齐) | (docs/_archived/ 或 confluence/decisions/15629cd + 03c0e7f) | — | — | — |
+| **v3.3.0** (A1+A2+B+C+E 根治 + eket 对齐) | (docs/_archived/ 或 confluence/decisions/15629cd + 03c0e7f) | — | — | — |
 | **v3.2.0** (rtk + caveman + U-002 重写 4 DEPRECATED) | (RTK-CAVEMAN-KALLAX-2026-06-29.md) | [rtk-caveman spec](../docs/superpowers/specs/2026-06-29-rtk-caveman-kallax-integration-design.md) | — | [evidence/v3.2.0/](../evidence/v3.2.0/) |
 | **v3.1.0** (16 hotfix + Iter 12 不删) | [RELEASE-v3.1.0-2026-06-29.md](../confluence/decisions/RELEASE-v3.1.0-2026-06-29.md) (在 confluence/decisions/ 或 docs/_archived/) | — | [v310 LESSONS](../confluence/decisions/V310-B-REVIEW-2026-06-29.md) | — |
 | **v3.0.0** (6 武器 + Iter 11 整合) | (跟 v3.0.0 1 release 入口 doc 联合) | — | — | — |
@@ -36,19 +36,19 @@
 | docs/architecture/online-deploy-2026-06-30/README.md | (v3.3.0) | v3.3.0 C 拍板 | ⚠️ U-005 nested dir (P2, 待整合到 degradation-strategy.md) |
 | docs/V340-RELEASE-2026-06-30.md | (v3.4.0) | 缺 | ⚠️ 缺, 待 V350-INDEX 入口 联合 |
 
-## 跟 B 组 U-002 治根 联合
+## 跟 B 组 U-002 从根源修复 联合
 
 v3.1.0 U-002 P1 (commit fbea0aa) 留待主公拍板, v3.2.0 主公拍 C 重写 (commit 08f2393), 但 commit 仅重写不删 — 4 × ~32KB DEPRECATED 仍.
 
 本 INDEX 不删 4 DEPRECATED (跟 v3.2.0 拍 C "重写 留 ref history" 一致), 只给 user 1 页入口 — user 不用 在 docs/architecture/ 17 文件 找 release doc.
 
-## 跟 B 组 U-005 治根 联合
+## 跟 B 组 U-005 从根源修复 联合
 
 docs/architecture/online-deploy-2026-06-30/ 是 nested dir, 唯一在 docs/architecture/ — _index.md 0 引用. 本 INDEX §"ad-hoc release doc" 表 第 4 行 列 出, user 可从 INDEX 入口 跳.
 
 ## 跟"独立" 拍 explicit 约束 联合
 
-主公 v3.5.0 拍 "v3.4.0 已 align eket + 开始 v3.5.0" (commit 096eafe) — 本 INDEX 显式 list v3.4.0 + v3.5.0 入口, 跟主公拍板 1:1 联合.
+主公 v3.5.0 拍 "v3.4.0 已 align eket + 开始 v3.5.0" (commit 096eafe) — 本 INDEX 显式 list v3.4.0 + v3.5.0 入口, 跟主公拍板 配合.
 
 ---
 

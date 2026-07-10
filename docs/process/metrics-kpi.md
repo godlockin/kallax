@@ -12,7 +12,7 @@
 
 ## 1. 概述 (跟 PROCESS.md 联合)
 
-本文件定义 KALLAX 流程效果度量的 **3 个 KPI**, 用于闭环 P3 痛点 (流程表演化). 
+本文件定义 KALLAX 流程效果度量的 **3 个 KPI**, 用于闭环 P3 痛点 (流程表演化).
 
 **设计原则** (跟 "流程效果 > 流程表演" 战略一致):
 - **效果导向**: 3 KPI 度量实际产出, 不度量步骤数
@@ -243,7 +243,7 @@ scripts/verify/check-test-case-isolation.sh \
 | AC1: process-metrics.ts 实现 3 KPI (Rule 9 X/Y) | ✅ | `node/src/core/process-metrics.ts` 全部 X/Y 格式 |
 | AC2: process-metrics.sh CLI 仪表盘 (3 KPI + 历史趋势) | ✅ | `scripts/dashboard/process-metrics.sh` 6 subcommand |
 | AC3: metrics-kpi.md 3 KPI 定义 + 目标值 + 度量方法 + BE 关联 | ✅ | 本文件 |
-| AC4: P3 治根 — 15 步流程表演化闭环 | ✅ | Section 8 闭环方案 |
+| AC4: P3 从根源修复 — 15 步流程表演化闭环 | ✅ | Section 8 闭环方案 |
 | AC5: 6/6 PASS test output | ✅ | `tests/integration/process-metrics-test.sh` |
 | AC6: Rule 9 X/Y 格式 — 6/6 PASS = 100.0% | ✅ | 测试输出 `6/6 PASS (100.0%)` |
 | AC7: 治理升级已拍板 (主公 2026-06-16 APPROVED) | ✅ | `confluence/decisions/5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md` line 21 |

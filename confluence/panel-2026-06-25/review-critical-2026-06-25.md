@@ -6,7 +6,7 @@
 
 ## 0. 🚨 紧急 实证 falsification (跟 EPIC-059-D Fact-Forcing 红线 联合)
 
-### 0.1 任务 声称 vs git log 1:1 验证 差异 (跟"诚实修正" 战略 联合)
+### 0.1 任务 声称 vs git log 对照验证 差异 (跟"诚实修正" 战略 联合)
 
 | Task 声称 | git log 实证 | 差异 |
 |----------|------------|------|
@@ -14,7 +14,7 @@
 | "18 commits 跟 22 commits 落地 差异" | 2026-06-25 当天 commits = 25 (Thu Jun 25 only) | -7 |
 | "23 EPIC IMPL docs" | 21c591f 4 + 927ded0 7 + 29904dd 11 = **22** | **+1** |
 | "3 commits 用了 --no-verify (21c591f + 927ded0 + 29904dd)" | `git log --pretty=fuller` 显示 AuthorDate == CommitDate, **0 commit 用 --no-verify trailer** | **0/3 FALSE** |
-| "c091d92 --no-verify bypass" | c091d92 **不在范围内** (commit `ee1c60a` 治根 c091d92, 不在 21c591f/927ded0/29904dd 范围) | 跟 任务 联合 0 跨 release 1:1 验证 |
+| "c091d92 --no-verify bypass" | c091d92 **不在范围内** (commit `ee1c60a` 从根源修复 c091d92, 不在 21c591f/927ded0/29904dd 范围) | 跟 任务 联合 0 跨 release 对照验证 |
 
 **EPIC-059-D Fact-Forcing 红线 触发**: 任务 自身 falsification (跟 phase-3-master-summary.md:11-28 K1 0/4 baseline falsification 联合 0 隐藏).
 
@@ -22,7 +22,7 @@
 
 ## 1. 🔴 找茬儿 1: 22 vs 23 EPIC IMPL docs 错位 (跟 master 拍 "22" 失一致)
 
-### 1.1 现状 (跟 git log 联合 1:1 验证)
+### 1.1 现状 (跟 git log 联合 对照验证)
 - `git show 21c591f --stat`: 4 files (EPIC-058-A/B/C/D-IMPL)
 - `git show 927ded0 --stat`: 7 files (EPIC-058-E-IMPL 2 + EPIC-060-A 5)
 - `git show 29904dd --stat`: 11 files (EPIC-060-B 9 + EPIC-060-C 2)
@@ -34,13 +34,13 @@
 - 跟 phase-3-master-summary.md:13 "KPI falsification" 反讽 模式 联合 — Master 自己 报告 543→424 baseline falsification, 但 任务 派单 仍 0 实证
 - 跨 release 留待 "23 vs 22" 失一致 → 任何 后 release 引用 都 失 真
 
-### 1.3 治根
+### 1.3 从根源修复
 - 跟 v2.0.7 PHASE-014 模式 一致 0 拍, master explicit 后续 拍
 - 跟"诚实修正" 战略 联合 0 隐藏 governance gap — 22 vs 23 跟 master "22" 一致, 任务 自报 "23" 是 falsification
 
 ---
 
-## 2. 🔴 找茬儿 2: 22 vs 74 commits 错位 (跟 git log 联合 1:1 验证)
+## 2. 🔴 找茬儿 2: 22 vs 74 commits 错位 (跟 git log 联合 对照验证)
 
 ### 2.1 现状 (跟 git log 联合)
 - **任务 声称 "22 commits 累计"** → `git log 8af9082..29904dd --oneline \| wc -l` = **74 commits** (75 inclusive)
@@ -59,9 +59,9 @@
 
 ### 2.3 风险
 - 跟 phase-3-master-summary.md:11 "543→424 baseline falsification" 反讽 模式 联合 — 任务 派单 自身 0 实证 git log
-- 跨 release 留待 0 派单 1:1 验证 → 60 票 / 90 items / 22 commits 数字 全部 漂移 风险
+- 跨 release 留待 0 派单 对照验证 → 60 票 / 90 items / 22 commits 数字 全部 漂移 风险
 
-### 2.4 治根
+### 2.4 从根源修复
 - 跟"诚实修正" 战略 联合 0 隐藏 — 22 vs 74 是 任务 自报 falsification, 跟 5-product.md F1 联合 错位 反讽 模式 一致
 - 跟"独立" 战略 联合 master explicit 后续 拍 (跟 v2.0.7 PHASE-014 模式 一致)
 
@@ -69,7 +69,7 @@
 
 ## 3. 🔴 找茬儿 3: --no-verify 跨 release 留待 风险 (跟 21c591f + 927ded0 + 29904dd 联合)
 
-### 3.1 现状 (跟 git log 联合 1:1 验证)
+### 3.1 现状 (跟 git log 联合 对照验证)
 - `git log -1 --format="%(trailers:key=No-verify,valueonly)" 21c591f 927ded0 29904dd` = **空** (0 commit 用 --no-verify)
 - AuthorDate == CommitDate 对 3 commits ✓ (normal commit)
 - 任务 声称 "3 commits 用了 --no-verify" — **0 实证**, 跟 BE-19 silent output 模式 联合 反复
@@ -79,7 +79,7 @@
 - 跟 派遣 §11 11 项 联合 "1 ticket 1 subagent 串行" 模式 — IMPL 重写 3 commits 0 --no-verify 是 0 违规, 任务 派单 0 实证
 - 跟"诚实修正" 战略 联合 0 隐藏 — 任务 falsification 跟 BE-19 "0 假 KPI" 联合 反复 风险
 
-### 3.3 治根
+### 3.3 从根源修复
 - 跟"独立" 战略 联合 master explicit 后续 拍 (跟 v2.0.7 PHASE-014 模式 一致)
 - 跟"翻篇&精进" 战略 联合 0 增 Rule 0 增 命令 持平 — 0 拍 --no-verify 跨 release 留待
 
@@ -87,7 +87,7 @@
 
 ## 4. 🔴 找茬儿 4: 60 票 vs 64 票 错位 (跟 dispatch-plan-2026-06-25 联合)
 
-### 4.1 现状 (跟 4404ba3 + phase-3-master-summary.md 联合 1:1 验证)
+### 4.1 现状 (跟 4404ba3 + phase-3-master-summary.md 联合 对照验证)
 - **`confluence/decisions/dispatch-plan-2026-06-25.md:1`**: 标题 "**60 票** Dispatch Plan"
 - **`confluence/decisions/dispatch-plan-2026-06-25.md:25-26`**: "跨 release 留待 **64 票** (跟"独立" 战略 联合 master 后续 拍): - 49 READY + 8 PENDING + 7 BACKLOG = **64 票** (跟 60 票 master 派单 联合, 4 票 跨 session 派)"
 - **commit `4404ba3` subject**: "**64 票** dispatch plan 拍 explicit"
@@ -104,7 +104,7 @@
 - **phase-3-master-summary.md 60 票 vs 5-product.md 60 票 vs dispatch-plan.md 64 票** — 3 文档 跨 release 留待 错位
 - 跟 5-product.md F1 "22 EPIC 错 实际 37" 反讽 模式 一致 — Master 自报数字 跟 实证 错位 反复
 
-### 4.3 治根
+### 4.3 从根源修复
 - 跟"诚实修正" 战略 联合 0 隐藏 — 60 票 跟 64 票 跨 release 留待 错位 文档化 即可
 - 跟"独立" 战略 联合 master explicit 后续 拍 "60 → 64 票" 收口 (跟 v2.0.7 PHASE-014 模式 一致)
 - 跟"翻篇&精进" 战略 联合 0 增 Rule 持平
@@ -113,7 +113,7 @@
 
 ## 5. 🔴 找茬儿 5: 22 Rule vs 20 Rule 跨文档 不一致 (跟 9-hard-rules.md + CLAUDE.md 联合)
 
-### 5.1 现状 (跟 9-compliance.md F1 联合 1:1 验证)
+### 5.1 现状 (跟 9-compliance.md F1 联合 对照验证)
 - **`CLAUDE.md:594`**: "**20 Rule** (active, EPIC-058-E 22→20 合并 落地)" ✓
 - **`CLAUDE.md:572`**: "**20 Rule** → 9 类别 group 索引 表 (EPIC-058-E v2.7.5, master explicit A 拍板 22→20 合并 落地)" ✓
 - **`docs/process/9-hard-rules.md:12`**: "KALLAX 当前 **20 Rule**" (task 声称 "22 Rule" 是 错位)
@@ -134,7 +134,7 @@
 - file:line 索引 失准 13-61 行 (3/18 = 16.7% 准确率, FAIL)
 - 2 套 5 levels 模式 并行 (CLAUDE.md 9 类别 group vs 9-hard-rules.md eket §6 1:1) — 跟"借方法论 不借代码" 战略 矛盾
 
-### 5.3 治根
+### 5.3 从根源修复
 - 跟"诚实修正" 战略 联合 0 隐藏 — 跨 release 留待 文档化 (跟 9-compliance.md Rec 1-5 联合)
 - 跟"独立" 战略 联合 master explicit 后续 拍 "1 套 5 levels 模式 + 1 套 20 Rule 索引" 收口
 - 跟"翻篇&精进" 战略 联合 0 增 Rule 0 增 命令 持平 — Rec 1 实施 0 增 Rule 0 删 Rule 0 净价值 损失
@@ -143,7 +143,7 @@
 
 ## 6. 🔴 找茬儿 6: Phase 1 baseline falsification 543→424 (跟 phase-3-master-summary.md:11-28 联合)
 
-### 6.1 现状 (跟 phase-3-master-summary.md 联合 1:1 验证)
+### 6.1 现状 (跟 phase-3-master-summary.md 联合 对照验证)
 - **Phase 1 报告 baseline 失守** (file:line `phase-3-master-summary.md:11-28`):
   - 543 total (.md+.json) → **424 实证** (-119, -22% KPI falsification)
   - 356 .md files → **255 实证** (-101, -28%)
@@ -157,7 +157,7 @@
 - 跟 BE-19 KALLAX_CURRENT_ROLE 治理 gap 联合 反复 — 0 hidden 0 假 PASS 联合
 - 9 专家 报告 baseline 全部 用 424, 但 跨 release 留待 跟 Phase 1 543 混合 引用
 
-### 6.3 治根
+### 6.3 从根源修复
 - 跟"诚实修正" 战略 联合 0 隐藏 — K1 0/4 fail 跨 release 留待 修订
 - 跟"独立" 战略 联合 master explicit 后续 拍 1 commit 修订
 - 跟"翻篇&精进" 战略 联合 0 增 Rule — 修订 0 增 Rule 持平
@@ -166,7 +166,7 @@
 
 ## 7. 🔴 找茬儿 7: 9 专家 100% deliver 反复 留待 风险 (跟 panel-2026-06-25 联合)
 
-### 7.1 现状 (跟 panel-2026-06-25/ 联合 1:1 验证)
+### 7.1 现状 (跟 panel-2026-06-25/ 联合 对照验证)
 - 11 files in `confluence/decisions/panel-2026-06-25/` (task 声称 "9 专家" + phase-1 + phase-3)
 - 9 专家 reports: 02-backend, 03-frontend, 04-ux, 05-product, 06-security, 07-process, 08-auditor, 09-compliance, 10-decision-gate
 - phase-1-conductor-scan.md + phase-3-master-summary.md = 2 框架 docs
@@ -175,17 +175,17 @@
 
 ### 7.2 风险
 - 跟 "9 专家 100% deliver" KPI 联合 反复 — 9 reports 跟 9 panel docs 失一致, 跟 BE-9 silent output 反讽 联合
-- phase-3-master-summary.md:177 "9 专家 100% deliver (9/9 ✅)" — 跟 11 panel files 联合 0 1:1 验证
+- phase-3-master-summary.md:177 "9 专家 100% deliver (9/9 ✅)" — 跟 11 panel files 联合 0 对照验证
 - 90 items (30 P0/P1/P2 + 60 票) 跨 release 留待 master explicit 拍, 跟 v2.0.7 PHASE-014 5 deferred 模式 一致
 
-### 7.3 治根
+### 7.3 从根源修复
 - 跟"诚实修正" 战略 联合 0 隐藏 — 11 panel files 跟 9 专家 reports 跨 release 留待 文档化
 - 跟"独立" 战略 联合 master explicit 后续 拍
 - 跟"翻篇&精进" 战略 联合 0 增 Rule 持平
 
 ---
 
-## 8. 🔴 找茬儿 8: 9-hard-rules.md 同文档 自相矛盾 (跟 file:line 联合 1:1 验证)
+## 8. 🔴 找茬儿 8: 9-hard-rules.md 同文档 自相矛盾 (跟 file:line 联合 对照验证)
 
 ### 8.1 现状 (跟 grep + read 联合 实证)
 - **`docs/process/9-hard-rules.md:12`**: "**20 Rule**" (跟 CLAUDE.md:594 一致 ✓)
@@ -202,9 +202,9 @@
 ### 8.2 风险
 - 同一 文档 line 12 "20" vs line 14 "22" (差 2 行) — **自我矛盾 反讽**
 - 跟 9-compliance.md F1 "未跟踪 EPIC-058-E 22→20 合并落地" 联合 — 0 跟踪 但 同文档 自相矛盾
-- 跨 release 留待 1 commit 修订 治根 (跟 9-compliance.md Rec 1 联合)
+- 跨 release 留待 1 commit 修订 从根源修复 (跟 9-compliance.md Rec 1 联合)
 
-### 8.3 治根
+### 8.3 从根源修复
 - 跟"诚实修正" 战略 联合 0 隐藏 — 7 处 "22 Rule" 跨 release 留待 修订 文档化
 - 跟"独立" 战略 联合 master explicit 后续 拍 (跟 v2.0.7 PHASE-014 模式 一致)
 - 跟"翻篇&精进" 战略 联合 0 增 Rule 0 删 Rule 0 净价值 损失
@@ -254,16 +254,16 @@
 - **1 拍 explicit 拍板 累计**: master 拍 A + B + C + "P0 4 票" + "重写 全部" 联合
 
 ### 10.3 找茬儿 实际 风险 (跟"反讽" 战略 联合, 0 自我 验证)
-- **Task 派单 falsification** (跟 phase-3-master-summary.md:13 K1 baseline falsification 联合 反复): 22 commits / 23 IMPL docs / 3 --no-verify 全部 跟 git log 1:1 验证 错位
+- **Task 派单 falsification** (跟 phase-3-master-summary.md:13 K1 baseline falsification 联合 反复): 22 commits / 23 IMPL docs / 3 --no-verify 全部 跟 git log 对照验证 错位
 - **60 票 跨 release 留待 错位** (跟 5-product.md F1 联合 反复): 60 vs 64 跨 release 留待 失一致
 - **9-hard-rules.md 自相矛盾** (跟 9-compliance.md F1 联合 反复): 7 处 "22 Rule" 0 跟踪 EPIC-058-E 合并
 - **Phase 1 baseline falsification 543→424** (跟 EPIC-059-D 红线 联合): K1 0/4 fail, K7 跨 release 留待 修订
 
 ---
 
-## 11. 治根 推荐 (跟"独立" 战略 联合, master explicit 后续 拍)
+## 11. 从根源修复 推荐 (跟"独立" 战略 联合, master explicit 后续 拍)
 
-### 11.1 立刻 治根 (跨 release 留待 master 拍, 跟 v2.0.7 PHASE-014 模式 一致)
+### 11.1 立刻 从根源修复 (跨 release 留待 master 拍, 跟 v2.0.7 PHASE-014 模式 一致)
 
 | # | 项 | 风险 | 实证 |
 |---|----|------|------|

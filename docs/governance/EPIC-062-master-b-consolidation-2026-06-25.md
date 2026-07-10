@@ -13,7 +13,7 @@
 
 **Master 拍 B 收口**: 全部 跨 release 留待 master explicit 后续 拍 (跟 v2.0.7 PHASE-014 5 deferred 模式 一致, 0 拍 ai-auto 决策, 0 增 ticket 持平).
 
-## 2. 30+ items 累计 清单 (跟 git log 1:1 验证, 跟"诚实修正" 战略 联合 0 隐藏)
+## 2. 30+ items 累计 清单 (跟 git log 对照验证, 跟"诚实修正" 战略 联合 0 隐藏)
 
 ### 2.1 P0-6: 22 EPIC epic_index.json 缺失 + EPIC-058 status drift
 - **现状**: `jira/epics/epic_index.json:1-86` 只列 9 EPICs, 缺失 22 EPIC. EPIC-058 status drift: `epic.json:8` "done" vs `epic_index.json:55` "active"
@@ -35,8 +35,8 @@
 - **跟"独立" 战略 联合**: 0 拍 ai-auto 修订, 跨 release 留待 master 拍 A (ROADMAP.md 末尾 加 1 行 "Distributed Roadmap: confluence/decisions/EPIC-060-A-ROADMAP-2026-06-19.md") 收口
 - **跟 2-backend.md F6 联合**: 0 隐藏 governance gap
 
-### 2.5 P1-9: Version drift ✅ 100% done (跟 web/index.html v2.7.4 1:1 验证)
-- **现状**: 跟 web/package.json v2.7.4 1:1 验证 (跟 commit c9979da 联合)
+### 2.5 P1-9: Version drift ✅ 100% done (跟 web/index.html v2.7.4 对照验证)
+- **现状**: 跟 web/package.json v2.7.4 对照验证 (跟 commit c9979da 联合)
 - **跨 release 留待**: ❌ 0% (跟 100% done 联合, 跨 release 累计 0 强制 拍 ai-auto)
 
 ### 2.6 P2 10 items (7 重复类型 + 9 README 缺 + 215 留待 + STRUCTURE + EPIC-055-B + dashboard 导航 + Phase 1 数字 + Option A vs B + 1 命名)
@@ -45,7 +45,7 @@
 
 | # | P2 Item | 跟"独立" 战略 联合 |
 |---|--------|------------------|
-| 1 | 7 重复 类型 治根 | master 拍 A 1 commit 修订 vs B 跨 release 留待 |
+| 1 | 7 重复 类型 从根源修复 | master 拍 A 1 commit 修订 vs B 跨 release 留待 |
 | 2 | 9 README 缺 | master 拍 A 1 commit 加 README vs B 跨 release 留待 |
 | 3 | 215 "跨 release 留待" occurrences | master 拍 A "0 增 留待" rule vs B 跨 release 留待 |
 | 4 | STRUCTURE.md 删 vs 改 | master 拍 A 删 vs B 改 (跟 PHASE-INDEX SoT 模式 联合) |

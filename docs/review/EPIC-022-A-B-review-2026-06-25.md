@@ -3,7 +3,7 @@
 > **Date**: 2026-06-25
 > **Source data**: `confluence/decisions/_archive/permission-model-expert-review-2026-06-07.md` (5-expert baseline, 2026-06-07) + `tests/integration/rbac-integration-test.sh` (85/85 PASS, 2026-06-25) + `tests/integration/role-matrix.json` (oracle) + `EPIC-022-LESSONS-LEARNED.md`
 > **Format**: Each expert writes A (Forward case) + B (Attack case). Master arbitrates by weighing A vs B per expert + cross-expert convergence.
-> **Strategic alignment**: "反讽" (治根 反复) + "诚实修正" (0 隐藏 governance gap) + "翻篇&精进" (0 增 Rule, 0 简单 记录)
+> **Strategic alignment**: "反讽" (从根源修复 反复) + "诚实修正" (0 隐藏 governance gap) + "翻篇&精进" (0 增 Rule, 0 简单 记录)
 > **Scope**: A+B review of EPIC-022 v1 landing readiness, NOT a re-derivation of the 2026-06-07 baseline (that report is the input).
 
 ---

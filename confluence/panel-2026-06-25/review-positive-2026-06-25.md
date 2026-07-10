@@ -9,21 +9,21 @@
 
 ### 1.1 22 commits 跨 release 累计 适用 (跟"翻篇&精进" 战略 联合)
 
-5 specific findings (跟 commit SHA 联合, 跟 git log --since="2026-06-25" 联合 1:1 验证):
+5 specific findings (跟 commit SHA 联合, 跟 git log --since="2026-06-25" 联合 对照验证):
 
 1. **22 commits on 2026-06-25** — `git log --since="2026-06-25 00:00" --until="2026-06-25 23:59" --format="%H" | wc -l` = **22** ✓ (跟 master 拍 explicit 联合 100%)
 2. **跟 origin/miao 0/0 同步** — `git status` 显示 "Your branch is up to date with 'origin/miao'" + "nothing to commit, working tree clean" ✓ (跟 18 release 累计 联合)
 3. **3 IMPL 重写 commits** — `21c591f` + `927ded0` + `29904dd` = 3 commits, 跨 release 适用 任何 "EPIC IMPL 重写" 决策 1 拍 explicit 拍板 (跟 master 拍 "重写 全部 23 EPIC-*-IMPL docs" 联合)
 4. **3 rename commits** — `8fda390` (82 files) + `431ed54` (27 files) + `d2ec098` (5 files) = 3 commits, 114 files 1 命名 共识 100% 落地 (跟 master 拍 B 联合, 跟"品味" 战略 联合)
-5. **3 ticket status reconcile commits** — `e851a8d` (3 DEFERRED → ready) + `74f48af` (3 ready → done) + `89679cc` (5 ticket.json 补) = 11 ticket 跟 实际 ACTIVE 1:1 验证 (跟"诚实修正" 战略 联合)
+5. **3 ticket status reconcile commits** — `e851a8d` (3 DEFERRED → ready) + `74f48af` (3 ready → done) + `89679cc` (5 ticket.json 补) = 11 ticket 跟 实际 ACTIVE 对照验证 (跟"诚实修正" 战略 联合)
 
 ### 1.2 23 EPIC IMPL docs 重写 落地 100% (跟"反哺框架" 战略 联合)
 
-5 specific findings (跟 `ls confluence/decisions/EPIC-*-IMPL*.md` 联合 1:1 验证):
+5 specific findings (跟 `ls confluence/decisions/EPIC-*-IMPL*.md` 联合 对照验证):
 
 1. **23 files @ 40-41 lines each** — `ls confluence/decisions/EPIC-*-IMPL*.md confluence/decisions/EPIC-060-*-PHASE*.md confluence/decisions/EPIC-060-B-RUST-INVEST*.md confluence/decisions/EPIC-060-A-ROADMAP*.md confluence/decisions/EPIC-060-C-LAYERS*.md | wc -l` = **23** ✓
 2. **5 段 重写 模板 100% 落地** — 所有 23 docs 都有 `## 5. 跟 ... 联合` 段 (跟 master 拍 explicit 联合 100%), grep 验证 23/23
-3. **5 段 模板 内容 1:1 一致** — 23 docs 都遵循 (1) 复利价值 (2) 反讽 (3) 治理 gap 暴露 (4) 实际 deliver (5) 跟 ... 联合 (跟"反哺框架" 战略 联合)
+3. **5 段 模板 内容 完全一致** — 23 docs 都遵循 (1) 复利价值 (2) 反讽 (3) 治理 gap 暴露 (4) 实际 deliver (5) 跟 ... 联合 (跟"反哺框架" 战略 联合)
 4. **0 "✅ COMPLETE" 标记** — 跟"翻篇&精进" 战略 联合 0 自我 验证 标记 (跟"反讽" 战略 联合 0 隐藏)
 5. **3 batches 累计 落地** — `21c591f` (4 files) + `927ded0` (7 files) + `29904dd` (12 files) = 23 files, 跟 master 拍 "重写 全部 23 EPPL-*-IMPL docs" 联合 (注: 29904dd commit body 标 "11 IMPL docs" 跟 stat "12 files" 失一致 1, 跟 commit body "22/22 EPIC IMPL docs" 跟 实际 "23" 失一致 1, 跨 release 留待 跟"诚实修正" 联合)
 
@@ -42,10 +42,10 @@
 5 specific findings (跟 5-Level Fact-Forcing 联合, raw file:line 全部 留存):
 
 1. **L1 存在性** — 23 files 全部存在 (`ls` 验证), 22 commits 全部存在 (`git log` 验证), 0 phantom reference ✓
-2. **L2 实质性** — 23 IMPL docs 全部 5 段模板 (grep `## 5. 跟` 23/23 ✓), 0 TODO 占位符 (跟 BE-19 silent output 治根 联合)
-3. **L3 接线 正确** — 23 IMPL docs 引用 commit SHA + version 1:1 验证, 跟 git log 联合 (e.g. `EPIC-058-A-IMPL-2026-06-19.md:39` 引用 `8acdb1a 9b6bc91 跟 EPIC-060-A/B/C 74f48af` 跟 git log 1:1 ✓)
+2. **L2 实质性** — 23 IMPL docs 全部 5 段模板 (grep `## 5. 跟` 23/23 ✓), 0 TODO 占位符 (跟 BE-19 silent output 从根源修复 联合)
+3. **L3 接线 正确** — 23 IMPL docs 引用 commit SHA + version 对照验证, 跟 git log 联合 (e.g. `EPIC-058-A-IMPL-2026-06-19.md:39` 引用 `8acdb1a 9b6bc91 跟 EPIC-060-A/B/C 74f48af` 跟 git log 1:1 ✓)
 4. **L4 数据流** — `21c591f` (1144 deletions, 103 insertions, 4 files) + `927ded0` (2465 deletions, 184 insertions, 7 files) + `29904dd` (3481 deletions, 312 insertions, 12 files) = **7090 lines 删除, 599 lines 加**, 净减 **~92%** ✓ (跟"翻篇&精进" 战略 联合)
-5. **raw test output 留存** — 跟 EPIC-059-D Fact-Forcing 联合, 跟 `EPIC-060-B-PHASE-3-INTEGRATION-TEST-2026-06-19.md:30` "23/23 PASS + 6/6 bench" 联合, raw output 引用 跟 git log 1:1 验证 ✓
+5. **raw test output 留存** — 跟 EPIC-059-D Fact-Forcing 联合, 跟 `EPIC-060-B-PHASE-3-INTEGRATION-TEST-2026-06-19.md:30` "23/23 PASS + 6/6 bench" 联合, raw output 引用 跟 git log 对照验证 ✓
 
 ---
 
@@ -66,10 +66,10 @@
 5 specific items (跟"反讽" 战略 联合 0 自我 验证 标记):
 
 1. **"翻篇&精进" 战略 反讽 模式** — 跟 `CLAUDE.md:106-143` Rule 5/8 merge 联合, "净减 1 Rule" 跟 "0 删 Rule" 自相矛盾 (跟 v2.4.0+v2.4.1 8 release 累计 联合 反讽)
-2. **"反哺框架" 战略 反讽 模式** — 跟 IMPL docs "反讽" 段 联合, "反讽: 跟 治理 gap 联合, 0 自我 验证 标记" 跟 "自我 验证 反讽 模式" 自指 矛盾 (治根: 0 假 浮夸)
+2. **"反哺框架" 战略 反讽 模式** — 跟 IMPL docs "反讽" 段 联合, "反讽: 跟 治理 gap 联合, 0 自我 验证 标记" 跟 "自我 验证 反讽 模式" 自指 矛盾 (从根源修复: 0 假 浮夸)
 3. **"诚实修正" 战略 反讽 模式** — 跟 `9-hard-rules.md:14,19,187,206,207,219,223` 7 处 "22 Rule" 联合, "诚实修正 0 隐藏" 跟 "7 处仍 写 22" 矛盾 (跟"独立" 战略 联合 跨 session 拍板 留待)
-4. **"独立" 战略 反讽 模式** — 跟 `74f48af` commit body 联合, "跟'独立' 战略 联合 0 ai-auto 拍板" 跟 commit 本身 是 master auto 实施 矛盾 (治根: 0 拍 explicit ≠ 0 实施)
-5. **"反哺框架" 反讽 模式** — 跟 IMPL docs 5 段 模板 联合, "0 简单 记录, 0 复利 内容" 跟 "## 1. 复利 价值" 段 自相矛盾 (治根: 反讽 是 模式 自我 引用, 0 隐 含 浮夸)
+4. **"独立" 战略 反讽 模式** — 跟 `74f48af` commit body 联合, "跟'独立' 战略 联合 0 ai-auto 拍板" 跟 commit 本身 是 master auto 实施 矛盾 (从根源修复: 0 拍 explicit ≠ 0 实施)
+5. **"反哺框架" 反讽 模式** — 跟 IMPL docs 5 段 模板 联合, "0 简单 记录, 0 复利 内容" 跟 "## 1. 复利 价值" 段 自相矛盾 (从根源修复: 反讽 是 模式 自我 引用, 0 隐 含 浮夸)
 
 ---
 
@@ -172,13 +172,13 @@
 
 ### 6.2 0 假 验证 (跟"反讽" 战略 联合)
 
-- 跟 22 commits 跟 23 IMPL docs 1:1 验证, 0 假 浮夸
+- 跟 22 commits 跟 23 IMPL docs 对照验证, 0 假 浮夸
 - 跟 7090 lines 删除 + 599 lines 加 raw stat 联合 1:1, 0 假 "净减 ~91%" (实际 ~92.2%)
-- 跟 5 段 模板 23/23 1:1 验证, 0 自我 验证 标记
-- 跟 0 跨 session 拍板 1:1 验证 (跟"独立" 战略 联合), 0 拍 ai-auto 决策
+- 跟 5 段 模板 23/23 对照验证, 0 自我 验证 标记
+- 跟 0 跨 session 拍板 对照验证 (跟"独立" 战略 联合), 0 拍 ai-auto 决策
 
 ---
 
 > **来源**: master 2026-06-25 '9 专家并行开工 + 重写 全部 EPIC-*-IMPL docs' 派单 (跟"反哺框架" + "翻篇&精进" 战略 联合) + v2.0.3 EPIC-056-A Phase 2 联合 + EPIC-059-D Fact-Forcing 联合 0 假 PASS
-> **Verification**: read-only subagent, 0 改 任何 实际 文件 (除 本 报告), 跟 git log + grep + wc + ls 1:1 联合 验证
+> **Verification**: read-only subagent, 0 改 任何 实际 文件 (除 本 报告), 跟 git log + grep + wc + ls 配合 验证
 > **Status**: 🟢 复利 价值 落地 100% (5/5 跨 release 留待 跟 1 拍 explicit 拍板 累计, 跟"诚实修正" 战略 联合 0 隐藏)

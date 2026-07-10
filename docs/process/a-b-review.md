@@ -17,11 +17,11 @@ A 组 找漏洞, 跟现有 5 default 联合 (跟"反讽" 联合, 跟"翻篇&精�
 
 B 组 找盲点, 跟现有 5 extended 联合 (跟"反讽" 联合, 跟 v1.2.4 5 扩展组 联合):
 
-- **🛡️ security-tool-bypass**: 工具可绕过 视角 (Rule 29 治根因 1)
-- **⚙️ process-engineering**: 自验证失效 视角 (Rule 30 治根因 2)
-- **🔍 auditor**: 独立见证缺失 视角 (Rule 31 治根因 3)
-- **📜 compliance**: Rule 升级率 100% 视角 (Rule 32 治根因 4)
-- **🚦 decision-gate**: 决策疲劳 视角 (Rule 33 治根因 5)
+- **🛡️ security-tool-bypass**: 工具可绕过 视角 (Rule 29 根因修复 1)
+- **⚙️ process-engineering**: 自验证失效 视角 (Rule 30 根因修复 2)
+- **🔍 auditor**: 独立见证缺失 视角 (Rule 31 根因修复 3)
+- **📜 compliance**: Rule 升级率 100% 视角 (Rule 32 根因修复 4)
+- **🚦 decision-gate**: 决策疲劳 视角 (Rule 33 根因修复 5)
 
 ## 5+5 双重 review 流程 (跟"反讽" 联合, 跟"诚实修正" 联合)
 

@@ -12,7 +12,7 @@
 | `docs/guides/` | 11 files | **9 files** | **-2** | Phase 1 多算 |
 | `docs/reference/` | 8 files | **6 files** + 2 archive subdirs | **-2** | Phase 1 多算 |
 
-**F1**: Phase 1 §1.2 数字 跟 实际 fs 不一致 (3 处 file:line `phase-1-conductor-scan.md:29, 31, 34`), "诚实修正" 治根: 跟"独立" 战略 联合 master explicit 拍 留待.
+**F1**: Phase 1 §1.2 数字 跟 实际 fs 不一致 (3 处 file:line `phase-1-conductor-scan.md:29, 31, 34`), "诚实修正" 从根源修复: 跟"独立" 战略 联合 master explicit 拍 留待.
 
 ### 1.2 Web dashboard 组件架构 (跟 EPIC-060-A Phase 4 联合)
 
@@ -51,13 +51,13 @@
 | `.continue/skills/kallax/README.md:61,63` | `INSTALL-MULTI-TOOL.md`, `slash-commands.md` | `-2026-06-19.md` ×2 |
 | `.claude/skills/kallax/SKILL.md:47` | `slash-commands.md` | `slash-commands-2026-06-19.md` |
 
-**F5**: **`docs/api/` 缺 overview / auth doc** — `api-authentication-2026-06-19.md` 在 `docs/guides/` 而非 `docs/api/`, 跟"api-authentication" 路径 不一致 (跨 release 留待 治根).
+**F5**: **`docs/api/` 缺 overview / auth doc** — `api-authentication-2026-06-19.md` 在 `docs/guides/` 而非 `docs/api/`, 跟"api-authentication" 路径 不一致 (跨 release 留待 从根源修复).
 
 ### 1.4 EPIC-060-A Phase 4 web dashboard deploy docs gap (跟"诚实修正" 联合 0 隐藏)
 
 **F6**: `web/scripts/deploy.sh` + `deploy-cloudflare.sh` + `deploy-github-pages.sh` + `status-deploy.sh` (4 scripts, 跟 `confluence/decisions/EPIC-060-A-PHASE-4-WEB-DEPLOY-2026-06-19.md:22-42` 联合, 3/3 PASS deployment-ready) — **0 user-facing docs**.
 
-**F7**: `docs/guides/deployment-2026-06-19.md:1-153` 全文 **0 提到** `web/scripts/deploy*.sh` / Cloudflare Pages / GitHub Pages / wrangler / gh-pages — 跟"反讽" 联合 治根 "deployment doc 0 提 真部署 路径".
+**F7**: `docs/guides/deployment-2026-06-19.md:1-153` 全文 **0 提到** `web/scripts/deploy*.sh` / Cloudflare Pages / GitHub Pages / wrangler / gh-pages — 跟"反讽" 联合 从根源修复 "deployment doc 0 提 真部署 路径".
 
 ### 1.5 版本 drift (跟"诚实修正" 联合 0 隐藏)
 
@@ -81,10 +81,10 @@
 | # | 风险 | 描述 | 缓解 |
 |---|------|------|------|
 | **R1** | 用户 onboarding 受阻 | 25+ broken cross-doc links → 新人 跟 quick-start 路径 走 9/9 断 (跟 README.md:127, RELEASE.md:89, troubleshooting.md:87 联合) | 跟"诚实修正" 联合 master explicit 拍 1 命名 共识 (Phase 1 §1.3), 跟"独立" 战略 联合 跨 release 留待 |
-| **R2** | EPIC-060-A Phase 4 文档 缺口 | 5 deploy scripts + 4 sections 0 user-facing docs → deployment-ready 但 用户 0 知道 如何 invoke | 跟"诚实修正" 联合: 文档 缺口 跟 代码 完成 度 失焦 (跟"反讽" 联合 治根) |
+| **R2** | EPIC-060-A Phase 4 文档 缺口 | 5 deploy scripts + 4 sections 0 user-facing docs → deployment-ready 但 用户 0 知道 如何 invoke | 跟"诚实修正" 联合: 文档 缺口 跟 代码 完成 度 失焦 (跟"反讽" 联合 从根源修复) |
 | **R3** | Phase 1 KPI 错位 风险 | 3/3 Phase 1 §1.2 数字 跟 fs 不一致 → 9 专家 报告 跟 Phase 1 baseline 不齐 | 跟"诚实修正" 联合 修 Phase 1 numbers (跟"独立" 战略 联合 0 跨 session 拍板) |
 | **R4** | dashboard 数据 fallback 隐性 | dispatch.js:176 fetch 相对路径 跟 comment:172 不一致 → 真实部署 silent failure (SAMPLE_DATA fallback 静默) | 跟"反讽" 联合: 0 hidden data wiring (跟 EPIC-053-D LESSONS-LEARNED.md:143 "SAMPLE_DATA fallback" 联合) |
-| **R5** | 命名 共识 0 拍 | 7 命名 模式 + 25+ broken links → 跨 release 反复 治根 | 跟"独立" + "翻篇&精进" 战略 联合 0 强制 拍板, master explicit 拍 1 命名 共识 留待 |
+| **R5** | 命名 共识 0 拍 | 7 命名 模式 + 25+ broken links → 跨 release 反复 从根源修复 | 跟"独立" + "翻篇&精进" 战略 联合 0 强制 拍板, master explicit 拍 1 命名 共识 留待 |
 | **R6** | Version drift | web/index.html v2.7.3 / web/package.json v2.7.4 / CHANGELOG v2.7.2 → 3 源 3 版本 | 跟"独立" 联合 master explicit 拍 1 共识, 跟"诚实修正" 联合 0 隐藏 drift |
 
 ## 3. 推荐 (跟"独立" 战略 联合 0 跨 session 拍板)
@@ -93,7 +93,7 @@
 
 **Rec 1**: 跟 Phase 1 §1.2 file:line `phase-1-conductor-scan.md:18-36` 联合, 修 Phase 1 数字 (api/3 + guides/9 + reference/6), 跟"诚实修正" 战略 联合 0 隐藏 KPI falsification.
 
-**Rec 2**: 跟 EPIC-060-A Phase 4 联合, 在 `docs/guides/deployment-2026-06-19.md` 加 **§5 Web Dashboard Deployment** (跟 `confluence/decisions/EPIC-060-A-PHASE-4-WEB-DEPLOY-2026-06-19.md:22-42` 联合), 覆盖 `deploy.sh --platform=cloudflare|github-pages|self-hosted` + `--dry-run` 模式 + env vars 12-factor (跟"反讽" 联合 治根 vendor lock-in, 跟"诚实修正" 联合 0 hidden).
+**Rec 2**: 跟 EPIC-060-A Phase 4 联合, 在 `docs/guides/deployment-2026-06-19.md` 加 **§5 Web Dashboard Deployment** (跟 `confluence/decisions/EPIC-060-A-PHASE-4-WEB-DEPLOY-2026-06-19.md:22-42` 联合), 覆盖 `deploy.sh --platform=cloudflare|github-pages|self-hosted` + `--dry-run` 模式 + env vars 12-factor (跟"反讽" 联合 从根源修复 vendor lock-in, 跟"诚实修正" 联合 0 hidden).
 
 **Rec 3**: 新建 `docs/api/dispatch-api-2026-06-19.md` (跟 `web/src/dashboard/dispatch/dispatch.js:172` 联合) — 文档 `/api/dispatch/dashboard.json` endpoint contract + reverse proxy 接入 pattern (跟 EPIC-053-D LESSONS-LEARNED.md:228 联合).
 
@@ -126,7 +126,7 @@
 | **K3** | **Phase 1 数字 一致性** | paths match fs / total paths stated | **3/6 paths 错位** (api / guides / reference) | 6/6 (Rec 1) |
 | **K4** | **API docs 对齐 code contract** | endpoints documented / endpoints used by web | **3/4** (agents/system/tasks ✅ + dispatch ❌) | 4/4 (Rec 3) |
 | **K5** | **Top-level README coverage** | paths with README / 10 paths | **0/10 web/ + 跟 Phase 1 §1.6 联合** | 10/10 跨 release (Rec 4) |
-| **K6** | **Hidden debt count** | web components / docs / API 缺口 (跟"反讽" 联合 治根) | **6 显式 debt** (F1/F3/F4/F5/F6/F8) | 跨 release 留待 master 拍 |
+| **K6** | **Hidden debt count** | web components / docs / API 缺口 (跟"反讽" 联合 从根源修复) | **6 显式 debt** (F1/F3/F4/F5/F6/F8) | 跨 release 留待 master 拍 |
 
 ---
 

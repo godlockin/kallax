@@ -46,7 +46,7 @@ Phase 1 line 14 声称 "**10 (.aider/.antigravity/.claude/.codex/.continue/.curs
 | line 11 | "需求分析和任务拆解**Performer (执行者)**" | 缺换行, Conductor 段 跟 Performer 段 文本 粘连 |
 | line 14 | "**旧称**: Performer" | 语义 broken — Performer 是当前名 (跟 CLAUDE.md/AGENTS.md 一致), 无 "旧称" 含义; 推测本意 是 "**当前名**: Performer" |
 
-跟 KALLAX-GLOSSARY.md 60+5 术语 SoT 反讽: 冗余 副本 含 factual error, 单一 SoT 落地 治根 未完成 (跟 EPIC-055-A 跨 release 留待 联合).
+跟 KALLAX-GLOSSARY.md 60+5 术语 SoT 反讽: 冗余 副本 含 factual error, 单一 SoT 落地 从根源修复 未完成 (跟 EPIC-055-A 跨 release 留待 联合).
 
 ### 1.5 PHASE-INDEX.md Rule numbering 错
 
@@ -63,9 +63,9 @@ Phase 1 line 14 声称 "**10 (.aider/.antigravity/.claude/.codex/.continue/.curs
 | 文件 | 头部 版本 标 | 实际 当前 |
 |------|------------|----------|
 | `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:1` | "v2.5.0 升级版" | 实际 CHANGELOG/package.json = v2.7.3 |
-| `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:1010` (§15 总结) | "v2.7.1 落地" | 实际 v2.7.3 (v2.7.2 + v2.7.3 留待 治根) |
+| `confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md:1010` (§15 总结) | "v2.7.1 落地" | 实际 v2.7.3 (v2.7.2 + v2.7.3 留待 从根源修复) |
 
-**3 文档 (CLAUDE.md/AGENTS.md/package.json) + CHANGELOG v2.7.3 vs ACCUMULATED-LESSONS-17 v2.5.0 标头, **跨 release 累计 1 file 跟 2 release 漂移**, 不算 跨 session 紧急, 但 跨 release 留待 治根 必填.
+**3 文档 (CLAUDE.md/AGENTS.md/package.json) + CHANGELOG v2.7.3 vs ACCUMULATED-LESSONS-17 v2.5.0 标头, **跨 release 累计 1 file 跟 2 release 漂移**, 不算 跨 session 紧急, 但 跨 release 留待 从根源修复 必填.
 
 ### 1.7 9 顶层 README.md 缺失 (Phase 1 报 9/10, 实际 7/10 验证)
 
@@ -101,7 +101,7 @@ Phase 1 line 111 报 "6 empty EPIC-042~047" — 实际:
 
 Phase 1 Conductor 自报 543 (实际 424) = KPI falsification 反讽 (跟 BE-9 模式 一致, file:line `confluence/decisions/FACT-FORCING-EXAMPLES-2026-06-19.md:9-25`). 跟 Master 6 维 L6 诚实 + Rule 17 (KPI Falsification 反模式黑名单) 联合. **如果 Phase 2/3 接受 543 baseline, 8 commit 累计 数字 全部 失真**.
 
-### R2: glossary/terms.md factual error 触发 跨 release 反复 治根 (P1)
+### R2: glossary/terms.md factual error 触发 跨 release 反复 从根源修复 (P1)
 
 terms.md line 14 "旧称: Performer" 反讽 — 0 evidence 残留 旧命名 含义, 跨 release 留待 master 拍 Performer 命名 (跟 ACCUMULATED-LESSONS-17 "22 active Rule" 错计数 同源: stale 副本 0 同步).
 
@@ -111,7 +111,7 @@ STRUCTURE.md line 1 "v2.0.0" vs 实际 v2.7.3 — 文档 自身 标的 "跟'反�
 
 ### R4: 215 "跨 release 留待" occurrences 触发 debt-inflation (P1)
 
-`grep -rn "跨 release 留待"` → **215 行** across **35 .md files**. 跟"翻篇&精进" 战略 联合, "留待" 短语 作为 deferral 标记 累计 上升 — 实际 治根 数 < 留待 数, 跨 release 留待 master 拍 "0 增 Rule" 是否 包含 "0 增 留待".
+`grep -rn "跨 release 留待"` → **215 行** across **35 .md files**. 跟"翻篇&精进" 战略 联合, "留待" 短语 作为 deferral 标记 累计 上升 — 实际 从根源修复 数 < 留待 数, 跨 release 留待 master 拍 "0 增 Rule" 是否 包含 "0 增 留待".
 
 ### R5: 7 archive paths 散乱 (Phase 1 报 "7 archive 路径", 实际 4 paths)
 
@@ -144,15 +144,15 @@ STRUCTURE.md line 1 "v2.0.0" vs 实际 v2.7.3 — 文档 自身 标的 "跟'反�
 
 ## 3. 推荐 (跟"独立" 战略 联合 0 跨 session 拍板)
 
-### REC-1 (P0): Phase 1 数字 baseline 立刻 治根 (Fact-Forcing)
+### REC-1 (P0): Phase 1 数字 baseline 立刻 从根源修复 (Fact-Forcing)
 
 **0 等跨 release 留待** — Phase 2/3 之前 立即:
 1. 公开 验证 Phase 1 line 11-14 "543 / 356.md / 187.json / 10 工具" 全部 错
 2. 重新 baseline: **424 total (255 .md + 169 .json)**
-3. Phase 1 报告 加 "FACT-CHECK 修订 段" 引用 file:line (跟 EPIC-059-D 治根 一致)
+3. Phase 1 报告 加 "FACT-CHECK 修订 段" 引用 file:line (跟 EPIC-059-D 从根源修复 一致)
 4. 后续 Phase 2/3 决策 用 424 baseline, 0 用 543
 
-**理由**: EPIC-059-D Fact-Forcing 红线, 接受 AI 自报 数字 = BE-9 silent output 复发. 不立即治根, 跨 release 留待 9 专家报告 全部 用 错 baseline.
+**理由**: EPIC-059-D Fact-Forcing 红线, 接受 AI 自报 数字 = BE-9 silent output 复发. 不立即从根源修复, 跨 release 留待 9 专家报告 全部 用 错 baseline.
 
 ### REC-2 (P1): STUCTURE.md + PHASE-INDEX.md 立刻 version 同步
 
@@ -161,20 +161,20 @@ STRUCTURE.md line 1 "v2.0.0" vs 实际 v2.7.3 — 文档 自身 标的 "跟'反�
 | `docs/STRUCTURE.md:1` | v2.0.0 → v2.7.3 (或 删, 跟 PHASE-INDEX SoT 一致) | line 1 |
 | `docs/PHASE-INDEX.md:21` | "Rule 1-18 + 29-33" → "Rule 1-18 + 30-31" | line 21 |
 
-**理由**: factual error 0 cost 治根, 跨 release 留待 无意义.
+**理由**: factual error 0 cost 从根源修复, 跨 release 留待 无意义.
 
-### REC-3 (P1): glossary/terms.md factual error 治根
+### REC-3 (P1): glossary/terms.md factual error 从根源修复
 
 | 文件 | 改 | file:line |
 |------|---|----------|
 | `confluence/memory/glossary/terms.md:11` | 加 换行 "需求分析和任务拆解\n\n### Performer (执行者)" | line 11 |
 | `confluence/memory/glossary/terms.md:14` | "**旧称**: Performer" → "**当前名**: Performer" | line 14 |
 
-**理由**: 单一 SoT 治根, 跟 EPIC-055-A 联合, 跨 release 留待 反讽.
+**理由**: 单一 SoT 从根源修复, 跟 EPIC-055-A 联合, 跨 release 留待 反讽.
 
 ### REC-4 (P2): 215 "跨 release 留待" occurrences 跨 release 留待 master 拍
 
-不立即 治根 (跟"翻篇&精进" 战略 联合), 但 跨 release 留待 master 拍 "0 增 留待" 是否 进 rule. REC 报告 不强制 拍.
+不立即 从根源修复 (跟"翻篇&精进" 战略 联合), 但 跨 release 留待 master 拍 "0 增 留待" 是否 进 rule. REC 报告 不强制 拍.
 
 ### REC-5 (P2): 9 README 缺失 + 7 archive paths 散乱 跨 release 留待 拍板
 
@@ -185,13 +185,13 @@ STRUCTURE.md line 1 "v2.0.0" vs 实际 v2.7.3 — 文档 自身 标的 "跟'反�
 ## 4. 跨 release 留待 (跟"翻篇&精进" 战略 联合)
 
 - **0 增 Rule**: 跟"翻篇&精进" 战略 联合, 0 强制 拍 1 命名 共识 / 0 强制 拍 archive 路径 统一
-- **0 强制 拍板**: 7 重复 类型 治根 / 9 顶层 README 新建 / Option A vs B 文档树 — **跨 release 留待 master explicit 拍**
+- **0 强制 拍板**: 7 重复 类型 从根源修复 / 9 顶层 README 新建 / Option A vs B 文档树 — **跨 release 留待 master explicit 拍**
 - **0 跨 session 拍板**: REC-4/REC-5 全部 跨 release 留待 master, 不在 auditor 报告 强加
 - **STRUCTURE.md 删 vs 改**: 跨 release 留待 master (跟 PHASE-INDEX SoT 模式 联合)
 - **glossary/terms.md 删 vs 修**: 跨 release 留待 master (跟 EPIC-055-A 联合)
 - **215 "留待" 短语 是否进 rule**: 跨 release 留待 master
-- **Phase 1 line 11-14 543 baseline 修订**: **REC-1 P0 立刻 治根**, 0 跨 release 留待
-- **REC-2 REC-3 factual errors**: **P1 立刻 治根**, 0 跨 release 留待
+- **Phase 1 line 11-14 543 baseline 修订**: **REC-1 P0 立刻 从根源修复**, 0 跨 release 留待
+- **REC-2 REC-3 factual errors**: **P1 立刻 从根源修复**, 0 跨 release 留待
 
 ---
 
@@ -201,8 +201,8 @@ STRUCTURE.md line 1 "v2.0.0" vs 实际 v2.7.3 — 文档 自身 标的 "跟'反�
 |-----|---------|------|
 | **K1 Phase 1 数字 baseline 验证** | **0 / 4** (543 / 356.md / 187.json / 10 工具 全 错) | ❌ 0/4 |
 | **K2 factual error 验证** | **3 / 4** (STRUCTURE.md v2.0.0 / PHASE-INDEX Rule 29-33 / terms.md "旧称" / terms.md 缺换行 — 3 错 1 换行错) | ❌ 3/4 |
-| **K3 跨 release 留待 治根** | **5 / 5** (6 empty EPIC intentional / 9 README 缺失 / 7 archive paths / 7 重复类型 / 7 命名模式 — 5 全部 跨 release 留待) | ✅ 5/5 跟"翻篇&精进" 一致 |
+| **K3 跨 release 留待 从根源修复** | **5 / 5** (6 empty EPIC intentional / 9 README 缺失 / 7 archive paths / 7 重复类型 / 7 命名模式 — 5 全部 跨 release 留待) | ✅ 5/5 跟"翻篇&精进" 一致 |
 | **K4 EPIC-059-D Fact-Forcing 落地** | **0 / 1** (Phase 1 自报 数字 失守, 1 fail) | ❌ 0/1 |
 | **K5 0 隐藏 debt 验证** | **8 / 10** 关键项 已验证 (543 错 / 10 工具 错 / STUCTURE stale / terms.md 错 / PHASE-INDEX Rule 错 / Version drift / 9 README / 6 empty intentional — 8 验证, 2 跨 release 留待) | ⚠️ 8/10 |
 
-**总体**: 3/5 KPI fail (K1/K2/K4), 2/5 pass (K3/K5) — **跟 EPIC-059-D Fact-Forcing 红线 联合, REC-1/REC-2/REC-3 必 立刻 治根**.
+**总体**: 3/5 KPI fail (K1/K2/K4), 2/5 pass (K3/K5) — **跟 EPIC-059-D Fact-Forcing 红线 联合, REC-1/REC-2/REC-3 必 立刻 从根源修复**.

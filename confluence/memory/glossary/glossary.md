@@ -54,7 +54,7 @@
 
 ### 3.1 「对策 A+B+C」
 - 大白话: Subagent 自验证 + Conductor 接收验证 + Master 强验证
-- 来源: 3 假 PASS 模式 治根
+- 来源: 3 假 PASS 模式 从根源修复
 - 跟 Rule 10/18 联合
 
 ### 3.2 「Master 强验证 6 维度」
@@ -175,7 +175,7 @@
 
 ### 7.3 「4 工具生态 (Trae/hybrid/auto-target)」
 - 大白话: 4 工具 + Trae ByteDance IDE + hybrid flag + auto-detect
-- 来源: EPIC-057 + v2.0.6 + v2.0.2 反讽治根
+- 来源: EPIC-057 + v2.0.6 + v2.0.2 反讽从根源修复
 - 跟 Karpathy "Readability" 联合
 
 ### 7.4 「64 → 35 术语压缩」

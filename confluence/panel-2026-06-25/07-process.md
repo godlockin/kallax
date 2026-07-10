@@ -23,7 +23,7 @@
 - **Rec 1 (Phase 1 数字 re-verify)**: Phase 3 Master 仲裁 前, 跑 `find docs confluence jira -type f \( -name "*.md" -o -name "*.json" \) | wc -l` + `ls docs/process/ | wc -l`, raw stdout 作为 Phase 1 §1.1-1.2 数字 唯一 evidence. 跟 fact-forcing §2.2.2 命令输出 联合 (file:line `docs/process/fact-forcing.md:83-93`).
 - **Rec 2 (5 原则 实施 闭环)**: CLEANUP-PHILOSOPHY §C 1-4 项 (9 console.log / 2 unwrap / 5 file 500+ / 10 hardcoded paths) 实际状态 grep verify — `rg "console\.log" --type ts node/src/ | wc -l` + `rg "\.unwrap\(\)" --type rust rust/src/ | wc -l` — 实际数字 替代 估数 (file:line `docs/process/CLEANUP-PHILOSOPHY.md:124-127`). 0 增 ticket, 仅 re-verify §C 状态.
 - **Rec 3 (Rule 数 single source)**: master explicit 拍 1 Rule 数 baseline (22 vs 23) 跟 1 权威 源 (建议 `docs/KALLAX-GLOSSARY.md` §11.1 或新增 `docs/governance/rule-count-snapshot.md`). 9-hard-rules.md + approval-tiering.md + PROCESS.md line 25-26 全部 引用 同一 baseline, 跨 release 累计 1 commit 改 3 处 (file:line `docs/process/9-hard-rules.md:12` + `docs/process/approval-tiering.md:30` + `docs/PROCESS.md:25-26`). 跟 CLEANUP-PHILOSOPHY §5 软性设置 + DRY 联合.
-- **Rec 4 (顶层 README 渐进治根)**: `docs/process/README.md` 仅 30 行 (跟 docs/ 现行 风格 联合, file:line `confluence/memory/lessons/README.md:26-54` 是 1 范本). 内容: 7 files 1-行描述 + 入口 (PROCESS.md 主流程 + CLEANUP-PHILOSOPHY 5 原则 + 9-hard-rules.md Rule 模式 + fact-forcing.md 证据链 + approval-tiering.md P0/P1/P2 + tag-sop.md 5 标签 + metrics-kpi.md 3 KPI + A-B-REVIEW.md 5+5 review). 0 增 长期 debt, 跟 §3 "小步快跑" + §5 "软性设置" 联合 (file:line `docs/process/CLEANUP-PHILOSOPHY.md:48-86`).
+- **Rec 4 (顶层 README 渐进从根源修复)**: `docs/process/README.md` 仅 30 行 (跟 docs/ 现行 风格 联合, file:line `confluence/memory/lessons/README.md:26-54` 是 1 范本). 内容: 7 files 1-行描述 + 入口 (PROCESS.md 主流程 + CLEANUP-PHILOSOPHY 5 原则 + 9-hard-rules.md Rule 模式 + fact-forcing.md 证据链 + approval-tiering.md P0/P1/P2 + tag-sop.md 5 标签 + metrics-kpi.md 3 KPI + A-B-REVIEW.md 5+5 review). 0 增 长期 debt, 跟 §3 "小步快跑" + §5 "软性设置" 联合 (file:line `docs/process/CLEANUP-PHILOSOPHY.md:48-86`).
 - **Rec 5 (fact-forcing.md checklist 自动化)**: fact-forcing.md:328-333 6-item checklist 改 `scripts/verify/check-fact-forcing-checklist.sh` 跑 raw `git log` + `git show` + `rg "console\.log"` 等 6 evidence 命令, 每次 release 跑, stdout 写入 `confluence/decisions/FACT-FORCING-CHECKLIST-RUN-<date>.md` 留痕. 跟 §4 "硬性脚本" 原则 联合 (file:line `docs/process/CLEANUP-PHILOSOPHY.md:64-71` + `docs/process/fact-forcing.md:328-333`).
 
 ## 4. 跨 release 留待 (跟"翻篇&精进" 战略 联合)
@@ -32,7 +32,7 @@
 - 0 增命令 (跟 STRUCTURE.md line 39 "23 Rule 累计 0 增" 联合, file:line `docs/STRUCTURE.md:39`)
 - 0 强制 拍板 (跟 Phase 1 §1.10 P0/P1/P2 联合, 跨 release 留待 master explicit 拍)
 - **L1**: docs/architecture/ + docs/api/ + docs/ops/ 顶层 README (跟 docs/process/ 模式 一致, 跨 release 累计 4/10 README 落地)
-- **L2**: 7 重复 类型 治根 (Glossary / Lessons / Architecture / Decisions / PHASE / Process / Templates, file:line `inbox/panel-2026-06-25/phase-1-conductor-scan.md:90-99`)
+- **L2**: 7 重复 类型 从根源修复 (Glossary / Lessons / Architecture / Decisions / PHASE / Process / Templates, file:line `inbox/panel-2026-06-25/phase-1-conductor-scan.md:90-99`)
 - **L3**: 7 命名 模式 共识 (Phase 1 §1.3, 跨 release 留待 master explicit 拍 1 命名 共识)
 - **L4**: 9/10 顶层 README 落地 (Phase 1 §1.6, 跟 docs/process/ 跨 release 留待 1 commit 1 README pattern)
 - **L5**: 7 archive 路径 统一 (`_archive/` vs `_archived/` vs `jira/tickets/_archive/` 模式, file:line `inbox/panel-2026-06-25/phase-1-conductor-scan.md:104-114`)

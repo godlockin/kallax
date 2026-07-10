@@ -22,7 +22,7 @@
 - **循环论证**: KPI falsification 10 次 → 加 anti-fab 工具 → 再加 Rule 18 黑名单 → 再 falsification
 - **净价值**: 85.5% - 18 Rule = 67.5% 净价值
 
-**compliance 治根因 4 方案** (跟"目标专家" 拍 explicit 约束 联合):
+**compliance 根因修复 4 方案** (跟"目标专家" 拍 explicit 约束 联合):
 - **方案 1**: 重构 3-5 架构原则 (撤销 8 Rule, 目标 ≤10 Rule)
 - **方案 2**: 撤销冗余 Rule 定期扫描 (rule-redundancy-audit.sh)
 - **方案 3**: 软约束升级阈值 (>80% 升级率触发审查)
@@ -70,10 +70,10 @@ KPI falsification 10 次 (71.4% BE)
 | 建议 | 跟 Root Cause 4 联合 | 状态 |
 |---|---|---|
 | 5.1 重构 3-5 架构原则, 撤销冗余 Rule (目标 ≤10) | **核心方案** | 待落地 |
-| 5.2 强制 subagent 自验证 | 治根因 2 | process-engineering 治 |
-| 5.3 worktree 路径工程校验 | 治根因 1 | security 治 |
-| 5.4 session timeout 必须可中断 | 治根因 1 | security 治 |
-| 5.5 EPIC 交付单页卡 | 治根因 5 | decision-gate 治 |
+| 5.2 强制 subagent 自验证 | 根因修复 2 | process-engineering 治 |
+| 5.3 worktree 路径工程校验 | 根因修复 1 | security 治 |
+| 5.4 session timeout 必须可中断 | 根因修复 1 | security 治 |
+| 5.5 EPIC 交付单页卡 | 根因修复 5 | decision-gate 治 |
 
 **跟 5 战略建议 5.6 (新) 联合** (跟任务说明 联合):
 - 撤销 8 Rule (Rule 9a/9b/9c/9e + L1-L4 preflight 重复)
@@ -95,7 +95,7 @@ KALLAX 框架能力: 85.5%
 
 ---
 
-## 2. compliance 治根因 4 方案
+## 2. compliance 根因修复 4 方案
 
 ### 2.1 方案 1: 重构 3-5 架构原则 (核心)
 
@@ -147,7 +147,7 @@ KALLAX 框架能力: 85.5%
 
 ### 2.3 方案 3: 软约束升级阈值
 
-**跟 Rule 32 联合** (新, 跟"治根因 4" 联合):
+**跟 Rule 32 联合** (新, 跟"根因修复 4" 联合):
 
 | 指标 | 阈值 | 触发动作 |
 |---|---|---|
@@ -158,7 +158,7 @@ KALLAX 框架能力: 85.5%
 **Rule 32: 软约束升级阈值 (KALLAX P0)**
 
 ```markdown
-### 32. 软约束升级阈值 (KALLAX P0) — Root Cause 4 治根
+### 32. 软约束升级阈值 (KALLAX P0) — Root Cause 4 从根源修复
 
 **教训**: 18 Rule 升级率 100%, 5 release 软约束失效, 循环论证无出口.
 
@@ -240,13 +240,13 @@ KALLAX 框架能力: 85.5%
 
 **跟"反讽" 闭环**:
 - 14 BE 累计 = 100% 闭环 (跟"避免反复出现" 拍一致)
-- Root Cause 4 治根 = 撤销冗余 Rule + 软约束升级阈值
+- Root Cause 4 从根源修复 = 撤销冗余 Rule + 软约束升级阈值
 
 ---
 
 ## 5. 总结 (跟"流程逻辑 > 扩充配置" + "诚实修正" 战略 一致)
 
-**Root Cause 4 治根**:
+**Root Cause 4 从根源修复**:
 - 18 Rule 升级率 100% → 软约束升级阈值 (Rule 32)
 - 治理复杂度替代架构设计 → 重构 3-5 架构原则 (方案 1)
 - 循环论证无出口 → 撤销冗余 Rule 定期扫描 (方案 2)

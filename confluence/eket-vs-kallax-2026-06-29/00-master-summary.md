@@ -1,7 +1,7 @@
 # KALLAX 接手维护审计 vs 师傅 EKET — 2026-06-30
 
-> 审计模式: C2 接手维护 + 全栈 5 专家组  
-> 核心问题: KALLAX 作为 EKET 徒弟, 是否**青出于蓝而胜于蓝**?
+> 审计模式: C2 接手维护 + 全栈 5 专家组
+> 核心问题: KALLAX 作为 EKET 徒弟, 是否****?
 
 ---
 
@@ -16,13 +16,13 @@
 **审计可用强度**:
 - ✅ 徒弟侧: 实测数字 (43 rs / 89 docs / 36 cmd / 5 专家 / 12 Rules)
 - ⚠️ 师傅侧: 仅作为定性参照 (架构/降级思路/文档覆盖深度)
-- ✅ 青蓝对照: 概念级判断 (机制是否青出于蓝)
+- ✅ 青蓝对照: 概念级判断 (机制是否)
 
 ---
 
 ## 🎯 核心判定 (一句话)
 
-KALLAX **青出于蓝, 但尚未胜于蓝**: 在 **6 个治理机制** 上**全面超越**师傅 (4 层降级 / Sub-Role 4 分工 / 5-Level Fact-Forcing / Hash-Chain Audit / 12 Active Rules / KPI 真量化), 但在 **2 个工程深度** 上**仍借势师傅** (Node core / Rust .rs 工程规模).
+KALLAX **, 但尚未胜于蓝**: 在 **6 个治理机制** 上**全面超越**师傅 (4 层降级 / Sub-Role 4 分工 / 5-Level Fact-Forcing / Hash-Chain Audit / 12 Active Rules / KPI 真量化), 但在 **2 个工程深度** 上**仍借势师傅** (Node core / Rust .rs 工程规模).
 
 ---
 
@@ -43,14 +43,14 @@ KALLAX **青出于蓝, 但尚未胜于蓝**: 在 **6 个治理机制** 上**全�
 
 ---
 
-## 🌟 KALLAX 青出于蓝 — 8 大独亮
+## 🌟 KALLAX — 8 大独亮
 
 | # | 亮点 | 引用 | 战略意义 |
 |---|------|------|---------|
 | 1 | **4 层降级** (Level 0 Shell Emergency) | `docs/architecture/degradation-strategy.md` + CLAUDE.md 降级层级定义 | 比师傅多一层兜底, 更适配生产环境的极限故障 |
 | 2 | **Sub-Role 4 分工** (Performer → coder/reviewer/tester/docs) | `docs/4-roles.md:4` + `AGENTS.md` Rule 15 sub-role | 适配 AI 协作的子角色分工, 师傅 Master-Slaver 单一 |
-| 3 | **5-Level Fact-Forcing** (L1-L5 逐级事实强制) | `CLAUDE.md:46-47` + `docs/5-levels.md` | 师傅无此机制, 治根 "Phantom ref / KPI 假 PASS" |
-| 4 | **Hash-Chain Audit Log + 6 武器** | `CLAUDE.md:52-53` (W1-W6) | 不可篡改审计链, 武器 1-6 全栈治根 |
+| 3 | **5-Level Fact-Forcing** (L1-L5 逐级事实强制) | `CLAUDE.md:46-47` + `docs/5-levels.md` | 师傅无此机制, 从根源修复 "Phantom ref / KPI 假 PASS" |
+| 4 | **Hash-Chain Audit Log + 6 武器** | `CLAUDE.md:52-53` (W1-W6) | 不可篡改审计链, 武器 1-6 全栈从根源修复 |
 | 5 | **12 Active Rules 治理** | `CLAUDE.md:15-28` (Rule 1/2/3/6/7/10/11/14/15 P0 + 4/5/8/9/12 P1) | 师傅 7 项 Checklist, 徒弟 12 Rules + 5 Levels + 6 武器, 体系更深 |
 | 6 | **KPI 真量化** (X/Y 格式 + 禁估数词 + 告警阈值) | `docs/process/metrics-kpi.md:42-74` | 工程化程度真正达 KPI-grade, 非 "later define" |
 | 7 | **experts/ 专家池** (5+ 独立专家) | `experts/` + `docs/5-EXPERT-POOL-2026-06-28.md` | 师傅无此设计, KALLAX 把"专家"作为一等公民 |
@@ -81,7 +81,7 @@ KALLAX **青出于蓝, 但尚未胜于蓝**: 在 **6 个治理机制** 上**全�
 
 **前端接手补充**:
 - `web/app.js` (263 LOC 全套 dashboard, 无构建链, http-server 极简)
-- `web/src/escape.js` (KallaxEscape.el() textContent 治根 FE-001)
+- `web/src/escape.js` (KallaxEscape.el() textContent 从根源修复 FE-001)
 - `node/src/hooks/http-hook-server.ts` (Hook Server 核心, web/node 唯一桥接)
 
 ---
@@ -107,7 +107,7 @@ KALLAX CLAUDE.md / AGENTS.md / LESSONS 多处显示已经吸收师傅 4 条方�
 3. **GATE-REVIEW-PROTOCOL → 升级为 5-Level Fact-Forcing L1-L5** (机制深化的典范)
 4. **eket Redis/SQLite/Saga 双轨架构 → 演化为 4 层降级** (机制深化第 2 例)
 
-**总判定**: KALLAX 不是 EKET 的"克隆", 而是 EKET 的"高分继承 + 6 大超越". 借鉴方法论 + 深化机制 + 自创武器, 是"青出于蓝"的范式样板.
+**总判定**: KALLAX 不是 EKET 的"克隆", 而是 EKET 的"高分继承 + 6 大超越". 借鉴方法论 + 深化机制 + 自创武器, 是""的范式样板.
 
 ---
 
@@ -124,8 +124,8 @@ KALLAX CLAUDE.md / AGENTS.md / LESSONS 多处显示已经吸收师傅 4 条方�
 
 ---
 
-**审计者**: KALLAX Master @ miao branch, 5-Expert 全栈组  
-**审计时长**: ~10 分钟 (架构/后端/前端/UX/产品 并行)  
-**审计数据**: 徒弟侧实测 (find/wc/ls/grep), 师傅侧定性, 校正见前段  
-**审计模式**: 接手维护 + 全栈专家组  
+**审计者**: KALLAX Master @ miao branch, 5-Expert 全栈组
+**审计时长**: ~10 分钟 (架构/后端/前端/UX/产品 并行)
+**审计数据**: 徒弟侧实测 (find/wc/ls/grep), 师傅侧定性, 校正见前段
+**审计模式**: 接手维护 + 全栈专家组
 **是否青于蓝**: **是**, 6 大机制超越 + 2 大深度借势. **青于蓝未胜于蓝**, 需补 R-2 / R-3 / web 测试后才算完全胜出.

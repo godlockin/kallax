@@ -81,7 +81,7 @@ git push origin "feature/rollback-$(echo $FIX_SHA | cut -c1-7)"
 
 | 约束 | 原因 |
 |------|------|
-| 用 `git revert` 不用 `git reset --hard` | 保留历史审计 (BE-22 治根 0 隐藏) |
+| 用 `git revert` 不用 `git reset --hard` | 保留历史审计 (BE-22 从根源修复 0 隐藏) |
 | 走 `--no-edit` 默认消息 | 避免 commit message 漂移 (跟 BE-25 check-scope-creep 联合) |
 | 单 commit revert 一次 | 12 fixes 不混 batch (定位责任清晰) |
 | 必须在 feature branch 上 revert | main 分支只能加不能减 (跟 SOP-cleanup.md §3 联合 0 NEW) |
@@ -112,11 +112,11 @@ jq -e '.heartbeat.last_beat' .kallax/instances/<test-instance>/state.json
 
 # Step 4: fd fail-closed 边界 (人为制造 pipe stdin)
 bash -c "echo '' | bash .kallax/hooks/session_start.sh <test-instance-2>"
-# 期望: exit 1 + 明确错误 "fd 0/1/2 not tty" (B2 治根后行为)
+# 期望: exit 1 + 明确错误 "fd 0/1/2 not tty" (B2 从根源修复后行为)
 # 注: B2 revert 后, 此处应 exit 0 + hang → 期望 fail → 验证 B2 确实在位
 
 # Step 5: pre-commit hook governance 验证 (BE-23 + BE-25 + BE-26 联合)
-bash -n .kallax/hooks/session_start.sh  # 语法 (B5 治根项)
+bash -n .kallax/hooks/session_start.sh  # 语法 (B5 从根源修复项)
 git status --porcelain | grep -E "^\?\? scripts/test-p0-integration.sh" || echo "test script tracked"
 # 期望: 语法 0 错 + test script tracked
 ```
@@ -233,10 +233,10 @@ echo "EMERGENCY ROLLBACK COMPLETED. Notify master. See .kallax/logs/emergency_ro
 |--------|------|----------|
 | EPIC-027-B rollback SOP 模式 | `docs/SOP-cleanup.md` §3 | 复用 "git revert + 5 步验证" 骨架 (archive-not-delete 哲学) |
 | `confluence/runbooks/orphan-heartbeat-cleanup.md` | EPIC-016-O | 复用 3 道防线叙事 (P0 fix 部署 + 集成测试 + 审计) |
-| BE-22 治根 | commit `30c8f23` (EPIC-024-A) | staged-not-committed 模式 0 隐藏 (本 SOP 要求 revert 必须 commit) |
-| BE-23 治根 | commit `7347ae6` (pre-commit branch-aware) | push 必须 feature branch (跟派遣 Checklist 11 项 #2 SSH 联合) |
+| BE-22 从根源修复 | commit `30c8f23` (EPIC-024-A) | staged-not-committed 模式 0 隐藏 (本 SOP 要求 revert 必须 commit) |
+| BE-23 从根源修复 | commit `7347ae6` (pre-commit branch-aware) | push 必须 feature branch (跟派遣 Checklist 11 项 #2 SSH 联合) |
 | BE-25 暴露 | `check-scope-creep` 0 TICKET_ID | revert commit message 模板 0 漂移 跟 BE-25 联合 |
-| BE-26 治根 | `check-scope-creep` staged 检测 | revert 后 git status 干净 0 NEW staged (跟 §3 Step 5 联合) |
+| BE-26 从根源修复 | `check-scope-creep` staged 检测 | revert 后 git status 干净 0 NEW staged (跟 §3 Step 5 联合) |
 | `scripts/test-p0-integration.sh` | 本 ticket | §3 Step 2 + §4 Step 1 复用 — 12 fix 集成测试 |
 | Emergency rollback audit (`.kallax/logs/emergency_rollback.jsonl`) | EPIC-027-B `.kallax/logs/pre_clean.jsonl` | JSONL append-only 模式 0 NEW |
 
