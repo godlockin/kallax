@@ -40,6 +40,29 @@ if [ -d "confluence/decisions" ]; then
   done < <(find confluence/decisions -name "*.md" -type f 2>/dev/null)
 fi
 
+# EPIC-110-C: KALLAX_STAGED_ONLY=1 → filter to staged .md files only
+# Usage: KALLAX_STAGED_ONLY=1 bash scripts/verify/check-decorative-claim.sh
+# Called from pre-commit hook to gate only newly-introduced violations
+if [ -n "${KALLAX_STAGED_ONLY:-}" ] && [ "$KALLAX_STAGED_ONLY" = "1" ]; then
+  STAGED=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || echo "")
+  if [ -z "$STAGED" ]; then
+    echo "KALLAX_STAGED_ONLY=1: no staged files, skip"
+    exit 0
+  fi
+  FILTERED=()
+  for f in $STAGED; do
+    case "$f" in
+      CHANGELOG.md|CLAUDE.md|confluence/decisions/*.md)
+        [ -f "$f" ] && FILTERED+=("$f") ;;
+    esac
+  done
+  if [ ${#FILTERED[@]} -eq 0 ]; then
+    echo "KALLAX_STAGED_ONLY=1: no staged .md files match scan scope, skip"
+    exit 0
+  fi
+  SCAN_FILES=("${FILTERED[@]}")
+fi
+
 echo "=========================================="
 echo "Decorative Claim Check (Anti-Fabrication)"
 echo "=========================================="
