@@ -3,7 +3,7 @@
 > **目的**: 沉淀 EPIC-024/028 L1a 路由设计决策 + tokenization 选型, 避免下一个 phase 重蹈覆辙
 > **作者**: master (PHASE-002 review 产出)
 > **Date**: 2026-06-08
-> **Status**: APPROVED (PHASE-002 升级, 主公 2026-06-08 拍板)
+> **Status**: APPROVED (PHASE-002 升级, 决策者 2026-06-08 拍板)
 > **关联**: EPIC-024-A/B, EPIC-028-A/B, EPIC-030, LESSONS-LEARNED EPIC-024
 
 ---
@@ -39,9 +39,9 @@ L1a 是 KALLAX 3 层专家路由的第 1 层 (L1a/L1b/L2), 负责**精确+子串
 
 ### 2.3 选型时间线
 
-- 2026-06-07: 主公提出 tokenization 是不是直接的分词模块, 是不是单独的 nlp 库, 需不需要 nlp 专家横向纵向对比
+- 2026-06-07: 决策者提出 tokenization 是不是直接的分词模块, 是不是单独的 nlp 库, 需不需要 nlp 专家横向纵向对比
 - 2026-06-07: EKET 调研, jieba-rs 0.7 出现, 5 选项比对
-- 2026-06-08: 主公拍 D — Rust 重写 expert-match, jieba-rs 落地
+- 2026-06-08: 决策者拍 D — Rust 重写 expert-match, jieba-rs 落地
 - 2026-06-08: a3be6648 Performer 实现, 但用 Python sqlite3 `:param` 语法 (CLI 不接, broken) → Master 接管修
 
 ---
@@ -158,7 +158,7 @@ matched expert + audit log
 | **M8 cold start** | jieba-rs 第一次跑 ~200ms, 后续 ~30ms | 加 jieba 预热 cache + in-process l1b-router (替代 subprocess) | P1 (follow-up) |
 | **Vector embedding 空** | `expert_vec` 表空, L2 缺语义分数 | 跑 `semantic-embed.py` 填 97 expert | P1 (低风险) |
 | **Extended trigger 短** | 90 extended 之前 5-6 词, EPIC-030 扩到 26-30 词 | ✅ EPIC-030 (d4390f9) 已落地 | ✅ done |
-| **L3 generation** | LLM 自动生成新 expert (飞轮 "运行" 阶段入口) | EPIC-024-C Sprint 3 (待主公拍) | P0 (主公决策) |
+| **L3 generation** | LLM 自动生成新 expert (飞轮 "运行" 阶段入口) | EPIC-024-C Sprint 3 (待决策者拍) | P0 (决策者决策) |
 | **A6 semantic recall** | "ML模型" 这种 jieba 拆开的需求 L2 substring 找不到 | 跑 `semantic-embed.py` 后 L2 cosine 兜底 | P1 |
 
 ---

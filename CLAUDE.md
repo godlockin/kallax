@@ -1,13 +1,13 @@
 # KALLAX v3.8.1
 
-> 借鉴 eket 极简哲学, 青出于蓝而胜于蓝 | 6 release 累计 0 跳 + 0 估数 + 0 装饰 + 0 meta 反讽
+> 借鉴 eket 极简哲学 | 6 release 累计: 0 跳流程, 0 估数字, 0 装饰性宣称, 0 元层自嘲
 
 ## 3 根本 价值观 (Q12 战略)
-- 小步迭代 + 彻底完成 (反讽 1:1 复发 治根)
-- 诚实修正 (1.5-2x → 0.92x, 100% parity → ~10%)
-- 反讽 1:1 复用 治根 (5 release 累计)
+- 小步迭代 + 彻底完成 (防止假 PASS 症状复发)
+- 诚实修正 (原声称 1.5-2x, 实测 0.92x; 原声称 100% parity, 实测 ~10%)
+- 复盘同类症状, 从根源修复 (5 release 累计)
 
-## 5 levels (跟 eket 1:1)
+## 5 levels (对齐 eket)
 L1 git / L2 stdout / L3 4-expert / L4 independent / L5 boundary
 
 ## 4 roles
@@ -26,16 +26,16 @@ Conductor / Performer + 4 sub-roles (coder / reviewer / tester / docs)
 - check-self-heal.sh (self-heal pattern)
 - **check-claim-evidence.sh** (v3.8.1 EPIC-069-D 新增, README/CHANGELOG 数字必带 raw test output 引用)
 
-## Q18 决策 1:1 (诚实修正 战略 1:1 联合)
+## Q18 决策矩阵 (对齐诚实修正战略)
 - 5 levels × 4 roles = 25 cells
 - 5 类 block + 3 类 danger
 - scripts/permission/decision-matrix.sh (law, 0 文档化)
-- 跟 eket 1:1 借鉴 0 增 Rule
+- 借鉴 eket 模式, 不新增 Rule
 
 ## Branch Flow Governance (EPIC-074, 主公拍板 2026-07-09)
 
 > **起源**: 主公问 "有没有严格遵守 feature/xx-xx → testing → main (UAT) → miao (stable/prod)?"
-> **Master 自查 (跟 v3.8.0 reviewer 同样诚实)**: ❌ v3.8.1-3.9.2 5 release 跳过 testing + main (直推 miao)
+> **Master 自查 (与 v3.8.0 reviewer 同样诚实)**: ❌ v3.8.1-3.9.2 5 release 跳过 testing + main (直推 miao)
 > **主公拍板**: 以后用 + 上个 release 之后补 (推荐)
 
 **4-branch 强制流程** (v3.10.0+ 强制, 0 容忍):
@@ -45,14 +45,14 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
    工作                      UAT 验证    集成测试        稳定发布
 ```
 
-| 阶段 | 操作 | 验证站 | 治根 |
+| 阶段 | 操作 | 验证站 | 目的 |
 |------|------|--------|------|
 | 1. feature/* | `git worktree add -b feature/...` | 5-Level Verify (新规) | worktree 隔离 |
-| 2. feature → testing | `gh pr create --base testing` | integration + cargo test + vitest env | 治 v3.8.0 form-only PASS |
-| 3. testing → main | `gh pr create --base main` | full e2e + decision matrix 25 cells | 治 v3.8.0 "25/25 假 PASS" |
-| 4. main → miao | `gh pr create --base miao` | master review + 4 sub-roles | 治 v3.8.0 red-blue review 阻塞 |
+| 2. feature → testing | `gh pr create --base testing` | integration + cargo test + vitest env | 防止 v3.8.0 form-only PASS |
+| 3. testing → main | `gh pr create --base main` | full e2e + decision matrix 25 cells | 防止 v3.8.0 "25/25 假 PASS" |
+| 4. main → miao | `gh pr create --base miao` | master review + 4 sub-roles | 处理 v3.8.0 red-blue review 阻塞 |
 
-**现状 (2026-07-09 治根后)**:
+**现状 (2026-07-09 修复后)**:
 - `main` ✅ 创建 + 推到 remote (commit 0595fea)
 - `testing` ✅ force-update 到 miao tip
 - 5 feature 分支 ✅ 推到 remote (PR 追溯 record): v3.8.1/v3.8.2/v3.9.0/v3.9.1/v3.9.2
@@ -66,14 +66,14 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 | v3.9.1 | feature/v3.9.1-EPIC-072 | ❌ 跳过 (历史) |
 | v3.9.2 | feature/v3.9.2-EPIC-073 | ❌ 跳过 (历史) |
 
-**0 静默跳过** (跟 EPIC-069-D check-claim-evidence 联合):
+**0 静默跳过** (配合 EPIC-069-D check-claim-evidence):
 - v3.10.0+ 必走 4-PR 全程
 - 紧急 bypass 仅 `git commit --no-verify` (主公明确批准时)
-- 反讽 1:1 复发 → pre-commit hook 拦截
+- 同类假 PASS 症状再次出现 → pre-commit hook 拦截
 
 详细: `confluence/decisions/branch-flow-governance-2026-07-09.md`
 
-## 5-Level Verify 新规 (EPIC-069-D 治反讽 1:1 复发)
+## 5-Level Verify 新规 (EPIC-069-D 防止假 PASS 复发)
 
 > **起源**: v3.8.0 README 声称 "25/25 PASS / 生产级 / 治根", reviewer 红蓝对抗 实测 `cargo test` 11 errors + Node 8/19 fail。**5-Level Verify 之前漏了 cargo test + node env setup, 等于形式通过实质失败**。
 
@@ -94,7 +94,7 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 **禁止**(PRE-COMMIT hook 拦截):
 - ❌ README/CHANGELOG 出现 `X/Y PASS` 数字但无 `raw_output` 引用
 - ❌ `5-Level Verify PASS` 字样但 L2 是 `cargo build`(必须 `cargo test`)
-- ❌ "生产级 / 治根 / 25/25" 等装饰性断言无 raw output 佐证
+- ❌ "生产级 / 25/25" 等装饰性断言无 raw output 佐证
 
 ## state.json 路径约定 (EPIC-068-A)
 

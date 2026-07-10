@@ -1,6 +1,6 @@
 # security-hardening-iterations-2026-06-19.md
 
-> **状态**: ARCHIVED — 5 年后过期 (主公 2026-06-09 拍)
+> **状态**: ARCHIVED — 5 年后过期 (决策者 2026-06-09 拍)
 > **原因**: 内容已整合到 `cross-epic-kpi-falsification-evolution-2026-06-19.md` §3
 > **保留历史**: 不删除, 跟 EKET "5 年后过期" 标一致
 
@@ -20,6 +20,6 @@
 
 ---
 
-**维护者**: master (主公拍板 2026-06-09)
+**维护者**: master (决策者拍板 2026-06-09)
 **最后更新**: 2026-06-11
 **状态**: ARCHIVED

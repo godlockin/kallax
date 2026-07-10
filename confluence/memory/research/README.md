@@ -1,8 +1,8 @@
 # L4 — 全局知识库 (Global Knowledge)
 
-> **Layer**: **L4** 全局知识库 (Global Knowledge) — 跟 [LAYERS.md](../LAYERS.md) 联合
+> **Layer**: **L4** 全局知识库 (Global Knowledge) — 跟 [LAYERS.md](../LAYERS.md),配合
 > **升级路径**: L3 (confluence/memory/patterns/) PHASE review 升级 → **L4** (本目录, research/) → 借鉴外部项目 (eket / industry) 沉淀
-> **已存在 files** (跟"借方法论 不借代码" 联合, 0 重写):
+> **已存在 files** (跟"借鉴方法论而非直接复制代码",配合, 0 重写):
 > - `anti-hallucination.md` — Agent 防幻觉机制 (Fact-Forcing 来源)
 > - `architecture-lessons-learned.md` — 架构经验教训
 >
@@ -12,13 +12,13 @@
 
 ---
 
-## L4 升级判据 (跟 LAYERS.md §3 联合)
+## L4 升级判据 (跟 LAYERS.md §3,配合)
 
-- ✅ PHASE-XXX-REVIEW 闭环
+- ✅ PHASE-XXX-REVIEW 完整完成
 - ✅ Master 拍板 + 关键 patterns 提取
 - ✅ 写 `confluence/memory/research/{topic}.md` + 引用 ≥ 3 PHASE
 - ✅ 借鉴外部项目: 写 `confluence/memory/research/{external-source}-{topic}.md`
 
-**反讽 治根** (跟 KALLAX-GLOSSARY §1.1 联合): research 文档必含 ≥ 3 PHASE 引用, 否则不算 L4 (空 L4 = 反讽)
+**同类症状 从根源修复** (跟 KALLAX-GLOSSARY §1.1,配合): research 文档必含 ≥ 3 PHASE 引用, 否则不算 L4 (空 L4 = 同类症状)
 
 **Rule 引用**: Rule 5 (DRY) + Rule 6 (经验沉淀) + Rule 11 (Master 6 维) — [CLAUDE.md](../../CLAUDE.md)

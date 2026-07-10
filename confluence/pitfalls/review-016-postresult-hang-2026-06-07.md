@@ -1,10 +1,10 @@
 # REVIEW-016: Post-Result Hang Investigation
 
-**Ticket**: EPIC-016-Q  
-**Priority**: P1  
-**Created**: 2026-06-06  
-**Status**: Investigation Complete  
-**Performer**: performer-EPIC-016-Q  
+**Ticket**: EPIC-016-Q
+**Priority**: P1
+**Created**: 2026-06-06
+**Status**: Investigation Complete
+**Performer**: performer-EPIC-016-Q
 
 ---
 
@@ -14,22 +14,22 @@
 
 Claude Code 输出 result 后，会话完全停止响应用户输入。
 
-**案例 1**: `Crunched 1m 43s`  
-- 会话在显示 "Crunched 1m 43s" 后无响应  
-- 进程存活，CPU 使用率归零  
-- 无法通过 Ctrl+C 中断，只能强制关闭终端  
+**案例 1**: `Crunched 1m 43s`
+- 会话在显示 "Crunched 1m 43s" 后无响应
+- 进程存活，CPU 使用率归零
+- 无法通过 Ctrl+C 中断，只能强制关闭终端
 
-**案例 2**: `Churned 3m 13s` (5.5 分钟)  
-- 同样模式：result 输出后卡死  
-- 与案例 1 相同时间量级（分钟级）  
-- 复现频率：每 10-20 次会话约 1 次  
+**案例 2**: `Churned 3m 13s` (5.5 分钟)
+- 同样模式：result 输出后卡死
+- 与案例 1 相同时间量级（分钟级）
+- 复现频率：每 10-20 次会话约 1 次
 
 ### 1.2 影响范围
 
-- 阻塞新会话可用性  
-- 用户工作流完全停摆  
-- 无法通过正常手段恢复（只能强杀进程）  
-- 影响所有并发会话数（因为 Claude Code 实例被阻塞）  
+- 阻塞新会话可用性
+- 用户工作流完全停摆
+- 无法通过正常手段恢复（只能强杀进程）
+- 影响所有并发会话数（因为 Claude Code 实例被阻塞）
 
 ### 1.3 时间线
 

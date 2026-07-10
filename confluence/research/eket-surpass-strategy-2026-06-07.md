@@ -37,7 +37,7 @@
 - **Security 边界**: 聚焦系统风险 (path traversal/injection/auth/race/fd 泄漏). 合规 (SOC2/GDPR) 和法律 (许可证/合同) 用 `When NOT to Use` 节文档化, 走外部专家
 - **降级链 (F ticket)**: Redis Stream → SQLite expert_invocations → `.kallax/queue/expert_invocations.jsonl`. 写盘 by default, 队列兜底
 - **顺序**: A 先, BCDE 并行 (A 完成后), F 独立
-- **治理**: 全 ticket 走 A+B 2-Group review (跟 EPIC-016 一致)
+- **治理**: 全 ticket 走 A+B 2-Group review (配合 EPIC-016 一致)
 
 ---
 
@@ -355,7 +355,7 @@ F (独立, 跟 A 一起开始)
 | 3 | KALLAX 5 位 default (不改 7)? | ✅ 5 位 |
 | 4 | 三角角色替代 EKET tier (不做 3 层)? | ✅ 替代 |
 | 5 | Heartbeat 写盘 vs 异步队列? | 写盘 (简单 + 已有) |
-| 6 | 治理 ticket EPIC-021 走 A+B review? | ✅ 走 (跟 EPIC-016 一致) |
+| 6 | 治理 ticket EPIC-021 走 A+B review? | ✅ 走 (配合 EPIC-016 一致) |
 
 **默认 plan**: 批准 EPIC-021 Layer 1, 6 ticket 4.1h, master 派发 + A+B review。
 

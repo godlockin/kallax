@@ -1,7 +1,7 @@
-# PHASE-XXX Review — 经验升级闭环
+# PHASE-XXX Review — 经验升级完整完成
 
 > **何时触发**: 完成 3-5 个 EPIC, 或阶段目标达成, master 召集.
-> **流程**: Phase 1 Architect 全局扫 → Phase 2 5 专家并行 → Phase 3 Master 仲裁升级 → Phase 4 主公审批.
+> **流程**: Phase 1 Architect 全局扫 → Phase 2 5 专家并行 → Phase 3 Master 仲裁升级 → Phase 4 决策者审批.
 > **产出**: 本文件 + CLAUDE.md 修订 + (可选) confluence/architecture/ 新文档.
 > **路径**: `confluence/decisions/PHASE-XXX-REVIEW-YYYYMMDD.md`
 
@@ -9,7 +9,7 @@
 **Phase 范围**: EPIC-XXX 到 EPIC-YYY (X 个 EPIC)
 **Status**: REVIEW IN PROGRESS / APPROVED
 **Author**: master_xxx (仲裁)
-**Reviewers**: 5 专家 panel + 主公
+**Reviewers**: 5 专家 panel + 决策者
 
 ---
 
@@ -155,11 +155,11 @@
 
 ---
 
-## 4. Phase 4 — 主公审批 (升级项决策)
+## 4. Phase 4 — 决策者审批 (升级项决策)
 
-### 4.1 主公决策点
+### 4.1 决策者决策点
 
-| 编号 | 决策问题 | 主公答复 | 决策日期 |
+| 编号 | 决策问题 | 决策者答复 | 决策日期 |
 |---|---|---|---|
 | UP-1 | 是否升级 [规则名]? | YES/NO/修订 | YYYY-MM-DD |
 | UP-2 | 是否新增 [模板名]? | YES/NO/修订 | YYYY-MM-DD |
@@ -176,7 +176,7 @@
 
 ---
 
-## 5. 下 Phase 路线图 (主公决策)
+## 5. 下 Phase 路线图 (决策者决策)
 
 ### 5.1 下 Phase 候选 EPIC
 
@@ -213,13 +213,13 @@
 
 - ✅ 跨 EPIC 模式识别 (合并)
 - ✅ 漏洞补全 (查漏)
-- ✅ 主公审批 (升级有 gate)
+- ✅ 决策者审批 (升级有 gate)
 - ❌ [不足 1]: 描述, 改进建议
 - ❌ [不足 2]: 描述, 改进建议
 
 ---
 
-**Reviewer(s)**: 5 专家 panel + master 仲裁 + 主公审批
+**Reviewer(s)**: 5 专家 panel + master 仲裁 + 决策者审批
 **Last updated**: YYYY-MM-DD
 **Status**: ✅ APPROVED — 升级项已实施, 下 Phase 路线图已确认
 

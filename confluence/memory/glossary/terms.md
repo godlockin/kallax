@@ -20,7 +20,7 @@
 - 提交 PR
 - 处理 Review 反馈
 
-**当前名**: Performer (跨 release 留待 v2.0 命名 共识 跟 5 战略 联合)
+**当前名**: Performer (跨 release 留待 v2.0 命名 共识 跟 5 战略,配合)
 
 ### Ticket (票据)
 工作单元的规范化描述，存储在 `jira/tickets/` 目录。

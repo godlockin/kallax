@@ -1,6 +1,6 @@
 # Expert 质量 audit + 已知债 (2026-06-09)
 
-> **何时写**: 飞轮"运行"阶段完成 + 主公拍"专家数量够了, 质量 ensure 一下"
+> **何时写**: 飞轮"运行"阶段完成 + 决策者拍"专家数量够了, 质量 ensure 一下"
 > **来源**: Performer a526de235 跑 5 维度 audit, commit 0684f4a
 > **作者**: master
 > **Date**: 2026-06-09
@@ -19,7 +19,7 @@
 
 **Overall**: WARN — 飞轮"运行"阶段可继续, 但质量债显式留债
 
-## 2. 揭露的 3 真问题 (留债, 不重做 — 主公拍"质量 ensure", 不是"质量修复")
+## 2. 揭露的 3 真问题 (留债, 不重做 — 决策者拍"质量 ensure", 不是"质量修复")
 
 ### P0-1: Expert 数量不匹配 (实际 65, 估报 101)
 
@@ -31,35 +31,35 @@
 
 **根因**: 估算时把 worktree 副本当 main repo, 没在真 merge 时验证
 **防范**: Quality audit 跑 X/Y 实际计数, 不依赖"理论值"
-**修复**: 合并 worktree 副本 (留 follow-up, 主公拍)
+**修复**: 合并 worktree 副本 (留 follow-up, 决策者拍)
 
 ### P0-2: Generated expert 域错 (10/15)
 
-**问题**: DeepSeek L3 真跑生成了 10 expert (主公原话"用 deepseek"), 但 10 个里 10 个用了 product/ux/finance domain, 跟原本 4 个 generated (data + legal) 不一致.
+**问题**: DeepSeek L3 真跑生成了 10 expert (决策者原话"用 deepseek"), 但 10 个里 10 个用了 product/ux/finance domain, 跟原本 4 个 generated (data + legal) 不一致.
 
 **根因**:
 - L3 generation prompt "找 top-5 gap domain" → DeepSeek 选了 product/ux/finance (因为 INDEX 缺这些)
-- 但产品主公在 Sprint 2 设过 "7 default 够用, 扩 200+ 走 L3" — generated 应该是细分 (data/legal/finance/...) 不是 default 域 (product/ux)
+- 但产品决策者在 Sprint 2 设过 "7 default 够用, 扩 200+ 走 L3" — generated 应该是细分 (data/legal/finance/...) 不是 default 域 (product/ux)
 - 4 个 generated (data + legal) 是 mock fallback 写的, 跟 DeepSeek 选的域不一致
 
 **防范**: L3 generation prompt 加约束 "generated tier 必须不在 default 7 expert domain 范围"
-**修复**: Re-generate 10 expert with constraint (留 follow-up, 主公拍)
+**修复**: Re-generate 10 expert with constraint (留 follow-up, 决策者拍)
 
 ### P1-3: frontend/pm default 触发词不足 (15 < 20)
 
 **问题**: 5 default expert (architect/backend/frontend/ux/product/security) 触发词扩到 24-30 词, 但 frontend 跟 pm 留 15 词
 
 **根因**: EPIC-028-B Performer 扩 5 expert trigger 时漏 frontend + pm (只扩 5/7, 漏 2/7)
-**修复**: 补 frontend + pm 触发词到 20+ (留 follow-up, 主公拍)
+**修复**: 补 frontend + pm 触发词到 20+ (留 follow-up, 决策者拍)
 
-## 3. 不修的原因 (主公原话 "质量 ensure" ≠ "质量修复")
+## 3. 不修的原因 (决策者原话 "质量 ensure" ≠ "质量修复")
 
-主公原话"已有 expert 数量够了, 质量 ensure 一下" — **ensure 验证 + 报告**, 不是修复. 3 真问题都标 follow-up, 待下 EPIC 修.
+决策者原话"已有 expert 数量够了, 质量 ensure 一下" — **ensure 验证 + 报告**, 不是修复. 3 真问题都标 follow-up, 待下 EPIC 修.
 
-## 4. M8 follow-up 关闭 (主公原话 2026-06-09)
+## 4. M8 follow-up 关闭 (决策者原话 2026-06-09)
 
-- M8 P99 latency 当前 206ms < 主公阈值 250ms ✅
-- 主公明确"如果现在能保持 250ms 以内就不需要 jieba 预热"
+- M8 P99 latency 当前 206ms < 决策者阈值 250ms ✅
+- 决策者明确"如果现在能保持 250ms 以内就不需要 jieba 预热"
 - **EPIC-028 留的 jieba 预热 follow-up 标已关闭**
 - 写进 LESSONS (本文件), 后续 EPIC 不再安排
 
@@ -72,13 +72,13 @@
 
 ## 6. 飞轮"运行" → "迭代" 阶段
 
-主公原话"专家数量够了" — 飞轮 L3 generation **停止扩**, 转质量 + 迭代:
+决策者原话"专家数量够了" — 飞轮 L3 generation **停止扩**, 转质量 + 迭代:
 
 - L3 generation API 配好 (DeepSeek 跑通, 10 真跑) — 飞轮可重启当需新 expert 时
 - Quality audit 工具就位 (`scripts/expert-quality-audit.py`) — 后续可重跑
 - 5 维度 4 PASS, 1 WARN, 1 FAIL — 总评 WARN, 留 3 债
 
-## 7. 后续建议 (主公拍)
+## 7. 后续建议 (决策者拍)
 
 | 优先级 | 行动 | 估时 |
 |---|---|---|
@@ -86,7 +86,7 @@
 | P0 | Re-generate 10 expert with domain constraint | 1h, 派 Performer |
 | P1 | 补 frontend + pm 触发词 | 30min, 派 Performer |
 | P2 | 扩 M1 test case 30 → 50 | 1h, 派 Performer |
-| P2 | Phase 3 review (累积 6+ EPIC 闭环) | 1-2h, Master |
+| P2 | Phase 3 review (累积 6+ EPIC 完整完成) | 1-2h, Master |
 
 ## 8. 关键洞察 (留教训)
 
@@ -99,4 +99,4 @@
 
 **Author**: master
 **Last updated**: 2026-06-09
-**Status**: ⏸ WARN — 3 已知债, 待主公拍修复时机
+**Status**: ⏸ WARN — 3 已知债, 待决策者拍修复时机

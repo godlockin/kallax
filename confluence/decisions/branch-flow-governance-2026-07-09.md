@@ -1,12 +1,12 @@
 # KALLAX Branch Flow Governance (EPIC-074)
 
-> **起源**: 主公 2026-07-09 提问 "有没有严格遵守 feature/xx-xx → testing → main (UAT) → miao (stable/prod) 的 PR 流程?"
-> **Master 自查 (跟 v3.8.0 reviewer 同样诚实)**: ❌ v3.8.1-3.9.2 5 release 跳过 testing + main (直推 miao)
-> **主公拍板**: "以后用 + 上个 release 之后补 (推荐)"
+> **起源**: 项目负责人 2026-07-09 提问 "有没有严格遵守 feature/xx-xx → testing → main (UAT) → miao (stable/prod) 的 PR 流程?"
+> **Master 自查 (配合 v3.8.0 reviewer 同样诚实)**: ❌ v3.8.1-3.9.2 5 release 跳过 testing + main (直推 miao)
+> **项目负责人拍板**: "以后用 + 上个 release 之后补 (推荐)"
 
 ## 当前状态 (2026-07-09 自查)
 
-### 4-branch 流程 (主公期望)
+### 4-branch 流程 (项目负责人期望)
 
 ```
 feature/xx-xx  →  testing  →  main (UAT)  →  miao (stable/prod)
@@ -54,20 +54,20 @@ feature/xx-xx  →  testing  →  main (UAT)  →  miao (stable/prod)
    - 验证站: master review + 4 sub-roles (coder/reviewer/tester/docs)
    - 通过 → merge miao + tag v3.X.Y
 
-### 反讽 1:1 治根 (跟 EPIC-069-D 联合)
+### 配套 hook
 
-- 5-Level Verify L1 (git) 升级: 必须 4-PR 全程 raw test output 引用
+- 5-Level Verify L1 (git) 升级: 4-PR 全程 raw test output 引用
 - check-claim-evidence.sh 拦截 "X/Y PASS" 但无 PR link 引用
-- 0 跳过 testing/main (跟 v3.8.0 reviewer "miao → main 阻塞" 联合)
+- 禁止跳过 testing/main (v3.8.0 reviewer 阻塞点)
 
 ### 紧急 bypass 路径
 
-主公明确批准时:
+项目负责人明确批准时:
 - `git commit --no-verify` (跳过 pre-commit hook)
 - `--admin` flag 跳 testing/main (1 release 0 PR 追溯)
-- 0 长期绕过, 0 静默跳过 (跟 EPIC-069-D check-claim-evidence 1:1 联合)
+- 禁止长期绕过或静默跳过 (由 check-claim-evidence.sh 拦截)
 
-## Honest (未完全闭环, 待续)
+## Honest (未完全完整完成, 待续)
 
 - v3.8.1-3.9.2 5 release 的 testing/main PR 记录**已追溯**(branch 推到 remote), 但实际 PR review 流程**仍跳过**
 - 未来 v3.10.0+ 必须 4-PR 强制流程 (此 doc 升级为 CLAUDE.md Rule)
