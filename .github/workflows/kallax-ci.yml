@@ -1,0 +1,119 @@
+name: KALLAX CI
+
+on:
+  push:
+    branches: [miao, main, testing]
+  pull_request:
+    branches: [miao, main, testing]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  # 治 v3.8.0 lesson #4 (gh merge ≠ CI pass)
+  # 强制 cargo test --workspace, 0 errors 才允许 merge
+  rust-workspace:
+    name: cargo test --workspace
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo registry & target
+        uses: Swatinem/rust-cache@v2
+
+      - name: cargo test --workspace --release
+        # EPIC-103 必加 --workspace 字面, 跟 EPIC-102 hook 1:1 联合
+        # 跟 v3.8.0 lesson #2 (build OK ≠ test OK) 治根
+        run: |
+          cd rust
+          cargo test --workspace --release 2>&1 | tee /tmp/cargo-test-workspace.log
+          EXIT_CODE=${PIPESTATUS[0]}
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "❌ cargo test --workspace failed (exit $EXIT_CODE)"
+            exit $EXIT_CODE
+          fi
+          echo "✅ cargo test --workspace 0 errors"
+
+  # 治 v3.8.0 lesson #3 (数字假装单 lib 当 workspace)
+  # 强制 node vitest 跑 (之前可能跳过)
+  node-tests:
+    name: vitest run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install npm dependencies
+        working-directory: node
+        run: npm install --no-audit --prefer-offline
+
+      - name: vitest run (with KALLAX_HOOK_API_KEY)
+        # EPIC-069-B 加 env setup (治 hook-replay 8/19 fail)
+        working-directory: node
+        run: |
+          KALLAX_HOOK_API_KEY=test-kallax-hook-api-key-12345678 \
+            npx vitest run 2>&1 | tee /tmp/vitest-run.log
+          EXIT_CODE=${PIPESTATUS[0]}
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "❌ vitest run failed (exit $EXIT_CODE)"
+            exit $EXIT_CODE
+          fi
+          echo "✅ vitest run 0 errors"
+
+  # 治 v3.8.0 lesson #3 (CHANGELOG 数字无 scope)
+  # 强制 CHANGELOG.md "raw output" 行必须含 3-crate scope
+  changelog-scope-check:
+    name: CHANGELOG 3-crate scope check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify CHANGELOG entries have 3-crate scope
+        run: |
+          # 强制每个 release entry 含 core + engine + server 字面
+          # 跟 EPIC-101 量化对账表 1:1 联合
+          RECENT=$(head -50 CHANGELOG.md)
+          if ! echo "$RECENT" | grep -q "core.*passed" || \
+             ! echo "$RECENT" | grep -q "engine.*passed" || \
+             ! echo "$RECENT" | grep -q "server"; then
+            echo "❌ CHANGELOG 最近 entry 缺 3-crate scope (core + engine + server)"
+            echo "   治 v3.8.0 lesson #3 (数字假装单 lib 当 workspace)"
+            echo "   Fix: 加 'raw output: cargo test --workspace N passed (X core + Y engine + Z server)'"
+            exit 1
+          fi
+          echo "✅ CHANGELOG 含 3-crate scope"
+
+  # 治 v3.8.0 lesson #5 (write ≠ do retrospective)
+  # 强制 pre-commit hooks 跑通
+  hooks-check:
+    name: pre-commit hooks dry-run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify all check-* scripts pass
+        run: |
+          FAIL=0
+          for hook in scripts/verify/check-*.sh; do
+            if [[ -f "$hook" ]]; then
+              if ! bash "$hook" --help >/dev/null 2>&1; then
+                echo "❌ $hook failed"
+                FAIL=1
+              else
+                echo "✅ $hook OK"
+              fi
+            fi
+          done
+          if [ $FAIL -ne 0 ]; then
+            echo "❌ Some hooks broken"
+            exit 1
+          fi
