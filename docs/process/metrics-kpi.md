@@ -5,20 +5,20 @@
 > **Ticket**: EPIC-056-B
 > **Phase**: PHASE-009
 > **Author**: performer-EPIC-056-B
-> **Reviewers**: Conductor + 5 levels (L1-L5) + 主公 2026-06-16 拍板
-> **Status**: ✅ APPROVED (主公 2026-06-16 explicit 拍板, 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md line 21)
+> **Reviewers**: Conductor + 5 levels (L1-L5) + 决策者 2026-06-16 拍板
+> **Status**: ✅ APPROVED (决策者 2026-06-16 explicit 拍板, 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md line 21)
 
 ---
 
-## 1. 概述 (跟 PROCESS.md 联合)
+## 1. 概述 (跟 PROCESS.md,配合)
 
-本文件定义 KALLAX 流程效果度量的 **3 个 KPI**, 用于闭环 P3 痛点 (流程表演化). 
+本文件定义 KALLAX 流程效果度量的 **3 个 KPI**, 用于完整完成 P3 痛点 (流程表演化).
 
 **设计原则** (跟 "流程效果 > 流程表演" 战略一致):
 - **效果导向**: 3 KPI 度量实际产出, 不度量步骤数
 - **数据驱动**: 所有 KPI 来自实际 ticket.json 数据, 非自报
-- **可观测**: 跟 11 BE 累计 + 6 痛点 联合, 跨 EPIC 可对比
-- **闭环**: 偏离目标 → 告警 → 升级 → 拍板
+- **可观测**: 跟 11 BE 累计 + 6 痛点,配合, 跨 EPIC 可对比
+- **完整完成**: 偏离目标 → 告警 → 升级 → 拍板
 
 **跟 Rule 9 KPI X/Y 格式严格联合** (CLAUDE.md:216):
 - ✅ 1 位小数 (e.g. `66.7%` 不是 `~67%`)
@@ -27,7 +27,7 @@
 
 ---
 
-## 2. 3 KPI 定义 (跟 ticket AC 1-3 联合)
+## 2. 3 KPI 定义 (跟 ticket AC 1-3,配合)
 
 ### KPI-1: 派单成功率 (Performer Dispatch Success Rate)
 
@@ -39,10 +39,10 @@
 | **计算公式** | `dispatch_rate = done_count / total_count * 100` |
 | **数据源** | `jira/tickets/<EPIC>/<TICKET>/ticket.json` 中的 `status` 字段 |
 | **输出格式** | `<done>/<total> (<percentage>%)` 例: `10/15 (66.7%)` |
-| **当前值** | `10/15 (66.7%)` (跟 PROJECT-STATUS-2026-06-13.md line 43 一致: 12 subagent 派单 7 真 PASS = 58.3%, 累计 4 票 done 跟 11 BE 联合) |
-| **目标值** | `>= 19/20 (95.0%)` (跟 EPIC-053-D 派单仪表盘目标一致) |
+| **当前值** | `10/15 (66.7%)` (跟 PROJECT-STATUS-2026-06-13.md line 43 一致: 12 subagent 派单 7 真 PASS = 58.3%, 累计 4 票 done 跟 11 BE,配合) |
+| **目标值** | `>= 19/20 (95.0%)` (配合 EPIC-053-D 派单仪表盘目标一致) |
 | **告警阈值** | < 85.0% = CRITICAL, 85.0% ≤ x < 95.0% = WARN |
-| **跟 BE 关联** | BE-5 (假 PASS, 跟 12 KPI falsification 反复 同源), BE-9 (L4 verify 自检漏洞), BE-10 (review.sh 拒 FAIL bug) |
+| **跟 BE 关联** | BE-5 (形式通过实质失败, 跟 12 KPI falsification 反复 同源), BE-9 (L4 verify 自检漏洞), BE-10 (review.sh 拒 FAIL bug) |
 
 ### KPI-2: 平均周期 (Avg Cycle Time)
 
@@ -54,7 +54,7 @@
 | **计算公式** | `avg_cycle_hours = mean(completed_at - created_at)` (单位: 小时) |
 | **数据源** | ticket.json `created_at` + `completed_at` 字段 |
 | **输出格式** | `<hours>h` 例: `6.0h` |
-| **当前值** | `6.0h` (跟 EPIC-053-A 估时 6h 一致, 估时 = 实际跑时) |
+| **当前值** | `6.0h` (配合 EPIC-053-A 估时 6h 一致, 估时 = 实际跑时) |
 | **目标值** | `<= 8.0h` (留 33% buffer, 跟估时上限 6h × 1.33 一致) |
 | **告警阈值** | > 8.8h (1.1 × target) = CRITICAL, 8.0h < x ≤ 8.8h = WARN |
 | **跟 BE 关联** | BE-2 (EPIC-035-A stale), BE-3 (EPIC-034-B blocked_by), 痛点 1 (假完成) |
@@ -104,13 +104,13 @@
 | 越界率 | `CRITICAL` | `CRITICAL: violation-rate 3/15 (20.0%) > 5%` | 启动 Rule 15 file_scope 审计 |
 | 越界率 | `WARN` | `WARN: violation-rate 1/15 (6.7%) above target 0%` | 监控越界趋势 |
 
-**告警跟主公拍板联动** (跟 PROCESS.md:25-26 联合):
+**告警跟决策者拍板联动** (跟 PROCESS.md:25-26,配合):
 - CRITICAL 触发 → 写 `.kallax/audit/alert-YYYY-MM-DD.jsonl`
-- 连续 3 个 CRITICAL → 升级到主公拍板 (P0 战略红线)
+- 连续 3 个 CRITICAL → 升级到决策者拍板 (P0 战略红线)
 
 ---
 
-## 5. 度量方法 (跟 AC 3 联合)
+## 5. 度量方法 (跟 AC 3,配合)
 
 ### 5.1 数据采集
 
@@ -121,7 +121,7 @@ scripts/dashboard/process-metrics.sh dashboard --tickets-dir jira/tickets
 # 2. Node.js 核心 (本 ticket 实现)
 node --experimental-strip-types node/src/core/process-metrics.ts dashboard --tickets-dir jira/tickets
 
-# 3. CI 集成 (跟 EPIC-053-B kpi-evidence-chain 联动)
+# 3. CI 集成 (配合 EPIC-053-B kpi-evidence-chain 联动)
 process-metrics.sh check-targets --tickets-dir jira/tickets
 # exit 0 = all 3 KPIs at target
 # exit 1 = at least 1 KPI not at target
@@ -168,7 +168,7 @@ scripts/verify/check-test-case-isolation.sh \
 
 ---
 
-## 6. 跟 11 BE 累计 + 6 痛点 联合
+## 6. 跟 11 BE 累计 + 6 痛点,配合
 
 ### 6.1 11 BE 累计 (跟 PROJECT-STATUS-2026-06-13.md line 50-64 一致)
 
@@ -178,7 +178,7 @@ scripts/verify/check-test-case-isolation.sh \
 | BE-2 | EPIC-035-A stale | **KPI-2** 平均周期 (拉高均值) |
 | BE-3 | EPIC-034-B blocked_by | **KPI-2** 平均周期 (拉高均值) |
 | BE-4 | ticket 状态没更新 | **KPI-1** 派单成功率 (count=pending 误判) |
-| BE-5 | Performer-EPIC-036/037 假 PASS | **KPI-1** 派单成功率 (false done count) |
+| BE-5 | Performer-EPIC-036/037 形式通过实质失败 | **KPI-1** 派单成功率 (false done count) |
 | BE-6 | Performer-EPIC-039-A 越界 | **KPI-3** 越界率 (count=1) |
 | BE-7 | Performer-EPIC-041-B 3 安全 issues | (跟 KPI 3 正交, 安全 KPI 后续 ticket) |
 | BE-8 | Master 协调层脱节 | **KPI-1** 派单成功率 (status 漂移) |
@@ -186,7 +186,7 @@ scripts/verify/check-test-case-isolation.sh \
 | BE-10 | review.sh 拒 FAIL bug | (跟 KPI 1 正交, 工具 KPI 后续 ticket) |
 | BE-11 | 主 checkout 缺 3 文件 | **KPI-3** 越界率 (count=1) |
 
-### 6.2 6 痛点 (跟痛点 1-6 联合)
+### 6.2 6 痛点 (跟痛点 1-6,配合)
 
 | 痛点 | 描述 | 本 KPI 关联 |
 |---|---|---|
@@ -199,7 +199,7 @@ scripts/verify/check-test-case-isolation.sh \
 
 ---
 
-## 7. 跟 EPIC-053-D 派单仪表盘 联动
+## 7. 配合 EPIC-053-D 派单仪表盘 联动
 
 **EPIC-053-D**: 派单仪表盘 (dispatch-dashboard.ts/sh/web/, 58.3% → 95%)
 - **作用域**: 派单成功率 (跟 KPI-1 重叠但范围更窄)
@@ -212,27 +212,27 @@ scripts/verify/check-test-case-isolation.sh \
 - **输出**: CLI 仪表盘 (text/markdown, 不进 web)
 
 **联动方式**:
-- 派单成功率 数据共享 (KPI-1 跟 EPIC-053-D 派单成功率 计算公式一致)
+- 派单成功率 数据共享 (KPI-1 配合 EPIC-053-D 派单成功率 计算公式一致)
 - 本 ticket 不抢 EPIC-053-D web dashboard (明确 file_scope excludes `web/src/dashboard/`)
 - 后续 PHASE-009 阶段, Master 串场对齐 2 个仪表盘数据源
 
 ---
 
-## 8. 闭环 P3 流程表演化 (跟 AC 4 联合)
+## 8. 完整完成 P3 流程表演化 (跟 AC 4,配合)
 
 **P3 痛点**: 15 步流程表演化 — 流程走过场, 没效果
 
-**闭环方式** (本 ticket):
+**完整完成方式** (本 ticket):
 1. **度量** (本 ticket): 3 KPI 计算 + 仪表盘
 2. **告警** (本 ticket): CRITICAL → 写 alert JSON
 3. **诊断** (后续): 5 扩展组 review (security/process-engineering/auditor/compliance/decision-gate)
 4. **修复** (后续): 启动 BE 修复 ticket (e.g. BE-7 修复模式: umask 077 + install -d -m 700)
-5. **升级** (跟主公拍板联动): 连续 3 KPI CRITICAL → 主公拍板 (P0 战略红线)
+5. **升级** (跟决策者拍板联动): 连续 3 KPI CRITICAL → 决策者拍板 (P0 战略红线)
 
-**闭环证据**:
+**完整完成证据**:
 - ✅ 本 ticket 度量 (3 KPI 实现)
-- ✅ 跟 11 BE 关联 (BE-1/2/3/4/5/6/8/9/11 跟 KPI 1/2/3 闭环)
-- ⏳ 告警 → 诊断 → 修复 闭环待后续 ticket 落地 (跟 EPIC-054-D Rule 合并联动)
+- ✅ 跟 11 BE 关联 (BE-1/2/3/4/5/6/8/9/11 跟 KPI 1/2/3 完整完成)
+- ⏳ 告警 → 诊断 → 修复 完整完成待后续 ticket 落地 (配合 EPIC-054-D Rule 合并联动)
 
 ---
 
@@ -243,23 +243,23 @@ scripts/verify/check-test-case-isolation.sh \
 | AC1: process-metrics.ts 实现 3 KPI (Rule 9 X/Y) | ✅ | `node/src/core/process-metrics.ts` 全部 X/Y 格式 |
 | AC2: process-metrics.sh CLI 仪表盘 (3 KPI + 历史趋势) | ✅ | `scripts/dashboard/process-metrics.sh` 6 subcommand |
 | AC3: metrics-kpi.md 3 KPI 定义 + 目标值 + 度量方法 + BE 关联 | ✅ | 本文件 |
-| AC4: P3 治根 — 15 步流程表演化闭环 | ✅ | Section 8 闭环方案 |
+| AC4: P3 从根源修复 — 15 步流程表演化完整完成 | ✅ | Section 8 完整完成方案 |
 | AC5: 6/6 PASS test output | ✅ | `tests/integration/process-metrics-test.sh` |
 | AC6: Rule 9 X/Y 格式 — 6/6 PASS = 100.0% | ✅ | 测试输出 `6/6 PASS (100.0%)` |
-| AC7: 治理升级已拍板 (主公 2026-06-16 APPROVED) | ✅ | `confluence/decisions/5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md` line 21 |
+| AC7: 治理升级已拍板 (决策者 2026-06-16 APPROVED) | ✅ | `confluence/decisions/5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md` line 21 |
 
 ---
 
-## 10. 后续动作 (跟 PHASE-009 联合)
+## 10. 后续动作 (跟 PHASE-009,配合)
 
 | 动作 | 优先级 | 联动 ticket |
 |---|---|---|
-| Web 仪表盘 (图表 + 历史趋势) | P1 | 跟 EPIC-053-D 联动 (后续 ticket) |
+| Web 仪表盘 (图表 + 历史趋势) | P1 | 配合 EPIC-053-D 联动 (后续 ticket) |
 | 实时告警 webhook (CRITICAL → Slack) | P2 | 跟 BE-7 修复模式联动 |
 | 跨 PHASE-009 KPI 对比 (跟 PHASE-007 baseline) | P2 | 跟 PHASE-REVIEW.md 联动 |
-| 3 KPI 跟 BE 关联自动化 (cron + audit-log-sink) | P2 | 跟 EPIC-054-D Rule 合并 联动 |
-| 升级 Rule 33 (Process KPI 度量强制) | P3 | 跟 EPIC-055-B 拍板分级 联动 (P0 必拍) |
+| 3 KPI 跟 BE 关联自动化 (cron + audit-log-sink) | P2 | 配合 EPIC-054-D Rule 合并 联动 |
+| 升级 Rule 33 (Process KPI 度量强制) | P3 | 配合 EPIC-055-B 拍板分级 联动 (P0 必拍) |
 
 ---
 
-**跟主公 2026-06-16 explicit 拍板 联合, 跟 PROCESS.md:25-26 "Master 不能自己升级红线" 联合, 跟 Rule 9 X/Y 格式 联合, 跟 11 BE 累计 联合, 跟 6 痛点 联合, 跟 EPIC-053-D 派单仪表盘 联动 (不抢 web), 跟 PHASE-009 PHASE-009 闭环**
+**跟决策者 2026-06-16 explicit 拍板,配合, 跟 PROCESS.md:25-26 "Master 不能自己升级红线",配合, 跟 Rule 9 X/Y 格式,配合, 跟 11 BE 累计,配合, 跟 6 痛点,配合, 配合 EPIC-053-D 派单仪表盘 联动 (不抢 web), 跟 PHASE-009 PHASE-009 完整完成**

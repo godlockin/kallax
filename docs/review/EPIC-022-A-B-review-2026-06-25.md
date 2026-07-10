@@ -3,7 +3,7 @@
 > **Date**: 2026-06-25
 > **Source data**: `confluence/decisions/_archive/permission-model-expert-review-2026-06-07.md` (5-expert baseline, 2026-06-07) + `tests/integration/rbac-integration-test.sh` (85/85 PASS, 2026-06-25) + `tests/integration/role-matrix.json` (oracle) + `EPIC-022-LESSONS-LEARNED.md`
 > **Format**: Each expert writes A (Forward case) + B (Attack case). Master arbitrates by weighing A vs B per expert + cross-expert convergence.
-> **Strategic alignment**: "反讽" (治根 反复) + "诚实修正" (0 隐藏 governance gap) + "翻篇&精进" (0 增 Rule, 0 简单 记录)
+> **Strategic alignment**: "同类症状" (从根源修复 反复) + "诚实修正评估" (0 隐藏 governance gap) + "翻篇&精进" (0 增 Rule, 0 简单 记录)
 > **Scope**: A+B review of EPIC-022 v1 landing readiness, NOT a re-derivation of the 2026-06-07 baseline (that report is the input).
 
 ---
@@ -20,7 +20,7 @@
 | DevOps | NO | O 10 issue 阻塞 W4 hard 切换, 测试时间 = 0 |
 | Product | PARTIAL | 6 role 过多, 18d 应缩到 12-14d, F5 移 Phase 0, F1 升 P0 |
 
-**Baseline consensus**: 4/5 NO + 1/5 PARTIAL → 12 P0 fixes → 主公拍板全范围 18d, 先 P0 fix 再批 v1.
+**Baseline consensus**: 4/5 NO + 1/5 PARTIAL → 12 P0 fixes → 决策者拍板全范围 18d, 先 P0 fix 再批 v1.
 
 ### 0.2 v1 reality (2026-06-25)
 
@@ -44,7 +44,7 @@ Given the v1 reality above, **should EPIC-022 v1 ship to production** (Hard mode
 ### 1.A Forward (case for shipping)
 
 - **ReBAC deferred to v2 = correct call**: RBAC + `ticket.json.file_scope` is enough for v1. ReBAC would have introduced realpath timing risk (Backend NO #5) without changing the M1 KPI (zero miao.write by conductor).
-- **Hard→Soft rollback SOP exists**: `confluence/runbooks/permission-p0-rollback.md` is step-by-step (commit 7347ae6 BE-23 era + 联合 EPIC-026). Architect baseline concern R4 ("无 hard→soft rollback 操作手册") is resolved.
+- **Hard→Soft rollback SOP exists**: `confluence/runbooks/permission-p0-rollback.md` is step-by-step (commit 7347ae6 BE-23 era +,配合 EPIC-026). Architect baseline concern R4 ("无 hard→soft rollback 操作手册") is resolved.
 - **FIFO non-blocking + watchdog**: `check.sh` uses `flock -n` on `${AUDIT_DB}.log.lock` with macOS fallback (Issue 1 mirror). Architect baseline R3 ("FIFO 自身无 watchdog") is partially mitigated — read-only actions get fallback path, state-changing fail-closed.
 - **Cache split to lib/authz/cache.sh**: not done (P1 baseline concern). Acceptable for v1 because TTL is in audit log only, no hot-path cache.
 - **18d → 22d buffer**: actual = 18d. 22d estimate was conservative; v1 hit the optimistic timeline because we shrunk scope (6 role → 5 role, super-admin/emergency-responder deferred).
@@ -215,7 +215,7 @@ Given the v1 reality above, **should EPIC-022 v1 ship to production** (Hard mode
 
 ---
 
-## 7. Master arbitration template (跟 2026-06-07 baseline 联合)
+## 7. Master arbitration template (跟 2026-06-07 baseline,配合)
 
 ### 7.1 Decision matrix
 
@@ -256,7 +256,7 @@ Given the v1 reality above, **should EPIC-022 v1 ship to production** (Hard mode
 
 ---
 
-## 8. Methodological notes (跟"翻篇&精进" 战略 联合 0 增 Rule)
+## 8. Methodological notes (跟"翻篇&精进" 战略,0 增 Rule)
 
 ### 8.1 What was reused
 
@@ -265,14 +265,14 @@ Given the v1 reality above, **should EPIC-022 v1 ship to production** (Hard mode
 - A/B adversarial review pattern from `/kallax-panel` skill
 - role-matrix.json as oracle (avoid aspirational spec)
 
-### 8.2 What was added (跟 baseline 联合)
+### 8.2 What was added (跟 baseline,配合)
 
 - A+B per expert (not just score) — 0 简单 记录
-- v1 reality anchored to integration test PASS/FAIL counts (跟 EPIC-059-D Fact-Forcing 联合)
-- v2 scope with explicit item count + estimate (跟 Product 范围决策 联合)
+- v1 reality anchored to integration test PASS/FAIL counts (配合 EPIC-059-D Fact-Forcing,配合)
+- v2 scope with explicit item count + estimate (跟 Product 范围决策,配合)
 - "concrete ask for v2" per expert (actionable, not aspirational)
 
-### 8.3 What was NOT added (跟"翻篇&精进" 战略 联合)
+### 8.3 What was NOT added (跟"翻篇&精进" 战略,配合)
 
 - No new Rule (0 增 Rule)
 - No new command (0 增 命令)

@@ -2,7 +2,7 @@
 
 > **目的**: 整合 4 主题 lessons (three-modes / security-hardening / token-plan-cap / performer-kpi-falsification), 跨 EPIC 经验单一入口
 > **日期**: 2026-06-11
-> **来源**: PHASE-005 升级 3 (主公 2026-06-11 拍"补落地")
+> **来源**: PHASE-005 升级 3 (决策者 2026-06-11 拍"补落地")
 > **作者**: master (Phase 5 review)
 > **状态**: ACTIVE (综合主题, 单一入口)
 
@@ -141,11 +141,11 @@
 
 **触发条件**: Token Plan Max 5h cap reached, 派不出 Performer
 
-**主公决策**: 等 token 恢复 + 重试派单
+**决策者决策**: 等 token 恢复 + 重试派单
 
 **Rule 11 v2 极端情况 #1**:
 ```markdown
-1. **Token Plan 限撞墙**: Token Plan Max 5h cap 9917k/9917k reached, 派不出 Performer, 主公拍"接口好了"或"你来干"
+1. **Token Plan 限撞墙**: Token Plan Max 5h cap 9917k/9917k reached, 派不出 Performer, 决策者拍"接口好了"或"你来干"
 ```
 
 ### 4.3 防范措施
@@ -166,12 +166,12 @@
 
 **3 模式借鉴**:
 - ai-auto: AI 决策所有事, 仅 block/danger 停下问
-- ai-copilot: AI 决策"简单", 跟主公协商"复杂"
-- manual: AI 提案 + 执行, 主公确认每阶段
+- ai-copilot: AI 决策"简单", 跟决策者协商"复杂"
+- manual: AI 提案 + 执行, 决策者确认每阶段
 
-### 5.2 EPIC-031 主公硬决策
+### 5.2 EPIC-031 决策者硬决策
 
-**主公 2026-06-11 拍板**: 60% AI + 40% 人工 (派发权让渡硬决策)
+**决策者 2026-06-11 拍板**: 60% AI + 40% 人工 (派发权让渡硬决策)
 
 **TrustScore 算法骨架**:
 1. Layer 1: "any" / 空 → TrustScore 最高
@@ -332,12 +332,12 @@ Performer report: "DONE, PASS"
 | Rule 9 9c | scope creep FAIL | EPIC-028 | 2026-06-08 |
 | Rule 10 | Anti-Fab 强制 | EPIC-028 | 2026-06-08 |
 | Rule 9 9d | Commit amend 验证 | EPIC-0313 amend | 2026-06-11 |
-| Rule 11 v2 | Master 写代码禁令 | 主公 2026-06-09 | 2026-06-09 |
+| Rule 11 v2 | Master 写代码禁令 | 决策者 2026-06-09 | 2026-06-09 |
 | Rule 9 9e | Performer 工具调用自验证 | PHASE-005 upgrade3 | 2026-06-11 |
 | Rule 11 v2.1 | Master 强验证 checklist | PHASE-005 upgrade 3 | 2026-06-11 |
 
 ---
 
-**维护者**: master (主公拍板 2026-06-11)
+**维护者**: master (决策者拍板 2026-06-11)
 **最后更新**: 2026-06-11
 **状态**: ACTIVE — 单一入口, 综合 4 主题

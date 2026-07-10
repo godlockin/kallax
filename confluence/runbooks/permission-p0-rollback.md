@@ -71,7 +71,7 @@ git show --stat "$FIX_SHA" | grep -E "^\s+\S+\s+\|\s+[0-9]+"
 # 4. 执行 git revert (默认 --no-edit, 走 §3 验证)
 git revert --no-edit "$FIX_SHA"
 
-# 5. Push 到 feature branch (跟 §6 BE-23 联合 0 强制 push)
+# 5. Push 到 feature branch (跟 §6 BE-23,0 强制 push)
 git push origin "feature/rollback-$(echo $FIX_SHA | cut -c1-7)"
 
 # 6. 走 §3 五步验证
@@ -81,11 +81,11 @@ git push origin "feature/rollback-$(echo $FIX_SHA | cut -c1-7)"
 
 | 约束 | 原因 |
 |------|------|
-| 用 `git revert` 不用 `git reset --hard` | 保留历史审计 (BE-22 治根 0 隐藏) |
-| 走 `--no-edit` 默认消息 | 避免 commit message 漂移 (跟 BE-25 check-scope-creep 联合) |
+| 用 `git revert` 不用 `git reset --hard` | 保留历史审计 (BE-22 从根源修复 0 隐藏) |
+| 走 `--no-edit` 默认消息 | 避免 commit message 漂移 (跟 BE-25 check-scope-creep,配合) |
 | 单 commit revert 一次 | 12 fixes 不混 batch (定位责任清晰) |
-| 必须在 feature branch 上 revert | main 分支只能加不能减 (跟 SOP-cleanup.md §3 联合 0 NEW) |
-| push 必须 SSH | 跟 eket MASTER-RULES §11-2 联合 (KALLAX 派遣 Checklist 11 项 #2) |
+| 必须在 feature branch 上 revert | main 分支只能加不能减 (跟 SOP-cleanup.md §3,0 NEW) |
+| push 必须 SSH | 跟 eket MASTER-RULES §11-2,配合 (KALLAX 派遣 Checklist 11 项 #2) |
 
 ## 3. 验证回滚成功的检查清单 (5 步)
 
@@ -112,11 +112,11 @@ jq -e '.heartbeat.last_beat' .kallax/instances/<test-instance>/state.json
 
 # Step 4: fd fail-closed 边界 (人为制造 pipe stdin)
 bash -c "echo '' | bash .kallax/hooks/session_start.sh <test-instance-2>"
-# 期望: exit 1 + 明确错误 "fd 0/1/2 not tty" (B2 治根后行为)
+# 期望: exit 1 + 明确错误 "fd 0/1/2 not tty" (B2 从根源修复后行为)
 # 注: B2 revert 后, 此处应 exit 0 + hang → 期望 fail → 验证 B2 确实在位
 
-# Step 5: pre-commit hook governance 验证 (BE-23 + BE-25 + BE-26 联合)
-bash -n .kallax/hooks/session_start.sh  # 语法 (B5 治根项)
+# Step 5: pre-commit hook governance 验证 (BE-23 + BE-25 + BE-26,配合)
+bash -n .kallax/hooks/session_start.sh  # 语法 (B5 从根源修复项)
 git status --porcelain | grep -E "^\?\? scripts/test-p0-integration.sh" || echo "test script tracked"
 # 期望: 语法 0 错 + test script tracked
 ```
@@ -129,7 +129,7 @@ git status --porcelain | grep -E "^\?\? scripts/test-p0-integration.sh" || echo 
 | Step 2 测试 fail | P0 fix 间有耦合 (一个 revert 影响另一个) | 进 §4 紧急全量回滚 |
 | Step 3 daemon 不跳 | A5 (atomic rename) 失效 → state.json 损坏 | 立刻 §4 |
 | Step 4 fd 不 fail-closed | B2 失效 → 黑洞风险复现 | **立刻 §4** (生产 P0 故障) |
-| Step 5 hook 异常 | BE-25 / BE-26 联合失效 (跟 EPIC-026-C 独立) | 单独处理 hook |
+| Step 5 hook 异常 | BE-25 / BE-26,配合失效 (配合 EPIC-026-C 独立) | 单独处理 hook |
 
 ## 4. 紧急全量回滚脚本 (回到 12 fixes 之前)
 
@@ -227,16 +227,16 @@ jq -e '.status' .kallax/instances/smoke-test-emergency/state.json
 echo "EMERGENCY ROLLBACK COMPLETED. Notify master. See .kallax/logs/emergency_rollback.jsonl"
 ```
 
-## 5. 联合模式 (0 NEW)
+## 5.,配合模式 (0 NEW)
 
-| 联合项 | 来源 | 复用方式 |
+|,配合项 | 来源 | 复用方式 |
 |--------|------|----------|
 | EPIC-027-B rollback SOP 模式 | `docs/SOP-cleanup.md` §3 | 复用 "git revert + 5 步验证" 骨架 (archive-not-delete 哲学) |
 | `confluence/runbooks/orphan-heartbeat-cleanup.md` | EPIC-016-O | 复用 3 道防线叙事 (P0 fix 部署 + 集成测试 + 审计) |
-| BE-22 治根 | commit `30c8f23` (EPIC-024-A) | staged-not-committed 模式 0 隐藏 (本 SOP 要求 revert 必须 commit) |
-| BE-23 治根 | commit `7347ae6` (pre-commit branch-aware) | push 必须 feature branch (跟派遣 Checklist 11 项 #2 SSH 联合) |
-| BE-25 暴露 | `check-scope-creep` 0 TICKET_ID | revert commit message 模板 0 漂移 跟 BE-25 联合 |
-| BE-26 治根 | `check-scope-creep` staged 检测 | revert 后 git status 干净 0 NEW staged (跟 §3 Step 5 联合) |
+| BE-22 从根源修复 | commit `30c8f23` (EPIC-024-A) | staged-not-committed 模式 0 隐藏 (本 SOP 要求 revert 必须 commit) |
+| BE-23 从根源修复 | commit `7347ae6` (pre-commit branch-aware) | push 必须 feature branch (跟派遣 Checklist 11 项 #2 SSH,配合) |
+| BE-25 暴露 | `check-scope-creep` 0 TICKET_ID | revert commit message 模板 0 漂移 跟 BE-25,配合 |
+| BE-26 从根源修复 | `check-scope-creep` staged 检测 | revert 后 git status 干净 0 NEW staged (跟 §3 Step 5,配合) |
 | `scripts/test-p0-integration.sh` | 本 ticket | §3 Step 2 + §4 Step 1 复用 — 12 fix 集成测试 |
 | Emergency rollback audit (`.kallax/logs/emergency_rollback.jsonl`) | EPIC-027-B `.kallax/logs/pre_clean.jsonl` | JSONL append-only 模式 0 NEW |
 
@@ -299,10 +299,10 @@ ls .kallax/logs/emergency-rollback-*/
 - [x] AC2: 每个 fix 的回滚命令 (git revert) 模板 + 关键约束
 - [x] AC3: 验证回滚成功的检查清单 (5 步)
 - [x] AC4: 紧急全量回滚脚本 (`scripts/emergency-rollback-p0.sh` §4.2) — 回到 12 fixes 之前
-- [x] AC5: 跟 EPIC-026-A + EPIC-026-B 联合 (12 fixes 主题正确)
-- [x] AC6: 跟 EPIC-027-B 模式联合 0 NEW (5 步验证 + JSONL 审计复用)
-- [x] AC7: 跟 BE-22 / BE-23 / BE-25 / BE-26 联合 (pre-commit hook governance)
-- [x] AC8: 跟"翻篇&精进" 战略 联合 0 简单 记录 (canonical source + 单一 SHA 表 + 永远反映当前状态)
+- [x] AC5: 配合 EPIC-026-A + EPIC-026-B,配合 (12 fixes 主题正确)
+- [x] AC6: 配合 EPIC-027-B 模式联合 0 NEW (5 步验证 + JSONL 审计复用)
+- [x] AC7: 跟 BE-22 / BE-23 / BE-25 / BE-26,配合 (pre-commit hook governance)
+- [x] AC8: 跟"翻篇&精进" 战略,0 简单 记录 (canonical source + 单一 SHA 表 + 永远反映当前状态)
 
 ## 9. 文件清单
 
@@ -310,9 +310,9 @@ ls .kallax/logs/emergency-rollback-*/
 |------|------|------|------|
 | Rollback SOP | `confluence/runbooks/permission-p0-rollback.md` (本文) | doc | created |
 | Integration test | `scripts/test-p0-integration.sh` | script | created (chmod +x) |
-| Emergency script | `scripts/emergency-rollback-p0.sh` (引用) | script | referenced (跟 EPIC-026-A/B Performer 联合, 落地时由其提供) |
+| Emergency script | `scripts/emergency-rollback-p0.sh` (引用) | script | referenced (配合 EPIC-026-A/B Performer,配合, 落地时由其提供) |
 
 ---
 
 > **变更日志**
-> - 2026-06-25: v1.0 落地（EPIC-026-C performer-EPIC-026-C, 1 ticket 1 subagent 串行, 跟 BE-22 + BE-23 + BE-25 + BE-26 联合 0 简单 记录）
+> - 2026-06-25: v1.0 落地（EPIC-026-C performer-EPIC-026-C, 1 ticket 1 subagent 串行, 跟 BE-22 + BE-23 + BE-25 + BE-26,0 简单 记录）

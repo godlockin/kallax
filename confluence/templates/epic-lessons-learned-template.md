@@ -100,7 +100,7 @@
 
 ## 7. 跟其他 EPIC 的关联
 
-- [跟 EPIC-YYY 的依赖 / 阻塞 / 互补关系]
+- [配合 EPIC-YYY 的依赖 / 阻塞 / 互补关系]
 - [复用 / 借鉴 / 跟冲突的内容]
 
 ## 8. 下一步建议
@@ -113,4 +113,4 @@
 
 **Reviewer(s)**: [名字列表]
 **Last updated**: YYYY-MM-DD
-**Status**: ✅ COMPLETE — 6 节全填, A+B review 整合, 跟 EPIC-XXX 实施 commit 同一 PR 提交
+**Status**: ✅ COMPLETE — 6 节全填, A+B review 整合, 配合 EPIC-XXX 实施 commit 同一 PR 提交

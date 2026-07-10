@@ -191,15 +191,15 @@ du -sh .kallax/instances/.archive/
 find .kallax/instances/.archive/ -maxdepth 2 -type d -size +100M
 ```
 
-## 6. 联合模式（0 NEW）
+## 6.,配合模式（0 NEW）
 
-| 联合项 | 来源 | 复用方式 |
+|,配合项 | 来源 | 复用方式 |
 |--------|------|----------|
 | EPIC-027-A (Phase 0.1 tracking) | jira/tickets/EPIC-027-A | ticket 结构 + status metadata 已落地，本 SOP 是实施层 |
 | 48 worktree cleanup 模式 | v2.4.0 P1-2 (commit fd9d0d9) | archive-not-delete 哲学复用（保留 .archive/ 30d 可回滚） |
 | cleanup-zombies.sh 既有逻辑 | scripts/cleanup-zombies.sh | 复用 .archive/YYYYMMDD_HHMMSS_<ID>/ 命名约定 + mv + rmdir pattern |
 | Orphan heartbeat cleanup runbook | confluence/runbooks/orphan-heartbeat-cleanup.md | 复用 3 道防线叙事（session_start + cleanup.sh + audit） |
-| BE-23 治根 (commit 7347ae6) | pre-commit hook branch-aware | 本 SOP 不涉及 commit，无需 hook 联动 |
+| BE-23 从根源修复 (commit 7347ae6) | pre-commit hook branch-aware | 本 SOP 不涉及 commit，无需 hook 联动 |
 | BE-25 / BE-26 留待 | check-scope-creep TICKET_ID + staged 检测 | 本 SOP 不修改 hook，无需联动 |
 
 ## 7. 测试
@@ -256,8 +256,8 @@ bash scripts/kallax-cleanup.sh --include-status ZOMBIE
 - [x] AC1: `scripts/kallax-cleanup.sh` supports pre-clean for 21 CLOSING instances
 - [x] AC2: Phase 0.3 identifies CLOSING instances older than 30 days
 - [x] AC3: Phase 0.4 rollback SOP documented in `docs/SOP-cleanup.md` (this file)
-- [x] AC4: 跟 EPIC-027-A 跟踪 (Phase 0.1) 联合（ticket 结构 + estimated_hours metadata 已落地）
-- [x] AC5: 跟 48 worktree cleanup 模式 联合 0 NEW（archive-not-delete 哲学复用）
+- [x] AC4: 配合 EPIC-027-A 跟踪 (Phase 0.1),配合（ticket 结构 + estimated_hours metadata 已落地）
+- [x] AC5: 跟 48 worktree cleanup 模式,0 NEW（archive-not-delete 哲学复用）
 
 ---
 

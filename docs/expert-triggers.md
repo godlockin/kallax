@@ -1,6 +1,6 @@
 # TRIGGERS — Expert Selection Decision Tree
 
-> **来源**: EXPERT-EXTENSION-SCHEME §2.3  
+> **来源**: EXPERT-EXTENSION-SCHEME §2.3
 > **版本**: 1.0.0
 > **日期**: 2026-06-07
 

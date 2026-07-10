@@ -4,7 +4,7 @@
 >
 > Source: `node/src/hooks/http-hook-server.ts` + `node/src/hooks/hook-events-store.ts`
 >
-> 跟 `tests/integration/real-claude-code-e2e.sh` 1:1 验证 (4-6 raw stdout PASS)
+> 跟 `tests/integration/real-claude-code-e2e.sh` 对照验证 (4-6 raw stdout PASS)
 
 ---
 
@@ -254,7 +254,7 @@ curl -sS "http://127.0.0.1:8787/hooks/audit?sessionId=alice&limit=10"
 - `fromTimestamp` / `toTimestamp` — 按时间范围 (ms epoch)
 - `limit` — 倒数 N 条
 
-**Hash-chain 独立验证** (跟 `scripts/audit/audit-verify.sh` 联合):
+**Hash-chain 独立验证** (跟 `scripts/audit/audit-verify.sh`,配合):
 ```bash
 # 1. 拉所有 events
 curl -sS "http://127.0.0.1:8787/hooks/audit" > events.json
@@ -295,7 +295,7 @@ node scripts/audit/verify-hook-chain.mjs < events.json
 
 ---
 
-## 9. 跟 6-weapons-e2e-test.sh 联合验证
+## 9. 跟 6-weapons-e2e-test.sh,配合验证
 
 `tests/integration/6-weapons-e2e-test.sh:372-412` 已经 验证:
 - L1 存在性: `http-hook-server.ts` 存在

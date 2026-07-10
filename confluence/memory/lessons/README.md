@@ -1,9 +1,9 @@
 # KALLAX Lessons Learned — 总结 + 索引
 
-> **Layer**: **L2** 项目知识 (Project Knowledge) — 跟 [LAYERS.md](../LAYERS.md) 联合
+> **Layer**: **L2** 项目知识 (Project Knowledge) — 跟 [LAYERS.md](../LAYERS.md),配合
 > **升级路径**: L1 (confluence/decisions/) → **L2** (本目录, lessons/) → L3 (confluence/memory/patterns/) 跨 release 累计
 > **目的**: 沉淀 KALLAX 多 Agent 框架跨 EPIC 教训, 统一文件名格式 + 便于搜索
-> **作者**: master (PHASE-002 整理, 主公 2026-06-09 拍板)
+> **作者**: master (PHASE-002 整理, 决策者 2026-06-09 拍板)
 > **最近更新**: 2026-06-11 (PHASE-005 升级 3+4) — 2026-06-18 EPIC-059-H 加 L2 分层标记
 
 ---
@@ -13,7 +13,7 @@
 | 类型 | 格式 | 例 | 描述 |
 |---|---|---|---|
 | **Epic 范围** | `epic-{ID}-{date}.md` | `epic-024-2026-06-08.md` | 单 EPIC LESSONS-LEARNED |
-| **Phase 范围** | `phase-{NNN}-{type}-{date}.md` | `phase-002-review-2026-06-08.md` | Phase 闭环 review |
+| **Phase 范围** | `phase-{NNN}-{type}-{date}.md` | `phase-002-review-2026-06-08.md` | Phase 完整完成 review |
 | **主题 lessons** | `{kebab-case-name}.md` | `tokenization.md` | 跨 EPIC 主题经验 |
 | **Template** | (在 `confluence/templates/`) | `epic-lessons-learned-template.md` | LESSONS-LEARNED 模板 |
 
@@ -70,7 +70,7 @@
 - **P1 [CRITICAL]**: KPI 估数 = falsification (must X/Y 1 位小数)
 - **P2 [CRITICAL]**: A+B self-review 不可信 (3 次 Performer 报 PASS 实际 FAIL)
 - **P3 [CRITICAL]**: Scope creep 必拆 PR (file_scope 外 = FAIL)
-- **P4 [HIGH]**: Master 写代码禁令 (主公 2026-06-09 硬红线, 极端情况例外)
+- **P4 [HIGH]**: Master 写代码禁令 (决策者 2026-06-09 硬红线, 极端情况例外)
 - **P5 [HIGH]**: Performer 任务 narrow (大任务易崩, 拆小)
 - **P6 [MEDIUM]**: 自审报告 ≤400 words, 错就承认
 
@@ -83,7 +83,7 @@
 ### 人员 (People, 3 条)
 - **Pe1 [CRITICAL]**: Master 不能完全 delegate (P4 边界)
 - **Pe2 [HIGH]**: Performer 失败模式识别 (API error / token 爆 / 任务过大)
-- **Pe3 [MEDIUM]**: 主公拍板 = 战略决策 (A/B/C/D 选项)
+- **Pe3 [MEDIUM]**: 决策者拍板 = 战略决策 (A/B/C/D 选项)
 
 ### 工具 (Tooling, 4 条)
 - **Tool1 [NEW]**: `check-test-case-isolation.sh` (verbatim 防御)
@@ -101,13 +101,13 @@
 
 ## 5. Master Corrective Integration 已知事件 (留教训, 不撤回)
 
-主公 2026-06-09 拍"保留 + 写进 Rule 11" — 边界事件, 跟当前 Rule 11 v2 硬红线对比:
+决策者 2026-06-09 拍"保留 + 写进 Rule 11" — 边界事件, 跟当前 Rule 11 v2 硬红线对比:
 
 - **837c9a4** (a3be6648 失败后): 不符合新标准, 应派新 Performer
 - **0767d81** (a5955cbd token 限失败后): 边界符合 (token 限)
 - **acf045a** (push security 2 issues): 跟 Rule 11 v1 一样越权
 
-**规则**: Master 写代码仅"极端情况"+主公明确指令 (token 限 / 生产事故 / ≥3 Performer 全 fail / 主公明示), 不可 override
+**规则**: Master 写代码仅"极端情况"+决策者明确指令 (token 限 / 生产事故 / ≥3 Performer 全 fail / 决策者明示), 不可 override
 
 ## 6. 跨 EPIC 模式 (4 模式, 来自 PHASE-002 §1.3)
 
@@ -125,7 +125,7 @@
 | Rule 9 增 9c (scope creep FAIL) | EPIC-028 P3 | ✅ 1a43389 |
 | Rule 10 (Anti-Fab 强制) | EPIC-028 Tool1/2/3 | ✅ 1a43389 |
 | Rule 11 v1 (Master Corrective) | EPIC-022/024/028 Pe1 | ⚠️ 1a43389, 2026-06-09 收回重写 |
-| Rule 11 v2 (Master 写代码禁令) | 主公原话 2026-06-09 | ✅ 6ec95ce |
+| Rule 11 v2 (Master 写代码禁令) | 决策者原话 2026-06-09 | ✅ 6ec95ce |
 
 ## 8. 后续累积指南
 
@@ -137,6 +137,6 @@
 
 ---
 
-**维护者**: master (主公拍板)
+**维护者**: master (决策者拍板)
 **最近整理**: 2026-06-09
 **下次整理触发**: 完成 3-5 个 EPIC 或阶段目标

@@ -1,7 +1,7 @@
 # KALLAX 多工具安装指南 (v2.2.0 — 10 工具 + Single Source Symlink 模式)
 
-> **跟主公 2026-06-17 explicit 派单 联合, 跟 v2.1.1 8 工具 → v2.2.0 10 工具 升级, 跟"single source" 模式 联合, 跟"反讽" 联合, 跟"诚实修正" 联合, 跟"翻篇&精进" 战略 一致.**
-> **跟主公"把kallax安装到能让本地 claude code、trae、antigravity、opencode 正常调用, 最好使用一份skills/命令文件支持所有的引用" explicit 派单 联合.**
+> **跟决策者 2026-06-17 explicit 派单,配合, 配合 v2.1.1 8 工具 → v2.2.0 10 工具 升级, 跟"single source" 模式,配合, 跟"同类症状",配合, 跟"诚实修正评估",配合, 跟"翻篇&精进" 战略 一致.**
+> **跟决策者"把kallax安装到能让本地 claude code、trae、antigravity、opencode 正常调用, 最好使用一份skills/命令文件支持所有的引用" explicit 派单,配合.**
 
 ## 1. 概述
 
@@ -24,14 +24,14 @@ KALLAX v2.2.0 起, install.sh 支持 **10 工具** 统一安装 + **single sourc
 - `full` — skills + slash commands 都装 (跟现有 4 工具 一致)
 - `config` — skills 路径 reference 写进 config 文件 (因 aider/continue 没有 slash command API)
 
-### 1.1 反讽治根 — v2.0.2 → v2.0.6 → v2.1.0 渐进闭环
+### 1.1 同类症状从根源修复 — v2.0.2 → v2.0.6 → v2.1.0 渐进完整完成
 
-跟"反讽" 联合:
+跟"同类症状",配合:
 - **证据 (v2.0.2)**: `CHANGELOG.md:647-661` (release notes 自称"跨平台 fix release", 实际只 Claude Code)
 - **证据 (v2.0.6)**: install.sh 加 `--target=auto` 检测 + 4 工具 skills/commands 路径映射 (opencode 30 文件 mirror)
 - **证据 (v2.1.0)**: install.sh 加 4 工具 (cursor/windsurf/aider/continue) + 完整 wizard (5 step) + UI 改进
-- **影响**: 命名跟实现 一致 (跟 KALLAX-GLOSSARY.md §1.1 反讽定义 联合, file:line `docs/KALLAX-GLOSSARY.md:30-36`)
-- **诚实修正**: 文档明确标注 v2.0.2 gap + v2.0.6 治根 + v2.1.0 扩 4 工具, 不模糊处理
+- **影响**: 命名跟实现 一致 (跟 KALLAX-GLOSSARY.md §1.1 同类症状定义,配合, file:line `docs/KALLAX-GLOSSARY.md:30-36`)
+- **诚实修正评估**: 文档明确标注 v2.0.2 gap + v2.0.6 从根源修复 + v2.1.0 扩 4 工具, 不模糊处理
 
 ### 1.2 auto-detect 默认行为
 
@@ -109,11 +109,11 @@ cd kallax
 # --target=all 强制全装 10 工具 (不管 detection 失败)
 ./scripts/install.sh --target=all
 
-# --target=all + --symlink 4 工具 single source 模式 (跟主公"用一份文件" 派单 联合, 推荐)
+# --target=all + --symlink 4 工具 single source 模式 (跟决策者"用一份文件" 派单,配合, 推荐)
 ./scripts/install.sh --symlink --target=all
 ```
 
-### 2.5 Wizard 模式 (5-step step-by-step, 跟"诚实修正" 联合)
+### 2.5 Wizard 模式 (5-step step-by-step, 跟"诚实修正评估",配合)
 
 ```bash
 # --wizard 进入 5-step step-by-step installer (推荐初次使用)
@@ -156,7 +156,7 @@ cd kallax
 ### 2.6 Dry-run 模式 (新, v2.1.0)
 
 ```bash
-# --dry-run 模拟运行, 不实际安装 (跟"诚实修正" 联合)
+# --dry-run 模拟运行, 不实际安装 (跟"诚实修正评估",配合)
 ./scripts/install.sh --dry-run
 
 # --dry-run + --symlink 测试 single source 模式
@@ -168,16 +168,16 @@ cd kallax
 - 验证检测逻辑
 - CI/automation 试运行
 
-跟"诚实修正" 联合:
+跟"诚实修正评估",配合:
 - **证据**: 本文档 §2.5 (wizard prompt 兜底) + §2.6 (dry-run)
 - **反驳/支持**: 不假装安装, 主动让用户确认
-- **影响**: 避免"4 工具都检测失败但 install.sh 报 PASS" (跟 BE-15 假 PASS 模式 联合, file:line `docs/KALLAX-GLOSSARY.md:198-201`)
+- **影响**: 避免"4 工具都检测失败但 install.sh 报 PASS" (跟 BE-15 形式通过实质失败 模式,配合, file:line `docs/KALLAX-GLOSSARY.md:198-201`)
 
 ---
 
 ## 3. 10 工具路径映射表
 
-跟 EPIC-057-A AC #3-4 契约 一致 (file:line `jira/tickets/EPIC-057-A/ticket.json:23-26`):
+配合 EPIC-057-A AC #3-4 契约 一致 (file:line `jira/tickets/EPIC-057-A/ticket.json:23-26`):
 
 | # | 工具 | Skills dir | Commands dir | Settings | 支持 |
 |---|---|---|---|---|---|
@@ -193,7 +193,7 @@ cd kallax
 | 10 | Continue | `~/.continue/skills/kallax/` | N/A (VS Code extension) | `~/.continue/config.json` | config |
 
 **注意**:
-- opencode commands dir 是 **singular** `~/.opencode/command/` (不是 `commands/`) — 跟 KALLAX-GLOSSARY.md §8.7 联合
+- opencode commands dir 是 **singular** `~/.opencode/command/` (不是 `commands/`) — 跟 KALLAX-GLOSSARY.md §8.7,配合
 - Codex commands dir 是 `~/.codex/prompts/` (slash commands) — Codex 把"command" 概念叫"prompt"
 - Aider + Continue: 没有 slash command API, install.sh 写 `~/.aider.conf.yml` / `~/.continue/config.json` stub 指向 skills dir
 - Source dir (本仓库): `.cursor/` `.codeium/windsurf/` `.trae/` `.antigravity/` 是 `.claude/` 的 symlinks (避免重复, 10 工具源共享)
@@ -202,7 +202,7 @@ cd kallax
 
 ## 4. Single Source 模式 (新, v2.2.0)
 
-跟主公 2026-06-17 "用一份skills/命令文件支持所有的引用" explicit 派单 联合, install.sh 加 `--symlink` flag 实现 single source 模式:
+跟决策者 2026-06-17 "用一份skills/命令文件支持所有的引用" explicit 派单,配合, install.sh 加 `--symlink` flag 实现 single source 模式:
 
 ### 4.1 原理
 
@@ -222,18 +222,18 @@ cd kallax
 ... (10 工具 user-level paths)             ─┘
 ```
 
-### 4.2 优势 (跟"翻篇&精进" 联合)
+### 4.2 优势 (跟"翻篇&精进",配合)
 
 - ✅ **一份文件** — 4 工具共享 1 份源, 不重复
 - ✅ **更新一次, 4 工具同时获更新** — 改 canonical, 4 工具立即生效
 - ✅ **省 disk** — 4 工具不再 4 份副本, 1 份源 (canonical ~30KB 共享)
 - ✅ **一致性** — 4 工具版本永远一致 (symlink 强制, 不可能漂移)
-- ✅ **copy 模式保留** — 跟 v2.1.x 兼容, 不破坏现有 install
+- ✅ **copy 模式保留** — 配合 v2.1.x 兼容, 不破坏现有 install
 
 ### 4.3 用法
 
 ```bash
-# 4 工具 single source 模式 (跟主公派单 一致, 推荐)
+# 4 工具 single source 模式 (跟决策者派单 一致, 推荐)
 ./scripts/install.sh --symlink --target=claude,trae,antigravity,opencode
 
 # 4 工具 + dry-run 测试
@@ -242,7 +242,7 @@ cd kallax
 # 10 工具 single source 模式
 ./scripts/install.sh --symlink --target=all
 
-# 默认 copy 模式 (跟 v2.1.x 兼容)
+# 默认 copy 模式 (配合 v2.1.x 兼容)
 ./scripts/install.sh --target=claude
 ```
 
@@ -270,10 +270,10 @@ $ readlink ~/.opencode/command
 
 ### 3.1 路径存在性校验
 
-跟"翻篇&精进" 联合:
+跟"翻篇&精进",配合:
 - **证据**: 本文档 §3 路径映射表 + EPIC-057-A AC #3-4 契约
 - **反驳/支持**: 4 工具路径 实测 (opencode/gemini 已装, claude 全支持, codex 只有 dir 没 binary), 不发明路径
-- **影响**: 文档不超代码契约, 跟 EPIC-057-A/B 实现 严格 一致 (跟"诚实修正" 联合, file:line `docs/KALLAX-GLOSSARY.md:40-47`)
+- **影响**: 文档不超代码契约, 配合 EPIC-057-A/B 实现 严格 一致 (跟"诚实修正评估",配合, file:line `docs/KALLAX-GLOSSARY.md:40-47`)
 
 ---
 
@@ -289,10 +289,10 @@ $ readlink ~/.opencode/command
 3. 至少需要 1 个 binary 或 1 个 dir 存在
 4. 都没装 → 装 Claude Code (推荐): `curl -fsSL https://claude.ai/install.sh | bash`
 
-跟"诚实修正" 联合:
+跟"诚实修正评估",配合:
 - **证据**: 本文档 §4.1 (4 工具都失败排查)
-- **反驳/支持**: detect 失败 fallback — exit 1 + suggestion "install claude" (跟 EPIC-057-D AC #8 联合, file:line `jira/tickets/EPIC-057-D/ticket.json:35`)
-- **影响**: 不假装成功, 主动给安装建议, 跟 BE-15 假 PASS 模式 反向
+- **反驳/支持**: detect 失败 fallback — exit 1 + suggestion "install claude" (配合 EPIC-057-D AC #8,配合, file:line `jira/tickets/EPIC-057-D/ticket.json:35`)
+- **影响**: 不假装成功, 主动给安装建议, 跟 BE-15 形式通过实质失败 模式 反向
 
 ### 4.2 单工具 SKILL.md 缺失
 
@@ -313,7 +313,7 @@ $ readlink ~/.opencode/command
 
 ### 4.4 verify_install 输出 4 工具分项 status
 
-跟 EPIC-057-A AC #6 联合 (file:line `jira/tickets/EPIC-057-A/ticket.json:27-28`):
+配合 EPIC-057-A AC #6,配合 (file:line `jira/tickets/EPIC-057-A/ticket.json:27-28`):
 
 ```
 === Verification ===
@@ -343,35 +343,35 @@ Restart Claude Code or open a new window. Then type /kallax-start
 ./scripts/install.sh --upgrade
 ```
 
-跟 EPIC-057-A AC #1 联合 (file:line `jira/tickets/EPIC-057-A/ticket.json:23`): `--upgrade` 跟 fresh install 等价 + changelog 输出.
+配合 EPIC-057-A AC #1,配合 (file:line `jira/tickets/EPIC-057-A/ticket.json:23`): `--upgrade` 跟 fresh install 等价 + changelog 输出.
 
 ### 5.2 从 v2.0.2 '跨平台 fix release' 升级
 
-跟"翻篇&精进" 联合:
+跟"翻篇&精进",配合:
 - **证据**: 本文档 §5.2 (v2.0.2 → v2.0.6 升级) + CHANGELOG.md `[2.0.6]` entry
-- **反驳/支持**: v2.0.2 自称"跨平台" 但 install.sh 只支持 Claude Code — v2.0.6 治根, 不在 v2.0.2 命名上纠结 (跟"翻篇&精进" 战略 一致, file:line `docs/KALLAX-GLOSSARY.md:108-112`)
-- **影响**: v2.0.2 release 命名 不删 (历史 commit 不可改), v2.0.6 治根 + 文档明确标注 gap
+- **反驳/支持**: v2.0.2 自称"跨平台" 但 install.sh 只支持 Claude Code — v2.0.6 从根源修复, 不在 v2.0.2 命名上纠结 (跟"翻篇&精进" 战略 一致, file:line `docs/KALLAX-GLOSSARY.md:108-112`)
+- **影响**: v2.0.2 release 命名 不删 (历史 commit 不可改), v2.0.6 从根源修复 + 文档明确标注 gap
 
-### 5.3 跟"翻篇&精进" 联合 — 不再加内容
+### 5.3 跟"翻篇&精进",配合 — 不再加内容
 
-跟"翻篇" 联合:
+跟"翻篇",配合:
 - **证据**: 本文档 5 章节 (概述/安装/路径/故障/升级) — 跟 docs/PROCESS.md 风格 一致, 不重复
 - **反驳/支持**: 跟 docs/guides/quick-start.md 互补 (quick-start 5 分钟快速开始, INSTALL-MULTI-TOOL 详细 multi-tool guide); 跟 docs/PROCESS.md 互补 (PROCESS.md 流程, INSTALL-MULTI-TOOL.md 安装)
-- **影响**: 文档体量 不增, 跟"翻篇&精进" 战略 一致 (跟 EPIC-054-D Rule 合并 模式 一致, file:line `docs/PROCESS.md:62-66` A+B Review 段)
+- **影响**: 文档体量 不增, 跟"翻篇&精进" 战略 一致 (配合 EPIC-054-D Rule 合并 模式 一致, file:line `docs/PROCESS.md:62-66` A+B Review 段)
 
 ---
 
 ## 附录: 跟其他文档的关系
 
-- **`README.md`**: 安装段 + 目录结构段 已加 4 工具支持标注 (跟 AC #2 联合)
-- **`CHANGELOG.md [2.0.6]`**: 加 entry "Multi-tool install support (Claude Code / opencode / Codex / Gemini, --target=auto 默认检测, 治 v2.0.2 跨平台 fix 反讽)" (跟 AC #3 联合)
+- **`README.md`**: 安装段 + 目录结构段 已加 4 工具支持标注 (跟 AC #2,配合)
+- **`CHANGELOG.md [2.0.6]`**: 加 entry "Multi-tool install support (Claude Code / opencode / Codex / Gemini, --target=auto 默认检测, 治 v2.0.2 跨平台 fix 同类症状)" (跟 AC #3,配合)
 - **`docs/PROCESS.md`**: 流程文档, 不重复
 - **`docs/guides/quick-start.md`**: 5 分钟快速开始, 不重复
-- **`docs/process/tag-sop.md`**: 5 标签 SOP, 本文档每条标签引用遵循证据链 3 件套 (跟 EPIC-055-C 联动, file:line `docs/process/tag-sop.md:64-78`)
+- **`docs/process/tag-sop.md`**: 5 标签 SOP, 本文档每条标签引用遵循证据链 3 件套 (配合 EPIC-055-C 联动, file:line `docs/process/tag-sop.md:64-78`)
 - **`jira/tickets/EPIC-057-A/ticket.json`**: install.sh 实现契约, 本文档路径映射 严格 跟 AC #3-4 一致
 - **`jira/tickets/EPIC-057-B/ticket.json`**: onramp.sh tool detection 契约, 本文档 auto-detect 行为 严格 跟 AC #3 一致
 - **`jira/tickets/EPIC-057-D/ticket.json`**: integration tests 契约, 跟本文档 §4 故障排查 一致
 
 ---
 
-**跟主公 2026-06-17 'B' explicit 拍板 联合 (file:line `jira/epics/EPIC-057/epic.json:21-26`), 跟 EPIC-057 4 ticket 联合 (file:line `jira/epics/EPIC-057/epic.json:27-55`), 跟 v2.0.2 '跨平台 fix' 反讽 闭环 (file:line `CHANGELOG.md:647-661`), 跟"诚实修正" 战略 一致 (file:line `docs/KALLAX-GLOSSARY.md:40-47`), 跟"翻篇&精进" 战略 一致 (file:line `docs/KALLAX-GLOSSARY.md:108-112`), 跟 EPIC-055-C 5 标签 SOP 联动 (file:line `docs/process/tag-sop.md:64-78`), 跟 Rule 5 DRY 联动, 跟 Rule 9 5 levels Fact-Forcing 联合 (file:line `docs/PROCESS.md:36-51`), 跟 EPIC-053-B 5 levels 证据链 联合, 跟 EPIC-056-A 3 阶段治理 联合**
+**跟决策者 2026-06-17 'B' explicit 拍板,配合 (file:line `jira/epics/EPIC-057/epic.json:21-26`), 配合 EPIC-057 4 ticket,配合 (file:line `jira/epics/EPIC-057/epic.json:27-55`), 配合 v2.0.2 '跨平台 fix' 同类症状 完整完成 (file:line `CHANGELOG.md:647-661`), 跟"诚实修正评估" 战略 一致 (file:line `docs/KALLAX-GLOSSARY.md:40-47`), 跟"翻篇&精进" 战略 一致 (file:line `docs/KALLAX-GLOSSARY.md:108-112`), 配合 EPIC-055-C 5 标签 SOP 联动 (file:line `docs/process/tag-sop.md:64-78`), 跟 Rule 5 DRY 联动, 跟 Rule 9 5 levels Fact-Forcing,配合 (file:line `docs/PROCESS.md:36-51`), 配合 EPIC-053-B 5 levels 证据链,配合, 配合 EPIC-056-A 3 阶段治理,配合**
