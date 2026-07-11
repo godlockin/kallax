@@ -1,0 +1,21 @@
+{
+  "ticket_id": "EPIC-113-A",
+  "epic": "EPIC-113",
+  "phase": "PHASE-017",
+  "title": "JSON→DB writer 切换: state.json + ticket.json + audit log",
+  "status": "planning",
+  "created_at": "2026-07-10",
+  "description": "现状: state.json / jira/tickets/*/ticket.json / audit log 仍写 file。目标: 双写 → DB-only。\n1. Rust runtime 写 tickets/instances 表 (schema 已建, INSERT 只 tickets 有)\n2. session_start.sh state.json 增写 SQLite instances 表 (保留 file 兼容)\n3. audit log JSONL → trace_spans 表",
+  "file_scope": {
+    "includes": [
+      "rust/crates/kallax-core/src/db/",
+      "scripts/session-start.sh",
+      "rust/crates/kallax-server/src/"
+    ]
+  },
+  "acceptance": [
+    "INSERT/UPDATE 覆盖 instances / trace_spans / dag_runs / dag_node_states 4 表",
+    "cargo test --workspace 0 errors",
+    "session_start 双写 (file + DB) 通过 smoke test"
+  ]
+}

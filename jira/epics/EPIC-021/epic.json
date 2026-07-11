@@ -5,7 +5,7 @@
   "scope": "1. 7 expert persona 文件 (5 现有 + Security + PM)\n2. KALLAX 专属字段 (worktree_role/review_group/tickets_served/version)\n3. 症状决策树 INDEX.md (10 emoji)\n4. output_format 4 节统一\n5. Fact-Forcing 5-Level 嵌入\n6. anatomy check 脚本 (6+ 项校验)\n7. expert_invocations 降级链 (Redis→SQLite→file)",
   "start_time": "2026-06-07",
   "delivery_time": "2026-06-08",
-  "status": "active",
+  "status": "delivered",
   "baseline": {
     "source": "EKET-EXPERT-SYSTEM-DEEP-DIVE-2026-06-07.md",
     "eket_expert_count": 7,
@@ -103,5 +103,6 @@
       "completed_at": "2026-06-07T19:50:00Z",
       "merge_commit": "cb29d17"
     }
-  ]
+  ],
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }

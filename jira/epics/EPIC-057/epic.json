@@ -5,7 +5,7 @@
   "scope": "1. 主公 2026-06-17 explicit 拍 B: install.sh --target=auto 检测 4 工具, 跟 v2.0.2 '跨平台 fix release' 命名一致, 跟 v2.0.5 release 联合\n2. install.sh 加 --target=auto|claude|opencode|codex|gemini|all|<逗号分隔> multi-flag (hybrid flag-controlled)\n3. onramp.sh 加 tool detection + dispatch (claude/opencode/codex/gemini --print 等价)\n4. docs/guides/INSTALL-MULTI-TOOL.md + README 改 '支持 4 工具'\n5. 4 工具 skills/commands dir 路径正确 (实测 opencode 1.17.7 + gemini 0.22.2 已装, codex 没 binary 但 ~/.codex/skills/ 存在)\n6. integration tests for multi-tool install + onramp tool detection\n7. 跟'反讽' 闭环 (v2.0.2 '跨平台 fix' 命名 vs 实际 Claude Code only 状态), 跟'诚实修正' 联合 (主公 explicit 区分 'Claude Code 完全支持' vs 'opencode 半支持' vs 'codex/gemini 完全不支持')\n8. 跟 EPIC-053/054/055/056 v2.0.5 + v2.0.6 release 联合, 跟'翻篇&精进' 战略 一致",
   "start_time": "2026-06-17",
   "delivery_time": "2026-06-18",
-  "status": "active",
+  "status": "delivered",
   "baseline": {
     "source": "Master 2026-06-17 跟主公 '检查引导安装脚本, 有没有支持包括 opencode、Claude code、codex 等工具的 skills 使用的' explicit 派单 联合",
     "current_state": "v2.0.5 install.sh 仅支持 Claude Code (~/.claude/), .opencode/command/ 仓库有 30 文件但 install.sh 没装, codex/gemini 完全 0 reference",
@@ -53,5 +53,6 @@
       "status": "ready",
       "blocked_by": null
     }
-  ]
+  ],
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }
