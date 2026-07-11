@@ -1,0 +1,347 @@
+warning: unused imports: `DateTime` and `Utc`
+  --> crates/kallax-core/src/db/mod.rs:18:14
+   |
+18 | use chrono::{DateTime, Utc};
+   |              ^^^^^^^^  ^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `std::collections::HashMap`
+  --> crates/kallax-core/src/db/mod.rs:22:5
+   |
+22 | use std::collections::HashMap;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `PathBuf`
+  --> crates/kallax-core/src/db/mod.rs:23:23
+   |
+23 | use std::path::{Path, PathBuf};
+   |                       ^^^^^^^
+
+warning: unused import: `std::collections::HashMap`
+  --> crates/kallax-core/src/types/task.rs:10:5
+   |
+10 | use std::collections::HashMap;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `std::path::PathBuf`
+  --> crates/kallax-core/src/types/task.rs:12:5
+   |
+12 | use std::path::PathBuf;
+   |     ^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `std::collections::HashMap`
+ --> crates/kallax-core/src/types/performer.rs:9:5
+  |
+9 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `std::collections::HashMap`
+ --> crates/kallax-core/src/types/event.rs:9:5
+  |
+9 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `std::path::PathBuf`
+  --> crates/kallax-core/src/types/event.rs:10:5
+   |
+10 | use std::path::PathBuf;
+   |     ^^^^^^^^^^^^^^^^^^
+
+warning: method `register_all` is never used
+  --> crates/kallax-core/src/db/migrations.rs:54:12
+   |
+47 | impl MigrationRunner {
+   | -------------------- method in this implementation
+...
+54 |     pub fn register_all(&mut self, ms: impl IntoIterator<Item = Box<dyn Migration>>) {
+   |            ^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `super::*`
+  --> crates/kallax-core/src/types/event.rs:67:9
+   |
+67 |     use super::*;
+   |         ^^^^^^^^
+
+warning: `kallax-core` (lib) generated 9 warnings (run `cargo fix --lib -p kallax-core` to apply 8 suggestions)
+warning: `kallax-core` (lib test) generated 10 warnings (9 duplicates) (run `cargo fix --lib -p kallax-core --tests` to apply 1 suggestion)
+warning: unused import: `KallaxError`
+ --> crates/kallax-engine/src/event_bus.rs:5:37
+  |
+5 | use kallax_core::{Event, EventType, KallaxError, Result};
+  |                                     ^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `DateTime`
+ --> crates/kallax-engine/src/agent_pool.rs:6:14
+  |
+6 | use chrono::{DateTime, Duration, Utc};
+  |              ^^^^^^^^
+
+warning: unused import: `std::sync::Arc`
+ --> crates/kallax-engine/src/agent_pool.rs:8:5
+  |
+8 | use std::sync::Arc;
+  |     ^^^^^^^^^^^^^^
+
+warning: unused import: `std::path::PathBuf`
+  --> crates/kallax-engine/src/conflict_resolver.rs:10:5
+   |
+10 | use std::path::PathBuf;
+   |     ^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `Path`
+ --> crates/kallax-engine/src/worktree_manager.rs:7:17
+  |
+7 | use std::path::{Path, PathBuf};
+  |                 ^^^^
+
+warning: unused import: `error`
+  --> crates/kallax-engine/src/worktree_manager.rs:10:27
+   |
+10 | use tracing::{info, warn, error};
+   |                           ^^^^^
+
+warning: variable does not need to be mutable
+   --> crates/kallax-engine/src/agent_pool.rs:132:13
+    |
+132 |         for mut entry in self.performers.iter_mut() {
+    |             ----^^^^^
+    |             |
+    |             help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `locked_at` is never read
+  --> crates/kallax-engine/src/conflict_resolver.rs:70:5
+   |
+68 | struct ResourceLock {
+   |        ------------ field in this struct
+69 |     performer_id: PerformerId,
+70 |     locked_at: DateTime<Utc>,
+   |     ^^^^^^^^^
+   |
+   = note: `ResourceLock` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused `Result` that must be used
+   --> crates/kallax-engine/src/agent_pool.rs:118:21
+    |
+118 |                     entry.assign_task(TaskId::from_str("reserved"));
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: this `Result` may be an `Err` variant, which should be handled
+    = note: `#[warn(unused_must_use)]` (part of `#[warn(unused)]`) on by default
+help: use `let _ = ...` to ignore the resulting value
+    |
+118 |                     let _ = entry.assign_task(TaskId::from_str("reserved"));
+    |                     +++++++
+
+warning: `kallax-engine` (lib) generated 9 warnings (run `cargo fix --lib -p kallax-engine` to apply 7 suggestions)
+warning: `kallax-engine` (lib test) generated 9 warnings (9 duplicates)
+warning: unused import: `kallax_core::types::Priority`
+ --> crates/kallax-cli/src/main/enums.rs:6:5
+  |
+6 | use kallax_core::types::Priority;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `OutputFormat`
+  --> crates/kallax-cli/src/main/cli.rs:13:28
+   |
+13 | use enums::{Cli, Commands, OutputFormat};
+   |                            ^^^^^^^^^^^^
+
+warning: unused import: `kallax_core::error::Result`
+  --> crates/kallax-cli/src/main/cli.rs:21:5
+   |
+21 | use kallax_core::error::Result;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `std::str::FromStr`
+ --> crates/kallax-cli/src/main/handlers.rs:4:5
+  |
+4 | use std::str::FromStr;
+  |     ^^^^^^^^^^^^^^^^^
+
+warning: function `parse_capabilities` is never used
+  --> crates/kallax-cli/src/main/parsers.rs:32:8
+   |
+32 | pub fn parse_capabilities(s: &str) -> Vec<String> {
+   |        ^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `kallax_core::TaskId`
+  --> crates/kallax-server/src/main.rs:22:5
+   |
+22 | use kallax_core::TaskId;
+   |     ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `Any`
+  --> crates/kallax-server/src/main.rs:26:24
+   |
+26 | use tower_http::cors::{Any, CorsLayer};
+   |                        ^^^
+
+warning: `kallax-cli` (bin "kallax" test) generated 5 warnings (run `cargo fix --bin "kallax" -p kallax-cli --tests` to apply 3 suggestions)
+warning: `kallax-server` (bin "kallax-server" test) generated 2 warnings (run `cargo fix --bin "kallax-server" -p kallax-server --tests` to apply 2 suggestions)
+    Finished `release` profile [optimized] target(s) in 0.13s
+     Running unittests src/main/cli.rs (target/release/deps/kallax-aa9f5d6a6970bb2e)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/release/deps/kallax_core-fc46b73ced333965)
+
+running 89 tests
+test analyzer::extractors::python::tests::empty_content ... ok
+test analyzer::extractors::tests::dispatch_to_python ... ok
+test analyzer::extractors::python::tests::extract_functions ... ok
+test analyzer::extractors::python::tests::extract_async_functions ... ok
+test analyzer::extractors::python::tests::extract_classes ... ok
+test analyzer::extractors::python::tests::skip_comments ... ok
+test analyzer::extractors::tests::dispatch_unknown_returns_empty ... ok
+test analyzer::extractors::tests::loc_counts_non_empty_lines ... ok
+test analyzer::extractors::tests::loc_empty_content ... ok
+test analyzer::extractors::typescript::tests::empty_content ... ok
+test analyzer::extractors::tests::dispatch_to_typescript ... ok
+test analyzer::language::tests::detect_python ... ok
+test analyzer::language::tests::detect_rust ... ok
+test analyzer::language::tests::detect_typescript ... ok
+test analyzer::extractors::rust::tests::empty_content ... ok
+test analyzer::extractors::typescript::tests::extract_classes ... ok
+test analyzer::extractors::rust::tests::skip_block_comments ... ok
+test analyzer::extractors::typescript::tests::extract_functions ... ok
+test analyzer::extractors::tests::dispatch_to_rust ... ok
+test analyzer::language::tests::detect_unknown ... ok
+test analyzer::extractors::rust::tests::extract_enums ... ok
+test analyzer::language::tests::is_supported_returns_false_for_unknown ... ok
+test analyzer::extractors::rust::tests::skip_comments ... ok
+test analyzer::language::tests::is_supported_returns_true_for_known ... ok
+test analyzer::extractors::rust::tests::extract_structs ... ok
+test analyzer::extractors::rust::tests::extract_functions ... ok
+test analyzer::extractors::typescript::tests::extract_interfaces ... ok
+test analyzer::extractors::rust::tests::extract_traits ... ok
+test analyzer::extractors::rust::tests::extract_impl ... ok
+test analyzer::tests::analyze_directory_nonexistent ... ok
+test analyzer::tests::analyze_unknown_file_returns_empty ... ok
+test analyzer::tests::default_and_new_are_equivalent ... ok
+test cache::tests::basic_operations ... ok
+test cache::tests::get_or_insert ... ok
+test analyzer::extractors::typescript::tests::skip_comments ... ok
+test db::tests::dag_node_update_completion ... ok
+test db::migrations::tests::runner_applies_pending ... ok
+test db::tests::dag_run_filter_by_status ... ok
+test db::migrations::tests::all_tables_exist_after_migration ... ok
+test db::tests::get_nonexistent_returns_not_found ... ok
+test db::tests::insert_and_get ... ok
+test db::tests::instance_filter_by_role ... ok
+test db::tests::insert_and_list ... ok
+test db::tests::dag_run_insert_and_get ... ok
+test db::tests::dag_node_insert_and_list_by_run ... ok
+test db::tests::dag_run_lifecycle_update ... ok
+test db::tests::filter_limit_and_offset ... ok
+test error::tests::error_messages_are_human_readable ... ok
+test error::tests::timeout_error_includes_duration ... ok
+test db::tests::filter_by_status ... ok
+test fingerprint::tests::compute_fingerprint_nonexistent_file_returns_error ... ok
+test fingerprint::tests::compute_fingerprint_on_directory_returns_validation_error ... ok
+test fingerprint::tests::compute_fingerprint_for_file ... ok
+test fingerprint::tests::memory_store_diff_detects_additions ... ok
+test fingerprint::tests::compute_fingerprint_sha256_is_64_hex_chars ... ok
+test fingerprint::tests::memory_store_diff_detects_modifications ... ok
+test fingerprint::tests::memory_store_diff_detects_removals ... ok
+test fingerprint::tests::memory_store_diff_handles_add_remove_modify_combination ... ok
+test fingerprint::tests::memory_store_diff_unchanged_files_are_skipped ... ok
+test fingerprint::tests::memory_store_load_nonexistent_returns_error ... ok
+test fingerprint::tests::memory_store_save_and_load ... ok
+test isolation::tests::manager_allows_non_overlapping ... ok
+test isolation::tests::manager_detects_overlap ... ok
+test isolation::tests::scope_allows_subpaths ... ok
+test isolation::tests::scope_denies_patterns ... ok
+test middleware::tests::middleware_transforms_request ... ok
+test registry::tests::basic_operations ... ok
+test registry::tests::get_or_err ... ok
+test registry::tests::register_or_replace ... ok
+test types::event::tests::invalid_state_transitions_return_error ... ok
+test types::event::tests::task_dependencies ... ok
+test types::event::tests::ticket_state_transitions ... ok
+test webhook::tests::endpoint_display_uses_id_string ... ok
+test webhook::tests::endpoint_id_is_unique_and_prefixed ... ok
+test webhook::tests::register_endpoint_with_multiple_events ... ok
+test webhook::tests::register_endpoint_returns_valid_id ... ok
+test webhook::tests::webhook_event_as_str_returns_correct_labels ... ok
+test db::tests::instance_update ... ok
+test db::tests::instance_update_nonexistent_returns_not_found ... ok
+test db::tests::instance_insert_and_list ... ok
+test db::tests::instance_insert_and_get ... ok
+test db::tests::update_nonexistent_returns_not_found ... ok
+test db::tests::span_insert_and_get ... ok
+test db::tests::instance_get_nonexistent_returns_not_found ... ok
+test db::tests::instance_upsert_replaces ... ok
+test db::tests::span_update_end_sets_duration ... ok
+test db::tests::span_list_by_name ... ok
+test db::tests::update_ticket ... ok
+test cache::tests::expiration ... ok
+
+test result: ok. 89 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+     Running unittests src/lib.rs (target/release/deps/kallax_engine-137d8b2d9e026d51)
+
+running 25 tests
+test agent_pool::tests::acquire_requires_capabilities ... ok
+test agent_pool::tests::register_and_acquire ... ok
+test conflict_resolver::tests::detect_and_resolve_conflict ... ok
+test conflict_resolver::tests::acquire_and_release_lock ... ok
+test agent_pool::tests::capacity_limit ... ok
+test conflict_resolver::tests::lock_prevents_concurrent_access ... ok
+test conflict_resolver::tests::release_all_locks ... ok
+test dag::scheduler::tests::chain_no_par ... ok
+test dag::scheduler::tests::complete_unblock ... ok
+test dag::scheduler::tests::critical_diamond ... ok
+test dag::scheduler::tests::parallel_count ... ok
+test dag::scheduler::tests::priority_order ... ok
+test dag::scheduler::tests::ready_no_deps ... ok
+test dag::scheduler::tests::topo_sort ... ok
+test knowledge_base::tests::add_and_search ... ok
+test event_bus::tests::publish_and_subscribe ... ok
+test knowledge_base::tests::and_search ... ok
+test knowledge_base::tests::search_by_tag ... ok
+test mailbox::tests::fifo_ordering ... ok
+test mailbox::tests::mailbox_capacity ... ok
+test mailbox::tests::send_and_receive ... ok
+test ticket_engine::tests::task_creation_requires_ticket ... ok
+test ticket_engine::tests::ticket_lifecycle ... ok
+test event_bus::tests::typed_subscription ... ok
+test worktree_manager::tests::capacity_check ... ok
+
+test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running unittests src/main.rs (target/release/deps/kallax_server-b6602beb511c11e6)
+
+running 1 test
+test tests::health_check_returns_healthy ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests kallax_core
+
+running 1 test
+test crates/kallax-core/src/analyzer/mod.rs - analyzer (line 5) ... ignored
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests kallax_engine
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
