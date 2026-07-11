@@ -5,7 +5,7 @@
   "scope": "1. state.json mode + mode_lock schema (Task 1)\n2. Performer 5 阶段协商 (stage-gate.sh, Task 2)\n3. Block + 危险操作统一检查 (decision-gate.sh, Task 3)\n4. session_start.sh MODE 选择菜单 (Task 4)\n5. pre-commit 串联 decision-gate (Task 5)\n6. kallax-init --mode CLI (Task 6)\n7. whoami.sh 输出 mode 字段 (Task 7)\n8. 3 模式 × 4 维度 E2E (16 场景, Task 8)\n9. CLAUDE.md Rule 13 (Task 9)\n10. 用户文档 3-MODES.md (Task 10)\n11. 全量测试 + miao promote (Task 11)",
   "start_time": "2026-06-09",
   "delivery_time": "2026-06-15",
-  "status": "active",
+  "status": "delivered",
   "baseline": {
     "source": "docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md",
     "design_decision": "主公 2026-06-09 拍板: 3 模式 + 跟 EKET interactive:start 借鉴集成",
@@ -25,17 +25,120 @@
     "merged_with_eket_borrow": "P1-3 interactive:start 借鉴"
   },
   "tickets": [
-    {"id": "EPIC-029-A", "title": "state.json mode + mode_lock schema + mode-set.sh CLI", "assignee": "performer-EPIC-029-A", "status": "ready", "blocked_by": null, "est_hours": 1.5},
-    {"id": "EPIC-029-B", "title": "stage-gate.sh Performer 5 阶段协商", "assignee": "performer-EPIC-029-B", "status": "ready", "blocked_by": ["EPIC-029-A"], "est_hours": 2.0},
-    {"id": "EPIC-029-C", "title": "decision-gate.sh block + danger 统一检查", "assignee": "performer-EPIC-029-C", "status": "ready", "blocked_by": ["EPIC-029-A"], "est_hours": 2.0},
-    {"id": "EPIC-029-D", "title": "session_start.sh MODE 选择菜单", "assignee": "performer-EPIC-029-D", "status": "ready", "blocked_by": ["EPIC-029-A"], "est_hours": 1.5},
-    {"id": "EPIC-029-E", "title": "pre-commit 串联 decision-gate.sh", "assignee": "performer-EPIC-029-E", "status": "ready", "blocked_by": ["EPIC-029-C"], "est_hours": 1.0},
-    {"id": "EPIC-029-F", "title": "kallax-init.sh --mode CLI", "assignee": "performer-EPIC-029-F", "status": "ready", "blocked_by": ["EPIC-029-A"], "est_hours": 1.0},
-    {"id": "EPIC-029-G", "title": "whoami.sh 输出 mode 字段", "assignee": "performer-EPIC-029-G", "status": "ready", "blocked_by": ["EPIC-029-A"], "est_hours": 0.5},
-    {"id": "EPIC-029-H", "title": "3 模式 × 4 维度 E2E 集成测试 (16 场景)", "assignee": "performer-EPIC-029-H", "status": "ready", "blocked_by": ["EPIC-029-B", "EPIC-029-C", "EPIC-029-D", "EPIC-029-E", "EPIC-029-F", "EPIC-029-G"], "est_hours": 2.0},
-    {"id": "EPIC-029-I", "title": "CLAUDE.md Rule 13 3 模式决策权分配", "assignee": "performer-EPIC-029-I", "status": "ready", "blocked_by": ["EPIC-029-H"], "est_hours": 1.0},
-    {"id": "EPIC-029-J", "title": "用户文档 docs/architecture/3-MODES.md", "assignee": "performer-EPIC-029-J", "status": "ready", "blocked_by": ["EPIC-029-I"], "est_hours": 1.5},
-    {"id": "EPIC-029-K", "title": "全量集成测试 + testing → miao promote", "assignee": "performer-EPIC-029-K", "status": "ready", "blocked_by": ["EPIC-029-J"], "est_hours": 1.0}
+    {
+      "id": "EPIC-029-A",
+      "title": "state.json mode + mode_lock schema + mode-set.sh CLI",
+      "assignee": "performer-EPIC-029-A",
+      "status": "ready",
+      "blocked_by": null,
+      "est_hours": 1.5
+    },
+    {
+      "id": "EPIC-029-B",
+      "title": "stage-gate.sh Performer 5 阶段协商",
+      "assignee": "performer-EPIC-029-B",
+      "status": "ready",
+      "blocked_by": [
+        "EPIC-029-A"
+      ],
+      "est_hours": 2.0
+    },
+    {
+      "id": "EPIC-029-C",
+      "title": "decision-gate.sh block + danger 统一检查",
+      "assignee": "performer-EPIC-029-C",
+      "status": "ready",
+      "blocked_by": [
+        "EPIC-029-A"
+      ],
+      "est_hours": 2.0
+    },
+    {
+      "id": "EPIC-029-D",
+      "title": "session_start.sh MODE 选择菜单",
+      "assignee": "performer-EPIC-029-D",
+      "status": "ready",
+      "blocked_by": [
+        "EPIC-029-A"
+      ],
+      "est_hours": 1.5
+    },
+    {
+      "id": "EPIC-029-E",
+      "title": "pre-commit 串联 decision-gate.sh",
+      "assignee": "performer-EPIC-029-E",
+      "status": "ready",
+      "blocked_by": [
+        "EPIC-029-C"
+      ],
+      "est_hours": 1.0
+    },
+    {
+      "id": "EPIC-029-F",
+      "title": "kallax-init.sh --mode CLI",
+      "assignee": "performer-EPIC-029-F",
+      "status": "ready",
+      "blocked_by": [
+        "EPIC-029-A"
+      ],
+      "est_hours": 1.0
+    },
+    {
+      "id": "EPIC-029-G",
+      "title": "whoami.sh 输出 mode 字段",
+      "assignee": "performer-EPIC-029-G",
+      "status": "ready",
+      "blocked_by": [
+        "EPIC-029-A"
+      ],
+      "est_hours": 0.5
+    },
+    {
+      "id": "EPIC-029-H",
+      "title": "3 模式 × 4 维度 E2E 集成测试 (16 场景)",
+      "assignee": "performer-EPIC-029-H",
+      "status": "ready",
+      "blocked_by": [
+        "EPIC-029-B",
+        "EPIC-029-C",
+        "EPIC-029-D",
+        "EPIC-029-E",
+        "EPIC-029-F",
+        "EPIC-029-G"
+      ],
+      "est_hours": 2.0
+    },
+    {
+      "id": "EPIC-029-I",
+      "title": "CLAUDE.md Rule 13 3 模式决策权分配",
+      "assignee": "performer-EPIC-029-I",
+      "status": "ready",
+      "blocked_by": [
+        "EPIC-029-H"
+      ],
+      "est_hours": 1.0
+    },
+    {
+      "id": "EPIC-029-J",
+      "title": "用户文档 docs/architecture/3-MODES.md",
+      "assignee": "performer-EPIC-029-J",
+      "status": "ready",
+      "blocked_by": [
+        "EPIC-029-I"
+      ],
+      "est_hours": 1.5
+    },
+    {
+      "id": "EPIC-029-K",
+      "title": "全量集成测试 + testing → miao promote",
+      "assignee": "performer-EPIC-029-K",
+      "status": "ready",
+      "blocked_by": [
+        "EPIC-029-J"
+      ],
+      "est_hours": 1.0
+    }
   ],
-  "total_estimated_hours": 15.0
+  "total_estimated_hours": 15.0,
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }

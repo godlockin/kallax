@@ -5,7 +5,7 @@
   "scope": "1. 主公 2026-06-12 拍'专门一张卡调查和 digging 为什么 subagent 做事完成之后没有更新文档、更新卡、提交pr给master review'\n2. 跟 EPIC-039 Sprint 4 修复执行分开: EPIC-040 = 调查 + 找思路 + 找方法 + 强制限制流程\n3. 跟 Master Rule 11 v2.1 强验证 6 维度联动 (Master 强验证 0 后, 写调查卡)\n4. 跟 Conductor root cause 模式一致 (R-NEW 之前用, R-NEW 后用 root cause 调查)\n5. 产出: 根因报告 (5 Why) + 强制限制流程方案 (跟 L1 战术拆 commit 联动) + 跟 EPIC-039 修复路线图对齐",
   "start_time": "2026-06-12",
   "delivery_time": "2026-06-15",
-  "status": "active",
+  "status": "delivered",
   "baseline": {
     "source": "Master 强验证 2026-06-12 16:29 (commit 4e6c4ff 修 4 ticket 状态) + 主公 2026-06-12 拍'再见张卡专门用来调查'",
     "current_state": "4 ticket 状态 (C/D/B/A) 刚修, 但流程仍手动 + Conductor 报 5 waves 实际 0 review + 走 R-NEW PR 跳 Conductor merge",
@@ -31,5 +31,6 @@
       "status": "in_progress",
       "blocked_by": null
     }
-  ]
+  ],
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }

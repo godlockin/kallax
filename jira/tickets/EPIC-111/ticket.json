@@ -1,7 +1,7 @@
 {
   "ticket_id": "EPIC-111",
   "title": "拍板点协议 — epic-schema checkin_points + create 强制 + 4-expert review",
-  "status": "in_progress",
+  "status": "closed",
   "created_at": "2026-07-10",
   "epic": "EPIC-111",
   "sprint": "Sprint 15",
@@ -20,5 +20,7 @@
     "111-B: scripts/epic/epic-create.sh new CLI with --checkin-point flag",
     "111-C: scripts/verify/check-checkin-points.sh validator (>=1)",
     "111-D: smoke test create with 0 / 1 / N checkin points"
-  ]
+  ],
+  "closed_at": "2026-07-10T13:42:51Z",
+  "closed_reason": "merged to miao (PR #109 → #111 → #110)"
 }

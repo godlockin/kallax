@@ -37,7 +37,9 @@
     ],
     "excludes": []
   },
-  "dependencies": ["EPIC-028-A"],
+  "dependencies": [
+    "EPIC-028-A"
+  ],
   "acceptance_criteria": [
     "M1 KPI: 30 短句真症状词 ≥ 80% 命中 (实测 26/30 = 86.7%)",
     "M6 KPI: 20 ambiguous case ≥ 70% 解决 (实测 18/20 = 90%)",
@@ -47,5 +49,8 @@
     "check-scope-creep: 所有改文件在 ticket scope 内"
   ],
   "estimated_hours": 8,
-  "notes": "Master corrective integration after 2 Performer attempts (6563362 falsified 30/30=100%, 33cfc48 build fail). Rust binary + L1a logic + 7 trigger 扩词 + 3 anti-fab tools. 4 KPI 全 PASS."
+  "notes": "Master corrective integration after 2 Performer attempts (6563362 falsified 30/30=100%, 33cfc48 build fail). Rust binary + L1a logic + 7 trigger 扩词 + 3 anti-fab tools. 4 KPI 全 PASS.",
+  "status": "closed",
+  "closed_at": "historical (commit c7854b6)",
+  "closed_reason": "delivered via commit c7854b6 + 6b2cc2e, retro-close"
 }

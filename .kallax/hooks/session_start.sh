@@ -294,6 +294,30 @@ mv -f "${_STATE_TMP}" "${_STATE_FILE}"
 unset _STATE_FILE _STATE_TMP
 
 # ============================================================
+# EPIC-113-A: Triple-write to SQLite instances table (fail-open)
+# File is still authoritative (EPIC-068-A); DB is additive for
+# runtime queries. sqlite3 CLI missing / DB uninitialized → skip.
+# ============================================================
+_KDB="${KALLAX_ROOT}/.kallax/kallax.db"
+if command -v sqlite3 >/dev/null 2>&1 && [ -f "${_KDB}" ]; then
+  # role → instances.role: master maps to conductor (schema CHECK constraint)
+  _DB_ROLE="conductor"
+  case "${ROLE}" in
+    performer) _DB_ROLE="performer" ;;
+    conductor|master) _DB_ROLE="conductor" ;;
+  esac
+  _INST_NAME="${ROLE}@${BRANCH}"
+  # Escape single quotes for SQL literal
+  _INST_NAME_ESC="${_INST_NAME//\'/\'\'}"
+  sqlite3 "${_KDB}" >/dev/null 2>&1 <<SQL || true
+INSERT OR REPLACE INTO instances (id, name, role, status, metadata, created_at, updated_at)
+VALUES ('${INSTANCE_ID}', '${_INST_NAME_ESC}', '${_DB_ROLE}', 'active', '{}', '${NOW}', '${NOW}');
+SQL
+  unset _DB_ROLE _INST_NAME _INST_NAME_ESC
+fi
+unset _KDB
+
+# ============================================================
 # EPIC-016-O: Stale heartbeat daemon cleanup — prevent accumulation
 # Run BEFORE daemon start (P1 fix from A review).
 # EPIC-026-A Fix #6: zombie daemon auto-cleanup before new daemon start.

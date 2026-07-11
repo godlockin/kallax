@@ -2,8 +2,11 @@
   "id": "PHASE-001",
   "title": "KALLAX 系统初始化与角色治理",
   "scope": "1. 系统初始化协议\n2. 角色设定与权限模型\n3. 目录框架结构标准化\n4. 基础治理脚本\n5. instance 注册与心跳\n6. 治理层/智能层分离",
-  "epics": ["EPIC-015"],
+  "epics": [
+    "EPIC-015"
+  ],
   "start_time": "2026-06-06",
-  "delivery_time": "2026-06-09",
-  "status": "active"
+  "delivery_time": "2026-07-10",
+  "status": "delivered",
+  "closed_reason": "EPIC-015 delivered; retro-close 2026-07-10"
 }

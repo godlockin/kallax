@@ -5,7 +5,7 @@
   "scope": "1. UP-1: Rule 8 \"L4 脚本必须存在, 否则 ticket 不 close\" (CLAUDE.md 修订)\n2. UP-2: Rule 9 \"5-Level Fact-Forcing 强制机制 = task:complete 集成\" (新脚本 + pre-flight check)\n3. UP-3: Rule 6 修订 \"EPIC 实施 commit 必带 LESSONS-LEARNED 草稿\" (CLAUDE.md 修订)\n4. UP-4: 新建 architecture/heartbeat-observability.md (F ticket 沉淀)\n5. integration test + A+B review",
   "start_time": "2026-06-07",
   "delivery_time": "2026-06-08",
-  "status": "active",
+  "status": "delivered",
   "baseline": {
     "source": "EPIC-021 LESSONS-LEARNED §8.3 (4 升级候选)",
     "current_rules": "Rule 6 + Rule 7 已在 CLAUDE.md (本会话 WORKFLOW-RULES 落地)",
@@ -54,5 +54,6 @@
       "status": "ready",
       "blocked_by": null
     }
-  ]
+  ],
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }

@@ -1,0 +1,20 @@
+{
+  "ticket_id": "EPIC-113-B",
+  "epic": "EPIC-113",
+  "phase": "PHASE-017",
+  "title": "CLI: kallax db:migrate-from-json 迁移工具",
+  "status": "planning",
+  "created_at": "2026-07-10",
+  "description": "扫 jira/tickets/*/ticket.json + .kallax/state/state.json + audit log 一次性 bulk import 到 SQLite。幂等 + dry-run。",
+  "file_scope": {
+    "includes": [
+      "rust/crates/kallax-cli/src/commands/db_migrate.rs",
+      "rust/crates/kallax-core/src/db/"
+    ]
+  },
+  "acceptance": [
+    "kallax db:migrate-from-json --dry-run 输出计划",
+    "kallax db:migrate-from-json --apply 幂等 (2 次执行结果一致)",
+    "smoke test 覆盖空库 + 已有数据 2 场景"
+  ]
+}

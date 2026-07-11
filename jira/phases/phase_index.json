@@ -2,9 +2,9 @@
   "phases": [
     {
       "id": "PHASE-001",
-      "status": "active",
+      "status": "delivered",
       "start_time": "2026-06-06",
-      "delivery_time": "2026-06-08",
+      "delivery_time": "2026-07-10",
       "title": "PHASE-001 历史 EPIC (跟 v2.0.4 无关, EPIC-015 联合)"
     },
     {
@@ -90,6 +90,12 @@
       "start_time": "2026-06-18",
       "delivery_time": "2026-06-19",
       "title": "PHASE-016 EPIC-060 3 票 P3 留待 入口 (跟主公 2026-06-18 '同意建议' explicit 派单 联合, 跟'独立' 拍板 explicit 联合, 跟 PROCESS.md:25-26 联合)"
+    },
+    {
+      "id": "PHASE-017",
+      "status": "active",
+      "start_time": "2026-07-10",
+      "title": "PHASE-017 Rust core 持久层与运行时基础 (EPIC-008 SQLite persistence + 后续 Rust 运行时演进)"
     }
   ]
 }

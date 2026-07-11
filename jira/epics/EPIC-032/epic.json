@@ -5,7 +5,7 @@
   "scope": "1. EPIC-031 anti-fab 工具落地后, M1 需要更多真实 test case 验证 recall\n2. 30 → 50 test case (扩 data + legal 场景, 触发 4 generated expert: finance×4 + product×3 + ux×3)\n3. 跑 expert-quality-audit.py 验证 M1 Recall 30/30 → 50/50 提升",
   "start_time": "2026-06-11",
   "delivery_time": "2026-06-12",
-  "status": "active",
+  "status": "delivered",
   "baseline": {
     "source": "EPIC-031 anti-fab 工具 (check-commit-amend-verify.sh)",
     "current_m1_test_cases": 30,
@@ -32,5 +32,6 @@
       "status": "in_progress",
       "blocked_by": null
     }
-  ]
+  ],
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }
