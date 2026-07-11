@@ -26,9 +26,15 @@ pub fn parse_priority(s: &str) -> Result<Priority> {
 }
 
 pub fn parse_scope(s: &str) -> Vec<PathBuf> {
-    s.split(',').filter(|p| !p.is_empty()).map(PathBuf::from).collect()
+    s.split(',')
+        .filter(|p| !p.is_empty())
+        .map(PathBuf::from)
+        .collect()
 }
 
 pub fn parse_capabilities(s: &str) -> Vec<String> {
-    s.split(',').filter(|c| !c.is_empty()).map(String::from).collect()
+    s.split(',')
+        .filter(|c| !c.is_empty())
+        .map(String::from)
+        .collect()
 }

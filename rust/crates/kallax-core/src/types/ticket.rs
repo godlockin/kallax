@@ -5,10 +5,10 @@
 //! TicketStatus: enum of valid ticket states (follows v1.0 status flow).
 //! Priority: enum of priority levels (P0-P3, lower number = higher priority).
 
+use super::performer::PerformerId;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use super::performer::PerformerId;
 use std::path::PathBuf;
 use uuid::Uuid;
 
@@ -48,20 +48,44 @@ impl Ticket {
     }
 
     // Getters
-    pub fn id(&self) -> &TicketId { &self.id }
-    pub fn title(&self) -> &str { &self.title }
-    pub fn description(&self) -> &str { &self.description }
-    pub fn status(&self) -> TicketStatus { self.status }
-    pub fn priority(&self) -> Priority { self.priority }
-    pub fn scope(&self) -> &[PathBuf] { &self.scope }
-    pub fn acceptance_criteria(&self) -> &[String] { &self.acceptance_criteria }
-    pub fn tags(&self) -> &[String] { &self.tags }
-    pub fn created_at(&self) -> DateTime<Utc> { self.created_at }
-    pub fn updated_at(&self) -> DateTime<Utc> { self.updated_at }
-    pub fn assigned_to(&self) -> Option<&PerformerId> { self.assigned_to.as_ref() }
+    pub fn id(&self) -> &TicketId {
+        &self.id
+    }
+    pub fn title(&self) -> &str {
+        &self.title
+    }
+    pub fn description(&self) -> &str {
+        &self.description
+    }
+    pub fn status(&self) -> TicketStatus {
+        self.status
+    }
+    pub fn priority(&self) -> Priority {
+        self.priority
+    }
+    pub fn scope(&self) -> &[PathBuf] {
+        &self.scope
+    }
+    pub fn acceptance_criteria(&self) -> &[String] {
+        &self.acceptance_criteria
+    }
+    pub fn tags(&self) -> &[String] {
+        &self.tags
+    }
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
+    pub fn assigned_to(&self) -> Option<&PerformerId> {
+        self.assigned_to.as_ref()
+    }
 
     /// Return a reference to the metadata map.
-    pub fn metadata(&self) -> &HashMap<String, serde_json::Value> { &self.metadata }
+    pub fn metadata(&self) -> &HashMap<String, serde_json::Value> {
+        &self.metadata
+    }
 
     /// Construct a ticket from raw storage values (used by persistence layer).
     /// Does NOT validate state transitions — assumes caller stored valid state.
@@ -81,9 +105,18 @@ impl Ticket {
         assigned_to: Option<PerformerId>,
     ) -> Self {
         Self {
-            id, title, description, status, priority,
-            scope, acceptance_criteria, tags, metadata,
-            created_at, updated_at, assigned_to,
+            id,
+            title,
+            description,
+            status,
+            priority,
+            scope,
+            acceptance_criteria,
+            tags,
+            metadata,
+            created_at,
+            updated_at,
+            assigned_to,
         }
     }
 
@@ -165,7 +198,10 @@ pub struct TicketId(String);
 
 impl TicketId {
     pub fn new() -> Self {
-        Self(format!("TICKET-{}", Uuid::new_v4().to_string()[..8].to_uppercase()))
+        Self(format!(
+            "TICKET-{}",
+            Uuid::new_v4().to_string()[..8].to_uppercase()
+        ))
     }
 
     pub fn from_str(s: impl Into<String>) -> Self {

@@ -7,21 +7,21 @@
 //! - **Immutability** - Prefer owned data over mutable references
 
 pub mod analyzer;
+pub mod cache;
 pub mod db;
 pub mod error;
-pub mod types;
-pub mod cache;
+pub mod fingerprint;
+pub mod isolation;
 pub mod middleware;
 pub mod registry;
-pub mod isolation;
+pub mod types;
 pub mod webhook;
-pub mod fingerprint;
 
-pub use error::{KallaxError, Result};
-pub use types::*;
 pub use cache::Cache;
+pub use error::{KallaxError, Result};
+pub use isolation::IsolationScope;
 pub use middleware::MiddlewarePipeline;
 pub use registry::Registry;
-pub use isolation::IsolationScope;
+pub use types::*;
 // EPIC-095: re-export db types (跟 ticket_engine.rs EPIC-075/079 联合, 治 E0432)
 pub use db::{SqliteClient, TicketFilter};
