@@ -5,7 +5,7 @@
   "scope": "1. Baseline 测量\n2. Layer B 行为优化(Claude 探索收敛)\n3. Layer C 脚本瘦身\n4. Layer A 平台级提案\n5. 迭代验证 60-80% 节省目标",
   "start_time": "2026-06-06",
   "delivery_time": "2026-06-08",
-  "status": "active",
+  "status": "delivered",
   "baseline": {
     "wall_time_seconds": 600,
     "tokens_estimate": 2500000,
@@ -145,5 +145,6 @@
       "merge_commit": "b59cb02",
       "title": "Layer A 实施 + session_start 回归修复"
     }
-  ]
+  ],
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }

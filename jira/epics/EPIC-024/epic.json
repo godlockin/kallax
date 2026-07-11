@@ -5,7 +5,7 @@
   "scope": "1. 收集 EPIC-016 + EPIC-021 真实 ticket 描述 (L1 miss rate 基线)\n2. 跑 trigger keyword match test (3-5 关键词 × 5 expert)\n3. 报告 L1 命中率 + miss rate 分布\n4. 给后续 Sprint B/C 决策建议 (validate_first 的 hard data)",
   "start_time": "2026-06-07",
   "delivery_time": "2026-06-08",
-  "status": "active",
+  "status": "delivered",
   "baseline": {
     "source": "EXPERT-EXTENSION-SCHEME-2026-06-07.md",
     "8_expert_consensus": "validate_first (3/3 补专家)",
@@ -43,5 +43,6 @@
         "EPIC-024-A"
       ]
     }
-  ]
+  ],
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }

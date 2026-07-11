@@ -5,7 +5,7 @@
   "scope": "1. SessionStart hook\n2. Worktree 隔离引导\n3. Heartbeat 自动 tick\n4. Performer 交付协议\n5. Performer 领卡前置协议\n6. 并行 Performer 调度\n7. JSON Schema 验证\n8. kallax init\n9. kallax.db",
   "start_time": "2026-06-06",
   "delivery_time": "2026-06-09",
-  "status": "active",
+  "status": "delivered",
   "tickets": [
     {
       "id": "EPIC-015-A",
@@ -52,5 +52,6 @@
       "assignee": null,
       "status": "backlog"
     }
-  ]
+  ],
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }

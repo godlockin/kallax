@@ -5,7 +5,7 @@
   "scope": "1. 写跨 worktree 派单脚本 cross-worktree-dispatch.sh\n2. 自动 cherry-pick / patch 传递 (1 Performer 完成后跨 worktree 给 2 Performer)\n3. 解决 Phase 5 模式 G 记录的 friction\n4. 集成 conductor/dispatch.sh 支持 --cross-worktree 选项",
   "start_time": "2026-06-12",
   "delivery_time": "2026-06-13",
-  "status": "active",
+  "status": "delivered",
   "baseline": {
     "source": "PROJECT-STATUS-AND-LESSONS-2026-06-12.md §2.6 推荐 C (主公 2026-06-12 拍 Top 4 开工)",
     "current_state": "1 Performer 完成后跨 worktree 给 2 Performer 用有 friction (Phase 5 模式 G)",
@@ -39,5 +39,6 @@
       "status": "pending",
       "blocked_by": "EPIC-036-A"
     }
-  ]
+  ],
+  "closed_reason": "all sub-tickets closed; retro-close 2026-07-10"
 }
