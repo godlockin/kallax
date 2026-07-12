@@ -41,17 +41,28 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PR_NUM="${{ github.event.pull_request.number }}"
-          STATS=$(gh pr view "$PR_NUM" --json additions,deletions,changedFiles)
+          STATS=$(gh pr view "$PR_NUM" --json additions,deletions,changedFiles,files)
           ADDITIONS=$(echo "$STATS" | jq -r '.additions')
           DELETIONS=$(echo "$STATS" | jq -r '.deletions')
           CHANGED_FILES=$(echo "$STATS" | jq -r '.changedFiles')
-          NET_CHANGE=$((ADDITIONS + DELETIONS))
+          RAW_NET_CHANGE=$((ADDITIONS + DELETIONS))
+
+          # 豁免list (主公拍板 2026-07-12): 不可拆分文件 (lockfile/dependency/manifest)
+          # 跟 code 依赖绑死, 不能独立 PR
+          EXEMPT_REGEX='(^|/)(package-lock\.json|pnpm-lock\.yaml|yarn\.lock|Cargo\.lock|poetry\.lock|Pipfile\.lock|composer\.lock|go\.sum|pyproject\.toml|Cargo\.toml|package\.json|go\.mod|requirements\.txt|Gemfile\.lock)$'
+          EXEMPT_LINES=$(echo "$STATS" | jq -r --arg re "$EXEMPT_REGEX" '[.files[] | select(.path | test($re)) | .additions + .deletions] | add // 0')
+          NET_CHANGE=$((RAW_NET_CHANGE - EXEMPT_LINES))
 
           echo "PR #$PR_NUM stats:"
-          echo "  Additions:      $ADDITIONS"
-          echo "  Deletions:      $DELETIONS"
-          echo "  Net change:     $NET_CHANGE"
-          echo "  Changed files:  $CHANGED_FILES"
+          echo "  Additions:         $ADDITIONS"
+          echo "  Deletions:         $DELETIONS"
+          echo "  Raw net change:    $RAW_NET_CHANGE"
+          echo "  Exempt lines:      $EXEMPT_LINES (lockfile/manifest)"
+          echo "  Net change (adj):  $NET_CHANGE"
+          echo "  Changed files:     $CHANGED_FILES"
+          echo ""
+          echo "  Exempt files:"
+          echo "$STATS" | jq -r --arg re "$EXEMPT_REGEX" '.files[] | select(.path | test($re)) | "    - \(.path) (+\(.additions) -\(.deletions))"'
           echo ""
 
           # ----------------------------------------
