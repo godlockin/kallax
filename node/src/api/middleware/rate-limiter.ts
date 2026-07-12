@@ -48,16 +48,17 @@ setInterval(() => {
 }, CLEANUP_INTERVAL_MS).unref();
 
 /**
- * Get the applicable rate limit config for a path
+ * Get the applicable rate limit config for a path, along with the matched prefix
+ * (or an empty string when the default limit applies). The prefix is used as
+ * part of the bucket key so each (IP, route) pair keeps its own token bucket.
  */
-function getLimitConfig(path: string): RouteLimitConfig {
-  // Check for specific route limits
+function getLimitConfig(path: string): { prefix: string; config: RouteLimitConfig } {
   for (const [prefix, config] of ROUTE_SPECIFIC_LIMITS) {
     if (path.startsWith(prefix)) {
-      return config;
+      return { prefix, config };
     }
   }
-  return DEFAULT_LIMIT;
+  return { prefix: '', config: DEFAULT_LIMIT };
 }
 
 /**
@@ -82,8 +83,9 @@ export function resetRateLimiter(): void {
  */
 export function createRateLimiter() {
   return function rateLimiter(req: Request, res: Response, next: NextFunction): void {
-    const key = req.ip ?? 'unknown';
-    const config = getLimitConfig(req.path);
+    const ip = req.ip ?? 'unknown';
+    const { prefix, config } = getLimitConfig(req.path);
+    const key = `${ip}::${prefix}`;
     const now = Date.now();
 
     let bucket = buckets.get(key);
