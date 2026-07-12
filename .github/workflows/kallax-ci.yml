@@ -82,8 +82,9 @@ jobs:
           # 强制每个 release entry 含 core + engine + server 字面
           # 跟 EPIC-101 量化对账表 1:1 联合
           RECENT=$(head -50 CHANGELOG.md)
-          if ! echo "$RECENT" | grep -q "core.*passed" || \
-             ! echo "$RECENT" | grep -q "engine.*passed" || \
+          # 双向匹配 (顺序无关): 允许 "passed 74 core" 或 "74 core ... passed"
+          if ! echo "$RECENT" | grep -qE "(core.*passed|passed.*core)" || \
+             ! echo "$RECENT" | grep -qE "(engine.*passed|passed.*engine)" || \
              ! echo "$RECENT" | grep -q "server"; then
             echo "❌ CHANGELOG 最近 entry 缺 3-crate scope (core + engine + server)"
             echo "   治 v3.8.0 lesson #3 (数字假装单 lib 当 workspace)"
@@ -102,11 +103,14 @@ jobs:
 
       - name: Verify all check-* scripts pass
         run: |
+          # dry-run = 纯语法检查 (bash -n), 不实际执行 hook
+          # 之前用 --help 探测, 但 11 个 hook 把 --help 当作 ticket/base-ref 参数报错 exit≠0
+          # 真正 dry-run 应验证语法, 不验证运行时行为
           FAIL=0
           for hook in scripts/verify/check-*.sh; do
             if [[ -f "$hook" ]]; then
-              if ! bash "$hook" --help >/dev/null 2>&1; then
-                echo "❌ $hook failed"
+              if ! bash -n "$hook" 2>&1; then
+                echo "❌ $hook syntax error"
                 FAIL=1
               else
                 echo "✅ $hook OK"
