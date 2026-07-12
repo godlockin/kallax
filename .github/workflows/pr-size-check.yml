@@ -41,7 +41,18 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PR_NUM="${{ github.event.pull_request.number }}"
-          STATS=$(gh pr view "$PR_NUM" --json additions,deletions,changedFiles,files)
+          STATS=$(gh pr view "$PR_NUM" --json additions,deletions,changedFiles,files,labels,body)
+
+          # Approved-Large-PR-By 豁免 (主公拍板 2026-07-12): label 或 PR body 里 marker
+          # 跟 scripts/check-pr-size.sh 提示语一致, 补上 workflow 侧实现
+          HAS_LABEL=$(echo "$STATS" | jq -r '[.labels[].name] | map(select(test("^Approved-Large-PR-By"; "i"))) | length')
+          HAS_BODY_MARKER=$(echo "$STATS" | jq -r '.body' | grep -ciE '^Approved-Large-PR-By:' || echo 0)
+          if [ "$HAS_LABEL" -gt 0 ] || [ "$HAS_BODY_MARKER" -gt 0 ]; then
+            APPROVED_LARGE="yes"
+          else
+            APPROVED_LARGE="no"
+          fi
+          echo "Approved-Large-PR-By: $APPROVED_LARGE (label=$HAS_LABEL body_marker=$HAS_BODY_MARKER)"
           ADDITIONS=$(echo "$STATS" | jq -r '.additions')
           DELETIONS=$(echo "$STATS" | jq -r '.deletions')
           CHANGED_FILES=$(echo "$STATS" | jq -r '.changedFiles')
@@ -126,6 +137,10 @@ jobs:
           #   - PR ~100 WARN-STRONG (300-500) → exit 1 (跟 Rule 13 decision-gate 联合)
           #   - PR ~100 WARN (100-300) → exit 0 (warn 不阻止)
           if [ "$PR_100_STATUS" = "FAIL" ] || [ "$R500_STATUS" = "FAIL" ] || [ "$PR_100_STATUS" = "WARN-STRONG" ]; then
+            if [ "$APPROVED_LARGE" = "yes" ]; then
+              echo "⚠ PR size FAILED but Approved-Large-PR-By marker present (bypass — 主公 拍板)"
+              exit 0
+            fi
             echo "❌ PR size check FAILED — see warnings/errors above"
             exit 1
           fi
