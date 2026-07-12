@@ -488,7 +488,7 @@ if (isMainModule) {
   main().then(
     (code) => process.exit(code),
     (e: unknown) => {
-      logger.error({}, 'FATAL:', e instanceof Error ? e.message : String(e));
+      logger.error({ error: e instanceof Error ? e.message : String(e) }, 'FATAL');
       process.exit(2);
     },
   );

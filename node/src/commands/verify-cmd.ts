@@ -129,7 +129,8 @@ export function registerVerifyCommands(program: Command, _ctx: AppContext): void
     .option('-v, --verbose', 'Show detailed evidence')
     .action(async (taskId: string, opts?: { level?: string; verbose?: boolean }) => {
       try {
-        const level = (parseInt(opts?.['level'] ?? '5', 10) as 1 | 2 | 3 | 4 | 5);
+        const parsed = parseInt(opts?.['level'] ?? '4', 10);
+        const level = (parsed >= 1 && parsed <= 4 ? parsed : 4) as 1 | 2 | 3 | 4;
         const result = await executeVerifyOutput(
           _ctx.db, _ctx.worktreeManager, _ctx.outputVerifier,
           { taskId, level, verbose: opts?.['verbose'] },

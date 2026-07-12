@@ -182,7 +182,7 @@ export function createHeartbeatClient(baseUrl: string, apiKey: string): Heartbea
     try {
       const body: Record<string, unknown> = {};
       if (currentTaskId !== null) {
-        body.currentTaskId = currentTaskId;
+        body['currentTaskId'] = currentTaskId;
       }
       const res = await fetch(`${baseUrl}/api/agents/${encodeURIComponent(agentId)}/heartbeat`, {
         method: 'PUT',

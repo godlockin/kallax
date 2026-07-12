@@ -215,7 +215,7 @@ export function parseArgs(argv: readonly string[]): Map<string, string> {
   const args = new Map<string, string>();
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
-    if (arg.startsWith('--')) {
+    if (arg && arg.startsWith('--')) {
       const eq = arg.indexOf('=');
       if (eq > 0) {
         args.set(arg.slice(2, eq), arg.slice(eq + 1));

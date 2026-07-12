@@ -48,9 +48,6 @@ export function createInstanceRegistry(db: SQLiteManager): InstanceRegistry {
     max: INSTANCE_CACHE_MAX,
     ttlMs: INSTANCE_TTL_MS,
     updateAgeOnGet: true,
-    dispose: (value, key) => {
-      logger.info({ cacheName: 'instance-registry', key }, 'instance cache entry disposed (7d TTL)');
-    },
   });
 
   return {
