@@ -49,10 +49,7 @@ describe('RateLimiter', () => {
     expect(blocked.status).toHaveBeenCalledWith(429);
   });
 
-  // TODO(EPIC-114-B): source bug — bucket 按 IP 分而非 (ip, route),
-  // 导致同一 IP 用两个不同 route 时 bucket size 塌陷到较小 route 的 maxTokens.
-  // 修 source (bucket key = `${ip}:${routePrefix}`) 后 unskip.
-  it.skip('uses different limits per route', () => {
+  it('uses different limits per route', () => {
     const ip = '192.168.1.1';
     const next = vi.fn();
     const res = mockRes();
