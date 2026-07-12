@@ -343,7 +343,7 @@ export function rowToProjectTicket(row: ProjectTicketRow): ProjectTicket {
     type: row.type,
     priority: row.priority,
     status: row.status,
-    assignee: row.assignee,
+    assignee: row.assignee ?? undefined,
     fileScope: row.file_scope !== null ? (JSON.parse(row.file_scope) as { includes: string[]; excludes: string[] }) : undefined,
     acceptanceCriteria: JSON.parse(row.acceptance_criteria) as string[],
   };
@@ -354,18 +354,18 @@ export function projectTicketToRow(ticket: ProjectTicket): ProjectTicketRow {
     id: ticket.id,
     epic_id: ticket.epicId,
     title: ticket.title,
-    type: ticket.type,
+    type: ticket.type ?? '',
     priority: ticket.priority,
     status: ticket.status,
     assignee: ticket.assignee ?? null,
     file_scope: ticket.fileScope !== undefined ? JSON.stringify(ticket.fileScope) : null,
-    acceptance_criteria: JSON.stringify(ticket.acceptanceCriteria),
+    acceptance_criteria: JSON.stringify(ticket.acceptanceCriteria ?? []),
   };
 }
 
 export function rowToTeamInstance(row: TeamInstanceRow): TeamInstance {
   return {
-    instanceId: row.instance_id,
+    id: row.instance_id,
     role: row.role,
     status: row.status,
     branch: row.branch ?? undefined,
@@ -377,7 +377,7 @@ export function rowToTeamInstance(row: TeamInstanceRow): TeamInstance {
 
 export function teamInstanceToRow(instance: TeamInstance): TeamInstanceRow {
   return {
-    instance_id: instance.instanceId,
+    instance_id: instance.id,
     role: instance.role,
     status: instance.status,
     branch: instance.branch ?? null,

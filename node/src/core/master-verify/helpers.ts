@@ -5,7 +5,7 @@
 
 import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
-import { logger } from '../utils/logger.js';
+import { logger } from '../../utils/logger.js';
 import { EXIT_FAIL } from './constants.js';
 
 const KPI_FAB_BLACKLIST_PATTERNS = [

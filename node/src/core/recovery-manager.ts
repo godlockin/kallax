@@ -197,7 +197,7 @@ async function probeAll(): Promise<void> {
     // 修: 用 state.json 写 last_tier1_probe_at, 5s 内跳过
     const now = Date.now();
     if (!shouldProbeTier1(now)) {
-      logger.debug('recovery: tier 1 probe skipped (recent)');
+      logger.debug({}, 'recovery: tier 1 probe skipped (recent)');
     } else {
       // Probe shell fallback
       const fileQOk = await probeFileQueue();

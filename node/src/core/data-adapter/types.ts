@@ -39,9 +39,12 @@ export interface ProjectTicket {
   id: string;
   epicId: string;
   title: string;
+  type?: string;
   status: string;
   assignee?: string;
   priority: string;
+  fileScope?: { includes: string[]; excludes: string[] };
+  acceptanceCriteria?: string[];
   startTime?: string;
   deliveryTime?: string;
 }

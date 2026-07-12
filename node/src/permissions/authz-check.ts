@@ -39,17 +39,17 @@ export function checkAuthz(options: AuthzCheckOptions): KallaxResult<AuthzCheckR
 
   // Validate inputs
   if (!action || typeof action !== 'string') {
-    return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Invalid action', { action }));
+    return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Invalid action', { metadata: { action } }));
   }
 
   if (!actor || typeof actor !== 'string') {
-    return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Invalid actor', { actor }));
+    return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Invalid actor', { metadata: { actor } }));
   }
 
   // Role name validation
   if (role) {
     if (role !== role.trim()) {
-      return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Role has whitespace', { role }));
+      return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Role has whitespace', { metadata: { role } }));
     }
   }
 
