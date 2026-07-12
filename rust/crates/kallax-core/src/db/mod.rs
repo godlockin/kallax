@@ -11,9 +11,7 @@
 mod migrations;
 mod serialization;
 
-pub(crate) use serialization::{
-    de_meta, de_scope, de_strs, ser_meta, ser_scope, ser_strs, str_to_ts, ts_to_str,
-};
+pub(crate) use serialization::{de_meta, de_scope, de_strs, ser_meta, ser_scope, ser_strs, str_to_ts, ts_to_str};
 
 use crate::error::{KallaxError, Result};
 use crate::types::*;
@@ -42,7 +40,8 @@ impl SqliteClient {
 
         // Ensure parent directory exists
         if let Some(parent) = path.parent() {
-            std::fs::create_dir_all(parent).map_err(|e| KallaxError::io(parent, e))?;
+            std::fs::create_dir_all(parent)
+                .map_err(|e| KallaxError::io(parent, e))?;
         }
 
         let manager = SqliteConnectionManager::file(&path);
@@ -120,12 +119,10 @@ impl SqliteClient {
             .get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
         let mut stmt = conn
-            .prepare(
-                "SELECT id, title, description, status, priority,
+            .prepare("SELECT id, title, description, status, priority,
                              scope, acceptance_criteria, tags, metadata,
                              created_at, updated_at, assigned_to
-                      FROM tickets WHERE id = ?1",
-            )
+                      FROM tickets WHERE id = ?1")
             .map_err(|e| KallaxError::database("prepare_get_ticket", e))?;
 
         let mut rows = stmt
@@ -218,9 +215,7 @@ impl SqliteClient {
 
     /// Insert a new instance. Errors if the ID already exists.
     pub fn insert_instance(&self, instance: &Instance) -> Result<()> {
-        let conn = self
-            .pool
-            .get()
+        let conn = self.pool.get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
         conn.execute(
             "INSERT INTO instances
@@ -242,9 +237,7 @@ impl SqliteClient {
 
     /// Upsert an instance (INSERT OR REPLACE). Used by session_start dual-write.
     pub fn upsert_instance(&self, instance: &Instance) -> Result<()> {
-        let conn = self
-            .pool
-            .get()
+        let conn = self.pool.get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
         conn.execute(
             "INSERT OR REPLACE INTO instances
@@ -266,19 +259,14 @@ impl SqliteClient {
 
     /// Fetch a single instance by ID.
     pub fn get_instance(&self, id: &str) -> Result<Instance> {
-        let conn = self
-            .pool
-            .get()
+        let conn = self.pool.get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
         let sql = format!("{} WHERE id = ?1", SELECT_INSTANCE_BASE);
-        let mut stmt = conn
-            .prepare(&sql)
+        let mut stmt = conn.prepare(&sql)
             .map_err(|e| KallaxError::database("prepare_get_instance", e))?;
-        let mut rows = stmt
-            .query(params![id])
+        let mut rows = stmt.query(params![id])
             .map_err(|e| KallaxError::database("query_get_instance", e))?;
-        match rows
-            .next()
+        match rows.next()
             .map_err(|e| KallaxError::database("get_instance_next", e))?
         {
             Some(row) => instance_from_row(row),
@@ -288,16 +276,11 @@ impl SqliteClient {
 
     /// List instances, optionally filtered by role. Ordered by `created_at DESC`.
     pub fn list_instances(&self, role: Option<InstanceRole>) -> Result<Vec<Instance>> {
-        let conn = self
-            .pool
-            .get()
+        let conn = self.pool.get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
         let (sql, role_param) = match role {
             Some(r) => (
-                format!(
-                    "{} WHERE role = ?1 ORDER BY created_at DESC",
-                    SELECT_INSTANCE_BASE
-                ),
+                format!("{} WHERE role = ?1 ORDER BY created_at DESC", SELECT_INSTANCE_BASE),
                 Some(r.as_str().to_string()),
             ),
             None => (
@@ -305,20 +288,16 @@ impl SqliteClient {
                 None,
             ),
         };
-        let mut stmt = conn
-            .prepare(&sql)
+        let mut stmt = conn.prepare(&sql)
             .map_err(|e| KallaxError::database("prepare_list_instances", e))?;
         let mut rows = match &role_param {
-            Some(v) => stmt
-                .query(params![v])
+            Some(v) => stmt.query(params![v])
                 .map_err(|e| KallaxError::database("query_list_instances", e))?,
-            None => stmt
-                .query([])
+            None => stmt.query([])
                 .map_err(|e| KallaxError::database("query_list_instances", e))?,
         };
         let mut out = Vec::new();
-        while let Some(row) = rows
-            .next()
+        while let Some(row) = rows.next()
             .map_err(|e| KallaxError::database("list_instances_next", e))?
         {
             out.push(instance_from_row(row)?);
@@ -328,29 +307,26 @@ impl SqliteClient {
 
     /// Update an existing instance. Returns `NotFound` if the ID does not exist.
     pub fn update_instance(&self, instance: &Instance) -> Result<()> {
-        let conn = self
-            .pool
-            .get()
+        let conn = self.pool.get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
-        let rows = conn
-            .execute(
-                "UPDATE instances SET
+        let rows = conn.execute(
+            "UPDATE instances SET
                 name       = ?1,
                 role       = ?2,
                 status     = ?3,
                 metadata   = ?4,
                 updated_at = ?5
              WHERE id = ?6",
-                params![
-                    instance.name(),
-                    instance.role().as_str(),
-                    instance.status(),
-                    ser_meta(instance.metadata()),
-                    ts_to_str(&instance.updated_at()),
-                    instance.id(),
-                ],
-            )
-            .map_err(|e| KallaxError::database("update_instance", e))?;
+            params![
+                instance.name(),
+                instance.role().as_str(),
+                instance.status(),
+                ser_meta(instance.metadata()),
+                ts_to_str(&instance.updated_at()),
+                instance.id(),
+            ],
+        )
+        .map_err(|e| KallaxError::database("update_instance", e))?;
         if rows == 0 {
             return Err(KallaxError::not_found("instance", instance.id()));
         }
@@ -363,9 +339,7 @@ impl SqliteClient {
 
     /// Insert a new trace span. Append-only; use `update_span_end` to close it.
     pub fn insert_span(&self, span: &TraceSpan) -> Result<()> {
-        let conn = self
-            .pool
-            .get()
+        let conn = self.pool.get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
         conn.execute(
             "INSERT INTO trace_spans
@@ -387,23 +361,20 @@ impl SqliteClient {
 
     /// Close an in-flight span (sets ended_at + duration_ms).
     pub fn update_span_end(&self, span: &TraceSpan) -> Result<()> {
-        let conn = self
-            .pool
-            .get()
+        let conn = self.pool.get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
-        let rows = conn
-            .execute(
-                "UPDATE trace_spans SET
+        let rows = conn.execute(
+            "UPDATE trace_spans SET
                 ended_at    = ?1,
                 duration_ms = ?2
              WHERE id = ?3",
-                params![
-                    span.ended_at().map(|t| ts_to_str(&t)),
-                    span.duration_ms(),
-                    span.id(),
-                ],
-            )
-            .map_err(|e| KallaxError::database("update_span_end", e))?;
+            params![
+                span.ended_at().map(|t| ts_to_str(&t)),
+                span.duration_ms(),
+                span.id(),
+            ],
+        )
+        .map_err(|e| KallaxError::database("update_span_end", e))?;
         if rows == 0 {
             return Err(KallaxError::not_found("trace_span", span.id()));
         }
@@ -412,19 +383,14 @@ impl SqliteClient {
 
     /// Fetch a single span by ID.
     pub fn get_span(&self, id: &str) -> Result<TraceSpan> {
-        let conn = self
-            .pool
-            .get()
+        let conn = self.pool.get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
         let sql = format!("{} WHERE id = ?1", SELECT_SPAN_BASE);
-        let mut stmt = conn
-            .prepare(&sql)
+        let mut stmt = conn.prepare(&sql)
             .map_err(|e| KallaxError::database("prepare_get_span", e))?;
-        let mut rows = stmt
-            .query(params![id])
+        let mut rows = stmt.query(params![id])
             .map_err(|e| KallaxError::database("query_get_span", e))?;
-        match rows
-            .next()
+        match rows.next()
             .map_err(|e| KallaxError::database("get_span_next", e))?
         {
             Some(row) => span_from_row(row),
@@ -433,14 +399,8 @@ impl SqliteClient {
     }
 
     /// List spans by name, ordered `started_at DESC`. Empty name = list all.
-    pub fn list_spans_by_name(
-        &self,
-        name: Option<&str>,
-        limit: Option<usize>,
-    ) -> Result<Vec<TraceSpan>> {
-        let conn = self
-            .pool
-            .get()
+    pub fn list_spans_by_name(&self, name: Option<&str>, limit: Option<usize>) -> Result<Vec<TraceSpan>> {
+        let conn = self.pool.get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
         let mut sql = String::from(SELECT_SPAN_BASE);
         if name.is_some() {
@@ -450,20 +410,16 @@ impl SqliteClient {
         if let Some(l) = limit {
             sql.push_str(&format!(" LIMIT {}", l as i64));
         }
-        let mut stmt = conn
-            .prepare(&sql)
+        let mut stmt = conn.prepare(&sql)
             .map_err(|e| KallaxError::database("prepare_list_spans", e))?;
         let mut rows = match name {
-            Some(n) => stmt
-                .query(params![n])
+            Some(n) => stmt.query(params![n])
                 .map_err(|e| KallaxError::database("query_list_spans", e))?,
-            None => stmt
-                .query([])
+            None => stmt.query([])
                 .map_err(|e| KallaxError::database("query_list_spans", e))?,
         };
         let mut out = Vec::new();
-        while let Some(row) = rows
-            .next()
+        while let Some(row) = rows.next()
             .map_err(|e| KallaxError::database("list_spans_next", e))?
         {
             out.push(span_from_row(row)?);
@@ -476,9 +432,7 @@ impl SqliteClient {
     // -----------------------------------------------------------------------
 
     pub fn insert_dag_run(&self, run: &DagRun) -> Result<()> {
-        let conn = self
-            .pool
-            .get()
+        let conn = self.pool.get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
         conn.execute(
             "INSERT INTO dag_runs (id, dag_name, status, trigger, started_at, completed_at)
@@ -497,29 +451,26 @@ impl SqliteClient {
     }
 
     pub fn update_dag_run(&self, run: &DagRun) -> Result<()> {
-        let conn = self
-            .pool
-            .get()
+        let conn = self.pool.get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
-        let rows = conn
-            .execute(
-                "UPDATE dag_runs SET
+        let rows = conn.execute(
+            "UPDATE dag_runs SET
                 dag_name     = ?1,
                 status       = ?2,
                 trigger      = ?3,
                 started_at   = ?4,
                 completed_at = ?5
              WHERE id = ?6",
-                params![
-                    run.dag_name(),
-                    run.status().as_str(),
-                    run.trigger(),
-                    run.started_at().map(|t| ts_to_str(&t)),
-                    run.completed_at().map(|t| ts_to_str(&t)),
-                    run.id(),
-                ],
-            )
-            .map_err(|e| KallaxError::database("update_dag_run", e))?;
+            params![
+                run.dag_name(),
+                run.status().as_str(),
+                run.trigger(),
+                run.started_at().map(|t| ts_to_str(&t)),
+                run.completed_at().map(|t| ts_to_str(&t)),
+                run.id(),
+            ],
+        )
+        .map_err(|e| KallaxError::database("update_dag_run", e))?;
         if rows == 0 {
             return Err(KallaxError::not_found("dag_run", run.id()));
         }
@@ -527,19 +478,14 @@ impl SqliteClient {
     }
 
     pub fn get_dag_run(&self, id: &str) -> Result<DagRun> {
-        let conn = self
-            .pool
-            .get()
+        let conn = self.pool.get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
         let sql = format!("{} WHERE id = ?1", SELECT_DAG_RUN_BASE);
-        let mut stmt = conn
-            .prepare(&sql)
+        let mut stmt = conn.prepare(&sql)
             .map_err(|e| KallaxError::database("prepare_get_dag_run", e))?;
-        let mut rows = stmt
-            .query(params![id])
+        let mut rows = stmt.query(params![id])
             .map_err(|e| KallaxError::database("query_get_dag_run", e))?;
-        match rows
-            .next()
+        match rows.next()
             .map_err(|e| KallaxError::database("get_dag_run_next", e))?
         {
             Some(row) => dag_run_from_row(row),
@@ -548,9 +494,7 @@ impl SqliteClient {
     }
 
     pub fn list_dag_runs(&self, status: Option<DagStatus>) -> Result<Vec<DagRun>> {
-        let conn = self
-            .pool
-            .get()
+        let conn = self.pool.get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
         let (sql, param): (String, Option<String>) = match status {
             Some(s) => (
@@ -559,20 +503,16 @@ impl SqliteClient {
             ),
             None => (format!("{} ORDER BY id DESC", SELECT_DAG_RUN_BASE), None),
         };
-        let mut stmt = conn
-            .prepare(&sql)
+        let mut stmt = conn.prepare(&sql)
             .map_err(|e| KallaxError::database("prepare_list_dag_runs", e))?;
         let mut rows = match &param {
-            Some(v) => stmt
-                .query(params![v])
+            Some(v) => stmt.query(params![v])
                 .map_err(|e| KallaxError::database("query_list_dag_runs", e))?,
-            None => stmt
-                .query([])
+            None => stmt.query([])
                 .map_err(|e| KallaxError::database("query_list_dag_runs", e))?,
         };
         let mut out = Vec::new();
-        while let Some(row) = rows
-            .next()
+        while let Some(row) = rows.next()
             .map_err(|e| KallaxError::database("list_dag_runs_next", e))?
         {
             out.push(dag_run_from_row(row)?);
@@ -585,9 +525,7 @@ impl SqliteClient {
     // -----------------------------------------------------------------------
 
     pub fn insert_dag_node(&self, node: &DagNodeState) -> Result<()> {
-        let conn = self
-            .pool
-            .get()
+        let conn = self.pool.get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
         conn.execute(
             "INSERT INTO dag_node_states
@@ -609,13 +547,10 @@ impl SqliteClient {
     }
 
     pub fn update_dag_node(&self, node: &DagNodeState) -> Result<()> {
-        let conn = self
-            .pool
-            .get()
+        let conn = self.pool.get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
-        let rows = conn
-            .execute(
-                "UPDATE dag_node_states SET
+        let rows = conn.execute(
+            "UPDATE dag_node_states SET
                 node_name    = ?1,
                 status       = ?2,
                 task_id      = ?3,
@@ -623,17 +558,17 @@ impl SqliteClient {
                 started_at   = ?5,
                 completed_at = ?6
              WHERE id = ?7",
-                params![
-                    node.node_name(),
-                    node.status().as_str(),
-                    node.task_id(),
-                    node.output(),
-                    node.started_at().map(|t| ts_to_str(&t)),
-                    node.completed_at().map(|t| ts_to_str(&t)),
-                    node.id(),
-                ],
-            )
-            .map_err(|e| KallaxError::database("update_dag_node", e))?;
+            params![
+                node.node_name(),
+                node.status().as_str(),
+                node.task_id(),
+                node.output(),
+                node.started_at().map(|t| ts_to_str(&t)),
+                node.completed_at().map(|t| ts_to_str(&t)),
+                node.id(),
+            ],
+        )
+        .map_err(|e| KallaxError::database("update_dag_node", e))?;
         if rows == 0 {
             return Err(KallaxError::not_found("dag_node_state", node.id()));
         }
@@ -641,23 +576,15 @@ impl SqliteClient {
     }
 
     pub fn list_dag_nodes(&self, dag_run_id: &str) -> Result<Vec<DagNodeState>> {
-        let conn = self
-            .pool
-            .get()
+        let conn = self.pool.get()
             .map_err(|e| KallaxError::database("get_connection", e))?;
-        let sql = format!(
-            "{} WHERE dag_run_id = ?1 ORDER BY id ASC",
-            SELECT_DAG_NODE_BASE
-        );
-        let mut stmt = conn
-            .prepare(&sql)
+        let sql = format!("{} WHERE dag_run_id = ?1 ORDER BY id ASC", SELECT_DAG_NODE_BASE);
+        let mut stmt = conn.prepare(&sql)
             .map_err(|e| KallaxError::database("prepare_list_dag_nodes", e))?;
-        let mut rows = stmt
-            .query(params![dag_run_id])
+        let mut rows = stmt.query(params![dag_run_id])
             .map_err(|e| KallaxError::database("query_list_dag_nodes", e))?;
         let mut out = Vec::new();
-        while let Some(row) = rows
-            .next()
+        while let Some(row) = rows.next()
             .map_err(|e| KallaxError::database("list_dag_nodes_next", e))?
         {
             out.push(dag_node_from_row(row)?);
@@ -684,7 +611,8 @@ pub struct TicketFilter {
 // Query building
 // ---------------------------------------------------------------------------
 
-const SELECT_TICKET: &str = "SELECT id, title, description, status, priority,
+const SELECT_TICKET: &str =
+    "SELECT id, title, description, status, priority,
             scope, acceptance_criteria, tags, metadata,
             created_at, updated_at, assigned_to
      FROM tickets";
@@ -704,7 +632,9 @@ const SELECT_DAG_NODE_BASE: &str =
      FROM dag_node_states";
 
 /// Build a parameterised list query + its bound values.
-fn build_list_sql(filter: &TicketFilter) -> (String, Vec<Box<dyn rusqlite::types::ToSql>>) {
+fn build_list_sql(
+    filter: &TicketFilter,
+) -> (String, Vec<Box<dyn rusqlite::types::ToSql>>) {
     let mut sql = String::with_capacity(320);
     sql.push_str(SELECT_TICKET);
     sql.push_str(" WHERE 1=1");
@@ -822,10 +752,7 @@ fn instance_from_row(row: &rusqlite::Row<'_>) -> Result<Instance> {
     })?;
 
     Ok(Instance::from_storage(
-        id,
-        name,
-        role,
-        status,
+        id, name, role, status,
         de_meta(&meta_str),
         str_to_ts(&created_str)?,
         str_to_ts(&updated_str)?,
@@ -848,13 +775,8 @@ fn span_from_row(row: &rusqlite::Row<'_>) -> Result<TraceSpan> {
     };
 
     Ok(TraceSpan::from_storage(
-        id,
-        name,
-        parent,
-        de_meta(&context_str),
-        str_to_ts(&started_str)?,
-        ended_at,
-        duration_ms,
+        id, name, parent, de_meta(&context_str),
+        str_to_ts(&started_str)?, ended_at, duration_ms,
     ))
 }
 
@@ -883,14 +805,7 @@ fn dag_run_from_row(row: &rusqlite::Row<'_>) -> Result<DagRun> {
         None => None,
     };
 
-    Ok(DagRun::from_storage(
-        id,
-        dag_name,
-        status,
-        trigger,
-        started_at,
-        completed_at,
-    ))
+    Ok(DagRun::from_storage(id, dag_name, status, trigger, started_at, completed_at))
 }
 
 fn dag_node_from_row(row: &rusqlite::Row<'_>) -> Result<DagNodeState> {
@@ -921,14 +836,7 @@ fn dag_node_from_row(row: &rusqlite::Row<'_>) -> Result<DagNodeState> {
     };
 
     Ok(DagNodeState::from_storage(
-        id,
-        dag_run_id,
-        node_name,
-        status,
-        task_id,
-        output,
-        started_at,
-        completed_at,
+        id, dag_run_id, node_name, status, task_id, output, started_at, completed_at,
     ))
 }
 
@@ -1046,7 +954,9 @@ mod tests {
         let mut t = Ticket::new("Will be in progress", "");
         t.assign(PerformerId::new()).unwrap();
         client.insert_ticket(&t).unwrap();
-        client.insert_ticket(&Ticket::new("Ready one", "")).unwrap();
+        client
+            .insert_ticket(&Ticket::new("Ready one", ""))
+            .unwrap();
 
         let filter = TicketFilter {
             status: Some(TicketStatus::InProgress),
@@ -1133,9 +1043,7 @@ mod tests {
             .list_instances(Some(InstanceRole::Performer))
             .unwrap();
         assert_eq!(performers.len(), 2);
-        assert!(performers
-            .iter()
-            .all(|i| i.role() == InstanceRole::Performer));
+        assert!(performers.iter().all(|i| i.role() == InstanceRole::Performer));
     }
 
     #[test]
@@ -1253,16 +1161,10 @@ mod tests {
     #[test]
     fn dag_node_insert_and_list_by_run() {
         let client = test_client();
-        client
-            .insert_dag_run(&DagRun::new("DR1", "d", "t"))
-            .unwrap();
+        client.insert_dag_run(&DagRun::new("DR1", "d", "t")).unwrap();
 
-        client
-            .insert_dag_node(&DagNodeState::new("N1", "DR1", "step-a"))
-            .unwrap();
-        client
-            .insert_dag_node(&DagNodeState::new("N2", "DR1", "step-b"))
-            .unwrap();
+        client.insert_dag_node(&DagNodeState::new("N1", "DR1", "step-a")).unwrap();
+        client.insert_dag_node(&DagNodeState::new("N2", "DR1", "step-b")).unwrap();
 
         let nodes = client.list_dag_nodes("DR1").unwrap();
         assert_eq!(nodes.len(), 2);
@@ -1271,9 +1173,7 @@ mod tests {
     #[test]
     fn dag_node_update_completion() {
         let client = test_client();
-        client
-            .insert_dag_run(&DagRun::new("DR2", "d", "t"))
-            .unwrap();
+        client.insert_dag_run(&DagRun::new("DR2", "d", "t")).unwrap();
         let mut node = DagNodeState::new("N-DONE", "DR2", "worker");
         client.insert_dag_node(&node).unwrap();
         node.mark_running();

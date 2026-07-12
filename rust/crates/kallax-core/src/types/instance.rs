@@ -57,27 +57,13 @@ impl Instance {
         }
     }
 
-    pub fn id(&self) -> &str {
-        &self.id
-    }
-    pub fn name(&self) -> &str {
-        &self.name
-    }
-    pub fn role(&self) -> InstanceRole {
-        self.role
-    }
-    pub fn status(&self) -> &str {
-        &self.status
-    }
-    pub fn metadata(&self) -> &InstanceMetadata {
-        &self.metadata
-    }
-    pub fn created_at(&self) -> DateTime<Utc> {
-        self.created_at
-    }
-    pub fn updated_at(&self) -> DateTime<Utc> {
-        self.updated_at
-    }
+    pub fn id(&self) -> &str { &self.id }
+    pub fn name(&self) -> &str { &self.name }
+    pub fn role(&self) -> InstanceRole { self.role }
+    pub fn status(&self) -> &str { &self.status }
+    pub fn metadata(&self) -> &InstanceMetadata { &self.metadata }
+    pub fn created_at(&self) -> DateTime<Utc> { self.created_at }
+    pub fn updated_at(&self) -> DateTime<Utc> { self.updated_at }
 
     pub fn set_status(&mut self, status: impl Into<String>) {
         self.status = status.into();
@@ -99,14 +85,6 @@ impl Instance {
         created_at: DateTime<Utc>,
         updated_at: DateTime<Utc>,
     ) -> Self {
-        Self {
-            id,
-            name,
-            role,
-            status,
-            metadata,
-            created_at,
-            updated_at,
-        }
+        Self { id, name, role, status, metadata, created_at, updated_at }
     }
 }
