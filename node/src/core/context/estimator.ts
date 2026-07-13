@@ -5,7 +5,6 @@
  * Text: 4 chars/token, Code: 3.5 chars/token, JSON: 3 chars/token.
  */
 
-import type { KallaxResult } from '../../types/index.js';
 import { logger } from '../../utils/logger.js';
 
 export interface TokenEstimate {
@@ -119,8 +118,6 @@ export function createContextEstimator(): ContextEstimator {
 let defaultEstimator: ContextEstimator | null = null;
 
 export function getContextEstimator(): ContextEstimator {
-  if (defaultEstimator === null) {
-    defaultEstimator = createContextEstimator();
-  }
+  defaultEstimator ??= createContextEstimator();
   return defaultEstimator;
 }

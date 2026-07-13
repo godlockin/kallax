@@ -77,8 +77,8 @@ export function analyzeComplexity(input: ComplexityInput): ComplexityResult {
 
   const recommendation =
     mode === 'dag'
-      ? `DAG mode recommended (score: ${score}/${DAG_THRESHOLD}+). ${input.subtaskCount} subtasks with depth ${input.dependencyDepth}. Use 'kallax epic:plan' to generate DAG YAML.`
-      : `Sequential mode sufficient (score: ${score}/${DAG_THRESHOLD}+). Simple enough for linear execution.`;
+      ? `DAG mode recommended (score: ${String(score)}/${String(DAG_THRESHOLD)}+). ${String(input.subtaskCount)} subtasks with depth ${String(input.dependencyDepth)}. Use 'kallax epic:plan' to generate DAG YAML.`
+      : `Sequential mode sufficient (score: ${String(score)}/${String(DAG_THRESHOLD)}+). Simple enough for linear execution.`;
 
   return { score, mode, breakdown, recommendation };
 }
@@ -112,7 +112,8 @@ export function calculateDependencyDepth(depsMap: Map<string, string[]>): number
     visited.add(root);
 
     while (queue.length > 0) {
-      const current = queue.shift()!;
+      const current = queue.shift();
+      if (current === undefined) break;
       if (current.depth > maxDepth) maxDepth = current.depth;
 
       const children = dependents.get(current.id) ?? [];

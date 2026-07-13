@@ -35,7 +35,7 @@ export function createAutoCompressor(): AutoCompressor {
       const before = usage.currentTokens;
       const items = usage.history.map(h => ({ estimatedTokens: 50, priority: h.event === 'compression' ? 10 : 5, data: h }));
       const cr = compressor.compress(items, { maxTokens: usage.maxTokens, targetPercent: 50, strategy: 'prioritize' });
-      const summary = `[${new Date().toISOString()}] ${performerId}: ${before}→${cr.afterTokens} tokens`;
+      const summary = `[${new Date().toISOString()}] ${performerId}: ${String(before)}→${String(cr.afterTokens)} tokens`;
       const dir = ensureDir();
       const fp = path.join(dir, `${performerId}-${Date.now().toString(36)}.json`);
       fs.writeFileSync(fp, JSON.stringify({ performerId, savedAt: new Date().toISOString(), beforeTokens: before, afterTokens: cr.afterTokens, itemCount: cr.items.length, summary }, null, 2));
@@ -46,7 +46,7 @@ export function createAutoCompressor(): AutoCompressor {
     },
     listSavedFiles(performerId?: string): string[] {
       const d = ensureDir();
-      return fs.readdirSync(d).filter(f => f.endsWith('.json') && (!performerId || f.startsWith(performerId))).map(f => path.join(d, f));
+      return fs.readdirSync(d).filter(f => f.endsWith('.json') && (performerId == null || f.startsWith(performerId))).map(f => path.join(d, f));
     },
   };
 }

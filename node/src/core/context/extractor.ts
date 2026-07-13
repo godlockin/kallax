@@ -25,15 +25,17 @@ export function createContextExtractor(): ContextExtractor {
     extract(messages): ExtractedContext {
       const text = messages.map(m => `${m.role}: ${m.content}`).join('\n');
       const e = this.extractFromText(text);
+      const decisionsCount = e.decisions?.length ?? 0;
+      const actionsCount = e.actionItems?.length ?? 0;
       const result: ExtractedContext = {
         decisions: e.decisions ?? [], actionItems: e.actionItems ?? [], learnedContext: e.learnedContext ?? [],
-        summary: [e.decisions?.length ? `${e.decisions.length} decisions` : '', e.actionItems?.length ? `${e.actionItems.length} actions` : ''].filter(Boolean).join(', ') || 'No key items',
+        summary: [decisionsCount ? `${String(decisionsCount)} decisions` : '', actionsCount ? `${String(actionsCount)} actions` : ''].filter(Boolean).join(', ') || 'No key items',
         timestamp: Date.now(),
       };
       logger.info({ d: result.decisions.length, a: result.actionItems.length }, 'context extracted');
       return result;
     },
-    extractFromText(text) {
+    extractFromText(text): Partial<ExtractedContext> {
       return { decisions: extractPatterns(text, DEC), actionItems: extractPatterns(text, ACT), learnedContext: extractPatterns(text, LRN) };
     },
   };
