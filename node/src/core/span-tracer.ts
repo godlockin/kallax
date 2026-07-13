@@ -131,10 +131,11 @@ export function createSpanTracer(db?: SQLiteManager): SpanTracer {
       },
 
       end(): void {
-        (span.data as { endTime: number }).endTime = Date.now();
+        const endTime = Date.now();
+        (span.data as { endTime: number }).endTime = endTime;
         activeSpans.delete(spanId);
 
-        const duration = span.data.endTime! - span.data.startTime;
+        const duration = endTime - span.data.startTime;
         logger.info(
           {
             spanId,
@@ -187,7 +188,7 @@ export function createSpanTracer(db?: SQLiteManager): SpanTracer {
     getActiveSpan(): Span | null {
       if (activeSpans.size === 0) return null;
       const lastId = Array.from(activeSpans.keys()).pop();
-      return lastId ? (activeSpans.get(lastId) ?? null) : null;
+      return lastId !== undefined ? activeSpans.get(lastId) ?? null : null;
     },
 
     async withSpan<T>(
@@ -215,9 +216,7 @@ export function createSpanTracer(db?: SQLiteManager): SpanTracer {
 let defaultTracer: SpanTracer | null = null;
 
 export function getSpanTracer(db?: SQLiteManager): SpanTracer {
-  if (defaultTracer === null) {
-    defaultTracer = createSpanTracer(db);
-  }
+  defaultTracer ??= createSpanTracer(db);
   return defaultTracer;
 }
 
@@ -236,7 +235,7 @@ function rowToTraceEntry(row: TraceLogRow): TraceEntry {
     target: row.target,
     detail: JSON.parse(row.detail) as Record<string, unknown>,
     result: row.result as TraceEntry['result'],
-    parentTraceId: row.parent_trace_id !== null ? row.parent_trace_id : undefined,
+    parentTraceId: row.parent_trace_id ?? undefined,
   };
 }
 
@@ -255,7 +254,7 @@ export function createTraceLog(db: Database.Database): TraceLog {
         target: entry.target,
         detail: JSON.stringify(entry.detail),
         result: entry.result,
-        parent_trace_id: entry.parentTraceId !== undefined ? entry.parentTraceId : null,
+        parent_trace_id: entry.parentTraceId ?? null,
       });
       return traceId;
     },

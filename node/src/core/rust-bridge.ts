@@ -49,22 +49,25 @@ export function createRustBridge(config?: Partial<RustBridgeConfig>): RustBridge
     // EPIC-070-B4: 每次请求新建 AbortController, 避免闭包共享导致一次超时永久失效
     const controller = new AbortController();
     try {
-      const timeout = setTimeout(() => controller.abort(), cfg.timeoutMs);
-      const resp = await fetch(`${cfg.baseUrl}${path}`, {
-        ...init,
-        signal: controller.signal,
-        headers: {
+      const timeout = setTimeout(() => { controller.abort(); }, cfg.timeoutMs);
+      const headers: Record<string, string> = {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          ...(init?.headers ?? {}),
-        },
+        };
+        if (init?.headers && !Array.isArray(init.headers)) {
+          Object.assign(headers, init.headers);
+        }
+        const resp = await fetch(`${cfg.baseUrl}${path}`, {
+        ...init,
+        signal: controller.signal,
+        headers,
       });
       clearTimeout(timeout);
 
       if (!resp.ok) {
         return err(new KallaxError(
           KallaxErrorCode.INTERNAL_ERROR,
-          `Rust server returned ${resp.status}: ${resp.statusText}`,
+          `Rust server returned ${String(resp.status)}: ${resp.statusText}`,
         ));
       }
 
@@ -103,7 +106,7 @@ export function createRustBridge(config?: Partial<RustBridgeConfig>): RustBridge
     },
 
     async listTickets(filter?: unknown): Promise<KallaxResult<{ tickets: unknown[] }>> {
-      const query = filter ? `?${new URLSearchParams(filter as Record<string, string>).toString()}` : '';
+      const query = filter !== undefined ? `?${new URLSearchParams(filter as Record<string, string>).toString()}` : '';
       return fetchJson<{ tickets: unknown[] }>(`/bridge/ticket/list${query}`);
     },
 
@@ -127,8 +130,6 @@ export function createRustBridge(config?: Partial<RustBridgeConfig>): RustBridge
 let defaultBridge: RustBridge | null = null;
 
 export function getRustBridge(config?: Partial<RustBridgeConfig>): RustBridge {
-  if (defaultBridge === null) {
-    defaultBridge = createRustBridge(config);
-  }
+  defaultBridge ??= createRustBridge(config);
   return defaultBridge;
 }

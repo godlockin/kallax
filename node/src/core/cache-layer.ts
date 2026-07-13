@@ -49,7 +49,7 @@ export function createCache<K extends object | string | number, V extends object
     ttl: config.ttlMs,
     updateAgeOnGet: config.updateAgeOnGet ?? true,
     updateAgeOnHas: config.updateAgeOnHas ?? false,
-    dispose: (value, key, reason) => {
+    dispose: (value, key, reason): void => {
       logger.debug({ cacheName: name, key, reason }, 'cache entry disposed');
     },
   });

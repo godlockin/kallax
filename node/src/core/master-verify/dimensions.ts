@@ -9,22 +9,16 @@
  * - L6: Honesty (no fake PASS)
  */
 
-import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import {
-  EXIT_FAIL,
-  EXIT_INVALID_ARGS,
   FIVE_EXTENDED_GROUPS,
   FIVE_PERCENTIVE_PRODUCT,
-  KPI_FAB_BLACKLIST,
   L4_KPI_EVIDENCE_CHECK,
   NET_VALUE_BASELINE_V124,
   NET_VALUE_TARGET,
   RECOVERY_RATE,
   REQUIRED_PREFLIGHT_TOOLS,
 } from './constants.js';
-import { type DimensionResult, die, detectKpiFab, getCommitMessage, isValidSha, runGit, runShell } from './helpers.js';
+import { type DimensionResult, detectKpiFab, getCommitMessage, runGit, runShell } from './helpers.js';
 
 // ============================================================================
 // L1: Existence — files exist in git diff
@@ -44,7 +38,7 @@ export function checkL1(): DimensionResult {
     return {
       passed: true,
       dimension: 'L1',
-      description: `${files.split('\n').length} file(s) staged`,
+      description: `${String(files.split('\n').length)} file(s) staged`,
       evidence: files.split('\n').slice(0, 5),
     };
   } catch (err: unknown) {
@@ -88,8 +82,8 @@ export function checkL2(): DimensionResult {
     passed: evidence.length === 0,
     dimension: 'L2',
     description: evidence.length === 0
-      ? 'No placeholder patterns detected'
-      : `${evidence.length} placeholder(s) detected`,
+      ? `No placeholder patterns detected`
+      : `${String(evidence.length)} placeholder(s) detected`,
     evidence: evidence.length > 0 ? evidence : ['clean'],
   };
 }
@@ -98,7 +92,7 @@ export function checkL2(): DimensionResult {
 // L3: Wiring — TypeScript / imports compile
 // ============================================================================
 
-export function checkL3(args: Map<string, string>): DimensionResult {
+export function checkL3(_args: Map<string, string>): DimensionResult {
   const diff = runGit(['diff', '--cached', '--name-only', '--diff-filter=ACM']);
   const tsFiles = diff.split('\n').filter(f => f.endsWith('.ts') || f.endsWith('.tsx'));
   if (tsFiles.length === 0) {
@@ -115,7 +109,7 @@ export function checkL3(args: Map<string, string>): DimensionResult {
     passed: tscCheck.rc === 0,
     dimension: 'L3',
     description: tscCheck.rc === 0
-      ? `TypeScript compiles (${tsFiles.length} files)`
+      ? `TypeScript compiles (${String(tsFiles.length)} files)`
       : 'TypeScript compile errors',
     evidence: tscCheck.rc === 0
       ? tsFiles.slice(0, 5)
@@ -127,7 +121,7 @@ export function checkL3(args: Map<string, string>): DimensionResult {
 // L4: Data Flow — preflight + KPI evidence scripts pass
 // ============================================================================
 
-export function checkL4(args: Map<string, string>): DimensionResult {
+export function checkL4(_args: Map<string, string>): DimensionResult {
   const evidence: string[] = [];
   let allPassed = true;
   for (const tool of REQUIRED_PREFLIGHT_TOOLS) {
@@ -153,7 +147,7 @@ export function checkL4(args: Map<string, string>): DimensionResult {
 // L5: Boundary — 5 extended groups wired (security/compliance/audit/process/decision-gate)
 // ============================================================================
 
-export function checkL5(args: Map<string, string>): DimensionResult {
+export function checkL5(_args: Map<string, string>): DimensionResult {
   // Look for references to the 5 extended expert groups in the staged diff
   const diff = runGit(['diff', '--cached']);
   const evidence: string[] = [];
@@ -176,20 +170,20 @@ export function checkL5(args: Map<string, string>): DimensionResult {
 // L6: Honesty — detect KPI falsification, no fake PASS
 // ============================================================================
 
-export function checkL6(args: Map<string, string>): DimensionResult {
+export function checkL6(_args: Map<string, string>): DimensionResult {
   const msg = getCommitMessage();
   const fabPattern = detectKpiFab(msg);
   // Also check that 5% perspective product is close to target
   const netValue = calculateNetValue();
   const evidence: string[] = [];
-  if (fabPattern) {
+  if (fabPattern !== null) {
     evidence.push(`KPI fabrication pattern detected: ${fabPattern}`);
   }
-  evidence.push(`net_value=${netValue.value.toFixed(1)}% target=${NET_VALUE_TARGET}%`);
+  evidence.push(`net_value=${netValue.value.toFixed(1)}% target=${String(NET_VALUE_TARGET)}%`);
   return {
-    passed: !fabPattern,
+    passed: fabPattern === null,
     dimension: 'L6',
-    description: fabPattern
+    description: fabPattern !== null
       ? `Fake PASS detected: ${fabPattern}`
       : 'No KPI fabrication patterns',
     evidence,
@@ -215,13 +209,13 @@ export function parseArgs(argv: readonly string[]): Map<string, string> {
   const args = new Map<string, string>();
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
-    if (arg && arg.startsWith('--')) {
+    if (arg?.startsWith('--') ?? false) {
       const eq = arg.indexOf('=');
       if (eq > 0) {
         args.set(arg.slice(2, eq), arg.slice(eq + 1));
       } else {
         const next = argv[i + 1];
-        if (next && !next.startsWith('--')) {
+        if (next !== undefined && !next.startsWith('--')) {
           args.set(arg.slice(2), next);
           i++;
         } else {

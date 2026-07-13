@@ -158,7 +158,7 @@ export function createGitService(): GitService {
 
       // Parse PR URL to extract number: https://github.com/owner/repo/pull/123
       const urlMatch = result.stdout.match(/pull\/(\d+)/);
-      const prNumber = urlMatch && urlMatch[1] ? parseInt(urlMatch[1], 10) : 0;
+      const prNumber = urlMatch?.[1] !== undefined ? parseInt(urlMatch[1], 10) : 0;
 
       logger.info({ cwd, prNumber, url: result.stdout }, 'pull request created');
       return ok({ number: prNumber, url: result.stdout });
@@ -232,8 +232,6 @@ export function createGitService(): GitService {
 let defaultGitService: GitService | null = null;
 
 export function getGitService(): GitService {
-  if (defaultGitService === null) {
-    defaultGitService = createGitService();
-  }
+  defaultGitService ??= createGitService();
   return defaultGitService;
 }

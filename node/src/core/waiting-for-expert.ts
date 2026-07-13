@@ -175,7 +175,10 @@ function pickBestResult(results: readonly TrustScoreResult[]): {
   if (results.length === 0) {
     return { bestScore: 0, bestLayer: null };
   }
-  let best: TrustScoreResult = results[0]!;
+  let best = results[0];
+  if (best === undefined) {
+    return { bestScore: 0, bestLayer: null };
+  }
   for (let i = 1; i < results.length; i++) {
     const r = results[i];
     if (r !== undefined && r.score > best.score) {
@@ -234,7 +237,7 @@ export function createWaitingForExpert(options: WaitingForExpertOptions = {}): W
 
   const writeState = (state: Record<string, WaitingExpertEntry>): void => {
     // EPIC-076 P1-10: TOCTOU 治根 — tmp 用 PID+timestamp 防并发写碰撞
-    const tmpPath = `${stateFile}.tmp.${process.pid}.${Date.now()}`;
+    const tmpPath = `${stateFile}.tmp.${String(process.pid)}.${String(Date.now())}`;
     try {
       fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2) + '\n');
       fs.renameSync(tmpPath, stateFile);
@@ -259,9 +262,9 @@ export function createWaitingForExpert(options: WaitingForExpertOptions = {}): W
       `- Mode: ai-auto`,
       `- Ticket: ${entry.ticketId}`,
       `- Required Expertise: ${expertise}`,
-      `- Retries: ${entry.retries}`,
+      `- Retries: ${String(entry.retries)}`,
       `- Last Attempt: ${entry.lastAttempt}`,
-      `- Best Match Score: ${entry.bestScore}`,
+      `- Best Match Score: ${String(entry.bestScore)}`,
       `- Best Match Layer: ${entry.bestLayer ?? 'none'}`,
       '',
       '## 建议',
@@ -381,6 +384,7 @@ export function createWaitingForExpert(options: WaitingForExpertOptions = {}): W
     if (!Object.prototype.hasOwnProperty.call(state, ticketId)) {
       return false;
     }
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete state[ticketId];
     writeState(state);
     logger.info(

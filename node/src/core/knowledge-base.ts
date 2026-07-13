@@ -234,7 +234,7 @@ export function createKnowledgeBase(): KnowledgeBase {
       }
 
       // Filter by source
-      if (query.source) {
+      if (query.source !== undefined && query.source !== '') {
         const sourceIds = new Set(
           Array.from(entries.values())
             .filter((e) => e.source === query.source)
@@ -267,7 +267,8 @@ export function createKnowledgeBase(): KnowledgeBase {
         if (candidates === null) {
           candidates = termCandidates;
         } else {
-          candidates = new Set([...candidates].filter((id: string) => termCandidates!.has(id)));
+          if (termCandidates === null) return err(new Error('termCandidates is null'));
+          candidates = new Set([...candidates].filter((id: string) => termCandidates.has(id)));
         }
       }
 
@@ -347,8 +348,6 @@ export function createKnowledgeBase(): KnowledgeBase {
 let defaultKB: KnowledgeBase | null = null;
 
 export function getKnowledgeBase(): KnowledgeBase {
-  if (defaultKB === null) {
-    defaultKB = createKnowledgeBase();
-  }
+  defaultKB ??= createKnowledgeBase();
   return defaultKB;
 }
