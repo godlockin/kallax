@@ -4,7 +4,7 @@
 
 ## 3 根本 价值观 (Q12 战略)
 - 小步迭代 + 彻底完成 (防止假 PASS 症状复发)
-- 诚实修正 (原声称 1.5-2x, 实测 0.92x; 原声称 100% parity, 实测 ~10%)
+- 诚实修正 (声称与实测偏差时以实测为准, 见 confluence/decisions/)
 - 复盘同类症状, 从根源修复 (5 release 累计)
 
 ## 5 levels (对齐 eket)
@@ -117,3 +117,8 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 ## Setup 3 步
 cargo install kallax / kallax init / kallax master:start
+
+## EPIC-114 test 反模式 (0 复发)
+- `*-live.test.ts` 必须 `describe.skipIf(!process.env.X_LIVE)` — check-live-test-guard.sh 强制
+- 测试断言别绑死 totalScore/枚举硬编码,断维度 (软规,vitest fail-fast 兜底)
+- source bug 不能 `it.skip` 逃避,必须修 source 再 unskip

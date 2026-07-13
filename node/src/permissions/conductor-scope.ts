@@ -76,7 +76,7 @@ export function verifyScope(
     }
 
     if (!action || typeof action !== 'string') {
-      return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Invalid action', { action }));
+      return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Invalid action', { metadata: { action } }));
     }
 
     // Role name validation: prevent trailing space, typo

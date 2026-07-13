@@ -18,7 +18,7 @@ jobs:
           if ! echo "$BODY" | grep -qiE '(test|PASS|pass|✓|coverage)'; then
             issues="$issues\n- Missing test evidence"
           fi
-          if ! echo "$BODY" | grep -qiE '(TASK|TICKET|task|ticket)-\d+'; then
+          if ! echo "$BODY" | grep -qiE '(TASK|TICKET|task|ticket)-[0-9]+'; then
             issues="$issues\n- Missing ticket reference"
           fi
           BODY_LENGTH=$(echo "$BODY" | wc -c)

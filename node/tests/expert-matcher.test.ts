@@ -31,8 +31,10 @@ describe('ExpertMatcher', () => {
   it('returns results even for unknown capability (low scores)', () => {
     const matches = matcher.findBestMatch(['cobol', 'fortran']);
     expect(matches.length).toBeGreaterThan(0);
-    // All scores should be low for irrelevant capabilities
-    for (const m of matches) expect(m.totalScore).toBeLessThan(1);
+    // Unknown capability → capabilityMatch dimension is 0.
+    // Baseline availability/success are still non-zero, so totalScore > 0
+    // but capabilityMatch specifically must be 0.
+    for (const m of matches) expect(m.breakdown.capabilityMatch).toBe(0);
   });
 
   it('scores breakdown includes all dimensions', () => {

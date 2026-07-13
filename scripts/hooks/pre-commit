@@ -210,7 +210,7 @@ fi
 # CLAUDE.md "4 不可更改 法律" — v3.6.0 起 script 存在, EPIC-110 接进 pre-commit hook
 if [[ "$HOOK_BYPASS" -eq 0 ]]; then
   LAW_FAILED=0
-  for _law in check-decorative-claim check-narrative check-fail-closed check-self-heal; do
+  for _law in check-decorative-claim check-narrative check-fail-closed check-self-heal check-live-test-guard check-evidence-fake; do
     _law_path="${KALLAX_ROOT}/scripts/verify/${_law}.sh"
     if [[ -x "$_law_path" ]]; then
       if ! KALLAX_STAGED_ONLY=1 bash "$_law_path" >/dev/null 2>&1; then

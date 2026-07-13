@@ -8,7 +8,8 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { tierRouter } from '../src/core/tier-router.js';
 import { getRustBridge } from '../src/core/rust-bridge.js';
 
-describe('TierRouter live (real Rust server on :3000)', () => {
+// Requires live Rust server on :3000. Set RUST_LIVE=1 to run.
+describe.skipIf(!process.env.RUST_LIVE)('TierRouter live (real Rust server on :3000)', () => {
   beforeAll(async () => {
     // Verify server reachable
     const bridge = getRustBridge();

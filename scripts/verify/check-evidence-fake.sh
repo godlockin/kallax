@@ -71,6 +71,30 @@ if [ -d "confluence/decisions" ]; then
   done < <(find confluence/decisions -name "*.md" -type f 2>/dev/null)
 fi
 
+# EPIC-114 debt cleanup: KALLAX_STAGED_ONLY=1 → filter to staged .md files only
+# Under staged-only mode, Detection 1 (evidence dir scan) results are cleared —
+# historical byte-identical files predate this hook and are out of scope.
+if [ -n "${KALLAX_STAGED_ONLY:-}" ] && [ "$KALLAX_STAGED_ONLY" = "1" ]; then
+  STAGED=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || echo "")
+  if [ -z "$STAGED" ]; then
+    echo "KALLAX_STAGED_ONLY=1: no staged files, skip"
+    exit 0
+  fi
+  FILTERED=()
+  for f in $STAGED; do
+    case "$f" in
+      CHANGELOG.md|CLAUDE.md|confluence/decisions/*.md)
+        [ -f "$f" ] && FILTERED+=("$f") ;;
+    esac
+  done
+  if [ ${#FILTERED[@]} -eq 0 ]; then
+    echo "KALLAX_STAGED_ONLY=1: no staged .md files match scan scope, skip"
+    exit 0
+  fi
+  SCAN_FILES=("${FILTERED[@]}")
+  FOUND=()
+fi
+
 # Pattern: "实战 N 次" / "实际 跑过" / "graceful-exit 1 次" 跟 byte-identical evidence 配对
 FAKE_THEATRE_PATTERNS=(
   '实战\s*[0-9]+\s*次'
@@ -78,16 +102,32 @@ FAKE_THEATRE_PATTERNS=(
   'graceful-exit\s*[0-9]+\s*次'
 )
 
-for file in "${SCAN_FILES[@]}"; do
-  [ -f "$file" ] || continue
-  for pat in "${FAKE_THEATRE_PATTERNS[@]}"; do
-    if matches=$(grep -nE "$pat" "$file" 2>/dev/null); then
-      while IFS= read -r match; do
-        FOUND+=("$file: $match (跟 fake theatre pattern 1:1 联合, require evidence byte-different)")
-      done <<< "$matches"
-    fi
+if [ -n "${KALLAX_STAGED_ONLY:-}" ] && [ "$KALLAX_STAGED_ONLY" = "1" ]; then
+  # EPIC-114: only scan newly-added lines; historical entries grandfathered
+  for file in "${SCAN_FILES[@]}"; do
+    [ -f "$file" ] || continue
+    ADDED=$(git diff --cached -U0 -- "$file" 2>/dev/null | grep '^+' | grep -v '^+++' | sed 's/^+//')
+    [ -z "$ADDED" ] && continue
+    for pat in "${FAKE_THEATRE_PATTERNS[@]}"; do
+      if matches=$(echo "$ADDED" | grep -nE "$pat" 2>/dev/null); then
+        while IFS= read -r match; do
+          FOUND+=("$file (new): $match")
+        done <<< "$matches"
+      fi
+    done
   done
-done
+else
+  for file in "${SCAN_FILES[@]}"; do
+    [ -f "$file" ] || continue
+    for pat in "${FAKE_THEATRE_PATTERNS[@]}"; do
+      if matches=$(grep -nE "$pat" "$file" 2>/dev/null); then
+        while IFS= read -r match; do
+          FOUND+=("$file: $match")
+        done <<< "$matches"
+      fi
+    done
+  done
+fi
 
 if [ ${#FOUND[@]} -gt 0 ]; then
   echo "FAIL: ${#FOUND[@]} fake theatre patterns detected:"

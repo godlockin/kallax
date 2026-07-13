@@ -19,7 +19,7 @@ if (process.argv[1] !== undefined && (process.argv[1] === __filename || process.
   const serverHost = process.env['KALLAX_API_HOST'] ?? '127.0.0.1';
   const apiKey = process.env['KALLAX_API_KEY'];
   if (!apiKey) {
-    logger.fatal('KALLAX_API_KEY required (set env var, e.g. export KALLAX_API_KEY=$(openssl rand -hex 32))');
+    logger.fatal({}, 'KALLAX_API_KEY required (set env var, e.g. export KALLAX_API_KEY=$(openssl rand -hex 32))');
     process.exit(1);
   }
   const dbPath = process.env['KALLAX_DB_PATH'] ?? '.kallax/data/kallax.db';

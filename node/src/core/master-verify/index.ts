@@ -10,7 +10,7 @@
  */
 
 import { execFileSync } from 'node:child_process';
-import { logger } from '../utils/logger.js';
+import { logger } from '../../utils/logger.js';
 import { EXIT_FAIL, EXIT_INVALID_ARGS, EXIT_OK } from './constants.js';
 import { die } from './helpers.js';
 import {

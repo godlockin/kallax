@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { getRustBridge } from '../src/core/rust-bridge.js';
 
-describe('bridge live', () => {
+// Requires live bridge server. Set BRIDGE_LIVE=1 to run.
+describe.skipIf(!process.env.BRIDGE_LIVE)('bridge live', () => {
   it('isAlive true', async () => {
     const bridge = getRustBridge();
     const alive = await bridge.isAlive();

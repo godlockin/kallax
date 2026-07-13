@@ -157,6 +157,77 @@ export function createHeartbeatMonitor(
 }
 
 /**
+ * HTTP-based heartbeat client for standalone performer processes.
+ * Talks to the server via PUT /api/agents/:id/heartbeat with X-KALLAX-API-Key auth.
+ */
+export interface HeartbeatClientStats {
+  readonly heartbeatsSent: number;
+  readonly errors: number;
+  readonly lastHeartbeatSent: number | null;
+}
+
+export interface HeartbeatClient {
+  startHeartbeat: (agentId: string, currentTaskId: string | null, intervalMs: number) => void;
+  stopHeartbeat: () => void;
+  getStats: () => HeartbeatClientStats;
+}
+
+export function createHeartbeatClient(baseUrl: string, apiKey: string): HeartbeatClient {
+  let timer: ReturnType<typeof setInterval> | null = null;
+  let heartbeatsSent = 0;
+  let errors = 0;
+  let lastHeartbeatSent: number | null = null;
+
+  async function sendOne(agentId: string, currentTaskId: string | null): Promise<void> {
+    try {
+      const body: Record<string, unknown> = {};
+      if (currentTaskId !== null) {
+        body['currentTaskId'] = currentTaskId;
+      }
+      const res = await fetch(`${baseUrl}/api/agents/${encodeURIComponent(agentId)}/heartbeat`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-KALLAX-API-Key': apiKey,
+        },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        errors++;
+        return;
+      }
+      heartbeatsSent++;
+      lastHeartbeatSent = Date.now();
+    } catch {
+      errors++;
+    }
+  }
+
+  return {
+    startHeartbeat(agentId: string, currentTaskId: string | null, intervalMs: number): void {
+      if (timer !== null) {
+        return;
+      }
+      void sendOne(agentId, currentTaskId);
+      timer = setInterval(() => {
+        void sendOne(agentId, currentTaskId);
+      }, intervalMs);
+    },
+
+    stopHeartbeat(): void {
+      if (timer !== null) {
+        clearInterval(timer);
+        timer = null;
+      }
+    },
+
+    getStats(): HeartbeatClientStats {
+      return { heartbeatsSent, errors, lastHeartbeatSent };
+    },
+  };
+}
+
+/**
  * Calculate adaptive timeout based on estimated task duration
  */
 export function calculateAdaptiveTimeout(estimatedMinutes: number | undefined): number {
