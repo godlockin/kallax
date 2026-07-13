@@ -17,10 +17,10 @@
 import { validateAll, SCHEMA_VERSION } from '../core/schema-validator.js';
 
 interface InputFileList {
-  readonly phases: string[];
-  readonly epics: string[];
-  readonly tickets: string[];
-  readonly states: string[];
+  readonly phases?: string[];
+  readonly epics?: string[];
+  readonly tickets?: string[];
+  readonly states?: string[];
 }
 
 function readStdin(): Promise<string> {
@@ -87,7 +87,7 @@ async function main(): Promise<number> {
   const failed = result.failed;
   const color = failed === 0 ? GREEN : RED;
   process.stdout.write(
-    `${color}${BOLD}Result: ${passed}/${total} passed, ${failed} failed${RESET}\n\n`,
+    `${color}${BOLD}Result: ${String(passed)}/${String(total)} passed, ${String(failed)} failed${RESET}\n\n`,
   );
 
   return failed === 0 ? 0 : 1;

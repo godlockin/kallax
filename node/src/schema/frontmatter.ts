@@ -58,7 +58,7 @@ export const parseFrontmatter = (fmBlock: string): Readonly<Record<string, unkno
   for (const raw of lines) {
     if (raw.trim() === '') continue;
     const match = /^([a-zA-Z_][a-zA-Z0-9_]*):\s*(.*)$/.exec(raw);
-    if (match && match[1] !== undefined && match[2] !== undefined) {
+    if (match?.[1] !== undefined && match[2] !== undefined) {
       flush();
       const key = match[1];
       const value = match[2];

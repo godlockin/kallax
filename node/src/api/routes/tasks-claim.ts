@@ -116,7 +116,7 @@ export function createClaimRoutes(deps: ClaimRouteDependencies): Router {
     void (async () => {
       try {
         const taskId = req.params['id'] as string;
-        const output = (req.body as Record<string, unknown>)?.['output'] as string | undefined;
+        const output = (req.body as Record<string, unknown>)['output'] as string | undefined;
 
         const result = await deps.taskAssigner.completeTask(taskId, output);
         if (result.isErr()) {
@@ -142,7 +142,7 @@ export function createClaimRoutes(deps: ClaimRouteDependencies): Router {
     void (async () => {
       try {
         const taskId = req.params['id'] as string;
-        const errorMsg = (req.body as Record<string, unknown>)?.['error'] as string | undefined ?? 'Task failed via API';
+        const errorMsg = (req.body as Record<string, unknown>)['error'] as string | undefined ?? 'Task failed via API';
 
         const result = await deps.taskAssigner.failTask(taskId, errorMsg);
         if (result.isErr()) {
