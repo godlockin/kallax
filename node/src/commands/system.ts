@@ -41,7 +41,7 @@ export interface CacheHealthStats {
   readonly instances: CacheStats;
 }
 
-export async function executeSystemDoctor(
+export function executeSystemDoctor(
   db: SQLiteManager,
   instanceRegistry: InstanceRegistry,
   messageQueue?: MessageQueue
@@ -59,7 +59,7 @@ export async function executeSystemDoctor(
     checks.push({
       name: 'database',
       status: 'healthy',
-      message: `Connected - ${stats.ticketCount} tickets, ${stats.taskCount} tasks`,
+      message: `Connected - ${String(stats.ticketCount)} tickets, ${String(stats.taskCount)} tasks`,
       duration: Date.now() - dbStart,
     });
   } catch (error: unknown) {
@@ -82,7 +82,7 @@ export async function executeSystemDoctor(
 
     if (status !== 'healthy') {
       healthy = status === 'degraded' ? healthy : false;
-      recommendations.push(`Instance heartbeat is ${Math.round(heartbeatAge / 1000)}s old - consider restart`);
+      recommendations.push(`Instance heartbeat is ${String(Math.round(heartbeatAge / 1000))}s old - consider restart`);
     }
 
     checks.push({
@@ -109,13 +109,13 @@ export async function executeSystemDoctor(
   const memStatus = heapUsedMb < 256 ? 'healthy' : heapUsedMb < 512 ? 'degraded' : 'unhealthy';
   if (memStatus !== 'healthy') {
     healthy = memStatus === 'degraded' ? healthy : false;
-    recommendations.push(`High memory usage: ${Math.round(heapUsedMb)}MB - consider restart`);
+    recommendations.push(`High memory usage: ${String(Math.round(heapUsedMb))}MB - consider restart`);
   }
 
   checks.push({
     name: 'memory',
     status: memStatus,
-    message: `Heap: ${Math.round(heapUsedMb)}MB, Trend: ${memoryStats.trend}`,
+    message: `Heap: ${String(Math.round(heapUsedMb))}MB, Trend: ${memoryStats.trend}`,
     duration: 0,
   });
 
@@ -130,13 +130,13 @@ export async function executeSystemDoctor(
   const cacheStatus = avgHitRate > 0.5 ? 'healthy' : avgHitRate > 0.2 ? 'degraded' : 'unhealthy';
 
   if (cacheStatus === 'unhealthy' && (cacheStats.tickets.hits + cacheStats.tickets.misses) > 100) {
-    recommendations.push(`Low cache hit rate: ${Math.round(avgHitRate * 100)}% - review access patterns`);
+    recommendations.push(`Low cache hit rate: ${String(Math.round(avgHitRate * 100))}% - review access patterns`);
   }
 
   checks.push({
     name: 'cache',
     status: cacheStatus,
-    message: `Hit rate: ${Math.round(avgHitRate * 100)}%`,
+    message: `Hit rate: ${String(Math.round(avgHitRate * 100))}%`,
     duration: 0,
   });
 
@@ -154,7 +154,7 @@ export async function executeSystemDoctor(
   checks.push({
     name: 'circuit-breakers',
     status: openCircuits === 0 ? 'healthy' : openCircuits < 2 ? 'degraded' : 'unhealthy',
-    message: `${Object.keys(circuitBreakers).length} breakers, ${openCircuits} open`,
+    message: `${String(Object.keys(circuitBreakers).length)} breakers, ${String(openCircuits)} open`,
     duration: 0,
   });
 
@@ -169,7 +169,7 @@ export async function executeSystemDoctor(
   checks.push({
     name: 'sse',
     status: 'healthy',
-    message: `${sseStats.clientCount} clients, ${sseStats.eventsPublished} events published`,
+    message: `${String(sseStats.clientCount)} clients, ${String(sseStats.eventsPublished)} events published`,
     duration: 0,
   });
 
@@ -181,13 +181,13 @@ export async function executeSystemDoctor(
 
     if (mqStatus !== 'healthy') {
       healthy = mqStatus === 'degraded' ? healthy : false;
-      recommendations.push(`${mqStats.pendingCount} pending messages - check processing`);
+      recommendations.push(`${String(mqStats.pendingCount)} pending messages - check processing`);
     }
 
     checks.push({
       name: 'message-queue',
       status: mqStatus,
-      message: `Mode: ${mqStats.mode}, Pending: ${mqStats.pendingCount}`,
+      message: `Mode: ${mqStats.mode}, Pending: ${String(mqStats.pendingCount)}`,
       duration: 0,
     });
   }
@@ -215,11 +215,8 @@ export async function executeSystemDoctor(
     'system diagnostics completed'
   );
 
-  return ok(result);
+  return Promise.resolve(ok(result));
 }
-
-// ============================================================================
-// Team Status
 // ============================================================================
 
 export interface TeamStatusResult {

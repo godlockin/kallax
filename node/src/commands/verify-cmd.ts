@@ -30,7 +30,7 @@ function findProjectRoot(): string {
 }
 
 function findVerifyScript(projectRoot: string, levelNum: number): string {
-  return path.join(projectRoot, 'scripts', 'verify', `level-${levelNum}.sh`);
+  return path.join(projectRoot, 'scripts', 'verify', `level-${String(levelNum)}.sh`);
 }
 
 interface LevelResult {
@@ -68,7 +68,7 @@ function runLevelScript(projectRoot: string, levelNum: number, ticketId: string,
   } catch (err: unknown) {
     const e = err as { status?: number | null; stdout?: Buffer | string; stderr?: Buffer | string };
     rc = typeof e.status === 'number' ? e.status : 1;
-    stdout = (e.stdout ? e.stdout.toString() : '') + (e.stderr ? `\n[STDERR]\n${e.stderr.toString()}` : '');
+    stdout = (e.stdout != null ? e.stdout.toString() : '') + (e.stderr != null ? `\n[STDERR]\n${e.stderr.toString()}` : '');
   }
   return {
     level: levelNum,
@@ -82,7 +82,7 @@ function runLevelScript(projectRoot: string, levelNum: number, ticketId: string,
 function formatResult(result: LevelResult): string {
   const status = result.passed ? 'PASS' : 'FAIL';
   const lines: string[] = [
-    `--- L${result.level} ${status} (rc=${result.rc}, ${result.durationMs}ms) ---`,
+    `--- L${String(result.level)} ${status} (rc=${String(result.rc)}, ${String(result.durationMs)}ms) ---`,
     result.stdout.trimEnd(),
   ];
   return lines.join('\n');
@@ -115,7 +115,7 @@ function emitOutput(
   process.stdout.write('\n');
   process.stdout.write(`==========================================\n`);
   process.stdout.write(`verify ${level} ${ticketId}${dryRun ? ' --dry-run' : ''}\n`);
-  process.stdout.write(`Total: ${totalPass} PASS, ${totalFail} FAIL (of ${results.length})\n`);
+  process.stdout.write(`Total: ${String(totalPass)} PASS, ${String(totalFail)} FAIL (of ${String(results.length)})\n`);
   process.stdout.write(`Overall: ${overallPassed ? 'PASS' : 'FAIL'}\n`);
   process.stdout.write(`==========================================\n`);
 }
@@ -161,7 +161,7 @@ export function registerVerifyCommands(program: Command, _ctx: AppContext): void
 
   verifyCmd.action((levelArg: string, ticketId: string, opts?: { dryRun?: boolean }) => {
     const projectRoot = findProjectRoot();
-    const level = (levelArg ?? '').trim().toLowerCase();
+    const level = levelArg.trim().toLowerCase();
     const dryRun = opts?.['dryRun'] === true;
 
     if (!ticketId || ticketId.trim() === '') {
