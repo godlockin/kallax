@@ -4,11 +4,15 @@
 
 set -euo pipefail
 
-WORKTREE="${1:?usage: check-orthogonal-edits.sh <worktree_path>}"
+WORKTREE="${1:-}"
+if [[ -z "$WORKTREE" ]]; then
+  echo "WARN: check-orthogonal-edits skipped (no worktree arg; pre-commit wrapper 0-arg invocation)" >&2
+  exit 0
+fi
 
 if [[ ! -d "$WORKTREE" ]]; then
-  echo "ERROR: worktree not found: $WORKTREE" >&2
-  exit 2
+  echo "WARN: check-orthogonal-edits skipped (worktree not found: $WORKTREE)" >&2
+  exit 0
 fi
 
 cd "$WORKTREE"

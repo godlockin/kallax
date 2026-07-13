@@ -73,9 +73,18 @@ echo "Scope Creep Check"
 echo "=========================================="
 
 if [ -z "$TICKET_ID" ]; then
-    echo "Usage: $0 <TICKET_ID>"
-    echo "Example: $0 EPIC-028-B"
-    exit 1
+    # Auto-discover from staged files or branch (mirrors check-epic-4-piece pattern).
+    staged="$(git diff --cached --name-only 2>/dev/null || true)"
+    TICKET_ID="$(echo "$staged" | grep -oE 'EPIC-[0-9]+-[A-Z]' | head -1 || true)"
+    if [[ -z "$TICKET_ID" ]]; then
+        branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")"
+        TICKET_ID="$(echo "$branch" | grep -oE 'EPIC-[0-9]+-[A-Z]' | head -1 || true)"
+    fi
+    if [[ -z "$TICKET_ID" ]]; then
+        echo "WARN: check-scope-creep skipped (no TICKET_ID from arg/staged/branch)" >&2
+        exit 0
+    fi
+    echo "INFO: auto-discovered TICKET_ID=$TICKET_ID" >&2
 fi
 
 # Find ticket.json

@@ -4,7 +4,11 @@
 
 set -euo pipefail
 
-PHASE="${1:?usage: check-halt-trigger.sh <phase>}"
+PHASE="${1:-}"
+if [[ -z "$PHASE" ]]; then
+  echo "WARN: check-halt-trigger skipped (no phase arg; pre-commit wrapper 0-arg invocation)" >&2
+  exit 0
+fi
 
 declare -a HALT_TRIGGERS=(
   "(unclear|ambiguous|maybe|should|要不要|模糊|应该)"

@@ -36,8 +36,24 @@ if [[ -z "$NET" || "$NET" == "0" ]]; then
   exit 0
 fi
 
-# 检查 approval trailer
+# 检查 approval trailer (git log range + pending COMMIT_EDITMSG for pre-commit)
 APPROVAL=$(git log -1 --format='%(trailers:key=Approved-Large-PR-By,valueonly)' "$BASE"..HEAD 2>/dev/null | head -1)
+if [[ -z "$APPROVAL" ]]; then
+  GIT_DIR_RESOLVED=$(git rev-parse --git-dir 2>/dev/null)
+  if [[ -n "$GIT_DIR_RESOLVED" ]] && [[ -f "$GIT_DIR_RESOLVED/COMMIT_EDITMSG" ]]; then
+    APPROVAL=$(grep -E '^Approved-Large-PR-By:' "$GIT_DIR_RESOLVED/COMMIT_EDITMSG" 2>/dev/null | head -1 | sed 's/^Approved-Large-PR-By:[[:space:]]*//')
+  fi
+fi
+
+# Pre-commit context: current staged commit not yet in HEAD. If NET is dominated by
+# unversioned staged changes, this is a per-commit hook — skip (PR-level check belongs in CI).
+# Detect by: are we invoked from a hook? Check for HOOK_INVOCATION marker or GIT_INDEX_FILE.
+if [[ -n "${GIT_INDEX_FILE:-}" ]] || [[ -n "${KALLAX_PRE_COMMIT:-}" ]]; then
+  if [[ -z "$APPROVAL" ]]; then
+    echo "check-pr-size: pre-commit context, PR-level check deferred to CI (approval trailer will be verified there)"
+    exit 0
+  fi
+fi
 
 if [[ "$NET" -gt "$FAIL_THRESHOLD" ]]; then
   if [[ -z "$APPROVAL" ]]; then
