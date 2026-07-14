@@ -81,6 +81,32 @@ ARGS=()
 # ----------------------------------------
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        --explain)
+            cat <<'EOF'
+post-process.sh — 11-step post-release checklist wrapper
+
+Underlying execution (11 steps, dry-run by default):
+  1. 回归验证 (build/test/CI)  — runs: cargo test, npm test
+  2. 分支同步 (miao → origin)  — runs: git push
+  3. 经验沉淀 (lessons)        — reads: confluence/decisions/**
+  4. 技术债登记                — reads: jira/backlog/**
+  5. GLOSSARY 更新             — writes: docs/KALLAX-GLOSSARY.md
+  6. PHASE-INDEX 更新          — writes: docs/PHASE-INDEX.md
+  7. ACCUMULATED-LESSONS       — writes: confluence/decisions/ACCUMULATED-LESSONS-*.md
+  8. CHANGELOG entry           — writes: CHANGELOG.md
+  9. CLAUDE.md rule update     — writes: CLAUDE.md
+  10. pre-commit hook test     — runs: bash scripts/hooks/pre-commit
+  11. PHASE-XXX-REVIEW entry   — writes: confluence/decisions/PHASE-*-REVIEW-*.md
+
+Modes:
+  (default)  dry-run — reports state only
+  --apply    actually execute mutations
+  --check-step N --status S / --check-all --mock-scenario X — testing hooks
+
+Usage: bash scripts/post-process.sh [--apply|--explain|--check-step N|...]
+EOF
+            exit 0
+            ;;
         --apply)
             APPLY_MODE=1
             shift

@@ -186,5 +186,27 @@ run_governance_3phase() {
 # Main (only when executed directly, not sourced)
 # ----------------------------------------
 if [ "$MAIN_MODE" -eq 1 ]; then
+    if [ "${1:-}" = "--explain" ]; then
+        cat <<'EOF'
+governance-3phase.sh — EPIC-056-A wrapper
+
+Underlying execution (per invocation):
+  Phase 1: Conductor scan
+    - reads: jira/epics/<EPIC>/epic.json
+    - writes: .kallax/phase1-conductor-scan-<EPIC>.md
+  Phase 2: 9 parallel experts (4 default + 5 extended)
+    - default: default/{backend,frontend,ux,product}.md
+    - extended: extended/{security-tool-bypass,process-engineering,auditor,compliance,decision-gate}.md
+    - writes: .kallax/phase2-expert-report-<expert>-<EPIC>.md
+  Phase 3: Master arbitration + 主公 P0/P1/P2 routing
+    - inbox: .kallax/inbox/REQUEST-P0-<EPIC>.md (P0)
+             .kallax/inbox/RECORD-P1-<EPIC>.md (P1)
+             .kallax/inbox/p2-log-<date>.jsonl (P2)
+
+Usage: bash scripts/audit/governance-3phase.sh <EPIC-ID>
+Flags: --explain (show this)
+EOF
+        exit 0
+    fi
     run_governance_3phase "${1:-EPIC-056-A}"
 fi

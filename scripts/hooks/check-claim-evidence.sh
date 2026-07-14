@@ -17,10 +17,12 @@ HOOK_NAME="check-claim-evidence"
 FAIL=0
 
 # 收集 staged 的 markdown / shell 文件 (macOS bash 3.2 兼容)
+# EPIC-117-A: 显式扫 confluence/decisions/** (之前 glob 依赖 shell 展开, 深层目录 miss)
 STAGED=()
 while IFS= read -r line; do
   [[ -n "$line" ]] && STAGED+=("$line")
-done < <(git diff --cached --name-only --diff-filter=ACM -- '*.md' '*.sh' '*.mdx' 2>/dev/null || true)
+done < <(git diff --cached --name-only --diff-filter=ACM \
+    -- '*.md' '*.sh' '*.mdx' 'confluence/decisions/**' 'confluence/memory/**' 2>/dev/null || true)
 
 if [[ ${#STAGED[@]} -eq 0 ]]; then
   echo "$HOOK_NAME: no staged md/sh files, skip"
@@ -44,6 +46,13 @@ for file in "${STAGED[@]}"; do
   [[ -f "$filepath" ]] || continue
   [[ "$file" == CLAUDE.md ]] && continue # CLAUDE.md is allowed to declare Rules
 
+  # EPIC-117-A: confluence/decisions/**/*.md 也纳入 X/Y PASS 数字检查
+  # (之前只查 README/CHANGELOG, decisions 里的假 PASS 漏网)
+  IS_DECISION=0
+  case "$file" in
+    confluence/decisions/*.md|confluence/memory/*.md) IS_DECISION=1 ;;
+  esac
+
   # 只看 diff 部分 (避免历史行 false positive)
   diff_content="$(git diff --cached "$file" 2>/dev/null || true)"
   [[ -z "$diff_content" ]] && continue
@@ -51,7 +60,11 @@ for file in "${STAGED[@]}"; do
   # 检查 1: X/Y PASS 数字必须带 raw output 引用
   if echo "$diff_content" | grep -E "$PATTERN_NUMERIC" >/dev/null 2>&1; then
     if ! echo "$diff_content" | grep -E -i '(raw_output|raw test output|test_output|vitest run|cargo test|npm test|jest run|实测|raw_output:|/tmp/.*\.log)' >/dev/null 2>&1; then
-      echo "❌ $file: X/Y PASS 数字无 raw_output 引用 (反讽 1:1 复发)"
+      if [[ $IS_DECISION -eq 1 ]]; then
+        echo "❌ $file: X/Y PASS 数字无 raw_output 引用 (decisions/memory 文档同 README 标准, EPIC-117-A)"
+      else
+        echo "❌ $file: X/Y PASS 数字无 raw_output 引用 (反讽 1:1 复发)"
+      fi
       FAIL=1
     fi
   fi
