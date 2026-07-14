@@ -4,7 +4,7 @@
  */
 
 import { err, ok } from 'neverthrow';
-import type { KallaxResult, Task, Ticket, Instance, IsolationScope } from '../types/index.js';
+import type { KallaxResult, Task, Ticket, IsolationScope } from '../types/index.js';
 import { KallaxError, KallaxErrorCode, TaskStatus, TaskType } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import type { SQLiteManager } from './sqlite/index.js';
@@ -22,7 +22,7 @@ export interface TaskAssigner {
 }
 
 function generateTaskId(): string {
-  return `task_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  return `task_${String(Date.now())}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
 export function createTaskAssigner(
@@ -130,7 +130,7 @@ export function createTaskAssigner(
       return ok(taskResult.value);
     },
 
-    async claimNextTask(performerId, capabilities = []): Promise<KallaxResult<Task | null>> {
+    async claimNextTask(performerId, _capabilities = []): Promise<KallaxResult<Task | null>> {
       // Get pending tasks
       const tasksResult = db.listTasks({ status: TaskStatus.PENDING, limit: 10 });
       if (tasksResult.isErr()) {
@@ -170,8 +170,7 @@ export function createTaskAssigner(
       return ok(null);
     },
 
-    async releaseTask(taskId): Promise<KallaxResult<void>> {
-      const now = Date.now();
+    releaseTask(taskId): Promise<KallaxResult<void>> {
       const result = db.updateTask(taskId, {
         status: TaskStatus.PENDING,
         performerId: null,
@@ -179,15 +178,15 @@ export function createTaskAssigner(
       });
 
       if (result.isErr()) {
-        return err(result.error);
+        return Promise.resolve(err(result.error));
       }
 
       isolationChecker.unregisterScope(taskId);
       logger.info({ taskId }, 'task released');
-      return ok(undefined);
+      return Promise.resolve(ok(undefined));
     },
 
-    async completeTask(taskId, output): Promise<KallaxResult<void>> {
+    completeTask(taskId, output): Promise<KallaxResult<void>> {
       const now = Date.now();
       const result = db.updateTask(taskId, {
         status: TaskStatus.COMPLETED,
@@ -197,15 +196,15 @@ export function createTaskAssigner(
       });
 
       if (result.isErr()) {
-        return err(result.error);
+        return Promise.resolve(err(result.error));
       }
 
       isolationChecker.unregisterScope(taskId);
       logger.info({ taskId }, 'task completed');
-      return ok(undefined);
+      return Promise.resolve(ok(undefined));
     },
 
-    async failTask(taskId, error): Promise<KallaxResult<void>> {
+    failTask(taskId, error): Promise<KallaxResult<void>> {
       const now = Date.now();
       const result = db.updateTask(taskId, {
         status: TaskStatus.FAILED,
@@ -214,18 +213,18 @@ export function createTaskAssigner(
       });
 
       if (result.isErr()) {
-        return err(result.error);
+        return Promise.resolve(err(result.error));
       }
 
       isolationChecker.unregisterScope(taskId);
       logger.error({ taskId, error }, 'task failed');
-      return ok(undefined);
+      return Promise.resolve(ok(undefined));
     },
 
-    async getAssignableTasks(): Promise<KallaxResult<Task[]>> {
+    getAssignableTasks(): Promise<KallaxResult<Task[]>> {
       const tasksResult = db.listTasks({ status: TaskStatus.PENDING });
       if (tasksResult.isErr()) {
-        return err(tasksResult.error);
+        return Promise.resolve(err(tasksResult.error));
       }
 
       // Filter out tasks with active isolation conflicts
@@ -240,7 +239,7 @@ export function createTaskAssigner(
         });
       });
 
-      return ok(assignable);
+      return Promise.resolve(ok(assignable));
     },
   };
 }

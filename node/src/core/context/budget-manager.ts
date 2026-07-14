@@ -3,7 +3,6 @@
  * Solves vision problem: "long context memory loss".
  */
 import { getContextTracker } from './tracker.js';
-import { getContextCompressor } from './compressor.js';
 import { getContextAlertManager } from './alert.js';
 import { logger } from '../../utils/logger.js';
 
@@ -53,13 +52,13 @@ export function createContextBudget(): ContextBudget {
       return { performerId, currentTokens: usage.currentTokens, maxTokens: cfg.maxTokens, usagePercent: pct, status, compressionCount: usage.compressionsTriggered };
     },
 
-    getAlert(performerId: string) {
+    getAlert(performerId: string): { level: 'warning' | 'critical'; message: string } | null {
       const state = this.getState(performerId);
       if (!state || state.status === 'normal') return null;
-      return { level: state.status, message: `Context ${state.status}: ${state.usagePercent}% used (${state.currentTokens}/${state.maxTokens})` };
+      return { level: state.status, message: `Context ${state.status}: ${String(state.usagePercent)}% used (${String(state.currentTokens)}/${String(state.maxTokens)})` };
     },
 
-    emergencyRecover(performerId: string) {
+    emergencyRecover(performerId: string): { saved: boolean; suggestion: string } {
       const state = this.getState(performerId);
       if (!state) return { saved: false, suggestion: 'Performer not found' };
       tracker.recordEvent(performerId, 'emergency_recovery');

@@ -3,7 +3,7 @@
  *
  * EPIC-030-C: skeleton (basic structure, can be enhanced later).
  *
- * Trigger flow (跟 EPIC-030-A 联合):
+ * Trigger flow (跟 EPIC-030-A ):
  *   TrustScore.matchAll(ticket, experts) → TrustScoreResult[]
  *     if every result.score === 0 (no L1/L2/L3 hit) → waiting-for-expert kicks in
  *       1. increment retries in `.kallax/state/waiting-for-expert.json`
@@ -29,7 +29,7 @@
  *       }
  *     }
  *
- * 1:1 TrustScore wiring (跟 EPIC-030-A 联合):
+ * 1:1 TrustScore wiring (跟 EPIC-030-A ):
  *   recordNoMatch() accepts a TrustScoreResult[] (the full matchAll output) and
  *   uses the BEST result's score + matchedLayer as the recorded bestScore /
  *   bestLayer. If the caller already knows the ticket is unmatched they can
@@ -175,7 +175,10 @@ function pickBestResult(results: readonly TrustScoreResult[]): {
   if (results.length === 0) {
     return { bestScore: 0, bestLayer: null };
   }
-  let best: TrustScoreResult = results[0]!;
+  let best = results[0];
+  if (best === undefined) {
+    return { bestScore: 0, bestLayer: null };
+  }
   for (let i = 1; i < results.length; i++) {
     const r = results[i];
     if (r !== undefined && r.score > best.score) {
@@ -233,8 +236,8 @@ export function createWaitingForExpert(options: WaitingForExpertOptions = {}): W
   };
 
   const writeState = (state: Record<string, WaitingExpertEntry>): void => {
-    // EPIC-076 P1-10: TOCTOU 治根 — tmp 用 PID+timestamp 防并发写碰撞
-    const tmpPath = `${stateFile}.tmp.${process.pid}.${Date.now()}`;
+    // EPIC-076 P1-10: TOCTOU fix — tmp 用 PID+timestamp 防并发写碰撞
+    const tmpPath = `${stateFile}.tmp.${String(process.pid)}.${String(Date.now())}`;
     try {
       fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2) + '\n');
       fs.renameSync(tmpPath, stateFile);
@@ -259,9 +262,9 @@ export function createWaitingForExpert(options: WaitingForExpertOptions = {}): W
       `- Mode: ai-auto`,
       `- Ticket: ${entry.ticketId}`,
       `- Required Expertise: ${expertise}`,
-      `- Retries: ${entry.retries}`,
+      `- Retries: ${String(entry.retries)}`,
       `- Last Attempt: ${entry.lastAttempt}`,
-      `- Best Match Score: ${entry.bestScore}`,
+      `- Best Match Score: ${String(entry.bestScore)}`,
       `- Best Match Layer: ${entry.bestLayer ?? 'none'}`,
       '',
       '## 建议',
@@ -381,6 +384,7 @@ export function createWaitingForExpert(options: WaitingForExpertOptions = {}): W
     if (!Object.prototype.hasOwnProperty.call(state, ticketId)) {
       return false;
     }
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete state[ticketId];
     writeState(state);
     logger.info(

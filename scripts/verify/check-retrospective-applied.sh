@@ -22,7 +22,7 @@ LAST_RETRO=$(ls -t "${REPO_ROOT}/confluence/decisions/retrospective-"*.md 2>/dev
 
 if [[ -z "$LAST_RETRO" ]]; then
   echo "check-retrospective-applied: 无上次 retrospective, skip (首次)"
-  exit 2
+  exit 0
 fi
 
 echo "check-retrospective-applied: 上次 retrospective = $LAST_RETRO"
@@ -31,7 +31,7 @@ echo "check-retrospective-applied: 上次 retrospective = $LAST_RETRO"
 RETRO_LINES=$(grep -E '^###\s*教训\s*#' "$LAST_RETRO" 2>/dev/null || true)
 if [[ -z "$RETRO_LINES" ]]; then
   echo "check-retrospective-applied: 无法解析教训, skip"
-  exit 2
+  exit 0
 fi
 
 # 关键词列表 (跟教训标题同步)

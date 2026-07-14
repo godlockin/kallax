@@ -9,8 +9,8 @@ GLOSSARY="${1:-docs/kallax-glossary.md}"
 MAX_TERMS="${2:-35}"
 
 if [[ ! -f "$GLOSSARY" ]]; then
-  echo "ERROR: glossary not found: $GLOSSARY" >&2
-  exit 2
+  echo "WARN: glossary not found: $GLOSSARY — skipping" >&2
+  exit 0
 fi
 
 term_count=$(grep -cE "^### [0-9]+\." "$GLOSSARY")

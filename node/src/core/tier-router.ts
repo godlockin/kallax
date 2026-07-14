@@ -92,7 +92,8 @@ class TierRouter {
       };
     }
 
-    if (tier === 3) {
+    // tier === 3
+    {
       try {
         const cmd = opToShellCommand(op, payload);
         const { stdout } = await execFileAsync('kallax', [cmd, JSON.stringify(payload)], { timeout: 5000 });
@@ -107,7 +108,7 @@ class TierRouter {
       }
     }
 
-    return { ok: false, tier, error: `unknown tier ${tier}` };
+    return { ok: false, tier, error: 'unknown tier' };
   }
 
   async execute<T>(
@@ -123,7 +124,6 @@ class TierRouter {
     logger.info({ op, startTier, payload }, 'tier-router: execute');
 
     let actualTier: TierLevel = startTier;
-    let degradedFrom: TierLevel | undefined;
 
     for (let step = 0; step <= maxDegradation; step++) {
       const tierStatus = state.tiers[actualTier];
@@ -134,8 +134,7 @@ class TierRouter {
       if (explicitPrefer && step === 0) {
         break; // 用 caller 选的 tier, 不被 recovery manager state 阻止
       }
-      if (tierStatus && tierStatus.healthy) {
-        if (step > 0) degradedFrom = startTier;
+      if (tierStatus.healthy) {
         break;
       }
       if (actualTier > 0) {
@@ -149,7 +148,7 @@ class TierRouter {
   }
 }
 
-function opToRustEndpoint(op: Operation): string {
+function _opToRustEndpoint(op: Operation): string {
   // EPIC-079: 保留以备脚本调试 (实际调用在 executeOnTier switch)
   const map: Record<Operation, string> = {
     'ticket.create': '/bridge/ticket/create',

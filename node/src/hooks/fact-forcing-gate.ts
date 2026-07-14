@@ -7,9 +7,8 @@
  * L4: Data Flow — integration tests pass
  */
 
-import { ok, err } from 'neverthrow';
+import { ok } from 'neverthrow';
 import type { KallaxResult } from '../types/index.js';
-import { KallaxError, KallaxErrorCode } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import type { Hook, HookContext } from './types.js';
 
@@ -95,7 +94,7 @@ export function createFactForcingGate(
 
 // ── L1: Existence ──────────────────────────────────────────────────────────
 
-async function checkL1Existence(ctx: HookContext): Promise<KallaxResult<boolean>> {
+async function checkL1Existence(_ctx: HookContext): Promise<KallaxResult<boolean>> {
   try {
     const { execFile } = await import('node:child_process');
     const { promisify } = await import('node:util');
@@ -120,7 +119,7 @@ async function checkL1Existence(ctx: HookContext): Promise<KallaxResult<boolean>
 // ── L2: Substance ──────────────────────────────────────────────────────────
 
 async function checkL2Substance(
-  ctx: HookContext,
+  _ctx: HookContext,
   stubPatterns: RegExp[],
 ): Promise<KallaxResult<boolean>> {
   try {
@@ -165,7 +164,7 @@ async function checkL2Substance(
 
 // ── L3: Wiring ─────────────────────────────────────────────────────────────
 
-async function checkL3Wiring(ctx: HookContext): Promise<KallaxResult<boolean>> {
+async function checkL3Wiring(_ctx: HookContext): Promise<KallaxResult<boolean>> {
   try {
     const { execFile } = await import('node:child_process');
     const { promisify } = await import('node:util');
@@ -174,6 +173,7 @@ async function checkL3Wiring(ctx: HookContext): Promise<KallaxResult<boolean>> {
     // Run TypeScript type check
     const { stderr } = await execFileAsync('npx', ['tsc', '--noEmit'], { timeout: 60000 });
 
+    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
     if (stderr && stderr.includes('error TS')) {
       logger.warn({ stderr: stderr.slice(0, 500) }, 'TypeScript compilation errors');
       return ok(false);
@@ -183,7 +183,7 @@ async function checkL3Wiring(ctx: HookContext): Promise<KallaxResult<boolean>> {
   } catch (error: unknown) {
     // tsc exits with non-zero on type errors
     const msg = error instanceof Error ? error.message : String(error);
-    if (msg.includes('error TS') || (error as { code?: number })?.code === 2) {
+    if (msg.includes('error TS') || (error as { code?: number }).code === 2) {
       return ok(false);
     }
     // npx or tsc not available — skip
@@ -193,7 +193,7 @@ async function checkL3Wiring(ctx: HookContext): Promise<KallaxResult<boolean>> {
 
 // ── L4: Data Flow ──────────────────────────────────────────────────────────
 
-async function checkL4DataFlow(ctx: HookContext): Promise<KallaxResult<boolean>> {
+async function checkL4DataFlow(_ctx: HookContext): Promise<KallaxResult<boolean>> {
   try {
     const { execFile } = await import('node:child_process');
     const { promisify } = await import('node:util');

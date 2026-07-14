@@ -79,10 +79,6 @@ const DLQ_RETENTION_MS = 3600_000; // 1 hour
 
 // ── Implementation ─────────────────────────────────────────────────────────
 
-function generateId(): string {
-  return `sub_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
-}
-
 export function createEventBus(): EventBus {
   const subscriptions = new Map<string, Subscription>();
   const interceptors: Interceptor[] = [];
@@ -255,7 +251,7 @@ export function createEventBus(): EventBus {
       logger.debug({ subscriberId: id, eventTypes, priority: sub.priority }, 'subscriber registered');
 
       // Return unsubscribe function
-      const unsubscribe = () => {
+      const unsubscribe = (): KallaxResult<void> => {
         subscriptions.delete(id);
         logger.debug({ subscriberId: id }, 'subscriber unregistered');
         return ok(undefined);
@@ -307,7 +303,8 @@ export function createEventBus(): EventBus {
         return err(new KallaxError(KallaxErrorCode.TASK_NOT_FOUND, `Dead letter ${eventId} not found`));
       }
 
-      const dl = deadLetters[idx]!;
+      const dl = deadLetters[idx];
+      if (!dl) return err(new KallaxError(KallaxErrorCode.TASK_NOT_FOUND, `Dead letter ${eventId} not found at index`));
       deadLetters.splice(idx, 1);
 
       // Reset retry count and re-deliver
@@ -351,8 +348,6 @@ export function createEventBus(): EventBus {
 let defaultBus: EventBus | null = null;
 
 export function getEventBus(): EventBus {
-  if (defaultBus === null) {
-    defaultBus = createEventBus();
-  }
+  defaultBus ??= createEventBus();
   return defaultBus;
 }

@@ -12,7 +12,6 @@
 import { err, ok } from 'neverthrow';
 import type { KallaxResult } from '../types/index.js';
 import { KallaxError, KallaxErrorCode } from '../types/index.js';
-import { canWritePath } from './readonly-path.js';
 
 export type WorkspaceName = 'master' | 'conductor' | 'performer' | 'readonly' | 'auditor';
 
@@ -72,16 +71,12 @@ export function canSwitchToWorkspace(
       return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Invalid actor role', { metadata: { actorRole } }));
     }
 
-    if (!targetWorkspace || typeof targetWorkspace !== 'string') {
-      return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Invalid target workspace', { metadata: { workspace: targetWorkspace } }));
-    }
-
     // Role name validation
     if (actorRole !== actorRole.trim()) {
       return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Role has whitespace', { metadata: { actorRole } }));
     }
 
-    const validRoles = ['master', 'conductor', 'performer', 'readonly', 'auditor'];
+    const validRoles: readonly string[] = ['master', 'conductor', 'performer', 'readonly', 'auditor'];
     if (!validRoles.includes(actorRole)) {
       return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Unknown actor role', { metadata: { actorRole } }));
     }

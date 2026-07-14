@@ -83,16 +83,33 @@ DECORATIVE_PATTERNS=(
 )
 
 FOUND=()
-for file in "${SCAN_FILES[@]}"; do
-  [ -f "$file" ] || continue
-  for pat in "${DECORATIVE_PATTERNS[@]}"; do
-    if matches=$(grep -nE "$pat" "$file" 2>/dev/null); then
-      while IFS= read -r match; do
-        FOUND+=("$file: $match")
-      done <<< "$matches"
-    fi
+# EPIC-114: STAGED_ONLY mode → only scan newly-added lines in staged diff
+# (Historical decorative lines already in CHANGELOG are grandfathered)
+if [ -n "${KALLAX_STAGED_ONLY:-}" ] && [ "$KALLAX_STAGED_ONLY" = "1" ]; then
+  for file in "${SCAN_FILES[@]}"; do
+    [ -f "$file" ] || continue
+    ADDED=$(git diff --cached -U0 -- "$file" 2>/dev/null | grep '^+' | grep -v '^+++' | sed 's/^+//')
+    [ -z "$ADDED" ] && continue
+    for pat in "${DECORATIVE_PATTERNS[@]}"; do
+      if matches=$(echo "$ADDED" | grep -nE "$pat" 2>/dev/null); then
+        while IFS= read -r match; do
+          FOUND+=("$file (new): $match")
+        done <<< "$matches"
+      fi
+    done
   done
-done
+else
+  for file in "${SCAN_FILES[@]}"; do
+    [ -f "$file" ] || continue
+    for pat in "${DECORATIVE_PATTERNS[@]}"; do
+      if matches=$(grep -nE "$pat" "$file" 2>/dev/null); then
+        while IFS= read -r match; do
+          FOUND+=("$file: $match")
+        done <<< "$matches"
+      fi
+    done
+  done
+fi
 
 if [ ${#FOUND[@]} -gt 0 ]; then
   echo "FAIL: ${#FOUND[@]} decorative claim patterns detected:"

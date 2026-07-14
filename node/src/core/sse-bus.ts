@@ -32,7 +32,7 @@ export interface SSEBusStats {
 }
 
 function generateEventId(): string {
-  return `evt_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  return `evt_${String(Date.now())}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
 export function createSSEBus(): SSEBus {
@@ -194,8 +194,6 @@ export function createEvent(
 let defaultBus: SSEBus | null = null;
 
 export function getSSEBus(): SSEBus {
-  if (defaultBus === null) {
-    defaultBus = createSSEBus();
-  }
+  defaultBus ??= createSSEBus();
   return defaultBus;
 }

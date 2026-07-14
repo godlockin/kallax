@@ -9,7 +9,7 @@ import { logger } from '../../utils/logger.js';
 import { registerCleanupHandler } from '../../utils/process-cleanup.js';
 
 function generateMessageId(): string {
-  return `msg_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+  return `msg_${String(Date.now())}_${Math.random().toString(36).slice(2, 11)}`;
 }
 
 /**
@@ -21,7 +21,7 @@ export function createRedisQueue(config: NonNullable<MessageQueueConfig['redis']
     port: config.port,
     password: config.password,
     db: config.db ?? 0,
-    retryStrategy: (times: number) => Math.min(times * 100, 3000),
+    retryStrategy(times: number): number { return Math.min(times * 100, 3000); },
   });
 
   const subscriber = new Redis({
@@ -152,7 +152,7 @@ export function createRedisQueue(config: NonNullable<MessageQueueConfig['redis']
       logger.info({}, 'redis queue closed');
     },
 
-    getStats() {
+    getStats(): MessageQueueStats {
       return {
         mode: 'redis',
         pendingCount: 0, // Would need async call

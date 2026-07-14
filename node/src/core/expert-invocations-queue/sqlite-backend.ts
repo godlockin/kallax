@@ -21,7 +21,7 @@ export interface SqliteBackend {
   readonly insert: (inv: ExpertInvocation) => Result<ExpertInvocation, Error>;
   readonly selectAll: () => Result<readonly ExpertInvocation[], Error>;
   readonly clear: () => Result<void, Error>;
-  readonly close: () => void;
+  readonly close: () => Promise<void>;
 }
 
 export function createSqliteBackend(dbPath: string): SqliteBackend {
@@ -48,7 +48,7 @@ export function createSqliteBackend(dbPath: string): SqliteBackend {
   const clearStmt = db.prepare(`DELETE FROM ${SQLITE_TABLE_NAME}`);
 
   return {
-    insert(inv) {
+    insert(inv): Result<ExpertInvocation, Error> {
       try {
         insertStmt.run(inv.expertId, inv.ticketId, inv.timestamp);
         return ok(inv);
@@ -56,7 +56,7 @@ export function createSqliteBackend(dbPath: string): SqliteBackend {
         return err(e instanceof Error ? e : new Error(String(e)));
       }
     },
-    selectAll() {
+    selectAll(): Result<readonly ExpertInvocation[], Error> {
       try {
         const rows = selectStmt.all() as Array<{
           expert_id: string;
@@ -74,7 +74,7 @@ export function createSqliteBackend(dbPath: string): SqliteBackend {
         return err(e instanceof Error ? e : new Error(String(e)));
       }
     },
-    clear() {
+    clear(): Result<void, Error> {
       try {
         clearStmt.run();
         return ok(undefined);
@@ -82,7 +82,8 @@ export function createSqliteBackend(dbPath: string): SqliteBackend {
         return err(e instanceof Error ? e : new Error(String(e)));
       }
     },
-    close() {
+    async close(): Promise<void> {
+      await Promise.resolve();
       try {
         db.close();
       } catch {
@@ -94,15 +95,17 @@ export function createSqliteBackend(dbPath: string): SqliteBackend {
 
 export function createFallbackSqliteBackend(): SqliteBackend {
   return {
-    insert() {
+    insert(): Result<ExpertInvocation, Error> {
       return err(new Error('SQLite unavailable'));
     },
-    selectAll() {
+    selectAll(): Result<readonly ExpertInvocation[], Error> {
       return err(new Error('SQLite unavailable'));
     },
-    clear() {
+    clear(): Result<void, Error> {
       return err(new Error('SQLite unavailable'));
     },
-    close() {},
+    async close(): Promise<void> {
+      await Promise.resolve();
+    },
   };
 }

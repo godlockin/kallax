@@ -33,12 +33,35 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$EPIC_ID" ]]; then
-    echo "ERROR: EPIC_ID required" >&2
-    echo "Usage: $0 [--require-passed] <EPIC_ID>" >&2
-    exit 2
+    # Auto-discover from staged files or branch (mirrors check-assumption-clarity v2.0.8 pattern).
+    # 0-arg invocation happens when pre-commit wrapper loops through check-*.sh.
+    staged="$(git diff --cached --name-only 2>/dev/null || true)"
+    EPIC_ID="$(echo "$staged" | grep -oE 'EPIC-[0-9]+' | head -1 || true)"
+    if [[ -z "$EPIC_ID" ]]; then
+        EPIC_ID="$(git diff --cached 2>/dev/null | grep -oE 'EPIC-[0-9]+' | head -1 || true)"
+    fi
+    if [[ -z "$EPIC_ID" ]]; then
+        branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")"
+        EPIC_ID="$(echo "$branch" | grep -oE 'EPIC-[0-9]+' | head -1 || true)"
+    fi
+    if [[ -z "$EPIC_ID" ]]; then
+        echo "WARN: check-checkin-points skipped (no EPIC_ID detected from arg, staged files, or branch)" >&2
+        exit 0
+    fi
+    echo "INFO: auto-discovered EPIC_ID=$EPIC_ID" >&2
 fi
 
 EPIC_JSON="jira/epics/$EPIC_ID/epic.json"
+if [[ ! -f "$EPIC_JSON" ]]; then
+    # Fallback: try branch EPIC if auto-discovery found a non-existent one
+    branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")"
+    BRANCH_EPIC="$(echo "$branch" | grep -oE 'EPIC-[0-9]+' | head -1 || true)"
+    if [[ -n "$BRANCH_EPIC" && "$BRANCH_EPIC" != "$EPIC_ID" ]]; then
+        EPIC_ID="$BRANCH_EPIC"
+        EPIC_JSON="jira/epics/$EPIC_ID/epic.json"
+        echo "INFO: falling back to branch EPIC_ID=$EPIC_ID" >&2
+    fi
+fi
 if [[ ! -f "$EPIC_JSON" ]]; then
     echo "ERROR: $EPIC_JSON not found" >&2
     exit 2

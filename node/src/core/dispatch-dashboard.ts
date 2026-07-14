@@ -14,14 +14,10 @@
  *   "Performer 派单成功率: 7/12 真 PASS (58.3%)" → target 95%+
  */
 
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { err, ok, type Result } from 'neverthrow';
 import { logger } from '../utils/logger.js';
-
-const execFileAsync = promisify(execFile);
 
 // ============================================================================
 // Constants (no magic numbers — KALLAX Hard Rule #4)
@@ -96,7 +92,7 @@ export function formatXofY(passed: number, total: number): string {
     return '0/0 (0.0%)';
   }
   const pct = (passed / total) * 100;
-  return `${passed}/${total} (${pct.toFixed(1)}%)`;
+  return `${String(passed)}/${String(total)} (${pct.toFixed(1)}%)`;
 }
 
 /**
@@ -234,7 +230,7 @@ async function readPassReport(filePath: string): Promise<Result<DispatchRecord, 
     return ok({
       ticketId,
       epicId: epicIdFromTicketId(ticketId),
-      performerId: String(obj['performer_id'] ?? `performer-${ticketId}`),
+      performerId: (typeof obj['performer_id'] === 'string' ? obj['performer_id'] : `performer-${ticketId}`),
       commitSha,
       outcome,
       evidenceChainPassed: false, // updated later by S3 loader
@@ -276,7 +272,7 @@ async function loadPassReports(outboxDir: string): Promise<Result<ReadonlyArray<
         }
       }
     }
-  } catch (e: unknown) {
+  } catch {
     return err({ kind: 'no_pass_reports', path: outboxDir });
   }
 
@@ -348,7 +344,7 @@ export function createDispatchDashboard(config: DispatchDashboardConfig): Dispat
   const evidenceChainDir = config.evidenceChainDir ?? join(outboxDir, '..', 'evidence-chain');
 
   return {
-    async loadDataSources() {
+    async loadDataSources(): Promise<Result<{ records: ReadonlyArray<DispatchRecord>; status: DataSourceStatus }, DashboardError>> {
       const passResult = await loadPassReports(outboxDir);
       if (passResult.isErr()) return err(passResult.error);
       const afterScope = await loadScopeCheckResults(scopeCheckDir, passResult.value);
@@ -378,12 +374,12 @@ export function createDispatchDashboard(config: DispatchDashboardConfig): Dispat
       lines.push(`Target: ${summary.targetRatePct.toFixed(1)}%`);
       lines.push(`Delta vs Baseline: ${summary.deltaVsBaseline >= 0 ? '+' : ''}${summary.deltaVsBaseline.toFixed(1)}%`);
       lines.push('');
-      lines.push(`Total: ${summary.total} | Passed: ${summary.passed} | Failed: ${summary.failed} | Fake PASS: ${summary.fakePasses} | Boundary Violations: ${summary.boundaryViolations}`);
+      lines.push(`Total: ${String(summary.total)} | Passed: ${String(summary.passed)} | Failed: ${String(summary.failed)} | Fake PASS: ${String(summary.fakePasses)} | Boundary Violations: ${String(summary.boundaryViolations)}`);
       lines.push('');
       if (summary.byEpic.length > 0) {
         lines.push('By EPIC:');
         for (const e of summary.byEpic) {
-          lines.push(`  ${e.epicId}: ${e.formatXofY} (fake=${e.fakePasses} boundary=${e.boundaryViolations})`);
+          lines.push(`  ${e.epicId}: ${e.formatXofY} (fake=${String(e.fakePasses)} boundary=${String(e.boundaryViolations)})`);
         }
         lines.push('');
       }
@@ -417,12 +413,12 @@ async function main(): Promise<number> {
   const args = process.argv.slice(2);
   const mockDir = process.env['KALLAX_DASHBOARD_MOCK_DIR'];
   const filter = process.env['KALLAX_DASHBOARD_FILTER'];
-  const outboxDir = mockDir ? join(mockDir, 'outbox') : join(process.cwd(), '.kallax', 'queue', 'outbox');
+  const outboxDir = mockDir != null ? join(mockDir, 'outbox') : join(process.cwd(), '.kallax', 'queue', 'outbox');
 
   const dashboard = createDispatchDashboard({
     outboxDir,
-    scopeCheckDir: mockDir ? join(mockDir, 'scope-creep') : undefined,
-    evidenceChainDir: mockDir ? join(mockDir, 'evidence-chain') : undefined,
+    scopeCheckDir: mockDir != null ? join(mockDir, 'scope-creep') : undefined,
+    evidenceChainDir: mockDir != null ? join(mockDir, 'evidence-chain') : undefined,
   });
 
   const loaded = await dashboard.loadDataSources();
@@ -442,26 +438,26 @@ async function main(): Promise<number> {
   const summary = dashboard.computeKpi(records);
 
   // Test cases 1-5 (when invoked with caseN arg)
-  if (args[0]?.startsWith('case')) {
+  if (args[0]?.startsWith('case') ?? false) {
     const caseNum = args[0];
     switch (caseNum) {
       case 'case1':
         logger.info({}, `S1_OK=${status.s1PassReports >= 5 ? 'yes' : 'no'} S2_OK=${status.s2ScopeChecks >= 1 ? 'yes' : 'no'} S3_OK=${status.s3EvidenceChainChecks >= 3 ? 'yes' : 'no'}`);
         return 0;
       case 'case2':
-        logger.info({}, `all_pass=${summary.passed}/${summary.total} ${summary.formatXofY}`);
+        logger.info({}, `all_pass=${String(summary.passed)}/${String(summary.total)} ${summary.formatXofY}`);
         return 0;
       case 'case3':
-        logger.info({}, `fake_passes=${summary.fakePasses} tickets=${records.filter((r) => r.outcome === 'fake_pass').map((r) => r.ticketId).join(',')}`);
+        logger.info({}, `fake_passes=${String(summary.fakePasses)} tickets=${records.filter((r) => r.outcome === 'fake_pass').map((r) => r.ticketId).join(',')}`);
         return 0;
       case 'case4':
-        logger.info({}, `boundary_violations=${summary.boundaryViolations} be_events=${records.filter((r) => r.outcome === 'boundary_violation').flatMap((r) => r.beEvents).join(',')}`);
+        logger.info({}, `boundary_violations=${String(summary.boundaryViolations)} be_events=${records.filter((r) => r.outcome === 'boundary_violation').flatMap((r) => r.beEvents).join(',')}`);
         return 0;
       case 'case5':
-        logger.info({}, `kpi=${summary.formatXofY} total=${summary.total} passed=${summary.passed} strict_rate=${summary.ratePct.toFixed(1)}% baseline=${summary.baselineRatePct.toFixed(1)}%`);
+        logger.info({}, `kpi=${summary.formatXofY} total=${String(summary.total)} passed=${String(summary.passed)} strict_rate=${summary.ratePct.toFixed(1)}% baseline=${summary.baselineRatePct.toFixed(1)}%`);
         return 0;
       default:
-        logger.error({}, `Unknown case: ${caseNum}`);
+        logger.error({}, `Unknown case: ${caseNum ?? 'unknown'}`);
         return 2;
     }
   }
@@ -475,7 +471,7 @@ async function main(): Promise<number> {
 export { main };
 
 // CLI entry — invoked directly by `node dispatch-dashboard.ts`
-const isMainModule = (() => {
+const isMainModule = ((): boolean => {
   try {
     const url = new URL(import.meta.url);
     return url.pathname === process.argv[1] || url.pathname.endsWith(process.argv[1] ?? '');
@@ -488,7 +484,7 @@ if (isMainModule) {
   main().then(
     (code) => process.exit(code),
     (e: unknown) => {
-      logger.error({}, 'FATAL:', e instanceof Error ? e.message : String(e));
+      logger.error({ error: e instanceof Error ? e.message : String(e) }, 'FATAL');
       process.exit(2);
     },
   );

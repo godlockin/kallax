@@ -200,12 +200,12 @@ export function createPluginRegistry(basePath: string): PluginRegistry {
       return discoverFromDir(directory);
     },
 
-    async load(manifest: PluginManifest): Promise<KallaxResult<void>> {
-      return loadIntoRegistry(state, manifest);
+    load(manifest: PluginManifest): Promise<KallaxResult<void>> {
+      return Promise.resolve(loadIntoRegistry(state, manifest));
     },
 
-    async unload(pluginName: string): Promise<KallaxResult<void>> {
-      return unloadFromRegistry(state, pluginName);
+    unload(pluginName: string): Promise<KallaxResult<void>> {
+      return Promise.resolve(unloadFromRegistry(state, pluginName));
     },
 
     list(): readonly PluginManifest[] {

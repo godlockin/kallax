@@ -87,7 +87,7 @@ export function createRoleSelector(): RoleSelector {
         `# Generated at: ${new Date().toISOString()}`,
         '',
         `role: ${config.role}`,
-        `configuredAt: ${config.configuredAt ?? Date.now()}`,
+        `configuredAt: ${String(config.configuredAt ?? Date.now())}`,
       ].join('\n');
 
       await fs.writeFile(filePath, content, 'utf-8');

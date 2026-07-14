@@ -125,7 +125,8 @@ export function createClaimQueue(): ClaimQueue {
       capabilities: readonly string[]
     ): ClaimQueueItem | null {
       for (let i = 0; i < queue.length; i++) {
-        const entry = queue[i]!;
+        const entry = queue[i];
+        if (entry === undefined) continue;
         if (hasCapabilities(entry.item.requiredCapabilities, capabilities)) {
           queue.splice(i, 1);
           activeClaims.set(entry.item.taskId, {

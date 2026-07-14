@@ -84,7 +84,7 @@ export function enforceClaimWithBrief(
     );
     return err({
       code: 'BRIEF_INFERENCE_MALFORMED',
-      message: `brief quality score ${quality.score.toFixed(3)} below threshold ${MIN_QUALITY_FOR_CLAIM} — needs more specificity / risks / measurable AC`,
+      message: `brief quality score ${quality.score.toFixed(3)} below threshold ${String(MIN_QUALITY_FOR_CLAIM)} — needs more specificity / risks / measurable AC`,
     });
   }
 

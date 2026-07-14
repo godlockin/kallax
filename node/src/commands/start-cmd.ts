@@ -13,12 +13,13 @@ export function registerStartCommands(program: Command, ctx: AppContext): void {
     .command('start')
     .description('Start KALLAX in interactive mode')
     .option('-r, --role <role>', 'Role: conductor | performer')
-    .action(async (opts?: { role?: string }) => {
+    .action(async (opts?: { role?: string }): Promise<void> => {
       try {
         const roleSelector = createRoleSelector();
 
-        if (opts?.['role']) {
-          const setResult = await roleSelector.setRole(process.cwd(), opts.role as 'conductor' | 'performer');
+        const roleOpt = opts?.['role'];
+        if (roleOpt != null && roleOpt !== '') {
+          const setResult = await roleSelector.setRole(process.cwd(), roleOpt as 'conductor' | 'performer');
           if (setResult.isErr()) {
             logger.kallaxError(setResult.error);
             process.exit(1);

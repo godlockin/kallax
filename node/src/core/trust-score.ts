@@ -51,7 +51,7 @@ const KEYWORD_THRESHOLD = 2;
 const COSINE_ACCEPT_THRESHOLD = 0.5;
 const COSINE_SCORE_SCALE = 1.0;
 
-const TOKEN_SPLIT_REGEX = /[\s,;:.!?()\[\]{}<>"'/\\|+\-*]+/u;
+const TOKEN_SPLIT_REGEX = /[\s,;:.!?()[\]{}<>"'/\\|+\-*]+/u;
 
 export function tokenize(text: string): readonly string[] {
   if (!text) return [];

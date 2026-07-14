@@ -59,9 +59,8 @@ export function registerEpicCommands(program: Command, ctx: AppContext): void {
   epic
     .command('create <epicId> <title>')
     .description('Create a new EPIC')
-    .action((epicId: string, title: string) => {
+    .action((epicId: string, title: string): void => {
       try {
-        const now = Date.now();
         const epicData = {
           epicId, title,
           createdAt: new Date().toISOString(),
@@ -81,11 +80,11 @@ export function registerEpicCommands(program: Command, ctx: AppContext): void {
   epic
     .command('analyze <epicId>')
     .description('Analyze EPIC complexity')
-    .action((epicId: string) => {
+    .action((epicId: string): void => {
       try {
         // Collect tickets for this epic
         const ticketsResult = ctx.db.listTickets({}); const tickets = ticketsResult.isOk() ? ticketsResult.value : [];
-        const epicTickets = tickets.filter((t: { labels?: string[] }) => t.labels?.includes(epicId));
+        const epicTickets = tickets.filter((t: { labels?: string[] }) => t.labels?.includes(epicId) === true);
 
         if (epicTickets.length === 0) {
           logger.warn({ epicId }, 'No tickets found for epic');
@@ -95,11 +94,11 @@ export function registerEpicCommands(program: Command, ctx: AppContext): void {
         // Calculate metrics
         const depsMap = new Map<string, string[]>();
         const scopes: string[][] = [];
-        let maxBlocked = 0;
+        const maxBlocked = 0;
 
         for (const t of epicTickets) {
           depsMap.set(t.id, []); // Simplified — real deps would come from ticket metadata
-          if (t.fileScope) scopes.push(t.fileScope);
+          if (t.fileScope !== undefined && t.fileScope.length > 0) scopes.push(t.fileScope);
         }
 
         const depDepth = calculateDependencyDepth(depsMap);
@@ -122,10 +121,10 @@ export function registerEpicCommands(program: Command, ctx: AppContext): void {
   epic
     .command('plan <epicId>')
     .description('Generate DAG YAML for EPIC')
-    .action((epicId: string) => {
+    .action((epicId: string): void => {
       try {
         const ticketsResult = ctx.db.listTickets({}); const tickets = ticketsResult.isOk() ? ticketsResult.value : []
-          .filter((t: { labels?: string[] }) => t.labels?.includes(epicId));
+          .filter((t: { labels?: string[] }) => t.labels?.includes(epicId) === true);
 
         const yaml = generateDagYaml(tickets, epicId);
         const dir = 'jira/epics';
@@ -142,7 +141,7 @@ export function registerEpicCommands(program: Command, ctx: AppContext): void {
   epic
     .command('status <epicId> <newStatus>')
     .description('Transition EPIC to a new state (6-state machine: planning→active→blocked→done→archived→closed)')
-    .action((epicId: string, newStatus: string) => {
+    .action((epicId: string, newStatus: string): void => {
       try {
         if (!EPIC_STATES.includes(newStatus as EpicState)) {
           logger.error({
@@ -159,7 +158,7 @@ export function registerEpicCommands(program: Command, ctx: AppContext): void {
           process.exit(1);
         }
         const content = fs.readFileSync(epicPath, 'utf-8');
-        const epicData: { status?: string } = JSON.parse(content);
+        const epicData = JSON.parse(content) as { status?: string };
         const currentStatus = epicData.status ?? 'planning';
 
         const validationError = validateTransition(currentStatus, newStatus);
@@ -204,7 +203,7 @@ export function registerEpicCommands(program: Command, ctx: AppContext): void {
     .command('run <epicId>')
     .description('Execute EPIC in DAG mode')
     .option('--dry-run', 'Simulate without executing')
-    .action(async (epicId: string, opts?: { dryRun?: boolean }) => {
+    .action(async (epicId: string, opts?: { dryRun?: boolean }): Promise<void> => {
       try {
         const dagPath = `jira/epics/${epicId}-dag.yml`;
         if (!fs.existsSync(dagPath)) {
@@ -221,14 +220,20 @@ export function registerEpicCommands(program: Command, ctx: AppContext): void {
         const nodes: Array<{ id: string; script: string; deps: string[]; priority?: number }> = [];
 
         for (const line of yamlContent.split('\n')) {
-          if (line.match(/^\s*- id:/)) {
-            const id = (line.match(/"([^"]+)"/) ?? [])[1] ?? '';
+          if (/^\s*- id:/.exec(line) !== null) {
+            const id = (/"([^"]+)"/.exec(line) ?? [])[1] ?? '';
             nodes.push({ id, script: '', deps: [] });
-          } else if (line.match(/^\s*script:/) && nodes.length > 0) {
-            nodes[nodes.length - 1]!.script = (line.match(/"([^"]+)"/) ?? [])[1] ?? '';
-          } else if (line.match(/^\s*deps:/) && nodes.length > 0) {
-            const depsStr = (line.match(/\[(.*)\]/) ?? [])[1] ?? '';
-            nodes[nodes.length - 1]!.deps = depsStr.split(',').map((s: string) => s.trim().replace(/"/g, '')).filter(Boolean);
+          } else if (/^\s*script:/.exec(line) !== null && nodes.length > 0) {
+            const last = nodes[nodes.length - 1];
+            if (last !== undefined) {
+              last.script = (/"([^"]+)"/.exec(line) ?? [])[1] ?? '';
+            }
+          } else if (/^\s*deps:/.exec(line) !== null && nodes.length > 0) {
+            const depsStr = (/\[(.*)\]/.exec(line) ?? [])[1] ?? '';
+            const last = nodes[nodes.length - 1];
+            if (last !== undefined) {
+              last.deps = depsStr.split(',').map((s: string) => s.trim().replace(/"/g, '')).filter(Boolean);
+            }
           }
         }
 

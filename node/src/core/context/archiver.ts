@@ -37,7 +37,7 @@ export function createContextArchiver(): ContextArchiver {
       ed(ARC); const cutoff = Date.now() - (retentionDays * 86_400_000); const idx = loadIdx();
       let rm = 0; const kp: ArchiveEntry[] = [];
       for (const e of idx) {
-        if ((e.archivedAt as number) < cutoff) { try { fs.unlinkSync(path.join(ARC, e.archiveFile as string)); rm++; } catch { /* */ } }
+        if ((e.archivedAt) < cutoff) { try { fs.unlinkSync(path.join(ARC, e.archiveFile)); rm++; } catch { /* */ } }
         else kp.push(e);
       }
       saveIdx(kp); logger.info({ rm, kp: kp.length }, 'archive cleaned'); return rm;

@@ -6,7 +6,7 @@
  *   - verify l1..l5  (武器 2, 调 scripts/verify/level-{1..5}.sh)
  *   - verify all     (L1-L5 一次跑)
  *
- * 跟 docs/5-levels.md §1:1 联合 (L1 git / L2 stdout / L3 4-expert / L4 independent / L5 boundary)
+ * 跟 docs/5-levels.md §1:1  (L1 git / L2 stdout / L3 4-expert / L4 independent / L5 boundary)
  */
 
 import { Command } from 'commander';
@@ -30,7 +30,7 @@ function findProjectRoot(): string {
 }
 
 function findVerifyScript(projectRoot: string, levelNum: number): string {
-  return path.join(projectRoot, 'scripts', 'verify', `level-${levelNum}.sh`);
+  return path.join(projectRoot, 'scripts', 'verify', `level-${String(levelNum)}.sh`);
 }
 
 interface LevelResult {
@@ -68,7 +68,7 @@ function runLevelScript(projectRoot: string, levelNum: number, ticketId: string,
   } catch (err: unknown) {
     const e = err as { status?: number | null; stdout?: Buffer | string; stderr?: Buffer | string };
     rc = typeof e.status === 'number' ? e.status : 1;
-    stdout = (e.stdout ? e.stdout.toString() : '') + (e.stderr ? `\n[STDERR]\n${e.stderr.toString()}` : '');
+    stdout = (e.stdout != null ? e.stdout.toString() : '') + (e.stderr != null ? `\n[STDERR]\n${e.stderr.toString()}` : '');
   }
   return {
     level: levelNum,
@@ -82,7 +82,7 @@ function runLevelScript(projectRoot: string, levelNum: number, ticketId: string,
 function formatResult(result: LevelResult): string {
   const status = result.passed ? 'PASS' : 'FAIL';
   const lines: string[] = [
-    `--- L${result.level} ${status} (rc=${result.rc}, ${result.durationMs}ms) ---`,
+    `--- L${String(result.level)} ${status} (rc=${String(result.rc)}, ${String(result.durationMs)}ms) ---`,
     result.stdout.trimEnd(),
   ];
   return lines.join('\n');
@@ -115,7 +115,7 @@ function emitOutput(
   process.stdout.write('\n');
   process.stdout.write(`==========================================\n`);
   process.stdout.write(`verify ${level} ${ticketId}${dryRun ? ' --dry-run' : ''}\n`);
-  process.stdout.write(`Total: ${totalPass} PASS, ${totalFail} FAIL (of ${results.length})\n`);
+  process.stdout.write(`Total: ${String(totalPass)} PASS, ${String(totalFail)} FAIL (of ${String(results.length)})\n`);
   process.stdout.write(`Overall: ${overallPassed ? 'PASS' : 'FAIL'}\n`);
   process.stdout.write(`==========================================\n`);
 }
@@ -129,7 +129,8 @@ export function registerVerifyCommands(program: Command, _ctx: AppContext): void
     .option('-v, --verbose', 'Show detailed evidence')
     .action(async (taskId: string, opts?: { level?: string; verbose?: boolean }) => {
       try {
-        const level = (parseInt(opts?.['level'] ?? '5', 10) as 1 | 2 | 3 | 4 | 5);
+        const parsed = parseInt(opts?.['level'] ?? '4', 10);
+        const level = (parsed >= 1 && parsed <= 4 ? parsed : 4) as 1 | 2 | 3 | 4;
         const result = await executeVerifyOutput(
           _ctx.db, _ctx.worktreeManager, _ctx.outputVerifier,
           { taskId, level, verbose: opts?.['verbose'] },
@@ -160,7 +161,7 @@ export function registerVerifyCommands(program: Command, _ctx: AppContext): void
 
   verifyCmd.action((levelArg: string, ticketId: string, opts?: { dryRun?: boolean }) => {
     const projectRoot = findProjectRoot();
-    const level = (levelArg ?? '').trim().toLowerCase();
+    const level = levelArg.trim().toLowerCase();
     const dryRun = opts?.['dryRun'] === true;
 
     if (!ticketId || ticketId.trim() === '') {

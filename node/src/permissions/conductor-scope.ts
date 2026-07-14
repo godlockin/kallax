@@ -76,7 +76,7 @@ export function verifyScope(
     }
 
     if (!action || typeof action !== 'string') {
-      return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Invalid action', { action }));
+      return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Invalid action', { metadata: { action } }));
     }
 
     // Role name validation: prevent trailing space, typo
@@ -134,7 +134,7 @@ export function verifyScope(
 /**
  * Check if task assignment is within conductor permissions
  */
-export function canAssignTask(role: string, taskId: string): KallaxResult<boolean> {
+export function canAssignTask(role: string, _taskId: string): KallaxResult<boolean> {
   const result = verifyScope(role, 'task.assign');
   if (result.isErr()) {
     return err(result.error);

@@ -64,8 +64,8 @@ const ALLOWED_COMMANDS = new Set([
 
 function validateScript(script: string): void {
   const cmd = script.trim().split(/\s+/)[0];
-  if (!cmd || !ALLOWED_COMMANDS.has(cmd)) {
-    throw new Error(`Command not in allowlist: ${cmd}`);
+  if (cmd == null || !ALLOWED_COMMANDS.has(cmd)) {
+    throw new Error(`Command not in allowlist: ${cmd ?? '<empty>'}`);
   }
 }
 
@@ -74,7 +74,7 @@ async function checkWorktreeLimit(limit: number): Promise<void> {
     const { stdout } = await execFileAsync('git', ['worktree', 'list'], { timeout: 5000 });
     const count = stdout.trim().split('\n').filter(Boolean).length;
     if (count >= limit) {
-      throw new Error(`Worktree count ${count} exceeds limit of ${limit}`);
+      throw new Error(`Worktree count ${String(count)} exceeds limit of ${String(limit)}`);
     }
   } catch (error: unknown) {
     if (error instanceof Error && error.message.startsWith('Worktree count')) {
@@ -86,7 +86,7 @@ async function checkWorktreeLimit(limit: number): Promise<void> {
 
 // ── Semaphore ──────────────────────────────────────────────────────────────
 
-function createSemaphore(max: number) {
+function createSemaphore(max: number): { acquire(): Promise<void>; release(): void; readonly running: number } {
   let running = 0;
   const queue: Array<() => void> = [];
 
@@ -102,7 +102,7 @@ function createSemaphore(max: number) {
       const next = queue.shift();
       if (next) next();
     },
-    get running() { return running; },
+    get running(): number { return running; },
   };
 }
 
@@ -128,10 +128,11 @@ async function saveCheckpoint(state: DagRunState, stateDir: string, schema?: Dag
 async function loadCheckpoint(stateDir: string, runId: string): Promise<DagRunState | null> {
   try {
     const data = await fs.readFile(getStatePath(stateDir, runId), 'utf-8');
-    const parsed = JSON.parse(data);
+    const parsed = JSON.parse(data) as unknown as Record<string, unknown>;
+    const nodesRecord = parsed.nodes as Record<string, NodeState>;
     return {
       ...parsed,
-      nodes: new Map(Object.entries(parsed.nodes)),
+      nodes: new Map(Object.entries(nodesRecord)),
     };
   } catch {
     return null;
@@ -165,14 +166,14 @@ export function createDagExecutor(options: DagExecutorOptions = {}): DagExecutor
 
     try {
       const [cmd, ...args] = node.script.split(' ');
-      if (!cmd) throw new Error('Empty script');
+      if (cmd == null || cmd === '') throw new Error('Empty script');
 
-      const { stdout, stderr } = await execFileAsync(cmd, args, {
+      const { stdout: _stdout } = await execFileAsync(cmd, args, {
         timeout: 600_000, // 10 min per node
         maxBuffer: 10 * 1024 * 1024,
       });
 
-      logger.info({ nodeId: node.id, stdout: stdout.slice(0, 500) }, 'node completed');
+      logger.info({ nodeId: node.id, stdout: _stdout.slice(0, 500) }, 'node completed');
       return { success: true };
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
@@ -192,7 +193,7 @@ export function createDagExecutor(options: DagExecutorOptions = {}): DagExecutor
       updatedAt: Date.now(),
       nodes: new Map(sorted.map((n) => [n.id, {
         id: n.id,
-        status: 'pending' as NodeStatus,
+        status: 'pending',
         attempt: 0,
       }])),
       settings: schema.settings,
@@ -231,12 +232,12 @@ export function createDagExecutor(options: DagExecutorOptions = {}): DagExecutor
       const wave: Promise<void>[] = [];
 
       while (readyQueue.length > 0 && semaphore.running < maxParallel) {
-        const nodeId = readyQueue.shift()!;
+        const nodeId = readyQueue.shift() ?? '';
         const nodeDef = nodeMap.get(nodeId);
         const nodeState = state.nodes.get(nodeId);
-        if (!nodeDef || !nodeState || nodeState.status !== 'pending') continue;
+        if (nodeId === '' || !nodeDef || nodeState?.status !== 'pending') continue;
 
-        const p = (async () => {
+        const p = (async (): Promise<void> => {
           await semaphore.acquire();
           try {
             const { success, error } = await executeNode(nodeDef, nodeState);
@@ -247,8 +248,9 @@ export function createDagExecutor(options: DagExecutorOptions = {}): DagExecutor
               state.nodes.set(nodeId, nodeState);
               await saveCheckpoint(state, stateDir);
 
-              // Release dependents
-              for (const depId of dependents.get(nodeId) ?? []) {
+              // Dependents may be undefined — suppress prefer-optional-chain (map not applicable in for-of)
+              // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+              for (const depId of (dependents.get(nodeId) ?? [])) {
                 const newDegree = (inDegree.get(depId) ?? 1) - 1;
                 inDegree.set(depId, newDegree);
                 if (newDegree === 0) {
@@ -281,6 +283,8 @@ export function createDagExecutor(options: DagExecutorOptions = {}): DagExecutor
       await Promise.all(wave);
     }
 
+    // hasFailure mutated in async closure — linter can't track
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     state.status = hasFailure ? 'failed' : 'completed';
     await saveCheckpoint(state, stateDir);
 
@@ -296,16 +300,17 @@ export function createDagExecutor(options: DagExecutorOptions = {}): DagExecutor
   return {
     async execute(schema: DagSchema): Promise<DagRunState> {
       if (schema.nodes.length > MAX_NODES) {
-        throw new Error(`DAG exceeds maximum of ${MAX_NODES} nodes (got ${schema.nodes.length})`);
+        throw new Error(`DAG exceeds maximum of ${String(MAX_NODES)} nodes (got ${String(schema.nodes.length)})`);
       }
       return runDag(schema);
     },
 
     async resume(runId: string): Promise<DagRunState> {
-      const raw = JSON.parse(await fs.readFile(getStatePath(stateDir, runId), 'utf-8'));
+      const raw = JSON.parse(await fs.readFile(getStatePath(stateDir, runId), 'utf-8')) as unknown as Record<string, unknown>;
+      const nodesRecord = raw.nodes as Record<string, NodeState>;
       const state: DagRunState = {
         ...raw,
-        nodes: new Map(Object.entries(raw.nodes)),
+        nodes: new Map(Object.entries(nodesRecord)),
       };
       const storedSchema = raw.schema as DagSchema | undefined;
       if (!storedSchema) {

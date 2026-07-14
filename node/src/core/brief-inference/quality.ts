@@ -1,5 +1,5 @@
 /**
- * KALLAX Brief Inference — Quality Scoring (EPIC-030-A TrustScore 联合)
+ * KALLAX Brief Inference — Quality Scoring (EPIC-030-A TrustScore )
  *
  * 4 quality dimensions, each scored 0.0-1.0:
  *   - specificity   — concrete (file paths / function names / metrics) vs vague

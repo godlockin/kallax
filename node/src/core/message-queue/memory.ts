@@ -7,7 +7,7 @@ import type { MessageHandler, MessageQueue, MessageQueueStats } from './types.js
 import { logger } from '../../utils/logger.js';
 
 function generateMessageId(): string {
-  return `msg_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+  return `msg_${String(Date.now())}_${Math.random().toString(36).slice(2, 11)}`;
 }
 
 /**
@@ -66,6 +66,7 @@ export function createMemoryQueue(): MessageQueue {
     },
 
     async peek(limit = 10): Promise<KallaxResult<Message[]>> {
+      await Promise.resolve();
       const now = Date.now();
       const pending = messages
         .filter((m) => m.processedAt === undefined && (m.expiresAt === undefined || m.expiresAt > now))
@@ -75,6 +76,7 @@ export function createMemoryQueue(): MessageQueue {
     },
 
     async ack(messageId): Promise<KallaxResult<void>> {
+      await Promise.resolve();
       const index = messages.findIndex((m) => m.id === messageId);
       if (index !== -1) {
         const message = messages[index];
@@ -86,6 +88,7 @@ export function createMemoryQueue(): MessageQueue {
     },
 
     async close(): Promise<void> {
+      await Promise.resolve();
       messages.length = 0;
       handlers.clear();
       logger.info({}, 'memory queue closed');

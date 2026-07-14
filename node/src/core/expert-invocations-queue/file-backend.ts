@@ -23,7 +23,7 @@ export interface FileBackend {
 
 export function createFileBackend(filePath: string): FileBackend {
   return {
-    async append(inv) {
+    async append(inv): Promise<Result<void, Error>> {
       try {
         await ensureDir(filePath);
         await fs.appendFile(filePath, `${JSON.stringify(inv)}\n`, 'utf8');
@@ -32,7 +32,7 @@ export function createFileBackend(filePath: string): FileBackend {
         return err(e instanceof Error ? e : new Error(String(e)));
       }
     },
-    async readAll() {
+    async readAll(): Promise<Result<readonly ExpertInvocation[], Error>> {
       try {
         await ensureDir(filePath);
         const content = await fs.readFile(filePath, 'utf8');
@@ -43,7 +43,7 @@ export function createFileBackend(filePath: string): FileBackend {
         return err(e instanceof Error ? e : new Error(String(e)));
       }
     },
-    async clear() {
+    async clear(): Promise<Result<void, Error>> {
       try {
         await fs.writeFile(filePath, '', 'utf8');
         return ok(undefined);

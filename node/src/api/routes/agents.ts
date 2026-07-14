@@ -179,7 +179,7 @@ export function createAgentRoutes(deps: AgentRouteDependencies): Router {
         if (body.status !== undefined && isValidInstanceStatus(body.status)) {
           const statusResult = await deps.instanceRegistry.updateStatus(
             instanceId,
-            body.status as InstanceStatus
+            body.status
           );
           if (statusResult.isErr()) {
             logger.warn(

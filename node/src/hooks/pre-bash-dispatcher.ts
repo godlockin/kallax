@@ -66,13 +66,14 @@ export function createPreBashSecurityHook(): Hook {
     phases: ['pre-tool-use'],
     priority: 1, // run FIRST — security gate before anything else
     async execute(ctx: HookContext): Promise<KallaxResult<{ allowed: boolean; reason?: string; warnings?: string[] }>> {
+      await Promise.resolve();
       // Only check Bash tool calls
       if (ctx.toolName !== 'Bash') {
         return ok({ allowed: true });
       }
 
       const command = ctx.toolParams?.['command'] as string | undefined;
-      if (!command || typeof command !== 'string') {
+      if (command === undefined || command === '' || typeof command !== 'string') {
         return ok({ allowed: true });
       }
 

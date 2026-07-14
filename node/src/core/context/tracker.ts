@@ -189,8 +189,6 @@ export function createContextTracker(): ContextTracker {
 let defaultTracker: ContextTracker | null = null;
 
 export function getContextTracker(): ContextTracker {
-  if (defaultTracker === null) {
-    defaultTracker = createContextTracker();
-  }
+  defaultTracker ??= createContextTracker();
   return defaultTracker;
 }

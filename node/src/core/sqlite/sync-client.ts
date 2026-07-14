@@ -12,7 +12,7 @@ import { registerCleanupHandler } from '../../utils/process-cleanup.js';
 import { existsSync, mkdirSync } from 'node:fs';
 import { Worker } from 'node:worker_threads';
 import { fileURLToPath } from 'node:url';
-import type { SQLiteConfig, SQLiteManager, SQLiteManagerAsync, DatabaseStats } from './types.js';
+import type { SQLiteConfig, SQLiteManager } from './types.js';
 import { initializeSchema } from './schema.js';
 import { createTicketOperations } from './ticket-ops.js';
 import { createTaskOperations } from './task-ops.js';
@@ -38,7 +38,7 @@ export function createSQLiteManager(config: SQLiteConfig): KallaxResult<SQLiteMa
     if (dbDir && !existsSync(dbDir)) mkdirSync(dbDir, { recursive: true });
     db = new Database(config.path, {
       readonly: config.readonly ?? false,
-      verbose: config.verbose === true ? (sql) => logger.debug({ sql }, 'sqlite query') : undefined,
+      verbose: config.verbose === true ? ((sql: string): void => { logger.debug({ sql }, 'sqlite query'); }) as ((message?: unknown, ...additionalArgs: unknown[]) => void) : undefined,
     });
 
     // Enable WAL mode for better concurrency
@@ -101,7 +101,7 @@ function createAsyncWrapper(_db: Database.Database, dbPath: string): SQLiteManag
       const p = pending.get(resp.id);
       if (!p) return;
       pending.delete(resp.id);
-      if (resp.error) {
+      if (resp.error !== undefined && resp.error !== '') {
         p.reject(new Error(resp.error));
       } else {
         p.resolve(resp.result);

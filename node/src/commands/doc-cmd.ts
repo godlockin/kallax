@@ -15,12 +15,15 @@ export function registerDocCommands(program: Command, _ctx: AppContext): void {
     .description('Create a documentation entry')
     .option('-c, --content <content>', 'Document content or file path')
     .option('-t, --tags <tags>', 'Comma-separated tags', 'documentation')
-    .action(async (type: string, title: string, opts?: { content?: string; tags?: string }) => {
+    .action(async (type: string, title: string, opts?: { content?: string; tags?: string }): Promise<void> => {
       try {
         const { getKnowledgeBase } = await import('../core/knowledge-base.js');
         const kb = getKnowledgeBase();
 
-        const tags = opts?.['tags'] ? opts['tags'].split(',').map((t: string) => t.trim()) : ['documentation'];
+        const tagsOpt = opts?.['tags'];
+        const tags = tagsOpt != null && tagsOpt !== ''
+          ? tagsOpt.split(',').map((t: string) => t.trim())
+          : ['documentation'];
         const content = opts?.['content'] ?? `# ${title}\n\nType: ${type}\nCreated: ${new Date().toISOString()}`;
 
         const result = kb.add({
@@ -45,7 +48,7 @@ export function registerDocCommands(program: Command, _ctx: AppContext): void {
   docCmd
     .command('status')
     .description('Show documentation summary')
-    .action(async () => {
+    .action(async (): Promise<void> => {
       try {
         const { getKnowledgeBase } = await import('../core/knowledge-base.js');
         const kb = getKnowledgeBase();
@@ -60,11 +63,12 @@ export function registerDocCommands(program: Command, _ctx: AppContext): void {
           byType.set(type, (byType.get(type) ?? 0) + 1);
         }
 
+        const first = docs[0];
         process.stdout.write(JSON.stringify({
           totalEntries: stats.totalEntries,
           documentCount: docs.length,
           byType: Object.fromEntries(byType),
-          lastUpdated: docs.length > 0 ? docs[0]!.entry.updatedAt : null,
+          lastUpdated: first !== undefined ? first.entry.updatedAt : null,
         }, null, 2) + '\n');
       } catch (error: unknown) {
         logger.kallaxError(KallaxError.fromUnknown(error));

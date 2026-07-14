@@ -10,7 +10,7 @@ export function registerRouteCommands(program: Command): void {
     .command('route <requirement>')
     .description('Analyze requirement complexity and route to direct or panel execution')
     .option('--json', 'Output as JSON')
-    .action(async (requirement: string, opts: { json?: boolean }) => {
+    .action(async (requirement: string, opts: { json?: boolean }): Promise<void> => {
       const { routeTask, getComplexityThreshold } = await import('../core/task-router.js');
       const result = routeTask(requirement);
 
@@ -21,7 +21,7 @@ export function registerRouteCommands(program: Command): void {
 
       const { decision, confidence, dispatch } = result.value;
 
-      if (opts.json) {
+      if (opts.json === true) {
         logger.info({}, JSON.stringify({ decision, confidence, requirement, dispatch }, null, 2));
         return;
       }
@@ -33,9 +33,9 @@ export function registerRouteCommands(program: Command): void {
       logger.info({}, '║  KALLAX Task Router — Complexity Gate              ║');
       logger.info({}, '╠══════════════════════════════════════════════════════╣');
       logger.info({}, `║  Requirement: ${requirement.slice(0, 40).padEnd(40)}║`);
-      logger.info({}, `║  Complexity:  ${decision.complexity.score}/${threshold}+ (threshold)                    ║`);
+      logger.info({}, `║  Complexity:  ${String(decision.complexity.score)}/${String(threshold)}+ (threshold)                    ║`);
       logger.info({}, `║  Strategy:    ${decision.strategy.padEnd(40)}║`);
-      logger.info({}, `║  Confidence:  ${Math.round(confidence * 100)}%                                 ║`);
+      logger.info({}, `║  Confidence:  ${String(Math.round(confidence * 100))}%                                 ║`);
       logger.info({}, '╠══════════════════════════════════════════════════════╣');
 
       if (decision.strategy === 'direct') {
