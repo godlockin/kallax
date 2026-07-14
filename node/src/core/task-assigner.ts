@@ -88,6 +88,7 @@ async function computePerformerMastery(
   return masteryLevelFromAbandonment(abandonmentRate);
 }
 
+||||||| 803bc58
 export interface TaskAssigner {
   createTask: (ticket: Ticket, type?: TaskType) => KallaxResult<Task>;
   assignTask: (taskId: string, performerId: string) => Promise<KallaxResult<Task>>;
@@ -217,6 +218,9 @@ export function createTaskAssigner(
 
       logger.info({ taskId, performerId, mastery, checkpointInterval }, 'task assigned with expertise-aware checkpoints');
       return ok({ ...taskResult.value, metadata: { ...taskResult.value.metadata, ...metadataUpdate } });
+||||||| 803bc58
+      logger.info({ taskId, performerId }, 'task assigned');
+      return ok(taskResult.value);
     },
 
     async claimNextTask(performerId, _capabilities = []): Promise<KallaxResult<Task | null>> {
