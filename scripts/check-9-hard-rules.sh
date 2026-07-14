@@ -226,7 +226,7 @@ _run_main() {
     return 0
   fi
 
-  # Default: 跑全 9 项 (跟 AC 联合, 输出 5/5 PASS 格式)
+  # Default: 跑全 9 项 (跟 AC)
   echo "=========================================="
   echo "5 levels 简化 — EPIC-059-A"
   echo "跟 eket MASTER-RULES.md §6 联合, 借方法论 不借代码"

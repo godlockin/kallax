@@ -39,22 +39,25 @@ export function checkAuthz(options: AuthzCheckOptions): KallaxResult<AuthzCheckR
 
   // Validate inputs
   if (!action || typeof action !== 'string') {
-    return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Invalid action', { action }));
+    return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Invalid action', { metadata: { action } }));
   }
 
   if (!actor || typeof actor !== 'string') {
-    return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Invalid actor', { actor }));
+    return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Invalid actor', { metadata: { actor } }));
   }
 
   // Role name validation
-  if (role) {
+  if (role !== undefined) {
+    if (role.trim() === '') {
+      return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Role is empty', { metadata: { role } }));
+    }
     if (role !== role.trim()) {
-      return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Role has whitespace', { role }));
+      return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Role has whitespace', { metadata: { role } }));
     }
   }
 
   // Use TypeScript implementation directly
-  const scopeResult = verifyScope(role || 'unknown', action);
+  const scopeResult = verifyScope(role ?? 'unknown', action);
   if (scopeResult.isErr()) {
     return err(scopeResult.error);
   }
@@ -63,7 +66,7 @@ export function checkAuthz(options: AuthzCheckOptions): KallaxResult<AuthzCheckR
     allowed: scopeResult.value.allowed,
     action,
     actor,
-    role: role || 'unknown',
+    role: role ?? 'unknown',
   });
 }
 
@@ -76,18 +79,17 @@ export function checkAuthzBash(options: AuthzCheckOptions): KallaxResult<AuthzCh
   try {
     const scriptPath = path.join(process.cwd(), 'scripts', 'permission', 'authz', 'check.sh');
     const args = ['--action', action, '--actor', actor];
-    if (role) {
+    if (role !== undefined) {
       args.push('--role', role);
     }
 
     // Capture both stdout and stderr to parse bash verdict
     let stdout = '';
-    let stderr = '';
     try {
       stdout = execFileSync('bash', [scriptPath, ...args], { stdio: 'pipe' }).toString();
     } catch (e: unknown) {
       // Non-zero exit — check if bash wrote DENIED: verdict to stderr
-      if (e && typeof e === 'object' && 'stderr' in e) {
+      if (typeof e === 'object' && e !== null && 'stderr' in e) {
         const errOutput = (e as { stderr: Buffer }).stderr.toString();
         if (errOutput.includes('DENIED:')) {
           return err(new KallaxError(
@@ -115,7 +117,7 @@ export function checkAuthzBash(options: AuthzCheckOptions): KallaxResult<AuthzCh
       allowed: true,
       action,
       actor,
-      role: role || 'unknown',
+      role: role ?? 'unknown',
     });
   } catch (e: unknown) {
     // P0: fail-closed — any error deny
@@ -146,7 +148,7 @@ export function logAuthzResult(result: AuthzCheckResult): void {
     result: result.allowed ? 'ALLOWED' : 'DENIED',
   };
 
-  // Structured audit logging (跟 Rule 7 联合, 跟 v2.7.4 D3 联合, 跟 Master 6 维 L8 观测性 联合)
+  // Structured audit logging (跟 Rule 7 , 跟 v2.7.4 D3 , 跟 Master 6 维 L8 观测性 )
   logger.info({
     audit: true,
     timestamp: entry.timestamp,

@@ -74,7 +74,7 @@ export function createEnterpriseAudit(): EnterpriseAudit {
     if (fs.existsSync(AUDIT_FILE)) {
       const lines = fs.readFileSync(AUDIT_FILE, 'utf-8').trim().split('\n');
       for (const line of lines.slice(-MAX_MEMORY_ENTRIES)) {
-        try { entries.push(JSON.parse(line)); } catch { /* skip corrupt lines */ }
+        try { entries.push(JSON.parse(line) as AuditEntry); } catch { /* skip corrupt lines */ }
       }
     }
   } catch { /* fresh start */ }
@@ -98,14 +98,14 @@ export function createEnterpriseAudit(): EnterpriseAudit {
 
     query(filter: AuditFilter = {}): AuditEntry[] {
       let results = [...entries];
-      if (filter.actor) results = results.filter(e => e.actor === filter.actor);
-      if (filter.role) results = results.filter(e => e.role === filter.role);
-      if (filter.action) results = results.filter(e => e.action.includes(filter.action!));
-      if (filter.since) results = results.filter(e => e.timestamp >= filter.since!);
-      if (filter.until) results = results.filter(e => e.timestamp <= filter.until!);
+      if (filter.actor != null) results = results.filter(e => e.actor === filter.actor);
+      if (filter.role != null) results = results.filter(e => e.role === filter.role);
+      if (filter.action != null) results = results.filter(e => e.action.includes(filter.action));
+      if (filter.since != null) results = results.filter(e => e.timestamp >= filter.since);
+      if (filter.until != null) results = results.filter(e => e.timestamp <= filter.until);
       if (filter.result) results = results.filter(e => e.result === filter.result);
       results.sort((a, b) => b.timestamp - a.timestamp);
-      if (filter.limit) results = results.slice(0, filter.limit);
+      if (filter.limit != null) results = results.slice(0, filter.limit);
       return results;
     },
 
@@ -129,7 +129,7 @@ export function createEnterpriseAudit(): EnterpriseAudit {
     export(format: 'json' | 'csv' = 'json'): string {
       if (format === 'csv') {
         const header = 'id,timestamp,actor,role,action,target,result,details';
-        const rows = entries.map(e => `${e.id},${e.timestamp},${e.actor},${e.role},${e.action},${e.target},${e.result},"${e.details}"`);
+        const rows = entries.map(e => `${e.id},${String(e.timestamp)},${e.actor},${e.role},${e.action},${e.target},${e.result},"${e.details}"`);
         return [header, ...rows].join('\n');
       }
       return JSON.stringify(entries, null, 2);

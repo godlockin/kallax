@@ -127,7 +127,7 @@ export function createAgentFarm(
   /**
 	 * Periodic heartbeat check — detect stale performers and re-queue their tasks.
 	 */
-  async function checkStalePerformers(): Promise<void> {
+  function checkStalePerformers(): Promise<void> {
     const now = Date.now();
 
     for (const performer of performers.values()) {
@@ -147,13 +147,14 @@ export function createAgentFarm(
       performer.currentTaskId = null;
       performer.taskStartedAt = null;
     }
+    return Promise.resolve();
   }
 
   return {
-    async start(configOverride?: Partial<FarmConfig>): Promise<void> {
+    start(configOverride?: Partial<FarmConfig>): Promise<void> {
       if (heartbeatInterval !== null) {
         logger.warn({}, 'agent farm already running');
-        return;
+        return Promise.resolve();
       }
 
       if (configOverride !== undefined) {
@@ -176,9 +177,10 @@ export function createAgentFarm(
         },
         'agent farm started'
       );
+      return Promise.resolve();
     },
 
-    async stop(): Promise<void> {
+    stop(): Promise<void> {
       isRunning = false;
 
       if (heartbeatInterval !== null) {
@@ -188,16 +190,17 @@ export function createAgentFarm(
 
       performers.clear();
       logger.info({ uptimeMs: startTime > 0 ? Date.now() - startTime : 0 }, 'agent farm stopped');
+      return Promise.resolve();
     },
 
-    async registerPerformer(capabilities: string[]): Promise<string> {
+    registerPerformer(capabilities: string[]): Promise<string> {
       if (performers.size >= finalConfig.maxPerformers) {
         throw new Error(
-          `Farm at capacity (${finalConfig.maxPerformers}). Cannot register more performers.`
+          `Farm at capacity (${String(finalConfig.maxPerformers)}). Cannot register more performers.`
         );
       }
 
-      const performerId = `perf_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      const performerId = `perf_${String(Date.now())}_${Math.random().toString(36).slice(2, 8)}`;
       const now = Date.now();
 
       const info: PerformerInfo = {
@@ -231,14 +234,14 @@ export function createAgentFarm(
         'performer registered in farm'
       );
 
-      return performerId;
+      return Promise.resolve(performerId);
     },
 
-    async unregisterPerformer(performerId: string): Promise<void> {
+    unregisterPerformer(performerId: string): Promise<void> {
       const performer = performers.get(performerId);
       if (performer === undefined) {
         logger.warn({ performerId }, 'attempt to unregister unknown performer');
-        return;
+        return Promise.resolve();
       }
 
       // Re-queue any active task before removing
@@ -253,15 +256,16 @@ export function createAgentFarm(
         { performerId, remainingPerformers: performers.size },
         'performer unregistered from farm'
       );
+      return Promise.resolve();
     },
 
-    async getNextTask(
+    getNextTask(
       performerId: string
     ): Promise<{ taskId: string; ticketId: string } | null> {
       const performer = performers.get(performerId);
       if (performer === undefined) {
         logger.warn({ performerId }, 'unknown performer requested next task');
-        return null;
+        return Promise.resolve(null);
       }
 
       // Touch heartbeat
@@ -273,14 +277,14 @@ export function createAgentFarm(
           { performerId, taskId: performer.currentTaskId },
           'performer already busy with a task'
         );
-        return null;
+        return Promise.resolve(null);
       }
 
       // Dequeue next matching task from claim queue
       const item = claimQueue.dequeue(performerId, performer.capabilities);
       if (item === null) {
         logger.debug({ performerId }, 'no matching task available');
-        return null;
+        return Promise.resolve(null);
       }
 
       performer.currentTaskId = item.taskId;
@@ -292,14 +296,14 @@ export function createAgentFarm(
         'task assigned to performer'
       );
 
-      return { taskId: item.taskId, ticketId: item.ticketId };
+      return Promise.resolve({ taskId: item.taskId, ticketId: item.ticketId });
     },
 
-    async completeTask(performerId: string, taskId: string, success: boolean): Promise<void> {
+    completeTask(performerId: string, taskId: string, success: boolean): Promise<void> {
       const performer = performers.get(performerId);
       if (performer === undefined) {
         logger.warn({ performerId }, 'unknown performer completed task');
-        return;
+        return Promise.resolve();
       }
 
       if (performer.currentTaskId !== taskId) {
@@ -307,7 +311,7 @@ export function createAgentFarm(
           { performerId, taskId, assignedTaskId: performer.currentTaskId },
           'task id mismatch on completion — ignoring stale completion'
         );
-        return;
+        return Promise.resolve();
       }
 
       if (success) {
@@ -343,6 +347,7 @@ export function createAgentFarm(
         { performerId, taskId, success, tasksCompleted, tasksFailed },
         'task completed in farm'
       );
+      return Promise.resolve();
     },
 
     getState(): FarmState {

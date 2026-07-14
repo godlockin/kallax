@@ -1,17 +1,16 @@
 /**
- * KALLAX Master Verify — Runners + Main (跟 v2.7.4 D4 联合, 跟 Rule 8 联合)
+ * KALLAX Master Verify — Runners + Main (跟 v2.7.4 D4 , 跟 Rule 8 )
  * 6-dimension verification entry point.
  *
- * Split structure (跟 Rule 8 联合):
+ * Split structure (跟 Rule 8 ):
  * - constants.ts: configuration constants
  * - helpers.ts: helper functions
  * - dimensions.ts: 6-dimension check functions
  * - index.ts: runners + main entry (this file)
  */
 
-import { execFileSync } from 'node:child_process';
-import { logger } from '../utils/logger.js';
-import { EXIT_FAIL, EXIT_INVALID_ARGS, EXIT_OK } from './constants.js';
+import { logger } from '../../utils/logger.js';
+import { EXIT_FAIL, EXIT_INVALID_ARGS } from './constants.js';
 import { die } from './helpers.js';
 import {
   calculateNetValue,
@@ -60,15 +59,15 @@ export function runAll(args: Map<string, string>): void {
   }
   logger.info({}, '────────────────────────────────────────────');
   const passed = results.filter(r => r.passed).length;
-  logger.info({}, `  Total: ${passed}/${results.length} dimensions passed`);
+  logger.info({}, `  Total: ${String(passed)}/${String(results.length)} dimensions passed`);
   logger.info({}, '════════════════════════════════════════════');
   logger.info({}, '');
   if (passed !== results.length) {
-    die(`${results.length - passed} dimension(s) failed`, EXIT_FAIL);
+    die(`${String(results.length - passed)} dimension(s) failed`, EXIT_FAIL);
   }
 }
 
-export function runNetValue(args: Map<string, string>): void {
+export function runNetValue(_args: Map<string, string>): void {
   const nv = calculateNetValue();
   logger.info({}, '');
   logger.info({}, '════════════════════════════════════════════');
@@ -106,7 +105,7 @@ export function main(): void {
   }
 }
 
-// CLI entry point (跟 v2.7.0+ pattern 联合)
+// CLI entry point (跟 v2.7.0+ pattern )
 if (typeof require !== 'undefined' && require.main === module) {
   main();
 }

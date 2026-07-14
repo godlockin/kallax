@@ -41,11 +41,12 @@ function buildChildContainer(parent: DIContainer, childName: string): DIContaine
   let cInstantiated = 0;
 
   const child: DIContainer = {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
     register<T>(svcName: string, factory: (c: DIContainer) => T, lifetime: Lifetime = 'singleton'): KallaxResult<void> {
       if (childServices.has(svcName)) {
         return err(new KallaxError(KallaxErrorCode.INSTANCE_ALREADY_EXISTS, `Service ${svcName} already registered`));
       }
-      childServices.set(svcName, { name: svcName, lifetime, factory: factory as (c: DIContainer) => unknown });
+      childServices.set(svcName, { name: svcName, lifetime, factory: factory });
       if (lifetime === 'singleton') cSingleton++; else cTransient++;
       return ok(undefined);
     },
@@ -60,7 +61,7 @@ function buildChildContainer(parent: DIContainer, childName: string): DIContaine
           const instance = desc.factory(child);
           if (desc.lifetime === 'singleton') { desc.instance = instance; cInstantiated++; }
           return ok(instance as T);
-        } catch (error: unknown) {
+        } catch {
           return err(new KallaxError(KallaxErrorCode.INTERNAL_ERROR, `Failed to instantiate ${svcName}`));
         }
       }
@@ -112,6 +113,7 @@ export function createDIContainer(name = 'root'): DIContainer {
   let instantiatedCount = 0;
 
   return {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
     register<T>(svcName: string, factory: (c: DIContainer) => T, lifetime: Lifetime = 'singleton'): KallaxResult<void> {
       if (services.has(svcName)) {
         return err(new KallaxError(
@@ -123,7 +125,7 @@ export function createDIContainer(name = 'root'): DIContainer {
       services.set(svcName, {
         name: svcName,
         lifetime,
-        factory: factory as (c: DIContainer) => unknown,
+        factory: factory,
       });
 
       if (lifetime === 'singleton') {
@@ -210,9 +212,7 @@ export function createDIContainer(name = 'root'): DIContainer {
 let defaultContainer: DIContainer | null = null;
 
 export function getDIContainer(): DIContainer {
-  if (defaultContainer === null) {
-    defaultContainer = createDIContainer();
-  }
+  defaultContainer ??= createDIContainer();
   return defaultContainer;
 }
 

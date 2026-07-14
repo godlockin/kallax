@@ -3,9 +3,6 @@
  * Generates executable DAG YAML from ticket dependency relationships.
  */
 
-import type { KallaxResult } from '../types/index.js';
-import type { SQLiteManager, TaskFilter } from './sqlite/index.js';
-
 export interface DagNodeDef {
   readonly id: string;
   readonly script: string;
@@ -74,13 +71,13 @@ function dagSchemaToYaml(schema: DagSchema): string {
     `# KALLAX DAG — ${schema.epic}`,
     `# Generated: ${new Date().toISOString()}`,
     '',
-    `version: "1.0"`,
+    'version: "1.0"',
     `epic: "${schema.epic}"`,
     '',
     'settings:',
-    `  max_parallel: ${schema.settings.max_parallel}`,
-    `  retry_count: ${schema.settings.retry_count}`,
-    `  timeout_seconds: ${schema.settings.timeout_seconds}`,
+    `  max_parallel: ${String(schema.settings.max_parallel)}`,
+    `  retry_count: ${String(schema.settings.retry_count)}`,
+    `  timeout_seconds: ${String(schema.settings.timeout_seconds)}`,
     `  on_failure: ${schema.settings.on_failure}`,
     '',
     'nodes:',
@@ -92,9 +89,9 @@ function dagSchemaToYaml(schema: DagSchema): string {
     if (node.deps.length > 0) {
       lines.push(`    deps: [${node.deps.map((d) => `"${d}"`).join(', ')}]`);
     }
-    if (node.priority !== undefined) lines.push(`    priority: ${node.priority}`);
-    if (node.retry !== undefined) lines.push(`    retry: ${node.retry}`);
-    if (node.description) lines.push(`    description: "${node.description}"`);
+    if (node.priority !== undefined) lines.push(`    priority: ${String(node.priority)}`);
+    if (node.retry !== undefined) lines.push(`    retry: ${String(node.retry)}`);
+    if (node.description != null) lines.push(`    description: "${node.description}"`);
   }
 
   return lines.join('\n') + '\n';
@@ -126,9 +123,9 @@ export function topologicalSort(nodes: DagNodeDef[]): DagNodeDef[] {
   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
 
   while (queue.length > 0) {
-    const current = queue.shift()!;
+    const current = queue.shift() ?? '';
     const node = nodeMap.get(current);
-    if (node) sorted.push(node);
+    if (current !== '' && node) sorted.push(node);
 
     for (const neighbor of adjacency.get(current) ?? []) {
       const newDegree = (inDegree.get(neighbor) ?? 1) - 1;

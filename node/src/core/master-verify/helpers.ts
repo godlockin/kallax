@@ -1,11 +1,11 @@
 /**
- * KALLAX Master Verify — Helpers (跟 v2.7.4 D4 联合, 跟 Rule 8 联合)
+ * KALLAX Master Verify — Helpers (跟 v2.7.4 D4 , 跟 Rule 8 )
  * Helper functions for the 6-dimension verification.
  */
 
 import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
-import { logger } from '../utils/logger.js';
+import { logger } from '../../utils/logger.js';
 import { EXIT_FAIL } from './constants.js';
 
 const KPI_FAB_BLACKLIST_PATTERNS = [

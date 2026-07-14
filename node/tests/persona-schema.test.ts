@@ -212,12 +212,7 @@ describe('PersonaSchema', () => {
       const { fmBlock } = extractFrontmatter(content);
       const parsed = parseFrontmatter(fmBlock);
       const result = PersonaSchema.safeParse(parsed);
-      // Document known pre-existing issue: security.md uses 'auditor' not in canonical enum
-      if (file === 'security.md') {
-        expect(result.success).toBe(false);
-      } else {
-        expect(result.success).toBe(true);
-      }
+      expect(result.success).toBe(true);
     });
   });
 });

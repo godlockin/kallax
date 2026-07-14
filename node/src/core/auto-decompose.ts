@@ -64,7 +64,7 @@ function extractFilePaths(text: string): string[] {
   return paths ? paths.map(p => p.replace(/[`'"]/g, '')) : [];
 }
 
-function generateSubTaskId(index: number): string { return `subtask_${index}_${Date.now().toString(36)}`; }
+function generateSubTaskId(index: number): string { return `subtask_${String(index)}_${Date.now().toString(36)}`; }
 
 export function decompose(requirement: string): KallaxResult<DecompositionResult> {
   try {

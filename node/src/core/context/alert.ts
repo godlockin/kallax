@@ -3,7 +3,7 @@
  */
 
 import { logger } from '../../utils/logger.js';
-import type { ContextUsage, ContextTracker } from './tracker.js';
+import type { ContextTracker } from './tracker.js';
 import { getContextTracker } from './tracker.js';
 
 export type AlertLevel = 'info' | 'warning' | 'critical';
@@ -87,7 +87,7 @@ export function createContextAlertManager(trackerOverride?: ContextTracker): Con
         id: generateAlertId(),
         performerId,
         level,
-        message: `Context ${level === 'critical' ? 'CRITICAL' : 'WARNING'}: ${usagePercent}% used (${usage.currentTokens}/${usage.maxTokens} tokens)`,
+        message: `Context ${level === 'critical' ? 'CRITICAL' : 'WARNING'}: ${String(usagePercent)}% used (${String(usage.currentTokens)}/${String(usage.maxTokens)} tokens)`,
         currentTokens: usage.currentTokens,
         maxTokens: usage.maxTokens,
         usagePercent,
@@ -118,7 +118,7 @@ export function createContextAlertManager(trackerOverride?: ContextTracker): Con
     },
 
     getAlerts(performerId?: string): ContextAlert[] {
-      if (performerId) {
+      if (performerId != null) {
         return alerts.filter((a) => a.performerId === performerId);
       }
       return [...alerts];
@@ -153,8 +153,6 @@ export function createContextAlertManager(trackerOverride?: ContextTracker): Con
 let defaultAlertManager: ContextAlertManager | null = null;
 
 export function getContextAlertManager(): ContextAlertManager {
-  if (defaultAlertManager === null) {
-    defaultAlertManager = createContextAlertManager();
-  }
+  defaultAlertManager ??= createContextAlertManager();
   return defaultAlertManager;
 }

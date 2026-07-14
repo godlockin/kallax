@@ -48,46 +48,44 @@ export function handleVersion(startTime: number) {
 
 export function handleStats(deps: ApiServerDependencies, startTime: number) {
   return (_req: Request, res: Response): void => {
-    void (async () => {
-      try {
-        const dbStats = deps.db.getStats();
-        const allTasksResult = deps.db.listTasks({ limit: 1000 });
-        let pt = 0, ct = 0, ct2 = 0, ft = 0;
-        if (allTasksResult.isOk()) {
-          for (const t of allTasksResult.value) {
-            switch (t.status) {
-              case 'pending': pt++; break;
-              case 'claimed': case 'running': ct++; break;
-              case 'completed': ct2++; break;
-              case 'failed': case 'cancelled': ft++; break;
-            }
+    try {
+      const dbStats = deps.db.getStats();
+      const allTasksResult = deps.db.listTasks({ limit: 1000 });
+      let pt = 0, ct = 0, ct2 = 0, ft = 0;
+      if (allTasksResult.isOk()) {
+        for (const t of allTasksResult.value) {
+          switch (t.status) {
+            case 'pending': pt++; break;
+            case 'claimed': case 'running': ct++; break;
+            case 'completed': ct2++; break;
+            case 'failed': case 'cancelled': ft++; break;
           }
         }
-        const allInstancesResult = deps.db.listInstances({ limit: 100 });
-        let ti = 0, ai = 0, pc = 0, cc = 0;
-        if (allInstancesResult.isOk()) {
-          const instances = allInstancesResult.value; ti = instances.length;
-          ai = instances.filter((i: { status: string }) => i.status !== 'shutdown' && i.status !== 'error').length;
-          for (const inst of instances) {
-            if (inst.role === 'performer') pc++;
-            if (inst.role === 'conductor') cc++;
-          }
+      }
+      const allInstancesResult = deps.db.listInstances({ limit: 100 });
+      let ti = 0, ai = 0, pc = 0, cc = 0;
+      if (allInstancesResult.isOk()) {
+        const instances = allInstancesResult.value; ti = instances.length;
+        ai = instances.filter((i: { status: string }) => i.status !== 'shutdown' && i.status !== 'error').length;
+        for (const inst of instances) {
+          if (inst.role === 'performer') pc++;
+          if (inst.role === 'conductor') cc++;
         }
-        const mem = process.memoryUsage();
-        res.json(createSuccessResponse({
-          tasks: { total: dbStats.taskCount, pending: pt, claimed: ct, completed: ct2, failed: ft },
-          instances: { total: ti, active: ai, performers: pc, conductors: cc },
-          performance: { uptime: Date.now() - startTime, memoryUsageMb: Math.round((mem.heapUsed / 1024 / 1024) * 100) / 100, cpus: 1 },
-        }));
-      } catch (error: unknown) { res.status(500).json(createErrorResponse(KallaxError.fromUnknown(error))); }
-    })();
+      }
+      const mem = process.memoryUsage();
+      res.json(createSuccessResponse({
+        tasks: { total: dbStats.taskCount, pending: pt, claimed: ct, completed: ct2, failed: ft },
+        instances: { total: ti, active: ai, performers: pc, conductors: cc },
+        performance: { uptime: Date.now() - startTime, memoryUsageMb: Math.round((mem.heapUsed / 1024 / 1024) * 100) / 100, cpus: 1 },
+      }));
+    } catch (error: unknown) { res.status(500).json(createErrorResponse(KallaxError.fromUnknown(error))); }
   };
 }
 
 export function handleSSE(deps: ApiServerDependencies) {
   return (req: Request, res: Response): void => {
     res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'Connection': 'keep-alive', 'X-Accel-Buffering': 'no' });
-    const clientId = `sse_${++sseClientCounter}_${Date.now()}`;
+    const clientId = `sse_${String(++sseClientCounter)}_${String(Date.now())}`;
     res.write(`id: init\nevent: connected\ndata: ${JSON.stringify({ clientId })}\n\n`);
     const sseClient: SSEClient = { id: clientId, send: (data: string) => { res.write(data); }, close: () => { res.end(); } };
     deps.sseBus.addClient(sseClient);

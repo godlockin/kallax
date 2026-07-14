@@ -18,8 +18,8 @@ if (process.argv[1] !== undefined && (process.argv[1] === __filename || process.
   const serverPort = parseInt(process.env['KALLAX_API_PORT'] ?? '9877', 10);
   const serverHost = process.env['KALLAX_API_HOST'] ?? '127.0.0.1';
   const apiKey = process.env['KALLAX_API_KEY'];
-  if (!apiKey) {
-    logger.fatal('KALLAX_API_KEY required (set env var, e.g. export KALLAX_API_KEY=$(openssl rand -hex 32))');
+  if (apiKey === undefined) {
+    logger.fatal({}, 'KALLAX_API_KEY required (set env var, e.g. export KALLAX_API_KEY=$(openssl rand -hex 32))');
     process.exit(1);
   }
   const dbPath = process.env['KALLAX_DB_PATH'] ?? '.kallax/data/kallax.db';
@@ -34,9 +34,12 @@ if (process.argv[1] !== undefined && (process.argv[1] === __filename || process.
   const taskAssigner = createTaskAssigner(db, isolationChecker, instanceRegistry);
   const outputVerifier = createOutputVerifier({ projectRoot: process.cwd(), testCommand: 'echo ok', lintCommand: 'echo ok' });
   const mockWorktreeManager: WorktreeManager = {
-    create: async () => ok({ path: '/tmp/wt', branch: 'kallax/t', commit: 'abc', taskId: 't' }),
-    remove: async () => ok(undefined), list: async () => ok([]), getByTaskId: async () => ok(null),
-    validateIsolation: async () => ok(true), getPath: () => '/tmp/wt',
+    create: () => Promise.resolve(ok({ path: '/tmp/wt', branch: 'kallax/t', commit: 'abc', taskId: 't' })),
+    remove: () => Promise.resolve(ok(undefined)),
+    list: () => Promise.resolve(ok([])),
+    getByTaskId: () => Promise.resolve(ok(null)),
+    validateIsolation: () => Promise.resolve(ok(true)),
+    getPath: () => '/tmp/wt',
   } as unknown as WorktreeManager;
   const server = createApiServer({ port: serverPort, host: serverHost, apiKey }, { db, taskAssigner, instanceRegistry, worktreeManager: mockWorktreeManager, outputVerifier, isolationChecker, sseBus });
   setupProcessCleanup();

@@ -120,8 +120,9 @@ export async function executeCompleteCommand(
         }
         return { ...state, testsRun: true };
       },
-      async compensate(state) {
+      async compensate(state): Promise<void> {
         logger.info({ taskId: state.taskId }, 'compensating test step (no-op)');
+        return Promise.resolve();
       },
     });
   }
@@ -142,8 +143,9 @@ export async function executeCompleteCommand(
         }
         return { ...state, lintPassed: true };
       },
-      async compensate(state) {
+      async compensate(state): Promise<void> {
         logger.info({ taskId: state.taskId }, 'compensating lint step (no-op)');
+        return Promise.resolve();
       },
     });
   }
@@ -169,8 +171,9 @@ export async function executeCompleteCommand(
       }
       return state;
     },
-    async compensate(state) {
+    async compensate(state): Promise<void> {
       logger.info({ taskId: state.taskId }, 'compensating verify step (no-op)');
+      return Promise.resolve();
     },
   });
 

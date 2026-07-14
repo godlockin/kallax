@@ -1,16 +1,13 @@
 /**
- * SQLite-based DataAdapter implementation (跟 v2.7.4 D4 联合, 跟 Rule 8 联合)
+ * SQLite-based DataAdapter implementation (跟 v2.7.4 D4 , 跟 Rule 8 )
  * Reads/writes team collaboration data to SQLite (kallax.db).
  * Used when the database file exists.
  */
 
 import Database from 'better-sqlite3';
 import { err, ok } from 'neverthrow';
-import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { KallaxError, KallaxErrorCode } from '../../types/index.js';
 import type { KallaxResult } from '../../types/index.js';
-import type { DataAdapter, Epic, HeartbeatLog, Phase, ProjectTicket, TeamInstance } from './types.js';
+import type { DataAdapter, Epic, Phase, ProjectTicket } from './types.js';
 import { createDataError } from './helpers.js';
 import { FileDataAdapter } from './file-adapter.js';
 import { logger } from '../../utils/logger.js';
@@ -62,7 +59,7 @@ export class SQLiteDataAdapter implements DataAdapter {
           start_time = excluded.start_time,
           delivery_time = excluded.delivery_time
       `);
-      stmt.run(row as unknown as Record<string, unknown>);
+      stmt.run(row);
       return ok(undefined);
     } catch (error: unknown) {
       return err(createDataError('Failed to write phase to DB', error));
@@ -94,7 +91,7 @@ export class SQLiteDataAdapter implements DataAdapter {
           start_time = excluded.start_time,
           delivery_time = excluded.delivery_time
       `);
-      stmt.run(row as unknown as Record<string, unknown>);
+      stmt.run(row);
       return ok(undefined);
     } catch (error: unknown) {
       return err(createDataError('Failed to write epic to DB', error));
@@ -128,7 +125,7 @@ export class SQLiteDataAdapter implements DataAdapter {
           file_scope = excluded.file_scope,
           acceptance_criteria = excluded.acceptance_criteria
       `);
-      stmt.run(row as unknown as Record<string, unknown>);
+      stmt.run(row);
       return ok(undefined);
     } catch (error: unknown) {
       return err(createDataError('Failed to write ticket to DB', error));
@@ -205,7 +202,7 @@ export class SQLiteDataAdapter implements DataAdapter {
     try {
       let stmt: Database.Statement;
       let rows: Record<string, unknown>[];
-      if (phaseId) {
+      if (phaseId != null) {
         stmt = this.db.prepare('SELECT * FROM epics WHERE phase_id = ? ORDER BY id');
         rows = stmt.all(phaseId) as Record<string, unknown>[];
       } else {
@@ -222,7 +219,7 @@ export class SQLiteDataAdapter implements DataAdapter {
     try {
       let stmt: Database.Statement;
       let rows: Record<string, unknown>[];
-      if (epicId) {
+      if (epicId !== undefined) {
         stmt = this.db.prepare('SELECT * FROM project_tickets WHERE epic_id = ? ORDER BY id');
         rows = stmt.all(epicId) as Record<string, unknown>[];
       } else {

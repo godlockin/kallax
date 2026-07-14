@@ -8,7 +8,7 @@ import type { SQLiteManager } from '../sqlite/index.js';
 import { logger } from '../../utils/logger.js';
 
 function generateMessageId(): string {
-  return `msg_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+  return `msg_${String(Date.now())}_${Math.random().toString(36).slice(2, 11)}`;
 }
 
 /**
@@ -41,6 +41,7 @@ export function createSQLiteQueue(dbManager: SQLiteManager): MessageQueue {
 
   return {
     async publish(type, payload, options): Promise<KallaxResult<string>> {
+      await Promise.resolve();
       const id = generateMessageId();
       const message: Message = {
         id,
@@ -66,11 +67,9 @@ export function createSQLiteQueue(dbManager: SQLiteManager): MessageQueue {
       handlers.set(type, handler);
 
       // Start polling if not already
-      if (pollInterval === null) {
-        pollInterval = setInterval(() => {
-          void processMessages();
-        }, 1000);
-      }
+      pollInterval ??= setInterval(() => {
+        void processMessages();
+      }, 1000);
 
       logger.debug({ type }, 'subscribed to message type');
       return ok(undefined);
@@ -89,15 +88,18 @@ export function createSQLiteQueue(dbManager: SQLiteManager): MessageQueue {
     },
 
     async peek(limit = 10): Promise<KallaxResult<Message[]>> {
+      await Promise.resolve();
       return dbManager.peekMessages(limit);
     },
 
     async ack(_messageId): Promise<KallaxResult<void>> {
+      await Promise.resolve();
       // Messages are already marked as processed when dequeued
       return ok(undefined);
     },
 
     async close(): Promise<void> {
+      await Promise.resolve();
       if (pollInterval !== null) {
         clearInterval(pollInterval);
         pollInterval = null;

@@ -1,14 +1,14 @@
 /**
- * File-based DataAdapter implementation (跟 v2.7.4 D4 联合, 跟 Rule 8 联合)
+ * File-based DataAdapter implementation (跟 v2.7.4 D4 , 跟 Rule 8 )
  * Reads/writes team collaboration data from/to jira/ JSON files.
  * Used when kallax.db does not exist.
  */
 
 import { err, ok } from 'neverthrow';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join } from 'node:path';
 import type { KallaxResult } from '../../types/index.js';
-import type { DataAdapter, Epic, HeartbeatLog, Phase, ProjectTicket, TeamInstance } from './types.js';
+import type { DataAdapter, Epic, Phase, ProjectTicket } from './types.js';
 import { createDataError, readDirSafe } from './helpers.js';
 
 
@@ -117,11 +117,11 @@ export class FileDataAdapter implements DataAdapter {
     try {
       const index = this.readEpicIndex();
       let entries = index.epics;
-      if (phaseId) entries = entries.filter((e: { id: string; phase: string }) => e.phase === phaseId);
+      if (phaseId != null) entries = entries.filter((e: { id: string; phase: string }) => e.phase === phaseId);
       const epics: Epic[] = [];
       for (const entry of entries) {
         const result = this.readEpic(entry.id);
-        if (result.isOk() && result.value && (!phaseId || result.value.phaseId === phaseId)) {
+        if (result.isOk() && result.value != null && (phaseId == null || result.value.phaseId === phaseId)) {
           epics.push(result.value);
         }
       }
@@ -142,7 +142,7 @@ export class FileDataAdapter implements DataAdapter {
         if (!existsSync(ticketPath)) continue;
         const raw = readFileSync(ticketPath, 'utf-8');
         const ticket = JSON.parse(raw) as ProjectTicket;
-        if (!epicId || ticket.epicId === epicId) tickets.push(ticket);
+        if (epicId == null || ticket.epicId === epicId) tickets.push(ticket);
       }
       return ok(tickets);
     } catch (error: unknown) {
@@ -159,7 +159,7 @@ export class FileDataAdapter implements DataAdapter {
   private readPhaseIndex(): { phases: Array<{ id: string; status: string; start_time: string; delivery_time: string }> } {
     const indexPath = join(this.jiraDir, 'phases', 'phase_index.json');
     if (!existsSync(indexPath)) return { phases: [] };
-    return JSON.parse(readFileSync(indexPath, 'utf-8'));
+    return JSON.parse(readFileSync(indexPath, 'utf-8')) as { phases: Array<{ id: string; status: string; start_time: string; delivery_time: string }> };
   }
 
   private updatePhaseIndex(phase: Phase): void {
@@ -177,7 +177,7 @@ export class FileDataAdapter implements DataAdapter {
   private readEpicIndex(): { epics: Array<{ id: string; phase: string; status: string; start_time: string; delivery_time: string }> } {
     const indexPath = join(this.jiraDir, 'epics', 'epic_index.json');
     if (!existsSync(indexPath)) return { epics: [] };
-    return JSON.parse(readFileSync(indexPath, 'utf-8'));
+    return JSON.parse(readFileSync(indexPath, 'utf-8')) as { epics: Array<{ id: string; phase: string; status: string; start_time: string; delivery_time: string }> };
   }
 
   private updateEpicIndex(epic: Epic): void {

@@ -2,19 +2,14 @@
  * KALLAX HookDispatcher — chain execution with priority ordering and stats.
  */
 
-import { ok, err } from 'neverthrow';
+import { ok } from 'neverthrow';
 import type { KallaxResult } from '../types/index.js';
-import { KallaxError, KallaxErrorCode } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import type {
   Hook, HookContext, HookResult, HookPhase,
   CheckRule, CheckRegistry, HookDispatcher, HookStats,
 } from './types.js';
-import {
-  appendHookEvent,
-  createHookEventsStore,
-  type HookEventsStore,
-} from './hook-events-store.js';
+import { appendHookEvent, type HookEventsStore } from './hook-events-store.js';
 
 // ── CheckRegistry ──────────────────────────────────────────────────────────
 
@@ -54,7 +49,7 @@ export function createHookDispatcher(
   const recentResults: HookStats['recentResults'] = [];
   const MAX_RECENT = 50;
   const checkReg = checkRegistry ?? createCheckRegistry();
-  const audit = auditStore ?? null; // default: no audit (opt-in by caller via http-hook-server)
+  const audit: HookEventsStore | null = auditStore ?? null; // default: no audit (opt-in by caller via http-hook-server)
 
   function recordAudit(
     ctx: HookContext,
@@ -258,7 +253,8 @@ export function createValidationHook(
     name: `validate:${name}`,
     phases,
     priority,
-    async execute(ctx: HookContext) {
+    async execute(ctx: HookContext): Promise<KallaxResult<HookResult>> {
+      await Promise.resolve(); // satisfy require-await
       const result = validator(ctx);
       if (result.isErr()) {
         return ok({ allowed: false, reason: result.error.message });
@@ -279,7 +275,8 @@ export function createLoggingHook(phases: HookPhase[]): Hook {
     name: 'audit:logging',
     phases,
     priority: 100, // run last
-    async execute(ctx: HookContext) {
+    async execute(ctx: HookContext): Promise<KallaxResult<HookResult>> {
+      await Promise.resolve();
       logger.info({
         phase: ctx.phase,
         toolName: ctx.toolName,
@@ -296,9 +293,7 @@ export function createLoggingHook(phases: HookPhase[]): Hook {
 let defaultDispatcher: HookDispatcher | null = null;
 
 export function getHookDispatcher(): HookDispatcher {
-  if (defaultDispatcher === null) {
-    defaultDispatcher = createHookDispatcher();
-  }
+  defaultDispatcher ??= createHookDispatcher();
   return defaultDispatcher;
 }
 

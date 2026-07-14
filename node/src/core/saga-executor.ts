@@ -163,11 +163,13 @@ export function createTaskCompletionSaga(gitService: GitService): SagaExecutor<T
     .addStep({
       name: 'run-tests',
       async execute(state) {
+        await Promise.resolve();
         logger.info({ taskId: state.taskId }, 'running tests');
         // Test execution would happen here
         return { ...state, testsRun: true };
       },
       async compensate(state) {
+        await Promise.resolve();
         logger.info({ taskId: state.taskId }, 'compensating test step (no-op)');
         // Nothing to undo for tests
       },
@@ -175,22 +177,26 @@ export function createTaskCompletionSaga(gitService: GitService): SagaExecutor<T
     .addStep({
       name: 'run-lint',
       async execute(state) {
+        await Promise.resolve();
         logger.info({ taskId: state.taskId }, 'running lint');
         // Lint execution would happen here
         return { ...state, lintPassed: true };
       },
       async compensate(state) {
+        await Promise.resolve();
         logger.info({ taskId: state.taskId }, 'compensating lint step (no-op)');
       },
     })
     .addStep({
       name: 'commit-changes',
       async execute(state) {
+        await Promise.resolve();
         logger.info({ taskId: state.taskId }, 'committing changes');
         // Git commit would happen here
         return { ...state, commitHash: 'abc123' };
       },
       async compensate(state) {
+        await Promise.resolve();
         if (state.commitHash !== undefined && state.commitHash !== '') {
           logger.info({ taskId: state.taskId, commitHash: state.commitHash }, 'reverting commit');
           const resetResult = await gitService.resetSoft(state.worktreePath, state.commitHash + '^');
@@ -203,11 +209,13 @@ export function createTaskCompletionSaga(gitService: GitService): SagaExecutor<T
     .addStep({
       name: 'push-branch',
       async execute(state) {
+        await Promise.resolve();
         logger.info({ taskId: state.taskId, branchName: state.branchName }, 'pushing branch');
         // Git push would happen here
         return state;
       },
       async compensate(state) {
+        await Promise.resolve();
         logger.info({ taskId: state.taskId, branchName: state.branchName }, 'compensating: deleting remote branch');
         const deleteResult = await gitService.deleteRemoteBranch(state.worktreePath, state.branchName);
         if (deleteResult.isErr()) {
@@ -218,11 +226,13 @@ export function createTaskCompletionSaga(gitService: GitService): SagaExecutor<T
     .addStep({
       name: 'create-pr',
       async execute(state) {
+        await Promise.resolve();
         logger.info({ taskId: state.taskId }, 'creating pull request');
         // PR creation would happen here
         return { ...state, prNumber: 123 };
       },
       async compensate(state) {
+        await Promise.resolve();
         if (state.prNumber !== undefined) {
           logger.info({ taskId: state.taskId, prNumber: state.prNumber }, 'closing pull request');
           const closeResult = await gitService.closePr(state.prNumber);

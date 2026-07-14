@@ -38,8 +38,9 @@ function aggregateSnapshots(snapshots: QualitySnapshot[], since: number): Qualit
     return { timestamp: Date.now(), successRate: 0, taskCount: 0, avgDurationMs: 0, onTimeRate: 0 };
   }
   const total = filtered.length;
+  const lastSnapshot = filtered[filtered.length - 1];
   return {
-    timestamp: filtered[filtered.length - 1]!.timestamp,
+    timestamp: lastSnapshot.timestamp,
     successRate: Math.round(filtered.reduce((a, s) => a + s.successRate, 0) / total),
     taskCount: filtered.reduce((a, s) => a + s.taskCount, 0),
     avgDurationMs: Math.round(filtered.reduce((a, s) => a + s.avgDurationMs, 0) / total),
@@ -74,7 +75,7 @@ export function createQualityTrend(): QualityTrend {
       if (!list || list.length < 2) return null;
 
       const now = Date.now();
-      const current = list[list.length - 1]!;
+      const current = list[list.length - 1];
       const daily = aggregateSnapshots(list, now - 86_400_000);
       const weekly = aggregateSnapshots(list, now - 604_800_000);
       const monthly = aggregateSnapshots(list, now - 2_592_000_000);
@@ -87,11 +88,11 @@ export function createQualityTrend(): QualityTrend {
       let anomalyReason: string | undefined;
       if (trend === 'declining' && strength < -30) {
         anomaly = true;
-        anomalyReason = `Quality declining sharply (strength: ${strength}). Review performer assignment.`;
+        anomalyReason = `Quality declining sharply (strength: ${String(strength)}). Review performer assignment.`;
       }
       if (current.successRate < 50 && current.taskCount > 5) {
         anomaly = true;
-        anomalyReason = `Success rate critical: ${current.successRate}% over ${current.taskCount} tasks.`;
+        anomalyReason = `Success rate critical: ${String(current.successRate)}% over ${String(current.taskCount)} tasks.`;
       }
 
       const analysis: TrendAnalysis = {
@@ -107,7 +108,7 @@ export function createQualityTrend(): QualityTrend {
       const results: TrendAnalysis[] = [];
       for (const pid of snapshots.keys()) {
         const a = this.analyze(pid);
-        if (a?.anomaly) results.push(a);
+        if (a?.anomaly === true) results.push(a);
       }
       return results;
     },

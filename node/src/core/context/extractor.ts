@@ -10,7 +10,7 @@ export interface ContextExtractor {
 }
 const DEC = [/决定[：:]\s*(.+)/g, /方案[是：:]\s*(.+)/g, /最终确认[：:]\s*(.+)/g, /we decided[：:]\s*(.+)/gi, /CONCLUSION[：:]\s*(.+)/g];
 const ACT = [/TODO[：:]\s*(.+)/gi, /下一步[：:]\s*(.+)/gi, /需要实现[：:]\s*(.+)/g, /待做[：:]\s*(.+)/g, /NEXT[：:]\s*(.+)/g];
-const LRN = [/修复[：:]\s*(.+)/g, /根因[：:]\s*(.+)/g, /教训[：:]\s*(.+)/g, /注意[：:]\s*(.+)/g];
+const LRN = [/修复[：:]\s*(.+)/g, /root cause[：:]\s*(.+)/g, /教训[：:]\s*(.+)/g, /注意[：:]\s*(.+)/g];
 
 function extractPatterns(text: string, patterns: RegExp[]): string[] {
   const results: string[] = [];
@@ -25,15 +25,17 @@ export function createContextExtractor(): ContextExtractor {
     extract(messages): ExtractedContext {
       const text = messages.map(m => `${m.role}: ${m.content}`).join('\n');
       const e = this.extractFromText(text);
+      const decisionsCount = e.decisions?.length ?? 0;
+      const actionsCount = e.actionItems?.length ?? 0;
       const result: ExtractedContext = {
         decisions: e.decisions ?? [], actionItems: e.actionItems ?? [], learnedContext: e.learnedContext ?? [],
-        summary: [e.decisions?.length ? `${e.decisions.length} decisions` : '', e.actionItems?.length ? `${e.actionItems.length} actions` : ''].filter(Boolean).join(', ') || 'No key items',
+        summary: [decisionsCount ? `${String(decisionsCount)} decisions` : '', actionsCount ? `${String(actionsCount)} actions` : ''].filter(Boolean).join(', ') || 'No key items',
         timestamp: Date.now(),
       };
       logger.info({ d: result.decisions.length, a: result.actionItems.length }, 'context extracted');
       return result;
     },
-    extractFromText(text) {
+    extractFromText(text): Partial<ExtractedContext> {
       return { decisions: extractPatterns(text, DEC), actionItems: extractPatterns(text, ACT), learnedContext: extractPatterns(text, LRN) };
     },
   };

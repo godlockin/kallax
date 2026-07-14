@@ -65,7 +65,7 @@ export function createAutoScaler(initialConfig?: Partial<ScaleConfig>): AutoScal
         action: 'none',
         currentCount: currentState.totalPerformers,
         targetCount: currentState.totalPerformers,
-        reason: `Cooldown active (elapsed ${now - lastScaleAt}ms < ${config.cooldownMs}ms)`,
+        reason: `Cooldown active (elapsed ${String(now - lastScaleAt)}ms < ${String(config.cooldownMs)}ms)`,
         queueDepth: currentState.taskQueueDepth,
         idleCount: currentState.idlePerformers,
       });
@@ -84,7 +84,7 @@ export function createAutoScaler(initialConfig?: Partial<ScaleConfig>): AutoScal
           action: 'none',
           currentCount: currentState.totalPerformers,
           targetCount,
-          reason: `At max capacity (${currentState.totalPerformers})`,
+          reason: `At max capacity (${String(currentState.totalPerformers)})`,
           queueDepth: currentState.taskQueueDepth,
           idleCount: currentState.idlePerformers,
         });
@@ -96,7 +96,7 @@ export function createAutoScaler(initialConfig?: Partial<ScaleConfig>): AutoScal
         action: 'scale_up',
         currentCount: currentState.totalPerformers,
         targetCount,
-        reason: `Queue depth ${currentState.taskQueueDepth} exceeds threshold ${config.scaleUpThreshold}`,
+        reason: `Queue depth ${String(currentState.taskQueueDepth)} exceeds threshold ${String(config.scaleUpThreshold)}`,
         queueDepth: currentState.taskQueueDepth,
         idleCount: currentState.idlePerformers,
       });
@@ -115,7 +115,7 @@ export function createAutoScaler(initialConfig?: Partial<ScaleConfig>): AutoScal
           action: 'none',
           currentCount: currentState.totalPerformers,
           targetCount,
-          reason: `Cannot reduce below minimum (${config.minPerformers})`,
+          reason: `Cannot reduce below minimum (${String(config.minPerformers)})`,
           queueDepth: currentState.taskQueueDepth,
           idleCount: currentState.idlePerformers,
         });
@@ -127,7 +127,7 @@ export function createAutoScaler(initialConfig?: Partial<ScaleConfig>): AutoScal
         action: 'scale_down',
         currentCount: currentState.totalPerformers,
         targetCount,
-        reason: `Idle performers ${currentState.idlePerformers} exceeds threshold ${config.scaleDownThreshold}`,
+        reason: `Idle performers ${String(currentState.idlePerformers)} exceeds threshold ${String(config.scaleDownThreshold)}`,
         queueDepth: currentState.taskQueueDepth,
         idleCount: currentState.idlePerformers,
       });
@@ -154,7 +154,7 @@ export function createAutoScaler(initialConfig?: Partial<ScaleConfig>): AutoScal
     return [...history];
   }
 
-  function getStats() {
+  function getStats(): { totalScaleUps: number; totalScaleDowns: number; lastScaleAt?: number } {
     return { totalScaleUps, totalScaleDowns, lastScaleAt };
   }
 

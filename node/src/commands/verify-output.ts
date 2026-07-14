@@ -54,7 +54,7 @@ export async function executeVerifyOutput(
     );
   }
 
-  const task = taskResult.value;
+  const _task = taskResult.value;
 
   // Get worktree
   const worktreeResult = await worktreeManager.getByTaskId(taskId);
@@ -95,10 +95,10 @@ export async function executeVerifyOutput(
   const recommendations: string[] = [];
 
   if (verification.passed) {
-    recommendations.push(`Task ${taskId} passed L${level} verification`);
+    recommendations.push(`Task ${taskId} passed L${String(level)} verification`);
     recommendations.push('Output is authentic and meets quality requirements');
   } else {
-    recommendations.push(`Task ${taskId} FAILED L${level} verification`);
+    recommendations.push(`Task ${taskId} FAILED L${String(level)} verification`);
 
     for (const evidence of verification.evidence) {
       if (!evidence.passed) {

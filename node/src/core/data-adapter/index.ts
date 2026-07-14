@@ -1,17 +1,16 @@
 /**
- * KALLAX Data Adapter — Factory + Re-exports (跟 v2.7.4 D4 联合, 跟 Rule 8 联合)
+ * KALLAX Data Adapter — Factory + Re-exports (跟 v2.7.4 D4 , 跟 Rule 8 )
  *
- * Split structure (跟 Rule 8 联合):
+ * Split structure (跟 Rule 8 ):
  * - types.ts: Domain types + DataAdapter interface
  * - file-adapter.ts: FileDataAdapter class
  * - sqlite-adapter.ts: SQLiteDataAdapter class
  * - index.ts: createDataAdapter factory + re-exports (this file)
  */
 
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import Database from 'better-sqlite3';
 import { logger } from '../../utils/logger.js';
-import { KallaxError, KallaxErrorCode } from '../../types/index.js';
 import { FileDataAdapter } from './file-adapter.js';
 import { SQLiteDataAdapter } from './sqlite-adapter.js';
 import type { DataAdapter } from './types.js';
@@ -51,20 +50,4 @@ export function createDataAdapter(config: DataAdapterConfig): DataAdapter {
   }
   logger.info({ jiraDir: config.jiraDir }, 'data-adapter: using file fallback');
   return new FileDataAdapter(config.jiraDir);
-}
-
-// ============================================================================
-// Helpers (跟 file-adapter 联合, 0 duplicate)
-// ============================================================================
-
-function createDataError(message: string, cause: unknown): KallaxError {
-  return new KallaxError(KallaxErrorCode.DB_ERROR, message, { cause });
-}
-
-function readDirSafe(dir: string): string[] {
-  try {
-    return readdirSync(dir);
-  } catch {
-    return [];
-  }
 }

@@ -41,18 +41,20 @@ async function gitCommand(
   cwd: string,
   args: string[]
 ): Promise<KallaxResult<string>> {
-  try {
-    const result = await execFile('git', args, { cwd });
-    return ok(String(result.stdout ?? '').trim());
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : String(error);
-    return err(
-      new KallaxError(KallaxErrorCode.INTERNAL_ERROR, `Git command failed: ${message}`, {
-        cause: error,
-        metadata: { args },
-      })
-    );
-  }
+  return new Promise((resolve) => {
+    execFile('git', args, { cwd }, (error: Error | null, stdout: string, _stderr: string) => {
+      if (error) {
+        resolve(err(
+          new KallaxError(KallaxErrorCode.INTERNAL_ERROR, `Git command failed: ${error.message}`, {
+            cause: error,
+            metadata: { args },
+          })
+        ));
+      } else {
+        resolve(ok(stdout.trim()));
+      }
+    });
+  });
 }
 
 export function createWorktreeManager(config: WorktreeConfig): KallaxResult<WorktreeManager> {
@@ -135,7 +137,7 @@ export function createWorktreeManager(config: WorktreeConfig): KallaxResult<Work
       if (createResult.isErr()) {
         // Clean up stale branch AND directory from previous failed attempts
         await gitCommand(projectRoot, ['branch', '-D', branchName]);
-        await fs.rm(worktreePath, { recursive: true, force: true }).catch(() => {});
+        await fs.rm(worktreePath, { recursive: true, force: true }).catch((_e: unknown) => { /* ignore cleanup errors */ });
         await gitCommand(projectRoot, ['worktree', 'prune']);
         // Retry after full cleanup
         const retryResult = await gitCommand(projectRoot, ['worktree', 'add', '-b', branchName, worktreePath, baseBranch]);
@@ -195,7 +197,7 @@ export function createWorktreeManager(config: WorktreeConfig): KallaxResult<Work
         try {
           await fs.rm(worktreePath, { recursive: true, force: true });
           await gitCommand(projectRoot, ['worktree', 'prune']);
-        } catch (cleanupError: unknown) {
+        } catch {
           return err(
             new KallaxError(KallaxErrorCode.WORKTREE_CLEANUP_FAILED, 'Failed to remove worktree', {
               cause: removeResult.error,
@@ -231,8 +233,8 @@ export function createWorktreeManager(config: WorktreeConfig): KallaxResult<Work
           current['commit'] = line.slice(5);
         } else if (line.startsWith('branch ')) {
           current['branch'] = line.slice(7).replace('refs/heads/', '');
-          if (current['branch']?.startsWith('kallax/')) {
-            current['taskId'] = current['branch']!.replace('kallax/', '');
+          if (current['branch'].startsWith('kallax/')) {
+            current['taskId'] = current['branch'].replace('kallax/', '');
           }
         } else if (line === '') {
           // End of entry

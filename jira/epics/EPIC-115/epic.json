@@ -1,0 +1,129 @@
+{
+  "id": "EPIC-115",
+  "phase": "PHASE-018",
+  "title": "633 lint errors 治债 (108 files / 25 rules, 6 专家并行, 主公 2026-07-13 explicit '一个 epic 多专家并行 + PR + master 统一 review + merge')",
+  "scope": "1. EPIC-114 引入 typescript-eslint@8 strictTypeChecked 后, 老代码 747 lint errors 暴露 (24 条 type-aware rule 首次生效, 非新增 bug)\n2. 本 session 已 landed 3 commit (bbc086c / 35271e2 / 3d47dda) 减到 633 errors\n3. 主公 2026-07-13 explicit 派单: '先整个 review 找到并记录所有需要修复的地方, 然后用一个 epic 但是多个专家并行修改 + pr, 由 master 统一 review + merge'\n4. 全量审计 doc: confluence/decisions/EPIC-115-lint-audit-2026-07-13.md (rule/file/dir 三视角, 6 ticket 文件边界 0 重叠)\n5. 6 张 ticket 并行, 文件 scope 两两不相交, 避免 merge conflict\n6. BE-14 (1 ticket 1 subagent 串行) 主公 explicit override 本 EPIC 内并行\n7. 每 PR 必带 5-Level Verify raw output (EPIC-069-D 强制)\n8. 4-PR 流程 (feature → testing → main → miao, EPIC-074 强制) — 本 EPIC 全 6 PR 都开在 testing 上\n9. 跟 EPIC-114 CI 治债 联合 (PR #117 待 landing 全绿)\n10. 跟'诚实修正' 战略 联合 (633 是实测, 非估数)",
+  "start_time": "2026-07-13",
+  "delivery_time": "2026-07-14",
+  "completion_time": null,
+  "status": "ready",
+  "master_explicit_decision": "2026-07-13 主公 explicit: '先整个 review 找到并记录所有需要修复的地方, 然后用一个 epic 但是多个专家并行修改 + pr, 由 master 统一 review + merge'. Master 拆 6 ticket (文件边界 0 重叠), 主公 confirm 后并行派 6 subagent, 每个 subagent 开自己的 PR against testing, master 5-Level Verify 后逐个 squash-merge.",
+  "checkin_points": [
+    {
+      "id": "CP-1",
+      "when": "T+24h after 派单",
+      "gate": "6 subagent 各自开 PR against testing 分支, 每 PR 含: (1) scope 文件路径列表, (2) local eslint --max-warnings 0 raw output, (3) local vitest run raw output, (4) local tsc --noEmit raw output. Master 汇总进度, 不合规 subagent 立即中止 (fail-fast, EPIC-111)."
+    },
+    {
+      "id": "CP-2",
+      "when": "6 PR ready to merge",
+      "gate": "Master 逐 PR review, 5-Level Verify (L1 raw output + L2 eslint pass + L3 4-expert review + L4 vitest 真跑 + L5 check-claim-evidence), squash-merge 顺序 A→B→C→D→E→F (依赖度低→高). 任一 PR fail → 阻塞后续, master 分析根因."
+    }
+  ],
+  "tickets": [
+    {
+      "id": "EPIC-115-A",
+      "title": "core/context + dispatch + top files (~140 err)",
+      "status": "ready",
+      "scope_files": [
+        "node/src/core/context/**",
+        "node/src/core/dispatch-dashboard.ts",
+        "node/src/core/process-metrics.ts",
+        "node/src/core/instance-registry.ts",
+        "node/src/core/master-election.ts",
+        "node/src/core/agent-farm.ts",
+        "node/src/core/auto-scaler.ts",
+        "node/src/core/enterprise-audit.ts",
+        "node/src/core/complexity-analyzer.ts",
+        "node/src/core/task-router.ts"
+      ]
+    },
+    {
+      "id": "EPIC-115-B",
+      "title": "core/dag + expert-invocations-queue + data-adapter + message-queue (~90 err)",
+      "status": "ready",
+      "scope_files": [
+        "node/src/core/dag-executor.ts",
+        "node/src/core/dag-generator.ts",
+        "node/src/core/dag-visualizer.ts",
+        "node/src/core/expert-invocations-queue/**",
+        "node/src/core/data-adapter/**",
+        "node/src/core/message-queue/**",
+        "node/src/core/message-queue.ts",
+        "node/src/core/saga-executor.ts",
+        "node/src/core/recovery-manager.ts"
+      ]
+    },
+    {
+      "id": "EPIC-115-C",
+      "title": "core/master-verify + skills + 剩余 core (~90 err)",
+      "status": "ready",
+      "scope_files": [
+        "node/src/core/master-verify/**",
+        "node/src/core/skills/**",
+        "node/src/core/gate-reviewer.ts",
+        "node/src/core/task-assigner.ts",
+        "node/src/core/quality-trend.ts",
+        "node/src/core/project-pool.ts",
+        "node/src/core/expert-matcher.ts",
+        "node/src/core/span-tracer.ts",
+        "node/src/core/tier-router.ts",
+        "node/src/core/worktree-manager.ts",
+        "node/src/core/brief-inference/**",
+        "node/src/core/{di-container,event-bus,waiting-for-expert,knowledge-base,master-verify-bridge,redis-pubsub,git-service,heartbeat-monitor,plugin-system,rust-bridge,sse-bus,auto-decompose,cache-layer,claim-queue,isolation-checker,role-selector,trust-score}.ts",
+        "node/src/core/sqlite/**"
+      ]
+    },
+    {
+      "id": "EPIC-115-D",
+      "title": "commands/** (~91 err)",
+      "status": "ready",
+      "scope_files": ["node/src/commands/**"]
+    },
+    {
+      "id": "EPIC-115-E",
+      "title": "utils + hooks (~74 err)",
+      "status": "ready",
+      "scope_files": [
+        "node/src/utils/**",
+        "node/src/hooks/**"
+      ]
+    },
+    {
+      "id": "EPIC-115-F",
+      "title": "api + permissions + scripts + schema + index (~73 err)",
+      "status": "ready",
+      "scope_files": [
+        "node/src/api/**",
+        "node/src/permissions/**",
+        "node/src/scripts/**",
+        "node/src/schema/**",
+        "node/src/index.ts"
+      ]
+    }
+  ],
+  "constraints": {
+    "immutable_files": [
+      "docs/evidence/**",
+      "CHANGELOG.md (historical entries)",
+      "pnpm-lock.yaml",
+      ".kallax/**",
+      "eslint.config.js",
+      "package.json",
+      "tsconfig.json"
+    ],
+    "shared_files_master_only": [
+      "eslint.config.js",
+      "package.json",
+      "tsconfig.json",
+      "vitest.config.ts"
+    ],
+    "hard_rules": [
+      "NEVER --no-verify",
+      "NEVER destructive git",
+      "NEVER update git config",
+      "always NEW commits, no --amend",
+      "4-PR flow strict (feature→testing→main→miao)"
+    ]
+  }
+}

@@ -7,8 +7,6 @@
  *   - prioritize: keep high-priority content, evict low-priority
  */
 
-import type { KallaxResult } from '../../types/index.js';
-import { ok } from 'neverthrow';
 import { logger } from '../../utils/logger.js';
 
 export type CompressionStrategy = 'truncate' | 'summarize' | 'prioritize';
@@ -30,8 +28,8 @@ export interface CompressionResult {
 }
 
 export interface ContextCompressor {
-  compress: <T extends { estimatedTokens?: number; priority?: number }>(
-    items: T[],
+  compress: (
+    items: readonly { estimatedTokens?: number; priority?: number }[],
     config: Partial<CompressionConfig>,
   ) => CompressionResult;
   shouldCompress: (currentTokens: number, maxTokens: number, thresholdPercent?: number) => boolean;
@@ -52,10 +50,11 @@ export function createContextCompressor(): ContextCompressor {
       return currentTokens >= threshold;
     },
 
-    compress<T extends { estimatedTokens?: number; priority?: number }>(
-      items: T[],
+    compress(
+      items: readonly { estimatedTokens?: number; priority?: number }[],
       config: Partial<CompressionConfig>,
     ): CompressionResult {
+      type Item = { estimatedTokens?: number; priority?: number };
       const cfg = { ...DEFAULT_CONFIG, ...config };
       const targetTokens = cfg.maxTokens * (cfg.targetPercent / 100);
 
@@ -66,19 +65,19 @@ export function createContextCompressor(): ContextCompressor {
       }
 
       if (totalTokens <= targetTokens) {
-        return { beforeTokens: totalTokens, afterTokens: totalTokens, removedItems: 0, strategy: cfg.strategy, items };
+        return { beforeTokens: totalTokens, afterTokens: totalTokens, removedItems: 0, strategy: cfg.strategy, items: [...items] };
       }
 
       const keep = cfg.keepRecent > 0 ? items.slice(-cfg.keepRecent) : [];
       const middle = cfg.keepRecent > 0 ? items.slice(0, -cfg.keepRecent) : items;
 
-      let keptItems: T[];
+      let keptItems: Item[];
 
       switch (cfg.strategy) {
         case 'truncate': {
           // Keep head items until we hit target
           let accumulated = 0;
-          const head: T[] = [];
+          const head: Item[] = [];
           for (const item of middle) {
             const tokens = item.estimatedTokens ?? 100;
             if (accumulated + tokens > targetTokens) break;
@@ -93,7 +92,7 @@ export function createContextCompressor(): ContextCompressor {
           // Sort by priority (higher first), then keep until target
           const sorted = [...middle].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
           let accumulated = 0;
-          const selected: T[] = [];
+          const selected: Item[] = [];
           for (const item of sorted) {
             const tokens = item.estimatedTokens ?? 100;
             if (accumulated + tokens > targetTokens) break;
@@ -134,8 +133,6 @@ export function createContextCompressor(): ContextCompressor {
 let defaultCompressor: ContextCompressor | null = null;
 
 export function getContextCompressor(): ContextCompressor {
-  if (defaultCompressor === null) {
-    defaultCompressor = createContextCompressor();
-  }
+  defaultCompressor ??= createContextCompressor();
   return defaultCompressor;
 }

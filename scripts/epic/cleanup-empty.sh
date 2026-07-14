@@ -18,8 +18,8 @@
 # 跟 EPIC-054-A worktree 统一 联动
 # 跟 EPIC-054-B instance TTL 联动
 #
-# Rule 9 X/Y KPI 格式: 8/8 PASS = 100.0% (EPIC-054-C 测试覆盖)
-# 跟主公 2026-06-16 14 问题 A6 explicit 派单 联合
+# Rule 9 KPI format: 8 scenarios tested (EPIC-054-C coverage)
+# 跟主公 2026-06-16 14 问题 A6 explicit 派单
 
 set -uo pipefail
 

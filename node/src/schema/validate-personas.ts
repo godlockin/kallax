@@ -14,7 +14,7 @@ const EXPERTS_DIR = '.kallax/experts/default';
 
 const main = (): void => {
   const files = readdirSync(EXPERTS_DIR).filter((f) => f.endsWith('.md')).sort();
-  process.stdout.write(`EPIC-023-A persona validation: ${files.length} files\n\n`);
+  process.stdout.write(`EPIC-023-A persona validation: ${String(files.length)} files\n\n`);
 
   let pass = 0;
   let fail = 0;
@@ -37,7 +37,7 @@ const main = (): void => {
     }
   }
 
-  process.stdout.write(`\nSummary: ${pass}/${files.length} pass\n`);
+  process.stdout.write(`\nSummary: ${String(pass)}/${String(files.length)} pass\n`);
   process.exit(fail);
 };
 

@@ -58,7 +58,7 @@ export function registerDbCommands(program: Command, ctx: AppContext): void {
     .command('migrate')
     .description('Run pending database migrations')
     .option('--dry-run', 'Show migrations without applying')
-    .action(async (opts?: { dryRun?: boolean }) => {
+    .action(async (opts?: { dryRun?: boolean }): Promise<void> => {
       try {
         const { createSQLiteManager } = await import('../core/sqlite/index.js');
         // Reinitialize DB to ensure schema is up to date
@@ -70,7 +70,7 @@ export function registerDbCommands(program: Command, ctx: AppContext): void {
 
         const stats = dbResult.value.getStats();
         process.stdout.write(JSON.stringify({
-          action: opts?.['dryRun'] ? 'dry-run' : 'migrate',
+          action: opts?.['dryRun'] === true ? 'dry-run' : 'migrate',
           ticketCount: stats.ticketCount,
           taskCount: stats.taskCount,
           instanceCount: stats.instanceCount,
@@ -86,7 +86,7 @@ export function registerDbCommands(program: Command, ctx: AppContext): void {
   dbCmd
     .command('status')
     .description('Show database status and statistics')
-    .action(async () => {
+    .action((): void => {
       try {
         const stats = ctx.db.getStats();
         process.stdout.write(JSON.stringify({

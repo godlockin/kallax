@@ -80,7 +80,7 @@ export function createProjectPool(): ProjectPool {
 
     const activeCount = project.allocatedPerformers.size;
     if (activeCount >= project.config.maxPerformers) {
-      return `project ${projectId} at capacity (${activeCount}/${project.config.maxPerformers})`;
+      return `project ${projectId} at capacity (${String(activeCount)}/${String(project.config.maxPerformers)})`;
     }
 
     // Check capability overlap
@@ -111,7 +111,8 @@ export function createProjectPool(): ProjectPool {
 
       if (projects.has(config.projectId)) {
         // Update existing config
-        const existing = projects.get(config.projectId)!;
+        const existing = projects.get(config.projectId);
+        if (!existing) return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, `Project ${config.projectId} not found`));
         existing.config = config;
 
         // If maxPerformers decreased, deallocate excess
@@ -161,7 +162,10 @@ export function createProjectPool(): ProjectPool {
         );
       }
 
-      const project = projects.get(projectId)!;
+      const project = projects.get(projectId);
+      if (!project) {
+        return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, `Project ${projectId} not found`));
+      }
 
       // Actually allocate
       const performerEntry: PerformerState = {
@@ -256,8 +260,9 @@ export function createProjectPool(): ProjectPool {
           return b.state.queueDepth - a.state.queueDepth;
         });
 
-      const highPriority = sorted[0]!;
-      const lowPriority = sorted[sorted.length - 1]!;
+      const highPriority = sorted[0];
+      const lowPriority = sorted[sorted.length - 1];
+      if (!highPriority || !lowPriority) return;
 
       // Only rebalance if high-priority project has available capacity
       const highAvailableSlots = highPriority.state.config.maxPerformers - highPriority.state.allocatedPerformers.size;
@@ -315,8 +320,6 @@ export function createProjectPool(): ProjectPool {
 let defaultPool: ProjectPool | null = null;
 
 export function getProjectPool(): ProjectPool {
-  if (defaultPool === null) {
-    defaultPool = createProjectPool();
-  }
+  defaultPool ??= createProjectPool();
   return defaultPool;
 }

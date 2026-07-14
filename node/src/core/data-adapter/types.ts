@@ -1,9 +1,9 @@
 /**
- * KALLAX Data Adapter — Domain Types (跟 v2.7.4 D4 联合, 跟 Rule 8 联合)
+ * KALLAX Data Adapter — Domain Types (跟 v2.7.4 D4 , 跟 Rule 8 )
  * DB-first / file-fallback adapter for team collaboration data (phases, epics, tickets).
  * Supports bidirectional sync between SQLite (kallax.db) and jira/ JSON files.
  *
- * Split structure (跟 Rule 8 联合):
+ * Split structure (跟 Rule 8 ):
  * - types.ts: Domain types + DataAdapter interface (this file)
  * - file-adapter.ts: FileDataAdapter class
  * - sqlite-adapter.ts: SQLiteDataAdapter class
@@ -39,9 +39,12 @@ export interface ProjectTicket {
   id: string;
   epicId: string;
   title: string;
+  type?: string;
   status: string;
   assignee?: string;
   priority: string;
+  fileScope?: { includes: string[]; excludes: string[] };
+  acceptanceCriteria?: string[];
   startTime?: string;
   deliveryTime?: string;
 }

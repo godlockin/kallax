@@ -8,9 +8,6 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync, renameSync } from '
 import { dirname } from 'node:path';
 
 import { logger } from '../utils/logger.js';
-import { createMasterElection } from './master-election.js';
-import { getCircuitBreaker } from './circuit-breaker.js';
-import type { CircuitBreaker } from './circuit-breaker.js';
 
 export type TierLevel = 0 | 1 | 2 | 3;
 
@@ -79,7 +76,7 @@ function recordTier1Probe(now: number): void {
   try {
     const dir = dirname(TIER1_PROBE_STATE_PATH);
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true, mode: 0o700 });
-    const tmp = `${TIER1_PROBE_STATE_PATH}.tmp.${process.pid}.${Date.now()}`;
+    const tmp = `${TIER1_PROBE_STATE_PATH}.tmp.${String(process.pid)}.${String(Date.now())}`;
     writeFileSync(tmp, JSON.stringify({ ts: now, pid: process.pid }), { mode: 0o600 });
     renameSync(tmp, TIER1_PROBE_STATE_PATH);
   } catch {
@@ -124,7 +121,7 @@ async function probeSQLite(): Promise<boolean> {
 
 async function probeRedis(): Promise<boolean> {
   try {
-    // v3.5.0 hotfix (跟 B 组 S-004 治根 联合): 实际探测 Redis PING (跟 probeNode 模式 1:1)
+    // v3.5.0 hotfix (跟 B 组 S-004 fix ): 实际探测 Redis PING (跟 probeNode 模式 1:1)
     const { execFile } = await import('node:child_process');
     const { promisify } = await import('node:util');
     const execFileAsync = promisify(execFile);
@@ -197,12 +194,12 @@ async function probeAll(): Promise<void> {
     // 修: 用 state.json 写 last_tier1_probe_at, 5s 内跳过
     const now = Date.now();
     if (!shouldProbeTier1(now)) {
-      logger.debug('recovery: tier 1 probe skipped (recent)');
+      logger.debug({}, 'recovery: tier 1 probe skipped (recent)');
     } else {
       // Probe shell fallback
       const fileQOk = await probeFileQueue();
       updateTierStatus(1, fileQOk);
-      // v3.5.0 hotfix (跟 B 组 S-004 治根 联合): Redis 加到 probeAll + Tier 1 跟 Redis 选举层 联合
+      // v3.5.0 hotfix (跟 B 组 S-004 fix ): Redis 加到 probeAll + Tier 1 跟 Redis 选举层 
       const redisOk = await probeRedis();
       updateTierStatus(1, fileQOk && redisOk);
       recordTier1Probe(now);
@@ -262,7 +259,7 @@ async function probeAll(): Promise<void> {
   return {
     async start(): Promise<void> {
       if (probeTimer) return;
-      // v3.5.0 hotfix (跟 B 组 S-006 治根 联合, 跟 V310-B S-006 audit chain fire-and-forget 1:1):
+      // v3.5.0 hotfix (跟 B 组 S-006 fix , 跟 V310-B S-006 audit chain fire-and-forget 1:1):
       // await 初始 probe, throw on fatal 而非 fire-and-forget 静默失败
       try {
         await probeAll();
@@ -330,8 +327,6 @@ async function probeAll(): Promise<void> {
 let defaultRM: RecoveryManager | null = null;
 
 export function getRecoveryManager(): RecoveryManager {
-  if (defaultRM === null) {
-    defaultRM = createRecoveryManager();
-  }
+  defaultRM ??= createRecoveryManager();
   return defaultRM;
 }

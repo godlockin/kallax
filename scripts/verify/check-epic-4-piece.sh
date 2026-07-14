@@ -52,9 +52,39 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$EPIC_ID" ]]; then
-    echo "ERROR: EPIC_ID required (e.g. EPIC-059)" >&2
-    echo "Usage: $0 [--skip-history] <EPIC_ID>" >&2
-    exit 2
+    # Auto-discover from staged files or branch (mirrors check-assumption-clarity v2.0.8 pattern).
+    # 0-arg invocation happens when pre-commit wrapper loops through check-*.sh.
+    staged="$(git diff --cached --name-only 2>/dev/null || true)"
+    EPIC_ID="$(echo "$staged" | grep -oE 'EPIC-[0-9]+' | head -1 || true)"
+    if [[ -z "$EPIC_ID" ]]; then
+        EPIC_ID="$(git diff --cached 2>/dev/null | grep -oE 'EPIC-[0-9]+' | head -1 || true)"
+    fi
+    if [[ -z "$EPIC_ID" ]]; then
+        branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")"
+        EPIC_ID="$(echo "$branch" | grep -oE 'EPIC-[0-9]+' | head -1 || true)"
+    fi
+    if [[ -z "$EPIC_ID" ]]; then
+        echo "WARN: check-epic-4-piece skipped (no EPIC_ID from arg/staged/branch)" >&2
+        exit 0
+    fi
+    echo "INFO: auto-discovered EPIC_ID=$EPIC_ID" >&2
+    # 4-piece is for CLOSING an EPIC. If epic still in creation (status != done), skip.
+    # Probe staged index first (worktree: file staged but not on disk in KALLAX_ROOT).
+    _STATUS=""
+    _STAGED_EPIC=$(git diff --cached --name-only 2>/dev/null | grep -E "jira/epics/${EPIC_ID}/epic\.json$" | head -1 || true)
+    if [[ -n "$_STAGED_EPIC" ]]; then
+        _STATUS=$(git show ":$_STAGED_EPIC" 2>/dev/null | python3 -c "import json,sys; print(json.load(sys.stdin).get('status',''))" 2>/dev/null || echo "")
+    fi
+    if [[ -z "$_STATUS" ]]; then
+        _EPIC_JSON_PROBE="$KALLAX_ROOT/jira/epics/$EPIC_ID/epic.json"
+        if [[ -f "$_EPIC_JSON_PROBE" ]]; then
+            _STATUS=$(python3 -c "import json; print(json.load(open('$_EPIC_JSON_PROBE')).get('status',''))" 2>/dev/null || echo "")
+        fi
+    fi
+    if [[ "$_STATUS" != "done" ]] && [[ "$_STATUS" != "completed" ]]; then
+        echo "INFO: EPIC $EPIC_ID status=${_STATUS:-not-yet-created} (not closing) — 4-piece check skipped" >&2
+        exit 0
+    fi
 fi
 
 if [[ ! "$EPIC_ID" =~ ^EPIC-[0-9]+$ ]]; then

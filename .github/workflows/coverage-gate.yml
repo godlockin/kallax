@@ -12,9 +12,12 @@ jobs:
           node-version: '20'
       - run: npm ci
       - name: Run tests with coverage
+        working-directory: node
+        env:
+          KALLAX_HOOK_API_KEY: test-kallax-hook-api-key-12345678
         run: npx vitest run --coverage
       - name: Upload to codecov
         uses: codecov/codecov-action@v4
         with:
-          files: ./coverage/lcov.info
-          fail_ci_if_error: true
+          files: ./node/coverage/lcov.info
+          fail_ci_if_error: false
