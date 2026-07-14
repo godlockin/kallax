@@ -26,7 +26,7 @@ export interface DisplayNode {
  * Build a tree structure from DAG nodes for visualization.
  */
 function buildTree(nodes: DagNodeDef[], statuses?: Map<string, NodeDisplayStatus>): DisplayNode[] {
-  const nodeMap = new Map(nodes.map((n) => [n.id, { ...n }]));
+  const _nodeMap = new Map(nodes.map((n) => [n.id, { ...n }]));
   const children = new Map<string, DisplayNode[]>();
   const roots: DagNodeDef[] = [];
 
@@ -63,19 +63,25 @@ export function renderDagTree(
   const lines: string[] = [];
 
   function renderNode(node: DisplayNode, prefix: string, isLast: boolean): void {
-    const icon = STATUS_ICONS[node.status] ?? '○';
-    const desc = node.description ? ` — ${node.description}` : '';
+    const icon = STATUS_ICONS[node.status];
+    const desc = node.description != null ? ` — ${node.description}` : '';
     const connector = isLast ? '└──' : '├──';
     lines.push(`${prefix}${connector} ${icon} ${node.id}${desc}`);
 
     const childPrefix = prefix + (isLast ? '    ' : '│   ');
     for (let i = 0; i < node.children.length; i++) {
-      renderNode(node.children[i]!, childPrefix, i === node.children.length - 1);
+      const child = node.children[i];
+      if (child !== undefined) {
+        renderNode(child, childPrefix, i === node.children.length - 1);
+      }
     }
   }
 
   for (let i = 0; i < roots.length; i++) {
-    renderNode(roots[i]!, '', i === roots.length - 1);
+    const root = roots[i];
+    if (root !== undefined) {
+      renderNode(root, '', i === roots.length - 1);
+    }
   }
 
   return lines.join('\n');
@@ -96,7 +102,7 @@ export function renderDagSummary(
   const barTotal = 30;
   const doneBar = Math.round((done / total) * barTotal);
   const runningBar = Math.round((running / total) * barTotal);
-  const failedBar = Math.round((failed / total) * barTotal);
+  const _failedBar = Math.round((failed / total) * barTotal);
 
   return [
     '',

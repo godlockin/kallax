@@ -8,9 +8,6 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync, renameSync } from '
 import { dirname } from 'node:path';
 
 import { logger } from '../utils/logger.js';
-import { createMasterElection } from './master-election.js';
-import { getCircuitBreaker } from './circuit-breaker.js';
-import type { CircuitBreaker } from './circuit-breaker.js';
 
 export type TierLevel = 0 | 1 | 2 | 3;
 
@@ -79,7 +76,7 @@ function recordTier1Probe(now: number): void {
   try {
     const dir = dirname(TIER1_PROBE_STATE_PATH);
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true, mode: 0o700 });
-    const tmp = `${TIER1_PROBE_STATE_PATH}.tmp.${process.pid}.${Date.now()}`;
+    const tmp = `${TIER1_PROBE_STATE_PATH}.tmp.${String(process.pid)}.${String(Date.now())}`;
     writeFileSync(tmp, JSON.stringify({ ts: now, pid: process.pid }), { mode: 0o600 });
     renameSync(tmp, TIER1_PROBE_STATE_PATH);
   } catch {
@@ -330,8 +327,6 @@ async function probeAll(): Promise<void> {
 let defaultRM: RecoveryManager | null = null;
 
 export function getRecoveryManager(): RecoveryManager {
-  if (defaultRM === null) {
-    defaultRM = createRecoveryManager();
-  }
+  defaultRM ??= createRecoveryManager();
   return defaultRM;
 }

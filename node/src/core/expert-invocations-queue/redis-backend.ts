@@ -21,7 +21,7 @@ export interface RedisBackend {
 export function createRedisBackend(redis: Redis, streamKey: string): RedisBackend {
   return {
     isAvailable: () => redis.status === 'ready' || redis.status === 'connect',
-    async xadd(payload) {
+    async xadd(payload): Promise<Result<string, Error>> {
       try {
         const id = await redis.xadd(streamKey, '*', 'payload', payload);
         return id === null ? err(new Error('xadd returned null')) : ok(id);
@@ -29,7 +29,7 @@ export function createRedisBackend(redis: Redis, streamKey: string): RedisBacken
         return err(e instanceof Error ? e : new Error(String(e)));
       }
     },
-    async xrange() {
+    async xrange(): Promise<Result<readonly string[], Error>> {
       try {
         const entries = await redis.xrange(streamKey, '-', '+');
         const payloads: string[] = entries.map((entry) => {
@@ -43,7 +43,7 @@ export function createRedisBackend(redis: Redis, streamKey: string): RedisBacken
         return err(e instanceof Error ? e : new Error(String(e)));
       }
     },
-    async xdel(id) {
+    async xdel(id): Promise<Result<void, Error>> {
       try {
         await redis.xdel(streamKey, id);
         return ok(undefined);
@@ -51,7 +51,7 @@ export function createRedisBackend(redis: Redis, streamKey: string): RedisBacken
         return err(e instanceof Error ? e : new Error(String(e)));
       }
     },
-    async ping() {
+    async ping(): Promise<Result<void, Error>> {
       try {
         await redis.ping();
         return ok(undefined);

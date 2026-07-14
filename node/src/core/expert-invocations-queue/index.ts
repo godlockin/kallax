@@ -71,13 +71,16 @@ export async function timed<T>(op: () => Promise<T>, thresholdMs: number): Promi
   const start = Date.now();
   let timer: ReturnType<typeof setTimeout> | null = null;
   const timeoutPromise = new Promise<never>((_, reject) => {
-    timer = setTimeout(() => reject(new Error(`op exceeded ${thresholdMs}ms threshold`)), thresholdMs);
+    timer = setTimeout(() => { reject(new Error(`op exceeded ${String(thresholdMs)}ms threshold`)); }, thresholdMs);
   });
   try {
     const value = await Promise.race([op(), timeoutPromise]);
+    // timer may be null if op() rejects before setTimeout fires (race condition)
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (timer !== null) clearTimeout(timer);
     return ok({ value, elapsedMs: Date.now() - start });
   } catch (e: unknown) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (timer !== null) clearTimeout(timer);
     return err(e instanceof Error ? e : new Error(String(e)));
   }
@@ -127,7 +130,9 @@ export function createExpertInvocationsQueue(config: ExpertInvocationsQueueConfi
   }
 
   async function tryRedisRecovery(): Promise<boolean> {
-    if (redisBackend === null || redisBackend.isAvailable() === false) {
+    // redisBackend is non-null here (guarded by == null check above)
+    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+    if (redisBackend == null || !redisBackend.isAvailable()) {
       return false;
     }
     const pingResult = await timed(() => redisBackend.ping(), l1Threshold);
@@ -173,7 +178,7 @@ export function createExpertInvocationsQueue(config: ExpertInvocationsQueueConfi
           logger.error({}, 'expert-invocations-queue SQLite FULL, degrading to file');
         }
       } else {
-        recordError('sqlite', new Error(`sqlite insert exceeded ${l2Threshold}ms (${elapsed}ms)`));
+        recordError('sqlite', new Error(`sqlite insert exceeded ${String(l2Threshold)}ms (${String(elapsed)}ms)`));
       }
       degrade('sqlite', 'file');
     }
@@ -224,7 +229,7 @@ export function createExpertInvocationsQueue(config: ExpertInvocationsQueueConfi
       if (selectResult.isErr()) {
         recordError('sqlite', selectResult.error);
       } else {
-        recordError('sqlite', new Error(`sqlite select exceeded ${l2Threshold}ms (${elapsed}ms)`));
+        recordError('sqlite', new Error(`sqlite select exceeded ${String(l2Threshold)}ms (${String(elapsed)}ms)`));
       }
       degrade('sqlite', 'file');
     }
@@ -287,7 +292,7 @@ export function createExpertInvocationsQueue(config: ExpertInvocationsQueueConfi
   }
 
   async function close(): Promise<void> {
-    sqliteBackend.close();
+    await sqliteBackend.close();
   }
 
   void queueSize;
