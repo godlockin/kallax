@@ -318,7 +318,7 @@ check_rule_currency() {
 
 # ----------------------------------------
 # Function: run_all_checks
-# 跑全部 5 项 检查 + 输出 X/Y PASS 格式 (跟 Rule 9 KPI 精确 X/Y 联合)
+# 跑全部 5 项 检查 + 输出格式 (跟 Rule 9 KPI)
 # ----------------------------------------
 run_all_checks() {
   local only_check="${1:-all}"
