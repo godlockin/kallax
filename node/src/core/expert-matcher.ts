@@ -2,9 +2,6 @@
  * KALLAX Expert Matcher — history-aware intelligent agent assignment.
  * Vision: framework autonomously assigns the right agent to the right task.
  */
-import { ok } from 'neverthrow';
-import type { KallaxResult } from '../types/index.js';
-import { KallaxError, KallaxErrorCode } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 
 export interface AgentProfile {
@@ -38,7 +35,7 @@ function computeCapabilityScore(agent: AgentProfile, required: string[]): number
 }
 
 function computeDomainScore(agent: AgentProfile, domain?: string): number {
-  if (!domain) return 10;
+  if (domain === undefined || domain === '') return 10;
   const match = agent.specializedDomains.some(d => d.toLowerCase().includes(domain.toLowerCase()));
   return match ? 20 : 5;
 }

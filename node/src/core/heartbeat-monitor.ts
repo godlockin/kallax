@@ -3,8 +3,7 @@
  * Monitor instance health and detect stale instances
  */
 
-import { ok } from 'neverthrow';
-import type { KallaxResult, Instance } from '../types/index.js';
+import type { Instance } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import type { InstanceRegistry } from './instance-registry.js';
 

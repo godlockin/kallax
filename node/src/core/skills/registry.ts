@@ -63,7 +63,7 @@ export function createSkillLoader(): SkillLoader {
   const loadedSkills = new Map<string, { definition: SkillDefinition; loadedAt: number }>();
 
   return {
-    async load(skill: SkillDefinition): Promise<KallaxResult<void>> {
+    load(skill: SkillDefinition): Promise<KallaxResult<void>> {
       if (loadedSkills.has(skill.name)) {
         return ok(undefined); // Already loaded
       }
@@ -77,20 +77,20 @@ export function createSkillLoader(): SkillLoader {
       return ok(undefined);
     },
 
-    async unload(skillName: string): Promise<KallaxResult<void>> {
+    unload(skillName: string): Promise<KallaxResult<void>> {
       if (!loadedSkills.has(skillName)) {
-        return err(new KallaxError(KallaxErrorCode.TASK_NOT_FOUND, `Skill ${skillName} not loaded`));
+        return Promise.resolve(err(new KallaxError(KallaxErrorCode.TASK_NOT_FOUND, `Skill ${skillName} not loaded`)));
       }
 
       loadedSkills.delete(skillName);
       logger.info({ skillName }, 'skill unloaded');
-      return ok(undefined);
+      return Promise.resolve(ok(undefined));
     },
 
-    async reload(skillName: string): Promise<KallaxResult<void>> {
+    reload(skillName: string): Promise<KallaxResult<void>> {
       const entry = loadedSkills.get(skillName);
       if (!entry) {
-        return err(new KallaxError(KallaxErrorCode.TASK_NOT_FOUND, `Skill ${skillName} not loaded`));
+        return Promise.resolve(err(new KallaxError(KallaxErrorCode.TASK_NOT_FOUND, `Skill ${skillName} not loaded`)));
       }
 
       const def = entry.definition;
@@ -100,7 +100,7 @@ export function createSkillLoader(): SkillLoader {
       });
 
       logger.info({ skillName }, 'skill reloaded');
-      return ok(undefined);
+      return Promise.resolve(ok(undefined));
     },
 
     isLoaded(skillName: string): boolean {
@@ -118,12 +118,13 @@ export function createSkillLoader(): SkillLoader {
 export function createLoggingInterceptor(): SkillInterceptor {
   return {
     name: 'logging',
-    async afterLoad(skill: SkillDefinition) {
+    afterLoad(skill: SkillDefinition): Promise<void> {
       logger.info({ skillName: skill.name, version: skill.version, capabilities: skill.capabilities }, 'skill loaded');
+      return Promise.resolve();
     },
-    async beforeUnload(skillName: string) {
+    beforeUnload(skillName: string): Promise<KallaxResult<void>> {
       logger.info({ skillName }, 'skill unloading');
-      return ok(undefined);
+      return Promise.resolve(ok(undefined));
     },
   };
 }
@@ -131,17 +132,17 @@ export function createLoggingInterceptor(): SkillInterceptor {
 export function createValidationInterceptor(): SkillInterceptor {
   return {
     name: 'validation',
-    async beforeLoad(skill: SkillDefinition) {
+    beforeLoad(skill: SkillDefinition): Promise<KallaxResult<SkillDefinition>> {
       if (!skill.name || skill.name.trim().length === 0) {
-        return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Skill name is required'));
+        return Promise.resolve(err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, 'Skill name is required')));
       }
       if (!skill.entryPoint) {
-        return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, `Skill ${skill.name} has no entryPoint`));
+        return Promise.resolve(err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, `Skill ${skill.name} has no entryPoint`)));
       }
       if (skill.capabilities.length === 0) {
-        return err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, `Skill ${skill.name} has no capabilities`));
+        return Promise.resolve(err(new KallaxError(KallaxErrorCode.INVALID_ARGUMENT, `Skill ${skill.name} has no capabilities`)));
       }
-      return ok(skill);
+      return Promise.resolve(ok(skill));
     },
   };
 }
@@ -150,16 +151,17 @@ export function createCachingInterceptor(): SkillInterceptor {
   const cache = new Map<string, SkillDefinition>();
   return {
     name: 'caching',
-    async beforeLoad(skill: SkillDefinition) {
+    beforeLoad(skill: SkillDefinition): Promise<KallaxResult<SkillDefinition>> {
       const cached = cache.get(skill.name);
-      if (cached && cached.version === skill.version) {
+      if (cached?.version === skill.version) {
         // Return cached version to skip reload
-        return ok(cached);
+        return Promise.resolve(ok(cached));
       }
-      return ok(skill);
+      return Promise.resolve(ok(skill));
     },
-    async afterLoad(skill: SkillDefinition) {
+    afterLoad(skill: SkillDefinition): Promise<void> {
       cache.set(skill.name, skill);
+      return Promise.resolve();
     },
   };
 }
@@ -205,11 +207,12 @@ export function createSkillsRegistry(loader?: SkillLoader): SkillsRegistry {
     list(filter?: { category?: string; tag?: string }): SkillDefinition[] {
       let result = Array.from(skills.values());
 
-      if (filter?.category) {
+      if (filter?.category !== undefined && filter.category !== '') {
         result = result.filter((s) => s.category === filter.category);
       }
-      if (filter?.tag) {
-        result = result.filter((s) => s.tags.includes(filter.tag!));
+      if (filter?.tag !== undefined && filter.tag !== '') {
+        const tag = filter.tag;
+        result = result.filter((s) => s.tags.includes(tag));
       }
 
       return result.sort((a, b) => a.name.localeCompare(b.name));
@@ -271,8 +274,6 @@ export function createSkillsRegistry(loader?: SkillLoader): SkillsRegistry {
 let defaultRegistry: SkillsRegistry | null = null;
 
 export function getSkillsRegistry(): SkillsRegistry {
-  if (defaultRegistry === null) {
-    defaultRegistry = createSkillsRegistry();
-  }
+  defaultRegistry ??= createSkillsRegistry();
   return defaultRegistry;
 }

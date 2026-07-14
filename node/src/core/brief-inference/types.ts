@@ -77,7 +77,7 @@ export function parseBrief(input: string): Result<BriefInference, BriefInference
   if (sections.length !== BRIEF_SECTION_COUNT) {
     return err({
       code: 'BRIEF_INFERENCE_MALFORMED',
-      message: `expected ${BRIEF_SECTION_COUNT} sections separated by "${BRIEF_SECTION_SEPARATOR}", got ${sections.length}`,
+      message: `expected ${String(BRIEF_SECTION_COUNT)} sections separated by "${BRIEF_SECTION_SEPARATOR}", got ${String(sections.length)}`,
     });
   }
 
@@ -99,7 +99,7 @@ export function parseBrief(input: string): Result<BriefInference, BriefInference
   if (emptySection !== null) {
     return err({
       code: 'BRIEF_INFERENCE_EMPTY_SECTION',
-      message: `section "${emptySection}" is empty or below min length ${MIN_FIELD_LENGTH}`,
+      message: `section "${emptySection}" is empty or below min length ${String(MIN_FIELD_LENGTH)}`,
       section: emptySection,
     });
   }

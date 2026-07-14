@@ -224,8 +224,6 @@ export function createIsolationChecker(): IsolationChecker {
 let defaultChecker: IsolationChecker | null = null;
 
 export function getIsolationChecker(): IsolationChecker {
-  if (defaultChecker === null) {
-    defaultChecker = createIsolationChecker();
-  }
+  defaultChecker ??= createIsolationChecker();
   return defaultChecker;
 }

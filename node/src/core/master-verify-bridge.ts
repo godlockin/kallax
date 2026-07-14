@@ -108,6 +108,7 @@ function tryLoadRustBridge(): RustBridgeModule | null {
       // 跟 Rule 7 (no commented-out code) 联合: 唯一 allowed use of require()
       // 是 napi-rs .node native module loading. 0 ESLint config 在 repo (verified),
       // 显式 注释 为什么 此处 0 用 dynamic import (Node.js process.dlopen 仅 require() 支持).
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const mod = require(join(process.cwd(), candidate)) as RustBridgeModule;
       cachedRustBridge = mod;
       cachedLoadStatus = {
@@ -123,8 +124,8 @@ function tryLoadRustBridge(): RustBridgeModule | null {
       cachedLoadStatus = {
         level: 'L2_NODE',
         reason: isArchMismatch
-          ? `arch mismatch: ${msg.split('\n')[0]?.slice(0, 120)}`
-          : `dlopen failed: ${msg.split('\n')[0]?.slice(0, 120)}`,
+          ? `arch mismatch: ${msg.split('\n')[0]?.slice(0, 120) ?? 'unknown'}`
+          : `dlopen failed: ${msg.split('\n')[0]?.slice(0, 120) ?? 'unknown'}`,
         candidate_path: candidate,
         bridge_version: null,
       };
