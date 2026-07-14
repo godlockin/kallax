@@ -1,0 +1,45 @@
+{
+  "id": "EPIC-119",
+  "phase": "PHASE-018",
+  "title": "Tool Orchestration 分类 (OpenAI Building Agents 借鉴)",
+  "scope": "1. OpenAI Building Agents: 3 类 tool (Data/Action/Orchestration)\n2. KALLAX 现状: 26 slash commands + 56 verify scripts 无分类, tool 设计缺标准化\n3. 本 EPIC: 建立 tools registry + 分类 schema + 更新已有工具\n4. 跟 EPIC-117 (ACI) / EPIC-118 (expertise) 联合: tool 是 agent 的 ACI\n5. 4-PR 流程 (feature → testing → main → miao, EPIC-074)",
+  "start_time": "2026-07-14",
+  "delivery_time": "2026-07-14",
+  "completion_time": null,
+  "status": "ready",
+  "master_explicit_decision": "2026-07-14 主公 explicit '加' 落地 OpenAI 3 类 tool 分类. OpenAI guide: Data (retrieve context) / Action (execute ops) / Orchestration (agents as tools for other agents). KALLAX 已有 26 slash commands + 56 verify scripts 缺分类.",
+  "checkin_points": [
+    {
+      "id": "CP-1",
+      "when": "PR opened against testing",
+      "gate": "PR 含: tools-registry.md (3 类分类) + 26 slash commands 分类结果 + local test raw output"
+    }
+  ],
+  "tickets": [
+    {
+      "id": "EPIC-119-A",
+      "title": "docs/tools-registry.md — OpenAI 3 类 tool schema",
+      "status": "ready",
+      "scope_files": ["docs/tools-registry.md"],
+      "acceptance": "Data/Action/Orchestration 3 类定义 + 每类 3+ 已有 KALLAX 命令示例"
+    },
+    {
+      "id": "EPIC-119-B",
+      "title": "scripts/tools/classify-tools.sh — 批量分类 26 slash commands",
+      "status": "ready",
+      "scope_files": ["scripts/tools/classify-tools.sh", "scripts/tools/tool-taxonomy.md"],
+      "acceptance": "26 slash commands 全部归类, 输出 tools-taxonomy.md"
+    },
+    {
+      "id": "EPIC-119-C",
+      "title": "SKILL.md 更新 — tool 分类入口 + Orchestration 触发词",
+      "status": "ready",
+      "scope_files": [".claude/skills/kallax/SKILL.md"],
+      "acceptance": "SKILL.md 新增 Tool 分类 section, triggerKeywords 加 'orchestration tool' / 'data tool' / 'action tool'"
+    }
+  ],
+  "constraints": {
+    "immutable_files": ["docs/evidence/**", "CHANGELOG.md (historical)", "pnpm-lock.yaml", ".kallax/**"],
+    "hard_rules": ["NEVER --no-verify (紧急除外)", "NEVER destructive git", "always NEW commits", "4-PR flow"]
+  }
+}
