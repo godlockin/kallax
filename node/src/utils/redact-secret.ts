@@ -11,7 +11,7 @@
 export const REDACTED = '***';
 
 const REDIS_AUTH_REGEX = /(\bredis:\/\/[^:]*:)([^@]+)(@)/g;
-const AUTH_BEARER_REGEX = /(Bearer\s+)[a-zA-Z0-9._\-]+/g;
+const AUTH_BEARER_REGEX = /(Bearer\s+)[a-zA-Z0-9._-]+/g;
 const PASSWORD_FIELD_REGEX = /((?:password|passwd|pwd|api_?key|api_?token|secret|token)\s*[=:]\s*)(\S+)/gi;
 const IOREDIS_AUTH_LINE_REGEX = /(AUTH failed[^,\n]*)/gi;
 
@@ -22,12 +22,11 @@ export function redactRedisUrl(url: string | undefined | null): string {
 
 export function redactErrorMessage(msg: string | undefined | null): string {
   if (msg === undefined || msg === null || msg === '') return '';
-  let out = String(msg);
-  out = out.replace(REDIS_AUTH_REGEX, `$1${REDACTED}$3`);
-  out = out.replace(AUTH_BEARER_REGEX, `$1${REDACTED}`);
-  out = out.replace(PASSWORD_FIELD_REGEX, `$1${REDACTED}`);
-  out = out.replace(IOREDIS_AUTH_LINE_REGEX, `AUTH failed (redacted)`);
-  return out;
+  return msg
+    .replace(REDIS_AUTH_REGEX, `$1${REDACTED}$3`)
+    .replace(AUTH_BEARER_REGEX, `$1${REDACTED}`)
+    .replace(PASSWORD_FIELD_REGEX, `$1${REDACTED}`)
+    .replace(IOREDIS_AUTH_LINE_REGEX, `AUTH failed (redacted)`);
 }
 
 export function hasPasswordLeak(text: string | undefined | null): boolean {

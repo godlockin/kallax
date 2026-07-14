@@ -19,7 +19,6 @@ import { KallaxError, KallaxErrorCode } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import type { HookContext, HookPhase, HookDispatcher } from './types.js';
 import {
-  createHookEventsStore,
   type HookEventsStore,
 } from './hook-events-store.js';
 
@@ -55,7 +54,7 @@ function parseBody(req: IncomingMessage): Promise<Record<string, unknown>> {
     req.on('end', () => {
       try {
         const raw = Buffer.concat(chunks).toString('utf-8');
-        resolve(raw ? JSON.parse(raw) : {});
+        resolve(raw ? (JSON.parse(raw) as Record<string, unknown>) : {});
       } catch {
         reject(new Error('Invalid JSON body'));
       }
@@ -90,7 +89,7 @@ export function createHookServer(
 
   function isAuthorized(req: IncomingMessage): boolean {
     // S-002 fail-closed: API key 必须存在, 否则 deny 所有 request (治 root cause of auth bypass)
-    if (!config.apiKey) {
+    if (config.apiKey === undefined) {
       logger.error({}, 'KALLAX_HOOK_API_KEY required for /hooks/* endpoints');
       return false;
     }
@@ -119,7 +118,7 @@ export function createHookServer(
     const fromTimestamp = typeof body['fromTimestamp'] === 'number' ? body['fromTimestamp'] : undefined;
     const toTimestamp = typeof body['toTimestamp'] === 'number' ? body['toTimestamp'] : undefined;
 
-    if (!targetSessionId) {
+    if (targetSessionId === undefined || targetSessionId === '') {
       sendJson(res, 400, { error: 'targetSessionId is required' });
       return;
     }
@@ -204,8 +203,8 @@ export function createHookServer(
     });
   }
 
-  async function handleAuditQuery(req: IncomingMessage, res: ServerResponse): Promise<void> {
-    if (!auditStore) {
+  function handleAuditQuery(req: IncomingMessage, res: ServerResponse): void {
+    if (auditStore === null) {
       sendJson(res, 503, { error: 'audit store not configured' });
       return;
     }
@@ -216,15 +215,15 @@ export function createHookServer(
     const toStr = url.searchParams.get('toTimestamp');
     const limitStr = url.searchParams.get('limit');
 
-    const fromTimestamp = fromStr ? Number(fromStr) : undefined;
-    const toTimestamp = toStr ? Number(toStr) : undefined;
-    const limit = limitStr ? Number(limitStr) : undefined;
+    const fromTimestamp = fromStr !== null && fromStr !== '' ? Number(fromStr) : undefined;
+    const toTimestamp = toStr !== null && toStr !== '' ? Number(toStr) : undefined;
+    const limit = limitStr !== null && limitStr !== '' ? Number(limitStr) : undefined;
 
     // EPIC-070-B1: scope guard — 无 sessionId 调用需 adminApiKey, 避免全量数据外泄
     const auth = req.headers['authorization'] ?? '';
     const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
     const isAdmin = config.adminApiKey !== undefined && token === config.adminApiKey;
-    if (!sessionId && !isAdmin) {
+    if ((sessionId === undefined || sessionId === '') && !isAdmin) {
       sendJson(res, 403, {
         error: 'sessionId required (or adminApiKey for full-export)',
         hint: 'Pass ?sessionId=<id> for scoped query, or use adminApiKey for full audit',
@@ -268,13 +267,13 @@ export function createHookServer(
         sendJson(res, 405, { error: 'Method not allowed' });
         return;
       }
-      await handleAuditQuery(req, res);
+      handleAuditQuery(req, res);
       return;
     }
 
     const phase = extractPhase(url);
     if (!phase) {
-      sendJson(res, 404, { error: `Unknown hook endpoint: ${req.url}` });
+      sendJson(res, 404, { error: `Unknown hook endpoint: ${url}` });
       return;
     }
 
@@ -293,7 +292,7 @@ export function createHookServer(
         ticketId: body['ticketId'] as string | undefined,
         performerId: body['performerId'] as string | undefined,
         sessionId: body['sessionId'] as string | undefined,
-        metadata: (body['metadata'] as Record<string, unknown>) ?? {},
+        metadata: (body['metadata'] as Record<string, unknown> | null | undefined) ?? {},
       };
 
       const result = await dispatcher.execute(ctx);
@@ -334,7 +333,7 @@ export function createHookServer(
       }
 
       // S-002 fail-closed: 启动时强制 apiKey 必须存在 (治 root cause)
-      if (!config.apiKey) {
+      if (config.apiKey === undefined) {
         const msg = 'KALLAX_HOOK_API_KEY required for hook server to start (fail-closed, S-002)';
         logger.fatal({}, msg);
         return Promise.resolve(err(new KallaxError(KallaxErrorCode.CONFIG_INVALID, msg)));
@@ -358,8 +357,8 @@ export function createHookServer(
         server.listen(config.port, config.host ?? '127.0.0.1', () => {
           running = true;
           // Capture the actual bound port (in case caller passed 0 for OS-assigned)
-          const addr = server!.address();
-          if (addr && typeof addr === 'object' && typeof addr.port === 'number') {
+          const addr = server.address() as { port: number } | null;
+          if (addr !== null) {
             boundPort = addr.port;
           }
           const endpoints = Object.keys(PHASE_MAP).length + (auditStore ? 2 : 0);
@@ -376,7 +375,8 @@ export function createHookServer(
       }
 
       return new Promise((resolve) => {
-        server!.close((error?: Error) => {
+        const srv = server as Server;
+        srv.close((error?: Error) => {
           running = false;
           if (error) {
             logger.error({ error: error.message }, 'hook server close error');

@@ -101,7 +101,7 @@ function canonicalize(entry: Record<string, unknown>): string {
   const sorted: Record<string, unknown> = {};
   for (const k of keys) {
     const v = entry[k];
-    if (v && typeof v === 'object' && !Array.isArray(v)) {
+    if (v !== null && typeof v === 'object' && !Array.isArray(v)) {
       sorted[k] = JSON.parse(canonicalize(v as Record<string, unknown>));
     } else {
       sorted[k] = v;
@@ -131,7 +131,7 @@ function readLastEntry(filePath: string): { seq: number; hash: string } | null {
     return null;
   }
   const last = lines[lines.length - 1];
-  if (!last) {
+  if (last === undefined || last === '') {
     lastEntryCache.set(filePath, null);
     return null;
   }
@@ -182,7 +182,7 @@ export function createHookEventsStore(
     }
   }
 
-  async function withLock<T>(fn: () => T): Promise<T> {
+  async function _withLock<T>(fn: () => T): Promise<T> {
     const prev = writeLock;
     let release!: () => void;
     writeLock = new Promise<void>((r) => { release = r; });
@@ -218,7 +218,7 @@ export function createHookEventsStore(
       };
 
       const hashInput = canonicalize({ ...partial, hash: undefined });
-      const hash = sha256(`${prevHash}|${seq}|${hashInput}`);
+      const hash = sha256(`${prevHash}|${String(seq)}|${hashInput}`);
 
       const entry = {
         ts: partial['ts'] as string,
@@ -238,7 +238,7 @@ export function createHookEventsStore(
       ensureDir();
       // EPIC-070-B5: 跨进程并发安全 — 用 atomic rename (tmp + rename) 替换 appendFileSync
       // appendFileSync 多进程并发会两条都拿同一 prevHash+seq 导致链断
-      const tmpPath = `${filePath}.tmp.${process.pid}.${Date.now()}`;
+      const tmpPath = `${filePath}.tmp.${String(process.pid)}.${String(Date.now())}`;
       const existing = existsSync(filePath) ? readFileSync(filePath, 'utf-8') : '';
       writeFileSync(tmpPath, existing + JSON.stringify(entry) + '\n', { mode: 0o600 });
       // EPIC-082 Perf-1: 更新 last entry 缓存 (避免下次 append O(N) 读盘)
@@ -251,8 +251,8 @@ export function createHookEventsStore(
     query(q: ReplayQuery): HookEventEntry[] {
       const all = readAllEntries(filePath);
       return all.filter((e) => {
-        if (q.sessionId && e.sessionId !== q.sessionId) return false;
-        if (q.hookType && e.hookType !== q.hookType) return false;
+        if (q.sessionId !== undefined && e.sessionId !== q.sessionId) return false;
+        if (q.hookType !== undefined && e.hookType !== q.hookType) return false;
         const tsMs = Date.parse(e.ts);
         if (q.fromTimestamp !== undefined && tsMs < q.fromTimestamp) return false;
         if (q.toTimestamp !== undefined && tsMs > q.toTimestamp) return false;

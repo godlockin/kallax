@@ -53,6 +53,16 @@ fi
 
 EPIC_JSON="jira/epics/$EPIC_ID/epic.json"
 if [[ ! -f "$EPIC_JSON" ]]; then
+    # Fallback: try branch EPIC if auto-discovery found a non-existent one
+    branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")"
+    BRANCH_EPIC="$(echo "$branch" | grep -oE 'EPIC-[0-9]+' | head -1 || true)"
+    if [[ -n "$BRANCH_EPIC" && "$BRANCH_EPIC" != "$EPIC_ID" ]]; then
+        EPIC_ID="$BRANCH_EPIC"
+        EPIC_JSON="jira/epics/$EPIC_ID/epic.json"
+        echo "INFO: falling back to branch EPIC_ID=$EPIC_ID" >&2
+    fi
+fi
+if [[ ! -f "$EPIC_JSON" ]]; then
     echo "ERROR: $EPIC_JSON not found" >&2
     exit 2
 fi
