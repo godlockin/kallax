@@ -27,7 +27,7 @@ const redisPool = new Map<string, Redis>();
 async function getRedis(redisUrl: string): Promise<Redis | null> {
   try {
     let redis = redisPool.get(redisUrl);
-    if (redis && redis.status === 'ready') return redis;
+    if (redis?.status === 'ready') return redis;
     // v3.5.0 hotfix (跟 B 组 S-005 治根 联合): overwrite 旧 connection 前先 quit (防 fd leak)
     if (redis && redis.status !== 'ready') {
       try { await redis.quit(); } catch { /* ignore, fd may already be closed */ }
@@ -84,7 +84,7 @@ export interface MasterElection {
 }
 
 const DEFAULT_TTL_MS = 30_000;
-const DEFAULT_RENEW_MS = 10_000;
+const _DEFAULT_RENEW_MS = 10_000;
 const DEFAULT_LOCK_DIR = '.kallax/election';
 
 // ── Level 3: Filesystem lock ───────────────────────────────────────────────
@@ -144,7 +144,7 @@ async function fsRenew(lockDir: string, instanceId: string): Promise<boolean> {
   try {
     const { readFile } = await import('node:fs/promises');
     const lockFile = `${lockDir}/master.lock`;
-    const data = JSON.parse(await readFile(lockFile, 'utf-8'));
+    const data = JSON.parse(await readFile(lockFile, 'utf-8')) as { instanceId?: string };
     if (data.instanceId !== instanceId) return false;
     const { utimes } = await import('node:fs/promises');
     const now = new Date();
@@ -281,8 +281,8 @@ async function redisResign(redisUrl: string, instanceId: string): Promise<void> 
 
 export function createMasterElection(config: ElectionConfig): MasterElection {
   const lockDir = config.lockDir ?? DEFAULT_LOCK_DIR;
-  const ttlMs = config.ttlMs ?? DEFAULT_TTL_MS;
-  const renewIntervalMs = config.renewIntervalMs ?? DEFAULT_RENEW_MS;
+  const ttlMs = config.ttlMs;
+  const renewIntervalMs = config.renewIntervalMs;
   let state: ElectionState = {
     isMaster: false, level: 3, instanceId: config.instanceId,
     acquiredAt: 0, lastRenewedAt: 0, term: 0,
@@ -291,7 +291,7 @@ export function createMasterElection(config: ElectionConfig): MasterElection {
 
   async function campaignLevel(level: ElectionLevel): Promise<boolean> {
     switch (level) {
-      case 1: return config.redisUrl ? redisCampaign(config.redisUrl, config.instanceId, ttlMs) : false;
+      case 1: return config.redisUrl != null ? redisCampaign(config.redisUrl, config.instanceId, ttlMs) : false;
       case 2: return sqliteCampaign('.kallax/data/kallax.db', config.instanceId);
       case 3: return fsCampaign(lockDir, config.instanceId);
     }
@@ -299,7 +299,7 @@ export function createMasterElection(config: ElectionConfig): MasterElection {
 
   async function renewLevel(level: ElectionLevel): Promise<boolean> {
     switch (level) {
-      case 1: return config.redisUrl ? redisRenew(config.redisUrl, config.instanceId, ttlMs) : false;
+      case 1: return config.redisUrl != null ? redisRenew(config.redisUrl, config.instanceId, ttlMs) : false;
       case 2: return sqliteRenew('.kallax/data/kallax.db', config.instanceId);
       case 3: return fsRenew(lockDir, config.instanceId);
     }
@@ -307,7 +307,7 @@ export function createMasterElection(config: ElectionConfig): MasterElection {
 
   async function resignLevel(level: ElectionLevel): Promise<void> {
     switch (level) {
-      case 1: if (config.redisUrl) await redisResign(config.redisUrl, config.instanceId); break;
+      case 1: if (config.redisUrl != null) await redisResign(config.redisUrl, config.instanceId); break;
       case 2: await sqliteResign('.kallax/data/kallax.db', config.instanceId); break;
       case 3: await fsResign(lockDir); break;
     }
@@ -350,22 +350,24 @@ export function createMasterElection(config: ElectionConfig): MasterElection {
       return ok(undefined);
     },
 
-    async getState(): Promise<KallaxResult<ElectionState>> {
-      return ok({ ...state });
+    getState(): Promise<KallaxResult<ElectionState>> {
+      return Promise.resolve(ok({ ...state }));
     },
 
     startAutoRenew(): KallaxResult<() => void> {
       if (renewTimer) {
         return err(new KallaxError(KallaxErrorCode.TASK_INVALID_STATE, 'auto-renew already started'));
       }
-      renewTimer = setInterval(async () => {
+      renewTimer = setInterval(() => {
         if (state.isMaster) {
-          const result = await this.renew();
-          if (result.isErr()) logger.error({ error: result.error.message }, 'auto-renew failed');
+          void (async (): Promise<void> => {
+            const result = await this.renew();
+            if (result.isErr()) logger.error({ error: result.error.message }, 'auto-renew failed');
+          })();
         }
       }, renewIntervalMs);
       logger.info({ intervalMs: renewIntervalMs }, 'auto-renew started');
-      const stop = () => { if (renewTimer) { clearInterval(renewTimer); renewTimer = null; } };
+      const stop = (): void => { if (renewTimer) { clearInterval(renewTimer); renewTimer = null; } };
       return ok(stop);
     },
 

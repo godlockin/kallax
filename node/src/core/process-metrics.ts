@@ -114,7 +114,7 @@ function isTicketData(value: unknown): value is TicketData {
 }
 
 function formatXY(numerator: number, denominator: number, percentage: number): string {
-  return `${numerator}/${denominator} (${percentage.toFixed(1)}%)`;
+  return `${String(numerator)}/${String(denominator)} (${percentage.toFixed(1)}%)`;
 }
 
 function formatHours(hours: number): string {
@@ -242,7 +242,7 @@ function computeTrend(tickets: readonly TicketData[]): readonly TrendBucket[] {
 
 function extractEpic(ticketId: string): string {
   const match = ticketId.match(/^(EPIC-\d+)/);
-  return match && match[1] ? match[1] : 'UNKNOWN';
+  return match?.[1] ?? 'UNKNOWN';
 }
 
 interface TargetsCheckResult {
@@ -257,9 +257,9 @@ function checkTargets(
   violation: KPIData
 ): TargetsCheckResult {
   const details: string[] = [];
-  details.push(`dispatch-rate: ${dispatch.formatted} target=${dispatch.target_value}% status=${dispatch.status}`);
-  details.push(`cycle-time: ${cycle.formatted} target=${cycle.target_value}h status=${cycle.status}`);
-  details.push(`violation-rate: ${violation.formatted} target=${violation.target_value}% status=${violation.status}`);
+  details.push(`dispatch-rate: ${dispatch.formatted} target=${String(dispatch.target_value)}% status=${dispatch.status}`);
+  details.push(`cycle-time: ${cycle.formatted} target=${String(cycle.target_value)}h status=${cycle.status}`);
+  details.push(`violation-rate: ${violation.formatted} target=${String(violation.target_value)}% status=${violation.status}`);
   const allPass =
     dispatch.status === 'PASS' &&
     cycle.status === 'PASS' &&
@@ -282,23 +282,23 @@ function dashboard(tickets: readonly TicketData[]): string {
   lines.push('==========================================');
   lines.push('KALLAX 3 KPI Dashboard — EPIC-056-B');
   lines.push('==========================================');
-  lines.push(`Tickets analyzed: ${tickets.length}`);
+  lines.push(`Tickets analyzed: ${String(tickets.length)}`);
   lines.push('');
   lines.push('--- KPI Summary (X/Y format, Rule 9) ---');
-  lines.push(`[${dispatch.status}] 派单成功率: ${dispatch.formatted}  target=${dispatch.target_value}%`);
-  lines.push(`[${cycle.status}] 平均周期: ${cycle.formatted}  target=${cycle.target_value}h`);
-  lines.push(`[${violation.status}] 越界率: ${violation.formatted}  target=${violation.target_value}%`);
+  lines.push(`[${dispatch.status}] 派单成功率: ${dispatch.formatted}  target=${String(dispatch.target_value)}%`);
+  lines.push(`[${cycle.status}] 平均周期: ${cycle.formatted}  target=${String(cycle.target_value)}h`);
+  lines.push(`[${violation.status}] 越界率: ${violation.formatted}  target=${String(violation.target_value)}%`);
   lines.push('');
 
   const anomalyCount = [dispatch, cycle, violation].filter(k => k.status !== 'PASS').length;
   if (anomalyCount > 0) {
-    lines.push(`--- ANOMALY ALERTS (${anomalyCount} KPI(s) outside target) ---`);
+    lines.push(`--- ANOMALY ALERTS (${String(anomalyCount)} KPI(s) outside target) ---`);
     if (dispatch.status === 'CRITICAL') lines.push(`CRITICAL: dispatch-rate ${dispatch.formatted} < 85%`);
-    if (cycle.status === 'CRITICAL') lines.push(`CRITICAL: cycle-time ${cycle.formatted} > ${TARGETS.cycleHoursMax * (1 + WARN_MARGIN)}h`);
+    if (cycle.status === 'CRITICAL') lines.push(`CRITICAL: cycle-time ${cycle.formatted} > ${String(TARGETS.cycleHoursMax * (1 + WARN_MARGIN))}h`);
     if (violation.status === 'CRITICAL') lines.push(`CRITICAL: violation-rate ${violation.formatted} > 5%`);
-    if (dispatch.status === 'WARN') lines.push(`WARN: dispatch-rate ${dispatch.formatted} below target ${dispatch.target_value}%`);
-    if (cycle.status === 'WARN') lines.push(`WARN: cycle-time ${cycle.formatted} above target ${cycle.target_value}h`);
-    if (violation.status === 'WARN') lines.push(`WARN: violation-rate ${violation.formatted} above target ${violation.target_value}%`);
+    if (dispatch.status === 'WARN') lines.push(`WARN: dispatch-rate ${dispatch.formatted} below target ${String(dispatch.target_value)}%`);
+    if (cycle.status === 'WARN') lines.push(`WARN: cycle-time ${cycle.formatted} above target ${String(cycle.target_value)}h`);
+    if (violation.status === 'WARN') lines.push(`WARN: violation-rate ${violation.formatted} above target ${String(violation.target_value)}%`);
     lines.push('');
   }
 
@@ -362,7 +362,7 @@ function cmdDashboard(tickets: readonly TicketData[]): void {
 function main(argv: readonly string[]): void {
   const args = argv.slice(2);
   const subcommand = args[0];
-  if (!subcommand || subcommand === '-h' || subcommand === '--help') {
+  if (subcommand == null || subcommand === '-h' || subcommand === '--help') {
     process.stdout.write(
       'Usage: process-metrics.ts <subcommand> --tickets-dir <path>\n' +
         'Subcommands: dispatch-rate | cycle-time | violation-rate | trend | check-targets | dashboard\n'

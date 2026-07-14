@@ -20,7 +20,7 @@ import type { SQLiteManager } from './sqlite/index.js';
 export const INSTANCE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 export const INSTANCE_CACHE_MAX = 100;
 // Protected roles that survive TTL expiry (conductor/master are precious)
-export const PROTECTED_ROLES: ReadonlySet<InstanceRole | string> = new Set(['conductor', 'master']);
+export const PROTECTED_ROLES: ReadonlySet<string> = new Set(['conductor', 'master']);
 
 export interface InstanceRegistry {
   register: (role: InstanceRole, capabilities?: string[]) => Promise<KallaxResult<Instance>>;
@@ -36,7 +36,7 @@ export interface InstanceRegistry {
 }
 
 function generateInstanceId(): string {
-  return `inst_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  return `inst_${String(Date.now())}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
 export function createInstanceRegistry(db: SQLiteManager): InstanceRegistry {
@@ -51,7 +51,7 @@ export function createInstanceRegistry(db: SQLiteManager): InstanceRegistry {
   });
 
   return {
-    async register(role, capabilities = []): Promise<KallaxResult<Instance>> {
+    register(role, capabilities = []): Promise<KallaxResult<Instance>> {
       const now = Date.now();
 
       // EPIC-054-B: register 前先扫 TTL 过期实例 (RLU 自我清理)
@@ -94,7 +94,7 @@ export function createInstanceRegistry(db: SQLiteManager): InstanceRegistry {
 
       const regResult = db.registerInstance(instance);
       if (regResult.isErr()) {
-        return err(regResult.error);
+        return Promise.resolve(err(regResult.error));
       }
 
       instanceCache.set(instance.id, instance, INSTANCE_TTL_MS);
@@ -105,13 +105,13 @@ export function createInstanceRegistry(db: SQLiteManager): InstanceRegistry {
         'instance registered'
       );
 
-      return ok(instance);
+      return Promise.resolve(ok(instance));
     },
 
-    async unregister(instanceId): Promise<KallaxResult<void>> {
+    unregister(instanceId): Promise<KallaxResult<void>> {
       const result = db.updateInstance(instanceId, { status: 'shutdown' });
       if (result.isErr()) {
-        return result;
+        return Promise.resolve(result);
       }
 
       instanceCache.delete(instanceId);
@@ -120,13 +120,13 @@ export function createInstanceRegistry(db: SQLiteManager): InstanceRegistry {
       }
 
       logger.info({ instanceId }, 'instance unregistered');
-      return ok(undefined);
+      return Promise.resolve(ok(undefined));
     },
 
-    async updateStatus(instanceId, status): Promise<KallaxResult<void>> {
+    updateStatus(instanceId, status): Promise<KallaxResult<void>> {
       const result = db.updateInstance(instanceId, { status });
       if (result.isErr()) {
-        return result;
+        return Promise.resolve(result);
       }
 
       const cached = instanceCache.get(instanceId);
@@ -139,14 +139,14 @@ export function createInstanceRegistry(db: SQLiteManager): InstanceRegistry {
       }
 
       logger.debug({ instanceId, status }, 'instance status updated');
-      return ok(undefined);
+      return Promise.resolve(ok(undefined));
     },
 
-    async heartbeat(instanceId): Promise<KallaxResult<void>> {
+    heartbeat(instanceId): Promise<KallaxResult<void>> {
       const now = Date.now();
       const result = db.updateHeartbeat(instanceId);
       if (result.isErr()) {
-        return result;
+        return Promise.resolve(result);
       }
 
       const cached = instanceCache.get(instanceId);
@@ -159,14 +159,14 @@ export function createInstanceRegistry(db: SQLiteManager): InstanceRegistry {
       }
 
       logger.debug({ instanceId }, 'heartbeat recorded');
-      return ok(undefined);
+      return Promise.resolve(ok(undefined));
     },
 
-    async getById(instanceId): Promise<KallaxResult<Instance | null>> {
+    getById(instanceId): Promise<KallaxResult<Instance | null>> {
       // Check cache first
       const cached = instanceCache.get(instanceId);
       if (cached !== undefined) {
-        return ok(cached);
+        return Promise.resolve(ok(cached));
       }
 
       const result = db.getInstance(instanceId);
@@ -177,26 +177,26 @@ export function createInstanceRegistry(db: SQLiteManager): InstanceRegistry {
       return result;
     },
 
-    async listByRole(role): Promise<KallaxResult<Instance[]>> {
-      return db.listInstances({ role });
+    listByRole(role): Promise<KallaxResult<Instance[]>> {
+      return Promise.resolve(db.listInstances({ role }));
     },
 
-    async listActive(): Promise<KallaxResult<Instance[]>> {
+    listActive(): Promise<KallaxResult<Instance[]>> {
       const result = db.listInstances();
       if (result.isErr()) {
-        return result;
+        return Promise.resolve(result);
       }
 
       const active = result.value.filter(
         (i) => i.status !== 'shutdown' && i.status !== 'error'
       );
-      return ok(active);
+      return Promise.resolve(ok(active));
     },
 
     async markStaleInstances(thresholdMs): Promise<KallaxResult<Instance[]>> {
       const staleResult = db.getStaleInstances(thresholdMs);
       if (staleResult.isErr()) {
-        return staleResult;
+        return Promise.resolve(staleResult);
       }
 
       for (const instance of staleResult.value) {
@@ -212,7 +212,7 @@ export function createInstanceRegistry(db: SQLiteManager): InstanceRegistry {
         }
       }
 
-      return ok(staleResult.value);
+      return Promise.resolve(ok(staleResult.value));
     },
 
     /**
@@ -223,7 +223,7 @@ export function createInstanceRegistry(db: SQLiteManager): InstanceRegistry {
     async markInstancesByTTL(thresholdMs): Promise<KallaxResult<Instance[]>> {
       const listResult = db.listInstances();
       if (listResult.isErr()) {
-        return listResult;
+        return Promise.resolve(listResult);
       }
 
       const now = Date.now();
@@ -258,7 +258,7 @@ export function createInstanceRegistry(db: SQLiteManager): InstanceRegistry {
         );
       }
 
-      return ok(removed);
+      return Promise.resolve(ok(removed));
     },
 
     getCurrentInstance(): Instance | null {

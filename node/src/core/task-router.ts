@@ -8,7 +8,6 @@
  */
 import { ok, err } from 'neverthrow';
 import type { KallaxResult } from '../types/index.js';
-import { KallaxError, KallaxErrorCode } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import { decompose, type DecompositionResult } from './auto-decompose.js';
 import { analyzeComplexity, calculateDependencyDepth, countCrossModules, type ComplexityResult } from './complexity-analyzer.js';
@@ -57,7 +56,12 @@ const DOMAIN_EXPERT_MAP: Record<string, string[]> = {
   devops: ['devops', 'infra', 'sre'], security: ['security'],
 };
 
-function buildComplexityInput(result: DecompositionResult) {
+function buildComplexityInput(result: DecompositionResult): {
+  subtaskCount: number;
+  dependencyDepth: number;
+  maxBlockedBy: number;
+  crossModuleCount: number;
+} {
   const depsMap = new Map<string, string[]>();
   for (const st of result.subtasks) depsMap.set(st.id, st.dependencies);
   return {
@@ -108,7 +112,7 @@ export function routeTask(requirement: string): KallaxResult<RouteResult> {
     const caps = decomposition.subtasks.flatMap(s => s.suggestedCapabilities);
     const decision: DirectRoute = {
       strategy: 'direct', decomposition, complexity,
-      recommendation: `Simple (${complexity.mode}, score ${complexity.score}). Create ticket, summon ${[...new Set(caps)].join('+') || 'general'} Performer, start.`,
+      recommendation: `Simple (${complexity.mode}, score ${String(complexity.score)}). Create ticket, summon ${[...new Set(caps)].join('+') || 'general'} Performer, start.`,
       suggestedPerformer: { capabilities: [...new Set(caps)], domain: caps[0] },
     };
 
@@ -135,14 +139,14 @@ export function routeTask(requirement: string): KallaxResult<RouteResult> {
   const estimatedRounds = Math.max(2, Math.ceil(complexity.score / 3));
   const decision: PanelRoute = {
     strategy: 'panel', decomposition, complexity,
-    recommendation: `Complex (${complexity.mode}, score ${complexity.score}). Panel: ${panel.required.join(', ')}. ~${estimatedRounds} rounds.`,
+    recommendation: `Complex (${complexity.mode}, score ${String(complexity.score)}). Panel: ${panel.required.join(', ')}. ~${String(estimatedRounds)} rounds.`,
     panel, estimatedRounds,
   };
 
   // EPIC-064-5: panel dispatch
   const dispatchHints: Array<{ verb: string; args: string[]; reason: string }> = [
-    { verb: 'epic', args: ['create', 'PANEL', requirement.slice(0, 60)], reason: `Complex task → EPIC for panel decomposition (score ${complexity.score})` },
-    { verb: 'load', args: ['all'], reason: `Pre-load context for ${panel.required.length} panel members` },
+    { verb: 'epic', args: ['create', 'PANEL', requirement.slice(0, 60)], reason: `Complex task → EPIC for panel decomposition (score ${String(complexity.score)})` },
+    { verb: 'load', args: ['all'], reason: `Pre-load context for ${String(panel.required.length)} panel members` },
     { verb: 'route', args: [requirement.slice(0, 80)], reason: 'Recurse sub-tasks through route' },
   ];
 
