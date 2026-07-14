@@ -35,6 +35,12 @@ done
 if [[ -z "$EPIC_ID" ]]; then
     # Auto-discover from staged files or branch (mirrors check-assumption-clarity v2.0.8 pattern).
     # 0-arg invocation happens when pre-commit wrapper loops through check-*.sh.
+    # In pre-commit context (KALLAX_PRE_COMMIT=1), skip auto-discovery to avoid
+    # false positives from pre-existing EPIC references in code comments.
+    if [[ "${KALLAX_PRE_COMMIT:-0}" == "1" ]]; then
+        echo "WARN: check-checkin-points skipped (pre-commit context, auto-discovery deferred to CI)" >&2
+        exit 0
+    fi
     staged="$(git diff --cached --name-only 2>/dev/null || true)"
     EPIC_ID="$(echo "$staged" | grep -oE 'EPIC-[0-9]+' | head -1 || true)"
     if [[ -z "$EPIC_ID" ]]; then
@@ -49,6 +55,10 @@ if [[ -z "$EPIC_ID" ]]; then
         exit 0
     fi
     echo "INFO: auto-discovered EPIC_ID=$EPIC_ID" >&2
+||||||| 3816b80
+    echo "ERROR: EPIC_ID required" >&2
+    echo "Usage: $0 [--require-passed] <EPIC_ID>" >&2
+    exit 2
 fi
 
 EPIC_JSON="jira/epics/$EPIC_ID/epic.json"
