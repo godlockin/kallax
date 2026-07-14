@@ -261,6 +261,27 @@ FORMAT="markdown"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --explain)
+      cat <<'EOF'
+decision-matrix.sh — 25-cell permission matrix wrapper
+
+Underlying execution:
+  25 cells = 5 levels (L1 stdout / L2 file / L3 tool / L4 network / L5 boundary)
+             × 5 roles (Master / Conductor / Performer / Reviewer / Sub-agent)
+  Each cell encodes: mode (自主/推荐/主公拍) + justification
+
+Reads: hardcoded matrix (see functions get_cell_master, get_cell_conductor, ...)
+Writes: nothing (pure read-only decision function)
+
+Callers: scripts/permission/check.sh + 9 authz scripts (read state.json role)
+
+Usage: bash scripts/permission/decision-matrix.sh [--format markdown|json]
+                                                  [--cell <role> <level>]
+                                                  [--check <role> <level>]
+                                                  [--self-test]
+EOF
+      exit 0
+      ;;
     --format)
       FORMAT="$2"
       shift 2

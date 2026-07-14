@@ -241,6 +241,27 @@ EOF
 # ============================================================
 if [ "$MAIN_MODE" = "1" ]; then
     case "${1:-help}" in
+        --explain)
+            cat <<'EOF'
+memory-promote.sh — L0-L4 memory layer wrapper
+
+Underlying execution:
+  verify-all: check dir existence for
+    - L0: .kallax/state/
+    - L1: confluence/decisions/
+    - L2: confluence/memory/lessons/
+    - L3: confluence/memory/patterns/
+    - L4: confluence/memory/research/
+  promote <from> <to> <src> <dest>: git mv src → dest (with layer validation)
+  check-layer <Ln>: ls the corresponding directory
+
+Reads: .kallax/state/, confluence/{decisions,memory}/
+Writes: git mv operations on confluence tree
+
+Usage: bash scripts/memory-promote.sh {verify-all|check-layer|promote|help}
+EOF
+            exit 0
+            ;;
         verify-all)
             shift
             verify_all
