@@ -1,0 +1,38 @@
+{
+  "id": "EPIC-120",
+  "phase": "PHASE-018",
+  "title": "自动化 PR Eval Framework (OpenAI Evals 借鉴)",
+  "scope": "1. OpenAI Evals: 'creating high-quality evals is among the most impactful activities for LLM development'\n2. KALLAX 现状: 5-Level Verify 是人工评审, 无自动化 PR eval gate\n3. 本 EPIC: pr-eval.sh 自动跑 lint + tsc + vitest, 每 PR merge 前必须 pass\n4. 跟 EPIC-069-D (check-claim-evidence) / EPIC-117 (ACI) / EPIC-118 (expertise) 联合\n5. 4-PR 流程 (feature → testing → main → miao, EPIC-074)",
+  "start_time": "2026-07-14",
+  "delivery_time": "2026-07-14",
+  "completion_time": null,
+  "status": "ready",
+  "master_explicit_decision": "2026-07-14 主公 explicit '要' 落地 OpenAI Eval Framework. OpenAI: eval is most impactful activity. KALLAX PR gate 目前 5-Level Verify 人工, 需要自动化. 每 PR 必须跑 lint + tsc + vitest, 0 errors 才 merge.",
+  "checkin_points": [
+    {
+      "id": "CP-1",
+      "when": "PR opened against testing",
+      "gate": "pr-eval.sh --pr N 输出: lint errors / tsc errors / vitest failures, 全部 0 才 PASS"
+    }
+  ],
+  "tickets": [
+    {
+      "id": "EPIC-120-A",
+      "title": "scripts/verify/pr-eval.sh — 自动化 PR eval gate",
+      "status": "ready",
+      "scope_files": ["scripts/verify/pr-eval.sh"],
+      "acceptance": "接受 PR# 或 commit SHA, 跑 eslint + tsc + vitest, 输出 JSON {lint,tsc,vitest}, exit 0 仅当全部 0 errors"
+    },
+    {
+      "id": "EPIC-120-B",
+      "title": "docs/pr-eval-guide.md — eval framework 文档",
+      "status": "ready",
+      "scope_files": ["docs/pr-eval-guide.md"],
+      "acceptance": "文档含: eval 原理 (OpenAI) + KALLAX PR gate 设计 + pr-eval.sh 用法 + exit code 说明"
+    }
+  ],
+  "constraints": {
+    "immutable_files": ["docs/evidence/**", "CHANGELOG.md (historical)", "pnpm-lock.yaml", ".kallax/**"],
+    "hard_rules": ["NEVER --no-verify (紧急除外)", "NEVER destructive git", "always NEW commits", "4-PR flow"]
+  }
+}
