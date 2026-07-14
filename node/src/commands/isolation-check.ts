@@ -76,18 +76,18 @@ export function executeIsolationCheck(
 
     if (errorConflicts.length > 0) {
       recommendations.push(
-        `${errorConflicts.length} blocking conflict(s) found - tasks cannot run in parallel`
+        `${String(errorConflicts.length)} blocking conflict(s) found - tasks cannot run in parallel`
       );
       for (const conflict of errorConflicts) {
         recommendations.push(
-          `  - ${conflict.taskA} and ${conflict.taskB}: ${conflict.conflictingFiles.length} file(s)`
+          `  - ${conflict.taskA} and ${conflict.taskB}: ${String(conflict.conflictingFiles.length)} file(s)`
         );
       }
     }
 
     if (warningConflicts.length > 0) {
       recommendations.push(
-        `${warningConflicts.length} warning(s) found - review before proceeding`
+        `${String(warningConflicts.length)} warning(s) found - review before proceeding`
       );
     }
   } else {

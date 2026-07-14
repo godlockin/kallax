@@ -23,7 +23,6 @@ import { execFileSync } from 'node:child_process';
 import * as path from 'node:path';
 import type { AppContext } from '../cli-context.js';
 import { logger } from '../utils/logger.js';
-import { KallaxError, KallaxErrorCode } from '../types/index.js';
 
 function getScriptPath(scriptName: string): string {
   const projectRoot = process.cwd();

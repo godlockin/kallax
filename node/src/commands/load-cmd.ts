@@ -130,7 +130,7 @@ export function registerLoadCommands(program: Command, _ctx: AppContext): void {
 
     const match = LAZY_TOPICS.find((t) => t.key === topic);
     if (!match) {
-      process.stderr.write(`error: unknown topic '${topicArg}'\n\n`);
+      process.stderr.write(`error: unknown topic '${String(topicArg)}'\n\n`);
       listTopics();
       process.exit(1);
     }

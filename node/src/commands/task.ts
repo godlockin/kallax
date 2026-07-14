@@ -5,7 +5,7 @@
 
 import { err, ok } from 'neverthrow';
 import type { KallaxResult, Task, Ticket } from '../types/index.js';
-import { KallaxError, KallaxErrorCode, TaskStatus, TaskType, TicketSchema } from '../types/index.js';
+import { KallaxError, KallaxErrorCode, TaskStatus, TaskType } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import type { SQLiteManager } from '../core/sqlite/index.js';
 import type { TaskAssigner } from '../core/task-assigner.js';
@@ -30,7 +30,7 @@ export function executeTaskCreate(
   taskAssigner: TaskAssigner,
   options: TaskCreateOptions
 ): KallaxResult<TaskCreateResult> {
-  const { ticketId, type = TaskType.DEVELOPMENT, metadata } = options;
+  const { ticketId, type = TaskType.DEVELOPMENT } = options;
 
   // Get ticket
   const ticketResult = db.getTicket(ticketId);
@@ -259,9 +259,9 @@ export interface TaskResumeResult {
   readonly previousState: TaskStatus;
 }
 
-export async function executeTaskResume(
+export function executeTaskResume(
   db: SQLiteManager,
-  taskAssigner: TaskAssigner,
+  _taskAssigner: TaskAssigner,
   options: TaskResumeOptions
 ): Promise<KallaxResult<TaskResumeResult>> {
   const { taskId } = options;
@@ -269,14 +269,14 @@ export async function executeTaskResume(
   // Get task
   const taskResult = db.getTask(taskId);
   if (taskResult.isErr()) {
-    return err(taskResult.error);
+    return Promise.resolve(err(taskResult.error));
   }
   if (taskResult.value === null) {
-    return err(
+    return Promise.resolve(err(
       new KallaxError(KallaxErrorCode.TASK_NOT_FOUND, 'Task not found', {
         metadata: { taskId },
       })
-    );
+    ));
   }
 
   const task = taskResult.value;
@@ -284,24 +284,24 @@ export async function executeTaskResume(
 
   // Check task can be resumed
   if (task.status !== TaskStatus.FAILED && task.status !== TaskStatus.CANCELLED) {
-    return err(
+    return Promise.resolve(err(
       new KallaxError(KallaxErrorCode.TASK_INVALID_STATE, 'Task cannot be resumed', {
         metadata: { taskId, status: task.status },
       })
-    );
+    ));
   }
 
   // Get ticket
   const ticketResult = db.getTicket(task.ticketId);
   if (ticketResult.isErr()) {
-    return err(ticketResult.error);
+    return Promise.resolve(err(ticketResult.error));
   }
   if (ticketResult.value === null) {
-    return err(
+    return Promise.resolve(err(
       new KallaxError(KallaxErrorCode.TICKET_NOT_FOUND, 'Associated ticket not found', {
         metadata: { ticketId: task.ticketId },
       })
-    );
+    ));
   }
 
   // Reset task to pending
@@ -315,7 +315,7 @@ export async function executeTaskResume(
   });
 
   if (updateResult.isErr()) {
-    return err(updateResult.error);
+    return Promise.resolve(err(updateResult.error));
   }
 
   logger.info({ taskId, previousState }, 'task resumed');
@@ -323,14 +323,14 @@ export async function executeTaskResume(
   // Get updated task
   const updatedResult = db.getTask(taskId);
   if (updatedResult.isErr() || updatedResult.value === null) {
-    return err(
+    return Promise.resolve(err(
       new KallaxError(KallaxErrorCode.TASK_NOT_FOUND, 'Failed to get updated task')
-    );
+    ));
   }
 
-  return ok({
+  return Promise.resolve(ok({
     task: updatedResult.value,
     ticket: ticketResult.value,
     previousState,
-  });
+  }));
 }

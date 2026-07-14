@@ -11,7 +11,7 @@ import { KallaxError } from '../types/index.js';
 async function readStdin(): Promise<string> {
   const chunks: Buffer[] = [];
   for await (const chunk of process.stdin) {
-    chunks.push(Buffer.from(chunk));
+    chunks.push(Buffer.from(chunk as Uint8Array));
   }
   return Buffer.concat(chunks).toString('utf-8');
 }
@@ -25,17 +25,20 @@ export function registerKnowledgeCommands(program: Command, _ctx: AppContext): v
     .option('-c, --content <content>', 'Content (reads stdin if omitted)')
     .option('-t, --tags <tags>', 'Comma-separated tags')
     .option('-s, --source <source>', 'Source identifier', 'manual')
-    .action(async (title: string, opts: Record<string, string>) => {
+    .action(async (title: string, opts: Record<string, string>): Promise<void> => {
       try {
         const { getKnowledgeBase } = await import('../core/knowledge-base.js');
         const kb = getKnowledgeBase();
 
         let content = opts['content'] ?? '';
-        if (!content && !process.stdin.isTTY) {
+        if (content === '' && !process.stdin.isTTY) {
           content = (await readStdin()).trim();
         }
 
-        const tags = opts['tags'] ? opts['tags'].split(',').map((t: string) => t.trim()) : [];
+        const tagsOpt = opts['tags'];
+        const tags = tagsOpt != null && tagsOpt !== ''
+          ? tagsOpt.split(',').map((t: string) => t.trim())
+          : [];
 
         const result = kb.add({ title, content, tags, source: opts['source'] ?? 'manual' });
         if (result.isErr()) throw result.error;
@@ -43,7 +46,7 @@ export function registerKnowledgeCommands(program: Command, _ctx: AppContext): v
         process.stdout.write(`Indexed: ${result.value.id}\n`);
         process.stdout.write(`  Title: ${title}\n`);
         process.stdout.write(`  Tags: ${tags.join(', ') || '(none)'}\n`);
-        process.stdout.write(`  Words: ${content.length} chars\n`);
+        process.stdout.write(`  Words: ${String(content.length)} chars\n`);
       } catch (error: unknown) {
         logger.kallaxError(KallaxError.fromUnknown(error));
         process.exit(1);
@@ -56,19 +59,22 @@ export function registerKnowledgeCommands(program: Command, _ctx: AppContext): v
     .option('-t, --tags <tags>', 'Filter by comma-separated tags')
     .option('-l, --limit <limit>', 'Max results', '10')
     .option('-s, --sort <sort>', 'Sort: relevance|date', 'relevance')
-    .action(async (query: string, opts: Record<string, string>) => {
+    .action(async (query: string, opts: Record<string, string>): Promise<void> => {
       try {
         const { getKnowledgeBase } = await import('../core/knowledge-base.js');
         const kb = getKnowledgeBase();
 
         const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
-        const tags = opts['tags'] ? opts['tags'].split(',').map((t: string) => t.trim()) : undefined;
+        const tagsOpt = opts['tags'];
+        const tags = tagsOpt != null && tagsOpt !== ''
+          ? tagsOpt.split(',').map((t: string) => t.trim())
+          : undefined;
 
         const result = kb.search({
           terms,
           tags,
           limit: parseInt(opts['limit'] ?? '10', 10),
-          sortBy: (opts['sort'] as 'relevance' | 'date') ?? 'relevance',
+          sortBy: (opts['sort'] as 'relevance' | 'date' | undefined) ?? 'relevance',
         });
 
         if (result.isErr()) throw result.error;
@@ -92,7 +98,7 @@ export function registerKnowledgeCommands(program: Command, _ctx: AppContext): v
     .command('list')
     .description('List all knowledge entries')
     .option('-l, --limit <limit>', 'Max entries', '50')
-    .action(async (opts: Record<string, string>) => {
+    .action(async (opts: Record<string, string>): Promise<void> => {
       try {
         const { getKnowledgeBase } = await import('../core/knowledge-base.js');
         const kb = getKnowledgeBase();
@@ -101,7 +107,7 @@ export function registerKnowledgeCommands(program: Command, _ctx: AppContext): v
         if (result.isErr()) throw result.error;
 
         const stats = kb.getStats();
-        process.stdout.write(`Total: ${stats.totalEntries} entries, ${stats.totalWords} words indexed\n\n`);
+        process.stdout.write(`Total: ${String(stats.totalEntries)} entries, ${String(stats.totalWords)} words indexed\n\n`);
 
         for (const entry of result.value) {
           const date = new Date(entry.updatedAt).toISOString().slice(0, 10);
@@ -118,7 +124,7 @@ export function registerKnowledgeCommands(program: Command, _ctx: AppContext): v
     .command('gc')
     .description('Garbage collect old entries')
     .option('-d, --days <days>', 'Remove entries older than N days', '90')
-    .action(async (opts: Record<string, string>) => {
+    .action(async (opts: Record<string, string>): Promise<void> => {
       try {
         const { getKnowledgeBase } = await import('../core/knowledge-base.js');
         const kb = getKnowledgeBase();
@@ -127,7 +133,7 @@ export function registerKnowledgeCommands(program: Command, _ctx: AppContext): v
         const result = kb.gc(days * 86400_000);
 
         if (result.isErr()) throw result.error;
-        process.stdout.write(`GC complete: removed ${result.value} entries older than ${days} days\n`);
+        process.stdout.write(`GC complete: removed ${String(result.value)} entries older than ${String(days)} days\n`);
       } catch (error: unknown) {
         logger.kallaxError(KallaxError.fromUnknown(error));
         process.exit(1);
@@ -140,7 +146,7 @@ export function registerKnowledgeCommands(program: Command, _ctx: AppContext): v
     .description('Review knowledge entries — staleness audit (fresh vs stale)')
     .option('-s, --stale <days>', 'Entries older than N days are stale', '30')
     .option('-n, --limit <limit>', 'Max entries shown per bucket', '50')
-    .action(async (opts?: { stale?: string; limit?: string }) => {
+    .action(async (opts?: { stale?: string; limit?: string }): Promise<void> => {
       try {
         const { getKnowledgeBase } = await import('../core/knowledge-base.js');
         const kb = getKnowledgeBase();
@@ -170,7 +176,7 @@ export function registerKnowledgeCommands(program: Command, _ctx: AppContext): v
           stats: { total: stats.totalEntries, words: stats.totalWords },
           stale: stale.slice(0, limit),
           fresh: fresh.slice(0, limit),
-          summary: `${stale.length} stale entries (>${staleDays}d), ${fresh.length} fresh entries`,
+          summary: `${String(stale.length)} stale entries (>${String(staleDays)}d), ${String(fresh.length)} fresh entries`,
         }, null, 2) + '\n');
       } catch (error: unknown) {
         logger.kallaxError(KallaxError.fromUnknown(error));

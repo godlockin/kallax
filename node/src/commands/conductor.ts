@@ -11,7 +11,6 @@ import type { SQLiteManager } from '../core/sqlite/index.js';
 import type { InstanceRegistry } from '../core/instance-registry.js';
 import type { TaskAssigner } from '../core/task-assigner.js';
 import type { IsolationChecker } from '../core/isolation-checker.js';
-import { calculateAdaptiveTimeout } from '../core/heartbeat-monitor.js';
 
 // ============================================================================
 // Conductor Heartbeat
@@ -76,13 +75,13 @@ export interface MessageCheckResult {
 export async function executeConductorHeartbeat(
   db: SQLiteManager,
   instanceRegistry: InstanceRegistry,
-  taskAssigner: TaskAssigner,
-  isolationChecker: IsolationChecker,
-  options: ConductorHeartbeatOptions = {}
+  _taskAssigner: TaskAssigner,
+  _isolationChecker: IsolationChecker,
+  _options: ConductorHeartbeatOptions = {}
 ): Promise<KallaxResult<ConductorHeartbeatResult>> {
   const currentInstance = instanceRegistry.getCurrentInstance();
 
-  if (currentInstance === null || currentInstance.role !== 'conductor') {
+  if (currentInstance?.role !== 'conductor') {
     return err(
       new KallaxError(KallaxErrorCode.PERMISSION_DENIED, 'Only conductors can run heartbeat', {
         metadata: { role: currentInstance?.role },
@@ -93,19 +92,19 @@ export async function executeConductorHeartbeat(
   logger.info({ instanceId: currentInstance.id }, 'conductor heartbeat starting');
 
   // Q1: Task Priority Check
-  const q1 = await checkTaskPriority(db);
+  const q1 = checkTaskPriority(db);
 
   // Q2: Performer Status Check
   const q2 = await checkPerformers(instanceRegistry);
 
   // Q3: Project Progress Check
-  const q3 = await checkProgress(db);
+  const q3 = checkProgress(db);
 
   // Q4: Blocked Decisions Check
-  const q4 = await checkBlocked(db);
+  const q4 = checkBlocked(db);
 
   // Q5: Message Queue Check
-  const q5 = await checkMessages(db);
+  const q5 = checkMessages(db);
 
   const result: ConductorHeartbeatResult = {
     timestamp: Date.now(),
@@ -130,7 +129,7 @@ export async function executeConductorHeartbeat(
   return ok(result);
 }
 
-async function checkTaskPriority(db: SQLiteManager): Promise<PriorityCheckResult> {
+function checkTaskPriority(db: SQLiteManager): PriorityCheckResult {
   const recommendations: string[] = [];
 
   // Check high priority tickets
@@ -143,7 +142,7 @@ async function checkTaskPriority(db: SQLiteManager): Promise<PriorityCheckResult
   const backlogCount = backlogResult.isOk() ? backlogResult.value.length : 0;
 
   if (p0Result.isOk() && p0Result.value.length > 0) {
-    recommendations.push(`${p0Result.value.length} P0 tickets need immediate attention`);
+    recommendations.push(`${String(p0Result.value.length)} P0 tickets need immediate attention`);
   }
 
   if (backlogCount > 20) {
@@ -208,7 +207,7 @@ async function checkPerformers(instanceRegistry: InstanceRegistry): Promise<Perf
   };
 }
 
-async function checkProgress(db: SQLiteManager): Promise<ProgressCheckResult> {
+function checkProgress(db: SQLiteManager): ProgressCheckResult {
   const allTasksResult = db.listTasks({});
   if (allTasksResult.isErr()) {
     return {
@@ -234,7 +233,7 @@ async function checkProgress(db: SQLiteManager): Promise<ProgressCheckResult> {
   };
 }
 
-async function checkBlocked(db: SQLiteManager): Promise<BlockedCheckResult> {
+function checkBlocked(db: SQLiteManager): BlockedCheckResult {
   const blockedResult = db.listTickets({ status: TicketStatus.BLOCKED });
   const blockedTickets = blockedResult.isOk() ? blockedResult.value : [];
 
@@ -244,7 +243,7 @@ async function checkBlocked(db: SQLiteManager): Promise<BlockedCheckResult> {
   };
 }
 
-async function checkMessages(db: SQLiteManager): Promise<MessageCheckResult> {
+function checkMessages(db: SQLiteManager): MessageCheckResult {
   const messagesResult = db.peekMessages(100);
   if (messagesResult.isErr()) {
     return { pendingMessages: 0, criticalMessages: 0 };

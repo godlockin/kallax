@@ -6,7 +6,7 @@
 import { Command } from 'commander';
 import type { AppContext } from '../cli-context.js';
 import { logger } from '../utils/logger.js';
-import { KallaxError, KallaxErrorCode, TaskStatus, TaskType } from '../types/index.js';
+import { KallaxError, TaskStatus, TaskType } from '../types/index.js';
 import { executeClaimCommand } from './claim.js';
 import { executeCompleteCommand } from './complete.js';
 import {
@@ -78,7 +78,7 @@ export function registerTaskCommands(program: Command, ctx: AppContext): void {
     .command('create <ticketId>')
     .description('Create a new task for a ticket')
     .option('-t, --type <type>', 'Task type (development, review, testing)', 'development')
-    .action(async (ticketId: string, opts?: { type?: string }) => {
+    .action((ticketId: string, opts?: { type?: string }): void => {
       try {
         const result = executeTaskCreate(ctx.db, ctx.taskAssigner, {
           ticketId,
@@ -101,7 +101,7 @@ export function registerTaskCommands(program: Command, ctx: AppContext): void {
     .option('-t, --ticket <ticketId>', 'Filter by ticket')
     .option('-p, --performer <performerId>', 'Filter by performer')
     .option('-s, --status <status>', 'Filter by status')
-    .action(async (taskId?: string, opts?: Record<string, string>) => {
+    .action((taskId?: string, opts?: Record<string, string>): void => {
       try {
         const result = executeTaskStatus(ctx.db, {
           taskId,
@@ -124,7 +124,7 @@ export function registerTaskCommands(program: Command, ctx: AppContext): void {
     .command('progress <taskId> <progress>')
     .description('Update task progress (0-100)')
     .option('-m, --message <message>', 'Progress message')
-    .action(async (taskId: string, progress: string, opts?: { message?: string }) => {
+    .action((taskId: string, progress: string, opts?: { message?: string }): void => {
       try {
         const result = executeTaskProgress(ctx.db, {
           taskId,
@@ -192,7 +192,7 @@ export function registerTaskCommands(program: Command, ctx: AppContext): void {
         }
 
         // Unset old performer's current task if they held this one
-        if (oldPerformerId) {
+        if (oldPerformerId != null && oldPerformerId !== '') {
           const oldInstResult = ctx.db.listInstances({ role: 'performer' });
           if (oldInstResult.isOk()) {
             for (const inst of oldInstResult.value) {

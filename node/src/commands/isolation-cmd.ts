@@ -13,7 +13,7 @@ export function registerIsolationCommands(program: Command, ctx: AppContext): vo
     .command('isolation:check <taskIdA> [taskIdB]')
     .description('Check file-scope overlap between tasks')
     .option('-f, --files <files>', 'Comma-separated file paths')
-    .action(async (taskIdA: string, taskIdB?: string, opts?: { files?: string }) => {
+    .action((taskIdA: string, taskIdB?: string, opts?: { files?: string }): void => {
       try {
         const files = opts?.['files']?.split(',').map((f: string) => f.trim()) ?? [];
         const result = executeIsolationCheck(ctx.isolationChecker, ctx.db, {
