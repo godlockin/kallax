@@ -41,14 +41,13 @@ function checkpointIntervalFromMastery(level: MasteryLevel): CheckpointInterval 
 
 /**
  * Compute performer's mastery level from historical ticket abandonment rate.
- * Data source: SQLite tickets assigned to this performer.
+ * Data source: SQLite tasks created for this performer within 30 days.
  */
 async function computePerformerMastery(
   db: SQLiteManager,
   performerId: string
 ): Promise<MasteryLevel> {
-  // List all tickets for this performer (via task performerId match)
-  const tasksResult = db.listTasks({}); // unfiltered
+  const tasksResult = db.listTasks({});
   if (tasksResult.isErr()) {
     logger.warn({ performerId, error: tasksResult.error.message }, 'computePerformerMastery: listTasks failed, defaulting to L2');
     return 'L2';
@@ -58,33 +57,18 @@ async function computePerformerMastery(
   const lookbackMs = ABANDONMENT_LOOKBACK_DAYS * 24 * 60 * 60 * 1000;
   const cutoff = now - lookbackMs;
 
-  // Filter tasks by performer and recent
   const performerTasks = tasksResult.value.filter(
     (t) => t.performerId === performerId && t.createdAt >= cutoff
   );
 
-  if (performerTasks.length === 0) {
-    // No history → assume intermediate until proven otherwise
-    return 'L2';
-  }
+  if (performerTasks.length === 0) return 'L2';
 
-  // Count abandoned vs completed
-  const abandoned = performerTasks.filter(
-    (t) => t.status === TaskStatus.FAILED
-  ).length;
-  const completed = performerTasks.filter(
-    (t) => t.status === TaskStatus.COMPLETED
-  ).length;
+  const abandoned = performerTasks.filter((t) => t.status === TaskStatus.FAILED).length;
+  const completed = performerTasks.filter((t) => t.status === TaskStatus.COMPLETED).length;
   const total = performerTasks.length;
-
-  // Abandonment rate: abandoned / total assigned
   const abandonmentRate = total > 0 ? (abandoned / total) * 100 : 0;
 
-  logger.info(
-    { performerId, abandonmentRate: abandonmentRate.toFixed(1), abandoned, completed, total },
-    'computePerformerMastery'
-  );
-
+  logger.info({ performerId, abandonmentRate: abandonmentRate.toFixed(1), abandoned, completed, total }, 'computePerformerMastery');
   return masteryLevelFromAbandonment(abandonmentRate);
 }
 
@@ -205,22 +189,17 @@ export function createTaskAssigner(
       }
 
       // EPIC-118-C: expertise-aware checkpoints
-      // Compute performer mastery from historical abandonment rate
       const mastery = await computePerformerMastery(db, performerId);
       const checkpointInterval = checkpointIntervalFromMastery(mastery);
-
-      // Attach checkpoint strategy to task metadata
-      const metadataUpdate = {
-        checkpointInterval,
-        masteryLevel: mastery,
-      };
-      db.updateTask(taskId, { metadata: metadataUpdate });
+      db.updateTask(taskId, { metadata: { checkpointInterval, masteryLevel: mastery } });
 
       logger.info({ taskId, performerId, mastery, checkpointInterval }, 'task assigned with expertise-aware checkpoints');
       return ok({ ...taskResult.value, metadata: { ...taskResult.value.metadata, ...metadataUpdate } });
 ||||||| 803bc58
       logger.info({ taskId, performerId }, 'task assigned');
       return ok(taskResult.value);
+||||||| f7dc288
+      return ok({ ...taskResult.value, metadata: { ...taskResult.value.metadata, ...metadataUpdate } });
     },
 
     async claimNextTask(performerId, _capabilities = []): Promise<KallaxResult<Task | null>> {
