@@ -183,7 +183,7 @@ export function getGateReviewer(): GateReviewer {
 // ========================================================================
 // 3 阶段治理协调器 (v2.0.3 EPIC-056-A)
 // 跟 5 levels Gate Review 并存 — 5 levels 用于 PR 评审, 3 阶段用于 EPIC/expert 评审
-// 跟 v1.2.4 5 扩展组 联合, 跟 EPIC-055-B 拍板分级 P0/P1/P2 联合
+// 跟 v1.2.4 5 扩展组 , 跟 EPIC-055-B 拍板分级 P0/P1/P2 
 // 治 A4 治理爆炸, 净价值 62.5% → 65%+
 // ========================================================================
 
@@ -287,21 +287,21 @@ function classifyChangeType(changeType: string): DecisionLevel {
 
 function p0Action(epicId: string): { action: string; inboxFile: string } {
   return {
-    action: 'BLOCKED 阻塞等主公 explicit 拍板 (跟 PROCESS.md:25-26 联合)',
+    action: 'BLOCKED 阻塞等主公 explicit 拍板 (跟 PROCESS.md:25-26 )',
     inboxFile: `REQUEST-P0-${epicId}.md`,
   };
 }
 
 function p1Action(epicId: string): { action: string; inboxFile: string } {
   return {
-    action: '备案 不阻塞 (跟 EPIC-055-B P1 备案 联合)',
+    action: '备案 不阻塞 (跟 EPIC-055-B P1 备案 )',
     inboxFile: `RECORD-P1-${epicId}.md`,
   };
 }
 
 function p2Action(_epicId: string): { action: string } {
   return {
-    action: 'EXECUTED 直接执行 + 写 p2-log-*.jsonl 留痕 (跟 EPIC-055-B P2 放手 联合)',
+    action: 'EXECUTED 直接执行 + 写 p2-log-*.jsonl 留痕 (跟 EPIC-055-B P2 放手 )',
   };
 }
 

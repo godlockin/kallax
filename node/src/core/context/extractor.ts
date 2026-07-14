@@ -10,7 +10,7 @@ export interface ContextExtractor {
 }
 const DEC = [/决定[：:]\s*(.+)/g, /方案[是：:]\s*(.+)/g, /最终确认[：:]\s*(.+)/g, /we decided[：:]\s*(.+)/gi, /CONCLUSION[：:]\s*(.+)/g];
 const ACT = [/TODO[：:]\s*(.+)/gi, /下一步[：:]\s*(.+)/gi, /需要实现[：:]\s*(.+)/g, /待做[：:]\s*(.+)/g, /NEXT[：:]\s*(.+)/g];
-const LRN = [/修复[：:]\s*(.+)/g, /根因[：:]\s*(.+)/g, /教训[：:]\s*(.+)/g, /注意[：:]\s*(.+)/g];
+const LRN = [/修复[：:]\s*(.+)/g, /root cause[：:]\s*(.+)/g, /教训[：:]\s*(.+)/g, /注意[：:]\s*(.+)/g];
 
 function extractPatterns(text: string, patterns: RegExp[]): string[] {
   const results: string[] = [];

@@ -1,32 +1,32 @@
 /**
- * KALLAX Master Verify Bridge — Node.js ↔ Rust napi-rs 联合
+ * KALLAX Master Verify Bridge — Node.js ↔ Rust napi-rs 
  *
  * EPIC-060-B 阶段 3 子任务 4: master-verify Rust napi-rs binding
- * 跟 eket 4 级降级 模式 联合:
+ * 跟 eket 4 级降级 模式 :
  *   L1 Rust 主用 (cargo build → libkallax_bridge.dylib → .node)
  *   L2 Node.js 备 (./master-verify/ 6 维度 子模块)
  *   L3 Shell (scripts/master/strong-verify-6d.sh)
  *   L0 Emergency
  *
- * 跟 Rule 8 (no copy-paste) 联合: L2 直接 reuse node/src/core/master-verify/index.ts
+ * 跟 Rule 8 (no copy-paste) : L2 直接 reuse node/src/core/master-verify/index.ts
  *   已存 6 维度 function (checkL1..checkL6 + runAll), 0 duplicate.
  *
- * 跟 Rule 7 (0 commented-out code) + Rule 10 (real tests) 联合:
- *   load_rust_bridge() 真实 dlopen, 失败 → typed BridgeLoadError (跟 Rule 3 0 skip tests 联合).
+ * 跟 Rule 7 (0 commented-out code) + Rule 10 (real tests) :
+ *   load_rust_bridge() 真实 dlopen, 失败 → typed BridgeLoadError (跟 Rule 3 0 skip tests ).
  *
- * 跟 eket 0 magic numbers 联合: 显式 命名 常量 BRIDGE_CANDIDATE_PATHS / ARCH_MISMATCH_HINTS.
+ * 跟 eket 0 magic numbers : 显式 命名 常量 BRIDGE_CANDIDATE_PATHS / ARCH_MISMATCH_HINTS.
  */
 
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 // ============================================================================
-// Constants (跟 Rule 4 no magic numbers 联合)
+// Constants (跟 Rule 4 no magic numbers )
 // ============================================================================
 
 /**
- * Bridge binary candidate paths (跟 cargo build --release 产物路径 联合).
- * 跟 eket "explicit paths > dynamic discovery" 模式 联合.
+ * Bridge binary candidate paths (跟 cargo build --release 产物路径 ).
+ * 跟 eket "explicit paths > dynamic discovery" 模式 .
  */
 const BRIDGE_CANDIDATE_PATHS: readonly string[] = [
   'rust/target/release/kallax_bridge.node',
@@ -37,7 +37,7 @@ const BRIDGE_CANDIDATE_PATHS: readonly string[] = [
 
 /**
  * dlopen error substrings indicating architecture mismatch (arm64 Node ↔ x86_64 Rust).
- * 跟 eket "explicit degradation hints" 模式 联合, 0 silent catch (跟 Rule 1 联合).
+ * 跟 eket "explicit degradation hints" 模式 , 0 silent catch (跟 Rule 1 ).
  */
 const ARCH_MISMATCH_HINTS: readonly string[] = [
   'incompatible architecture',
@@ -47,7 +47,7 @@ const ARCH_MISMATCH_HINTS: readonly string[] = [
 
 /**
  * Fallback degradation level when Rust bridge is unavailable.
- * 跟 eket "L1 Rust 主用 + L2 Node.js 备" 4 级降级 模式 联合.
+ * 跟 eket "L1 Rust 主用 + L2 Node.js 备" 4 级降级 模式 .
  */
 type DegradationLevel = 'L1_RUST' | 'L2_NODE' | 'L3_SHELL';
 
@@ -99,13 +99,13 @@ let cachedLoadStatus: BridgeLoadStatus | null = null;
 
 /**
  * Try to load the Rust bridge binary.
- * 失败 → typed BridgeLoadError (跟 Rule 3 no skip tests + Rule 8 no copy-paste 联合).
+ * 失败 → typed BridgeLoadError (跟 Rule 3 no skip tests + Rule 8 no copy-paste ).
  */
 function tryLoadRustBridge(): RustBridgeModule | null {
   for (const candidate of BRIDGE_CANDIDATE_PATHS) {
     if (!existsSync(candidate)) continue;
     try {
-      // 跟 Rule 7 (no commented-out code) 联合: 唯一 allowed use of require()
+      // 跟 Rule 7 (no commented-out code) : 唯一 allowed use of require()
       // 是 napi-rs .node native module loading. 0 ESLint config 在 repo (verified),
       // 显式 注释 为什么 此处 0 用 dynamic import (Node.js process.dlopen 仅 require() 支持).
       // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -154,7 +154,7 @@ export function getLoadStatus(): BridgeLoadStatus {
 }
 
 // ============================================================================
-// Per-dimension functions (跟 Rule 8 no copy-paste 联合: 1 dispatcher)
+// Per-dimension functions (跟 Rule 8 no copy-paste : 1 dispatcher)
 // ============================================================================
 
 export function verifyL1Existence(path: string): BridgeDimensionResult {
@@ -217,7 +217,7 @@ export function verifyAll(path: string): BridgeAggregateResult {
 }
 
 // ============================================================================
-// L2 Node.js fallback (跟 Rule 8 no copy-paste 联合: dynamic import, 0 duplicate)
+// L2 Node.js fallback (跟 Rule 8 no copy-paste : dynamic import, 0 duplicate)
 // ============================================================================
 
 type MasterVerifyModule = {
@@ -242,7 +242,7 @@ async function loadL2Module(): Promise<MasterVerifyModule | null> {
 }
 
 function l2Fallback(path: string, dim: string): BridgeDimensionResult {
-  // 显式 typed unsupported (跟 Rule 1 no silent catch + Rule 10 real tests 联合):
+  // 显式 typed unsupported (跟 Rule 1 no silent catch + Rule 10 real tests ):
   //   per-file path 验证 是 Rust bridge 独有 capability, Node.js master-verify
   //   是 git-diff-based (不同 semantics). 同步 per-dim 在 L2 不可用 → 显式 returned.
   //   推荐 用 verifyAllAsync() async 路径 (L2 git-diff 模式).

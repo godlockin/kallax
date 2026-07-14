@@ -4,7 +4,7 @@
  * 3 KPI 度量: 派单成功率 / 平均周期 / 越界率
  *
  * Rule 9 KPI X/Y 格式: 6/6 = 100.0% (1 位小数, no estimate, no "~")
- * Rule 11 强验证: 跟 11 BE 累计 + 6 痛点 联合
+ * Rule 11 强验证: 跟 11 BE 累计 + 6 痛点 
  * Rule 15 file_scope: 严格不动 docs/PROCESS.md
  *
  * CLI Usage:

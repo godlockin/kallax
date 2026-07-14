@@ -1,8 +1,8 @@
 /**
- * KALLAX Master Verify — Runners + Main (跟 v2.7.4 D4 联合, 跟 Rule 8 联合)
+ * KALLAX Master Verify — Runners + Main (跟 v2.7.4 D4 , 跟 Rule 8 )
  * 6-dimension verification entry point.
  *
- * Split structure (跟 Rule 8 联合):
+ * Split structure (跟 Rule 8 ):
  * - constants.ts: configuration constants
  * - helpers.ts: helper functions
  * - dimensions.ts: 6-dimension check functions
@@ -105,7 +105,7 @@ export function main(): void {
   }
 }
 
-// CLI entry point (跟 v2.7.0+ pattern 联合)
+// CLI entry point (跟 v2.7.0+ pattern )
 if (typeof require !== 'undefined' && require.main === module) {
   main();
 }

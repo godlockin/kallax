@@ -56,7 +56,7 @@ export function registerBranchCommands(program: Command): void {
     });
 
   // EPIC-074 + Sprint 6/7: 4-PR 流程新规 (feature → testing → main → miao)
-  // 跟 v3.8.0 red-blue review "miao → main 阻塞" 治根
+  // 跟 v3.8.0 red-blue review "miao → main 阻塞" fix
   branch.command('pr <feature>')
     .description('4-PR 流程: feature/<name> → testing → main → miao (新规首次实战)')
     .option('--skip-tests', 'Skip test verification (5-Level Verify 强制, 慎用)')

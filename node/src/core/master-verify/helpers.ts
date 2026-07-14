@@ -1,5 +1,5 @@
 /**
- * KALLAX Master Verify — Helpers (跟 v2.7.4 D4 联合, 跟 Rule 8 联合)
+ * KALLAX Master Verify — Helpers (跟 v2.7.4 D4 , 跟 Rule 8 )
  * Helper functions for the 6-dimension verification.
  */
 

@@ -1,5 +1,5 @@
 /**
- * SQLite-based DataAdapter implementation (跟 v2.7.4 D4 联合, 跟 Rule 8 联合)
+ * SQLite-based DataAdapter implementation (跟 v2.7.4 D4 , 跟 Rule 8 )
  * Reads/writes team collaboration data to SQLite (kallax.db).
  * Used when the database file exists.
  */

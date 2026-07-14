@@ -9,7 +9,7 @@
  *   - attachBriefToTicket(ticketPath, brief, claimerId) — write brief + claim metadata
  *   - combinedExpertAssignment(ticket, expert, brief?) — base TrustScore + optional brief boost
  *
- * Quality of brief can BOOST TrustScore via evaluateBriefQuality (EPIC-030-A 联合).
+ * Quality of brief can BOOST TrustScore via evaluateBriefQuality (EPIC-030-A ).
  */
 
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -45,7 +45,7 @@ export interface TicketWithBrief {
 }
 
 // ============================================================================
-// Expert assignment (TrustScore 联合 — brief quality → score boost)
+// Expert assignment (TrustScore  — brief quality → score boost)
 // ============================================================================
 
 export function combinedExpertAssignment(

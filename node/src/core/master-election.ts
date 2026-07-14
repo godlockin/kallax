@@ -28,7 +28,7 @@ async function getRedis(redisUrl: string): Promise<Redis | null> {
   try {
     let redis = redisPool.get(redisUrl);
     if (redis?.status === 'ready') return redis;
-    // v3.5.0 hotfix (跟 B 组 S-005 治根 联合): overwrite 旧 connection 前先 quit (防 fd leak)
+    // v3.5.0 hotfix (跟 B 组 S-005 fix ): overwrite 旧 connection 前先 quit (防 fd leak)
     if (redis && redis.status !== 'ready') {
       try { await redis.quit(); } catch { /* ignore, fd may already be closed */ }
       redisPool.delete(redisUrl);
@@ -56,7 +56,7 @@ async function getRedis(redisUrl: string): Promise<Redis | null> {
   }
 }
 
-// v3.5.0 hotfix (跟 B 组 S-005 治根 联合): Node.js exit 时 close 全部 redisPool 连接 (跟 redis-pubsub.ts:144 模式 1:1)
+// v3.5.0 hotfix (跟 B 组 S-005 fix ): Node.js exit 时 close 全部 redisPool 连接 (跟 redis-pubsub.ts:144 模式 1:1)
 registerCleanupHandler('redis-election-pool', async () => {
   const conns = Array.from(redisPool.values());
   redisPool.clear();
@@ -107,7 +107,7 @@ async function fsCampaign(lockDir: string, instanceId: string): Promise<boolean>
         const lockFile = `${lockDir}/master.lock`;
         const st = await stat(lockFile);
         const age = Date.now() - st.mtimeMs;
-        // EPIC-076 P1-1 split-brain 治根: 缩 TTL grace 60s→45s, 加 EEXIST 重试防 unlink 失败
+        // EPIC-076 P1-1 split-brain fix: 缩 TTL grace 60s→45s, 加 EEXIST 重试防 unlink 失败
         // 原来: DEFAULT_TTL_MS * 2 = 60s grace (过长, Redis 抖动 3s 后 lock 残留)
         // 修: DEFAULT_TTL_MS + DEFAULT_TTL_MS / 2 = 45s grace, 加快 split-brain 检测
         if (age > DEFAULT_TTL_MS + DEFAULT_TTL_MS / 2) {

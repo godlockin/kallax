@@ -1,5 +1,5 @@
 /**
- * KALLAX Master Verify — 6-Dimension Checks (跟 v2.7.4 D4 联合, 跟 Rule 8 联合)
+ * KALLAX Master Verify — 6-Dimension Checks (跟 v2.7.4 D4 , 跟 Rule 8 )
  * 6 Master Verification dimensions (L1-L6):
  * - L1: Existence (files exist in git diff)
  * - L2: Substance (real logic, not stubs)
@@ -191,7 +191,7 @@ export function checkL6(_args: Map<string, string>): DimensionResult {
 }
 
 // ============================================================================
-// Helpers (跟 checkL6 联合, 跟 Master 6 维 L6 联合)
+// Helpers (跟 checkL6 , 跟 Master 6 维 L6 )
 // ============================================================================
 
 export function calculateNetValue(): { value: number; improvement: number } {

@@ -1,15 +1,15 @@
 /**
  * KALLAX Pub/Sub Bus — cross-process publish/subscribe abstraction
  *
- * EPIC-060-C: ioredis Pub/Sub 启用 (跟 v2.7.0 分布式 路线图 联合, 跟 eket 4 级降级 模式 联合)
+ * EPIC-060-C: ioredis Pub/Sub 启用 (跟 v2.7.0 分布式 路线图 , 跟 eket 4 级降级 模式 )
  *
- * 1 interface + 2 implementations (跟 Rule 5 DRY 联合, 0 copy-paste):
+ * 1 interface + 2 implementations (跟 Rule 5 DRY , 0 copy-paste):
  *   - RedisPubSubBus     (primary, ioredis, 跨 Node.js 进程 通信)
- *   - InMemoryPubSubBus  (fallback, 单进程, 跟 AGENTS.md 4 级降级 L2 联合)
+ *   - InMemoryPubSubBus  (fallback, 单进程, 跟 AGENTS.md 4 级降级 L2 )
  *
- * 跟 v2.4.1 Hard Rule #4 联合: 0 magic numbers, 全部 named constants
- * 跟 v2.4.1 Hard Rule #5 联合: 0 console.log, 用 logger
- * 跟 v2.4.1 Hard Rule #8 联合: 0 copy-paste, 1 interface + 2 implementations
+ * 跟 v2.4.1 Hard Rule #4 : 0 magic numbers, 全部 named constants
+ * 跟 v2.4.1 Hard Rule #5 : 0 console.log, 用 logger
+ * 跟 v2.4.1 Hard Rule #8 : 0 copy-paste, 1 interface + 2 implementations
  */
 
 import { logger } from '../utils/logger.js';
@@ -43,7 +43,7 @@ export interface PubSubConfig {
   readonly redis?: RedisPubSubConfig;
 }
 
-// ── Constants (跟 Hard Rule #4 0 magic numbers 联合) ────────────────────────
+// ── Constants (跟 Hard Rule #4 0 magic numbers ) ────────────────────────
 
 export const KALLAX_PUBSUB_CHANNEL_PREFIX = 'kallax:pubsub:';
 export const REDIS_RETRY_BASE_MS = 100;
@@ -63,7 +63,7 @@ function redisRetryStrategy(times: number): number {
 //
 // ioredis is now a hard dependency (file:line `node/package.json:32`), so the
 // static import above is safe. InMemoryPubSubBus remains as the L2 fallback
-// for unit tests and degraded single-process environments (跟 eket 4 级降级 模式 联合).
+// for unit tests and degraded single-process environments (跟 eket 4 级降级 模式 ).
 
 export function createRedisPubSubBus(config: RedisPubSubConfig): PubSubBus {
   const publisher = new Redis({
@@ -206,7 +206,7 @@ export function createRedisPubSubBus(config: RedisPubSubConfig): PubSubBus {
 // ── InMemoryPubSubBus (fallback, single-process) ───────────────────────────
 
 export function createInMemoryPubSubBus(): PubSubBus {
-  // channel -> Set<handler>  (跟 RedisPubSubBus 同 结构, 跟 Rule 5 DRY 联合)
+  // channel -> Set<handler>  (跟 RedisPubSubBus 同 结构, 跟 Rule 5 DRY )
   const handlers = new Map<string, Set<PubSubHandler>>();
 
   registerCleanupHandler('in-memory-pubsub-bus', () => {
@@ -265,12 +265,12 @@ export function createInMemoryPubSubBus(): PubSubBus {
   };
 }
 
-// ── Factory (跟 AGENTS.md 4 级降级 模式 联合) ──────────────────────────────
+// ── Factory (跟 AGENTS.md 4 级降级 模式 ) ──────────────────────────────
 
 /**
  * Create a Pub/Sub bus based on configuration.
  *
- * 跟 eket 4 级降级 模式 联合:
+ * 跟 eket 4 级降级 模式 :
  *   - L3 (Production):     mode='redis'    → RedisPubSubBus
  *   - L2 (Degraded / dev): mode='memory'   → InMemoryPubSubBus
  */

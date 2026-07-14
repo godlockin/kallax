@@ -3,7 +3,7 @@
  *
  * EPIC-030-C: skeleton (basic structure, can be enhanced later).
  *
- * Trigger flow (跟 EPIC-030-A 联合):
+ * Trigger flow (跟 EPIC-030-A ):
  *   TrustScore.matchAll(ticket, experts) → TrustScoreResult[]
  *     if every result.score === 0 (no L1/L2/L3 hit) → waiting-for-expert kicks in
  *       1. increment retries in `.kallax/state/waiting-for-expert.json`
@@ -29,7 +29,7 @@
  *       }
  *     }
  *
- * 1:1 TrustScore wiring (跟 EPIC-030-A 联合):
+ * 1:1 TrustScore wiring (跟 EPIC-030-A ):
  *   recordNoMatch() accepts a TrustScoreResult[] (the full matchAll output) and
  *   uses the BEST result's score + matchedLayer as the recorded bestScore /
  *   bestLayer. If the caller already knows the ticket is unmatched they can
@@ -236,7 +236,7 @@ export function createWaitingForExpert(options: WaitingForExpertOptions = {}): W
   };
 
   const writeState = (state: Record<string, WaitingExpertEntry>): void => {
-    // EPIC-076 P1-10: TOCTOU 治根 — tmp 用 PID+timestamp 防并发写碰撞
+    // EPIC-076 P1-10: TOCTOU fix — tmp 用 PID+timestamp 防并发写碰撞
     const tmpPath = `${stateFile}.tmp.${String(process.pid)}.${String(Date.now())}`;
     try {
       fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2) + '\n');

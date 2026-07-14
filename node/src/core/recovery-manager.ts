@@ -121,7 +121,7 @@ async function probeSQLite(): Promise<boolean> {
 
 async function probeRedis(): Promise<boolean> {
   try {
-    // v3.5.0 hotfix (跟 B 组 S-004 治根 联合): 实际探测 Redis PING (跟 probeNode 模式 1:1)
+    // v3.5.0 hotfix (跟 B 组 S-004 fix ): 实际探测 Redis PING (跟 probeNode 模式 1:1)
     const { execFile } = await import('node:child_process');
     const { promisify } = await import('node:util');
     const execFileAsync = promisify(execFile);
@@ -199,7 +199,7 @@ async function probeAll(): Promise<void> {
       // Probe shell fallback
       const fileQOk = await probeFileQueue();
       updateTierStatus(1, fileQOk);
-      // v3.5.0 hotfix (跟 B 组 S-004 治根 联合): Redis 加到 probeAll + Tier 1 跟 Redis 选举层 联合
+      // v3.5.0 hotfix (跟 B 组 S-004 fix ): Redis 加到 probeAll + Tier 1 跟 Redis 选举层 
       const redisOk = await probeRedis();
       updateTierStatus(1, fileQOk && redisOk);
       recordTier1Probe(now);
@@ -259,7 +259,7 @@ async function probeAll(): Promise<void> {
   return {
     async start(): Promise<void> {
       if (probeTimer) return;
-      // v3.5.0 hotfix (跟 B 组 S-006 治根 联合, 跟 V310-B S-006 audit chain fire-and-forget 1:1):
+      // v3.5.0 hotfix (跟 B 组 S-006 fix , 跟 V310-B S-006 audit chain fire-and-forget 1:1):
       // await 初始 probe, throw on fatal 而非 fire-and-forget 静默失败
       try {
         await probeAll();

@@ -1,8 +1,8 @@
 /**
- * KALLAX Master Verify — Constants (跟 v2.7.4 D4 联合, 跟 Rule 8 联合)
+ * KALLAX Master Verify — Constants (跟 v2.7.4 D4 , 跟 Rule 8 )
  * Configuration constants used across the 6-dimension verification.
  *
- * Split structure (跟 Rule 8 联合):
+ * Split structure (跟 Rule 8 ):
  * - constants.ts: configuration constants (this file)
  * - helpers.ts: helper functions (die, runGit, runShell, etc.)
  * - dimensions.ts: 6-dimension check functions (checkL1-L6)
