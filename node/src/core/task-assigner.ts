@@ -194,10 +194,12 @@ export function createTaskAssigner(
       db.updateTask(taskId, { metadata: { checkpointInterval, masteryLevel: mastery } });
 
       logger.info({ taskId, performerId, mastery, checkpointInterval }, 'task assigned with expertise-aware checkpoints');
-      return ok({ ...taskResult.value, metadata: { ...taskResult.value.metadata, checkpointInterval, masteryLevel: mastery } });
+      return ok({ ...taskResult.value, metadata: { ...taskResult.value.metadata, ...metadataUpdate } });
 ||||||| 803bc58
       logger.info({ taskId, performerId }, 'task assigned');
       return ok(taskResult.value);
+||||||| f7dc288
+      return ok({ ...taskResult.value, metadata: { ...taskResult.value.metadata, ...metadataUpdate } });
     },
 
     async claimNextTask(performerId, _capabilities = []): Promise<KallaxResult<Task | null>> {
