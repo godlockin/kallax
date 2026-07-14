@@ -22,7 +22,7 @@ function hasMessage(value: unknown): value is { message: string } {
     typeof value === 'object' &&
     value !== null &&
     'message' in value &&
-    typeof (value as { message: unknown }).message === 'string'
+    typeof (value).message === 'string'
   );
 }
 
@@ -94,7 +94,7 @@ export async function withRetry<T>(
     delayMs = 1000,
     backoffMultiplier = 2,
     errorCode = KallaxErrorCode.INTERNAL_ERROR,
-    shouldRetry = () => true,
+    shouldRetry = (_error: unknown, _attempt: number): boolean => true,
   } = options;
 
   let lastError: unknown;
@@ -119,7 +119,7 @@ export async function withRetry<T>(
     }
   }
 
-  const kallaxError = new KallaxError(errorCode, `Operation failed after ${maxAttempts} attempts`, {
+  const kallaxError = new KallaxError(errorCode, `Operation failed after ${String(maxAttempts)} attempts`, {
     cause: lastError,
     metadata: { attempts: maxAttempts },
   });
@@ -167,7 +167,7 @@ export function mapError<T>(
   if (newCode !== undefined) {
     return err(new KallaxError(newCode, result.error.message, {
       cause: result.error.cause,
-      metadata: result.error.metadata as Record<string, unknown>,
+      metadata: result.error.metadata,
     }));
   }
 

@@ -180,9 +180,7 @@ export function createMemoryMonitor(config: Partial<MemoryMonitorConfig> = {}): 
 let defaultMonitor: MemoryMonitor | null = null;
 
 export function getDefaultMemoryMonitor(): MemoryMonitor {
-  if (defaultMonitor === null) {
-    defaultMonitor = createMemoryMonitor();
-  }
+  defaultMonitor ??= createMemoryMonitor();
   return defaultMonitor;
 }
 

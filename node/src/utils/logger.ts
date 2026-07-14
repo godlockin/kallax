@@ -32,11 +32,14 @@ const baseLogger = pino({
   level: process.env['KALLAX_LOG_LEVEL'] ?? 'info',
   formatters: {
     level: (label: string) => ({ level: label }),
-    bindings: (bindings: pino.Bindings) => ({
-      pid: bindings['pid'],
-      hostname: bindings['hostname'],
-      service: 'kallax',
-    }),
+    bindings: (bindings: pino.Bindings) => {
+      const b = bindings as unknown as { pid: number; hostname: string; service: string };
+      return {
+        pid: b.pid,
+        hostname: b.hostname,
+        service: 'kallax',
+      };
+    },
   },
   timestamp: pino.stdTimeFunctions.isoTime,
   base: {
