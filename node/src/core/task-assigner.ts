@@ -1,6 +1,12 @@
 /**
  * KALLAX Task Assigner
- * Intelligent task assignment with isolation validation
+ * Intelligent task assignment with isolation validation + expertise-aware checkpoints (EPIC-118-C)
+ *
+ * Anthropic research: expert vs novice abandonment 5-7% vs 19%.
+ * CheckpointInterval 根据 performer 历史 abandonment rate 差异化:
+ *   L1 (abandonment > 15%): subtask checkpoint (每个子任务必验证)
+ *   L2 (abandonment 5-15%): milestone checkpoint (关键节点验证)
+ *   L3 (abandonment < 5%): final checkpoint (只验收最终 PR)
  */
 
 import { err, ok } from 'neverthrow';
@@ -10,6 +16,77 @@ import { logger } from '../utils/logger.js';
 import type { SQLiteManager } from './sqlite/index.js';
 import type { IsolationChecker } from './isolation-checker.js';
 import type { InstanceRegistry } from './instance-registry.js';
+
+export type MasteryLevel = 'L1' | 'L2' | 'L3';
+export type CheckpointInterval = 'subtask' | 'milestone' | 'final';
+
+// Anthropic thresholds: novice >15%, intermediate 5-15%, expert <5%
+const MASTERY_ABANDONMENT_L1_THRESHOLD = 15; // >15% → L1 (novice)
+const MASTERY_ABANDONMENT_L2_THRESHOLD = 5;  // >5%  → L2 (intermediate)
+const ABANDONMENT_LOOKBACK_DAYS = 30;
+
+function masteryLevelFromAbandonment(rate: number): MasteryLevel {
+  if (rate > MASTERY_ABANDONMENT_L1_THRESHOLD) return 'L1';
+  if (rate > MASTERY_ABANDONMENT_L2_THRESHOLD) return 'L2';
+  return 'L3';
+}
+
+function checkpointIntervalFromMastery(level: MasteryLevel): CheckpointInterval {
+  switch (level) {
+    case 'L1': return 'subtask';
+    case 'L2': return 'milestone';
+    case 'L3': return 'final';
+  }
+}
+
+/**
+ * Compute performer's mastery level from historical ticket abandonment rate.
+ * Data source: SQLite tickets assigned to this performer.
+ */
+async function computePerformerMastery(
+  db: SQLiteManager,
+  performerId: string
+): Promise<MasteryLevel> {
+  // List all tickets for this performer (via task performerId match)
+  const tasksResult = db.listTasks({}); // unfiltered
+  if (tasksResult.isErr()) {
+    logger.warn({ performerId, error: tasksResult.error.message }, 'computePerformerMastery: listTasks failed, defaulting to L2');
+    return 'L2';
+  }
+
+  const now = Date.now();
+  const lookbackMs = ABANDONMENT_LOOKBACK_DAYS * 24 * 60 * 60 * 1000;
+  const cutoff = now - lookbackMs;
+
+  // Filter tasks by performer and recent
+  const performerTasks = tasksResult.value.filter(
+    (t) => t.performerId === performerId && t.createdAt >= cutoff
+  );
+
+  if (performerTasks.length === 0) {
+    // No history → assume intermediate until proven otherwise
+    return 'L2';
+  }
+
+  // Count abandoned vs completed
+  const abandoned = performerTasks.filter(
+    (t) => t.status === TaskStatus.FAILED
+  ).length;
+  const completed = performerTasks.filter(
+    (t) => t.status === TaskStatus.COMPLETED
+  ).length;
+  const total = performerTasks.length;
+
+  // Abandonment rate: abandoned / total assigned
+  const abandonmentRate = total > 0 ? (abandoned / total) * 100 : 0;
+
+  logger.info(
+    { performerId, abandonmentRate: abandonmentRate.toFixed(1), abandoned, completed, total },
+    'computePerformerMastery'
+  );
+
+  return masteryLevelFromAbandonment(abandonmentRate);
+}
 
 export interface TaskAssigner {
   createTask: (ticket: Ticket, type?: TaskType) => KallaxResult<Task>;
@@ -126,8 +203,20 @@ export function createTaskAssigner(
         );
       }
 
-      logger.info({ taskId, performerId }, 'task assigned');
-      return ok(taskResult.value);
+      // EPIC-118-C: expertise-aware checkpoints
+      // Compute performer mastery from historical abandonment rate
+      const mastery = await computePerformerMastery(db, performerId);
+      const checkpointInterval = checkpointIntervalFromMastery(mastery);
+
+      // Attach checkpoint strategy to task metadata
+      const metadataUpdate = {
+        checkpointInterval,
+        masteryLevel: mastery,
+      };
+      db.updateTask(taskId, { metadata: metadataUpdate });
+
+      logger.info({ taskId, performerId, mastery, checkpointInterval }, 'task assigned with expertise-aware checkpoints');
+      return ok({ ...taskResult.value, metadata: { ...taskResult.value.metadata, ...metadataUpdate } });
     },
 
     async claimNextTask(performerId, _capabilities = []): Promise<KallaxResult<Task | null>> {
