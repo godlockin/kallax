@@ -1,7 +1,7 @@
 ---
 name: kallax
 description: Use when user types any `/kallax-*` slash command or mentions "expert panel", "architecture review", "kallax expert", "召唤专家", "EPIC 拆解", "PHASE review", or invokes a multi-role expert review for a new EPIC, architectural decision, or major refactor. Spawns a 3-phase governance (EPIC-056-A): Phase 1 Conductor 全局扫描 (Architect 合并) + Phase 2 4 default (Backend/Frontend/UX/Product) + 5 extended (security-tool-bypass + process-engineering + auditor + compliance + decision-gate) 并行 + Phase 3 Master 仲裁 + 主公拍板. Do NOT trigger for simple bug fixes, single-domain tasks, or chores.
-triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专家评审, multi-agent, subagent, EPIC 拆解, PHASE review, BE 教训, 3 阶段治理, EPIC-056-A]
+triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专家评审, multi-agent, subagent, EPIC 拆解, PHASE review, BE 教训, 3 阶段治理, EPIC-056-A, tool orchestration, data tool, action tool, orchestration tool]
 ---
 
 # KALLAX Skills 命令索引
@@ -242,6 +242,22 @@ triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专�
 **Security**: `security-review`, `penetration-testing`
 
 **UX**: `user-research`, `usability-testing`
+
+## Tool 分类 (OpenAI 3-Class, EPIC-119)
+
+OpenAI《Building Agents》3-class tool taxonomy:
+
+| Class | 定义 | KALLAX 示例 |
+|-------|------|------------|
+| **data** | 检索上下文, 只读 | `/kallax-status`, `/kallax-board`, `/kallax metrics:sprint` |
+| **action** | 执行操作, 写外部状态 | `/kallax-claim`, `/kallax-submit-pr`, `/kallax-merge` |
+| **orchestration** | Agent 作为 tool 供其他 agent 调用 | `/kallax-expert`, `/kallax-panel`, `/kallax-review-pr` |
+
+**分类脚本**: `python3 scripts/tools/classify-tools.sh --format table`
+
+**Orchestration 触发词**: `tool orchestration` / `agent as tool` / `multi-agent coordination`
+
+**Tool 文档**: `docs/tools-registry.md`
 
 ## Metrics (北极星指标, EPIC-023-C)
 
