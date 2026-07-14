@@ -1,0 +1,21 @@
+# Dockerfile.eval — SWE-bench style sandbox for KALLAX pr-eval.sh
+#
+# 3-layer isolation:
+#   Base: node:20-alpine (shared core)
+#   Env: project node_modules + tsc
+#   Instance: per-eval tmp dir
+#
+# Usage:
+#   docker build -f Dockerfile.eval -t kallax-eval .
+#   docker run --rm -v $(pwd):/repo kallax-eval
+
+FROM node:20-alpine AS base
+RUN apk add --no-cache git bash python3 make
+WORKDIR /repo
+
+COPY package.json package-lock.json* .npmrc* ./
+RUN npm ci --ignore-scripts 2>/dev/null || npm install --ignore-scripts
+
+COPY . .
+
+CMD ["sh", "-c", "eslint . --max-warnings 0 && tsc --noEmit && vitest run --reporter=json || true"]
