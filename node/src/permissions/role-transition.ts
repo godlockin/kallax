@@ -39,7 +39,7 @@ export const BREAK_GLASS_MAX_TTL_MS = 60 * 60 * 1000; // 1 hour
  * Check if a break-glass transition has expired
  */
 export function isBreakGlassExpired(record: RoleTransitionRecord): boolean {
-  if (!record.expiresAt) return true; // no TTL set = treat as expired
+  if (record.expiresAt === undefined) return true; // no TTL set = treat as expired
   return Date.now() > record.expiresAt;
 }
 
@@ -64,10 +64,6 @@ export function isValidTransition(from: RoleName, to: RoleName): boolean {
   }
 
   const allowedTargets = ALLOWED_TRANSITIONS[from];
-  if (!allowedTargets) {
-    return false;
-  }
-
   return allowedTargets.includes(to);
 }
 
@@ -84,13 +80,13 @@ export function detectCycle(
   const graph = new Map<RoleName, RoleName[]>();
 
   for (const t of transitions) {
-    const existing = graph.get(t.fromRole) || [];
+    const existing = graph.get(t.fromRole) ?? [];
     existing.push(t.toRole);
     graph.set(t.fromRole, existing);
   }
 
   // Add the proposed transition
-  const proposedTargets = graph.get(proposedFrom) || [];
+  const proposedTargets = graph.get(proposedFrom) ?? [];
   proposedTargets.push(proposedTo);
   graph.set(proposedFrom, proposedTargets);
 
@@ -102,7 +98,7 @@ export function detectCycle(
     visited.add(role);
     recursionStack.add(role);
 
-    const neighbors = graph.get(role) || [];
+    const neighbors = graph.get(role) ?? [];
     for (const neighbor of neighbors) {
       if (!visited.has(neighbor)) {
         if (hasCycleDFS(neighbor)) {
@@ -172,7 +168,7 @@ export function verifyTransition(
     // Break-glass TTL enforcement: reject if any prior break-glass record has expired
     if (isBreakGlass) {
       for (const t of recentTransitions) {
-        if (t.isBreakGlass && isBreakGlassExpired(t)) {
+        if (t.isBreakGlass === true && isBreakGlassExpired(t)) {
           return ok({
             allowed: false,
             from: fromRole,
@@ -197,15 +193,6 @@ export function verifyTransition(
         reason: `transition from ${fromRole} to ${toRole} is not allowed`,
       });
     }
-
-    // Detect cycles
-    const proposedTransition: RoleTransitionRecord = {
-      fromRole,
-      toRole,
-      reason,
-      actor,
-      timestamp: Date.now(),
-    };
 
     if (detectCycle(recentTransitions, fromRole, toRole)) {
       return ok({
@@ -261,6 +248,16 @@ export function createBreakGlassTransition(
  * Read recent transitions from the audit log file
  * Used to provide recentTransitions to verifyTransition (required param)
  */
+interface RawTransitionEntry {
+  readonly from: string;
+  readonly to: string;
+  readonly reason: string;
+  readonly actor: string;
+  readonly ts: number;
+  readonly expires_at?: number;
+  readonly is_break_glass?: boolean;
+}
+
 export async function readRecentTransitions(
   auditLogPath: string,
   limit = 100
@@ -274,7 +271,7 @@ export async function readRecentTransitions(
     for (const line of lines) {
       if (!line.trim()) continue;
       try {
-        const entry = JSON.parse(line);
+        const entry = JSON.parse(line) as RawTransitionEntry;
         records.push({
           fromRole: entry.from as RoleName,
           toRole: entry.to as RoleName,

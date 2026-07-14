@@ -109,7 +109,7 @@ export function createHeartbeatRoutes(deps: HeartbeatRouteDependencies): Router 
           if (isValidInstanceStatus(body.status)) {
             const statusResult = await deps.instanceRegistry.updateStatus(
               body.performerId,
-              body.status as InstanceStatus
+              body.status
             );
             if (statusResult.isErr()) {
               logger.warn(
