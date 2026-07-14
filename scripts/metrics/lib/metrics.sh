@@ -34,6 +34,8 @@ export EXPERT_ACTIVATION_TARGET_DISTINCT=5      # ≥5 distinct experts / EPIC
 export CROSS_EPIC_REUSE_TARGET_PCT=60          # ≥60% 跨 EPIC 复用率
 export AB_HIT_RATE_TARGET_MISMATCH_PCT=15      # <15% 错配 (推荐 vs 实际)
 export MIS_DISPATCH_TARGET_PCT=10              # <10% 错派率
+export ABANDONMENT_THRESHOLD_HOURS=48         # assigned >48h 无 PR = abandoned
+export ABANDONMENT_TARGET_PCT=10             # <10% abandonment rate
 
 # 输入校验
 export EPIC_ID_PATTERN='^EPIC-[0-9]+$'
@@ -503,6 +505,98 @@ compute_mis_dispatch_rate() {
   return 0
 }
 
+# ─── Metric 5: abandonment_rate ────────────────────────────────────────────────
+
+# Performer abandonment rate: assigned 但超 48h 无 PR 的 ticket 占比
+# Anthropic research: novice abandonment 19%, expert 5-7%, target <10%
+#
+# Abandonment 判定:
+#   1. ticket.json 有 performer (已派单)
+#   2. ticket.json 无 pr_url (未提交 PR)
+#   3. status 不在 done/merged/closed/passed/failed
+#   4. assigned_at 超过 ABANDONMENT_THRESHOLD_HOURS
+#
+# 数据源: jira/tickets/EPIC-NNN-*/ticket.json
+# 输出: JSON {metric, epic, abandonment_pct, target, status, total, abandoned, breakdown}
+compute_abandonment_rate() {
+  local epic_id="$1"
+  validate_epic_id "$epic_id" || return 1
+
+  local epic_num="${epic_id#EPIC-}"
+  local total=0
+  local abandoned=0
+  local threshold_hours="${ABANDONMENT_THRESHOLD_HOURS:-48}"
+
+  # 当前时间戳
+  local now_ts
+  now_ts="$(date +%s)" || now_ts="$(python3 -c 'import time; print(int(time.time()))')"
+
+  for ticket_dir in "${JIRA_TICKETS_DIR}/EPIC-${epic_num}-"*/; do
+    [ -d "$ticket_dir" ] || continue
+    local tj="${ticket_dir}ticket.json"
+    [ -f "$tj" ] || continue
+
+    # 必须有 performer 才算 assigned
+    local performer pr_url status assigned_at
+    performer="$(jq -r '.performer // empty' "$tj" 2>/dev/null || true)"
+    [ -z "$performer" ] && continue
+
+    pr_url="$(jq -r '.pr_url // .pr_number // empty' "$tj" 2>/dev/null || true)"
+    status="$(jq -r '.status // empty' "$tj" 2>/dev/null || true)"
+    assigned_at="$(jq -r '.assigned_at // empty' "$tj" 2>/dev/null || true)"
+
+    total=$((total + 1))
+
+    # 已合并/完成/关闭 → 非 abandoned
+    case "$status" in
+      done|merged|closed|passed|failed) continue ;;
+    esac
+
+    # 有 PR → 非 abandoned
+    [ -n "$pr_url" ] && continue
+
+    # 无 assigned_at → 无法判断 → 不计入
+    [ -z "$assigned_at" ] && continue
+
+    # 计算 assigned_at 距今小时数
+    local assigned_ts
+    assigned_ts="$(python3 -c "import time; print(int(time.mktime(time.strptime('${assigned_at}', '%Y-%m-%dT%H:%M:%SZ'))))" 2>/dev/null || true)"
+    [ -z "$assigned_ts" ] && continue
+
+    local elapsed_hours=$(( (now_ts - assigned_ts) / 3600 ))
+    if [ "$elapsed_hours" -gt "$threshold_hours" ]; then
+      abandoned=$((abandoned + 1))
+    fi
+  done
+
+  if [ "$total" -eq 0 ]; then
+    log_warn "abandonment_rate" "epic=${epic_id} reason=no_assigned_tickets"
+    jq -n \
+      --arg epic "$epic_id" \
+      --argjson target "$ABANDONMENT_TARGET_PCT" \
+      '{metric:"abandonment_rate", epic:$epic, abandonment_pct:0, target:$target, status:"NO_DATA", total:0, abandoned:0, breakdown:{}}'
+    return 0
+  fi
+
+  local abandonment_pct=$(( (abandoned * 100) / total ))
+  local status_val="FAIL"
+  if [ "$abandonment_pct" -lt "$ABANDONMENT_TARGET_PCT" ]; then
+    status_val="PASS"
+  fi
+
+  jq -n \
+    --arg epic "$epic_id" \
+    --argjson abandonment_pct "$abandonment_pct" \
+    --argjson target "$ABANDONMENT_TARGET_PCT" \
+    --argjson total "$total" \
+    --argjson abandoned "$abandoned" \
+    --arg status "$status_val" \
+    --argjson threshold "$threshold_hours" \
+    '{metric:"abandonment_rate", epic:$epic, abandonment_pct:$abandonment_pct, target:$target, status:$status, total:$total, abandoned:$abandoned, threshold_hours:$threshold}'
+
+  return 0
+}
+
 # infer_specialization <json_array_of_paths>
 # 按 SPECIALIZATION_PATTERNS 顺序匹配, 返回首个匹配; 多 specialization → "mixed"
 infer_specialization() {
@@ -541,11 +635,12 @@ infer_specialization() {
 # 合并 4 个 metric 为单一 JSON (machine-readable)
 format_json_metrics() {
   local epic_id="$1"
-  local m1 m2 m3 m4
+  local m1 m2 m3 m4 m5
   m1="$(compute_expert_activation_rate "$epic_id")"
   m2="$(compute_cross_epic_reuse_rate "$epic_id")"
   m3="$(compute_ab_hit_rate "$epic_id")"
   m4="$(compute_mis_dispatch_rate "$epic_id")"
+  m5="$(compute_abandonment_rate "$epic_id")"
 
   jq -n \
     --arg epic "$epic_id" \
@@ -554,6 +649,7 @@ format_json_metrics() {
     --argjson m2 "$m2" \
     --argjson m3 "$m3" \
     --argjson m4 "$m4" \
+    --argjson m5 "$m5" \
     '{
       epic: $epic,
       generated_at: $generated_at,
@@ -561,19 +657,21 @@ format_json_metrics() {
         $m1,
         $m2,
         $m3,
-        $m4
+        $m4,
+        $m5
       ]
     }'
 }
 
-# 合并 4 个 metric 为 Markdown table (human-readable, master + conductor 可读)
+# 合并 5 个 metric 为 Markdown table (human-readable, master + conductor 可读)
 format_markdown_metrics() {
   local epic_id="$1"
-  local m1 m2 m3 m4
+  local m1 m2 m3 m4 m5
   m1="$(compute_expert_activation_rate "$epic_id")"
   m2="$(compute_cross_epic_reuse_rate "$epic_id")"
   m3="$(compute_ab_hit_rate "$epic_id")"
   m4="$(compute_mis_dispatch_rate "$epic_id")"
+  m5="$(compute_abandonment_rate "$epic_id")"
 
   # 提取每个 metric 的 status / 主要数字
   local m1_distinct m1_target m1_status m1_breakdown
@@ -603,6 +701,13 @@ format_markdown_metrics() {
   m4_total="$(printf '%s' "$m4" | jq -r '.total')"
   m4_mm="$(printf '%s' "$m4" | jq -r '.mis_dispatched')"
 
+  local m5_pct m5_target m5_status m5_total m5_abandoned
+  m5_pct="$(printf '%s' "$m5" | jq -r '.abandonment_pct')"
+  m5_target="$(printf '%s' "$m5" | jq -r '.target')"
+  m5_status="$(printf '%s' "$m5" | jq -r '.status')"
+  m5_total="$(printf '%s' "$m5" | jq -r '.total')"
+  m5_abandoned="$(printf '%s' "$m5" | jq -r '.abandoned')"
+
   local generated_at
   generated_at="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
@@ -620,6 +725,7 @@ format_markdown_metrics() {
 | cross_epic_reuse_rate | ${m2_pct}% (${m2_overlap}/${m2_total} files) | ≥ ${m2_target}% | **${m2_status}** |
 | ab_hit_rate (mismatch) | ${m3_pct}% (${m3_mm}/${m3_total} reviews) | < ${m3_target}% | **${m3_status}** |
 | mis_dispatch_rate | ${m4_pct}% (${m4_mm}/${m4_total} tickets) | < ${m4_target}% | **${m4_status}** |
+| abandonment_rate | ${m5_pct}% (${m5_abandoned}/${m5_total} tickets) | < ${m5_target}% | **${m5_status}** |
 
 ## 详细
 
@@ -635,6 +741,8 @@ ${m1_breakdown:-  (no breakdown)}
 ### 3. ab_hit_rate — ${m3_pct}% mismatch (${m3_mm} / ${m3_total})
 
 ### 4. mis_dispatch_rate — ${m4_pct}% misdispatch (${m4_mm} / ${m4_total})
+
+### 5. abandonment_rate — ${m5_pct}% abandoned (${m5_abandoned} / ${m5_total})
 
 ---
 
