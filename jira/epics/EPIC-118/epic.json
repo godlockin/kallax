@@ -1,0 +1,45 @@
+{
+  "id": "EPIC-118",
+  "phase": "PHASE-018",
+  "title": "Expertise-aware dispatch (Anthropic Claude Code Research 借鉴)",
+  "scope": "1. Anthropic Claude Code Research: novice vs expert abandonment gap 19% vs 5-7%, verified success requires hard evidence\n2. KALLAX 现状: performer 无 expertise 分层, dispatch 无 mastery awareness, 无 abandonment tracking\n3. 3 ticket 并行: A abandonment_rate 指标 / B verified success schema / C expertise-aware dispatch\n4. 跟 EPIC-117 Simplicity 联合: expertise-aware dispatch 不是加复杂度, 是让现有规则更精准\n5. 4-PR 流程 (feature → testing → main → miao, EPIC-074)",
+  "start_time": "2026-07-14",
+  "delivery_time": "2026-07-14",
+  "completion_time": null,
+  "status": "ready",
+  "master_explicit_decision": "2026-07-14 主公 explicit '需要' 开 EPIC-118. Anthropic research: expert performer abandonment 5-7% vs novice 19%, expert verified success 28-33% vs novice 15%. KALLAX dispatch 无 expertise awareness, 有改进空间.",
+  "checkin_points": [
+    {
+      "id": "CP-1",
+      "when": "3 PR opened against testing",
+      "gate": "每 PR 含: (a) scope 文件 (b) local test raw output (c) 该 ticket 声明的 acceptance criteria 全绿"
+    }
+  ],
+  "tickets": [
+    {
+      "id": "EPIC-118-A",
+      "title": "abandonment_rate metric — 补缺失的 reliability 指标",
+      "status": "ready",
+      "scope_files": ["scripts/metrics/lib/metrics.sh", "scripts/metrics/sprint-metrics.sh"],
+      "acceptance": "abandonment_rate 加入 sprint metrics (target <10%, 计算: abandoned_tickets / assigned_tickets, abandonment=performer 认领后无 PR 且超 48h)"
+    },
+    {
+      "id": "EPIC-118-B",
+      "title": "ticket.json schema: mastery_level + verified_commit_sha",
+      "status": "ready",
+      "scope_files": ["docs/ticket-schema.md", "scripts/update-ticket-state.sh"],
+      "acceptance": "ticket.json 新字段: mastery_level (L1/L2/L3), verified_commit_sha (commit SHA 或 null), schema 文档更新"
+    },
+    {
+      "id": "EPIC-118-C",
+      "title": "conductor dispatch: expertise-aware checkpoints",
+      "status": "ready",
+      "scope_files": ["node/src/core/task-assigner.ts", "node/src/core/conductor.ts"],
+      "acceptance": "task-assigner 根据 performer mastery_level 调整 checkpoints: L1=每子任务必验证 / L2=里程碑验证 / L3=只验收最终 PR"
+    }
+  ],
+  "constraints": {
+    "immutable_files": ["docs/evidence/**", "CHANGELOG.md (historical)", "pnpm-lock.yaml", ".kallax/**"],
+    "hard_rules": ["NEVER --no-verify (紧急除外)", "NEVER destructive git", "always NEW commits", "4-PR flow"]
+  }
+}
