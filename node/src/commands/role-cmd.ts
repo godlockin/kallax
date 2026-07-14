@@ -14,8 +14,8 @@
  * - role fatigue — 拍板疲劳指数
  *
  * Source: confluence/decisions/PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §2 + §4
- * 跟 confluence/decisions/5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md 联合
- * 跟 PROCESS.md:25-26 "Master 不能自己升级红线" 联合
+ * 跟 confluence/decisions/5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md 
+ * 跟 PROCESS.md:25-26 "Master 不能自己升级红线" 
  */
 
 import { Command } from 'commander';
@@ -81,7 +81,7 @@ export function registerRoleCommands(program: Command, _ctx: AppContext): void {
     });
 
   // EPIC-055-B: 3 级路由 — role decide <change_type> [tier]
-  // 跟 PROCESS.md:25-26 联合, 跟 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md 联合
+  // 跟 PROCESS.md:25-26 , 跟 5-GOVERNANCE-CARDS-APPROVAL-2026-06-16.md 
   role
     .command('decide <ticket_id> <change_type> [tier]')
     .description('Route decision per P0/P1/P2 tier (EPIC-055-B, Master 阻塞/备案/放手)')

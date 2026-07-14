@@ -6,7 +6,7 @@
  *   - verify l1..l5  (武器 2, 调 scripts/verify/level-{1..5}.sh)
  *   - verify all     (L1-L5 一次跑)
  *
- * 跟 docs/5-levels.md §1:1 联合 (L1 git / L2 stdout / L3 4-expert / L4 independent / L5 boundary)
+ * 跟 docs/5-levels.md §1:1  (L1 git / L2 stdout / L3 4-expert / L4 independent / L5 boundary)
  */
 
 import { Command } from 'commander';

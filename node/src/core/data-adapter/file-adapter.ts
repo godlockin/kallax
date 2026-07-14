@@ -1,5 +1,5 @@
 /**
- * File-based DataAdapter implementation (跟 v2.7.4 D4 联合, 跟 Rule 8 联合)
+ * File-based DataAdapter implementation (跟 v2.7.4 D4 , 跟 Rule 8 )
  * Reads/writes team collaboration data from/to jira/ JSON files.
  * Used when kallax.db does not exist.
  */

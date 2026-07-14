@@ -148,7 +148,7 @@ export function logAuthzResult(result: AuthzCheckResult): void {
     result: result.allowed ? 'ALLOWED' : 'DENIED',
   };
 
-  // Structured audit logging (跟 Rule 7 联合, 跟 v2.7.4 D3 联合, 跟 Master 6 维 L8 观测性 联合)
+  // Structured audit logging (跟 Rule 7 , 跟 v2.7.4 D3 , 跟 Master 6 维 L8 观测性 )
   logger.info({
     audit: true,
     timestamp: entry.timestamp,

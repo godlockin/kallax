@@ -8,8 +8,8 @@
  *   📋 任务理解: [任务类型] | [核心目标] | [技术方案] | [风险点]
  *   e.g.       📋 任务理解: backend | 修复 N+1 query | 加 eager-load + 索引 | 索引迁移回滚
  *
- * Why (反讽 + 诚实修正 战略):
- *   - "反讽": Performers who claim without understanding produce cargo-cult code
+ * Why ( + 诚实修正 plan):
+ *   - "": Performers who claim without understanding produce cargo-cult code
  *     (1 ticket 1 subagent 串行 treats this as a hard gate, not a soft hint).
  *   - "诚实修正": Surface hidden misunderstanding early — better to reject the
  *     claim (exit 1) than ship "should work" stubs.

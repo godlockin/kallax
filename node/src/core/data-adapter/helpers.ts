@@ -1,5 +1,5 @@
 /**
- * KALLAX Data Adapter — Helpers (跟 v2.7.4 D4 联合, 跟 Rule 8 联合)
+ * KALLAX Data Adapter — Helpers (跟 v2.7.4 D4 , 跟 Rule 8 )
  * Shared utility functions used by both file-adapter and sqlite-adapter.
  */
 

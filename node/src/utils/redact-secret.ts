@@ -1,11 +1,11 @@
 /**
  * KALLAX Secret Redaction Utility
  *
- * v3.5.0 hotfix: 跟 B 组 Attack Review S-003 治根 联合, 跟 V310-B S-001 fail-closed 1:1 联合.
+ * v3.5.0 hotfix: 跟 B 组 Attack Review S-003 fix , 跟 V310-B S-001 fail-closed 1:1 .
  * 用途: 在 logger.error / logger.warn 输出前 mask 凭据 (password / token / api_key / Bearer / redis://:pwd@host).
  *
- * 跟 Rule 5 DRY 联合: 单一入口, 全 codebase 复用 (跟 audit-middleware 已有 redaction pattern 1:1).
- * 跟 Hard Rule #4 0 magic numbers 联合: 全部 named constants.
+ * 跟 Rule 5 DRY : 单一入口, 全 codebase 复用 (跟 audit-middleware 已有 redaction pattern 1:1).
+ * 跟 Hard Rule #4 0 magic numbers : 全部 named constants.
  */
 
 export const REDACTED = '***';

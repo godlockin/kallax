@@ -9,12 +9,12 @@
  *   The `date` field on every entry mirrors the file partition so a query can
  *   scope to a single day's trace without parsing timestamps.
  *
- * Append-only baseline (跟 EPIC-024 enterprise-audit 联合):
+ * Append-only baseline (跟 EPIC-024 enterprise-audit ):
  *   - log() opens file with 'a' flag, never reads-then-writes
  *   - No mutation, no deletion, no in-place rewrite
  *   - One JSON object per line (jsonl), trailing newline required
  *
- * 1:1 TrustScore wiring (跟 EPIC-030-A 联合):
+ * 1:1 TrustScore wiring (跟 EPIC-030-A ):
  *   logFromTrustScore() accepts a TrustScoreResult and produces an entry
  *   with matchedLayer + score + factors breakdown preserved verbatim.
  *   The breakdown.exactHit / keywordOverlap / cosine triple is the same

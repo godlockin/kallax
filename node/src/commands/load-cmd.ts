@@ -1,7 +1,7 @@
 /**
  * KALLAX Load Command — Lazy Load 详细文档 (Iter 2, Q14=B 决策)
  *
- * 不在 cold start 时加载详细文档 (S-04 CLAUDE.md 5KB trim 联合):
+ * 不在 cold start 时加载详细文档 (S-04 CLAUDE.md 5KB trim ):
  * - `kallax load cheatsheet`  → docs/CHEATSHEET.md (27 行)
  * - `kallax load 5-levels`   → docs/5-levels.md (143 行)
  * - `kallax load 4-roles`    → docs/4-roles.md (181 行)
@@ -14,7 +14,7 @@
  * - 文件不存在 → 友好错误 + exit 1
  * - PAGER 兼容: `kallax load cheatsheet | less` 直通 stdout
  *
- * Source: Iter 2 / Q14=B 决策 (lazy load 架构) + S-04 CLAUDE.md 5KB trim 联合
+ * Source: Iter 2 / Q14=B 决策 (lazy load 架构) + S-04 CLAUDE.md 5KB trim 
  */
 
 import { Command } from 'commander';
