@@ -31,5 +31,6 @@
     "set -euo pipefail on all bash scripts",
     "role 名称 validation (防 trailing space, typo)"
   ],
-  "source": "confluence/decisions/PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §2 + §4 (P0 修复项)"
+  "source": "confluence/decisions/PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §2 + §4 (P0 修复项)",
+  "verified_commit_sha": "263b6de"
 }
