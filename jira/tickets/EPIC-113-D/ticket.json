@@ -3,7 +3,7 @@
   "epic": "EPIC-113",
   "phase": "PHASE-017",
   "title": "并发事务边界 + CRUD API 完整测试",
-  "status": "planning",
+  "status": "done",
   "created_at": "2026-07-10",
   "description": "12 表 CRUD 只 tickets 有测试。补测试:\n1. 每表 insert/select/update roundtrip\n2. r2d2 pool 并发 (8 conn 同时 write)\n3. 事务回滚场景 (write 失败 → rollback 干净)\n4. WAL 并发读写 (1 writer + N reader)",
   "file_scope": {
