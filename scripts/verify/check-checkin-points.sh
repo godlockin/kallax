@@ -55,10 +55,6 @@ if [[ -z "$EPIC_ID" ]]; then
         exit 0
     fi
     echo "INFO: auto-discovered EPIC_ID=$EPIC_ID" >&2
-||||||| 3816b80
-    echo "ERROR: EPIC_ID required" >&2
-    echo "Usage: $0 [--require-passed] <EPIC_ID>" >&2
-    exit 2
 fi
 
 EPIC_JSON="jira/epics/$EPIC_ID/epic.json"

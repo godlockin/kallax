@@ -96,6 +96,29 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 - ❌ `5-Level Verify PASS` 字样但 L2 是 `cargo build`(必须 `cargo test`)
 - ❌ "生产级 / 25/25" 等装饰性断言无 raw output 佐证
 
+## CLI 执行规范 (借鉴 whisper-cpp 教训)
+
+**来源**: whisper-cpp 10 段全失败未发现 (wrapper 无 fail-fast + 未主动 grep "FAILED")
+
+**5 条强制**:
+1. **后台执行** — 所有 CLI 命令后台跑，不阻塞主会话 (`run_in_background: true` 或 `bash ~/.claude/exec-task.sh`)
+2. **日志到 /tmp** — 输出重定向到 `/tmp/claude-tasks/<task>-<ts>.log`
+3. **检查 exit code** — 不假设"没看到错误=成功"，必须显式 `if ! cmd; then`
+4. **返回 OK/FAILED + 自动 tail** — 成功只返回一行，失败自动 tail 最后 10 行
+5. **禁止监控日志** — ❌ `tail -f` / `tail -F` / `less +F` / `watch`
+
+**⚠️ nohup & 是逃逸路径**:
+- `nohup ... &` 可绕过 PreToolUse hook 的 `tail -f` 拦截 (hook 认为是"后台任务"非"监控")
+- 解法: 统一走 `~/.claude/exec-task.sh` wrapper
+- Wrapper 自身必须 `set -e` + `trap ERR`，否则内部命令失败也静默
+
+**Fail-Fast 强制** (EPIC-026-A 教训):
+- ❌ 禁止 `cmd || true` 吞错误继续跑
+- ✅ 必须 `if ! cmd; then echo "error"; exit 1; fi`
+- 关键路径 (heartbeat-daemon / queue emit / atomic mv): 每步必须显式检查
+
+**验证**: `bash ~/.claude/verify-rule.sh verify` 可检查规则完整性
+
 ## state.json 路径约定 (EPIC-068-A)
 
 **写者**(session_start.sh, line 236+):

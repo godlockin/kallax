@@ -58,9 +58,11 @@ while true; do
      .heartbeat.missed_count = 0 |
      if .status == "STALE" then .status = "ACTIVE" else . end' \
     "${STATE_FILE}" > "${STATE_FILE}.tmp" 2>/dev/null; then
-    mv "${STATE_FILE}.tmp" "${STATE_FILE}"
+    if ! mv "${STATE_FILE}.tmp" "${STATE_FILE}" 2>/dev/null; then
+      echo "[heartbeat] atomic write failed for ${INSTANCE_ID}" >&2
+    fi
   else
-    echo "[heartbeat] update failed" >&2
+    echo "[heartbeat] jq update failed for ${INSTANCE_ID}" >&2
   fi
 
   # EPIC-021-F: expert_invocations tracking -- emit invocation on each heartbeat
@@ -75,14 +77,18 @@ while true; do
     MY_EXPERT_ID="$(jq -r '.expert_id // empty' "${STATE_FILE}" 2>/dev/null || echo '')"
     LAST_TICKET="$(jq -r '.ticket_id // empty' "${STATE_FILE}" 2>/dev/null || echo '')"
     if [ -n "$MY_EXPERT_ID" ] && [ -n "$LAST_TICKET" ]; then
-      emit "$MY_EXPERT_ID" "$LAST_TICKET" 2>/dev/null || true
+      if ! emit "$MY_EXPERT_ID" "$LAST_TICKET" 2>/dev/null; then
+        echo "[heartbeat] emit failed for ${MY_EXPERT_ID}:${LAST_TICKET}, continuing" >&2
+      fi
     fi
 
     # LRU 1000 -- trim expert_invocations array in state.json
-    if jq 'if .expert_invocations then [.expert_invocations[0:1000]] else . end |
+    if ! jq 'if .expert_invocations then [.expert_invocations[0:1000]] else . end |
           .expert_invocations = (if .expert_invocations then .expert_invocations else [] end)' \
       "${STATE_FILE}" > "${STATE_FILE}.tmp" 2>/dev/null; then
-      mv "${STATE_FILE}.tmp" "${STATE_FILE}"
+      echo "[heartbeat] LRU trim failed for ${INSTANCE_ID}" >&2
+    elif ! mv "${STATE_FILE}.tmp" "${STATE_FILE}" 2>/dev/null; then
+      echo "[heartbeat] atomic write failed for ${INSTANCE_ID}" >&2
     fi
   fi
 done
