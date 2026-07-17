@@ -405,17 +405,24 @@ write_state_invocations() {
 
   with_lock "state_json" sh -c '
     local tmp="${1}.tmp.$$"
+    # EPIC-122-F: add output_length and output_truncated fields
+    # output_length: estimated bytes of invocation output (0 = no output tracked)
+    # output_truncated: true if output exceeded DEFAULT_TOOL_OUTPUT_BYTES (40000)
+    local output_len="${7:-0}"
+    local truncated="${8:-false}"
     jq --arg eid "$2" \
        --arg tid "$3" \
        --argjson ts "$4" \
        --arg b "$5" \
        --argjson max "$6" \
-       ".expert_invocations = ((.expert_invocations // []) + [{expert_id:\$eid, ticket_id:\$tid, ts:\$ts, backend:\$b}]) |
+       --argjson olen "$output_len" \
+       --argjson trunc "$truncated" \
+       ".expert_invocations = ((.expert_invocations // []) + [{expert_id:\$eid, ticket_id:\$tid, ts:\$ts, backend:\$b, output_length:\$olen, output_truncated:\$trunc}]) |
         if (.expert_invocations | length) > \$max then
           .expert_invocations |= .[-\$max:]
         else . end" \
        "$1" > "$tmp" && mv "$tmp" "$1"
-  ' _ "$state_file" "$expert_id" "$ticket_id" "$ts" "$backend" "$LRU_MAX"
+  ' _ "$state_file" "$expert_id" "$ticket_id" "$ts" "$backend" "$LRU_MAX" "0" "false"
 }
 
 get_latency_ms() {
