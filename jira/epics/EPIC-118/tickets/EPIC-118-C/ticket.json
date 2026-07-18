@@ -1,0 +1,28 @@
+{
+  "id": "EPIC-118-C",
+  "epicId": "EPIC-118",
+  "phaseId": "PHASE-018",
+  "title": "conductor dispatch: expertise-aware checkpoints",
+  "type": "feature",
+  "priority": "P1",
+  "status": "done",
+  "created_by": "KALLAX Master",
+  "created_at": "2026-07-14T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "scope": {
+    "includes": [
+      "node/src/core/task-assigner.ts",
+      "node/src/core/conductor.ts"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "task-assigner 根据 performer mastery_level 调整 checkpoints",
+    "L1=每子任务必验证",
+    "L2=里程碑验证",
+    "L3=只验收最终 PR"
+  ],
+  "estimated_hours": 4
+}

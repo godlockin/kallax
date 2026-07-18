@@ -210,6 +210,53 @@ json_escape() {
   printf '%s' "$s"
 }
 
+# EPIC-122-E: Extract EPIC from ticket_id (e.g., "EPIC-104-TASK-002" → "EPIC-104")
+extract_epic() {
+  local ticket_id="$1"
+  # Handle both EPIC-XXX pattern and fallback to "DEFAULT"
+  if [[ "$ticket_id" =~ ^([A-Z]+-[0-9]+) ]]; then
+    echo "${BASH_REMATCH[1]}"
+  else
+    echo "DEFAULT"
+  fi
+}
+
+# EPIC-122-E: Write to EPIC-specific jsonl
+# $1: expert_id, $2: ticket_id, $3: ts, $4: backend
+epic_jsonl_emit() {
+  local expert_id="$1"
+  local ticket_id="$2"
+  local ts="$3"
+  local backend="$4"
+
+  local epic
+  epic=$(extract_epic "$ticket_id")
+
+  local epic_dir="${INVOCATION_DIR}/${epic}"
+  local epic_file="${epic_dir}/invocations.jsonl"
+
+  # Create EPIC dir if not exists (chmod 0700 for security)
+  mkdir -p "$epic_dir"
+  chmod 0700 "$epic_dir" 2>/dev/null || true
+
+  # JSON payload for EPIC jsonl
+  local payload
+  payload=$(jq -n \
+    --arg eid "$expert_id" \
+    --arg tid "$ticket_id" \
+    --argjson ts "$ts" \
+    --arg b "$backend" \
+    '{expert_id: $eid, ticket_id: $tid, ts: $ts, backend: $b}')
+
+  # Append to EPIC jsonl with lock
+  with_lock "epic_jsonl" sh -c '
+    echo "$2" >> "$1"
+  ' _ "$epic_file" "$payload" || {
+    LAST_ERROR="failed to write to $epic_file"
+    return 1
+  }
+}
+
 # emit: 写一条 invocation
 # $1: expert_id
 # $2: ticket_id
@@ -260,6 +307,7 @@ emit() {
         # FIX: explicit error check (no silent fallthrough)
         if redis-cli -x XADD "$REDIS_KEY" '"'"'*'"'"' payload "$payload" 2>/dev/null; then
           write_state_invocations "$__emit_expert_id" "$__emit_ticket_id" "$__emit_ts" "$backend"
+          epic_jsonl_emit "$__emit_expert_id" "$__emit_ticket_id" "$__emit_ts" "$backend"
           return 0
         fi
         LAST_ERROR="redis XADD failed despite probe success (ACL/stream config?)"
@@ -273,6 +321,7 @@ emit() {
       if probe_sqlite; then
         if sqlite_emit "$payload"; then
           write_state_invocations "$__emit_expert_id" "$__emit_ticket_id" "$__emit_ts" "$backend"
+          epic_jsonl_emit "$__emit_expert_id" "$__emit_ticket_id" "$__emit_ts" "$backend"
           return 0
         fi
       fi
@@ -283,6 +332,7 @@ emit() {
     if [ "$backend" = "file" ]; then
       file_emit "$payload"
       write_state_invocations "$__emit_expert_id" "$__emit_ticket_id" "$__emit_ts" "$backend"
+      epic_jsonl_emit "$__emit_expert_id" "$__emit_ticket_id" "$__emit_ts" "$backend"
     fi
   '
 }

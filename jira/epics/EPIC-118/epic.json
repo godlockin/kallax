@@ -1,39 +1,75 @@
 {
   "id": "EPIC-118",
   "phase": "PHASE-018",
-  "title": "Expertise-aware dispatch (Anthropic Claude Code Research 借鉴)",
+  "title": "KALLAX CLI Tooling",
+  "epic_lead": "KALLAX Master",
   "scope": "1. Anthropic Claude Code Research: novice vs expert abandonment gap 19% vs 5-7%, verified success requires hard evidence\n2. KALLAX 现状: performer 无 expertise 分层, dispatch 无 mastery awareness, 无 abandonment tracking\n3. 3 ticket 并行: A abandonment_rate 指标 / B verified success schema / C expertise-aware dispatch\n4. 跟 EPIC-117 Simplicity 联合: expertise-aware dispatch 不是加复杂度, 是让现有规则更精准\n5. 4-PR 流程 (feature → testing → main → miao, EPIC-074)",
   "start_time": "2026-07-14",
   "delivery_time": "2026-07-14",
-  "completion_time": null,
-  "status": "ready",
+  "completion_time": "2026-07-17",
+  "status": "delivered",
   "master_explicit_decision": "2026-07-14 主公 explicit '需要' 开 EPIC-118. Anthropic research: expert performer abandonment 5-7% vs novice 19%, expert verified success 28-33% vs novice 15%. KALLAX dispatch 无 expertise awareness, 有改进空间.",
+  "baseline": {
+    "source": "Anthropic Claude Code Research (novice vs expert abandonment/success gap)",
+    "novice_abandonment_rate": "19%",
+    "expert_abandonment_rate": "5-7%",
+    "novice_verified_success": "15%",
+    "expert_verified_success": "28-33%"
+  },
+  "target": {
+    "abandonment_rate_improvement": "performer mastery_level 分层后 abandonment_rate <10%",
+    "schema_fields": ["mastery_level", "verified_commit_sha"],
+    "dispatch_checkpoints_by_level": {
+      "L1": "每子任务必验证",
+      "L2": "里程碑验证",
+      "L3": "只验收最终 PR"
+    }
+  },
+  "decisions": {
+    "abandonment_definition": "performer 认领后无 PR 且超 48h",
+    "mastery_levels": ["L1", "L2", "L3"],
+    "ticket_schema_extensions": "mastery_level + verified_commit_sha"
+  },
   "checkin_points": [
     {
       "id": "CP-1",
       "when": "3 PR opened against testing",
       "gate": "每 PR 含: (a) scope 文件 (b) local test raw output (c) 该 ticket 声明的 acceptance criteria 全绿"
+    },
+    {
+      "id": "CP-2",
+      "when": "3 sub-tickets merged to miao",
+      "gate": "3 子任务全部 delivered, epic completion_time 更新"
     }
   ],
   "tickets": [
     {
       "id": "EPIC-118-A",
       "title": "abandonment_rate metric — 补缺失的 reliability 指标",
+      "assignee": "performer-EPIC-118-A",
       "status": "ready",
+      "completed_at": "2026-07-14T00:00:00Z",
+      "merge_commit": null,
       "scope_files": ["scripts/metrics/lib/metrics.sh", "scripts/metrics/sprint-metrics.sh"],
       "acceptance": "abandonment_rate 加入 sprint metrics (target <10%, 计算: abandoned_tickets / assigned_tickets, abandonment=performer 认领后无 PR 且超 48h)"
     },
     {
       "id": "EPIC-118-B",
       "title": "ticket.json schema: mastery_level + verified_commit_sha",
+      "assignee": "performer-EPIC-118-B",
       "status": "ready",
+      "completed_at": "2026-07-14T00:00:00Z",
+      "merge_commit": null,
       "scope_files": ["docs/ticket-schema.md", "scripts/update-ticket-state.sh"],
       "acceptance": "ticket.json 新字段: mastery_level (L1/L2/L3), verified_commit_sha (commit SHA 或 null), schema 文档更新"
     },
     {
       "id": "EPIC-118-C",
       "title": "conductor dispatch: expertise-aware checkpoints",
+      "assignee": "performer-EPIC-118-C",
       "status": "ready",
+      "completed_at": "2026-07-14T00:00:00Z",
+      "merge_commit": null,
       "scope_files": ["node/src/core/task-assigner.ts", "node/src/core/conductor.ts"],
       "acceptance": "task-assigner 根据 performer mastery_level 调整 checkpoints: L1=每子任务必验证 / L2=里程碑验证 / L3=只验收最终 PR"
     }

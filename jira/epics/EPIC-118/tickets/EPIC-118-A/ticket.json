@@ -1,0 +1,28 @@
+{
+  "id": "EPIC-118-A",
+  "epicId": "EPIC-118",
+  "phaseId": "PHASE-018",
+  "title": "abandonment_rate metric — 补缺失的 reliability 指标",
+  "type": "feature",
+  "priority": "P1",
+  "status": "done",
+  "created_by": "KALLAX Master",
+  "created_at": "2026-07-14T00:00:00Z",
+  "blocked_by": null,
+  "worktree_role": "performer",
+  "handoff_depth": "L2",
+  "scope": {
+    "includes": [
+      "scripts/metrics/lib/metrics.sh",
+      "scripts/metrics/sprint-metrics.sh"
+    ],
+    "excludes": []
+  },
+  "acceptance_criteria": [
+    "abandonment_rate 加入 sprint metrics",
+    "target <10%",
+    "计算公式: abandoned_tickets / assigned_tickets",
+    "abandonment 定义: performer 认领后无 PR 且超 48h"
+  ],
+  "estimated_hours": 2
+}
