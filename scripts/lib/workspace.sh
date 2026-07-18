@@ -121,32 +121,143 @@ workspace_vcs_diff() {
   git diff "$ref" 2>/dev/null || echo "ERROR: git diff failed" >&2
 }
 
-# === Command Execution ===
+# === Command Execution (TerminalBackend trait) ===
 
 workspace_exec() {
-  local cmd="$1"
-  local timeout="${2:-30}"
-  if [[ -z "$WORKSPACE_CWD" ]]; then
-    echo "ERROR: workspace not initialized. Call workspace_init() first." >&2
-    return 1
-  fi
-  cd "$WORKSPACE_CWD"
-  # Timeout: kill after N seconds
-  if command -v timeout &>/dev/null; then
-    timeout "$timeout" bash -c "$cmd" 2>&1 || {
-      local rc=$?
-      if [[ $rc -eq 124 ]]; then
-        echo "ERROR: command timed out after ${timeout}s: $cmd" >&2
-      fi
-      return $rc
-    }
-  else
-    bash -c "$cmd" 2>&1
-  fi
+  # Delegates to workspace_exec_backend with current backend
+  # For explicit local-only execution, use workspace_exec_backend "cmd" timeout local
+  workspace_exec_backend "$1" "${2:-30}" "$WORKSPACE_BACKEND"
 }
 
-# === Checkpoint Operations ===
-# 参照 grok-build CheckpointStore: temp-file + fsync + rename
+# === TerminalBackend trait (EPIC-123-B) ===
+# Grok-build pattern: xai-grok-tools/src/computer/types.rs TerminalBackend trait
+# Supports pluggable execution backends: local / ssh / docker
+# Usage:
+#   workspace_backend set local|ssh|docker
+#   workspace_exec "ls -la"   # uses current backend
+#   workspace_exec "cmd" timeout backend
+
+WORKSPACE_BACKEND="${WORKSPACE_BACKEND:-local}"
+WORKSPACE_SSH_HOST="${WORKSPACE_SSH_HOST:-}"
+WORKSPACE_SSH_USER="${WORKSPACE_SSH_USER:-}"
+WORKSPACE_DOCKER_IMAGE="${WORKSPACE_DOCKER_IMAGE:-}"
+
+workspace_backend() {
+  local op="${1:-get}"
+  case "$op" in
+    get) echo "$WORKSPACE_BACKEND" ;;
+    set)
+      WORKSPACE_BACKEND="${2:-local}"
+      echo "backend set to $WORKSPACE_BACKEND"
+      ;;
+    ssh)
+      WORKSPACE_BACKEND="ssh"
+      WORKSPACE_SSH_HOST="${2:?ssh host required}"
+      WORKSPACE_SSH_USER="${3:-}"
+      echo "backend set to ssh://${WORKSPACE_SSH_USER:-root}@${WORKSPACE_SSH_HOST}"
+      ;;
+    docker)
+      WORKSPACE_BACKEND="docker"
+      WORKSPACE_DOCKER_IMAGE="${2:?docker image required}"
+      echo "backend set to docker:${WORKSPACE_DOCKER_IMAGE}"
+      ;;
+  esac
+}
+
+# TerminalBackend trait interface — execute command on configured backend
+# Returns: stdout on success, stderr on failure, exit code preserved
+workspace_exec_backend() {
+  local cmd="${1:?command required}"
+  local timeout="${2:-30}"
+  local backend="${3:-}"
+  [[ -z "$backend" ]] && backend="$WORKSPACE_BACKEND"
+
+  case "$backend" in
+    local)
+      workspace_exec "$cmd" "$timeout"
+      ;;
+    ssh)
+      if [[ -z "$WORKSPACE_SSH_HOST" ]]; then
+        echo "ERROR: SSH backend requires workspace_backend ssh <host> [user]" >&2
+        return 1
+      fi
+      local ssh_cmd="ssh ${WORKSPACE_SSH_USER:-root}@${WORKSPACE_SSH_HOST}"
+      if [[ -n "$WORKSPACE_CWD" && "$WORKSPACE_CWD" != "/" ]]; then
+        ssh_cmd="$ssh_cmd cd '$WORKSPACE_CWD' && $cmd"
+      else
+        ssh_cmd="$ssh_cmd $cmd"
+      fi
+      if command -v timeout &>/dev/null; then
+        timeout "$timeout" bash -c "$ssh_cmd" 2>&1 || {
+          local rc=$?
+          [[ $rc -eq 124 ]] && echo "ERROR: ssh command timed out after ${timeout}s" >&2
+          return $rc
+        }
+      else
+        bash -c "$ssh_cmd" 2>&1
+      fi
+      ;;
+    docker)
+      if [[ -z "$WORKSPACE_DOCKER_IMAGE" ]]; then
+        echo "ERROR: Docker backend requires workspace_backend docker <image>" >&2
+        return 1
+      fi
+      local docker_cmd="docker run --rm -w '${WORKSPACE_CWD:-/}' ${WORKSPACE_DOCKER_IMAGE} bash -c '$cmd'"
+      if command -v timeout &>/dev/null; then
+        timeout "$timeout" bash -c "$docker_cmd" 2>&1 || {
+          local rc=$?
+          [[ $rc -eq 124 ]] && echo "ERROR: docker command timed out after ${timeout}s" >&2
+          return $rc
+        }
+      else
+        bash -c "$docker_cmd" 2>&1
+      fi
+      ;;
+    *)
+      echo "ERROR: unknown backend: $backend (local|ssh|docker)" >&2
+      return 1
+      ;;
+  esac
+}
+
+# TaskSnapshot analog: returns execution metadata as JSON
+workspace_exec_snapshot() {
+  local cmd="$1"
+  local timeout="${2:-30}"
+  local backend="${3:-}"
+  [[ -z "$backend" ]] && backend="$WORKSPACE_BACKEND"
+
+  local start_ts end_ts rc output
+  start_ts=$(date +%s%N)
+  output=$(workspace_exec_backend "$cmd" "$timeout" "$backend")
+  rc=$?
+  end_ts=$(date +%s%N)
+  local elapsed_ms=$(( (end_ts - start_ts) / 1000000 ))
+
+  # Truncate output for snapshot (参照 grok-build DEFAULT_TOOL_OUTPUT_CHARS=20000)
+  local truncated="false"
+  if [[ ${#output} -gt 40000 ]]; then
+    output="${output:0:40000}"
+    truncated="true"
+  fi
+
+  jq -n \
+    --arg cmd "$cmd" \
+    --arg backend "$backend" \
+    --argjson rc "$rc" \
+    --argjson elapsed_ms "$elapsed_ms" \
+    --arg output "$output" \
+    --argjson truncated "$truncated" \
+    '{
+      command: $cmd,
+      backend: $backend,
+      exit_code: $rc,
+      elapsed_ms: $elapsed_ms,
+      output: $output,
+      truncated: $truncated
+    }'
+}
+
 
 workspace_checkpoint_save() {
   local name="${1:?checkpoint name required}"

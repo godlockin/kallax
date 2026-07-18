@@ -84,10 +84,9 @@ do_search() {
     hay=$(echo "$nm $desc $cat $tags" | tr '[:upper:]' '[:lower:]')
     if echo "$hay" | grep -qi "$lcq" 2>/dev/null; then
       echo "MATCH:$line"
+      current=$(cat "$tmpcnt")
+      echo $((current + 1)) > "$tmpcnt"
     fi
-    local current
-    current=$(cat "$tmpcnt")
-    echo $((current + 1)) > "$tmpcnt"
   done < "$tmpf"
   local cnt
   cnt=$(cat "$tmpcnt")
@@ -132,7 +131,7 @@ case "$TOOL_CMD" in
       echo "  \"results\": ["
       first=true
       echo "$matches" | while IFS= read -r line; do
-        local entry="${line#MATCH:}"
+        entry="${line#MATCH:}"
         $first || echo "      ,"
         first=false
         fmt_json "$entry"
