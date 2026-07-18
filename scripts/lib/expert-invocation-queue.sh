@@ -462,3 +462,91 @@ get_queue_size() {
     *) echo 0 ;;
   esac
 }
+
+# EPIC-122-J: cancel_invocations — cancel running invocations by IDs
+# 参照 grok-build subagent_coordinator.rs cancel pattern
+# 实际上 bash 实现里 invocation 是 fire-and-forget，
+# 这里做的是"标记取消"而不是真正 kill 进程
+# Returns: JSON array of cancellation results
+cancel_invocations() {
+  local ids="$1"  # space-separated invocation IDs
+  local results="[]"
+
+  for id in $ids; do
+    # In our model, we mark the invocation as cancelled in the queue
+    # For file backend: add cancelled marker
+    # For sqlite: update status field
+    # For redis: not easily cancellable (stream trimming is async)
+    local backend
+    backend=$(get_backend)
+    case "$backend" in
+      file)
+        if [ -f "$INVOCATION_FILE" ]; then
+          # Append cancelled marker (fire-and-forget, not true cancellation)
+          echo "{\"id\":\"$id\",\"cancelled\":true,\"ts\":$(date +%s),\"backend\":\"$backend\"}" >> "${INVOCATION_FILE}.cancelled"
+        fi
+        ;;
+      sqlite)
+        sqlite3 "$SQLITE_DB" "UPDATE invocations SET payload = payload || ', \"cancelled\": true' WHERE id = '$id'" 2>/dev/null || true
+        ;;
+      redis)
+        # Redis Stream: can't easily cancel individual items, mark in side file
+        echo "{\"id\":\"$id\",\"cancelled\":true,\"ts\":$(date +%s)}" >> "${INVOCATION_FILE}.cancelled"
+        ;;
+    esac
+    results=$(echo "$results" | jq ". + [{\"id\":\"$id\",\"cancelled\":true}]")
+  done
+  echo "$results"
+}
+
+# EPIC-122-J: query_invocations — query status of specific invocations
+# Returns: JSON array of invocation records
+# 参照 grok-build TaskSnapshot + subagent_coordinator query pattern
+query_invocations() {
+  local ids="${1:-}"  # space-separated IDs, empty = all
+  local backend
+  backend=$(get_backend)
+  local results="[]"
+
+  case "$backend" in
+    file)
+      if [ -f "$INVOCATION_FILE" ]; then
+        if [ -z "$ids" ]; then
+          # Return all recent (last 100)
+          results=$(tail -100 "$INVOCATION_FILE" 2>/dev/null | jq -s '.' || echo "[]")
+        else
+          # Filter by IDs
+          for id in $ids; do
+            local rec
+            rec=$(grep -F "\"$id\"" "$INVOCATION_FILE" 2>/dev/null | tail -1 || echo "")
+            if [ -n "$rec" ]; then
+              results=$(echo "$results" | jq ". + [$rec]")
+            fi
+          done
+        fi
+      fi
+      ;;
+    sqlite)
+      if [ -z "$ids" ]; then
+        results=$(sqlite3 "$SQLITE_DB" "SELECT payload FROM invocations ORDER BY id DESC LIMIT 100" 2>/dev/null | jq -s '.' || echo "[]")
+      else
+        for id in $ids; do
+          local rec
+          rec=$(sqlite3 "$SQLITE_DB" "SELECT payload FROM invocations WHERE id = '$id'" 2>/dev/null || echo "")
+          if [ -n "$rec" ]; then
+            results=$(echo "$results" | jq ". + [$rec]")
+          fi
+        done
+      fi
+      ;;
+    redis)
+      if [ -f "${INVOCATION_FILE}.cancelled" ]; then
+        results=$(cat "${INVOCATION_FILE}.cancelled" 2>/dev/null | jq -s '.' || echo "[]")
+      else
+        results="[]"
+      fi
+      ;;
+  esac
+
+  echo "$results"
+}
