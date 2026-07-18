@@ -6,7 +6,7 @@
   "start_time": "2026-07-13",
   "delivery_time": "2026-07-14",
   "completion_time": null,
-  "status": "ready",
+  "status": "delivered",
   "master_explicit_decision": "2026-07-13 主公 explicit: '先整个 review 找到并记录所有需要修复的地方, 然后用一个 epic 但是多个专家并行修改 + pr, 由 master 统一 review + merge'. Master 拆 6 ticket (文件边界 0 重叠), 主公 confirm 后并行派 6 subagent, 每个 subagent 开自己的 PR against testing, master 5-Level Verify 后逐个 squash-merge.",
   "checkin_points": [
     {
@@ -78,7 +78,9 @@
       "id": "EPIC-115-D",
       "title": "commands/** (~91 err)",
       "status": "ready",
-      "scope_files": ["node/src/commands/**"]
+      "scope_files": [
+        "node/src/commands/**"
+      ]
     },
     {
       "id": "EPIC-115-E",

@@ -3,7 +3,7 @@
   "phase": "PHASE-017",
   "title": "JSON→SQLite 迁移与运行时持久化落地",
   "scope": "EPIC-008 已交付基础设施 (SqliteClient+MigrationRunner+12 表 schema, kallax-core/src/db/)。本 EPIC 完成 EPIC-008 未覆盖部分:\n1. state.json / ticket.json / audit log 由 file 迁 DB (writer + reader 切换)\n2. 迁移工具 CLI (kallax db:migrate-from-json)\n3. backup / restore CLI (kallax db:backup / db:restore)\n4. CRUD API 补全测试 (span / instance / dag_run)\n5. 并发事务边界 + 集成测试",
-  "status": "planning",
+  "status": "delivered",
   "start_time": "2026-07-10T14:00:00Z",
   "tickets": [
     "EPIC-113-A",

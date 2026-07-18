@@ -6,7 +6,7 @@
   "start_time": "2026-07-14",
   "delivery_time": "2026-07-14",
   "completion_time": null,
-  "status": "ready",
+  "status": "delivered",
   "master_explicit_decision": "2026-07-14 主公 explicit '要' 落地 OpenAI Eval Framework. OpenAI: eval is most impactful activity. KALLAX PR gate 目前 5-Level Verify 人工, 需要自动化. 每 PR 必须跑 lint + tsc + vitest, 0 errors 才 merge.",
   "checkin_points": [
     {
@@ -20,19 +20,33 @@
       "id": "EPIC-120-A",
       "title": "scripts/verify/pr-eval.sh — 自动化 PR eval gate",
       "status": "ready",
-      "scope_files": ["scripts/verify/pr-eval.sh"],
+      "scope_files": [
+        "scripts/verify/pr-eval.sh"
+      ],
       "acceptance": "接受 PR# 或 commit SHA, 跑 eslint + tsc + vitest, 输出 JSON {lint,tsc,vitest}, exit 0 仅当全部 0 errors"
     },
     {
       "id": "EPIC-120-B",
       "title": "docs/pr-eval-guide.md — eval framework 文档",
       "status": "ready",
-      "scope_files": ["docs/pr-eval-guide.md"],
+      "scope_files": [
+        "docs/pr-eval-guide.md"
+      ],
       "acceptance": "文档含: eval 原理 (OpenAI) + KALLAX PR gate 设计 + pr-eval.sh 用法 + exit code 说明"
     }
   ],
   "constraints": {
-    "immutable_files": ["docs/evidence/**", "CHANGELOG.md (historical)", "pnpm-lock.yaml", ".kallax/**"],
-    "hard_rules": ["NEVER --no-verify (紧急除外)", "NEVER destructive git", "always NEW commits", "4-PR flow"]
+    "immutable_files": [
+      "docs/evidence/**",
+      "CHANGELOG.md (historical)",
+      "pnpm-lock.yaml",
+      ".kallax/**"
+    ],
+    "hard_rules": [
+      "NEVER --no-verify (紧急除外)",
+      "NEVER destructive git",
+      "always NEW commits",
+      "4-PR flow"
+    ]
   }
 }

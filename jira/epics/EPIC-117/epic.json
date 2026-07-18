@@ -6,7 +6,7 @@
   "start_time": "2026-07-14",
   "delivery_time": "2026-07-14",
   "completion_time": null,
-  "status": "ready",
+  "status": "delivered",
   "master_explicit_decision": "2026-07-14 主公 explicit '开 epic 做所有这些' 覆盖 5 借鉴项. Anthropic 文章原则: (1) Simplicity — 能不能删 (2) Transparency — 显式暴露 planning (3) ACI — 工具接口统一. KALLAX 反例: 命令/规则/脚本只加不减, wrapper 层层封装.",
   "checkin_points": [
     {
@@ -20,40 +20,67 @@
       "id": "EPIC-117-A",
       "title": "check-claim-evidence 扫描扩到 confluence/decisions/**",
       "status": "ready",
-      "scope_files": ["scripts/hooks/check-claim-evidence.sh", "tests/verify/claim-evidence-test.sh"],
+      "scope_files": [
+        "scripts/hooks/check-claim-evidence.sh",
+        "tests/verify/claim-evidence-test.sh"
+      ],
       "acceptance": "staged confluence/decisions/*.md 含 X/Y PASS 数字 → 强制 raw output 引用"
     },
     {
       "id": "EPIC-117-B",
       "title": "scripts/verify/CONTRACT.md + audit 现有脚本",
       "status": "ready",
-      "scope_files": ["scripts/verify/CONTRACT.md", "scripts/verify/audit-contract.sh"],
+      "scope_files": [
+        "scripts/verify/CONTRACT.md",
+        "scripts/verify/audit-contract.sh"
+      ],
       "acceptance": "CONTRACT.md 定义 3 条: 0-arg auto-discovery / KALLAX_PRE_COMMIT bypass / exit 0/1/2 语义. audit-contract.sh 扫 56 个 check-*.sh 合规率"
     },
     {
       "id": "EPIC-117-C",
       "title": "check-release-budget.sh 每 release 砍 1 硬约束",
       "status": "ready",
-      "scope_files": ["scripts/verify/check-release-budget.sh", "docs/release-budget.md"],
+      "scope_files": [
+        "scripts/verify/check-release-budget.sh",
+        "docs/release-budget.md"
+      ],
       "acceptance": "release commit 触发时, 比对上一 tag 到 HEAD 的 rule/command/script 净增量, >=1 项需 delete 记录, 0 delete → warn"
     },
     {
       "id": "EPIC-117-D",
       "title": "verify-pr --iterate evaluator-optimizer 循环",
       "status": "ready",
-      "scope_files": ["scripts/verify-pr-iterate.sh", "docs/verify-pr-iterate.md"],
+      "scope_files": [
+        "scripts/verify-pr-iterate.sh",
+        "docs/verify-pr-iterate.md"
+      ],
       "acceptance": "接受 PR#, 循环 review → findings → 待 fix commit → 再 review, max 3 轮 或 findings=0 退出"
     },
     {
       "id": "EPIC-117-E",
       "title": "wrapper 脚本 --explain 破黑盒",
       "status": "ready",
-      "scope_files": ["scripts/audit/governance-3phase.sh", "scripts/memory-promote.sh", "scripts/post-process.sh", "scripts/permission/decision-matrix.sh"],
+      "scope_files": [
+        "scripts/audit/governance-3phase.sh",
+        "scripts/memory-promote.sh",
+        "scripts/post-process.sh",
+        "scripts/permission/decision-matrix.sh"
+      ],
       "acceptance": "4 wrapper 支持 --explain, 输出真实执行的底层命令列表 + 数据来源, 不实际执行"
     }
   ],
   "constraints": {
-    "immutable_files": ["docs/evidence/**", "CHANGELOG.md (historical entries)", "pnpm-lock.yaml", ".kallax/**"],
-    "hard_rules": ["NEVER --no-verify (紧急除外)", "NEVER destructive git", "always NEW commits", "4-PR flow strict"]
+    "immutable_files": [
+      "docs/evidence/**",
+      "CHANGELOG.md (historical entries)",
+      "pnpm-lock.yaml",
+      ".kallax/**"
+    ],
+    "hard_rules": [
+      "NEVER --no-verify (紧急除外)",
+      "NEVER destructive git",
+      "always NEW commits",
+      "4-PR flow strict"
+    ]
   }
 }

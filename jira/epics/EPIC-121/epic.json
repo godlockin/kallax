@@ -6,7 +6,7 @@
   "start_time": "2026-07-14",
   "delivery_time": "2026-07-14",
   "completion_time": null,
-  "status": "ready",
+  "status": "delivered",
   "master_explicit_decision": "2026-07-14 主公 explicit '开'. 来源: SWE-bench 沙箱隔离 + LangChain Tiered Memory. KALLAX pr-eval.sh 无沙箱 (host 上跑), performer mastery 只靠 SQLite 30-day.",
   "checkin_points": [
     {
@@ -20,19 +20,35 @@
       "id": "EPIC-121-A",
       "title": "pr-eval.sh --docker 沙箱隔离",
       "status": "ready",
-      "scope_files": ["scripts/verify/pr-eval.sh", "Dockerfile.eval"],
+      "scope_files": [
+        "scripts/verify/pr-eval.sh",
+        "Dockerfile.eval"
+      ],
       "acceptance": "pr-eval.sh --docker 在容器内跑 lint+tsc+vitest, 输出 JSON, 容器自动清理"
     },
     {
       "id": "EPIC-121-B",
       "title": "performer VectorStore profile",
       "status": "ready",
-      "scope_files": ["node/src/core/performer-profile.ts", "scripts/tools/performer-profile-cli.sh"],
+      "scope_files": [
+        "node/src/core/performer-profile.ts",
+        "scripts/tools/performer-profile-cli.sh"
+      ],
       "acceptance": "performer profile 含: mastery_level + abandonment_history (VectorStore) + recent_tasks (BufferWindow)"
     }
   ],
   "constraints": {
-    "immutable_files": ["docs/evidence/**", "CHANGELOG.md (historical)", "pnpm-lock.yaml", ".kallax/**"],
-    "hard_rules": ["NEVER --no-verify (紧急除外)", "NEVER destructive git", "always NEW commits", "4-PR flow"]
+    "immutable_files": [
+      "docs/evidence/**",
+      "CHANGELOG.md (historical)",
+      "pnpm-lock.yaml",
+      ".kallax/**"
+    ],
+    "hard_rules": [
+      "NEVER --no-verify (紧急除外)",
+      "NEVER destructive git",
+      "always NEW commits",
+      "4-PR flow"
+    ]
   }
 }
