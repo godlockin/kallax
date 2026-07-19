@@ -1,8 +1,11 @@
 ---
 name: kallax
 description: Use when user types any `/kallax-*` slash command or mentions "expert panel", "architecture review", "kallax expert", "召唤专家", "EPIC 拆解", "PHASE review", or invokes a multi-role expert review for a new EPIC, architectural decision, or major refactor. Spawns a 3-phase governance (EPIC-056-A): Phase 1 Conductor 全局扫描 (Architect 合并) + Phase 2 4 default (Backend/Frontend/UX/Product) + 5 extended (security-tool-bypass + process-engineering + auditor + compliance + decision-gate) 并行 + Phase 3 Master 仲裁 + 主公拍板. Do NOT trigger for simple bug fixes, single-domain tasks, or chores.
-triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专家评审, multi-agent, subagent, EPIC 拆解, PHASE review, BE 教训, 3 阶段治理, EPIC-056-A, tool orchestration, data tool, action tool, orchestration tool]
+triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专家评审, multi-agent, subagent, EPIC 拆解, PHASE review, BE 教训, 3 阶段治理, EPIC-056-A, tool orchestration, data tool, action tool, orchestration tool, kallax 路由, smart router, 一键入口] # EPIC-127: 裸 /kallax 路由触发
+
 ---
+
+> **EPIC-127 一键入口**: `/kallax <任意诉求>` 由 `.claude/commands/kallax.md` 自动路由到 26 sub-command。描述见命令文件, 主公只打 `/kallax <要求>` 即可。
 
 # KALLAX Skills 命令索引
 
