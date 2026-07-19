@@ -33,6 +33,7 @@ import { registerStartCommands } from './commands/start-cmd.js';
 import { registerEpicCommands } from './commands/epic-cmd.js';
 import { registerBranchCommands } from './commands/branch-cmd.js';
 import { registerInitCommands } from './commands/init.js';
+import { registerInstallCommands } from './commands/install-cmd.js';
 
 import { registerRouteCommands } from './commands/route-cmd.js';
 import { registerRoleCommands } from './commands/role-cmd.js';
@@ -83,6 +84,7 @@ registerEpicCommands(program, ctx);
 registerBranchCommands(program);
 registerRouteCommands(program);
 registerInitCommands(program);
+registerInstallCommands(program);
 registerLoadCommands(program, ctx);
 registerRoleCommands(program, ctx);
 

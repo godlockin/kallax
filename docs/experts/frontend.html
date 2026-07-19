@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>frontend | kallax-experts</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    max-width: 900px; margin: 2em auto; padding: 0 1em;
+    color: #1a1a1a; background: #fafafa; line-height: 1.6;
+  }
+  h1, h2, h3 { color: #1a1a1a; border-bottom: 1px solid #ddd; padding-bottom: 0.3em; }
+  h1 { font-size: 2em; }
+  h2 { font-size: 1.5em; margin-top: 1.5em; }
+  h3 { font-size: 1.2em; margin-top: 1.2em; border-bottom: none; }
+  pre { background: #f5f5f5; padding: 1em; border-radius: 6px; overflow-x: auto; }
+  code { background: #f0f0f0; padding: 0.1em 0.3em; border-radius: 3px; font-family: monospace; }
+  pre code { background: transparent; padding: 0; }
+  table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+  td, th { border: 1px solid #ddd; padding: 0.5em; }
+  th { background: #f0f0f0; }
+  a { color: #0066cc; }
+  p { margin: 1em 0; }
+  .back { background: #fff; padding: 1em; border-radius: 6px; margin-bottom: 2em; border: 1px solid #eee; }
+  .frontmatter { background: #f9f9f9; padding: 1em; border-radius: 6px; font-size: 0.9em; }
+  .frontmatter dt { font-weight: bold; display: inline-block; min-width: 100px; }
+  .frontmatter dd { display: inline; margin: 0; }
+  .frontmatter dd::after { content: ""; display: block; }
+</style>
+</head>
+<body>
+<a href="https://godlockin.github.io/kallax-experts/experts/" class="back">← 返回 Experts 列表</a> |
+<a href="https://godlockin.github.io/kallax-experts/" class="back">🏠 回到 kallax-experts 首页</a>
+
+<h1>🤖 frontend <code style="font-size: 0.6em;">frontend</code></h1>
+<p><em></em></p>
+
+<div class="frontmatter"><dl><dt>role_id:</dt><dd>frontend</dd><dt>vibe:</dt><dd></dd><dt>source:</dt><dd>custom</dd><dt>divisions:</dt><dd>n/a</dd><dt>domains:</dt><dd></dd><dt>triggers_zh:</dt><dd></dd><dt>triggers_en:</dt><dd></dd><dt>priority:</dt><dd>medium</dd></dl></div>
+
+<h1>Expert: Frontend (前端)</h1>
+
+<h2>评估范围</h2>
+
+<table>
+<tr><td>维度</td><td>检查项</td></tr>
+<tr><td><strong>组件设计</strong></td><td>单一职责, props 受控, 状态提升合理, 无 props drilling</td></tr>
+<tr><td><strong>渲染性能</strong></td><td>LCP < 2.5s, FID < 100ms, CLS < 0.1, 重渲染可控</td></tr>
+<tr><td><strong>交互</strong></td><td>键盘可达, 焦点管理, 加载/错误状态, 表单校验</td></tr>
+<tr><td><strong>可访问性</strong></td><td>ARIA 标签, 语义化 HTML, 颜色对比 ≥ 4.5:1</td></tr>
+<tr><td><strong>状态管理</strong></td><td>Store 边界清晰, 无全局突变, 时间旅行可调试</td></tr>
+</table>
+
+<h2>Verdict 准则</h2>
+
+<p>- <strong>PASS</strong>: 5 维度无 P0/P1 阻塞, Lighthouse 评分 ≥ 90
+- <strong>FAIL</strong>: 任一维度 P0 阻塞 (LCP > 4s / 键盘不可达 / 渲染崩溃 / 状态管理无边界 / a11y 缺失)</p>
+
+<h2>权威领域 (跟 Rule 12 决策权矩阵 联合)</h2>
+
+<p>frontend 拥有 组件/渲染/交互 一票否决权.
+视觉/文案/信息架构 必须 UX 复核.</p>
+
+<h2>关联</h2>
+
+<p>- 完整 persona: <code>.kallax/experts/default/frontend.md</code> (~190 lines)
+- L3 dry-run: <code>scripts/verify/level-3.sh</code> 武器 2
+- 视觉层评估 → UX expert (<code>.kallax/experts/default/ux.md</code>)</p>
+
+<hr>
+<p>
+  <a href="https://github.com/godlockin/kallax-experts/blob/main/experts/frontend.md">📝 在 GitHub 上编辑此 expert</a>
+  · <a href="https://github.com/godlockin/kallax-experts">kallax-experts</a>
+</p>
+</body>
+</html>

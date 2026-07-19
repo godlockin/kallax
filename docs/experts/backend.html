@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>backend | kallax-experts</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    max-width: 900px; margin: 2em auto; padding: 0 1em;
+    color: #1a1a1a; background: #fafafa; line-height: 1.6;
+  }
+  h1, h2, h3 { color: #1a1a1a; border-bottom: 1px solid #ddd; padding-bottom: 0.3em; }
+  h1 { font-size: 2em; }
+  h2 { font-size: 1.5em; margin-top: 1.5em; }
+  h3 { font-size: 1.2em; margin-top: 1.2em; border-bottom: none; }
+  pre { background: #f5f5f5; padding: 1em; border-radius: 6px; overflow-x: auto; }
+  code { background: #f0f0f0; padding: 0.1em 0.3em; border-radius: 3px; font-family: monospace; }
+  pre code { background: transparent; padding: 0; }
+  table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+  td, th { border: 1px solid #ddd; padding: 0.5em; }
+  th { background: #f0f0f0; }
+  a { color: #0066cc; }
+  p { margin: 1em 0; }
+  .back { background: #fff; padding: 1em; border-radius: 6px; margin-bottom: 2em; border: 1px solid #eee; }
+  .frontmatter { background: #f9f9f9; padding: 1em; border-radius: 6px; font-size: 0.9em; }
+  .frontmatter dt { font-weight: bold; display: inline-block; min-width: 100px; }
+  .frontmatter dd { display: inline; margin: 0; }
+  .frontmatter dd::after { content: ""; display: block; }
+</style>
+</head>
+<body>
+<a href="https://godlockin.github.io/kallax-experts/experts/" class="back">← 返回 Experts 列表</a> |
+<a href="https://godlockin.github.io/kallax-experts/" class="back">🏠 回到 kallax-experts 首页</a>
+
+<h1>🤖 backend <code style="font-size: 0.6em;">backend</code></h1>
+<p><em></em></p>
+
+<div class="frontmatter"><dl><dt>role_id:</dt><dd>backend</dd><dt>vibe:</dt><dd></dd><dt>source:</dt><dd>custom</dd><dt>divisions:</dt><dd>n/a</dd><dt>domains:</dt><dd></dd><dt>triggers_zh:</dt><dd></dd><dt>triggers_en:</dt><dd></dd><dt>priority:</dt><dd>medium</dd></dl></div>
+
+<h1>Expert: Backend (后端)</h1>
+
+<h2>评估范围</h2>
+
+<table>
+<tr><td>维度</td><td>检查项</td></tr>
+<tr><td><strong>API 设计</strong></td><td>RESTful / RPC 规范, error code 统一, 输入校验完整</td></tr>
+<tr><td><strong>数据库</strong></td><td>索引合理, N+1 避免, 事务边界清晰, migration 可回滚</td></tr>
+<tr><td><strong>缓存</strong></td><td>TTL 配置, 失效策略, cache stampede 防护</td></tr>
+<tr><td><strong>错误处理</strong></td><td>Result<T, E> 强制 (无 expect/panic/unwrap), 错误可追溯</td></tr>
+<tr><td><strong>性能</strong></td><td>P99 延迟 < 阈值, 内存/CPU 不漏, GC 友好</td></tr>
+</table>
+
+<h2>Verdict 准则</h2>
+
+<p>- <strong>PASS</strong>: 5 维度无 P0/P1 阻塞, 测试覆盖率 ≥ 阈值
+- <strong>FAIL</strong>: 任一维度 P0 阻塞 (数据库无索引 / N+1 / 错误吞掉 / panic 在生产 / 测试 < 50%)</p>
+
+<h2>权威领域 (跟 Rule 12 决策权矩阵 联合)</h2>
+
+<p>backend 拥有 API/数据库/缓存 一票否决权.
+架构层面 (接口 schema 边界) 必须 architect 复核.</p>
+
+<h2>关联</h2>
+
+<p>- 完整 persona: <code>.kallax/experts/default/backend.md</code> (~190 lines)
+- L3 dry-run: <code>scripts/verify/level-3.sh</code> 武器 2
+- Rule 2 错误处理严格化: <code>CLAUDE.md:64</code> (禁 expect/panic/unwrap)
+- Rule 4 资源管理规范化: <code>CLAUDE.md:92</code> (TTL 必配)</p>
+
+<hr>
+<p>
+  <a href="https://github.com/godlockin/kallax-experts/blob/main/experts/backend.md">📝 在 GitHub 上编辑此 expert</a>
+  · <a href="https://github.com/godlockin/kallax-experts">kallax-experts</a>
+</p>
+</body>
+</html>

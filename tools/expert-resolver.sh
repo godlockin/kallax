@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """
-expert-resolver — CLI expert matching with keyword + embedding hybrid scoring
-Usage: python3 tools/expert-resolver.py <query> [--pool=local|all|extended] [--json] [--top=N] [--embedding]
+expert-resolver — CLI expert matching with keyword + embedding + LLM hybrid scoring
+Usage: python3 tools/expert-resolver.py <query> [--pool=local|all|extended] [--json] [--top=N] [--embedding|--llm]
 """
 import json
 import sys
 import re
 import argparse
+import os
 from pathlib import Path
+from urllib.request import Request, urlopen
+from urllib.error import URLError, HTTPError
 
 # Optional embedding support
 try:
@@ -27,6 +30,25 @@ EMBEDDING_WEIGHT = 0.4
 EMBEDDING_SCALE = 500
 
 DATA_JSON = Path(__file__).parent.parent.parent / "kallax-experts" / "docs" / "experts" / "data.json"
+
+def find_repo_root():
+    """Find repo root by searching upward for KALLAX identity or git"""
+    import os
+    dir = Path(__file__).resolve().parent
+    while dir != dir.parent:
+        if (dir / ".kallax" / "IDENTITY.md").exists() or (dir / ".git").exists():
+            return dir
+        dir = dir.parent
+    return None
+
+# Override: if KALLAX_ROOT env set, use it; otherwise search upward
+_kallax_root = os.environ.get('KALLAX_ROOT')
+if _kallax_root:
+    DATA_JSON = Path(_kallax_root) / "kallax-experts" / "docs" / "experts" / "data.json"
+else:
+    _repo = find_repo_root()
+    if _repo:
+        DATA_JSON = _repo / "kallax-experts" / "docs" / "experts" / "data.json"
 
 def load_experts():
     """Load experts from data.json"""
@@ -143,6 +165,53 @@ def compute_embeddings(experts, query):
 
     return dict(zip(expert_ids, similarities))
 
+def call_claude_api(query, experts):
+    """Call Claude API for semantic expert matching"""
+    api_key = os.environ.get('ANTHROPIC_API_KEY') or os.environ.get('CLAUDE_API_KEY')
+    if not api_key:
+        return None
+
+    # Build expert descriptions
+    expert_list = []
+    for i, exp in enumerate(experts):
+        parts = [
+            f"#{i+1} {exp.get('name', '')} ({exp.get('role_id', '')})",
+            f"   vibe: {exp.get('vibe', '')}",
+            f"   use_when_zh: {', '.join(exp.get('use_when_zh', []))}",
+            f"   use_when_en: {', '.join(exp.get('use_when_en', []))}",
+            f"   domains: {', '.join(exp.get('domains', []))}",
+        ]
+        expert_list.append('\n'.join(parts))
+
+    prompt = f"""用户问题: {query}
+
+从以下 experts 中选出最合适的（可多选，最多 3 个），按匹配度排序。
+只返回 JSON 格式：{{"matches": [{"role_id": "...", "reason": "..."}, ...]}}
+
+Experts:
+{chr(10).join(expert_list)}"""
+
+    try:
+        req = Request(
+            'https://api.anthropic.com/v1/messages',
+            data=json.dumps({
+                'model': 'claude-opus-4-7',
+                'max_tokens': 500,
+                'messages': [{'role': 'user', 'content': prompt}]
+            }).encode(),
+            headers={
+                'x-api-key': api_key,
+                'anthropic-version': '2023-06-01',
+                'content-type': 'application/json',
+            }
+        )
+        with urlopen(req, timeout=15) as resp:
+            result = json.loads(resp.read())
+            return result['content'][0]['text']
+    except (URLError, HTTPError, KeyError, json.JSONDecodeError) as e:
+        print(f"WARNING: LLM API call failed: {e}", file=sys.stderr)
+        return None
+
 def hybrid_score(keyword_score, embed_score):
     """Combine keyword and embedding scores"""
     return keyword_score * KEYWORD_WEIGHT + embed_score * EMBEDDING_SCALE * EMBEDDING_WEIGHT
@@ -215,6 +284,7 @@ parser.add_argument('--pool', default='local')
 parser.add_argument('--json', action='store_true')
 parser.add_argument('--top', type=int, default=0)
 parser.add_argument('--embedding', action='store_true')
+parser.add_argument('--llm', action='store_true')
 args = parser.parse_args()
 
 if not args.query:
@@ -232,6 +302,39 @@ scored = []
 for exp in experts:
     k_score, reason = score_expert_keyword(exp, tokens)
     scored.append((k_score, exp['role_id'], reason))
+
+# LLM mode: try API first, fallback to skill-based session LLM
+if args.llm:
+    llm_result = call_claude_api(args.query, experts)
+    if llm_result:
+        try:
+            # Parse JSON from LLM response
+            import re as re_module
+            json_match = re_module.search(r'\{[\s\S]*\}', llm_result)
+            if json_match:
+                llm_data = json.loads(json_match.group())
+                # Build results from LLM output
+                role_id_to_exp = {exp['role_id']: exp for exp in experts}
+                results = []
+                for i, m in enumerate(llm_data.get('matches', [])[:args.top or 3]):
+                    rid = m.get('role_id', '')
+                    if rid in role_id_to_exp:
+                        exp = role_id_to_exp[rid]
+                        results.append((100 - i * 10, rid, m.get('reason', ''), 0, 0))
+                if results:
+                    results.sort(key=lambda x: -x[0])
+                else:
+                    print("ERROR: LLM returned no valid matches", file=sys.stderr)
+                    sys.exit(2)
+            else:
+                raise ValueError("No JSON in LLM response")
+        except (json.JSONDecodeError, KeyError, ValueError) as e:
+            print(f"WARNING: LLM response parse failed: {e}", file=sys.stderr)
+            print("FALLBACK_TO_SESSION_LLM", file=sys.stderr)
+            sys.exit(2)
+    else:
+        print("FALLBACK_TO_SESSION_LLM", file=sys.stderr)
+        sys.exit(2)
 
 # Embedding scoring
 embed_scores = {}

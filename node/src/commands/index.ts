@@ -89,3 +89,4 @@ export type {
 } from './system.js';
 
 export { registerInitCommands } from './init.js';
+export { registerInstallCommands } from './install-cmd.js';
