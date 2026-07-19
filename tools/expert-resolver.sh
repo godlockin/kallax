@@ -1,615 +1,266 @@
-#!/bin/bash
-# =================================================================
-# expert-resolver.sh — CLI 智能 expert 匹配
-# =================================================================
-# Accepts free-form query, scores experts by use_when + triggers
-# Outputs all experts sorted by score (no top-N truncation)
-# macOS bash 3.2 compatible (no declare -A)
-# =================================================================
-
-set -e
-
-# -----------------------------------------------------------------------------
-# Constants
-# -----------------------------------------------------------------------------
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-DATA_JSON="${SCRIPT_DIR}/../../kallax-experts/docs/experts/data.json"
-TEMP_SCORES="/tmp/resolver-scores-$$.txt"
-TEMP_META="/tmp/resolver-meta-$$.txt"
-
-# Score weights (per the plan)
-WEIGHT_TRIGGER=100
-WEIGHT_USE_WHEN=10
-WEIGHT_SUBSTRING=5
-WEIGHT_PREFIX=0.5
-
-# Pool sizes (approximate, for display)
-POOL_LOCAL_SIZE=15
-POOL_ALL_SIZE=25
-POOL_EXTENDED_SIZE=350
-
-# -----------------------------------------------------------------------------
-# Cleanup on exit
-# -----------------------------------------------------------------------------
-cleanup() {
-  rm -f "$TEMP_SCORES" "$TEMP_META"
-}
-trap cleanup EXIT
-
-# -----------------------------------------------------------------------------
-# Usage
-# -----------------------------------------------------------------------------
-usage() {
-  cat << 'EOF'
-Usage: expert-resolver.sh <query> [options]
-
-Options:
-  --pool=local|all|extended  Expert pool to search (default: local)
-  --json                      Output JSON format
-  --top=N                     Return top N results (default: all)
-  -h, --help                  Show this help
-
-Examples:
-  expert-resolver.sh "数据库查询动不动就超时"
-  expert-resolver.sh "SQL注入漏洞" --json
-  expert-resolver.sh "团队扩张,微服务怎么拆" --pool=all --top 5
-
-Output:
-  Human-readable: sorted list with scores and match reasons
-  JSON: structured output with bridge field (/kallax-expert <role_id>)
-EOF
-  exit 0
-}
-
-# -----------------------------------------------------------------------------
-# Parse arguments
-# -----------------------------------------------------------------------------
-QUERY=""
-POOL="local"
-OUTPUT_JSON=false
-TOP_N=0  # 0 means all
-
-while [[ $# -gt 0 ]]; do
-  case "$1" in
-    --pool=*)
-      POOL="${1#*=}"
-      if [[ ! "$POOL" =~ ^(local|all|extended)$ ]]; then
-        echo "ERROR: --pool must be local, all, or extended" >&2
-        exit 1
-      fi
-      shift
-      ;;
-    --json)
-      OUTPUT_JSON=true
-      shift
-      ;;
-    --top=*)
-      TOP_N="${1#*=}"
-      if [[ ! "$TOP_N" =~ ^[0-9]+$ ]]; then
-        echo "ERROR: --top must be a number" >&2
-        exit 1
-      fi
-      shift
-      ;;
-    -h|--help)
-      usage
-      ;;
-    -*)
-      echo "ERROR: Unknown option: $1" >&2
-      exit 1
-      ;;
-    *)
-      if [[ -z "$QUERY" ]]; then
-        QUERY="$1"
-      else
-        QUERY="$QUERY $1"
-      fi
-      shift
-      ;;
-  esac
-done
-
-# Validate query
-if [[ -z "$QUERY" ]]; then
-  echo "ERROR: Query is required" >&2
-  echo "" >&2
-  usage
-fi
-
-# -----------------------------------------------------------------------------
-# Pool size helper
-# -----------------------------------------------------------------------------
-get_pool_size() {
-  case "$POOL" in
-    local) echo "$POOL_LOCAL_SIZE" ;;
-    all) echo "$POOL_ALL_SIZE" ;;
-    extended) echo "$POOL_EXTENDED_SIZE" ;;
-  esac
-}
-
-# -----------------------------------------------------------------------------
-# Tokenize query into temp file (one token per line)
-# macOS bash 3.2 compatible
-# Strategy:
-#   - English: whole words only (3+ chars), no substrings
-#   - Chinese: sliding window 2-4 chars (meaningful Chinese units)
-# -----------------------------------------------------------------------------
-tokenize_query() {
-  local q="$1"
-  local tok_file="/tmp/resolver-tokens-$$.txt"
-  > "$tok_file"
-
-  # Extract English words (whole words only, 3+ chars)
-  echo "$q" | grep -oE '[a-zA-Z][a-zA-Z0-9]{2,}' 2>/dev/null | sort -u >> "$tok_file" || true
-
-  # Extract Chinese character sequences and create n-grams
-  local chinese_only
-  chinese_only=$(echo "$q" | grep -oE '[一-龥]+' 2>/dev/null || true)
-
-  for phrase in $chinese_only; do
-    local len=${#phrase}
-    # Only create 2, 3, 4 char windows (meaningful Chinese units)
-    local start=0
-    while [[ $start -lt $((len - 1)) ]]; do
-      # 2-char
-      if [[ $start -lt $((len - 1)) ]]; then
-        echo "${phrase:$start:2}" >> "$tok_file"
-      fi
-      # 3-char
-      if [[ $start -lt $((len - 2)) ]]; then
-        echo "${phrase:$start:3}" >> "$tok_file"
-      fi
-      # 4-char
-      if [[ $start -lt $((len - 3)) ]]; then
-        echo "${phrase:$start:4}" >> "$tok_file"
-      fi
-      start=$((start + 1))
-    done
-  done
-
-  # Deduplicate and ensure minimum length (2 chars)
-  LC_ALL=C sort -u "$tok_file" -o "$tok_file"
-  LC_ALL=C awk 'length >= 2' "$tok_file"
-  rm -f "$tok_file"
-}
-
-# -----------------------------------------------------------------------------
-# Check if token exists in text (substring match, case-insensitive)
-# -----------------------------------------------------------------------------
-token_hit() {
-  local token="$1"
-  local text="$2"
-  echo "$text" | grep -i "$token" > /dev/null 2>&1
-}
-
-# -----------------------------------------------------------------------------
-# Score an expert against query tokens
-# Returns: "score|match_reason"
-# -----------------------------------------------------------------------------
-score_expert() {
-  local role_id="$1"
-  local name="$2"
-  local emoji="$3"
-  local triggers_zh="$4"
-  local triggers_en="$5"
-  local use_when_zh_arr="$6"  # newline-separated
-  local use_when_en_arr="$7"  # newline-separated
-
-  local total_score=0
-  local match_reasons=""
-  local first_reason=true
-
-  # Get tokens
-  local tokens
-  tokens=$(tokenize_query "$QUERY")
-
-  # --- Trigger scoring (weight = 100) ---
-  # Track which tokens have matched to avoid double-counting across fields
-  local matched_trigger_tokens="/tmp/matched-tokens-$$.txt"
-  > "$matched_trigger_tokens"
-
-  while IFS= read -r token; do
-    [[ -z "$token" ]] && continue
-
-    # Check if already matched this token for triggers
-    if grep -Fxq "$token" "$matched_trigger_tokens" 2>/dev/null; then
-      continue
-    fi
-
-    local token_matched=false
-    local reasons_for_token=""
-    local matched_field=""
-
-    # Check triggers_zh (priority field)
-    if ! $token_matched && token_hit "$token" "$triggers_zh"; then
-      total_score=$((total_score + WEIGHT_TRIGGER))
-      reasons_for_token="${reasons_for_token},trigger:${token}×1"
-      token_matched=true
-      matched_field="zh"
-    fi
-
-    # Check triggers_en
-    if ! $token_matched && token_hit "$token" "$triggers_en"; then
-      total_score=$((total_score + WEIGHT_TRIGGER))
-      reasons_for_token="${reasons_for_token},trigger:${token}×1"
-      token_matched=true
-      matched_field="en"
-    fi
-
-    # Check name
-    if ! $token_matched && token_hit "$token" "$name"; then
-      total_score=$((total_score + WEIGHT_TRIGGER))
-      reasons_for_token="${reasons_for_token},trigger:${token}×1"
-      token_matched=true
-      matched_field="name"
-    fi
-
-    # Check role_id
-    if ! $token_matched && token_hit "$token" "$role_id"; then
-      total_score=$((total_score + WEIGHT_TRIGGER))
-      reasons_for_token="${reasons_for_token},trigger:${token}×1"
-      token_matched=true
-      matched_field="role"
-    fi
-
-    # Only add reasons ONCE per token
-    if $token_matched; then
-      echo "$token" >> "$matched_trigger_tokens"
-      # Remove leading comma from reasons_for_token for the first addition
-      if $first_reason; then
-        match_reasons="${match_reasons}${reasons_for_token#,}"
-        first_reason=false
-      else
-        match_reasons="${match_reasons}${reasons_for_token}"
-      fi
-    fi
-  done <<< "$tokens"
-
-  rm -f "$matched_trigger_tokens"
-
-  # --- use_when scoring (weight = 10 for direct hit, 5 for substring, 0.5 for prefix) ---
-  # use_when_zh
-  while IFS= read -r phrase; do
-    [[ -z "$phrase" ]] && continue
-    local phrase_score=0
-    local hit_type=""
-
-    # Check direct match (any token hits the phrase)
-    while IFS= read -r token; do
-      [[ -z "$token" ]] && continue
-      if token_hit "$token" "$phrase"; then
-        phrase_score=$((phrase_score + WEIGHT_USE_WHEN))
-        hit_type="use_when"
-        break
-      fi
-    done <<< "$tokens"
-
-    # Check if query token is substring of phrase (5 pts)
-    if [[ $phrase_score -eq 0 ]]; then
-      while IFS= read -r token; do
-        [[ -z "$token" ]] && continue
-        if echo "$phrase" | grep -i "$token" > /dev/null 2>&1; then
-          # Check if token is substring of phrase (query contains phrase-like content)
-          phrase_score=$((phrase_score + WEIGHT_SUBSTRING))
-          hit_type="substring"
-          break
-        fi
-      done <<< "$tokens"
-    fi
-
-    # Check if phrase is prefix of any query token (0.5 pts)
-    if [[ $phrase_score -eq 0 && ${#phrase} -le 6 ]]; then
-      while IFS= read -r token; do
-        [[ -z "$token" ]] && continue
-        if [[ "$token" == "$phrase"* ]] || [[ "$token" == *"$phrase" ]]; then
-          phrase_score=$(awk "BEGIN {printf \"%.1f\", $WEIGHT_PREFIX}")
-          hit_type="prefix"
-          break
-        fi
-      done <<< "$tokens"
-    fi
-
-    if [[ $phrase_score -gt 0 ]]; then
-      total_score=$(awk "BEGIN {printf \"%.1f\", $total_score + $phrase_score}")
-      [[ -n "$match_reasons" ]] && match_reasons="${match_reasons},"
-      match_reasons="${match_reasons}${hit_type}:${phrase}×1"
-    fi
-  done <<< "$use_when_zh_arr"
-
-  # use_when_en (same logic)
-  while IFS= read -r phrase; do
-    [[ -z "$phrase" ]] && continue
-    local phrase_score=0
-    local hit_type=""
-
-    while IFS= read -r token; do
-      [[ -z "$token" ]] && continue
-      if token_hit "$token" "$phrase"; then
-        phrase_score=$((phrase_score + WEIGHT_USE_WHEN))
-        hit_type="use_when"
-        break
-      fi
-    done <<< "$tokens"
-
-    if [[ $phrase_score -eq 0 ]]; then
-      while IFS= read -r token; do
-        [[ -z "$token" ]] && continue
-        if echo "$phrase" | grep -i "$token" > /dev/null 2>&1; then
-          phrase_score=$((phrase_score + WEIGHT_SUBSTRING))
-          hit_type="substring"
-          break
-        fi
-      done <<< "$tokens"
-    fi
-
-    if [[ $phrase_score -gt 0 ]]; then
-      total_score=$(awk "BEGIN {printf \"%.1f\", $total_score + $phrase_score}")
-      [[ -n "$match_reasons" ]] && match_reasons="${match_reasons},"
-      match_reasons="${match_reasons}${hit_type}:${phrase}×1"
-    fi
-  done <<< "$use_when_en_arr"
-
-  # Return formatted result
-  echo "${total_score}|${match_reasons}"
-}
-
-# -----------------------------------------------------------------------------
-# Parse use_when arrays from JSON (without jq)
-# Returns: newline-separated strings
-# -----------------------------------------------------------------------------
-parse_use_when() {
-  local json="$1"
-  local field="$2"
-
-  # Extract the array and process each element
-  echo "$json" | grep -oE "\"${field}\"\s*:\s*\[[^\]]*\]" | \
-    sed 's/.*\[//' | sed 's/\]//' | \
-    grep -oE '"[^"]*"' | \
-    sed 's/^"//' | sed 's/"$//'
-}
-
-# -----------------------------------------------------------------------------
-# Load experts from JSON file (without jq)
-# Uses Python fallback if grep/sed fails
-# -----------------------------------------------------------------------------
-load_experts() {
-  local json_file="$1"
-
-  if [[ ! -f "$json_file" ]]; then
-    echo "ERROR: $json_file not found" >&2
-    echo "Hint: Run 'python3 tools/build-experts.py' to generate it" >&2
-    exit 1
-  fi
-
-  # Use Python for reliable JSON parsing if available
-  if command -v python3 > /dev/null 2>&1; then
-    python3 - "$json_file" << 'PYEOF'
+#!/usr/bin/env python3
+"""
+expert-resolver — CLI expert matching with keyword + embedding hybrid scoring
+Usage: python3 tools/expert-resolver.py <query> [--pool=local|all|extended] [--json] [--top=N] [--embedding]
+"""
 import json
 import sys
+import re
+import argparse
+from pathlib import Path
 
-with open(sys.argv[1], 'r') as f:
-    experts = json.load(f)
+# Optional embedding support
+try:
+    from sentence_transformers import SentenceTransformer
+    import numpy as np
+    EMBEDDING_AVAILABLE = True
+except ImportError:
+    EMBEDDING_AVAILABLE = False
 
+# Constants
+WEIGHT_TRIGGER = 100
+WEIGHT_USE_WHEN = 10
+WEIGHT_SUBSTRING = 5
+WEIGHT_PREFIX = 0.5
+KEYWORD_WEIGHT = 0.6
+EMBEDDING_WEIGHT = 0.4
+EMBEDDING_SCALE = 500
+
+DATA_JSON = Path(__file__).parent.parent.parent / "kallax-experts" / "docs" / "experts" / "data.json"
+
+def load_experts():
+    """Load experts from data.json"""
+    if not DATA_JSON.exists():
+        print(f"ERROR: {DATA_JSON} not found", file=sys.stderr)
+        print("Hint: Run 'python3 tools/build-experts.py' to generate it", file=sys.stderr)
+        sys.exit(1)
+    with open(DATA_JSON) as f:
+        return json.load(f)
+
+def tokenize_query(query):
+    """Tokenize query into list of tokens"""
+    tokens = set()
+
+    # English words (3+ chars)
+    english = re.findall(r'[a-zA-Z][a-zA-Z0-9]{2,}', query)
+    tokens.update(w.lower() for w in english)
+
+    # Chinese n-grams (2, 3, 4 char sliding windows)
+    chinese_seqs = re.findall(r'[一-鿿]+', query)
+    for seq in chinese_seqs:
+        for size in (2, 3, 4):
+            for i in range(len(seq) - size + 1):
+                tokens.add(seq[i:i+size])
+
+    return list(tokens)
+
+def score_expert_keyword(expert, query_tokens):
+    """Score expert by keyword matching"""
+    total = 0.0
+    reasons = []
+
+    triggers_zh = expert.get('triggers_zh', '')
+    triggers_en = expert.get('triggers_en', '')
+    name = expert.get('name', '')
+    role_id = expert.get('role_id', '')
+    use_when_zh = expert.get('use_when_zh', [])
+    use_when_en = expert.get('use_when_en', [])
+
+    matched_tokens = set()
+
+    # Trigger scoring (100 pts each)
+    for tok in query_tokens:
+        tok_lower = tok.lower()
+        for field_val in [triggers_zh, triggers_en, name, role_id]:
+            if field_val and tok_lower in field_val.lower() and tok not in matched_tokens:
+                total += WEIGHT_TRIGGER
+                matched_tokens.add(tok)
+                reasons.append(f"trigger:{tok}×1")
+                break
+
+    # use_when scoring (10/5/0.5 pts)
+    for phrase in use_when_zh + use_when_en:
+        phrase_lower = phrase.lower()
+        phrase_score = 0
+        hit_type = ''
+
+        for tok in query_tokens:
+            tok_lower = tok.lower()
+            if tok_lower in phrase_lower:
+                phrase_score = WEIGHT_USE_WHEN
+                hit_type = 'use_when'
+                break
+
+        if phrase_score == 0:
+            for tok in query_tokens:
+                tok_lower = tok.lower()
+                if tok_lower in phrase_lower:
+                    phrase_score = WEIGHT_SUBSTRING
+                    hit_type = 'substring'
+                    break
+
+        if phrase_score == 0 and len(phrase) <= 6:
+            for tok in query_tokens:
+                if tok.startswith(phrase) or tok.endswith(phrase):
+                    phrase_score = WEIGHT_PREFIX
+                    hit_type = 'prefix'
+                    break
+
+        if phrase_score > 0:
+            total += phrase_score
+            reasons.append(f"{hit_type}:{phrase}×1")
+
+    return total, ','.join(reasons) if reasons else ''
+
+def compute_embeddings(experts, query):
+    """Compute cosine similarity between query and expert descriptions"""
+    if not EMBEDDING_AVAILABLE:
+        return {}
+
+    model = SentenceTransformer('all-MiniLM-L6-v2')
+
+    expert_texts = []
+    expert_ids = []
+    for exp in experts:
+        parts = [
+            exp.get('name', ''),
+            exp.get('name_en', ''),
+            exp.get('vibe', ''),
+            exp.get('triggers_zh', ''),
+            exp.get('triggers_en', ''),
+            ' '.join(exp.get('use_when_zh', [])),
+            ' '.join(exp.get('use_when_en', [])),
+            ' '.join(exp.get('domains', [])),
+        ]
+        text = ' '.join(p for p in parts if p)
+        expert_texts.append(text)
+        expert_ids.append(exp['role_id'])
+
+    query_emb = model.encode([query], normalize_embeddings=True)
+    expert_embs = model.encode(expert_texts, normalize_embeddings=True)
+
+    similarities = np.dot(expert_embs, query_emb.T).flatten()
+
+    return dict(zip(expert_ids, similarities))
+
+def hybrid_score(keyword_score, embed_score):
+    """Combine keyword and embedding scores"""
+    return keyword_score * KEYWORD_WEIGHT + embed_score * EMBEDDING_SCALE * EMBEDDING_WEIGHT
+
+def output_human(results, query, pool, use_embedding):
+    """Human-readable output"""
+    pool_sizes = {'local': 15, 'all': 25, 'extended': 350}
+    pool_size = pool_sizes.get(pool, 15)
+
+    print("=" * 60)
+    print(f"  Query: \"{query}\"  |  Pool: {pool} ({pool_size} experts)")
+    mode = f"hybrid (keyword {KEYWORD_WEIGHT} + embedding {EMBEDDING_WEIGHT})" if use_embedding else "keyword only"
+    print(f"  Mode: {mode}")
+    print("=" * 60)
+
+    if not results:
+        print("(No experts matched your query. Try different keywords.)")
+        print("=" * 60)
+        return
+
+    for rank, (score, role_id, reason, k_score, e_score) in enumerate(results, 1):
+        emoji = next((e['emoji'] for e in experts if e['role_id'] == role_id), '❓')
+        name = next((e['name'] for e in experts if e['role_id'] == role_id), role_id)
+
+        score_str = f"{score:.2f}" if score != int(score) else f"{score:.0f}"
+        detail = f" [kwd={k_score:.0f}, emb={e_score:.1f}]" if use_embedding else ""
+
+        print(f"#{rank}  {emoji}  {role_id}          Score:{score_str}{detail}")
+        print(f"    {reason[:80]}")
+
+    print("=" * 60)
+    print(f"SUMMARY: best={results[0][1] if results else 'none'} count={len(results)}")
+
+def output_json(results, query, pool, use_embedding):
+    """JSON output for LLM agents"""
+    output = {
+        'query': query,
+        'pool': pool,
+        'mode': 'hybrid' if use_embedding else 'keyword',
+        'results': [],
+        'best_match': results[0][1] if results else None,
+        'total_matched': len(results)
+    }
+
+    for rank, (score, role_id, reason, k_score, e_score) in enumerate(results, 1):
+        emoji = next((e['emoji'] for e in experts if e['role_id'] == role_id), '❓')
+        name = next((e['name'] for e in experts if e['role_id'] == role_id), role_id)
+
+        entry = {
+            'rank': rank,
+            'role_id': role_id,
+            'name': name,
+            'emoji': emoji,
+            'score': round(score, 2),
+            'hit_reason': reason,
+            'bridge': f'/kallax-expert {role_id}'
+        }
+        if use_embedding:
+            entry['keyword_score'] = round(k_score, 2)
+            entry['embedding_score'] = round(e_score, 2)
+
+        output['results'].append(entry)
+
+    print(json.dumps(output, ensure_ascii=False, indent=2))
+
+# Parse arguments
+parser = argparse.ArgumentParser(description='Expert resolver')
+parser.add_argument('query', nargs='?', default='')
+parser.add_argument('--pool', default='local')
+parser.add_argument('--json', action='store_true')
+parser.add_argument('--top', type=int, default=0)
+parser.add_argument('--embedding', action='store_true')
+args = parser.parse_args()
+
+if not args.query:
+    print("ERROR: Query is required", file=sys.stderr)
+    sys.exit(1)
+
+# Load experts
+experts = load_experts()
+
+# Tokenize
+tokens = tokenize_query(args.query)
+
+# Keyword scoring
+scored = []
 for exp in experts:
-    # Format use_when arrays as newline-separated
-    use_when_zh = '\n'.join(exp.get('use_when_zh', []))
-    use_when_en = '\n'.join(exp.get('use_when_en', []))
-    triggers_zh = exp.get('triggers_zh', '')
-    triggers_en = exp.get('triggers_en', '')
+    k_score, reason = score_expert_keyword(exp, tokens)
+    scored.append((k_score, exp['role_id'], reason))
 
-    # Escape pipes in content for pipe-based parsing
-    def esc(s):
-        return s.replace('\\', '\\\\').replace('|', '\\|').replace('\n', '<NL>')
+# Embedding scoring
+embed_scores = {}
+if args.embedding and EMBEDDING_AVAILABLE:
+    embed_scores = compute_embeddings(experts, args.query)
+elif args.embedding and not EMBEDDING_AVAILABLE:
+    print("WARNING: --embedding requested but sentence-transformers not installed", file=sys.stderr)
+    print("Installing: pip install sentence-transformers", file=sys.stderr)
 
-    print(f"{exp['role_id']}|{esc(exp['name'])}|{exp['emoji']}|{esc(triggers_zh)}|{esc(triggers_en)}|{esc(use_when_zh)}|{esc(use_when_en)}")
-PYEOF
-    return
-  fi
+# Hybrid scoring
+if embed_scores:
+    results = []
+    for k_score, role_id, reason in scored:
+        e_score = embed_scores.get(role_id, 0)
+        h_score = hybrid_score(k_score, e_score)
+        if h_score > 0:
+            results.append((h_score, role_id, reason, k_score, e_score))
+else:
+    results = [(k, r, rea, k, 0) for k, r, rea in scored if k > 0]
 
-  # Fallback: manual parsing with grep/sed (less reliable)
-  # Extract each expert block
-  local num_experts
-  num_experts=$(grep -c '"role_id"' "$json_file" || echo "0")
+# Sort by hybrid score descending
+results.sort(key=lambda x: -x[0])
 
-  local i=0
-  while [[ $i -lt $num_experts ]]; do
-    local role_id name emoji triggers_zh triggers_en
-    role_id=$(grep '"role_id"' "$json_file" | head -n $((i+1)) | tail -1 | grep -oE '"[^"]*"$' | sed 's/"//g')
-    name=$(grep '"name"' "$json_file" | head -n $((i+1)) | tail -1 | grep -oE '"[^"]*"$' | sed 's/"//g')
-    emoji=$(grep '"emoji"' "$json_file" | head -n $((i+1)) | tail -1 | grep -oE '"[^"]*"$' | sed 's/"//g')
-    triggers_zh=$(grep '"triggers_zh"' "$json_file" | head -n $((i+1)) | tail -1 | sed 's/.*"triggers_zh"\s*:\s*"//' | sed 's/".*//')
-    triggers_en=$(grep '"triggers_en"' "$json_file" | head -n $((i+1)) | tail -1 | sed 's/.*"triggers_en"\s*:\s*"//' | sed 's/".*//')
+# Limit to top N if specified
+if args.top > 0:
+    results = results[:args.top]
 
-    # use_when arrays (simplified - just grab first element per array)
-    local use_when_zh use_when_en
-    use_when_zh="use_when_zh_$i"
-    use_when_en="use_when_en_$i"
-
-    echo "${role_id}|${name}|${emoji}|${triggers_zh}|${triggers_en}|${use_when_zh}|${use_when_en}"
-    i=$((i+1))
-  done
-}
-
-# -----------------------------------------------------------------------------
-# Score all experts and write to temp file
-# -----------------------------------------------------------------------------
-score_all() {
-  local json_file="$DATA_JSON"
-
-  # For local pool, use data.json directly
-  # For all/extended, we'd need additional sources (future enhancement)
-  > "$TEMP_SCORES"
-  > "$TEMP_META"
-
-  # Load and score
-  local experts_data
-  experts_data=$(load_experts "$json_file")
-
-  while IFS='|' read -r role_id name emoji triggers_zh triggers_en use_when_zh use_when_en; do
-    [[ -z "$role_id" ]] && continue
-
-    # Restore newlines from <NL> placeholder
-    use_when_zh=$(echo "$use_when_zh" | sed 's/<NL>/\n/g')
-    use_when_en=$(echo "$use_when_en" | sed 's/<NL>/\n/g')
-    triggers_zh=$(echo "$triggers_zh" | sed 's/<NL>/\n/g')
-    triggers_en=$(echo "$triggers_en" | sed 's/<NL>/\n/g')
-
-    # Score this expert
-    local result
-    result=$(score_expert "$role_id" "$name" "$emoji" "$triggers_zh" "$triggers_en" "$use_when_zh" "$use_when_en")
-    local score="${result%%|*}"
-    local match_reason="${result#*|}"
-
-    # Write to temp files (score|role_id|reason format)
-    echo "${score}|${role_id}|${match_reason}" >> "$TEMP_SCORES"
-    echo "${role_id}|${name}|${emoji}" >> "$TEMP_META"
-  done <<< "$experts_data"
-
-  # Sort by score descending (handle float scores)
-  sort -t'|' -k1 -nr "$TEMP_SCORES" -o "$TEMP_SCORES"
-}
-
-# -----------------------------------------------------------------------------
-# Output human-readable format
-# -----------------------------------------------------------------------------
-output_human() {
-  local pool_size
-  pool_size=$(get_pool_size)
-
-  echo "=================================================================="
-  echo "  Query: \"$QUERY\"  |  Pool: $POOL ($pool_size experts)"
-  echo "=================================================================="
-
-  local rank=0
-  local best_match=""
-
-  while IFS='|' read -r score role_id reason; do
-    [[ -z "$score" ]] && continue
-
-    # Skip zero scores
-    is_zero=$(awk "BEGIN {print ($score == 0 ? \"1\" : \"0\")}")
-    [[ "$is_zero" == "1" ]] && continue
-
-    rank=$((rank+1))
-
-    # Get name and emoji from meta
-    local meta
-    meta=$(grep "^${role_id}|" "$TEMP_META" | head -1)
-    local name="${meta#*|}"
-    name="${name%|*}"
-    local emoji="${meta##*|}"
-
-    # Truncate long reasons
-    local display_reason="$reason"
-    if [[ ${#display_reason} -gt 80 ]]; then
-      display_reason="${display_reason:0:77}..."
-    fi
-
-    if [[ $rank -eq 1 ]]; then
-      best_match="$role_id"
-    fi
-
-    # Pad score to consistent width
-    local score_str
-    score_str=$(printf "%s" "$score" | awk '{if($1 != int($1)) printf "%.1f", $1; else printf "%.0f", $1}')
-
-    echo "#${rank}  ${emoji}  ${role_id:-unknown}          Score:${score_str}  Match:${display_reason}"
-
-    # Respect --top if specified
-    if [[ $TOP_N -gt 0 && $rank -ge $TOP_N ]]; then
-      break
-    fi
-  done < "$TEMP_SCORES"
-
-  if [[ $rank -eq 0 ]]; then
-    echo "(No experts matched your query. Try different keywords.)"
-    echo ""
-    echo "Suggestions:"
-    echo "  - Check spelling"
-    echo "  - Try broader terms (e.g., 'database' instead of 'postgresql')"
-    echo "  - Use English terms for technical keywords"
-  fi
-
-  echo "=================================================================="
-  if [[ -n "$best_match" ]]; then
-    echo "SUMMARY: best=${best_match} count=${rank}"
-  fi
-}
-
-# -----------------------------------------------------------------------------
-# Output JSON format
-# -----------------------------------------------------------------------------
-output_json() {
-  local pool_size
-  pool_size=$(get_pool_size)
-
-  echo "{"
-  echo "  \"query\": \"$(echo "$QUERY" | sed 's/"/\\"/g')\","
-  echo "  \"pool\": \"$POOL\","
-  echo "  \"results\": ["
-
-  local first=true
-  local rank=0
-  local best_match=""
-
-  while IFS='|' read -r score role_id reason; do
-    [[ -z "$score" ]] && continue
-
-    # Skip zero scores
-    is_zero=$(awk "BEGIN {print ($score == 0 ? \"1\" : \"0\")}")
-    [[ "$is_zero" == "1" ]] && continue
-
-    rank=$((rank+1))
-
-    # Get name and emoji from meta
-    local meta
-    meta=$(grep "^${role_id}|" "$TEMP_META" | head -1)
-    local name="${meta#*|}"
-    name="${name%|*}"
-    local emoji="${meta##*|}"
-
-    # Add comma before this element if not first
-    if [[ "$first" == "false" ]]; then
-      echo ","
-    fi
-    first=false
-
-    if [[ $rank -eq 1 ]]; then
-      best_match="$role_id"
-    fi
-
-    # Escape JSON special chars
-    local reason_escaped
-    reason_escaped=$(echo "$reason" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
-    local name_escaped
-    name_escaped=$(echo "$name" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
-
-    printf "    {\"rank\":%d,\"role_id\":\"%s\",\"name\":\"%s\",\"emoji\":\"%s\",\"score\":%s,\"hit_reason\":\"%s\",\"bridge\":\"/kallax-expert %s\"}" \
-      "$rank" "$role_id" "$name_escaped" "$emoji" "$score" "$reason_escaped" "$role_id"
-
-    if [[ $TOP_N -gt 0 && $rank -ge $TOP_N ]]; then
-      break
-    fi
-  done < "$TEMP_SCORES"
-
-  echo ""
-  echo "  ],"
-  echo "  \"best_match\": \"$best_match\","
-  echo "  \"total_matched\": $rank"
-  echo "}"
-}
-
-# -----------------------------------------------------------------------------
-# Main
-# -----------------------------------------------------------------------------
-main() {
-  score_all
-
-  if $OUTPUT_JSON; then
-    output_json
-  else
-    output_human
-  fi
-}
-
-main
+# Output
+if args.json:
+    output_json(results, args.query, args.pool, bool(embed_scores))
+else:
+    output_human(results, args.query, args.pool, bool(embed_scores))
