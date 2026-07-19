@@ -1,6 +1,6 @@
 ---
-description: Mid-project takeover (3-repo state scan + router proposes 2 paths + 3-piece output).
-argument-hint: <project_path> <user_need>
+description: Mid-project takeover (3-repo state scan + router proposes 2 paths + 3-piece output). REQUIRES 2 args — both `project_path` (绝对路径) and `user_need` (主公诉求). 没有 path 就让主公先 `/kallax-onramp`, 不要瞎路由。
+argument-hint: <project_path> <user_need> (2 required)
 ---
 
 # /kallax-takeover

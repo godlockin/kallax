@@ -45,6 +45,42 @@ argument-hint: "[query] — free-form, framework will route"
 | load / 加载 | `/kallax-load [target]` | |
 | route / 路由 | `/kallax-route` | 调试路由 |
 
+## 路由失败防范 (主公 "parameters error" 的 6 大元凶)
+
+LLM 路由时,**不要瞎猜 enum / 必填参数**。下表列每个 sub-command 的必填 + enum:
+
+| Sub-command | Args 必填? | Enum / 约束 | 瞎路由会怎样 |
+|---|---|---|---|
+| `init` | 0 | (无) | — |
+| `start` | 0/1 | role: `master\|conductor\|performer` | 不传 prompt |
+| `status` | 0 | — | — |
+| `help` | 0 | — | — |
+| `expert` | **1** | `<role>` (e.g. backend/architect/security) | 无 role 走 list fallback 不报错 |
+| `panel` | 0/1 | `[TOPIC]` | 无 topic 自动 show help |
+| `list` | 0 | — | — |
+| `task` | 0/1 | `[action TASK_ID]`, action ∈ {claim/complete/status/list} | 无效 action 报错 |
+| `claim` | 0/1 | `[TASK_ID]` | 无 ID auto-claim |
+| `submit-pr` | 0/1 | `[TASK_ID]` | 无 ID 从 branch 自动推 |
+| `review-pr` | 0/1/2 | `[PR_NUMBER] [BASE_BRANCH]` | 无效 PR exit 1 |
+| `verify-pr` | 0/1 | `[PR_NUMBER]` | — |
+| `merge` | 0/1 | `[PR_NUMBER]` | 无 ID 列 open PRs |
+| `save` / `resume` | 0 | — | — |
+| `board` / `instances` / `check-progress` | 0 | — | — |
+| `phase-review` | 0/1 | `[PHASE\|EPIC]` | — |
+| `ask` | **1** | `<question>` | 无 q 显示 help |
+| `skill` | **1** | `<skill-name>`, 可选 `[target]` | 无 name 走 list |
+| `analyze` / `office-hours` | 0/1 | `[TARGET] / [TOPIC]` | — |
+| `onramp` / `takeover` | **2** | `<project_path> <user_need>` (均必填) | **缺 1 个 = exit 1** ⚠️ |
+| `mode` | 0/1 | `conductor\|performer\|standalone` | **其他值 exit 1** ⚠️ |
+| `role` | 0/1 | `master\|conductor\|performer` | **其他值 exit 1** ⚠️ |
+| `load` / `route` | 0/1 | — | — |
+| `review-analysis` / `review-merge` | 0/1 | `[PR_NUMBER]` (merge) | — |
+
+**规则**: LLM 路由时, 如果主公只给了诉求没给必填参数 →
+1. 优先 fallback (status/help/expert/list/board 都能无参)
+2. 其次提示「主公需要 X 参数」(onramp/takeover/mode/role)
+3. 绝不**瞎填占位值**当参数
+
 ## 输出格式 (强制)
 
 每次路由回复必须**先打印 1 行**:

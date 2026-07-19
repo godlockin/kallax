@@ -2,6 +2,30 @@
 
 > Complete reference for all 26 KALLAX slash commands (in-tool invocations).
 
+---
+
+## §0 Smart Router (EPIC-127) — `/kallax <任意诉求>` 一键入口
+
+**新加**(2026-07-20): 主公只打 `/kallax <诉求>`, 框架**自动路由**到下方 26 命令之一。
+
+| 主公原话样例 | 自动路由到 |
+|---|---|
+| `/kallax` (无参) | `/kallax-help` |
+| `/kallax 现在状态` / `/kallax 进度` | `/kallax-status` |
+| `/kallax 帮我看 ticket` / `/kallax 看板` | `/kallax-board` |
+| `/kallax 召唤架构师看微服务` | `/kallax-expert architect 微服务` |
+| `/kallax 全员评审新功能` | `/kallax-panel 新功能` |
+| `/kallax fastapi 怎么用` | `/kallax-ask fastapi 怎么用` |
+| `/kallax 启动` / `/kallax 接 master` | `/kallax-start master` |
+
+**机制**: Claude Code 读 `.claude/commands/kallax.md` 的 `description:`, 看全 26 命令表 + 主公诉求 → 自动挑 sub-command 执行。每次先打印 1 行 `🔀 routed: /kallax-<subcmd>`。
+
+**完整路由表 + 路由失败防范** (含 parameters error 的 6 大元凶): 见 `.claude/commands/kallax.md`。
+
+> 路由命中但不熟用法 → 仍然 fallback 跑 `/kallax-<subcmd> --help` 看详细说明。
+
+---
+
 This document covers the **slash commands** invoked from inside the AI tool (Claude Code / opencode / Codex / Gemini). For the **CLI commands** (`kallax task claim`, `kallax conductor heartbeat`, etc.) used from a terminal, see [cli-reference.md](cli-reference.md).
 
 **Source paths**:

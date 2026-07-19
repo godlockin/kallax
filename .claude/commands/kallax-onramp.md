@@ -1,6 +1,6 @@
 ---
-description: Multi-level project analyzer (L1 simple / L2 deep / L3 full audit + 3-piece output).
-argument-hint: <project_path> <user_need>
+description: Multi-level project analyzer (L1 simple / L2 deep / L3 full audit + 3-piece output). REQUIRES 2 args — both `project_path` (绝对路径) and `user_need` (主公诉求). 路由前必须先有这 2 个, 不然会撞参数缺失。
+argument-hint: <project_path> <user_need> (2 required)
 ---
 
 # /kallax-onramp

@@ -64,10 +64,18 @@ fi
 
 log_info "Summoning expert: ${EXPERT}"
 
-# Check expert exists
-EXPERT_FILE="${KALLAX_ROOT}/.claude/skills/kallax/experts/default/${EXPERT}.md"
+# Check expert exists — try both layouts (legacy `experts/default/` and current `default/`)
+EXPERT_FILE="${KALLAX_ROOT}/.claude/skills/kallax/default/${EXPERT}.md"
 if [ ! -f "$EXPERT_FILE" ]; then
-  EXPERT_FILE="${KALLAX_ROOT}/.claude/skills/kallax/experts/extended/*/${EXPERT}.md"
+  EXPERT_FILE="${KALLAX_ROOT}/.claude/skills/kallax/experts/default/${EXPERT}.md"
+fi
+if [ ! -f "$EXPERT_FILE" ]; then
+  EXPERT_FILE="${KALLAX_ROOT}/.claude/skills/kallax/extended/${EXPERT}.md"
+fi
+if [ ! -f "$EXPERT_FILE" ]; then
+  log_error "Expert not found: ${EXPERT}"
+  echo "  Run /kallax-list to see available roles"
+  exit 2  # Distinct code so LLM can detect "not found" vs generic error
 fi
 
 echo ""
