@@ -59,34 +59,39 @@ stage_static() {
     ok "@ts-ignore / @ts-expect-error: 0 处"
   fi
 
-  # 1b. ': any' / 'as any' 残留
-  hits=$(grep -rnE '(:\s*any|as\s+any)\b' node/src/ 2>/dev/null \
-    | grep -v 'node_modules\|//\s*eslint-disable\|/\*' \
-    | head -10 || true)
-  if [ -n "$hits" ]; then
-    warn "'any' 残留 (允许 warn, 不 fail)"
-    echo "$hits"
-  else
-    ok "'any' 残留: 0 处"
-  fi
-
-  # 1c. TODO / FIXME / HACK / XXX 占位符
-  hits=$(grep -rnE '\b(TODO|FIXME|HACK|XXX)\b' node/src/ 2>/dev/null || true)
-  if [ -n "$hits" ]; then
-    warn "TODO/FIXME/HACK 标记存在 (允许 warn)"
-    echo "$hits" | head -5
-  else
-    ok "TODO/FIXME/HACK: 0 处"
-  fi
-
-  # 1d. catch (e: any) / catch (e)
-  hits=$(grep -rnE 'catch\s*\(' node/src/ 2>/dev/null \
-    | grep -v 'catch\s*(\s*[a-zA-Z_][a-zA-Z_0-9]*\s*:\s*unknown' \
+  # 1b. ': any' / 'as any' ACTIVE type usage (exclude JSDoc comments)
+  hits=$(grep -rnE '(:\s*any\b|as\s+any\b)' node/src/ 2>/dev/null \
+    | grep -vE '^\S+:\s*[0-9]+:\s*\*' \
     | head -5 || true)
   if [ -n "$hits" ]; then
-    warn "有 catch 但 second arg 不是 :unknown (CLAUDE.md Rule 3)"
+    warn "'any' 残留 in code (allow warn)"
+    echo "$hits"
   else
-    ok "catch (e: unknown): 全用"
+    ok "'any' 残留 in code: 0 active (JSDoc comments allowed)"
+  fi
+
+  # 1c. ACTIVE TODO / FIXME / HACK (exclude: regex patterns, string literals, enum values)
+  # Only flag // <comment> markers indicating unfinished work
+  hits=$(grep -rnE '//\s*(TODO|FIXME|HACK|XXX)\b' node/src/ 2>/dev/null \
+    | grep -v "TODO: 'todo'\|TODO:\\s*'todo'\|FIXME:\\s*'fixme'" \
+    | head -5 || true)
+  if [ -n "$hits" ]; then
+    warn "real TODO/FIXME/HACK markers in comments (allow review)"
+    echo "$hits"
+  else
+    ok "real TODO/FIXME/HACK in code comments: 0"
+  fi
+
+  # 1d. catch (e: any) / catch (e) — only try { } catch (e) form, not Promise.catch
+  hits=$(grep -rnE 'catch\s*\(\s*[a-zA-Z_][a-zA-Z_0-9]*\s*(?::\s*[a-zA-Z]+)?\s*\)' node/src/ 2>/dev/null \
+    | grep -v 'catch\s*(\s*[a-zA-Z_][a-zA-Z_0-9]*\s*:\s*unknown' \
+    | grep -v '\.catch(' \
+    | head -5 || true)
+  if [ -n "$hits" ]; then
+    warn "有 try { } catch 但 second arg 不是 :unknown (CLAUDE.md Rule 3)"
+    echo "$hits"
+  else
+    ok "try { } catch (e: unknown): 全用"
   fi
 }
 
