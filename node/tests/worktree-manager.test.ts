@@ -6,7 +6,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createWorktreeManager } from '../src/core/worktree-manager.js';
 
-const mockExecFile = vi.hoisted(() => vi.fn());
+// EPIC-133: execFile returns Promise<{stdout, stderr}> on Node 22+; cast mock accordingly
+type ExecResult = { stdout: string; stderr: string };
+const mockExecFile = vi.hoisted(() => vi.fn<[], Promise<ExecResult>>());
 
 vi.mock('node:child_process', () => ({
   execFile: mockExecFile,
