@@ -2,19 +2,36 @@ name: Release
 
 on:
   push:
+    # Full release: tag push v* triggers upload
     tags:
       - 'v*'
-  workflow_dispatch: {}
+    # Verify-only: branch push triggers build but skips publish (EPIC-130 主公触发)
+    branches:
+      - miao
+      - main
+      - testing
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish release assets to GitHub Release'
+        required: false
+        type: boolean
+        default: false
+
+# Cancel in-progress runs when new push arrives (saves CI minutes)
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: write
 
 jobs:
   # ===========================================================================
-  # Matrix build: 5 platforms, single release tag
+  # Matrix build: 5 platforms, only upload on tag push
   # ===========================================================================
   release:
-    name: Build & ship (${{ matrix.name }})
+    name: Build ${{ matrix.name }}${{ (startsWith(github.ref, 'refs/tags') || inputs.publish) && ' + ship' || ' (verify)' }}
     strategy:
       # don't cancel others on first failure — collect all assets then publish
       fail-fast: false
@@ -167,11 +184,27 @@ jobs:
           fi
         shell: bash
 
-      # ── Upload per-platform assets to same release tag ────────────────
+      # ── Upload per-platform assets — only on tag push or manual publish ──
       - name: Upload release assets
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.publish == true)
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
           files: |
             kallax-cli-rule-${{ github.ref_name }}-${{ matrix.name }}.${{ matrix.archive_ext }}
             kallax-cli-rule-${{ github.ref_name }}-${{ matrix.name }}.${{ matrix.archive_ext }}.sha256
+
+      # ── Verify-only fallback: just print archive (no upload) ──────────
+      - name: Verify build (no publish)
+        if: "!startsWith(github.ref, 'refs/tags/') && !(github.event_name == 'workflow_dispatch' && inputs.publish == true)"
+        run: |
+          ARCHIVE_NAME="kallax-cli-rule-${GITHUB_REF_NAME}-${{ matrix.name }}.${{ matrix.archive_ext }}"
+          echo "=== Verify-only build (no upload) ==="
+          echo "Archive would be: ${ARCHIVE_NAME}"
+          if [ -f "${ARCHIVE_NAME}" ]; then
+            echo "✅ archive exists locally"
+            ls -lh "${ARCHIVE_NAME}"
+          else
+            echo "❌ archive missing — build failed"
+            exit 1
+          fi
