@@ -555,6 +555,15 @@ install_canonical_commands() {
     count=$((count + 1))
   done
 
+  # EPIC-127 smart router (kallax.md — bare /kallax command, no -prefix).
+  # install.sh L552 only globs `kallax-*`, so this file was silently skipped —
+  # new sessions without manual symlink lost the bare `/kallax` command.
+  # EPIC-134: add explicit sync so future --upgrade runs guarantee /kallax works.
+  if [ -f "$src/kallax.md" ]; then
+    cp "$src/kallax.md" "$CANONICAL_COMMANDS/"
+    md_count=$((md_count + 1))
+  fi
+
   # Shared library
   if [ -f "$src/_kallax_common.sh" ]; then
     cp "$src/_kallax_common.sh" "$CANONICAL_COMMANDS/"
