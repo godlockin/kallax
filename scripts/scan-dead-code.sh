@@ -143,10 +143,11 @@ stage_sentinel() {
   local uncovered_list=""
 
   for mod in $modules; do
-    # mod = src/foo/bar (with .ts stripped); sentinel pattern: relative imports
+    # mod = src/foo/bar (with .ts stripped); sentinel pattern: any import statement
     # Tests use: '../src/foo/bar.js' or '../../src/foo/bar.js'
+    # Also catches dynamic imports: import('...')
     local hits
-    hits=$(grep -rE "from ['\"]([.][.]?/)+src/${mod}(\.js)?['\"]" node/tests/ 2>/dev/null \
+    hits=$(grep -rE "(from|import)[ ]?\(?['\"]([.][.]?/)+src/${mod}(\.js)?['\"]" node/tests/ 2>/dev/null \
       | grep -v 'node_modules' || true)
     if [ -z "$hits" ]; then
       uncovered=$((uncovered + 1))
