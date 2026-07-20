@@ -8,23 +8,13 @@ on:
       - miao
       - main
       - testing
-  workflow_dispatch:
-    inputs:
-      publish:
-        description: 'Publish release assets to GitHub Release'
-        required: false
-        type: boolean
-        default: false
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  workflow_dispatch: {}
 
 permissions:
   contents: write
 
 jobs:
-  release:
+  test:
     strategy:
       fail-fast: false
       matrix:
@@ -33,22 +23,6 @@ jobs:
             os: ubuntu-latest
             rust_target: x86_64-unknown-linux-gnu
             archive_ext: tar.gz
-          - name: linux-arm64
-            os: ubuntu-24.04-arm
-            rust_target: aarch64-unknown-linux-gnu
-            archive_ext: tar.gz
-          - name: darwin-x64
-            os: macos-13
-            rust_target: x86_64-apple-darwin
-            archive_ext: tar.gz
-          - name: darwin-arm64
-            os: macos-14
-            rust_target: aarch64-apple-darwin
-            archive_ext: tar.gz
-          - name: windows-x64
-            os: windows-latest
-            rust_target: x86_64-pc-windows-msvc
-            archive_ext: zip
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -56,149 +30,50 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: node/package-lock.json
-      - name: Node install + build
+      - name: Node install build
         run: |
           cd node
           npm ci
           npm run build
           ls -la dist/
 
-      - name: Rust setup toolchain
+      - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.rust_target }}
-
-      - name: Windows binary suffix
-        if: runner.os == 'Windows'
-        run: echo "BIN_EXT=.exe" >> $GITHUB_ENV
-        shell: bash
 
       - name: Rust cache
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: rust
 
-      - name: Rust build static binary
+      - name: Rust build
         env:
           RUSTFLAGS: "-C link-arg=-s"
         run: |
           set +e
           cd rust
-          BUILD_LOG=/tmp/cargo-build.log
-          TARGET="${{ matrix.rust_target }}"
-          mkdir -p ../dist-rust
-          if cargo build --release --target "$TARGET" > "$BUILD_LOG" 2>&1; then
-            echo "cargo build --release OK for $TARGET"
-            cp "target/$TARGET/release/kallax${BIN_EXT:-}" ../dist-rust/kallax-engine
-          elif cargo build --target "$TARGET" > "$BUILD_LOG" 2>&1; then
-            echo "::warning::fallback to debug build for $TARGET"
-            cp "target/$TARGET/debug/kallax${BIN_EXT:-}" ../dist-rust/kallax-engine
-          else
-            echo "::warning::Rust build failed for $TARGET; Node-only release"
-            tail -30 "$BUILD_LOG" || true
-          fi
-          if [ -f ../dist-rust/kallax-engine ]; then
-            chmod +x ../dist-rust/kallax-engine 2>/dev/null || true
-            ls -lh ../dist-rust/kallax-engine
-            file ../dist-rust/kallax-engine 2>/dev/null || true
-          fi
+          cargo build --release --target ${{ matrix.rust_target }} 2>&1 | tail -20
         shell: bash
 
-      - name: Archive package release
+      - name: Archive
         env:
           TAG: ${{ github.ref_name }}
-          SHA: ${{ github.sha }}
-          RUNNER: ${{ runner.os }}
           PLATFORM: ${{ matrix.name }}
-          ARCHIVE_EXT: ${{ matrix.archive_ext }}
         run: |
-          set -e
-          ARCHIVE_NAME="kallax-cli-rule-${TAG}-${PLATFORM}.${ARCHIVE_EXT}"
-          STAGE_DIR="release-stage-${PLATFORM}"
-          rm -rf "$STAGE_DIR" dist-rust
-          mkdir -p "$STAGE_DIR"
-
-          mkdir -p "$STAGE_DIR/node/dist"
-          if [ -d "node/dist" ]; then
-            cp -r node/dist/. "$STAGE_DIR/node/dist/"
-            cp node/package.json "$STAGE_DIR/node/"
-          fi
-
-          if [ -f dist-rust/kallax-engine ]; then
-            mkdir -p "$STAGE_DIR/rust"
-            cp dist-rust/kallax-engine "$STAGE_DIR/rust/"
-            chmod +x "$STAGE_DIR/rust/kallax-engine" 2>/dev/null || true
-          fi
-
-          mkdir -p "$STAGE_DIR/scripts"
-          for f in setup.sh cli-rule init-project.sh; do
-            if [ -f "scripts/$f" ]; then cp "scripts/$f" "$STAGE_DIR/scripts/"; fi
-          done
-
-          mkdir -p "$STAGE_DIR/hooks"
-          for f in exec-task.sh bash-rule-enforcer.sh verify-rule.sh; do
-            if [ -f "hooks/$f" ]; then cp "hooks/$f" "$STAGE_DIR/hooks/"; fi
-          done
-
-          {
-            echo "tag=${TAG}"
-            echo "commit=${SHA}"
-            echo "platform=${PLATFORM}"
-            echo "runner_os=${RUNNER}"
-            echo "rust_target=${{ matrix.rust_target }}"
-            echo "built_at=$(date -u +%FT%TZ)"
-          } > "$STAGE_DIR/MANIFEST"
-
-          case "$ARCHIVE_EXT" in
-            tar.gz)
-              tar -czf "$ARCHIVE_NAME" -C "$STAGE_DIR" .
-              ;;
-            zip)
-              cd "$STAGE_DIR"
-              powershell Compress-Archive -Path './*' -DestinationPath "../${ARCHIVE_NAME}" -Force
-              cd ..
-              ;;
-          esac
-
-          ls -lh "$ARCHIVE_NAME"
-          if [ "$ARCHIVE_EXT" = "tar.gz" ]; then
-            shasum -a 256 "$ARCHIVE_NAME" > "${ARCHIVE_NAME}.sha256"
-            cat "${ARCHIVE_NAME}.sha256"
-          fi
+          mkdir -p out
+          tar -czf out/kallax-cli-rule-${TAG}-${PLATFORM}.tar.gz -C node/dist .
+          ls -lh out/
         shell: bash
 
-      - name: Set publish flag
-        id: set-publish
-        run: |
-          if [[ "${{ github.ref_type }}" == "tag" ]]; then
-            echo "should_publish=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "should_publish=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Upload release assets
-        if: steps.set-publish.outputs.should_publish == 'true'
+      - name: Upload (tag only)
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          generate_release_notes: true
-          files: |
-            kallax-cli-rule-${{ github.ref_name }}-${{ matrix.name }}.${{ matrix.archive_ext }}
-            kallax-cli-rule-${{ github.ref_name }}-${{ matrix.name }}.${{ matrix.archive_ext }}.sha256
+          files: out/kallax-cli-rule-${{ github.ref_name }}-${{ matrix.name }}.tar.gz
 
-      - name: Verify build (no publish)
-        if: steps.set-publish.outputs.should_publish != 'true'
+      - name: Verify (branch only)
+        if: "!startsWith(github.ref, 'refs/tags/')"
         run: |
-          ARCHIVE_NAME="kallax-cli-rule-${GITHUB_REF_NAME}-${{ matrix.name }}.${{ matrix.archive_ext }}"
-          echo "=== Verify-only build (no publish) ==="
-          echo "Ref: ${{ github.ref }}"
-          echo "Ref type: ${{ github.ref_type }}"
-          echo "Archive: ${ARCHIVE_NAME}"
-          if [ -f "${ARCHIVE_NAME}" ]; then
-            echo "OK archive exists locally"
-            ls -lh "${ARCHIVE_NAME}"
-          else
-            echo "FAIL archive missing - build failed"
-            exit 1
-          fi
+          echo "Verify build complete on ${{ github.ref }}"
+          ls -lh out/
