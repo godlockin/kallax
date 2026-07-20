@@ -99,7 +99,25 @@
       "Bash(bash -n /Users/chenchen/.claude/verify-rule.sh)",
       "Read(//private/tmp/research-repos/**)",
       "Read(//private/tmp/research-repos/eket-experts-extended/**)",
-      "Read(//private/tmp/research-repos/agency-agents/**)"
+      "Read(//private/tmp/research-repos/agency-agents/**)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:api.github.com)",
+      "mcp__plugin_github_github__get_file_contents",
+      "Bash(bash scripts/kallax-tools.sh list)",
+      "Bash(bash -c ' *)",
+      "Bash(bash scripts/check-tools.sh)",
+      "Bash(bash -c 'source scripts/lib/expert-invocation-queue.sh && health')",
+      "Bash(bash *)",
+      "Bash(bash scripts/kallax-tools.sh list --json)",
+      "Read(//tmp/**)",
+      "Bash(KALLAX_HOOK_API_KEY=test-key rtk vitest --reporter=verbose)",
+      "Bash(KALLAX_HOOK_API_KEY=test-key rtk vitest)",
+      "Bash(KALLAX_HOOK_API_KEY=test-key rtk vitest --reporter=json)",
+      "Bash(KALLAX_HOOK_API_KEY=test-key rtk vitest --reporter=basic)",
+      "Bash(gh run *)",
+      "Bash(gh workflow *)",
+      "Bash(KALLAX_HOOK_API_KEY=test-key npx vitest run tests/dead-code-sentinel-coverage-d.test.ts)",
+      "Bash(gh pr *)"
     ]
   }
 }
