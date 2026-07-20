@@ -137,8 +137,24 @@ if [[ "$SOURCE_KIND" == "release" ]]; then
   echo "📥 从 GitHub Release 下载..."
   echo ""
 
-  ARCHIVE_NAME="kallax-cli-rule-${RELEASE_TAG}.tar.gz"
+  # EPIC-128-A: detect current platform
+  _uname_s=$(uname -s 2>/dev/null || echo "Unknown")
+  _uname_m=$(uname -m 2>/dev/null || echo "Unknown")
+  case "${_uname_s}:${_uname_m}" in
+    Linux:x86_64|Linux:amd64)   PLATFORM_TAG="linux-x64" ;;
+    Linux:aarch64|Linux:arm64)  PLATFORM_TAG="linux-arm64" ;;
+    Darwin:x86_64|Darwin:amd64) PLATFORM_TAG="darwin-x64" ;;
+    Darwin:arm64|Darwin:aarch64) PLATFORM_TAG="darwin-arm64" ;;
+    MINGW*:x86_64|MINGW*:amd64|MSYS*:x86_64|CYGWIN*:x86_64) PLATFORM_TAG="windows-x64" ;;
+    *) PLATFORM_TAG="linux-x64" ;;  # default
+  esac
+
+  # Use old single archive name if new per-platform not found (backward compat)
+  ARCHIVE_NAME="kallax-cli-rule-${RELEASE_TAG}-${PLATFORM_TAG}.tar.gz"
   DOWNLOAD_URL="https://github.com/${KALLAX_REPO}/releases/download/${RELEASE_TAG}/${ARCHIVE_NAME}"
+
+  echo "  Platform: ${PLATFORM_TAG} (${_uname_s}/${_uname_m})"
+  echo "  URL: ${DOWNLOAD_URL}"
 
   # 检查必需工具
   for cmd in curl tar; do
@@ -148,17 +164,25 @@ if [[ "$SOURCE_KIND" == "release" ]]; then
     fi
   done
 
-  echo "  URL: $DOWNLOAD_URL"
-
   cd "$KALLAX_ROOT"
+
+  # Try per-platform asset first
   if ! curl -fsSL "$DOWNLOAD_URL" -o "$ARCHIVE_NAME" 2>/dev/null; then
-    echo "❌ 下载失败" >&2
-    echo "  提示: 1) 检查 TAG 是否存在 2) GitHub Release 可能未发布" >&2
-    echo "        3) 网络问题(尝试 --repo your-org/kallax)" >&2
-    exit 1
+    echo "  ⚠️  Per-platform asset not found; trying legacy single archive"
+    LEGACY_NAME="kallax-cli-rule-${RELEASE_TAG}.tar.gz"
+    LEGACY_URL="https://github.com/${KALLAX_REPO}/releases/download/${RELEASE_TAG}/${LEGACY_NAME}"
+    if curl -fsSL "$LEGACY_URL" -o "$LEGACY_NAME" 2>/dev/null; then
+      ARCHIVE_NAME="$LEGACY_NAME"
+      DOWNLOAD_URL="$LEGACY_URL"
+    else
+      echo "❌ 下载失败 (per-platform + legacy 都试了)" >&2
+      echo "  提示: 1) 检查 TAG 是否存在 2) GitHub Release 可能未发布" >&2
+      echo "        3) 网络问题(尝试 --repo your-org/kallax)" >&2
+      exit 1
+    fi
   fi
 
-  echo "✅ 已下载: $ARCHIVE_NAME"
+  echo "✅ 已下载: ${ARCHIVE_NAME}"
 
   # 验证 SHA256(如有 .sha256 文件)
   SHA_FILE="${ARCHIVE_NAME}.sha256"
