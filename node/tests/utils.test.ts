@@ -161,8 +161,8 @@ describe('KallaxError', () => {
 // ── Startup Validator ───────────────────────────────────────────────────────
 
 describe('validateStartup', () => {
-  it('validates current project successfully', () => {
-    const result = validateStartup(process.cwd());
+  it('validates current project successfully', async () => {
+    const result = await validateStartup(process.cwd());
     expect(result.isOk()).toBe(true);
     if (result.isOk()) {
       expect(result.value.allPassed).toBe(true);
@@ -170,8 +170,8 @@ describe('validateStartup', () => {
     }
   });
 
-  it('fails for non-existent directory', () => {
-    const result = validateStartup('/nonexistent/path/12345');
+  it('fails for non-existent directory', async () => {
+    const result = await validateStartup('/nonexistent/path/12345');
     expect(result.isErr()).toBe(true);
   });
 });

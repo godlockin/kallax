@@ -7,6 +7,7 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { err, ok } from 'neverthrow';
 import type { KallaxResult } from '../types/index.js';
 import { KallaxError, KallaxErrorCode } from '../types/index.js';
@@ -26,7 +27,7 @@ export interface StartupValidationResult {
   readonly warningCount: number;
 }
 
-export function validateStartup(projectRoot: string): KallaxResult<StartupValidationResult> {
+export async function validateStartup(projectRoot: string): Promise<KallaxResult<StartupValidationResult>> {
   const checks: StartupCheck[] = [];
   let fatalCount = 0;
   let warningCount = 0;
@@ -79,7 +80,6 @@ export function validateStartup(projectRoot: string): KallaxResult<StartupValida
 
   // 4. Check for required binaries (non-fatal — may run in sandbox)
   try {
-    const { execFileSync }: typeof import('node:child_process') = await import('node:child_process');
     execFileSync('git', ['--version'], { stdio: 'ignore' });
     addCheck('git-binary', true, 'git command available', 'info');
   } catch {
@@ -88,7 +88,6 @@ export function validateStartup(projectRoot: string): KallaxResult<StartupValida
 
   // 5. Check gh CLI (optional — needed for PR creation)
   try {
-    const { execFileSync }: typeof import('node:child_process') = await import('node:child_process');
     execFileSync('gh', ['--version'], { stdio: 'ignore' });
     addCheck('gh-cli', true, 'GitHub CLI available', 'info');
   } catch {
@@ -102,7 +101,6 @@ export function validateStartup(projectRoot: string): KallaxResult<StartupValida
 
   // 7. Check disk space (warning only)
   try {
-    const { execFileSync }: typeof import('node:child_process') = await import('node:child_process');
     const df = execFileSync('df', ['-h', projectRoot], { encoding: 'utf-8' });
     const lines = df.trim().split('\n');
     if (lines.length > 1) {

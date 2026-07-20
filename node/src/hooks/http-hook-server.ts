@@ -357,7 +357,7 @@ export function createHookServer(
         server.listen(config.port, config.host ?? '127.0.0.1', () => {
           running = true;
           // Capture the actual bound port (in case caller passed 0 for OS-assigned)
-          const addr = server.address() as { port: number } | null;
+          const addr = server?.address() as { port: number } | null;
           if (addr !== null) {
             boundPort = addr.port;
           }

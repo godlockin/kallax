@@ -39,6 +39,9 @@ function aggregateSnapshots(snapshots: QualitySnapshot[], since: number): Qualit
   }
   const total = filtered.length;
   const lastSnapshot = filtered[filtered.length - 1];
+  if (lastSnapshot === undefined) {
+    return { timestamp: Date.now(), successRate: 0, taskCount: 0, avgDurationMs: 0, onTimeRate: 0 };
+  }
   return {
     timestamp: lastSnapshot.timestamp,
     successRate: Math.round(filtered.reduce((a, s) => a + s.successRate, 0) / total),
@@ -76,6 +79,7 @@ export function createQualityTrend(): QualityTrend {
 
       const now = Date.now();
       const current = list[list.length - 1];
+      if (current === undefined) return null;
       const daily = aggregateSnapshots(list, now - 86_400_000);
       const weekly = aggregateSnapshots(list, now - 604_800_000);
       const monthly = aggregateSnapshots(list, now - 2_592_000_000);

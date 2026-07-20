@@ -100,9 +100,18 @@ export function createEnterpriseAudit(): EnterpriseAudit {
       let results = [...entries];
       if (filter.actor != null) results = results.filter(e => e.actor === filter.actor);
       if (filter.role != null) results = results.filter(e => e.role === filter.role);
-      if (filter.action != null) results = results.filter(e => e.action.includes(filter.action));
-      if (filter.since != null) results = results.filter(e => e.timestamp >= filter.since);
-      if (filter.until != null) results = results.filter(e => e.timestamp <= filter.until);
+      if (filter.action != null) {
+        const action = filter.action;
+        results = results.filter(e => e.action.includes(action));
+      }
+      if (filter.since != null) {
+        const since = filter.since;
+        results = results.filter(e => e.timestamp >= since);
+      }
+      if (filter.until != null) {
+        const until = filter.until;
+        results = results.filter(e => e.timestamp <= until);
+      }
       if (filter.result) results = results.filter(e => e.result === filter.result);
       results.sort((a, b) => b.timestamp - a.timestamp);
       if (filter.limit != null) results = results.slice(0, filter.limit);
