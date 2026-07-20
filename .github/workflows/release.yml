@@ -2,10 +2,8 @@ name: Release
 
 on:
   push:
-    # Full release: tag push v* triggers upload
     tags:
       - 'v*'
-    # Verify-only: branch push triggers build but skips publish (EPIC-130 主公触发)
     branches:
       - miao
       - main
@@ -18,7 +16,6 @@ on:
         type: boolean
         default: false
 
-# Cancel in-progress runs when new push arrives (saves CI minutes)
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
@@ -27,13 +24,8 @@ permissions:
   contents: write
 
 jobs:
-  # ===========================================================================
-  # Matrix build: 5 platforms, only upload on tag push
-  # ===========================================================================
   release:
-    name: Build ${{ matrix.name }}${{ (startsWith(github.ref, 'refs/tags') || inputs.publish) && ' + ship' || ' (verify)' }}
     strategy:
-      # don't cancel others on first failure — collect all assets then publish
       fail-fast: false
       matrix:
         include:
@@ -61,7 +53,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ── Node CLI: same across platforms (tsc output is portable JS) ──
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -74,19 +65,21 @@ jobs:
           npm run build
           ls -la dist/
 
-      # ── Rust engine: per-platform binary ──────────────────────────────
-      - name: Rust setup toolchain (${{ matrix.rust_target }})
+      - name: Rust setup toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.rust_target }}
+
       - name: Windows binary suffix
         if: runner.os == 'Windows'
         run: echo "BIN_EXT=.exe" >> $GITHUB_ENV
         shell: bash
+
       - name: Rust cache
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: rust
+
       - name: Rust build static binary
         env:
           RUSTFLAGS: "-C link-arg=-s"
@@ -113,8 +106,7 @@ jobs:
           fi
         shell: bash
 
-      # ── Archive per-platform ───────────────────────────────────────────
-      - name: Archive package release (${{ matrix.name }})
+      - name: Archive package release
         env:
           TAG: ${{ github.ref_name }}
           SHA: ${{ github.sha }}
@@ -128,33 +120,28 @@ jobs:
           rm -rf "$STAGE_DIR" dist-rust
           mkdir -p "$STAGE_DIR"
 
-          # Node dist (cross-platform JS)
           mkdir -p "$STAGE_DIR/node/dist"
           if [ -d "node/dist" ]; then
             cp -r node/dist/. "$STAGE_DIR/node/dist/"
             cp node/package.json "$STAGE_DIR/node/"
           fi
 
-          # Rust engine
           if [ -f dist-rust/kallax-engine ]; then
             mkdir -p "$STAGE_DIR/rust"
             cp dist-rust/kallax-engine "$STAGE_DIR/rust/"
             chmod +x "$STAGE_DIR/rust/kallax-engine" 2>/dev/null || true
           fi
 
-          # Install scripts
           mkdir -p "$STAGE_DIR/scripts"
           for f in setup.sh cli-rule init-project.sh; do
             if [ -f "scripts/$f" ]; then cp "scripts/$f" "$STAGE_DIR/scripts/"; fi
           done
 
-          # Hooks
           mkdir -p "$STAGE_DIR/hooks"
           for f in exec-task.sh bash-rule-enforcer.sh verify-rule.sh; do
             if [ -f "hooks/$f" ]; then cp "hooks/$f" "$STAGE_DIR/hooks/"; fi
           done
 
-          # Manifest
           {
             echo "tag=${TAG}"
             echo "commit=${SHA}"
@@ -164,13 +151,11 @@ jobs:
             echo "built_at=$(date -u +%FT%TZ)"
           } > "$STAGE_DIR/MANIFEST"
 
-          # Tar (or zip on windows)
           case "$ARCHIVE_EXT" in
             tar.gz)
               tar -czf "$ARCHIVE_NAME" -C "$STAGE_DIR" .
               ;;
             zip)
-              # Windows zip — powershell Compress-Archive prefers relative paths
               cd "$STAGE_DIR"
               powershell Compress-Archive -Path './*' -DestinationPath "../${ARCHIVE_NAME}" -Force
               cd ..
@@ -184,9 +169,17 @@ jobs:
           fi
         shell: bash
 
-      # ── Upload per-platform assets — only on tag push or manual publish ──
+      - name: Set publish flag
+        id: set-publish
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "should_publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_publish=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Upload release assets
-        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.publish == true)
+        if: steps.set-publish.outputs.should_publish == 'true'
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
@@ -194,17 +187,18 @@ jobs:
             kallax-cli-rule-${{ github.ref_name }}-${{ matrix.name }}.${{ matrix.archive_ext }}
             kallax-cli-rule-${{ github.ref_name }}-${{ matrix.name }}.${{ matrix.archive_ext }}.sha256
 
-      # ── Verify-only fallback: just print archive (no upload) ──────────
       - name: Verify build (no publish)
-        if: "!startsWith(github.ref, 'refs/tags/') && !(github.event_name == 'workflow_dispatch' && inputs.publish == true)"
+        if: steps.set-publish.outputs.should_publish != 'true'
         run: |
           ARCHIVE_NAME="kallax-cli-rule-${GITHUB_REF_NAME}-${{ matrix.name }}.${{ matrix.archive_ext }}"
-          echo "=== Verify-only build (no upload) ==="
-          echo "Archive would be: ${ARCHIVE_NAME}"
+          echo "=== Verify-only build (no publish) ==="
+          echo "Ref: ${{ github.ref }}"
+          echo "Ref type: ${{ github.ref_type }}"
+          echo "Archive: ${ARCHIVE_NAME}"
           if [ -f "${ARCHIVE_NAME}" ]; then
-            echo "✅ archive exists locally"
+            echo "OK archive exists locally"
             ls -lh "${ARCHIVE_NAME}"
           else
-            echo "❌ archive missing — build failed"
+            echo "FAIL archive missing - build failed"
             exit 1
           fi
