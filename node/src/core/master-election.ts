@@ -26,14 +26,14 @@ const redisPool = new Map<string, Redis>();
 
 async function getRedis(redisUrl: string): Promise<Redis | null> {
   try {
-    let redis = redisPool.get(redisUrl);
-    if (redis?.status === 'ready') return redis;
+    const cached = redisPool.get(redisUrl);
+    if (cached !== undefined && cached.status === 'ready') return cached;
     // v3.5.0 hotfix (跟 B 组 S-005 fix ): overwrite 旧 connection 前先 quit (防 fd leak)
-    if (redis && redis.status !== 'ready') {
-      try { await redis.quit(); } catch { /* ignore, fd may already be closed */ }
+    if (cached !== undefined && cached.status !== 'ready') {
+      try { await cached.quit(); } catch { /* ignore, fd may already be closed */ }
       redisPool.delete(redisUrl);
-      redis = undefined;
     }
+    let redis: Redis | undefined = cached;
     // Create or recreate
     const { Redis: IORedis } = await import('ioredis');
     redis = new IORedis(redisUrl, {

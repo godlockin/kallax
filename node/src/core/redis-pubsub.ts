@@ -243,7 +243,7 @@ export function createInMemoryPubSubBus(): PubSubBus {
       logger.debug({ channel, subscriberCount: handlersForChannel.size }, 'in-memory-pubsub published');
     },
 
-    subscribe(channel: string, handler: PubSubHandler): void {
+    subscribe(channel: string, handler: PubSubHandler): Promise<void> {
       let handlersForChannel = handlers.get(channel);
       if (handlersForChannel === undefined) {
         handlersForChannel = new Set();
@@ -251,16 +251,19 @@ export function createInMemoryPubSubBus(): PubSubBus {
       }
       handlersForChannel.add(handler);
       logger.debug({ channel, subscriberCount: handlersForChannel.size }, 'in-memory-pubsub subscribed');
+      return Promise.resolve();
     },
 
-    unsubscribe(channel: string): void {
+    unsubscribe(channel: string): Promise<void> {
       handlers.delete(channel);
       logger.debug({ channel }, 'in-memory-pubsub unsubscribed');
+      return Promise.resolve();
     },
 
-    close(): void {
+    close(): Promise<void> {
       handlers.clear();
       logger.info({}, 'in-memory-pubsub bus closed');
+      return Promise.resolve();
     },
   };
 }

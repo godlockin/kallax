@@ -65,7 +65,7 @@ export function createSkillLoader(): SkillLoader {
   return {
     load(skill: SkillDefinition): Promise<KallaxResult<void>> {
       if (loadedSkills.has(skill.name)) {
-        return ok(undefined); // Already loaded
+        return Promise.resolve(ok(undefined)); // Already loaded
       }
 
       loadedSkills.set(skill.name, {
@@ -74,7 +74,7 @@ export function createSkillLoader(): SkillLoader {
       });
 
       logger.info({ skillName: skill.name, version: skill.version }, 'skill loaded');
-      return ok(undefined);
+      return Promise.resolve(ok(undefined));
     },
 
     unload(skillName: string): Promise<KallaxResult<void>> {

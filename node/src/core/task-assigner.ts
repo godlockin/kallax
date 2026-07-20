@@ -193,7 +193,8 @@ export function createTaskAssigner(
       db.updateTask(taskId, { metadata: { checkpointInterval, masteryLevel: mastery } });
 
       logger.info({ taskId, performerId, mastery, checkpointInterval }, 'task assigned with expertise-aware checkpoints');
-      return ok({ ...taskResult.value, metadata: { ...taskResult.value.metadata, ...metadataUpdate } });
+      const existingMetadata = taskResult.value.metadata ?? {};
+      return ok({ ...taskResult.value, metadata: { ...existingMetadata, checkpointInterval, masteryLevel: mastery } });
     },
 
     async claimNextTask(performerId, _capabilities = []): Promise<KallaxResult<Task | null>> {

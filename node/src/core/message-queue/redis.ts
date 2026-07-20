@@ -4,7 +4,7 @@
 import { err, ok } from 'neverthrow';
 import { Redis } from 'ioredis';
 import { KallaxError, KallaxErrorCode, MessagePriority, type KallaxResult, type Message } from '../../types/index.js';
-import type { MessageHandler, MessageQueue, MessageQueueConfig } from './types.js';
+import type { MessageHandler, MessageQueue, MessageQueueConfig, MessageQueueStats } from './types.js';
 import { logger } from '../../utils/logger.js';
 import { registerCleanupHandler } from '../../utils/process-cleanup.js';
 

@@ -209,18 +209,17 @@ export function parseArgs(argv: readonly string[]): Map<string, string> {
   const args = new Map<string, string>();
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
-    if (arg?.startsWith('--') ?? false) {
-      const eq = arg.indexOf('=');
-      if (eq > 0) {
-        args.set(arg.slice(2, eq), arg.slice(eq + 1));
+    if (arg === undefined || !arg.startsWith('--')) continue;
+    const eq = arg.indexOf('=');
+    if (eq > 0) {
+      args.set(arg.slice(2, eq), arg.slice(eq + 1));
+    } else {
+      const next = argv[i + 1];
+      if (next !== undefined && !next.startsWith('--')) {
+        args.set(arg.slice(2), next);
+        i++;
       } else {
-        const next = argv[i + 1];
-        if (next !== undefined && !next.startsWith('--')) {
-          args.set(arg.slice(2), next);
-          i++;
-        } else {
-          args.set(arg.slice(2), 'true');
-        }
+        args.set(arg.slice(2), 'true');
       }
     }
   }
