@@ -84,7 +84,6 @@ export interface MasterElection {
 }
 
 const DEFAULT_TTL_MS = 30_000;
-const _DEFAULT_RENEW_MS = 10_000;
 const DEFAULT_LOCK_DIR = '.kallax/election';
 
 // ── Level 3: Filesystem lock ───────────────────────────────────────────────

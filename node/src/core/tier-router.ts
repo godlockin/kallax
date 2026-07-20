@@ -148,16 +148,6 @@ class TierRouter {
   }
 }
 
-function _opToRustEndpoint(op: Operation): string {
-  // EPIC-079: 保留以备脚本调试 (实际调用在 executeOnTier switch)
-  const map: Record<Operation, string> = {
-    'ticket.create': '/bridge/ticket/create',
-    'ticket.list': '/bridge/ticket/list',
-    'task.assign': '/bridge/task/assign',
-    'task.complete': '/bridge/task/complete',
-  };
-  return map[op];
-}
 
 function opToShellCommand(op: Operation, _payload: unknown): string {
   const map: Record<Operation, string> = {

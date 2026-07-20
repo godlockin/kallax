@@ -54,8 +54,6 @@ export async function executeVerifyOutput(
     );
   }
 
-  const _task = taskResult.value;
-
   // Get worktree
   const worktreeResult = await worktreeManager.getByTaskId(taskId);
   if (worktreeResult.isErr()) {

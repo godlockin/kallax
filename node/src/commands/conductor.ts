@@ -282,7 +282,7 @@ export interface Assignment {
 }
 
 export async function executeConductorPoll(
-  db: SQLiteManager,
+  _db: SQLiteManager,
   instanceRegistry: InstanceRegistry,
   taskAssigner: TaskAssigner,
   isolationChecker: IsolationChecker,

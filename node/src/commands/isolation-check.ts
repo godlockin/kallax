@@ -24,7 +24,7 @@ export interface IsolationCheckResult {
 
 export function executeIsolationCheck(
   isolationChecker: IsolationChecker,
-  db: SQLiteManager,
+  _db: SQLiteManager,
   options: IsolationCheckOptions
 ): KallaxResult<IsolationCheckResult> {
   const { taskIdA, taskIdB, files } = options;
