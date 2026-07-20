@@ -2,21 +2,122 @@ name: Release
 
 on:
   push:
-    tags: ['v*']
+    tags:
+      - 'v*'
+  workflow_dispatch: {}
 
 jobs:
   release:
+    name: Build & ship release archive
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
-        with: { node-version: '20', cache: 'npm', cache-dependency-path: node/package-lock.json }
-      - name: Install
-        run: cd node && npm ci
-      - name: Build
-        run: cd node && npm run build
-      - name: Create Release
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: node/package-lock.json
+      - name: Node install + build
+        run: |
+          cd node
+          npm ci
+          npm run build
+          ls -la dist/
+
+      - name: Rust setup toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-musl
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Rust build static binary
+        env:
+          RUSTFLAGS: "-C link-arg=-s"
+        run: |
+          set +e
+          cd rust
+          BUILD_LOG=/tmp/cargo-build.log
+          mkdir -p ../dist-rust
+          if cargo build --release --target x86_64-unknown-linux-musl > "$BUILD_LOG" 2>&1; then
+            echo "cargo build --release OK"
+            cp target/x86_64-unknown-linux-musl/release/kallax ../dist-rust/kallax-engine
+          elif cargo build --target x86_64-unknown-linux-musl > "$BUILD_LOG" 2>&1; then
+            echo "::warning::fallback to debug build"
+            cp target/x86_64-unknown-linux-musl/debug/kallax ../dist-rust/kallax-engine
+          else
+            echo "::warning::Rust build failed; Node-only release"
+            tail -30 "$BUILD_LOG" || true
+          fi
+          if [ -f ../dist-rust/kallax-engine ]; then
+            chmod +x ../dist-rust/kallax-engine
+            ls -lh ../dist-rust/kallax-engine
+            file ../dist-rust/kallax-engine
+          fi
+
+      - name: Archive package release
+        env:
+          TAG: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          RUNNER: ${{ runner.os }}
+        run: |
+          set -e
+          ARCHIVE_NAME="kallax-cli-rule-${TAG}.tar.gz"
+          STAGE_DIR="release-stage"
+          rm -rf "$STAGE_DIR" dist-rust
+          mkdir -p "$STAGE_DIR"
+
+          # Node dist
+          mkdir -p "$STAGE_DIR/node/dist"
+          if [ -d "node/dist" ]; then
+            cp -r node/dist/. "$STAGE_DIR/node/dist/"
+            cp node/package.json "$STAGE_DIR/node/"
+          fi
+
+          # Rust engine
+          if [ -f dist-rust/kallax-engine ]; then
+            mkdir -p "$STAGE_DIR/rust"
+            cp dist-rust/kallax-engine "$STAGE_DIR/rust/"
+            chmod +x "$STAGE_DIR/rust/kallax-engine"
+          fi
+
+          # Install scripts
+          mkdir -p "$STAGE_DIR/scripts"
+          for f in setup.sh cli-rule init-project.sh; do
+            if [ -f "scripts/$f" ]; then cp "scripts/$f" "$STAGE_DIR/scripts/"; fi
+          done
+
+          # Hooks
+          mkdir -p "$STAGE_DIR/hooks"
+          for f in exec-task.sh bash-rule-enforcer.sh verify-rule.sh; do
+            if [ -f "hooks/$f" ]; then cp "hooks/$f" "$STAGE_DIR/hooks/"; fi
+          done
+
+          # Manifest
+          {
+            echo "tag=${TAG}"
+            echo "commit=${SHA}"
+            echo "built_at=$(date -u +%FT%TZ)"
+            echo "runner=${RUNNER}"
+            echo "node_arch=x86_64-linux-musl"
+            echo "rust_arch=x86_64-unknown-linux-musl"
+          } > "$STAGE_DIR/MANIFEST"
+
+          # Tar + SHA256
+          tar -czf "$ARCHIVE_NAME" -C "$STAGE_DIR" .
+          tar -tzf "$ARCHIVE_NAME"
+          ls -lh "$ARCHIVE_NAME"
+          shasum -a 256 "$ARCHIVE_NAME" > "${ARCHIVE_NAME}.sha256"
+          cat "${ARCHIVE_NAME}.sha256"
+
+      - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          files: node/dist/**
+          files: |
+            kallax-cli-rule-${{ github.ref_name }}.tar.gz
+            kallax-cli-rule-${{ github.ref_name }}.tar.gz.sha256
