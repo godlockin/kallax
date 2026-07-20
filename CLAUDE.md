@@ -96,6 +96,47 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 - ❌ `5-Level Verify PASS` 字样但 L2 是 `cargo build`(必须 `cargo test`)
 - ❌ "生产级 / 25/25" 等装饰性断言无 raw output 佐证
 
+## 5-Level Verify 硬化 (EPIC-131 + EPIC-132, v3.27.0+)
+
+> **起源**: EPIC-131 主公抓的 "死代码/类型错误不被调用就不暴露" 治根. EPIC-132-A→G 跑了 `scripts/scan-dead-code.sh` 抓死债并 enabled strict.
+> **L2 / L4 必跑扩展规则**:
+
+| 检查 | 必须 | 禁止 |
+|------|------|------|
+| L2 stdout | `cd node && npm run build` (= `npx tsc`) | ❌ `npx tsc --noEmit` alone (跳过 emit 不算 build) |
+| L2 strict | tsconfig 含 `strict: true` (含 noUncheckedIndexedAccess + noPropertyAccessFromIndexSignature + noImplicitOverride + noUnusedLocals + noUnusedParameters) | ❌ `--strict false` 任何 flag override |
+| L4 sentinel | `bash scripts/scan-dead-code.sh` exit 0 | ❌ 改 scan 脚本让 sentinel 永远 exit 0 (gate-paint) |
+| L4 coverage | `vitest tests/dead-code-sentinel-coverage*.test.ts` 100% pass | ❌ try/catch tolerant 验业务逻辑 (sentinel 仅验"module 加载不抛") |
+
+**Stage 1 regex false-positive 沉淀** (主公 Phase F 教训):
+- ❌ `grep -rnE '@ts-ignore'` 抓 JSDoc prose `"no @ts-ignore"` → 排除 `^\s*\*\s` 模式
+- ❌ `grep -rnE ':\s*any'` 抓 JSDoc prose `"fail-closed: any error"` → 排除 JSDoc 行
+- ❌ `grep -rnE '\bTODO\b'` 抓 enum literal `TicketStatus.TODO` + regex pattern `/TODO/` → 排除
+- ❌ `grep -rnE 'catch\s*\('` 抓 `.catch((err: unknown) => ...)` Promise → 排除 `\.catch(`
+
+**新 EPIC 必跑 sentinel**:
+```bash
+bash scripts/scan-dead-code.sh  # exit 0 = pass
+cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run \
+  tests/dead-code-sentinel-coverage.test.ts \
+  tests/dead-code-sentinel-coverage-d.test.ts \
+  tests/dead-code-sentinel-coverage-e.test.ts \
+  tests/dead-code-master-verify.test.ts
+```
+
+**tsconfig 跟 5-Level 必须对齐** (跟 EPIC-131 教训):
+```
+"strict": true,                    # 含 noImplicit* 全套
+"noUncheckedIndexedAccess": true,  # index access 后 必须 narrow
+"noPropertyAccessFromIndexSignature": true,
+"noUnusedLocals": true,             # EPIC-132-G 启用
+"noUnusedParameters": true,         # EPIC-132-G 启用
+"noImplicitOverride": true,
+"noFallthroughCasesInSwitch": true,
+```
+
+**Pre-commit hook** (`.githooks/pre-commit`) 强制跑 `scripts/scan-dead-code.sh`。Stage 1 false positives 通过精确 regex 排除。
+
 ## CLI 执行规范 (借鉴 whisper-cpp 教训)
 
 **来源**: whisper-cpp 10 段全失败未发现 (wrapper 无 fail-fast + 未主动 grep "FAILED")

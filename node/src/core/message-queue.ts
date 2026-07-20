@@ -4,13 +4,13 @@
  */
 
 import { err, ok } from 'neverthrow';
-import { KallaxError, KallaxErrorCode, type KallaxResult, type Message } from '../types/index.js';
+import { KallaxError, KallaxErrorCode, type KallaxResult } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import { createSQLiteManager } from './sqlite/index.js';
 import { createRedisQueue } from './message-queue/redis.js';
 import { createMemoryQueue } from './message-queue/memory.js';
 import { createSQLiteQueue } from './message-queue/sqlite.js';
-import type { MessageQueueConfig, PublishOptions, MessageHandler, MessageQueue, MessageQueueStats } from './message-queue/types.js';
+import type { MessageQueueConfig, MessageQueue } from './message-queue/types.js';
 export type {
   MessageQueueConfig,
   PublishOptions,

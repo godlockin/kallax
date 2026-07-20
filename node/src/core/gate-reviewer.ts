@@ -17,7 +17,7 @@ import { logger } from '../utils/logger.js';
 
 function execFileAsync(command: string, args: string[], opts?: { cwd?: string; timeout?: number }): Promise<{ stdout: string; stderr: string }> {
   return new Promise((resolve, reject) => {
-    const _child = execFile(command, args, { ...opts, timeout: opts?.timeout ?? 30000 }, (error, stdout, stderr) => {
+    execFile(command, args, { ...opts, timeout: opts?.timeout ?? 30000 }, (error, stdout, stderr) => {
       if (error) {
         const e = error as Error & { stdout?: string; stderr?: string };
         e.stdout = stdout;

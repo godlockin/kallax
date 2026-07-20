@@ -26,7 +26,6 @@ export interface DisplayNode {
  * Build a tree structure from DAG nodes for visualization.
  */
 function buildTree(nodes: DagNodeDef[], statuses?: Map<string, NodeDisplayStatus>): DisplayNode[] {
-  const _nodeMap = new Map(nodes.map((n) => [n.id, { ...n }]));
   const children = new Map<string, DisplayNode[]>();
   const roots: DagNodeDef[] = [];
 
@@ -102,7 +101,6 @@ export function renderDagSummary(
   const barTotal = 30;
   const doneBar = Math.round((done / total) * barTotal);
   const runningBar = Math.round((running / total) * barTotal);
-  const _failedBar = Math.round((failed / total) * barTotal);
 
   return [
     '',
