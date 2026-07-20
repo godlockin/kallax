@@ -129,11 +129,16 @@ async function loadCheckpoint(stateDir: string, runId: string): Promise<DagRunSt
   try {
     const data = await fs.readFile(getStatePath(stateDir, runId), 'utf-8');
     const parsed = JSON.parse(data) as unknown as Record<string, unknown>;
-    const nodesRecord = parsed.nodes as Record<string, NodeState>;
+    const nodesRecord = parsed['nodes'] as Record<string, NodeState>;
     return {
-      ...parsed,
+      runId: typeof parsed['runId'] === 'string' ? parsed['runId'] : '',
+      epic: typeof parsed['epic'] === 'string' ? parsed['epic'] : '',
+      startedAt: typeof parsed['startedAt'] === 'number' ? parsed['startedAt'] : 0,
+      updatedAt: typeof parsed['updatedAt'] === 'number' ? parsed['updatedAt'] : 0,
+      status: (parsed['status'] as DagRunState['status']) ?? 'running',
+      settings: parsed['settings'] as DagRunState['settings'],
       nodes: new Map(Object.entries(nodesRecord)),
-    };
+    } as DagRunState;
   } catch {
     return null;
   }
@@ -307,12 +312,17 @@ export function createDagExecutor(options: DagExecutorOptions = {}): DagExecutor
 
     async resume(runId: string): Promise<DagRunState> {
       const raw = JSON.parse(await fs.readFile(getStatePath(stateDir, runId), 'utf-8')) as unknown as Record<string, unknown>;
-      const nodesRecord = raw.nodes as Record<string, NodeState>;
+      const nodesRecord = raw['nodes'] as Record<string, NodeState>;
       const state: DagRunState = {
-        ...raw,
+        runId: typeof raw['runId'] === 'string' ? raw['runId'] : '',
+        epic: typeof raw['epic'] === 'string' ? raw['epic'] : '',
+        startedAt: typeof raw['startedAt'] === 'number' ? raw['startedAt'] : 0,
+        updatedAt: typeof raw['updatedAt'] === 'number' ? raw['updatedAt'] : 0,
+        status: (raw['status'] as DagRunState['status']) ?? 'running',
+        settings: raw['settings'] as DagRunState['settings'],
         nodes: new Map(Object.entries(nodesRecord)),
       };
-      const storedSchema = raw.schema as DagSchema | undefined;
+      const storedSchema = raw['schema'] as DagSchema | undefined;
       if (!storedSchema) {
         throw new Error(`Cannot resume ${runId}: checkpoint has no schema, start a fresh run`);
       }

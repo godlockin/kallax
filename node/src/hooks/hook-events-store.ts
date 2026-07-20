@@ -182,17 +182,6 @@ export function createHookEventsStore(
     }
   }
 
-  async function _withLock<T>(fn: () => T): Promise<T> {
-    const prev = writeLock;
-    let release!: () => void;
-    writeLock = new Promise<void>((r) => { release = r; });
-    await prev;
-    try {
-      return fn();
-    } finally {
-      release();
-    }
-  }
 
   return {
     // EPIC-084 P1-2: 改名为 _appendInternal, 外部必须走 appendHookEvent (带 withLock 互斥)
