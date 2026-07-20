@@ -266,8 +266,7 @@ export function createKnowledgeBase(): KnowledgeBase {
 
         if (candidates === null) {
           candidates = termCandidates;
-        } else {
-          if (termCandidates === null) return err(new Error('termCandidates is null'));
+        } else if (termCandidates !== null) {
           candidates = new Set([...candidates].filter((id: string) => termCandidates.has(id)));
         }
       }

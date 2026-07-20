@@ -174,7 +174,7 @@ export function createInstanceRegistry(db: SQLiteManager): InstanceRegistry {
         instanceCache.set(instanceId, result.value);
       }
 
-      return result;
+      return Promise.resolve(result);
     },
 
     listByRole(role): Promise<KallaxResult<Instance[]>> {

@@ -36,14 +36,15 @@ const buckets = new Map<string, TokenBucket>();
 const CLEANUP_INTERVAL_MS = 5 * 60 * 1000;
 setInterval(() => {
   const now = Date.now();
+  let clearedCount = 0;
   for (const [key, bucket] of buckets) {
     if (now - bucket.lastRefill > CLEANUP_INTERVAL_MS) {
       buckets.delete(key);
+      clearedCount++;
     }
   }
-  const deleted = buckets.size; // FIXME: record pre-clear count
-  if (deleted > 0) {
-    logger.debug({ cleanedBuckets: deleted }, 'rate limiter bucket cleanup');
+  if (clearedCount > 0) {
+    logger.debug({ cleanedBuckets: clearedCount }, 'rate limiter bucket cleanup');
   }
 }, CLEANUP_INTERVAL_MS).unref();
 
