@@ -41,20 +41,20 @@ async function gitCommand(
   cwd: string,
   args: string[]
 ): Promise<KallaxResult<string>> {
-  return new Promise((resolve) => {
-    execFile('git', args, { cwd }, (error: Error | null, stdout: string, _stderr: string) => {
-      if (error) {
-        resolve(err(
-          new KallaxError(KallaxErrorCode.INTERNAL_ERROR, `Git command failed: ${error.message}`, {
-            cause: error,
-            metadata: { args },
-          })
-        ));
-      } else {
-        resolve(ok(stdout.trim()));
-      }
-    });
-  });
+  // EPIC-133: Promise-based execFile (Node 22+ deprecated callback-only form)
+  try {
+    const result = await execFile('git', args, { cwd, encoding: 'utf8' });
+    // EPIC-133: stdout may be string (default utf8) or Buffer (when encoding unset) — accept both
+    const stdout = typeof result.stdout === 'string' ? result.stdout : Buffer.isBuffer(result.stdout) ? result.stdout.toString('utf8') : '';
+    return ok(stdout.trim());
+  } catch (error) {
+    return err(
+      new KallaxError(KallaxErrorCode.INTERNAL_ERROR, `Git command failed: ${error instanceof Error ? error.message : String(error)}`, {
+        cause: error,
+        metadata: { args },
+      })
+    );
+  }
 }
 
 export function createWorktreeManager(config: WorktreeConfig): KallaxResult<WorktreeManager> {
