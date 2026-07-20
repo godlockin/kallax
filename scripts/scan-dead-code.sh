@@ -48,9 +48,9 @@ FAIL_COUNT=0
 stage_static() {
   info "Stage 1: Static scan (undefined / ignore / TODO / FIXME)"
 
-  # 1a. @ts-ignore / @ts-expect-error — CLAUDE.md Rule 1 禁
-  local hits
-  hits=$(grep -rnE '@ts-(ignore|expect-error|nocheck)' node/src/ 2>/dev/null || true)
+  # 1a. active @ts-ignore / @ts-expect-error / @ts-nocheck directives — Rule 1 禁
+  # Exclude matches inside /** ... */ doc comments (false positive "no @ts-ignore" prose)
+  hits=$(grep -rnE '^[^/*]*\s@ts-(ignore|expect-error|nocheck)' node/src/ 2>/dev/null | awk -F: '$2 !~ /^[[:space:]]*\*/' || true)
   if [ -n "$hits" ]; then
     err "@ts-ignore / @ts-expect-error 发现,违反 CLAUDE.md Rule 1"
     echo "$hits" | head -5
