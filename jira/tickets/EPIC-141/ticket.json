@@ -1,0 +1,66 @@
+{
+  "ticket_id": "EPIC-141",
+  "epic": "EPIC-141",
+  "phase": "PHASE-018",
+  "title": "vitest FATAL — validate-runner.ts top-level main() 无 entry-point guard (canary 首次 diagnosis 更正)",
+  "status": "done",
+  "priority": "P1",
+  "type": "bugfix",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "tester",
+  "handoff_depth": "L1",
+  "description": "PR #148 canary CI log 里 `error:INTERNAL_ERROR` / `error:DB_ERROR` 出现在 [FATAL] Runner crashed 之前, master 建卡时假设是 utils.test.ts:53/61/78/96 的 wrapAsync/wrapSync 测试真 throw 逃逸. **Performer 独立诊断更正**: utils.test.ts 单独跑 23/23 PASS, 无 FATAL. \n\n**真凶**: `node/tests/dead-code-sentinel-coverage-d.test.ts:113-116` 加载 `src/scripts/validate-runner.js`, 触发 top-level `main()` (`src/scripts/validate-runner.ts:96-99`), 读空 stdin → JSON.parse fail → `process.exit(1)`. Vitest patch 了 process.exit 会 throw, unhandled rejection → `[FATAL] Runner crashed`. \n\n**pino error 日志是无害的**: wrapAsync/wrapSync catch 里的 `logger.kallaxError()` 调用, 错误已正确 wrap 成 KallaxError 返回 Result, tests 断言 `result.isErr()` 全 PASS. \n\n**修法 (Option B, Performer 推荐)**: `src/scripts/validate-runner.ts:96-99` 加 CLI entry-point guard: ```typescript\nimport { fileURLToPath } from 'node:url';\nconst isMain = import.meta.url === `file://${process.argv[1]}` \n  || process.argv[1] === fileURLToPath(import.meta.url);\nif (isMain) {\n  main().then((code) => { process.exit(code); }).catch(...);\n}\n```\n只在被当 CLI 直接执行时 run main; 被 import 时不 run (dead-code sentinel 只需模块能加载). 标准 Node ESM CLI 模式.\n\n**追责链**: PR #148 canary 抓到 FATAL, master 首次 diagnosis 有误 (基于 pino log 推断而非独立复现), Performer 修正. 记入 Fact-Forcing 案例: '看 CI log 不等于诊断, 需独立复现'.",
+  "file_scope": {
+    "includes": [
+      "node/src/scripts/validate-runner.ts",
+      "node/tests/dead-code-sentinel-coverage-d.test.ts"
+    ]
+  },
+  "acceptance": [
+    "cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run tests/dead-code-sentinel-coverage-d.test.ts 无 FATAL",
+    "cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run 全 suite 无 FATAL Runner crashed",
+    "src/scripts/validate-runner.ts 直接跑 (node dist/scripts/validate-runner.js) 仍能读 stdin + exit code 正确 (CLI 语义未破)",
+    "sentinel 测试保留 (dead-code coverage 覆盖 validate-runner 模块不减)"
+  ],
+  "labels": [
+    "test-flake",
+    "canary-finding",
+    "vitest"
+  ],
+  "derived_from": "PR #148 canary — vitest run failure",
+  "found_by_run": "https://github.com/godlockin/kallax/actions/runs/30199368324",
+  "postmortem": [
+    {
+      "date": "2026-07-26",
+      "issue": "master 建卡时 diagnosis 错 (指到 utils.test.ts, 真凶是 validate-runner)",
+      "root_cause": "master 只看 CI raw log 里的 error 日志顺序推断, 未独立复现. pino error 日志和 FATAL 时间相邻但因果无关.",
+      "corrected_by": "Performer independently ran vitest utils.test.ts alone → 23/23 PASS, 排除嫌疑; 然后跑 sentinel-d 单独复现 FATAL; 找到 validate-runner 入口点问题",
+      "lesson": "Fact-Forcing 第二重: 'raw output 相邻 ≠ 因果'. 建 bugfix ticket 时必须独立复现, 不能只看 CI log 推断."
+    }
+  ],
+  "verification": {
+    "date": "2026-07-26",
+    "fix_summary": "Added CLI entry-point guard in node/src/scripts/validate-runner.ts. Imported fileURLToPath from node:url. main() invocation (previously top-level, lines 96-99) now wrapped in `if (isMainModule)` guard using standard ESM `import.meta.url === fileURLToPath === process.argv[1]` pattern. When imported by dead-code sentinel, main() is skipped; when run as CLI, behavior is identical to before.",
+    "changes": {
+      "node/src/scripts/validate-runner.ts": "Added `import { fileURLToPath } from 'node:url'` (line 1). Wrapped top-level main() call in isMainModule guard (previously lines 96-99, now lines 98-111).",
+      "node/tests/dead-code-sentinel-coverage-d.test.ts": "No changes needed — sentinel assertion `expect(m).toBeDefined()` still holds since module still exports validateAll indirectly; only main() side-effect is gated."
+    },
+    "sentinel_d_test": "PASS (via bash ~/.claude/exec-task.sh 'vitest-sentinel-d' 'npx vitest run tests/dead-code-sentinel-coverage-d.test.ts' → OK success)",
+    "full_suite": {
+      "test_files": "47 passed | 2 skipped (49)",
+      "tests": "960 passed | 4 skipped (964)",
+      "fatal_count": 0,
+      "raw_log": "/tmp/claude-tasks/vitest-full-141-tee.txt (614 lines, 107686 bytes)",
+      "grep_command": "grep -c '\\[FATAL\\]' /tmp/claude-tasks/vitest-full-141-tee.txt",
+      "grep_output": "0"
+    },
+    "cli_semantics": {
+      "empty_stdin": "exit code 1 (unchanged) + stderr '[FATAL] Invalid JSON on stdin: '",
+      "valid_stdin_empty_lists": "echo '{\"phases\":[],\"epics\":[],\"tickets\":[],\"states\":[]}' | tsx validate-runner.ts → exit code 0 (unchanged, 0/0 passed)"
+    },
+    "tsc_noEmit": "exit 0 (via bash ~/.claude/exec-task.sh 'tsc-after-141' 'npx tsc --noEmit' → OK success)",
+    "sentinel_adjustment_needed": false,
+    "note": "pino error logs from tests/utils.test.ts:53/61/78/96 (wrapAsync/wrapSync tests) remain visible in vitest output — these are harmless: logger.kallaxError() calls within catch blocks, tests correctly assert result.isErr(). Master's original diagnosis conflated log adjacency with causation; Performer's independent repro isolated the real cause to validate-runner import triggering main()."
+  }
+}
