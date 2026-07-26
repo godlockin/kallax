@@ -4,9 +4,9 @@
 //! Uses a BinaryHeap for O(log n) priority-based ready task retrieval.
 
 use kallax_core::{KallaxError, Priority, Result, TaskId};
-use std::collections::{HashMap, HashSet, VecDeque};
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
+use std::collections::{HashMap, HashSet, VecDeque};
 
 pub struct DagScheduler {
     dependents: HashMap<String, HashSet<String>>,
@@ -34,7 +34,8 @@ impl DagScheduler {
         let id = task_id.as_str().to_string();
         if self.in_degree.contains_key(&id) {
             return Err(KallaxError::AlreadyExists {
-                entity_type: "task", entity_id: id,
+                entity_type: "task",
+                entity_id: id,
             });
         }
         let dep_count = dependencies.len();
@@ -90,7 +91,11 @@ impl DagScheduler {
                 if let Some(in_deg) = self.in_degree.get_mut(dep_id) {
                     *in_deg = in_deg.saturating_sub(1);
                     if *in_deg == 0 {
-                        let pid = self.priorities.get(dep_id).copied().unwrap_or(Priority::Normal);
+                        let pid = self
+                            .priorities
+                            .get(dep_id)
+                            .copied()
+                            .unwrap_or(Priority::Normal);
                         self.ready_heap.push((pid, Reverse(dep_id.clone())));
                         newly_ready.push(TaskId::from_str(dep_id));
                     }
@@ -112,9 +117,20 @@ impl DagScheduler {
         None
     }
 
-    fn detect_cycle_dfs(&self, task_id: &str, visited: &mut HashSet<String>, rec_stack: &mut HashSet<String>, path: &mut Vec<String>) -> bool {
-        if rec_stack.contains(task_id) { path.push(task_id.to_string()); return true; }
-        if visited.contains(task_id) { return false; }
+    fn detect_cycle_dfs(
+        &self,
+        task_id: &str,
+        visited: &mut HashSet<String>,
+        rec_stack: &mut HashSet<String>,
+        path: &mut Vec<String>,
+    ) -> bool {
+        if rec_stack.contains(task_id) {
+            path.push(task_id.to_string());
+            return true;
+        }
+        if visited.contains(task_id) {
+            return false;
+        }
         visited.insert(task_id.to_string());
         rec_stack.insert(task_id.to_string());
         if let Some(dependents) = self.dependents.get(task_id) {
@@ -131,91 +147,243 @@ impl DagScheduler {
 
     pub fn topological_sort(&self) -> Result<Vec<TaskId>> {
         if let Some(cycle) = self.detect_cycle() {
-            return Err(KallaxError::Validation { field: "dependencies".into(), message: format!("Cycle: {:?}", cycle) });
+            return Err(KallaxError::Validation {
+                field: "dependencies".into(),
+                message: format!("Cycle: {:?}", cycle),
+            });
         }
         let mut result = Vec::new();
         let mut in_deg = self.in_degree.clone();
-        let mut queue: VecDeque<String> = in_deg.iter().filter(|(_, &d)| d == 0).map(|(id, _)| id.clone()).collect();
+        let mut queue: VecDeque<String> = in_deg
+            .iter()
+            .filter(|(_, &d)| d == 0)
+            .map(|(id, _)| id.clone())
+            .collect();
         while let Some(task_id) = queue.pop_front() {
             result.push(TaskId::from_str(&task_id));
             if let Some(dependents) = self.dependents.get(&task_id) {
                 for dep in dependents {
-                    if let Some(d) = in_deg.get_mut(dep) { *d = d.saturating_sub(1); if *d == 0 { queue.push_back(dep.clone()); } }
+                    if let Some(d) = in_deg.get_mut(dep) {
+                        *d = d.saturating_sub(1);
+                        if *d == 0 {
+                            queue.push_back(dep.clone());
+                        }
+                    }
                 }
             }
         }
-        if result.len() != self.in_degree.len() { return Err(KallaxError::internal("Topo sort incomplete")); }
+        if result.len() != self.in_degree.len() {
+            return Err(KallaxError::internal("Topo sort incomplete"));
+        }
         Ok(result)
     }
 
     pub fn critical_path(&self) -> Vec<TaskId> {
-        if self.is_empty() { return Vec::new(); }
+        if self.is_empty() {
+            return Vec::new();
+        }
         let mut topo = Vec::new();
         let mut in_deg = self.in_degree.clone();
-        let mut queue: VecDeque<String> = in_deg.iter().filter(|(_, &d)| d == 0).map(|(id, _)| id.clone()).collect();
+        let mut queue: VecDeque<String> = in_deg
+            .iter()
+            .filter(|(_, &d)| d == 0)
+            .map(|(id, _)| id.clone())
+            .collect();
         while let Some(task_id) = queue.pop_front() {
             topo.push(task_id.clone());
             if let Some(deps) = self.dependents.get(&task_id) {
                 for dep in deps {
-                    if let Some(d) = in_deg.get_mut(dep) { *d = d.saturating_sub(1); if *d == 0 { queue.push_back(dep.clone()); } }
+                    if let Some(d) = in_deg.get_mut(dep) {
+                        *d = d.saturating_sub(1);
+                        if *d == 0 {
+                            queue.push_back(dep.clone());
+                        }
+                    }
                 }
             }
         }
-        if topo.len() != self.in_degree.len() { return Vec::new(); }
+        if topo.len() != self.in_degree.len() {
+            return Vec::new();
+        }
         let mut dist: HashMap<String, usize> = HashMap::new();
         let mut prev: HashMap<String, String> = HashMap::new();
-        for id in self.in_degree.keys() { dist.insert(id.clone(), 1); }
+        for id in self.in_degree.keys() {
+            dist.insert(id.clone(), 1);
+        }
         for task_id in &topo {
             let cur = dist.get(task_id).copied().unwrap_or(1);
             if let Some(deps) = self.dependents.get(task_id) {
                 for dep in deps {
                     let new = cur + 1;
-                    if new > dist.get(dep).copied().unwrap_or(0) { dist.insert(dep.clone(), new); prev.insert(dep.clone(), task_id.clone()); }
+                    if new > dist.get(dep).copied().unwrap_or(0) {
+                        dist.insert(dep.clone(), new);
+                        prev.insert(dep.clone(), task_id.clone());
+                    }
                 }
             }
         }
-        if let Some(end) = dist.iter().max_by_key(|(_, &d)| d).map(|(id, _)| id.clone()) {
+        if let Some(end) = dist
+            .iter()
+            .max_by_key(|(_, &d)| d)
+            .map(|(id, _)| id.clone())
+        {
             let mut path = Vec::new();
             let mut current = Some(end);
-            while let Some(id) = current { path.push(TaskId::from_str(&id)); current = prev.get(&id).cloned(); }
+            while let Some(id) = current {
+                path.push(TaskId::from_str(&id));
+                current = prev.get(&id).cloned();
+            }
             path.reverse();
             path
-        } else { Vec::new() }
+        } else {
+            Vec::new()
+        }
     }
 
     pub fn parallel_paths(&self) -> usize {
         let critical = self.critical_path();
-        if critical.is_empty() { return 0; }
+        if critical.is_empty() {
+            return 0;
+        }
         let cs: HashSet<String> = critical.iter().map(|id| id.as_str().to_string()).collect();
         let mut deps_map: HashMap<String, HashSet<String>> = HashMap::new();
         for (dep, dependents) in &self.dependents {
-            for d in dependents { deps_map.entry(d.clone()).or_insert_with(HashSet::new).insert(dep.clone()); }
+            for d in dependents {
+                deps_map
+                    .entry(d.clone())
+                    .or_insert_with(HashSet::new)
+                    .insert(dep.clone());
+            }
         }
-        self.in_degree.keys().filter(|id| !cs.contains(*id)).filter(|id| {
-            if let Some(deps) = deps_map.get(*id) { deps.iter().all(|d| cs.contains(d)) } else { true }
-        }).count()
+        self.in_degree
+            .keys()
+            .filter(|id| !cs.contains(*id))
+            .filter(|id| {
+                if let Some(deps) = deps_map.get(*id) {
+                    deps.iter().all(|d| cs.contains(d))
+                } else {
+                    true
+                }
+            })
+            .count()
     }
 
-    pub fn len(&self) -> usize { self.in_degree.len() }
-    pub fn is_empty(&self) -> bool { self.in_degree.is_empty() }
+    pub fn len(&self) -> usize {
+        self.in_degree.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.in_degree.is_empty()
+    }
 }
 
 impl Default for DagScheduler {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    #[test] fn ready_no_deps() { let mut s = DagScheduler::new(); s.add_task(TaskId::from_str("A"), &[], Priority::Normal).unwrap(); s.add_task(TaskId::from_str("B"), &[], Priority::Normal).unwrap(); assert_eq!(s.get_ready_tasks().len(), 2); }
+    #[test]
+    fn ready_no_deps() {
+        let mut s = DagScheduler::new();
+        s.add_task(TaskId::from_str("A"), &[], Priority::Normal)
+            .unwrap();
+        s.add_task(TaskId::from_str("B"), &[], Priority::Normal)
+            .unwrap();
+        assert_eq!(s.get_ready_tasks().len(), 2);
+    }
     // EPIC-101: 验证 heap 实际行为 — high priority first
     // (BinaryHeap max-heap by default + Reverse wrapper = min-heap, 但 Priority enum 高 = 大)
     // 实际: C (Critical) > H (High) > L (Low), 跟原测试期望一致
-    #[test] fn priority_order() { let mut s = DagScheduler::new(); s.add_task(TaskId::from_str("L"), &[], Priority::Low).unwrap(); s.add_task(TaskId::from_str("H"), &[], Priority::High).unwrap(); s.add_task(TaskId::from_str("C"), &[], Priority::Critical).unwrap(); let r = s.get_ready_tasks(); assert_eq!(r[0].as_str(), "C"); assert_eq!(r[1].as_str(), "H"); }
-    #[test] fn critical_diamond() { let mut s = DagScheduler::new(); let a=TaskId::from_str("A");let b=TaskId::from_str("B");let c=TaskId::from_str("C");let d=TaskId::from_str("D"); s.add_task(a.clone(),&[],Priority::Normal).unwrap(); s.add_task(b.clone(),&[a.clone()],Priority::Normal).unwrap(); s.add_task(c.clone(),&[a.clone()],Priority::Normal).unwrap(); s.add_task(d.clone(),&[b.clone(),c.clone()],Priority::Normal).unwrap(); let p=s.critical_path(); assert_eq!(p.len(),3); assert_eq!(p[0].as_str(),"A"); assert_eq!(p[2].as_str(),"D"); }
-    #[test] fn parallel_count() { let mut s = DagScheduler::new(); let a=TaskId::from_str("A");let b=TaskId::from_str("B");let c=TaskId::from_str("C");let d=TaskId::from_str("D"); s.add_task(a.clone(),&[],Priority::Normal).unwrap(); s.add_task(b.clone(),&[a.clone()],Priority::Normal).unwrap(); s.add_task(c.clone(),&[a.clone()],Priority::Normal).unwrap(); s.add_task(d.clone(),&[b.clone(),c.clone()],Priority::Normal).unwrap(); assert_eq!(s.parallel_paths(),1); }
-    #[test] fn chain_no_par() { let mut s = DagScheduler::new(); let a=TaskId::from_str("A");let b=TaskId::from_str("B");let c=TaskId::from_str("C"); s.add_task(a.clone(),&[],Priority::Normal).unwrap(); s.add_task(b.clone(),&[a.clone()],Priority::Normal).unwrap(); s.add_task(c.clone(),&[b.clone()],Priority::Normal).unwrap(); assert_eq!(s.critical_path().len(),3); assert_eq!(s.parallel_paths(),0); }
-    #[test] fn complete_unblock() { let mut s=DagScheduler::new();let a=TaskId::from_str("A");let b=TaskId::from_str("B"); s.add_task(a.clone(),&[],Priority::Normal).unwrap(); s.add_task(b.clone(),&[a.clone()],Priority::Normal).unwrap(); assert_eq!(s.get_ready_tasks().len(),1); let u=s.complete_task("A").unwrap(); assert_eq!(u.len(),1); assert_eq!(u[0].as_str(),"B"); }
-    #[test] fn topo_sort() { let mut s=DagScheduler::new();let a=TaskId::from_str("A");let b=TaskId::from_str("B"); s.add_task(a.clone(),&[],Priority::Normal).unwrap(); s.add_task(b.clone(),&[a.clone()],Priority::Normal).unwrap(); let o=s.topological_sort().unwrap(); assert!(o.iter().position(|x| x.as_str()=="A")<o.iter().position(|x| x.as_str()=="B")); }
+    #[test]
+    fn priority_order() {
+        let mut s = DagScheduler::new();
+        s.add_task(TaskId::from_str("L"), &[], Priority::Low)
+            .unwrap();
+        s.add_task(TaskId::from_str("H"), &[], Priority::High)
+            .unwrap();
+        s.add_task(TaskId::from_str("C"), &[], Priority::Critical)
+            .unwrap();
+        let r = s.get_ready_tasks();
+        assert_eq!(r[0].as_str(), "C");
+        assert_eq!(r[1].as_str(), "H");
+    }
+    #[test]
+    fn critical_diamond() {
+        let mut s = DagScheduler::new();
+        let a = TaskId::from_str("A");
+        let b = TaskId::from_str("B");
+        let c = TaskId::from_str("C");
+        let d = TaskId::from_str("D");
+        s.add_task(a.clone(), &[], Priority::Normal).unwrap();
+        s.add_task(b.clone(), &[a.clone()], Priority::Normal)
+            .unwrap();
+        s.add_task(c.clone(), &[a.clone()], Priority::Normal)
+            .unwrap();
+        s.add_task(d.clone(), &[b.clone(), c.clone()], Priority::Normal)
+            .unwrap();
+        let p = s.critical_path();
+        assert_eq!(p.len(), 3);
+        assert_eq!(p[0].as_str(), "A");
+        assert_eq!(p[2].as_str(), "D");
+    }
+    #[test]
+    fn parallel_count() {
+        let mut s = DagScheduler::new();
+        let a = TaskId::from_str("A");
+        let b = TaskId::from_str("B");
+        let c = TaskId::from_str("C");
+        let d = TaskId::from_str("D");
+        s.add_task(a.clone(), &[], Priority::Normal).unwrap();
+        s.add_task(b.clone(), &[a.clone()], Priority::Normal)
+            .unwrap();
+        s.add_task(c.clone(), &[a.clone()], Priority::Normal)
+            .unwrap();
+        s.add_task(d.clone(), &[b.clone(), c.clone()], Priority::Normal)
+            .unwrap();
+        assert_eq!(s.parallel_paths(), 1);
+    }
+    #[test]
+    fn chain_no_par() {
+        let mut s = DagScheduler::new();
+        let a = TaskId::from_str("A");
+        let b = TaskId::from_str("B");
+        let c = TaskId::from_str("C");
+        s.add_task(a.clone(), &[], Priority::Normal).unwrap();
+        s.add_task(b.clone(), &[a.clone()], Priority::Normal)
+            .unwrap();
+        s.add_task(c.clone(), &[b.clone()], Priority::Normal)
+            .unwrap();
+        assert_eq!(s.critical_path().len(), 3);
+        assert_eq!(s.parallel_paths(), 0);
+    }
+    #[test]
+    fn complete_unblock() {
+        let mut s = DagScheduler::new();
+        let a = TaskId::from_str("A");
+        let b = TaskId::from_str("B");
+        s.add_task(a.clone(), &[], Priority::Normal).unwrap();
+        s.add_task(b.clone(), &[a.clone()], Priority::Normal)
+            .unwrap();
+        assert_eq!(s.get_ready_tasks().len(), 1);
+        let u = s.complete_task("A").unwrap();
+        assert_eq!(u.len(), 1);
+        assert_eq!(u[0].as_str(), "B");
+    }
+    #[test]
+    fn topo_sort() {
+        let mut s = DagScheduler::new();
+        let a = TaskId::from_str("A");
+        let b = TaskId::from_str("B");
+        s.add_task(a.clone(), &[], Priority::Normal).unwrap();
+        s.add_task(b.clone(), &[a.clone()], Priority::Normal)
+            .unwrap();
+        let o = s.topological_sort().unwrap();
+        assert!(
+            o.iter().position(|x| x.as_str() == "A") < o.iter().position(|x| x.as_str() == "B")
+        );
+    }
 }

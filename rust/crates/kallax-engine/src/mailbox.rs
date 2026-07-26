@@ -2,12 +2,12 @@
 //!
 //! Asynchronous message passing between performers.
 
-use kallax_core::{KallaxError, PerformerId, Result};
 use chrono::{DateTime, Utc};
 use dashmap::DashMap;
+use kallax_core::{KallaxError, PerformerId, Result};
+use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
-use parking_lot::Mutex;
 use uuid::Uuid;
 
 /// A message between performers
@@ -121,7 +121,8 @@ impl Mailbox {
         let to_id = message.to.as_str().to_string();
 
         // Get or create mailbox
-        let mailbox = self.mailboxes
+        let mailbox = self
+            .mailboxes
             .entry(to_id)
             .or_insert_with(|| PerformerMailbox::new(self.max_mailbox_size));
 
@@ -221,7 +222,12 @@ mod tests {
 
         // Fill mailbox
         for _ in 0..2 {
-            let msg = Message::new(from.clone(), to.clone(), MessageType::Notification, serde_json::json!({}));
+            let msg = Message::new(
+                from.clone(),
+                to.clone(),
+                MessageType::Notification,
+                serde_json::json!({}),
+            );
             mailbox.send(msg).unwrap();
         }
 

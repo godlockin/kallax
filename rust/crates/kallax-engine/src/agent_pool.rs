@@ -2,9 +2,9 @@
 //!
 //! Manages performer lifecycle and allocation.
 
-use kallax_core::{KallaxError, Performer, PerformerId, PerformerStatus, Result, TaskId};
 use chrono::{DateTime, Duration, Utc};
 use dashmap::DashMap;
+use kallax_core::{KallaxError, Performer, PerformerId, PerformerStatus, Result, TaskId};
 use std::sync::Arc;
 use tracing::{info, warn};
 
@@ -84,7 +84,8 @@ impl AgentPool {
 
     /// Update performer heartbeat
     pub fn heartbeat(&self, performer_id: &str) -> Result<()> {
-        let mut performer = self.performers
+        let mut performer = self
+            .performers
             .get_mut(performer_id)
             .ok_or_else(|| KallaxError::not_found("performer", performer_id))?;
 
@@ -110,9 +111,9 @@ impl AgentPool {
     pub fn acquire_performer(&self, required_capabilities: &[String]) -> Option<Performer> {
         for mut entry in self.performers.iter_mut() {
             if entry.status() == PerformerStatus::Idle {
-                let has_all_caps = required_capabilities.iter().all(|cap| {
-                    entry.capabilities().contains(cap)
-                });
+                let has_all_caps = required_capabilities
+                    .iter()
+                    .all(|cap| entry.capabilities().contains(cap));
                 if has_all_caps || required_capabilities.is_empty() {
                     // 真正 reserve — 在 pool 标记为 Busy, caller 必须 release/commit_task
                     entry.assign_task(TaskId::from_str("reserved"));
@@ -148,9 +149,21 @@ impl AgentPool {
     /// Get pool statistics
     pub fn stats(&self) -> AgentPoolStats {
         let total = self.performers.len();
-        let idle = self.performers.iter().filter(|p| p.status() == PerformerStatus::Idle).count();
-        let busy = self.performers.iter().filter(|p| p.status() == PerformerStatus::Busy).count();
-        let offline = self.performers.iter().filter(|p| p.status() == PerformerStatus::Offline).count();
+        let idle = self
+            .performers
+            .iter()
+            .filter(|p| p.status() == PerformerStatus::Idle)
+            .count();
+        let busy = self
+            .performers
+            .iter()
+            .filter(|p| p.status() == PerformerStatus::Busy)
+            .count();
+        let offline = self
+            .performers
+            .iter()
+            .filter(|p| p.status() == PerformerStatus::Offline)
+            .count();
 
         AgentPoolStats {
             total,
@@ -163,7 +176,10 @@ impl AgentPool {
 
     /// List all performers
     pub fn list(&self) -> Vec<Performer> {
-        self.performers.iter().map(|p| (*p.value()).clone()).collect()
+        self.performers
+            .iter()
+            .map(|p| (*p.value()).clone())
+            .collect()
     }
 }
 
@@ -206,8 +222,7 @@ mod tests {
     fn acquire_requires_capabilities() {
         let pool = AgentPool::default();
 
-        let performer = Performer::new("Agent-1")
-            .with_capabilities(vec!["rust".to_string()]);
+        let performer = Performer::new("Agent-1").with_capabilities(vec!["rust".to_string()]);
 
         pool.register(performer).unwrap();
 

@@ -2,8 +2,8 @@
 //!
 //! In-memory knowledge storage with simple FTS.
 
-use kallax_core::{KallaxError, Result};
 use dashmap::DashMap;
+use kallax_core::{KallaxError, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
@@ -19,7 +19,11 @@ pub struct KnowledgeEntry {
 }
 
 impl KnowledgeEntry {
-    pub fn new(id: impl Into<String>, title: impl Into<String>, content: impl Into<String>) -> Self {
+    pub fn new(
+        id: impl Into<String>,
+        title: impl Into<String>,
+        content: impl Into<String>,
+    ) -> Self {
         Self {
             id: id.into(),
             title: title.into(),
@@ -108,7 +112,8 @@ impl KnowledgeBase {
         let mut matching_ids: Option<HashSet<String>> = None;
 
         for word in query_words {
-            let word_matches: HashSet<String> = self.word_index
+            let word_matches: HashSet<String> = self
+                .word_index
                 .get(&word)
                 .map(|ids| ids.clone())
                 .unwrap_or_default();
@@ -200,8 +205,12 @@ mod tests {
     fn add_and_search() {
         let kb = KnowledgeBase::new();
 
-        let entry = KnowledgeEntry::new("1", "Rust Programming", "Rust is a systems programming language")
-            .with_tags(vec!["rust".to_string(), "programming".to_string()]);
+        let entry = KnowledgeEntry::new(
+            "1",
+            "Rust Programming",
+            "Rust is a systems programming language",
+        )
+        .with_tags(vec!["rust".to_string(), "programming".to_string()]);
 
         kb.add(entry).unwrap();
 
