@@ -1,0 +1,56 @@
+{
+  "ticket_id": "EPIC-144",
+  "epic": "EPIC-144",
+  "phase": "PHASE-018",
+  "title": "npm script name 修复 — ci.yml/dual-engine.yml 引 type-check 但 package.json 是 typecheck",
+  "status": "done",
+  "priority": "P0",
+  "type": "bugfix",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "PR #150 canary 抓到 CI `TypeScript Type Check` job 报 `npm error Missing script: type-check`. 根因: workflow 引 `npm run type-check` 但 `node/package.json` scripts 里是 `typecheck` (无横杠).\n\n**核对 2 处不一致**:\n- `.github/workflows/ci.yml:51` — `run: npm run type-check` (workflow)\n- `.github/workflows/dual-engine.yml:19` — `Node typecheck` (workflow 名称含横杠)\n- `node/package.json` scripts — `typecheck: tsc --noEmit` (无横杠)\n\n**修法** (choose one, master 拍板):\n- Option A: 改 workflow → `npm run typecheck` (2 处 workflow 改动, 保 package.json 原样)\n- Option B: 改 package.json → add `type-check` alias (or rename), 保 workflow 原样\n\n**推荐 Option A** — workflow 一致跟 kebab-case Node 生态惯例 (但 script name 已有 typecheck 用户可能记熟了). 主公拍.\n\n**关联**: main 分支 CI 从没跑过所以此 bug 一直隐藏, 直到 4-branch flow 第一次真走到 main.",
+  "file_scope": {
+    "includes": [
+      ".github/workflows/ci.yml",
+      ".github/workflows/dual-engine.yml",
+      "node/package.json"
+    ]
+  },
+  "acceptance": [
+    "workflow 引用的 npm script name 在 package.json 存在",
+    "CI TypeScript Type Check job PASS",
+    "本地 `cd node && npm run <script>` 可跑"
+  ],
+  "labels": ["cleanup", "canary-finding", "ci-config"],
+  "derived_from": "PR #150 canary",
+  "verification": {
+    "option_chosen": "A (change workflows to match package.json)",
+    "grep_before": {
+      "pattern": "npm run type-check",
+      "occurrences": 1,
+      "matches": [".github/workflows/ci.yml:51"]
+    },
+    "grep_after": {
+      "pattern": "npm run type-check",
+      "occurrences": 0
+    },
+    "grep_after_fixed": {
+      "pattern": "npm run typecheck",
+      "occurrences": 1,
+      "matches": [".github/workflows/ci.yml:51"]
+    },
+    "dual_engine_note": "dual-engine.yml line 19 has step NAME 'Node typecheck' but the run: command is 'cd node && npx tsc --noEmit' (direct tsc invocation, does NOT call npm run type-check). No mismatch to fix in dual-engine.yml. Only ci.yml required a change.",
+    "yaml_validation": {
+      "ci.yml": "OK",
+      "dual-engine.yml": "OK"
+    },
+    "local_typecheck": {
+      "cmd": "cd node && npm run typecheck",
+      "exit_code": 0,
+      "runner": "bash ~/.claude/exec-task.sh 'epic144-typecheck' -> OK success"
+    },
+    "package_json_untouched": true
+  }
+}

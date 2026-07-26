@@ -48,7 +48,7 @@ jobs:
         run: npm ci
 
       - name: Type check
-        run: npm run type-check
+        run: npm run typecheck
 
   node-test:
     name: Node.js Tests
