@@ -1,0 +1,65 @@
+{
+  "ticket_id": "EPIC-137-C",
+  "epic": "EPIC-137",
+  "phase": "PHASE-018",
+  "title": "scripts/check-dco.sh + CI 门禁",
+  "status": "done",
+  "verification": {
+    "test_command": "bash tests/integration/check-dco-test.sh",
+    "test_result": "PASS 3/3",
+    "raw_test_output": [
+      "=== Scenario 1: all signed ===",
+      "check-dco: 3/3 commits PASS (base=base, head=HEAD)",
+      "exit=0",
+      "S1: PASS",
+      "=== Scenario 2: middle commit missing signoff ===",
+      "[✗] 69c9dd57 commit 2 unsigned  missing-signoff",
+      "check-dco: 2/3 commits PASS (base=base, head=HEAD)",
+      "exit=1",
+      "S2: PASS",
+      "=== Scenario 3: forged Signed-off-by email ===",
+      "[✗] 60bb3844 commit 1 forged  email-mismatch:fake@evil≠a@k.io",
+      "check-dco: 0/1 commits PASS (base=base, head=HEAD)",
+      "exit=1",
+      "S3: PASS",
+      "=== Summary === PASS 3/3"
+    ],
+    "syntax_check": {
+      "scripts/check-dco.sh": "bash -n OK",
+      "tests/integration/check-dco-test.sh": "bash -n OK",
+      ".github/workflows/dco-check.yml": "YAML OK (python yaml.safe_load)"
+    },
+    "file_sizes_bytes": {
+      "scripts/check-dco.sh": 4733,
+      ".github/workflows/dco-check.yml": 1216,
+      "tests/integration/check-dco-test.sh": 4234
+    },
+    "checkout_action_sha": "11d5960a326750d5838078e36cf38b85af677262 (v4, pinned by EPIC-136-A, matches ci.yml + cleanup-merged.yml + pr-body-check.yml)"
+  },
+  "priority": "P0",
+  "type": "chore",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "本地 pre-push / PR 前的 DCO 自查, 跟 Cindy 的 `pnpm check:dco` 对齐.\n\n脚本 scripts/check-dco.sh:\n- 扫当前分支 vs base (miao/main) 所有 commit, 检查每个 commit message 是否含 Signed-off-by\n- 校验 Signed-off-by 的 email 与 committer email 一致 (防伪签)\n- 输出遗漏 commit 清单, exit 1 若有遗漏\n\nCI: .github/workflows/dco-check.yml (触发: pull_request), 跑 scripts/check-dco.sh --base miao\n\n跟 KALLAX check-* 4 immutable script 家族对齐.",
+  "file_scope": {
+    "includes": [
+      "scripts/check-dco.sh",
+      ".github/workflows/dco-check.yml"
+    ]
+  },
+  "acceptance": [
+    "scripts/check-dco.sh 可执行, --help 输出用法",
+    "3 场景测试: 全签 / 部分未签 / 伪签 email 不一致",
+    "CI dco-check.yml 触发 pull_request, 未签则 FAIL block merge",
+    "check-dco.sh 语法 `bash -n` PASS"
+  ],
+  "labels": [
+    "borrow-from-cindy",
+    "governance",
+    "dco",
+    "ci"
+  ],
+  "derived_from": "confluence/decisions/borrow-from-cindy-2026-07-26.md"
+}

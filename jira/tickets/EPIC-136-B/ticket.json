@@ -1,0 +1,48 @@
+{
+  "ticket_id": "EPIC-136-B",
+  "epic": "EPIC-136",
+  "phase": "PHASE-018",
+  "title": "Node 侧三重锁 — .nvmrc + .npmrc + packageManager SHA512",
+  "status": "done",
+  "priority": "P0",
+  "type": "chore",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "Node 工程环境硬锁, 让 clone 后 `pnpm i` (或 npm i) 必然命中 CI 相同环境.\n\n1. 添加 `.nvmrc` 内容为固定 Node 版本 (e.g. 22.11.0, 跟 rust-toolchain 风格对齐).\n2. 添加/更新 `node/.npmrc`:\n   ```\n   node-linker=hoisted\n   frozen-lockfile=true\n   engine-strict=true\n   ```\n3. 在 node/package.json 添加 `packageManager` 字段带 SHA512:\n   `\"packageManager\": \"pnpm@X.Y.Z+sha512:<hash>\"` (或 npm@ 对应哈希).\n4. Cargo 侧 rust-toolchain.toml 补一致的 channel + components pin (如已存在则 verify).\n\nCindy 参考: apps/desktop 用 `packageManager: pnpm@10.33.2+sha512:...` + `.npmrc` 3 行.",
+  "file_scope": {
+    "includes": [
+      "node/.npmrc",
+      "node/package.json",
+      ".nvmrc",
+      "rust-toolchain.toml"
+    ]
+  },
+  "acceptance": [
+    ".nvmrc 存在, 内容为版本号单行",
+    "node/.npmrc 3 行完全匹配 spec",
+    "node/package.json packageManager 字段带 +sha512 后缀",
+    "CI 从零 clone 环境 `node -v` == .nvmrc 内容",
+    "刻意改 .nvmrc 为错版本 → CI FAIL (engine-strict 生效)"
+  ],
+  "labels": [
+    "borrow-from-cindy",
+    "supply-chain",
+    "dx"
+  ],
+  "derived_from": "confluence/decisions/borrow-from-cindy-2026-07-26.md",
+  "verification": {
+    "nvmrc_content": "22.11.0",
+    "npmrc_content": "node-linker=hoisted\nfrozen-lockfile=true\nengine-strict=true",
+    "package_json_packageManager_line": "\"packageManager\": \"pnpm@10.13.1+sha512.N+vxpcejDV+r4MXfRO6NpMllygxa89urKMOhaBtwolYhjQXIHJwNz3Z+9rhVHrW5YAQrntQwDFkkIzY3fgHPrQ==\"",
+    "rust_toolchain_toml_state": "created new file (did not exist before) — channel=1.97.1, components=[rustfmt, clippy, rust-src], profile=minimal",
+    "package_manager_detected": "pnpm@10.13.1 (no lockfile at node/ root — followed KALLAX doc convention preferring pnpm)",
+    "sha512_source": "npm view pnpm@10.13.1 dist.integrity => sha512-N+vxpcejDV+r4MXfRO6NpMllygxa89urKMOhaBtwolYhjQXIHJwNz3Z+9rhVHrW5YAQrntQwDFkkIzY3fgHPrQ==",
+    "notes": [
+      "Format uses +sha512.<base64> (dot) per corepack spec matching Cindy pnpm@10.33.2+sha512:... pattern",
+      "Node 22.11.0 as ticket description specified as LTS baseline",
+      "No commit/push per instructions"
+    ]
+  }
+}

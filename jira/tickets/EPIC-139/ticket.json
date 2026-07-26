@@ -1,0 +1,41 @@
+{
+  "ticket_id": "EPIC-139",
+  "epic": "EPIC-139",
+  "phase": "PHASE-018",
+  "title": "SECURITY.md — 私有披露入口 + SLA (10-day / 90-day)",
+  "status": "done",
+  "priority": "P0",
+  "type": "docs",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "根新建 SECURITY.md, 建立漏洞披露渠道.\n\n结构 (抄 Cindy SECURITY.md 但 SLA 数字放宽):\n- 优先渠道: GitHub Private Vulnerability Reporting (仓 /security/advisories/new)\n- 备用: security@<domain> (若无 domain 则用 issue label + private handle)\n- SLA: **10 工作日确认 + 90 天协调披露窗口**\n- 7 天无响应可换渠道催\n- 请求提交者提供: 受影响版本 / 平台 / PoC / 影响面\n- 说明公开 vs 私有 CVE 边界 (KALLAX CLI 漏洞 vs 用户数据泄露)\n- 不需要双语版本 (KALLAX 目前中文单语)\n\n同时启用 GitHub Private Vulnerability Reporting (Settings → Security → Advisories).",
+  "file_scope": {
+    "includes": [
+      "SECURITY.md"
+    ]
+  },
+  "acceptance": [
+    "SECURITY.md 存在, 首行含项目名 + 版本策略",
+    "含 4 段: 报告渠道 / SLA 表 / 请求信息 / 公开策略",
+    "SLA 明确数字 (10 工作日 / 90 天)",
+    "gh 查询 github.com/repos/<owner>/kallax/security/advisories 接口可访问 (private reporting 启用)"
+  ],
+  "labels": [
+    "borrow-from-cindy",
+    "security",
+    "governance"
+  ],
+  "derived_from": "confluence/decisions/borrow-from-cindy-2026-07-26.md",
+  "verification": {
+    "security_md_bytes": 2622,
+    "todo_placeholder_count": 1,
+    "supported_versions_table_rows": 3,
+    "recent_tags_used": ["v3.28.0", "v3.27.x", "v3.27"],
+    "existing_file_before": false,
+    "github_pvr_enabled": false,
+    "gh_api_response": "{\"enabled\":false}",
+    "note": "SECURITY.md 首选渠道仍写 GitHub Private Vulnerability Reporting; PVR 需主公去 Settings→Security→Advisories 手动启用."
+  }
+}

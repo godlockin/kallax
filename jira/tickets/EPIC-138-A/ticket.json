@@ -1,0 +1,100 @@
+{
+  "ticket_id": "EPIC-138-A",
+  "epic": "EPIC-138",
+  "phase": "PHASE-018",
+  "title": "PR template 加 KALLAX 版 7 类风险 checkbox",
+  "status": "done",
+  "priority": "P0",
+  "type": "docs",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "抄 Cindy `PULL_REQUEST_TEMPLATE.md` 的 7 类结构化风险模式, 但主题换成 KALLAX 域:\n\n**KALLAX 7 类风险 (跟 branch-flow / 5-Level Verify / EPIC-131 sentinel 对齐)**:\n1. **5-Level Verify** — L2 cargo test --workspace 是否绿 (raw output 引用)\n2. **state.json 边界** — 是否改 authz 读写路径 (.kallax/state/*)\n3. **worktree 隔离** — 是否越出 file_scope\n4. **Dead-code sentinel** — 是否新增 dead module (scripts/scan-dead-code.sh)\n5. **Rule / immutable script** — 是否新增/改 4 immutable scripts 或 CLAUDE.md Rule\n6. **Rust ↔ Node 边界** — 是否跨语言改 IPC/protocol\n7. **跨 EPIC 复用** — 是否有 file_scope.includes 跟其他 EPIC overlap (未记录)\n\n每类必须显式勾选 ✅ 或写「不涉及」+ 简短原因.\n另外抄 Cindy 的字段: `## 自动验证` (含命令与结果) + `## 手工验证` + `## 未执行验证`.",
+  "file_scope": {
+    "includes": [
+      ".github/PULL_REQUEST_TEMPLATE.md"
+    ]
+  },
+  "acceptance": [
+    "PR template 含 7 类 checkbox 段落, 每条一行描述",
+    "含 `## 自动验证 (raw output)` 段, 强制粘贴 cargo test / vitest raw 输出",
+    "含 `## 手工验证` + `## 未执行验证` 段",
+    "开一个 sample PR 时模板自动填入 (GH 生效验证)"
+  ],
+  "labels": [
+    "borrow-from-cindy",
+    "pr-hygiene"
+  ],
+  "derived_from": "confluence/decisions/borrow-from-cindy-2026-07-26.md",
+  "verification": {
+    "file_path": ".github/PULL_REQUEST_TEMPLATE.md",
+    "existed_before": false,
+    "byte_size": 3857,
+    "sections_present": [
+      "PR 标题",
+      "摘要",
+      "变更类型",
+      "关联 ticket",
+      "🔒 KALLAX 7 类风险 checkbox",
+      "自动验证 (raw output)",
+      "手工验证",
+      "未执行验证",
+      "回滚方案",
+      "提交前 checklist"
+    ],
+    "seven_risks_present": [
+      "5-Level Verify (L2)",
+      "state.json 边界",
+      "worktree 隔离",
+      "Dead-code sentinel",
+      "Rule / immutable script",
+      "Rust ↔ Node 边界",
+      "跨 EPIC 复用"
+    ],
+    "raw_output_code_blocks": 3,
+    "code_fence_count": 6,
+    "kallax_artifacts_quoted": [
+      "CLAUDE.md 5-Level Verify",
+      "Branch Flow Governance (feature/* → testing → main → miao)",
+      "EPIC-131/132 dead-code sentinel",
+      "5 immutable scripts (check-decorative-claim/check-narrative/check-fail-closed/check-self-heal/check-claim-evidence)",
+      "scripts/scan-dead-code.sh",
+      "scripts/permission/* (9 authz)",
+      ".kallax/state/*",
+      "DCO 签核",
+      "4-expert review"
+    ],
+    "acceptance_check": {
+      "7_checkbox_sections": true,
+      "auto_verify_raw_output_section": true,
+      "manual_verify_section": true,
+      "unexecuted_verify_section": true,
+      "gh_render_verify": "pending (需 sample PR, out of L1 scope)"
+    },
+    "not_committed": true,
+    "notes": [
+      "EPIC-138-A 描述提到 '4 immutable scripts', 但 CLAUDE.md 实际列 5 个 (含 check-claim-evidence.sh, EPIC-069-D 新增). 模板按 5 个写.",
+      "5-Level Verify L2 在 CLAUDE.md 有 cargo test 与 cargo test --workspace --release 变体, 模板取 --workspace --release 严格版 (跟 EPIC-102 升级对齐).",
+      "acceptance[3] 'GH 生效验证' 需 sample PR, 由下游 138-B CI 或 sample PR 触发, 本 ticket 不 commit."
+    ]
+  },
+  "resolutions": [
+    {
+      "date": "2026-07-26",
+      "ambiguity": "immutable scripts 4 or 5",
+      "master_decision": "keep 5 (含 EPIC-069-D check-claim-evidence.sh) — 按 CLAUDE.md 当前状态"
+    },
+    {
+      "date": "2026-07-26",
+      "ambiguity": "L2 command form",
+      "master_decision": "keep `cargo test --workspace --release` (EPIC-102 strict) — Performer 已按此写"
+    },
+    {
+      "date": "2026-07-26",
+      "ambiguity": "GH 生效验证 pending (未 push)",
+      "master_decision": "开单独 PR 做端到端验证; 主公明确要 '针对性单测/pr'",
+      "followup": "TODO: 首个真实 PR 时验证 PR template 弹出 + pr-body-check.yml 拦截 + dco-check.yml 拦截"
+    }
+  ]
+}

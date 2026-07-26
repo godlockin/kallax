@@ -1,0 +1,39 @@
+name: DCO Check
+# EPIC-137-C: enforce DCO Signed-off-by trailer on every non-merge commit in PR.
+# Complements .githooks/prepare-commit-msg (EPIC-137-B, auto-append) and
+# .github/dco.yml (server-side DCO app). This workflow is the CI hard gate.
+#
+# Local self-check: `bash scripts/check-dco.sh --base miao`
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: dco-check-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check-dco:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 — pinned by EPIC-136-A
+        with:
+          fetch-depth: 0  # full history required for base..head walk
+
+      - name: Fetch base branch
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          git fetch --no-tags --prune origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
+
+      - name: Run check-dco.sh
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          bash scripts/check-dco.sh --base "origin/${BASE_REF}" --head HEAD

@@ -1,0 +1,49 @@
+{
+  "ticket_id": "EPIC-137-B",
+  "epic": "EPIC-137",
+  "phase": "PHASE-018",
+  "title": ".githooks/prepare-commit-msg — DCO trailer 自动追加",
+  "status": "done",
+  "priority": "P0",
+  "type": "chore",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "抄 Cindy 的 hook 设计 (但主题换成 KALLAX):\n- 使用 **COMMITTER ident** 而非 AUTHOR (防 cherry-pick / --author= 代签)\n- 显式 `git interpret-trailers --if-exists addIfDifferent --if-missing add` (防本地 config 绕过)\n- Merge commit 豁免 (跳过 MERGE_MSG)\n- 已签名 (Signed-off-by 已存在) 跳过\n- 空 message 布局跟 `git commit -s` 一致 (subject 空行再 sign-off)\n\n同时更新 `scripts/install-hooks.sh` 让 `kallax init` 自动 chmod +x + git config core.hooksPath.\n\n文件: .githooks/prepare-commit-msg (新), scripts/install-hooks.sh (改)",
+  "file_scope": {
+    "includes": [
+      ".githooks/prepare-commit-msg",
+      "scripts/install-hooks.sh"
+    ]
+  },
+  "acceptance": [
+    "prepare-commit-msg 语法 `bash -n` PASS",
+    "5 场景测试: 1) 空 commit -m → 追加; 2) 已有 Signed-off-by → 不追加; 3) merge → 跳过; 4) --author= 其他人 → 用 COMMITTER 签; 5) 本地设 trailer.ifExists=doNothing → 仍追加",
+    "tests/integration/dco-hook-test.sh 5/5 PASS",
+    "install-hooks.sh 幂等, 二次运行不重复"
+  ],
+  "labels": [
+    "borrow-from-cindy",
+    "governance",
+    "dco",
+    "hooks"
+  ],
+  "derived_from": "confluence/decisions/borrow-from-cindy-2026-07-26.md",
+  "verification": {
+    "syntax_checks": {
+      "sh -n .githooks/prepare-commit-msg": "PASS (POSIX sh)",
+      "bash -n scripts/install-hooks.sh": "PASS",
+      "bash -n tests/integration/dco-hook-test.sh": "PASS"
+    },
+    "test_output": "── DCO Hook Test Results ──────────────────────────────\nPASS  S1-empty-commit-m  trailer appended\nPASS  S2-already-signed  single trailer preserved (n=1)\nPASS  S3-merge-skip  merge commit exempt\nPASS  S4-committer-not-author  signed as committer (Alice), not author (Other)\nPASS  S5-trailer-config-override  explicit --if-exists overrode local config\n───────────────────────────────────────────────────────\nPASS 5/5\nEXIT=0",
+    "install_hooks_idempotency": "run1='hooks installed: 2', run2='hooks installed: 2', core.hooksPath='.githooks' (no dup, exit 0 both runs)",
+    "file_sizes": {
+      ".githooks/prepare-commit-msg": 3286,
+      "scripts/install-hooks.sh": 1088,
+      "tests/integration/dco-hook-test.sh": 7104
+    },
+    "portability_notes": "POSIX sh shebang. sed used only for stripping comment lines with '/^#/d' — portable across BSD (macOS) and GNU. No sed -i. Trailer append via git interpret-trailers (git builtin, portable). Ident resolved via git config user.name/email (COMMITTER, not AUTHOR).",
+    "prerequisites_confirmed": "DCO (1400 bytes), .github/dco.yml (1200 bytes), NOTICE (223 bytes) all exist from EPIC-137-A"
+  }
+}

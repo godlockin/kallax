@@ -1,0 +1,150 @@
+<!--
+  KALLAX PR Template (EPIC-138-A)
+  规则源: CLAUDE.md 5-Level Verify + Branch Flow Governance + EPIC-131/132 sentinel
+  0 装饰性宣称 · 0 假 PASS · 数字必带 raw output
+  下游 CI 校验: EPIC-138-B (check-pr-template.sh)
+-->
+
+## PR 标题
+
+> 建议格式 (Conventional Commits): `type(scope): desc`
+> 例: `feat(EPIC-138-A): PR template 7 类风险 checkbox`
+
+## 摘要
+
+<!-- 1-2 段说清: 改了什么 + 为什么 -->
+
+
+
+## 变更类型
+
+- [ ] feat — 新功能
+- [ ] fix — bug 修复
+- [ ] refactor — 重构 (无行为变更)
+- [ ] docs — 文档
+- [ ] test — 测试
+- [ ] chore — 杂项
+- [ ] release — 发版
+- [ ] ci — CI/hook
+
+## 关联 ticket
+
+<!-- 必填. 格式: EPIC-XXX / EPIC-XXX-Y / PHASE-XXX. 无 ticket 禁 merge. -->
+
+- Ticket:
+
+---
+
+## 🔒 KALLAX 7 类风险 checkbox
+
+> 规则: 每项 **必填**. 勾选 ✅ 或写 `不涉及: <原因 ≥5 字>`. 空项 = CI fail.
+
+### 1. 5-Level Verify (L2)
+
+> `cd node && npm run build` 通过? `cd rust && cargo test --workspace --release` 0 errors? 附 raw output 到下方 `## 自动验证 (raw output)`.
+
+- [ ] ✅ L2 全绿, raw output 已附
+- [ ] 不涉及: <原因>
+
+### 2. state.json 边界
+
+> 是否改 `.kallax/state/*` 读写路径 / authz 脚本 (`scripts/permission/*`) / session_start.sh?
+
+- [ ] ✅ 已改, 已跑 9 authz 脚本 fail-closed 验证
+- [ ] 不涉及: <原因>
+
+### 3. worktree 隔离
+
+> 变更文件是否全在 `ticket.json.file_scope.includes` 内? 越界 = 违反 Branch Flow Governance.
+
+- [ ] ✅ 全在 scope 内
+- [ ] 不涉及: <原因>
+
+### 4. Dead-code sentinel
+
+> 是否新增未被调用的 module? 跑 `bash scripts/scan-dead-code.sh` exit 0?
+
+- [ ] ✅ scan-dead-code.sh exit 0, 无新 dead module
+- [ ] 不涉及: <原因>
+
+### 5. Rule / immutable script
+
+> 是否新增/改 5 immutable scripts (`check-decorative-claim.sh` / `check-narrative.sh` / `check-fail-closed.sh` / `check-self-heal.sh` / `check-claim-evidence.sh`) 或 CLAUDE.md Rule?
+
+- [ ] ✅ 已改, 主公明确批准 (link decision doc)
+- [ ] 不涉及: <原因>
+
+### 6. Rust ↔ Node 边界
+
+> 是否跨语言改 IPC / protocol / schema / hook API?
+
+- [ ] ✅ 已改, 双端已 sync + 端到端测试
+- [ ] 不涉及: <原因>
+
+### 7. 跨 EPIC 复用
+
+> 是否有 `file_scope.includes` 跟其他 EPIC 已完成 ticket overlap 但未记录?
+
+- [ ] ✅ 已 grep 冲突, 无 overlap 或已记录 (link)
+- [ ] 不涉及: <原因>
+
+---
+
+## 自动验证 (raw output)
+
+> 强制粘贴 raw output (0 装饰). 无 output = CI fail (EPIC-138-B).
+
+### cargo test (Rust)
+
+```
+$ cd rust && cargo test --workspace --release
+<paste raw output here>
+```
+
+### vitest (Node)
+
+```
+$ cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run
+<paste raw output here>
+```
+
+### scan-dead-code
+
+```
+$ bash scripts/scan-dead-code.sh
+<paste raw output here>
+```
+
+## 手工验证
+
+<!-- bullet list, 描述人肉验证过的行为. 例: -->
+<!-- - 本地跑 `kallax init` 生成 .kallax/ 结构, 8 目录齐 -->
+<!-- - Master 起来后 4 sub-role 全 spawn (ps aux | grep kallax) -->
+
+-
+
+## 未执行验证
+
+<!-- 显式声明哪些没跑 (跟 Fact-Forcing 一致, 0 假 PASS). 例: -->
+<!-- - 未跑 e2e 端到端 (需 3 台机器) -->
+<!-- - 未验证 macOS 以外平台 -->
+
+-
+
+## 回滚方案
+
+<!-- 一句话: 如何回滚? -->
+<!-- 例: `git revert <sha>` 直接回退, 无 schema migration -->
+
+
+
+---
+
+## 提交前 checklist
+
+- [ ] DCO 签核 (`Signed-off-by:` 在 commit message)
+- [ ] 无凭证入库 (API key / token / password 均在 env 或 secret)
+- [ ] 文档同步 (README / CHANGELOG / CLAUDE.md 数字必带 raw output 引用)
+- [ ] 测试全绿 (cargo test --workspace --release + vitest 均 pass)
+- [ ] Branch flow 已走 (`feature/*` → `testing` → `main` → `miao`, 0 直推 miao)
+- [ ] Master 已审阅 (4-expert review APPROVE, 至少 1 expert 提供 raw output)
