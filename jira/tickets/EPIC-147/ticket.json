@@ -1,0 +1,31 @@
+{
+  "ticket_id": "EPIC-147",
+  "epic": "EPIC-147",
+  "phase": "PHASE-018",
+  "title": "version drift — root/node/rust 3 处版本不一致 (node 1.0.0 / root 3.18.0 / rust 3.5.0 / git tag v3.29.0)",
+  "status": "todo",
+  "priority": "P1",
+  "type": "chore",
+  "created_at": "2026-07-26",
+  "worktree_role": "master",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "EPIC-145 canary 抓到 root `npm run build` prebuild hook `version-check.sh` FAIL. 独立复现: 3 处版本源不一致.\n\n**已 confirmed drift**:\n- `node/package.json` version: **1.0.0** (从没维护)\n- `package.json` (root) version: **3.18.0** (老)\n- `rust/Cargo.toml` version: **3.5.0** (更老)\n- `rust/crates/*/Cargo.toml` versions: 待核对\n- Git latest tag: **v3.29.0** (真实 release)\n\n**根因**: v3.10.0+ 每 release 只打 tag + 发 gh release, 没 bump 各 package version 字段. 长期漂移.\n\n**修法** (master 拍板):\n- Option A: 都 bump 到 v3.29.0 (跟 git tag 对齐)\n- Option B: 都 bump 到 v3.30.0 (canary 清账后 next release, 跟本轮 backlog v3.30.0 对齐)\n- Option C: 加一个 `scripts/build-tools/bump-version.sh` 未来 auto-sync\n\n**推荐 B + C** — bump 到 v3.30.0 (canary 完成的新版本) + 加自动化脚本预防未来漂移.\n\n**关联**:\n- EPIC-145 (npm build 诊断) 已发现此债, EPIC-145 已关\n- 修完后 `bash scripts/build-tools/version-check.sh` exit 0\n- 修完后 root `npm run build` exit 0",
+  "file_scope": {
+    "includes": [
+      "package.json",
+      "node/package.json",
+      "rust/Cargo.toml",
+      "rust/crates/*/Cargo.toml",
+      "scripts/build-tools/bump-version.sh"
+    ]
+  },
+  "acceptance": [
+    "3 处版本源一致 (选定 canonical version)",
+    "bash scripts/build-tools/version-check.sh exit 0",
+    "root npm run build exit 0",
+    "如果加了 bump-version.sh, 未来 release 用它同步 (记入 docs/reference/)"
+  ],
+  "labels": ["cleanup", "canary-finding", "version-drift"],
+  "derived_from": "EPIC-145 独立复现 (Performer diagnose-first)"
+}
