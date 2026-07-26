@@ -1,0 +1,24 @@
+# DCO GitHub App configuration
+# https://github.com/apps/dco
+#
+# Purpose: enforce Developer Certificate of Origin sign-off on all commits.
+# KALLAX chooses DCO over CLA — lightest legal chain, verifiable via git trailer.
+
+allowRemediationCommits:
+  # Allow contributors to fix a missing Sign-off-by via a follow-up commit
+  # (e.g. `git commit --allow-empty -s -m "Signed-off-by: ..."`) instead of
+  # force-pushing an amended history. This keeps existing review comments
+  # anchored to the original commit SHA (not orphaned/outdated).
+  individual: true
+  # Same rationale for commits authored by a third party (co-author, bot,
+  # or vendored patch) — the current PR author may sign off on their behalf
+  # via a remediation commit.
+  thirdParty: true
+
+require:
+  # Enforce DCO Sign-off-by trailer from repo members / org members too.
+  # `members: true` = 严格 (含 members), `false` = 豁免 members (probot-dco
+  # 语义, 见 https://github.com/dcoapp/app). 不要豁免: 无 GPG / verified-
+  # signature fallback, 一旦豁免 collaborator 就能悄悄 bypass, 审计链断.
+  # (原参考 Cindy `require.members: false` 语义方向反, 已修正.)
+  members: true
