@@ -40,28 +40,52 @@ mod tests {
 
     #[test]
     fn detect_typescript() {
-        assert_eq!(detect_language(&PathBuf::from("main.ts")), Language::TypeScript);
-        assert_eq!(detect_language(&PathBuf::from("component.tsx")), Language::TypeScript);
-        assert_eq!(detect_language(&PathBuf::from("util.js")), Language::TypeScript);
+        assert_eq!(
+            detect_language(&PathBuf::from("main.ts")),
+            Language::TypeScript
+        );
+        assert_eq!(
+            detect_language(&PathBuf::from("component.tsx")),
+            Language::TypeScript
+        );
+        assert_eq!(
+            detect_language(&PathBuf::from("util.js")),
+            Language::TypeScript
+        );
     }
 
     #[test]
     fn detect_python() {
         assert_eq!(detect_language(&PathBuf::from("main.py")), Language::Python);
-        assert_eq!(detect_language(&PathBuf::from("tests/test_foo.py")), Language::Python);
+        assert_eq!(
+            detect_language(&PathBuf::from("tests/test_foo.py")),
+            Language::Python
+        );
     }
 
     #[test]
     fn detect_rust() {
         assert_eq!(detect_language(&PathBuf::from("lib.rs")), Language::Rust);
-        assert_eq!(detect_language(&PathBuf::from("src/main.rs")), Language::Rust);
+        assert_eq!(
+            detect_language(&PathBuf::from("src/main.rs")),
+            Language::Rust
+        );
     }
 
     #[test]
     fn detect_unknown() {
-        assert_eq!(detect_language(&PathBuf::from("readme.md")), Language::Unknown);
-        assert_eq!(detect_language(&PathBuf::from("Makefile")), Language::Unknown);
-        assert_eq!(detect_language(&PathBuf::from("data.json")), Language::Unknown);
+        assert_eq!(
+            detect_language(&PathBuf::from("readme.md")),
+            Language::Unknown
+        );
+        assert_eq!(
+            detect_language(&PathBuf::from("Makefile")),
+            Language::Unknown
+        );
+        assert_eq!(
+            detect_language(&PathBuf::from("data.json")),
+            Language::Unknown
+        );
     }
 
     #[test]

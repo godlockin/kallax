@@ -5,10 +5,10 @@
 //! TaskType: enum of task categories (Analyze, Generate, Verify, Execute).
 //! TaskStatus: enum of valid task states (follows v1.0 status flow).
 
+use super::ticket::TicketId;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use super::ticket::TicketId;
 use std::path::PathBuf;
 use uuid::Uuid;
 
@@ -42,13 +42,27 @@ impl Task {
     }
 
     // Getters
-    pub fn id(&self) -> &TaskId { &self.id }
-    pub fn ticket_id(&self) -> &TicketId { &self.ticket_id }
-    pub fn task_type(&self) -> TaskType { self.task_type }
-    pub fn input(&self) -> &serde_json::Value { &self.input }
-    pub fn output(&self) -> Option<&serde_json::Value> { self.output.as_ref() }
-    pub fn status(&self) -> TaskStatus { self.status }
-    pub fn dependencies(&self) -> &[TaskId] { &self.dependencies }
+    pub fn id(&self) -> &TaskId {
+        &self.id
+    }
+    pub fn ticket_id(&self) -> &TicketId {
+        &self.ticket_id
+    }
+    pub fn task_type(&self) -> TaskType {
+        self.task_type
+    }
+    pub fn input(&self) -> &serde_json::Value {
+        &self.input
+    }
+    pub fn output(&self) -> Option<&serde_json::Value> {
+        self.output.as_ref()
+    }
+    pub fn status(&self) -> TaskStatus {
+        self.status
+    }
+    pub fn dependencies(&self) -> &[TaskId] {
+        &self.dependencies
+    }
 
     /// Add dependency
     pub fn with_dependency(mut self, task_id: TaskId) -> Self {
@@ -109,7 +123,10 @@ pub struct TaskId(String);
 
 impl TaskId {
     pub fn new() -> Self {
-        Self(format!("TASK-{}", Uuid::new_v4().to_string()[..8].to_uppercase()))
+        Self(format!(
+            "TASK-{}",
+            Uuid::new_v4().to_string()[..8].to_uppercase()
+        ))
     }
 
     pub fn from_str(s: impl Into<String>) -> Self {

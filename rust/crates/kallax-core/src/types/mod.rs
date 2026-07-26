@@ -11,19 +11,19 @@
 //! - All state transitions are explicit
 //! - Public API exposed via re-exports below
 
-pub mod ticket;
-pub mod task;
-pub mod performer;
+pub mod dag;
 pub mod event;
 pub mod instance;
+pub mod performer;
+pub mod task;
+pub mod ticket;
 pub mod trace;
-pub mod dag;
 
 // Re-export public API (跟 v2.7.4 单一 SoT 模式 一致, 跟 D4.3 联合)
-pub use ticket::{Ticket, TicketId, TicketStatus, Priority};
-pub use task::{Task, TaskId, TaskType, TaskStatus};
-pub use performer::{Performer, PerformerId, PerformerStatus};
+pub use dag::{DagNodeState, DagRun, DagStatus};
 pub use event::{Event, EventId, EventType};
 pub use instance::{Instance, InstanceRole};
-pub use trace::{TraceSpan, SpanContext};
-pub use dag::{DagRun, DagNodeState, DagStatus};
+pub use performer::{Performer, PerformerId, PerformerStatus};
+pub use task::{Task, TaskId, TaskStatus, TaskType};
+pub use ticket::{Priority, Ticket, TicketId, TicketStatus};
+pub use trace::{SpanContext, TraceSpan};

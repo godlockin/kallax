@@ -56,7 +56,10 @@ pub struct EndpointId(String);
 
 impl EndpointId {
     pub fn new() -> Self {
-        Self(format!("EP-{}", &uuid::Uuid::new_v4().to_string()[..8].to_uppercase()))
+        Self(format!(
+            "EP-{}",
+            &uuid::Uuid::new_v4().to_string()[..8].to_uppercase()
+        ))
     }
 
     pub fn as_str(&self) -> &str {
@@ -461,10 +464,7 @@ mod tests {
         );
         assert_eq!(manager.endpoint_count(), 1);
 
-        let ep = manager
-            .endpoints
-            .get(&id)
-            .expect("endpoint should exist");
+        let ep = manager.endpoints.get(&id).expect("endpoint should exist");
         assert_eq!(ep.events().len(), 3);
     }
 

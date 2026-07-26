@@ -1,0 +1,59 @@
+{
+  "ticket_id": "EPIC-145",
+  "epic": "EPIC-145",
+  "phase": "PHASE-018",
+  "title": "npm run build script 缺失 — Node.js Build workflow FAIL",
+  "status": "done",
+  "priority": "P1",
+  "type": "bugfix",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "PR #150 canary 抓到 `Node.js Build` workflow job `npm run build` FAIL. 需要独立复现看具体错误 (跟 EPIC-141 教训一致, 不能只看 log 位置推断).\n\n**Performer 步骤**:\n1. `cd node && npm run build 2>&1 | tee /tmp/npm-build.log`\n2. 分析 error 具体是什么: script 缺? tsc 报错? 缺 dep?\n3. `node/package.json` 已有 `build: tsc` (v3.29.0 miao 上), 那 fail 可能是:\n   - main 分支 workflow 跑的是 old package.json (main lag)\n   - tsc 有真实类型错 (跟 EPIC-141 修完 validate-runner 无关的其他类型错)\n\n**验收**:\n- 报告 fail root cause (不要预设)\n- 若是 lag 问题 → 属 EPIC-146 sync 范围, 本 ticket 关\n- 若是 tsc 类型错 → fix + report\n- 若是 script 缺 → 补 script + 说明\n\n**追责链**: PR #150 canary, 需独立复现 (Fact-Forcing 第二重).",
+  "file_scope": {
+    "includes": [
+      "node/package.json",
+      "node/src/**/*.ts",
+      "node/tsconfig.json"
+    ]
+  },
+  "acceptance": [
+    "cd node && npm run build exit 0 (or 报告根因并明确 scope)",
+    "如果是 EPIC-146 sync 覆盖范围内, 关本 ticket 并转 146",
+    "如果是真实类型错, 修 + 附 tsc 输出证据"
+  ],
+  "labels": [
+    "cleanup",
+    "canary-finding",
+    "diagnose-first"
+  ],
+  "derived_from": "PR #150 canary",
+  "verification": {
+    "case_classification": "A (misdiagnosed root cause)",
+    "diagnosis": "Ticket title 'npm run build script 缺失' is FACTUALLY WRONG. node/package.json has scripts.build='tsc' present on miao (and main). Local reproduction confirms no missing script.",
+    "actual_root_cause": "Root package.json (not node/) has scripts.prebuild='npm run version:check' which runs scripts/build-tools/version-check.sh. That script FAILs because: package.json version = 3.18.0, rust/Cargo.toml version = 3.5.0 → version drift detected.",
+    "ci_job_evidence": {
+      "run": "https://github.com/godlockin/kallax/actions/runs/30204297702/job/89799567338",
+      "step": "npm run build",
+      "actual_failure_line": "FAIL: version drift detected  package.json: 3.18.0  rust/Cargo.toml: 3.5.0",
+      "exit_code": 1
+    },
+    "local_reproduction": {
+      "cd_node_npm_run_build": "exit 0 — tsc PASS (5 lines output, only npm warn + build header)",
+      "root_npm_run_build": "exit 1 — same version drift FAIL as CI",
+      "bash_scripts_build_tools_version_check_sh_direct": "exit 1 — same drift FAIL"
+    },
+    "why_ticket_title_misled": "Ticket assumed node/ scope. Actual CI job cd-s to root, invokes root prebuild hook via `npm run build`. The 'Node.js Build' job name in CI refers to compiling node/ code, but the entry point is root package.json's build script which chains prebuild → version:check → drift.",
+    "scope": "This is NOT tsc, NOT node/, NOT missing script. It is version drift between two source-of-truth files (package.json 3.18.0 vs rust/Cargo.toml 3.5.0).",
+    "handoff": "Should be a NEW ticket or folded into EPIC-146 (main sync). EPIC-146 description mentions 'main lag' — but the drift is present ON MIAO (current branch), not just main. So this needs its own resolution: pick canonical version (Q1 says package.json), bump rust/Cargo.toml from 3.5.0 → 3.18.0 (or latest agreed version).",
+    "action_taken": "DEFERRED. Not fixing here because: (a) ticket file_scope is node/*, not rust/Cargo.toml; (b) the fix requires an intentional version decision (which release/version tag?) that is out of a P1 canary-finding bugfix's authority; (c) EPIC-141 postmortem explicitly says do not assume — I diagnosed independently and the assumption 'script missing' was wrong.",
+    "next_ticket_recommendation": "Open new ticket 'chore: version drift — rust/Cargo.toml 3.5.0 vs package.json 3.18.0' with file_scope=[rust/Cargo.toml], OR extend EPIC-146 to include version:sync as part of main-sync work.",
+    "files_changed": [],
+    "acceptance_matched": {
+      "npm_run_build_exit_0_or_report_root_cause": "REPORTED root cause (Case A per master procedure)",
+      "if_EPIC_146_scope_close_and_transfer": "PARTIAL — related but not identical; recommending new ticket",
+      "if_real_type_error_fix_and_report": "N/A — not a type error"
+    }
+  }
+}
