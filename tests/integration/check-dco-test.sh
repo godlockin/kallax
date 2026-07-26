@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# tests/integration/check-dco-test.sh — EPIC-137-C
-# 3 scenarios: all-signed / missing-signoff / forged-email.
+# tests/integration/check-dco-test.sh — EPIC-137-C, extended by EPIC-142
+# 4 scenarios: all-signed / missing-signoff / forged-email / pre-cutoff-grace.
 # Runs check-dco.sh against a throwaway git repo in /tmp.
 
 set -eu
@@ -18,7 +18,7 @@ TMP="$(mktemp -d -t check-dco-test.XXXXXX)"
 trap 'rm -rf "$TMP"' EXIT
 
 PASS=0
-TOTAL=3
+TOTAL=4
 
 section() { printf '\n=== %s ===\n' "$1"; }
 
@@ -133,6 +133,42 @@ if [ "$S3_EXIT" -eq 1 ] \
   PASS=$((PASS + 1))
 else
   echo "S3: FAIL — expected exit 1 + '0/1 commits PASS' + 'email-mismatch:fake@evil≠a@k.io'"
+fi
+
+# ------------------------------------------------------------------
+# Scenario 4: --allow-pre-cutoff → 1 pre-cutoff unsigned skipped silently,
+# 2 post-cutoff signed commits pass. Expect exit 0, "2/2 commits PASS".
+# ------------------------------------------------------------------
+section "Scenario 4: --allow-pre-cutoff skips pre-cutoff unsigned commit"
+S4="$TMP/s4"
+(
+  init_repo "$S4"
+  # commit 1 — UNSIGNED, this will be the cutoff (pre-cutoff = ancestor OR equal)
+  echo c1 > f1.txt && git add f1.txt
+  git commit -q --no-verify -m "commit 1 unsigned pre-cutoff"
+  # commit 2 — signed, post-cutoff
+  echo c2 > f2.txt && git add f2.txt
+  git commit -q -m "commit 2 signed post-cutoff
+
+Signed-off-by: Alice <a@k.io>"
+  # commit 3 — signed, post-cutoff
+  echo c3 > f3.txt && git add f3.txt
+  git commit -q -m "commit 3 signed post-cutoff
+
+Signed-off-by: Alice <a@k.io>"
+)
+
+cd "$S4"
+CUTOFF_SHA=$(git log --format='%H' --no-merges --reverse base..HEAD | sed -n '1p')
+S4_OUT=$("$CHECK" --base base --head HEAD --allow-pre-cutoff "$CUTOFF_SHA" 2>&1) && S4_EXIT=0 || S4_EXIT=$?
+echo "$S4_OUT"
+echo "exit=$S4_EXIT"
+echo "cutoff_sha=$(printf '%s' "$CUTOFF_SHA" | cut -c1-8)"
+if [ "$S4_EXIT" -eq 0 ] && echo "$S4_OUT" | grep -q "2/2 commits PASS"; then
+  echo "S4: PASS"
+  PASS=$((PASS + 1))
+else
+  echo "S4: FAIL — expected exit 0 + '2/2 commits PASS' (pre-cutoff commit silently skipped)"
 fi
 
 # ------------------------------------------------------------------

@@ -65,6 +65,13 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 | v3.9.0 | feature/v3.9.0-EPIC-071 | ❌ 跳过 (历史) |
 | v3.9.1 | feature/v3.9.1-EPIC-072 | ❌ 跳过 (历史) |
 | v3.9.2 | feature/v3.9.2-EPIC-073 | ❌ 跳过 (历史) |
+| v3.29.0 | feature/v3.29.0-EPIC-136-to-139 | PR #148 → base=miao (testing 首次 sync via EPIC-142) |
+
+**testing 分支 sync 记录 (EPIC-142, 2026-07-26)**:
+- 首次 4-branch flow 落地时 testing 已落后 miao 6 commit (EPIC-133/134/135 系列, 均未 Signed-off-by, DCO 上线前的历史)
+- Master force-push testing 到 miao HEAD (v3.29.0 merge `7187bb5`)
+- `check-dco.sh` 加 `--allow-pre-cutoff` 让未来 PR 只查本 PR commits, 不 pollute base 历史
+- v3.30.0+ testing 分支强制跟 miao 同步 (每 release merge miao → testing)
 
 **0 静默跳过** (配合 EPIC-069-D check-claim-evidence):
 - v3.10.0+ 必走 4-PR 全程

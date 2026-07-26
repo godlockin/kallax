@@ -1,0 +1,90 @@
+{
+  "ticket_id": "EPIC-140",
+  "epic": "EPIC-140",
+  "phase": "PHASE-018",
+  "title": "cargo audit 4 CVE + 2 warnings — RUSTSEC-2025-0134 anyhow unsound + RUSTSEC-2026-0190",
+  "status": "done",
+  "priority": "P0",
+  "type": "bugfix",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "PR #148 canary (EPIC-136-C 装上第一天) 抓到 rust/Cargo.lock 中 4 vulnerabilities + 2 denied warnings. `cargo audit --deny warnings` 阻塞 CI.\n\n**已确认 finding (raw output from PR #148 run 30199368393)**:\n- RUSTSEC-2025-0134: `anyhow@1.0.102` — Unsoundness in `Error::downcast_mut()` (2025-11-28)\n- RUSTSEC-2026-0190: (待读完整 log 补, 2026-06-25 date)\n- 4 vulnerabilities total + 2 denied warnings\n\n**修复策略** (跟 docs/reference/supply-chain-cargo.md 联合):\n1. 优先 `cargo update -p <crate>` 升到修好版本\n2. 若 upstream 未 release, 用 `[patch.crates-io]` 临时 patch\n3. 若 anyhow 上游还没修, 评估切 `thiserror` (KALLAX 大部分错误已经用 thiserror)\n\n**追责链**: 本 ticket 是 EPIC-136-C canary 发现的技术债, 不是新 bug — 是历史包袱 (从 v3.28.0 前就存在, 只是没 CI 检测).\n\n**验收**: CI cargo-audit workflow 全绿 (exit 0), `cd rust && cargo audit --deny warnings` 本地 PASS.",
+  "file_scope": {
+    "includes": [
+      "rust/Cargo.toml",
+      "rust/Cargo.lock",
+      "rust/crates/*/Cargo.toml"
+    ]
+  },
+  "acceptance": [
+    "cargo audit --deny warnings 本地 PASS (0 CVE, 0 warnings)",
+    "CI .github/workflows/cargo-audit.yml 全绿",
+    "如果用 [patch.crates-io], 附上游 issue/PR 链接",
+    "更新 docs/reference/supply-chain-cargo.md CVE 响应记录段 (real-world case)"
+  ],
+  "labels": ["security", "supply-chain", "cve-response", "canary-finding"],
+  "derived_from": "PR #148 canary (EPIC-136-C first-day catch)",
+  "found_by_run": "https://github.com/godlockin/kallax/actions/runs/30199368393",
+  "verification": {
+    "cargo_audit_before": {
+      "path": "/tmp/cargo-audit-before.txt",
+      "counts": "4 vulnerabilities + 2 denied warnings",
+      "advisories": [
+        "RUSTSEC-2026-0204 (crossbeam-epoch 0.9.18)",
+        "RUSTSEC-2026-0104 (rustls-webpki 0.101.7)",
+        "RUSTSEC-2026-0098 (rustls-webpki 0.101.7)",
+        "RUSTSEC-2026-0099 (rustls-webpki 0.101.7)",
+        "RUSTSEC-2025-0134 (rustls-pemfile 1.0.4, unmaintained)",
+        "RUSTSEC-2026-0190 (anyhow 1.0.102, unsound)"
+      ]
+    },
+    "cargo_audit_after": {
+      "path": "/tmp/cargo-audit-after.txt",
+      "exit_code": 0,
+      "counts": "0 vulnerabilities, 0 warnings",
+      "raw_lines": [
+        "    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`",
+        "      Loaded 1169 security advisories (from /Users/chenchen/.cargo/advisory-db)",
+        "    Updating crates.io index",
+        "    Scanning Cargo.lock for vulnerabilities (294 crate dependencies)"
+      ]
+    },
+    "fixes": {
+      "manifest_bumps": [
+        "rust/Cargo.toml: reqwest 0.11 → 0.12 (workspace dep)",
+        "rust/crates/kallax-server/Cargo.toml: reqwest 0.11 → 0.12 (dev-dep)"
+      ],
+      "cargo_update_only": [
+        "crossbeam-epoch 0.9.18 → 0.9.20 (in-range)"
+      ],
+      "transitively_dropped": [
+        "anyhow (was 1.0.102; no direct workspace use, dropped by reqwest 0.12 upgrade)",
+        "rustls-pemfile 1.0.4 (unmaintained; dropped by reqwest 0.12)"
+      ],
+      "transitively_upgraded": [
+        "rustls-webpki 0.101.7 → 0.103.13 (via reqwest 0.12 → rustls-24+)"
+      ],
+      "patch_crates_io": "none needed — all upstream fixes released"
+    },
+    "cargo_test": {
+      "cmd": "cd rust && cargo test --workspace --release --no-fail-fast",
+      "result": "all green",
+      "evidence_log": "/tmp/claude-tasks/cargo-test-evidence-20260726-210620.log",
+      "tail_summary": "kallax-core 25/25 passed; kallax-server 1/1 passed; kallax-engine unit+doc tests 0 failed; total test result: ok"
+    },
+    "cargo_check_locked": {
+      "cmd": "cd rust && cargo check --locked --workspace",
+      "result": "PASS (Cargo.toml + Cargo.lock consistent)"
+    },
+    "files_touched": [
+      "rust/Cargo.toml",
+      "rust/crates/kallax-server/Cargo.toml",
+      "rust/Cargo.lock",
+      "docs/reference/supply-chain-cargo.md",
+      "jira/tickets/EPIC-140/ticket.json"
+    ],
+    "crates_count": "307 → 294 (13 crates removed by reqwest 0.11 → 0.12 stack consolidation)"
+  }
+}

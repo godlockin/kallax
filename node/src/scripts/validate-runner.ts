@@ -14,6 +14,8 @@
  * Exit code: 0 if all pass, 1 if any fail.
  */
 
+import { fileURLToPath } from 'node:url';
+
 import { validateAll, SCHEMA_VERSION } from '../core/schema-validator.js';
 
 interface InputFileList {
@@ -93,7 +95,17 @@ async function main(): Promise<number> {
   return failed === 0 ? 0 : 1;
 }
 
-main().then((code) => { process.exit(code); }).catch((error: unknown) => {
-  process.stderr.write(`[FATAL] Runner crashed: ${String(error)}\n`);
-  process.exit(1);
-});
+// Only run main() when this file is executed directly as a CLI.
+// When imported (e.g. by dead-code sentinel tests), skip execution to avoid
+// reading an empty stdin, failing JSON.parse, and triggering a vitest-patched
+// process.exit throw. Standard Node ESM entry-point pattern.
+const isMainModule = import.meta.url.startsWith('file:')
+  && typeof process.argv[1] === 'string'
+  && fileURLToPath(import.meta.url) === process.argv[1];
+
+if (isMainModule) {
+  main().then((code) => { process.exit(code); }).catch((error: unknown) => {
+    process.stderr.write(`[FATAL] Runner crashed: ${String(error)}\n`);
+    process.exit(1);
+  });
+}
