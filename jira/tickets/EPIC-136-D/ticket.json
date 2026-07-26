@@ -1,0 +1,60 @@
+{
+  "ticket_id": "EPIC-136-D",
+  "epic": "EPIC-136",
+  "phase": "PHASE-018",
+  "title": "Node postinstall 白名单 + Rust build.rs audit",
+  "status": "done",
+  "priority": "P1",
+  "type": "chore",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "收窄任意代码执行面.\n\nNode: 添加 pnpm/npm 的 `onlyBuiltDependencies` 白名单 (若使用 pnpm), 仅允许必要 native module 跑 postinstall (better-sqlite3 / etc, 若无则空数组).\n\nRust: 扫 rust/**/build.rs 存在性, 写 docs 记录每个 build.rs 的用途 (防止 upstream crate 悄悄加).\n新脚本: scripts/audit/list-build-rs.sh 输出 rust workspace 内所有 build.rs + 大小 + 首行注释.\n\nCindy 参考: `pnpm.onlyBuiltDependencies` 白名单收窄到 4-6 个 essential native module.",
+  "file_scope": {
+    "includes": [
+      "node/package.json",
+      "scripts/audit/list-build-rs.sh",
+      "docs/reference/build-rs-inventory.md"
+    ]
+  },
+  "acceptance": [
+    "node/package.json 有 pnpm.onlyBuiltDependencies 数组 (即使空)",
+    "scripts/audit/list-build-rs.sh 可执行, 输出所有 build.rs 清单",
+    "docs/reference/build-rs-inventory.md 存在, 每个 build.rs 一行说明",
+    "CI 一步: bash scripts/audit/list-build-rs.sh > /tmp/build-rs.txt && diff 对齐 inventory"
+  ],
+  "labels": [
+    "borrow-from-cindy",
+    "supply-chain"
+  ],
+  "derived_from": "confluence/decisions/borrow-from-cindy-2026-07-26.md",
+  "verification": {
+    "completed_at": "2026-07-26",
+    "node_package_manager": "pnpm@10.13.1",
+    "node_lockfile_present": false,
+    "node_pnpm_block_added": {
+      "onlyBuiltDependencies": ["better-sqlite3", "esbuild"],
+      "rationale": "better-sqlite3 is a direct dep with native binding; esbuild is transitive via tsx/vitest and downloads platform binary via postinstall. No other native packages present in dep tree (no bcrypt/sharp/node-pty/fsevents/deasync/sqlite3)."
+    },
+    "audit_script": {
+      "path": "scripts/audit/list-build-rs.sh",
+      "bash_n_result": "PASS (syntax OK)",
+      "executable": true,
+      "cli": "[--format human|json] [--diff-against <inventory>]",
+      "exit_codes": "0=ok, 1=diff mismatch, 2=usage error"
+    },
+    "build_rs_scan_raw_output": "# build.rs inventory (rust/ workspace)\n# scanned: 2026-07-26T10:50:07Z\n# root: /Users/chenchen/working/sourcecode/tools/dev-tools/kallax/rust\n# count: 0\n\n(no build.rs files found)",
+    "build_rs_count": 0,
+    "diff_against_check": "exit 0 (clean repo, sentinel match)",
+    "doc_path": "docs/reference/build-rs-inventory.md",
+    "doc_bytes": 2929,
+    "ambiguous_purpose_flags": [],
+    "acceptance_pass": [
+      "node/package.json has pnpm.onlyBuiltDependencies (2 entries)",
+      "scripts/audit/list-build-rs.sh executable, bash -n PASS, both formats work",
+      "docs/reference/build-rs-inventory.md exists (sentinel state: count=0)",
+      "CI one-liner: bash scripts/audit/list-build-rs.sh --diff-against docs/reference/build-rs-inventory.md exit 0"
+    ]
+  }
+}

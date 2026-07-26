@@ -1,0 +1,43 @@
+{
+  "ticket_id": "EPIC-136-C",
+  "epic": "EPIC-136",
+  "phase": "PHASE-018",
+  "title": "Cargo audit + Cargo.lock 完整性 CI",
+  "status": "done",
+  "priority": "P0",
+  "type": "chore",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "Rust 侧供应链: 每 PR 跑 `cargo audit --deny warnings` + `cargo tree --duplicates` 检测.\nCargo.lock 必须 commit (workspace 根); PR 若改依赖但没更新 lock → FAIL.\n\nCindy Node 侧对应 `pnpm.overrides` (CVE 治理) — Rust 用 [patch.crates-io] + cargo audit 双闸.\n\n新 workflow: .github/workflows/cargo-audit.yml (schedule: weekly + on cargo file change).",
+  "file_scope": {
+    "includes": [
+      ".github/workflows/cargo-audit.yml",
+      "rust/Cargo.lock"
+    ]
+  },
+  "acceptance": [
+    "cargo-audit.yml 存在, 触发 pull_request + schedule(weekly)",
+    "cargo audit --deny warnings 在 CI 中执行, warnings 阻塞 merge",
+    "PR 若改 rust/**/Cargo.toml 但 Cargo.lock 未同步 → CI FAIL",
+    "文档: docs/reference/supply-chain-cargo.md 说明如何应对 CVE 提示"
+  ],
+  "labels": [
+    "borrow-from-cindy",
+    "supply-chain",
+    "rust"
+  ],
+  "derived_from": "confluence/decisions/borrow-from-cindy-2026-07-26.md",
+  "verification": {
+    "cargo_lock_committed": true,
+    "cargo_lock_gitignored": false,
+    "cargo_lock_path": "rust/Cargo.lock",
+    "workflow_yaml_valid": "OK",
+    "workflow_yaml_check_cmd": "python3 -c \"import yaml; yaml.safe_load(open('.github/workflows/cargo-audit.yml'))\"",
+    "doc_line_count": 53,
+    "doc_path": "docs/reference/supply-chain-cargo.md",
+    "cargo_audit_local_run": "skipped — cargo-audit not installed locally; CI installs via `cargo install cargo-audit --locked`",
+    "third_party_action_pin_status": "actions/checkout@v4 tagged with `# TODO: 136-A pin` for retro SHA-pinning"
+  }
+}

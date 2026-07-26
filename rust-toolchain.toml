@@ -1,0 +1,8 @@
+# KALLAX Rust toolchain pin (EPIC-136-B — 3 重锁 Node/Rust 环境 hardening)
+# 让 clone 后 `cargo build` 必然命中 CI 相同环境.
+# 与 .nvmrc + node/.npmrc + node/package.json packageManager 三重锁对齐.
+
+[toolchain]
+channel = "1.97.1"
+components = ["rustfmt", "clippy", "rust-src"]
+profile = "minimal"
