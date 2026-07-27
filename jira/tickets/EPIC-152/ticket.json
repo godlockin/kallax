@@ -3,7 +3,7 @@
   "epic": "EPIC-152",
   "phase": "PHASE-018",
   "title": "Fact-Forcing 累积 3 例 — Master 建 bugfix ticket 前必须独立复现 (Rule 升级候选)",
-  "status": "todo",
+  "status": "done",
   "priority": "P1",
   "type": "docs",
   "created_at": "2026-07-26",
@@ -23,6 +23,14 @@
     "confluence/decisions/fact-forcing-independent-repro-2026-07-26.md 存在 (3 case + lesson + Rule 升级建议)",
     "0 增 immutable script (跟 Rule 5 DRY 联合)"
   ],
-  "labels": ["governance", "lesson", "fact-forcing", "rule-upgrade"],
-  "derived_from": "EPIC-141 v1 + EPIC-145 + EPIC-148 累积 3 例"
+  "labels": [
+    "governance",
+    "lesson",
+    "fact-forcing",
+    "rule-upgrade"
+  ],
+  "derived_from": "EPIC-141 v1 + EPIC-145 + EPIC-148 累积 3 例",
+  "completed_at": "2026-07-27",
+  "completed_by": "master direct edit (doc-level, 0 source change)",
+  "resolution_summary": "Rule 34 added to CLAUDE.md: § 'Rule 34 — Bugfix Ticket 必须独立复现'. Decision doc already lives at confluence/decisions/fact-forcing-independent-repro-2026-07-26.md. 0 source change + 0 new immutable script (跟 Rule 5 DRY 一致). Future bugfix tickets will include verification.reproduction_{command,exit_code,raw_output} fields per Rule 34. Culture enforcement 由 Master (主公) 拍 — Master 自警 — 决策 doc 提青 case。"
 }
