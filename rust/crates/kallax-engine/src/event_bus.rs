@@ -122,10 +122,8 @@ mod tests {
         assert_eq!(received.event_type, EventType::TicketCreated);
 
         // Task subscriber should timeout (no message)
-        let result = tokio::time::timeout(
-            std::time::Duration::from_millis(10),
-            task_rx.recv()
-        ).await;
+        let result =
+            tokio::time::timeout(std::time::Duration::from_millis(10), task_rx.recv()).await;
         assert!(result.is_err());
     }
 }

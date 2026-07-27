@@ -12,9 +12,9 @@
 //!
 //! Supported languages: TypeScript, Python, Rust
 
-mod types;
-mod language;
 mod extractors;
+mod language;
+mod types;
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -55,9 +55,8 @@ impl CodeAnalyzer {
             });
         }
 
-        let content = fs::read_to_string(&path).map_err(|e| {
-            KallaxError::io(&path, format!("failed to read file: {e}"))
-        })?;
+        let content = fs::read_to_string(&path)
+            .map_err(|e| KallaxError::io(&path, format!("failed to read file: {e}")))?;
 
         let symbols = extract_symbols(&content, language);
         let loc = count_loc(&content, language);
@@ -86,9 +85,8 @@ impl CodeAnalyzer {
             ));
         }
 
-        let files = collect_files(dir).map_err(|e| {
-            KallaxError::io(dir, format!("failed to scan directory: {e}"))
-        })?;
+        let files = collect_files(dir)
+            .map_err(|e| KallaxError::io(dir, format!("failed to scan directory: {e}")))?;
 
         for file_path in files {
             let analysis = self.analyze_file(&file_path)?;

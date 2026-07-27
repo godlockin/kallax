@@ -34,7 +34,10 @@ pub struct EventId(String);
 
 impl EventId {
     pub fn new() -> Self {
-        Self(format!("EVT-{}", Uuid::new_v4().to_string()[..8].to_uppercase()))
+        Self(format!(
+            "EVT-{}",
+            Uuid::new_v4().to_string()[..8].to_uppercase()
+        ))
     }
 }
 
@@ -65,7 +68,7 @@ pub enum EventType {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{Ticket, TicketId, TicketStatus, PerformerId, Task, TaskType};
+    use crate::{PerformerId, Task, TaskType, Ticket, TicketId, TicketStatus};
 
     #[test]
     fn ticket_state_transitions() {

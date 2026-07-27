@@ -12,7 +12,10 @@ pub fn output_result(format: OutputFormat, action: &str, data: serde_json::Value
                 "status": "ok",
                 "data": data,
             });
-            println!("{}", serde_json::to_string_pretty(&envelope).unwrap_or_default());
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&envelope).unwrap_or_default()
+            );
         }
         OutputFormat::Yaml => {
             let envelope = serde_yaml_or_json(&data);

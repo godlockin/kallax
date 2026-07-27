@@ -1,0 +1,51 @@
+{
+  "ticket_id": "EPIC-146",
+  "epic": "EPIC-146",
+  "phase": "PHASE-018",
+  "title": "main 分支 sync 跟 miao/testing — 3 merge commit divergent + 长期 lag 债",
+  "status": "done",
+  "priority": "P0",
+  "type": "chore",
+  "created_at": "2026-07-26",
+  "worktree_role": "master",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L2",
+  "description": "PR #150 canary 抓到 main 分支落后 testing 16 commits + 独有 3 merge commits (diverged). 根因: 长期 miao-only 开发, main 分支只在少数 PR (#139, #141, #145) 通过 merge commit 收过 miao 的部分内容, 但从没做真正的 fast-forward sync.\n\n**已 confirmed main 独有 3 commits (全 merge commit, 无独立内容)**:\n- b99fada Merge pull request #145 from godlockin/testing\n- bb93164 Merge pull request #141 from godlockin/miao\n- fbdc73e Merge pull request #139 from godlockin/miao\n\n**修法** (跟 EPIC-142 testing sync 模式一致, force-push 到 miao HEAD):\n1. 确认 v3.30.0 内容全在 testing (feature/v3.30.0-EPIC-140-to-142 已 merge 4307d2f2)\n2. `git push origin origin/testing:refs/heads/main --force` (main = testing HEAD)\n3. 验证 `git log origin/main..origin/testing | wc -l` = 0\n4. 更新 CLAUDE.md branch-flow-governance 段加 main sync record (跟 EPIC-142 testing sync 段并列)\n\n**注意**: main 的 3 merge commit 内容都是历史 miao → main 的 subset, 已经在 testing HEAD 里, force-push 不丢内容.\n\n**验收**:\n- git log origin/main..origin/testing 输出 0 lines\n- git log origin/testing..origin/main 输出 0 lines (完全对齐)\n- CLAUDE.md 加 sync record\n- 下一个 testing → main PR 只查本 PR commits, 不 pollute base\n\n**追责链**: PR #150 canary — 4-branch flow 第一次真走到 main 暴露长期 miao-only 开发债. 跟 EPIC-142 是 sister ticket.",
+  "file_scope": {
+    "includes": [
+      "CLAUDE.md"
+    ]
+  },
+  "acceptance": [
+    "origin/main = origin/testing HEAD (git log 0 diff 双向)",
+    "CLAUDE.md branch-flow-governance 段加 main sync record + v3.30.0 追溯 row",
+    "无内容丢失 (main 独有 3 merge commit 都是 testing subset, 已 confirm)"
+  ],
+  "labels": ["governance", "branch-flow", "canary-finding"],
+  "derived_from": "PR #150 canary — main 分支 diverged from testing 4-branch governance 补齐",
+  "verification": {
+    "main_sha_before": "b99fadad2578f134bf1b05f624fa980a5a5d0e17",
+    "main_sha_after": "4307d2f2cca0f38f038bb6b11c42b78d0c1df158",
+    "testing_sha": "4307d2f2cca0f38f038bb6b11c42b78d0c1df158",
+    "content_verification": {
+      "main_independent_count_before": 3,
+      "main_independent_non_merge_before": 0,
+      "merge_sources_ancestor_of_testing": [
+        "436b0db4ba88c0d46c959114e1246477a5205578",
+        "3d15c3e4088ea0c7ebe7001c46d243fa99ffadca",
+        "91c07f8f0e02436ee87181b64fd291b80f51ff03"
+      ],
+      "note": "All 3 main-independent commits are merge commits (2 parents each); merge sources are ancestors of testing HEAD — no content lost."
+    },
+    "post_push": {
+      "git_log_main_to_testing_lines": 0,
+      "git_log_testing_to_main_lines": 0,
+      "ls_remote_main": "4307d2f2cca0f38f038bb6b11c42b78d0c1df158"
+    },
+    "claude_md_diff": {
+      "files_changed": 1,
+      "insertions": 7,
+      "deletions": 0
+    }
+  }
+}

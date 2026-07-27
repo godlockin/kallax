@@ -6,8 +6,8 @@ use serde::{Deserialize, Serialize};
 use kallax_core::types::Priority;
 
 use crate::sub_enums::{
-    ConductorAction, IsolationAction, KnowledgeAction, PerformerAction, SystemAction,
-    TaskAction, VerifyAction,
+    ConductorAction, IsolationAction, KnowledgeAction, PerformerAction, SystemAction, TaskAction,
+    VerifyAction,
 };
 
 // ---------------------------------------------------------------------------

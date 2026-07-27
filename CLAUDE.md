@@ -65,6 +65,20 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 | v3.9.0 | feature/v3.9.0-EPIC-071 | ❌ 跳过 (历史) |
 | v3.9.1 | feature/v3.9.1-EPIC-072 | ❌ 跳过 (历史) |
 | v3.9.2 | feature/v3.9.2-EPIC-073 | ❌ 跳过 (历史) |
+| v3.29.0 | feature/v3.29.0-EPIC-136-to-139 | PR #148 → base=miao (testing 首次 sync via EPIC-142) |
+| v3.30.0 | feature/v3.30.0-EPIC-140-to-142 | PR #149 → testing (merged 4307d2f2); PR #150 → main (closed 因 debt) → force-push (EPIC-146) |
+
+**testing 分支 sync 记录 (EPIC-142, 2026-07-26)**:
+- 首次 4-branch flow 落地时 testing 已落后 miao 6 commit (EPIC-133/134/135 系列, 均未 Signed-off-by, DCO 上线前的历史)
+- Master force-push testing 到 miao HEAD (v3.29.0 merge `7187bb5`)
+- `check-dco.sh` 加 `--allow-pre-cutoff` 让未来 PR 只查本 PR commits, 不 pollute base 历史
+- v3.30.0+ testing 分支强制跟 miao 同步 (每 release merge miao → testing)
+
+**main 分支 sync 记录 (EPIC-146, 2026-07-26)**:
+- 4-branch flow 第 2 段 (testing → main) 首次落地时 main 落后 testing 16 commit, 且 main 独有 3 merge commit (`b99fada` / `bb93164` / `fbdc73e` — 全部只是历史 miao/testing → main 的 merge commit, 无独立内容)
+- Master 借 EPIC-142 pattern force-push main 到 testing HEAD (v3.30.0 sync commit `4307d2f2`)
+- v3.31.0+ main 分支强制跟 testing 同步 (每 testing → main PR merge 后 auto-align)
+- **Canary 战果**: PR #150 首次真走到 main 时抓到 main 分支 4 类历史债 (fmt / npm scripts / diverged commits / pre-DCO), 全部 记入 EPIC-143/144/145/146
 
 **0 静默跳过** (配合 EPIC-069-D check-claim-evidence):
 - v3.10.0+ 必走 4-PR 全程

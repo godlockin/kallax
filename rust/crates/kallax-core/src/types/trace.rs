@@ -48,13 +48,27 @@ impl TraceSpan {
         self.ended_at = Some(now);
     }
 
-    pub fn id(&self) -> &str { &self.id }
-    pub fn span_name(&self) -> &str { &self.span_name }
-    pub fn parent_span_id(&self) -> Option<&str> { self.parent_span_id.as_deref() }
-    pub fn context(&self) -> &SpanContext { &self.context }
-    pub fn started_at(&self) -> DateTime<Utc> { self.started_at }
-    pub fn ended_at(&self) -> Option<DateTime<Utc>> { self.ended_at }
-    pub fn duration_ms(&self) -> Option<i64> { self.duration_ms }
+    pub fn id(&self) -> &str {
+        &self.id
+    }
+    pub fn span_name(&self) -> &str {
+        &self.span_name
+    }
+    pub fn parent_span_id(&self) -> Option<&str> {
+        self.parent_span_id.as_deref()
+    }
+    pub fn context(&self) -> &SpanContext {
+        &self.context
+    }
+    pub fn started_at(&self) -> DateTime<Utc> {
+        self.started_at
+    }
+    pub fn ended_at(&self) -> Option<DateTime<Utc>> {
+        self.ended_at
+    }
+    pub fn duration_ms(&self) -> Option<i64> {
+        self.duration_ms
+    }
 
     pub fn from_storage(
         id: String,
@@ -65,6 +79,14 @@ impl TraceSpan {
         ended_at: Option<DateTime<Utc>>,
         duration_ms: Option<i64>,
     ) -> Self {
-        Self { id, span_name, parent_span_id, context, started_at, ended_at, duration_ms }
+        Self {
+            id,
+            span_name,
+            parent_span_id,
+            context,
+            started_at,
+            ended_at,
+            duration_ms,
+        }
     }
 }

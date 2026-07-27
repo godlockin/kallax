@@ -73,7 +73,7 @@ export function createKnowledgeRoutes(deps: KnowledgeRouteDependencies): Router 
 
   // GET /api/knowledge/search?q= — search knowledge base
   router.get('/search', (req: Request, res: Response): void => {
-    void (async () => {
+    void (async (): Promise<void> => {
       try {
         const query = req.query['q'] as string | undefined;
 
@@ -179,7 +179,7 @@ export function createKnowledgeRoutes(deps: KnowledgeRouteDependencies): Router 
 
   // POST /api/knowledge/index — index a file/directory
   router.post('/index', (req: Request, res: Response): void => {
-    void (async () => {
+    void (async (): Promise<void> => {
       try {
         const body = req.body as Record<string, unknown>;
         const targetPath = body['path'] as string | undefined;
@@ -247,7 +247,7 @@ export function createKnowledgeRoutes(deps: KnowledgeRouteDependencies): Router 
 
   // GET /api/knowledge/stats — knowledge base stats
   router.get('/stats', (_req: Request, res: Response): void => {
-    void (async () => {
+    void (async (): Promise<void> => {
       try {
         let dirExists = false;
         try {

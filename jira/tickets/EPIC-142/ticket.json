@@ -1,0 +1,54 @@
+{
+  "ticket_id": "EPIC-142",
+  "epic": "EPIC-142",
+  "phase": "PHASE-018",
+  "title": "testing 分支落后 miao 6 commit — branch flow governance 首次落地补 sync",
+  "status": "done",
+  "priority": "P0",
+  "type": "chore",
+  "created_at": "2026-07-26",
+  "worktree_role": "master",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L2",
+  "description": "PR #148 建 PR 到 testing 时抓到 testing 分支落后 miao 6 commit (acf48f2, 3345914, 44b3b7a, 06a5c72, d69e218, 18878203). 这 6 个 commit 都是 EPIC-133/134/135 系列, 全部未 Signed-off-by (因为当时还没有 EPIC-137-A DCO 机制).\n\n**背景** (跟 CLAUDE.md `Branch Flow Governance` 段联合):\n- v3.8.1-v3.9.2 5 个 release 全跳过 testing/main (CLAUDE.md 已 record)\n- v3.28.0 时决定 v3.10.0+ 强制 4-branch flow, 但 testing 一直没 sync\n- PR #148 (v3.29.0) 是首个真的走 testing 的 PR, 立刻暴露 testing = stale\n\n**修复策略** — 3 步:\n1. **testing hard-reset 到 miao**: `git checkout testing && git reset --hard origin/miao && git push -f origin testing`\n   - 6 个 unsigned commit 已在 miao 上, testing 只需 fast-forward\n   - hard-reset 不动内容, 只对齐指针\n2. **建 grace policy**: check-dco.sh 加 `--allow-pre-cutoff <sha>` 选项, 默认 cutoff = 首个签的 commit (本 PR 4 commit 之前的都豁免) — 记入 CLAUDE.md DCO 段\n3. **CLAUDE.md 更新**: 在 branch-flow-governance 段加一行 record: 'testing 首次同步 2026-07-26 via EPIC-142; v3.29.0+ 强制 4-branch 全程'\n\n**验收**:\n- `git log origin/testing..origin/miao` 输出 0 lines (完全对齐)\n- 下一个 PR 到 testing 时 check-dco 只检查本 PR 引入的 commit, 不 pollute base 分支历史\n- CLAUDE.md 追溯段更新",
+  "file_scope": {
+    "includes": [
+      "CLAUDE.md",
+      "scripts/check-dco.sh",
+      "confluence/decisions/"
+    ]
+  },
+  "acceptance": [
+    "testing 分支 = miao 分支 (git log 0 diff)",
+    "check-dco.sh 支持 --allow-pre-cutoff 或等价机制",
+    "CLAUDE.md branch-flow-governance 段加 sync record",
+    "下一个到 testing 的 PR check-dco 通过 (不 pollute base 历史)"
+  ],
+  "labels": [
+    "branch-flow",
+    "governance",
+    "canary-finding"
+  ],
+  "derived_from": "PR #148 canary — check-dco on base=testing 抓到 6 unsigned",
+  "found_by_run": "https://github.com/godlockin/kallax/actions/runs/30199368359",
+  "verification": {
+    "testing_sync": {
+      "before_sha": "436b0db4ba88c0d46c959114e1246477a5205578",
+      "after_sha": "7187bb5704bb34596c64728ab1fd461191d10f83",
+      "diff_lines_origin_testing_to_miao": 0,
+      "verified_by": "git log origin/testing..origin/miao | wc -l = 0"
+    },
+    "syntax_checks": {
+      "scripts/check-dco.sh": "bash -n PASS",
+      "tests/integration/check-dco-test.sh": "bash -n PASS"
+    },
+    "integration_test": "PASS 4/4 (S1 all-signed, S2 missing-signoff, S3 forged-email, S4 pre-cutoff-grace)",
+    "real_repo_check": {
+      "no_cutoff_range_miao~10..miao": "4/23 PASS exit=1 (19 unsigned pre-DCO commits fail)",
+      "cutoff_acf48f2_range_miao~10..miao": "4/4 PASS exit=0 (pre-cutoff EPIC-133/134/135 silently skipped, v3.29.0 EPIC-136-139 pass)",
+      "default_cutoff_7187bb5": "0/0 PASS exit=0 (entire range pre-cutoff)",
+      "unknown_cutoff_SHA": "grace disabled + warns to stderr + still fails on unsigned (exit=1)"
+    },
+    "claude_md_diff": "+8 lines: v3.29.0 追溯 row + testing sync record 4-bullet block"
+  }
+}

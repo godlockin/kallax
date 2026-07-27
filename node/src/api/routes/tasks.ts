@@ -44,7 +44,7 @@ export function createTaskRoutes(deps: TaskRouteDependencies): Router {
   // GET /api/tasks/next — claim the next available task by priority + capability
   // Must be placed BEFORE /:id to avoid route capture
   router.get('/next', (req: Request, res: Response): void => {
-    void (async () => {
+    void (async (): Promise<void> => {
       try {
         if (deps.claimQueue === undefined) {
           res.status(501).json({
@@ -128,7 +128,7 @@ export function createTaskRoutes(deps: TaskRouteDependencies): Router {
 
   // GET /api/tasks — list tasks with filters
   router.get('/', (req: Request, res: Response): void => {
-    void (async () => {
+    ((): void => {
       try {
         const status = req.query['status'] as string | undefined;
         const performerId = req.query['performerId'] as string | undefined;
@@ -187,11 +187,11 @@ export function createTaskRoutes(deps: TaskRouteDependencies): Router {
 
   // POST /api/tasks — create task from ticket
   router.post('/', (req: Request, res: Response): void => {
-    void (async () => {
+    ((): void => {
       try {
         const body = req.body as CreateTaskRequest;
 
-        if (body.ticketId === undefined || typeof body.ticketId !== 'string') {
+        if (typeof body.ticketId !== 'string') {
           res.status(400).json({
             success: false,
             error: { code: 'VALIDATION_ERROR', message: 'ticketId is required' },
@@ -259,7 +259,7 @@ export function createTaskRoutes(deps: TaskRouteDependencies): Router {
 
   // GET /api/tasks/:id — get task detail
   router.get('/:id', (req: Request, res: Response): void => {
-    void (async () => {
+    ((): void => {
       try {
         const taskId = req.params['id'] as string;
 
@@ -298,12 +298,12 @@ export function createTaskRoutes(deps: TaskRouteDependencies): Router {
 
   // PUT /api/tasks/:id/progress — update progress
   router.put('/:id/progress', (req: Request, res: Response): void => {
-    void (async () => {
+    ((): void => {
       try {
         const taskId = req.params['id'] as string;
         const body = req.body as UpdateProgressRequest;
 
-        if (body.progress === undefined || typeof body.progress !== 'number') {
+        if (typeof body.progress !== 'number') {
           res.status(400).json({
             success: false,
             error: { code: 'VALIDATION_ERROR', message: 'progress (0-100) is required' },
@@ -370,7 +370,7 @@ export function createTaskRoutes(deps: TaskRouteDependencies): Router {
 
   // DELETE /api/tasks/:id — cancel task
   router.delete('/:id', (req: Request, res: Response): void => {
-    void (async () => {
+    ((): void => {
       try {
         const taskId = req.params['id'] as string;
 

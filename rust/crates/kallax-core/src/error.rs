@@ -3,8 +3,8 @@
 //! All errors carry enough context for debugging without stack traces.
 //! No unwrap/expect/panic allowed - use these error types.
 
-use thiserror::Error;
 use std::path::PathBuf;
+use thiserror::Error;
 
 /// Result type alias using KallaxError
 pub type Result<T> = std::result::Result<T, KallaxError>;
@@ -102,10 +102,7 @@ pub enum KallaxError {
     // Execution errors
     // ─────────────────────────────────────────────────────────────────────────
     #[error("task execution failed for task '{task_id}': {reason}")]
-    TaskExecution {
-        task_id: String,
-        reason: String,
-    },
+    TaskExecution { task_id: String, reason: String },
 
     #[error("tree-sitter parsing timeout for file '{path}' (size: {size_bytes} bytes, timeout: {timeout_ms}ms)")]
     TreeSitterTimeout {
@@ -118,33 +115,22 @@ pub enum KallaxError {
     // IO errors
     // ─────────────────────────────────────────────────────────────────────────
     #[error("IO error at '{path}': {message}")]
-    Io {
-        path: PathBuf,
-        message: String,
-    },
+    Io { path: PathBuf, message: String },
 
     // ─────────────────────────────────────────────────────────────────────────
     // Configuration errors
     // ─────────────────────────────────────────────────────────────────────────
     #[error("configuration error: {key} - {message}")]
-    Config {
-        key: &'static str,
-        message: String,
-    },
+    Config { key: &'static str, message: String },
 
     // ─────────────────────────────────────────────────────────────────────────
     // Channel/Communication errors
     // ─────────────────────────────────────────────────────────────────────────
     #[error("channel closed: {channel_name}")]
-    ChannelClosed {
-        channel_name: &'static str,
-    },
+    ChannelClosed { channel_name: &'static str },
 
     #[error("message delivery failed to '{recipient}': {reason}")]
-    MessageDelivery {
-        recipient: String,
-        reason: String,
-    },
+    MessageDelivery { recipient: String, reason: String },
 
     // ─────────────────────────────────────────────────────────────────────────
     // Serialization errors
@@ -159,9 +145,7 @@ pub enum KallaxError {
     // Internal errors (should never happen in production)
     // ─────────────────────────────────────────────────────────────────────────
     #[error("internal error: {message} (this is a bug, please report)")]
-    Internal {
-        message: String,
-    },
+    Internal { message: String },
 }
 
 impl KallaxError {
@@ -268,10 +252,7 @@ mod tests {
     #[test]
     fn error_messages_are_human_readable() {
         let err = KallaxError::not_found("ticket", "TICKET-001");
-        assert_eq!(
-            err.to_string(),
-            "entity not found: ticket 'TICKET-001'"
-        );
+        assert_eq!(err.to_string(), "entity not found: ticket 'TICKET-001'");
 
         let err = KallaxError::invalid_state("ticket", "TICKET-001", "ready", "in_progress");
         assert_eq!(
