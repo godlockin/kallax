@@ -1,0 +1,72 @@
+{
+  "ticket_id": "EPIC-154",
+  "epic": "EPIC-154",
+  "phase": "PHASE-018",
+  "title": "CLAUDE.md trim — 224 行 → 110 行 + 6 篇 detail doc 抽到按需加载",
+  "status": "done",
+  "priority": "P1",
+  "type": "docs",
+  "created_at": "2026-07-27",
+  "worktree_role": "master",
+  "performer_sub_role": "docs",
+  "handoff_depth": "L1",
+  "description": "主公 ack 同意策略 A — 砍冗余内容到按需加载.
+
+**Before**: CLAUDE.md 224 行 (full-of-history + fact-zero-need).
+
+**After**: CLAUDE.md 110 行 (主永久规则 + 6 link reference). 历史 / 详情各抽到 docs/reference/.
+
+**6 docs/reference/ 新建 / 更新**:
+- branch-flow-history.md (89 行) — 5 release PR record + 4-branch sync record
+- 5-level-verify-harden.md (98 行) — tsconfig + dead-code sentinel + Stage 1 false-positives
+- cli-execution-rules.md (82 行) — 5 项 background-exec rules + nohup 逃逸路径
+- state-json-path-conventions.md (44 行) — multi-instance + state authz path
+- test-anti-patterns.md (43 行) — 3 项 live test 反模式 (跟 Rule 34 区分 layer)
+- dco-and-licensing.md (NEW) — Apache-2.0 + DCO 三闸门 + --allow-pre-cutoff
+
+**新增 0** (跟 Rule 5 DRY 联合):
+- 0 新增 immutable scripts
+- 0 新增 keyword noise
+- 0 改 confluence/decisions/
+
+**Template 隔离保证** (主公关注点):
+- `template/CLAUDE-TEMPLATE.md` 是新项目 init 时用的模板, 与根 CLAUDE.md 完全隔离
+- `install.sh` 不拷贝根 CLAUDE.md (只装 `.claude/skills/` + `.claude/commands/`)
+- 所以根 CLAUDE.md 修改不影响他项目 ✓
+
+**Score 提升**:
+- 1-2 行 vs 224 行, Master (主公) + AI Agent 看一眼 status 即可
+- 按需加载 details 不丢失 information",
+  "file_scope": {
+    "includes": [
+      "CLAUDE.md",
+      "docs/reference/branch-flow-history.md",
+      "docs/reference/5-level-verify-harden.md",
+      "docs/reference/cli-execution-rules.md",
+      "docs/reference/state-json-path-conventions.md",
+      "docs/reference/test-anti-patterns.md",
+      "docs/reference/dco-and-licensing.md",
+      "jira/tickets/EPIC-154/ticket.json"
+    ]
+  },
+  "acceptance": [
+    "CLAUDE.md wc -l = 110 (was 224, -51%)",
+    "所有 docs/reference/*.md 链接 resolve (no 404)",
+    "5 immutable scripts 名仍写在主 CLAUDE.md (无 lose context)",
+    "5-Level Verify L1-L5 仍写在主 CLAUDE.md",
+    "Rule 34 仍写在主 CLAUDE.md (新规则不被外部化)",
+    "template/CLAUDE-TEMPLATE.md 0 change (隔离完好)"
+  ],
+  "labels": ["docs", "trim", "load-on-demand"],
+  "completed_at": "2026-07-27",
+  "completed_by": "master direct edit (跟 Rule 34 类似, 主公写, apply 1 commit)",
+  "verification": {
+    "claudemd_old_lines": 224,
+    "claudemd_new_lines": 110,
+    "reduction_pct": 51,
+    "new_docs_created": 6,
+    "new_docs_total_lines": 467,
+    "info_lost": 0,
+    "info_moved_to": "docs/reference/{branch-flow-history, 5-level-verify-harden, cli-execution-rules, state-json-path-conventions, test-anti-patterns, dco-and-licensing}.md"
+  }
+}
