@@ -200,3 +200,25 @@ cargo install kallax / kallax init / kallax master:start
 - `*-live.test.ts` 必须 `describe.skipIf(!process.env.X_LIVE)` — check-live-test-guard.sh 强制
 - 测试断言别绑死 totalScore/枚举硬编码,断维度 (软规,vitest fail-fast 兜底)
 - source bug 不能 `it.skip` 逃避,必须修 source 再 unskip
+
+## Rule 34 — Bugfix Ticket 必须独立复现 (EPIC-152, v3.31.0, canary 链 6+1 案例驱动)
+
+**起因**: KALLAX v3.30.0 + v3.30.1 canary 链 7 个 EPIC (141 v1 / 145 / 148 / 150-A / 151 / 152 / 153) 的 Performer 独立复现纠正 Master (主公) 错 diagnosis. 决策 doc: `confluence/decisions/fact-forcing-independent-repro-2026-07-26.md`.
+
+**Rule (强制)**:
+1. **Master (主公) 建 bugfix ticket 必含 3 字段**:
+   - `verification.reproduction_command` — 本地 or CI 复现命令 (e.g. `cd node && npx vitest run tests/x.test.ts`)
+   - `verification.reproduction_exit_code` — 实跑 exit code (0 / 1 / 2 / ...)
+   - `verification.reproduction_raw_output` — 复现 raw output (前 30 行足够)
+   - **不能**只贴 CI log text + 一句话 hypothesis 就建卡. CI log 是 symptom, 不是 diagnosis.
+2. **Performer (sub-agent) 收到 ticket 必做独立复现 first**:
+   - 跑 reproduction_command 验实诊断一致 — 一致 → 修
+   - 不一致 → **STOP**, ticket status → `blocked`, 上报 Master 报告 diagnosis mismatch
+   - 不允许为 "fill commit" 编变化; **0 source change 本身也是 valid conclusion** (案例 6 — EPIC-153)
+3. **0 source change 不视失败**: Performer 验证债已 cascading 修 / 误报 / 不存在 → ticket done + trace 记录实际状态, 不为 response SLA 编造 empty fix.
+
+**跟现有 Rule 联合 (0 增)**: 跟 Rule 5 DRY (不增 keyword noise), Rule 9 KPI (X/Y 格式), Rule 33 decision-gate (上游 Master 拍"是否修", 下游 Performer 拍"怎么修") 1:1 一致, 不冲突.
+
+**覆盖 ticket 模板 (`jira/tickets/EPIC-XXX/ticket.json`)**: 下方 `verification` block 必含上述 3 field. Master commit 时如 ticket 缺, 分支 fail.
+
+**升级路径**: 此 Rule 在 v3.31.0 起强制 (5 immutable scripts 不增, doc-level enforcement + culture enforcement, 跟 v3.29.0 borrow-from-cindy 模式一致).
