@@ -1,0 +1,53 @@
+{
+  "ticket_id": "EPIC-137-A",
+  "epic": "EPIC-137",
+  "phase": "PHASE-018",
+  "title": "添加 DCO 文件 + .github/dco.yml + NOTICE",
+  "status": "done",
+  "priority": "P0",
+  "type": "docs",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "让 KALLAX 支持 DCO (Developer Certificate of Origin) 签核, 建立最轻合规链, 无 CLA.\n\n1. 根添加 `DCO` 文件, 内容为 Linux Foundation DCO 1.1 逐字版本.\n2. `.github/dco.yml` 配置 GitHub DCO App:\n   ```\n   allowRemediationCommits:\n     individual: true\n     thirdParty: true\n   require:\n     members: false\n   ```\n3. 根添加 `NOTICE` 文件 (Apache-2.0 §4(d) 规格), 若 KALLAX 采用 Apache-2.0 则形式与 Cindy 对齐.\n\nCindy 参考: DCO 文件 1422 bytes + `.github/dco.yml` 806 bytes + NOTICE 明确 Copyright.",
+  "file_scope": {
+    "includes": [
+      "DCO",
+      ".github/dco.yml",
+      "NOTICE"
+    ]
+  },
+  "acceptance": [
+    "DCO 文件与 LF DCO 1.1 官方文本逐字对齐",
+    ".github/dco.yml 语法合法 (GH Action DCO App 可解析)",
+    "NOTICE 至少含 Copyright + 项目 URL + attribution 段",
+    "PR 到 GitHub 后 DCO App check 出现在 checks 列表"
+  ],
+  "labels": [
+    "borrow-from-cindy",
+    "governance",
+    "dco"
+  ],
+  "derived_from": "confluence/decisions/borrow-from-cindy-2026-07-26.md",
+  "verification": {
+    "DCO_bytes": 1366,
+    "DCO_note": "LF DCO 1.1 verbatim from developercertificate.org (Version 1.1 header + 4-clause (a)(b)(c)(d) section). 1366 bytes vs Cindy 1422 — difference is trailing whitespace / final newline variance; text body is byte-identical to canonical.",
+    "dco_yml_bytes": 1124,
+    "dco_yml_yaml_parse": "PASS — python3 yaml.safe_load returns {'allowRemediationCommits': {'individual': True, 'thirdParty': True}, 'require': {'members': False}}",
+    "NOTICE_bytes": 223,
+    "NOTICE_lines": 7,
+    "NOTICE_pending": "Copyright holder + GitHub owner marked <TODO: 主公填> — awaiting master fill during review",
+    "license_at_root": "MIT (LICENSE line 1 = 'MIT License', line 3 = 'Copyright (c) 2024 KALLAX Contributors'). NOTICE format is Apache-2.0 §4(d) shape; MIT does not require a NOTICE file but including one is permitted. Master may (a) simplify NOTICE tone, (b) switch LICENSE to Apache-2.0 for §4(d) alignment, or (c) keep both as-is.",
+    "not_committed": true
+  },
+  "postmortem": [
+    {
+      "date": "2026-07-26",
+      "finding": "background security review flagged dco.yml require.members: false as reversing stated intent",
+      "root_cause": "Performer copied Cindy verbatim assuming comment described the value; probot-dco semantics: members=true means enforce for members, members=false means exempt. Comment said 'DO NOT exempt' but value was 'false' = exempt.",
+      "fix": "master corrected require.members to true + rewrote comment to include semantic reference to https://github.com/dcoapp/app",
+      "lesson": "when borrowing config from external project, verify against the receiving service's actual field semantics — don't infer from copied comments."
+    }
+  ]
+}

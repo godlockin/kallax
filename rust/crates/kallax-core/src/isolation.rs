@@ -2,10 +2,10 @@
 //!
 //! Ensures performers only access files within their designated scope.
 
-use std::path::{Path, PathBuf};
 use std::collections::HashSet;
+use std::path::{Path, PathBuf};
 
-use crate::{KallaxError, Result, PerformerId};
+use crate::{KallaxError, PerformerId, Result};
 
 /// Isolation scope defines what files a performer can access
 #[derive(Debug, Clone)]
@@ -99,9 +99,7 @@ pub struct IsolationManager {
 
 impl IsolationManager {
     pub fn new() -> Self {
-        Self {
-            scopes: Vec::new(),
-        }
+        Self { scopes: Vec::new() }
     }
 
     /// Add a scope (validates no overlap first)
@@ -123,7 +121,8 @@ impl IsolationManager {
 
     /// Remove a scope by performer ID
     pub fn remove_scope(&mut self, performer_id: &PerformerId) {
-        self.scopes.retain(|s| s.performer_id.as_str() != performer_id.as_str());
+        self.scopes
+            .retain(|s| s.performer_id.as_str() != performer_id.as_str());
     }
 
     /// Find overlapping path between two scopes

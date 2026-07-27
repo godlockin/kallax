@@ -65,6 +65,20 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 | v3.9.0 | feature/v3.9.0-EPIC-071 | ❌ 跳过 (历史) |
 | v3.9.1 | feature/v3.9.1-EPIC-072 | ❌ 跳过 (历史) |
 | v3.9.2 | feature/v3.9.2-EPIC-073 | ❌ 跳过 (历史) |
+| v3.29.0 | feature/v3.29.0-EPIC-136-to-139 | PR #148 → base=miao (testing 首次 sync via EPIC-142) |
+| v3.30.0 | feature/v3.30.0-EPIC-140-to-142 | PR #149 → testing (merged 4307d2f2); PR #150 → main (closed 因 debt) → force-push (EPIC-146) |
+
+**testing 分支 sync 记录 (EPIC-142, 2026-07-26)**:
+- 首次 4-branch flow 落地时 testing 已落后 miao 6 commit (EPIC-133/134/135 系列, 均未 Signed-off-by, DCO 上线前的历史)
+- Master force-push testing 到 miao HEAD (v3.29.0 merge `7187bb5`)
+- `check-dco.sh` 加 `--allow-pre-cutoff` 让未来 PR 只查本 PR commits, 不 pollute base 历史
+- v3.30.0+ testing 分支强制跟 miao 同步 (每 release merge miao → testing)
+
+**main 分支 sync 记录 (EPIC-146, 2026-07-26)**:
+- 4-branch flow 第 2 段 (testing → main) 首次落地时 main 落后 testing 16 commit, 且 main 独有 3 merge commit (`b99fada` / `bb93164` / `fbdc73e` — 全部只是历史 miao/testing → main 的 merge commit, 无独立内容)
+- Master 借 EPIC-142 pattern force-push main 到 testing HEAD (v3.30.0 sync commit `4307d2f2`)
+- v3.31.0+ main 分支强制跟 testing 同步 (每 testing → main PR merge 后 auto-align)
+- **Canary 战果**: PR #150 首次真走到 main 时抓到 main 分支 4 类历史债 (fmt / npm scripts / diverged commits / pre-DCO), 全部 记入 EPIC-143/144/145/146
 
 **0 静默跳过** (配合 EPIC-069-D check-claim-evidence):
 - v3.10.0+ 必走 4-PR 全程
@@ -186,3 +200,25 @@ cargo install kallax / kallax init / kallax master:start
 - `*-live.test.ts` 必须 `describe.skipIf(!process.env.X_LIVE)` — check-live-test-guard.sh 强制
 - 测试断言别绑死 totalScore/枚举硬编码,断维度 (软规,vitest fail-fast 兜底)
 - source bug 不能 `it.skip` 逃避,必须修 source 再 unskip
+
+## Rule 34 — Bugfix Ticket 必须独立复现 (EPIC-152, v3.31.0, canary 链 6+1 案例驱动)
+
+**起因**: KALLAX v3.30.0 + v3.30.1 canary 链 7 个 EPIC (141 v1 / 145 / 148 / 150-A / 151 / 152 / 153) 的 Performer 独立复现纠正 Master (主公) 错 diagnosis. 决策 doc: `confluence/decisions/fact-forcing-independent-repro-2026-07-26.md`.
+
+**Rule (强制)**:
+1. **Master (主公) 建 bugfix ticket 必含 3 字段**:
+   - `verification.reproduction_command` — 本地 or CI 复现命令 (e.g. `cd node && npx vitest run tests/x.test.ts`)
+   - `verification.reproduction_exit_code` — 实跑 exit code (0 / 1 / 2 / ...)
+   - `verification.reproduction_raw_output` — 复现 raw output (前 30 行足够)
+   - **不能**只贴 CI log text + 一句话 hypothesis 就建卡. CI log 是 symptom, 不是 diagnosis.
+2. **Performer (sub-agent) 收到 ticket 必做独立复现 first**:
+   - 跑 reproduction_command 验实诊断一致 — 一致 → 修
+   - 不一致 → **STOP**, ticket status → `blocked`, 上报 Master 报告 diagnosis mismatch
+   - 不允许为 "fill commit" 编变化; **0 source change 本身也是 valid conclusion** (案例 6 — EPIC-153)
+3. **0 source change 不视失败**: Performer 验证债已 cascading 修 / 误报 / 不存在 → ticket done + trace 记录实际状态, 不为 response SLA 编造 empty fix.
+
+**跟现有 Rule 联合 (0 增)**: 跟 Rule 5 DRY (不增 keyword noise), Rule 9 KPI (X/Y 格式), Rule 33 decision-gate (上游 Master 拍"是否修", 下游 Performer 拍"怎么修") 1:1 一致, 不冲突.
+
+**覆盖 ticket 模板 (`jira/tickets/EPIC-XXX/ticket.json`)**: 下方 `verification` block 必含上述 3 field. Master commit 时如 ticket 缺, 分支 fail.
+
+**升级路径**: 此 Rule 在 v3.31.0 起强制 (5 immutable scripts 不增, doc-level enforcement + culture enforcement, 跟 v3.29.0 borrow-from-cindy 模式一致).

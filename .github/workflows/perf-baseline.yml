@@ -30,10 +30,10 @@ jobs:
       node_build_ms: ${{ steps.node-timing.outputs.node_build_ms }}
       rust_build_ms: ${{ steps.rust-timing.outputs.rust_build_ms }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -52,12 +52,12 @@ jobs:
           echo "Node.js build: ${DURATION_MS}ms"
 
       - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@4cda84d5c5c54efe2404f9d843567869ab1699d4 # stable @ 2026-07-26
         with:
           targets: x86_64-unknown-linux-gnu
 
       - name: Cache cargo
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
         with:
           workspaces: rust
 

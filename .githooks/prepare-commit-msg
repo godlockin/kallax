@@ -1,0 +1,90 @@
+#!/bin/sh
+# KALLAX prepare-commit-msg — DCO Signed-off-by auto-append (EPIC-137-B)
+#
+# Purpose:
+#   Append `Signed-off-by: <committer-name> <committer-email>` trailer to every
+#   commit, matching `git commit -s` semantics. Contract enforced by
+#   check-dco.sh (EPIC-137-C) and .github/dco.yml.
+#
+# Contract (do NOT change without updating check-dco.sh):
+#   - Exact format: `Signed-off-by: NAME <EMAIL>` (case + colon + space)
+#   - Uses COMMITTER ident (git config user.name/email), NOT --author override
+#   - Merge commits exempt (source=merge)
+#   - Amends exempt (source=commit) — user is editing existing message
+#   - No-op if committer ident missing (check-dco.sh catches later)
+#   - Explicit `--if-exists addIfDifferent --if-missing add` overrides any
+#     local `[trailer]` gitconfig that might silently bypass
+#
+# POSIX sh (not bash) for portability. Works on macOS BSD + GNU Linux.
+
+set -eu
+
+COMMIT_MSG_FILE="${1:-}"
+COMMIT_SOURCE="${2:-}"
+# arg 3 = SHA if amend; ignored (we skip amends via COMMIT_SOURCE=commit)
+
+# Guard: file arg required
+[ -n "$COMMIT_MSG_FILE" ] || exit 0
+[ -f "$COMMIT_MSG_FILE" ] || exit 0
+
+# Skip merge commits (source=merge)
+if [ "$COMMIT_SOURCE" = "merge" ]; then
+  exit 0
+fi
+
+# Skip amends (source=commit means existing commit being amended;
+# trailer is either already there or user is explicitly editing)
+if [ "$COMMIT_SOURCE" = "commit" ]; then
+  exit 0
+fi
+
+# Skip if Signed-off-by trailer already present (any email)
+if grep -q '^Signed-off-by:' "$COMMIT_MSG_FILE" 2>/dev/null; then
+  exit 0
+fi
+
+# Resolve COMMITTER ident. This is what `git commit -s` uses.
+# When cherry-picking or using --author="Other <x>", author differs from
+# committer — we sign as the person actually running the commit.
+NAME="$(git config user.name 2>/dev/null || true)"
+EMAIL="$(git config user.email 2>/dev/null || true)"
+
+# Silent no-op if ident missing (compat with --no-verify workflows;
+# check-dco.sh will reject the commit downstream if trailer absent).
+if [ -z "$NAME" ] || [ -z "$EMAIL" ]; then
+  exit 0
+fi
+
+TRAILER="Signed-off-by: $NAME <$EMAIL>"
+
+# Determine whether commit message has real content (strip comment lines
+# starting with `#` and blank lines). If nothing remains, we're dealing
+# with an empty commit message — layout differs.
+BODY_CONTENT="$(sed -e '/^#/d' "$COMMIT_MSG_FILE" 2>/dev/null | \
+                grep -v '^[[:space:]]*$' 2>/dev/null || true)"
+
+if [ -z "$BODY_CONTENT" ]; then
+  # Empty (or comments-only) message: append fresh layout at end.
+  # Git will properly assemble subject + blank + trailer when user types
+  # a subject line above our appended block.
+  printf '\n\n%s\n' "$TRAILER" >> "$COMMIT_MSG_FILE"
+  exit 0
+fi
+
+# Body exists: use git interpret-trailers with EXPLICIT flags.
+# CLI flags override any local `[trailer] ifExists=doNothing` gitconfig
+# that would otherwise silently skip the append.
+TMP_FILE="${COMMIT_MSG_FILE}.dco.$$"
+if git interpret-trailers \
+      --if-exists addIfDifferent \
+      --if-missing add \
+      --trailer "$TRAILER" \
+      "$COMMIT_MSG_FILE" > "$TMP_FILE" 2>/dev/null; then
+  mv "$TMP_FILE" "$COMMIT_MSG_FILE"
+else
+  # interpret-trailers failed for some reason — clean up, no-op, let
+  # check-dco.sh catch missing trailer downstream.
+  rm -f "$TMP_FILE"
+fi
+
+exit 0

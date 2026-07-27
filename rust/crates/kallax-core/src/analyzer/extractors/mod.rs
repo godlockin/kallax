@@ -3,15 +3,15 @@
 //! Each sub-module implements regex-based extraction for one language.
 //! The `extract_symbols` function dispatches to the correct extractor.
 
-mod typescript;
 mod python;
 mod rust;
+mod typescript;
 
 use super::types::{Language, Symbol};
 
-use self::typescript as ts_ext;
 use self::python as py_ext;
 use self::rust as rs_ext;
+use self::typescript as ts_ext;
 
 /// Dispatch to language-specific extractor
 pub fn extract_symbols(content: &str, language: Language) -> Vec<Symbol> {
@@ -34,7 +34,10 @@ pub fn count_loc(content: &str, language: Language) -> usize {
             }
             match language {
                 Language::TypeScript | Language::Rust => {
-                    !t.starts_with("//") && !t.starts_with("/*") && !t.starts_with("///") && !t.starts_with("//!")
+                    !t.starts_with("//")
+                        && !t.starts_with("/*")
+                        && !t.starts_with("///")
+                        && !t.starts_with("//!")
                 }
                 Language::Python => !t.starts_with('#'),
                 Language::Unknown => true,
@@ -46,11 +49,11 @@ pub fn count_loc(content: &str, language: Language) -> usize {
 // Re-export individual extractors for direct use
 // Re-export individual extractors for direct use (suppress dead_code: available for library consumers)
 #[allow(unused_imports)]
-pub use self::typescript::extract as extract_ts;
-#[allow(unused_imports)]
 pub use self::python::extract as extract_py;
 #[allow(unused_imports)]
 pub use self::rust::extract as extract_rs;
+#[allow(unused_imports)]
+pub use self::typescript::extract as extract_ts;
 
 #[cfg(test)]
 mod tests {

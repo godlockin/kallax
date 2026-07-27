@@ -1,0 +1,68 @@
+{
+  "ticket_id": "EPIC-138-B",
+  "epic": "EPIC-138",
+  "phase": "PHASE-018",
+  "title": "升级 pr-body-check.yml 强制 7 类 checkbox 填写",
+  "status": "done",
+  "priority": "P0",
+  "type": "chore",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "现有 .github/workflows/pr-body-check.yml (存在但不确定内容) 扩展:\n- 校验 PR body 是否 7 段全部出现 (grep header 关键字)\n- 每类必须有 `- [x]` 或 `不涉及: <原因>` (至少 5 字)\n- `## 自动验证 (raw output)` 段必须含代码块 (```) 且非空\n- 未通过 → PR check FAIL block merge\n\n跟 Cindy `pr-template-rules.yml` 对齐, 但用 bash + gh cli 而非 JS.",
+  "file_scope": {
+    "includes": [
+      ".github/workflows/pr-body-check.yml",
+      "scripts/ci/check-pr-body.sh"
+    ]
+  },
+  "acceptance": [
+    "pr-body-check.yml 触发 pull_request (含 edited/synchronize)",
+    "scripts/ci/check-pr-body.sh 语法 PASS, 覆盖 7 类校验",
+    "空 PR body → FAIL; 缺任一类 → FAIL; 全填 → PASS",
+    "raw_output 段无 ``` block → FAIL (跟 EPIC-069-D check-claim-evidence 一致)"
+  ],
+  "labels": [
+    "borrow-from-cindy",
+    "pr-hygiene",
+    "ci"
+  ],
+  "derived_from": "confluence/decisions/borrow-from-cindy-2026-07-26.md",
+  "verification": {
+    "yaml_load": "python3 -c \"import yaml; yaml.safe_load(open('.github/workflows/pr-body-check.yml'))\" → OK",
+    "bash_syntax": "bash -n scripts/ci/check-pr-body.sh → syntax OK",
+    "bytes": {
+      "scripts/ci/check-pr-body.sh": 5635,
+      ".github/workflows/pr-body-check.yml": 1346
+    },
+    "fixture_tests": [
+      {
+        "fixture": "/tmp/pr-body-valid.md",
+        "expected": "PASS",
+        "actual_exit": 0,
+        "actual_output": "PASS"
+      },
+      {
+        "fixture": "/tmp/pr-body-invalid-missing-risk.md",
+        "expected": "FAIL (missing section 7)",
+        "actual_exit": 1,
+        "actual_output": "PR body validation failed:\n  - missing-risk-section:### 7. 跨 EPIC 复用\nFAIL: 1 issue(s)"
+      },
+      {
+        "fixture": "/tmp/pr-body-invalid-no-code-block.md",
+        "expected": "FAIL (no code block in raw output section)",
+        "actual_exit": 1,
+        "actual_output": "PR body validation failed:\n  - no-code-block-in-auto-verify:fence_count=0\nFAIL: 1 issue(s)"
+      },
+      {
+        "fixture": "/tmp/pr-body-invalid-unchecked.md",
+        "expected": "FAIL (7 unchecked, no 不涉及 reasons — placeholders don't count)",
+        "actual_exit": 1,
+        "actual_output": "PR body validation failed:\n  - unchecked-and-no-reason:### 1. 5-Level Verify (L2) [x7 all sections]\nFAIL: 7 issue(s)"
+      }
+    ],
+    "replaced_prior_workflow": "prior version only checked (test|PASS|coverage) keyword + (TASK|TICKET)-N + body_len>=50; subsumed by new 7-class schema (via `## 关联 ticket` content + `## 自动验证` code block + risk boxes). Full replace, no logic preserved.",
+    "actions_checkout_pin": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 (kept from prior version, matches EPIC-136-A pinning convention)"
+  }
+}

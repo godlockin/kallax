@@ -85,7 +85,9 @@ impl<T> Registry<T> {
 
     /// Iterate over all entries
     pub fn iter(&self) -> impl Iterator<Item = (String, Arc<T>)> + '_ {
-        self.store.iter().map(|r| (r.key().clone(), Arc::clone(r.value())))
+        self.store
+            .iter()
+            .map(|r| (r.key().clone(), Arc::clone(r.value())))
     }
 }
 

@@ -1,0 +1,64 @@
+name: cargo-audit
+
+# Rust supply-chain gate (EPIC-136-C).
+# Runs on every PR touching rust/**, weekly (Mon 03:00 UTC), and on demand.
+# See docs/reference/supply-chain-cargo.md for CVE response playbook.
+
+on:
+  pull_request:
+    paths:
+      - 'rust/**'
+      - '.github/workflows/cargo-audit.yml'
+  schedule:
+    # Weekly Mon 03:00 UTC — catches newly-disclosed advisories on lockfiles
+    # that haven't changed since the last PR.
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+# Least-privilege: read-only checkout, no write scopes.
+permissions:
+  contents: read
+
+concurrency:
+  group: cargo-audit-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: cargo audit + lockfile integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: rust
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+
+      - name: cargo audit --deny warnings
+        # Fails on: known vulnerabilities, yanked crates, unmaintained flags.
+        # See docs/reference/supply-chain-cargo.md.
+        run: cargo audit --deny warnings
+
+      - name: cargo tree --duplicates (informational)
+        # Duplicate crate versions bloat binaries and complicate CVE tracking.
+        # Not a gate today; report only.
+        continue-on-error: true
+        run: cargo tree --duplicates
+
+      - name: Cargo.lock integrity (--locked check)
+        # If Cargo.toml changed without a Cargo.lock update, cargo check --locked
+        # exits non-zero. This blocks PRs that drift lockfile from manifest.
+        run: cargo check --locked --workspace
+
+      - name: Lockfile diff must be empty
+        # Defensive belt-and-suspenders: any tool step above that mutates
+        # Cargo.lock would show up here.
+        run: |
+          if ! git diff --exit-code -- Cargo.lock; then
+            echo "::error::Cargo.lock modified during CI run — commit the updated lockfile."
+            exit 1
+          fi

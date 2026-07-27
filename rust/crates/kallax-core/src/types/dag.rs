@@ -64,12 +64,24 @@ impl DagRun {
         }
     }
 
-    pub fn id(&self) -> &str { &self.id }
-    pub fn dag_name(&self) -> &str { &self.dag_name }
-    pub fn status(&self) -> DagStatus { self.status }
-    pub fn trigger(&self) -> &str { &self.trigger }
-    pub fn started_at(&self) -> Option<DateTime<Utc>> { self.started_at }
-    pub fn completed_at(&self) -> Option<DateTime<Utc>> { self.completed_at }
+    pub fn id(&self) -> &str {
+        &self.id
+    }
+    pub fn dag_name(&self) -> &str {
+        &self.dag_name
+    }
+    pub fn status(&self) -> DagStatus {
+        self.status
+    }
+    pub fn trigger(&self) -> &str {
+        &self.trigger
+    }
+    pub fn started_at(&self) -> Option<DateTime<Utc>> {
+        self.started_at
+    }
+    pub fn completed_at(&self) -> Option<DateTime<Utc>> {
+        self.completed_at
+    }
 
     pub fn mark_running(&mut self) {
         self.status = DagStatus::Running;
@@ -94,7 +106,14 @@ impl DagRun {
         started_at: Option<DateTime<Utc>>,
         completed_at: Option<DateTime<Utc>>,
     ) -> Self {
-        Self { id, dag_name, status, trigger, started_at, completed_at }
+        Self {
+            id,
+            dag_name,
+            status,
+            trigger,
+            started_at,
+            completed_at,
+        }
     }
 }
 
@@ -128,14 +147,30 @@ impl DagNodeState {
         }
     }
 
-    pub fn id(&self) -> &str { &self.id }
-    pub fn dag_run_id(&self) -> &str { &self.dag_run_id }
-    pub fn node_name(&self) -> &str { &self.node_name }
-    pub fn status(&self) -> DagStatus { self.status }
-    pub fn task_id(&self) -> Option<&str> { self.task_id.as_deref() }
-    pub fn output(&self) -> Option<&str> { self.output.as_deref() }
-    pub fn started_at(&self) -> Option<DateTime<Utc>> { self.started_at }
-    pub fn completed_at(&self) -> Option<DateTime<Utc>> { self.completed_at }
+    pub fn id(&self) -> &str {
+        &self.id
+    }
+    pub fn dag_run_id(&self) -> &str {
+        &self.dag_run_id
+    }
+    pub fn node_name(&self) -> &str {
+        &self.node_name
+    }
+    pub fn status(&self) -> DagStatus {
+        self.status
+    }
+    pub fn task_id(&self) -> Option<&str> {
+        self.task_id.as_deref()
+    }
+    pub fn output(&self) -> Option<&str> {
+        self.output.as_deref()
+    }
+    pub fn started_at(&self) -> Option<DateTime<Utc>> {
+        self.started_at
+    }
+    pub fn completed_at(&self) -> Option<DateTime<Utc>> {
+        self.completed_at
+    }
 
     pub fn set_task_id(&mut self, task_id: impl Into<String>) {
         self.task_id = Some(task_id.into());
@@ -168,6 +203,15 @@ impl DagNodeState {
         started_at: Option<DateTime<Utc>>,
         completed_at: Option<DateTime<Utc>>,
     ) -> Self {
-        Self { id, dag_run_id, node_name, status, task_id, output, started_at, completed_at }
+        Self {
+            id,
+            dag_run_id,
+            node_name,
+            status,
+            task_id,
+            output,
+            started_at,
+            completed_at,
+        }
     }
 }

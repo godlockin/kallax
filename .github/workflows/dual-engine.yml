@@ -11,8 +11,8 @@ jobs:
   consistency:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with: { node-version: '20', cache: 'npm', cache-dependency-path: node/package-lock.json }
       - name: Install
         run: cd node && npm ci
@@ -20,7 +20,7 @@ jobs:
         run: cd node && npx tsc --noEmit
       - name: Node test
         run: cd node && npx vitest run
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@4cda84d5c5c54efe2404f9d843567869ab1699d4 # stable @ 2026-07-26
       - name: Rust check
         run: cd rust && cargo check --workspace --all-features
       - name: Rust test

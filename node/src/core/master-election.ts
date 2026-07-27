@@ -27,9 +27,11 @@ const redisPool = new Map<string, Redis>();
 async function getRedis(redisUrl: string): Promise<Redis | null> {
   try {
     const cached = redisPool.get(redisUrl);
-    if (cached !== undefined && cached.status === 'ready') return cached;
+    if (cached?.status === 'ready') return cached;
     // v3.5.0 hotfix (跟 B 组 S-005 fix ): overwrite 旧 connection 前先 quit (防 fd leak)
-    if (cached !== undefined && cached.status !== 'ready') {
+    // After the early return above, cached.status is guaranteed to be != 'ready'
+    // when cached is defined, so this branch only runs for stale/in-flight connections.
+    if (cached !== undefined) {
       try { await cached.quit(); } catch { /* ignore, fd may already be closed */ }
       redisPool.delete(redisUrl);
     }

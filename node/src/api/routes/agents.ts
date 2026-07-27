@@ -33,7 +33,7 @@ export function createAgentRoutes(deps: AgentRouteDependencies): Router {
 
   // GET /api/agents — list all performers
   router.get('/', (req: Request, res: Response): void => {
-    void (async () => {
+    ((): void => {
       try {
         const role = req.query['role'] as string | undefined;
 
@@ -63,7 +63,7 @@ export function createAgentRoutes(deps: AgentRouteDependencies): Router {
 
   // POST /api/agents/register — register a new performer
   router.post('/register', (req: Request, res: Response): void => {
-    void (async () => {
+    void (async (): Promise<void> => {
       try {
         const body = req.body as RegisterAgentRequest;
 
@@ -115,7 +115,7 @@ export function createAgentRoutes(deps: AgentRouteDependencies): Router {
 
   // GET /api/agents/:id — get performer status
   router.get('/:id', (req: Request, res: Response): void => {
-    void (async () => {
+    void (async (): Promise<void> => {
       try {
         const instanceId = req.params['id'] as string;
 
@@ -146,7 +146,7 @@ export function createAgentRoutes(deps: AgentRouteDependencies): Router {
 
   // PUT /api/agents/:id/heartbeat — send heartbeat
   router.put('/:id/heartbeat', (req: Request, res: Response): void => {
-    void (async () => {
+    void (async (): Promise<void> => {
       try {
         const instanceId = req.params['id'] as string;
         const body = req.body as HeartbeatRequest;
@@ -226,7 +226,7 @@ export function createAgentRoutes(deps: AgentRouteDependencies): Router {
 
   // GET /api/agents/:id/tasks — get performer's tasks
   router.get('/:id/tasks', (req: Request, res: Response): void => {
-    void (async () => {
+    void (async (): Promise<void> => {
       try {
         const performerId = req.params['id'] as string;
 

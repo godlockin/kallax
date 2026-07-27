@@ -2,9 +2,9 @@
 //!
 //! Detects and resolves conflicts when multiple performers modify overlapping resources.
 
-use kallax_core::{KallaxError, PerformerId, Result};
 use chrono::{DateTime, Utc};
 use dashmap::DashMap;
+use kallax_core::{KallaxError, PerformerId, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::path::PathBuf;
@@ -169,7 +169,8 @@ impl ConflictResolver {
     ) -> Conflict {
         let id = format!(
             "CONFLICT-{}",
-            self.conflict_counter.fetch_add(1, std::sync::atomic::Ordering::SeqCst)
+            self.conflict_counter
+                .fetch_add(1, std::sync::atomic::Ordering::SeqCst)
         );
 
         let conflict = Conflict {
@@ -189,8 +190,13 @@ impl ConflictResolver {
     }
 
     /// Resolve a conflict
-    pub fn resolve_conflict(&self, conflict_id: &str, resolution: ConflictResolution) -> Result<()> {
-        let mut conflict = self.conflicts
+    pub fn resolve_conflict(
+        &self,
+        conflict_id: &str,
+        resolution: ConflictResolution,
+    ) -> Result<()> {
+        let mut conflict = self
+            .conflicts
             .get_mut(conflict_id)
             .ok_or_else(|| KallaxError::not_found("conflict", conflict_id))?;
 
@@ -232,7 +238,9 @@ impl ConflictResolver {
 
     /// Get lock holder for a resource
     pub fn get_lock_holder(&self, resource: &str) -> Option<PerformerId> {
-        self.locks.get(resource).map(|l| l.value().performer_id.clone())
+        self.locks
+            .get(resource)
+            .map(|l| l.value().performer_id.clone())
     }
 }
 
@@ -276,20 +284,21 @@ mod tests {
         let perf1 = PerformerId::from_str("perf-1");
         let perf2 = PerformerId::from_str("perf-2");
 
-        let conflict = resolver.detect_conflict(
-            &perf1,
-            &perf2,
-            "/src/main.rs",
-            ConflictType::FileConflict,
-        );
+        let conflict =
+            resolver.detect_conflict(&perf1, &perf2, "/src/main.rs", ConflictType::FileConflict);
 
         assert_eq!(conflict.status, ConflictStatus::Detected);
 
-        resolver.resolve_conflict(&conflict.id, ConflictResolution::KeepA).unwrap();
+        resolver
+            .resolve_conflict(&conflict.id, ConflictResolution::KeepA)
+            .unwrap();
 
         let resolved = resolver.get_conflict(&conflict.id).unwrap();
         assert_eq!(resolved.status, ConflictStatus::Resolved);
-        assert!(matches!(resolved.resolution, Some(ConflictResolution::KeepA)));
+        assert!(matches!(
+            resolved.resolution,
+            Some(ConflictResolution::KeepA)
+        ));
     }
 
     #[test]

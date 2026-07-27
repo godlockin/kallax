@@ -34,9 +34,7 @@ pub enum TaskAction {
         status: Option<String>,
     },
     /// Get task details
-    Get {
-        ticket_id: String,
-    },
+    Get { ticket_id: String },
 }
 
 #[derive(Debug, Subcommand)]

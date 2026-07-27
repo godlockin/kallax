@@ -1,0 +1,91 @@
+{
+  "ticket_id": "EPIC-143",
+  "epic": "EPIC-143",
+  "phase": "PHASE-018",
+  "title": "cargo fmt --check --all 修复 pre-existing formatting debt (kallax-bench + kallax-cli + kallax-core)",
+  "status": "done",
+  "priority": "P0",
+  "type": "chore",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "PR #150 (testing → main) canary 抓到 `cargo fmt --check --all` FAIL. Pre-existing debt, 不是 v3.30.0 引入.\n\n**已 confirmed 未 fmt 文件**:\n- rust/crates/kallax-bench/benches/bench_hash.rs:42 (trailing newline)\n- rust/crates/kallax-bench/benches/bench_json.rs:87\n- rust/crates/kallax-bench/benches/bench_sqlite.rs:109\n- rust/crates/kallax-cli/src/main/enums.rs:6 (import order)\n- rust/crates/kallax-core/src/error.rs:3, 102, 118, 128 (import + line wrapping)\n- 可能还有更多, 需 `cargo fmt --check --all` 全跑一遍看\n\n**修法**: `cd rust && cargo fmt --all` (auto-fix). 无源码语义改动, 只 whitespace/import ordering.\n\n**验收**: `cargo fmt --check --all` exit 0. cargo test 全绿证明无破坏.\n\n**追责链**: PR #150 canary — main 分支 CI 严格模式 (`RUSTFLAGS=-D warnings`) 抓到 miao 长期未 fmt 债. 装 4-branch flow 第 2 段时第一次暴露.",
+  "file_scope": {
+    "includes": [
+      "rust/crates/**/*.rs"
+    ]
+  },
+  "acceptance": [
+    "cd rust && cargo fmt --check --all exit 0",
+    "cd rust && cargo test --workspace --release 全绿 (无 regression)",
+    "改动仅 whitespace/import order, 无语义修改 (git diff 抽查 5 处证实)"
+  ],
+  "labels": ["cleanup", "canary-finding", "rust-fmt"],
+  "derived_from": "PR #150 canary — main 分支 4-branch governance 第 2 段",
+  "verification": {
+    "completed_at": "2026-07-26",
+    "files_formatted": 39,
+    "scope_check": "git diff --name-only rust/ | grep -v .rs$ → empty (only .rs files touched)",
+    "cargo_fmt_check_before": {
+      "exit": "nonzero",
+      "diff_blocks": 10,
+      "sample": "Diff in bench_hash.rs:42, bench_json.rs:87, bench_sqlite.rs:109, enums.rs:6, handlers.rs:8/26, error.rs:3/102/118/128, scheduler.rs (multiple)",
+      "log": "/tmp/fmt-check-before.txt (206 lines)"
+    },
+    "cargo_fmt_check_after": {
+      "exit": 0,
+      "log": "/tmp/fmt-check-after.txt (empty)"
+    },
+    "cargo_test_workspace_release": {
+      "log": "/tmp/claude-tasks/cargo-test-EPIC143.log (347 lines)",
+      "test_result_ok_count": 6,
+      "test_result_failed_count": 0,
+      "totals": "kallax-cli 0 tests, kallax-core 89 pass, kallax-engine 25 pass, kallax-server 1 pass, doc-tests 0/0 pass (1 ignored)",
+      "tail_last_lines": [
+        "test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s",
+        "Running unittests src/main.rs (target/release/deps/kallax_server-fa6049e63afa3b92)",
+        "test tests::health_check_returns_healthy ... ok",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "Doc-tests kallax_core",
+        "test crates/kallax-core/src/analyzer/mod.rs - analyzer (line 5) ... ignored",
+        "test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "Doc-tests kallax_engine",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ]
+    },
+    "spot_checks": [
+      {
+        "file": "rust/crates/kallax-core/src/error.rs",
+        "verdict": "whitespace/import-order only",
+        "changes": "reorder `use std::path::PathBuf` before `use thiserror::Error` (alphabetical), collapse multi-line struct variants `TaskExecution { task_id, reason }` to single line — all rustfmt canonical form"
+      },
+      {
+        "file": "rust/crates/kallax-engine/src/dag/scheduler.rs",
+        "verdict": "whitespace/import-order only",
+        "changes": "merge `use std::collections::*` imports, expand narrow struct literals across lines, break long fn signatures multi-line — no logic touched"
+      },
+      {
+        "file": "rust/crates/kallax-bench/benches/bench_hash.rs",
+        "verdict": "whitespace only",
+        "changes": "add trailing newline at EOF (POSIX text file convention)"
+      },
+      {
+        "file": "rust/crates/kallax-cli/src/main/enums.rs",
+        "verdict": "import-order only",
+        "changes": "re-wrap `use crate::sub_enums::{...}` list; alphabetical rewrap after import list too long for single line"
+      },
+      {
+        "file": "rust/crates/kallax-cli/src/main/handlers.rs",
+        "verdict": "whitespace/import-order only",
+        "changes": "same import rewrap; expand narrow enum variant destructure across lines"
+      }
+    ],
+    "non_scope_files_touched": "none — only 39 .rs files in rust/crates/**; Cargo.toml/Cargo.lock unchanged; no generated artifact modified",
+    "acceptance_matrix": {
+      "cargo_fmt_check_exit_0": true,
+      "cargo_test_workspace_release_green": true,
+      "whitespace_only_confirmed": true
+    }
+  }
+}

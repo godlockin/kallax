@@ -64,7 +64,7 @@ export function createWorkflowRoutes(deps: WorkflowRouteDependencies): Router {
 
   // GET /api/workflow/dag — get DAG visualization data
   router.get('/dag', (_req: Request, res: Response): void => {
-    void (async () => {
+    ((): void => {
       try {
         // Get all tasks
         const tasksResult = deps.db.listTasks({ limit: 100 });
@@ -136,7 +136,7 @@ export function createWorkflowRoutes(deps: WorkflowRouteDependencies): Router {
 
   // GET /api/workflow/status — get workflow status
   router.get('/status', (_req: Request, res: Response): void => {
-    void (async () => {
+    void (async (): Promise<void> => {
       try {
         const tasksResult = deps.db.listTasks({ limit: 500 });
         if (tasksResult.isErr()) {
@@ -230,7 +230,7 @@ export function createWorkflowRoutes(deps: WorkflowRouteDependencies): Router {
 
   // POST /api/workflow/run — trigger a workflow step
   router.post('/run', (req: Request, res: Response): void => {
-    void (async () => {
+    ((): void => {
       try {
         const body = req.body as Record<string, unknown>;
         const action = body['action'] as string | undefined;
@@ -257,7 +257,7 @@ export function createWorkflowRoutes(deps: WorkflowRouteDependencies): Router {
             res.json(createSuccessResponse({
               action,
               pendingCount: pendingTasks.length,
-              message: `${pendingTasks.length} pending tasks found, waiting for performer claims`,
+              message: `${String(pendingTasks.length)} pending tasks found, waiting for performer claims`,
             }));
             break;
           }
@@ -274,7 +274,7 @@ export function createWorkflowRoutes(deps: WorkflowRouteDependencies): Router {
             res.json(createSuccessResponse({
               action,
               completedCount: completedTasks.length,
-              message: `${completedTasks.length} completed tasks ready for verification`,
+              message: `${String(completedTasks.length)} completed tasks ready for verification`,
             }));
             break;
           }

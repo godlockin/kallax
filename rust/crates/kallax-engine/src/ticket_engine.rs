@@ -2,11 +2,11 @@
 //!
 //! Manages ticket lifecycle, task creation, and performer assignment.
 
+use dashmap::DashMap;
 use kallax_core::{
     Event, EventType, KallaxError, Performer, PerformerId, Result, SqliteClient, Task, TaskId,
     TaskStatus, TaskType, Ticket, TicketId, TicketStatus,
 };
-use dashmap::DashMap;
 use std::sync::Arc;
 use tracing::{info, warn};
 
@@ -106,7 +106,8 @@ impl TicketEngine {
         use kallax_core::TicketFilter;
         use std::collections::HashSet;
         let mut seen: HashSet<String> = self.tickets.iter().map(|t| t.key().clone()).collect();
-        let mut out: Vec<Ticket> = self.tickets
+        let mut out: Vec<Ticket> = self
+            .tickets
             .iter()
             .filter(|t| status.map_or(true, |s| t.status() == s))
             .map(|t| (*t.value()).clone())
@@ -136,12 +137,14 @@ impl TicketEngine {
 
     /// Claim a ticket for a performer
     pub fn claim_ticket(&self, ticket_id: &str, performer_id: &PerformerId) -> Result<()> {
-        let mut ticket = self.tickets
+        let mut ticket = self
+            .tickets
             .get_mut(ticket_id)
             .ok_or_else(|| KallaxError::not_found("ticket", ticket_id))?;
 
         // Validate performer exists and is idle
-        let performer = self.performers
+        let performer = self
+            .performers
             .get(performer_id.as_str())
             .ok_or_else(|| KallaxError::not_found("performer", performer_id.as_str()))?;
 
@@ -177,7 +180,8 @@ impl TicketEngine {
 
     /// Complete a ticket
     pub fn complete_ticket(&self, ticket_id: &str) -> Result<()> {
-        let mut ticket = self.tickets
+        let mut ticket = self
+            .tickets
             .get_mut(ticket_id)
             .ok_or_else(|| KallaxError::not_found("ticket", ticket_id))?;
 
@@ -239,7 +243,8 @@ impl TicketEngine {
 
     /// Start a task
     pub fn start_task(&self, task_id: &str) -> Result<()> {
-        let mut task = self.tasks
+        let mut task = self
+            .tasks
             .get_mut(task_id)
             .ok_or_else(|| KallaxError::not_found("task", task_id))?;
 
@@ -257,7 +262,8 @@ impl TicketEngine {
 
     /// Complete a task with output
     pub fn complete_task(&self, task_id: &str, output: serde_json::Value) -> Result<()> {
-        let mut task = self.tasks
+        let mut task = self
+            .tasks
             .get_mut(task_id)
             .ok_or_else(|| KallaxError::not_found("task", task_id))?;
 
@@ -329,12 +335,16 @@ impl TicketEngine {
 
     /// List all performers
     pub fn list_performers(&self) -> Vec<Performer> {
-        self.performers.iter().map(|p| (*p.value()).clone()).collect()
+        self.performers
+            .iter()
+            .map(|p| (*p.value()).clone())
+            .collect()
     }
 
     /// Update performer heartbeat
     pub fn heartbeat(&self, performer_id: &str) -> Result<()> {
-        let mut performer = self.performers
+        let mut performer = self
+            .performers
             .get_mut(performer_id)
             .ok_or_else(|| KallaxError::not_found("performer", performer_id))?;
 
@@ -353,12 +363,32 @@ impl TicketEngine {
     pub fn stats(&self) -> EngineStats {
         EngineStats {
             total_tickets: self.tickets.len(),
-            ready_tickets: self.tickets.iter().filter(|t| t.status() == TicketStatus::Ready).count(),
-            in_progress_tickets: self.tickets.iter().filter(|t| t.status() == TicketStatus::InProgress).count(),
-            completed_tickets: self.tickets.iter().filter(|t| t.status() == TicketStatus::Completed).count(),
+            ready_tickets: self
+                .tickets
+                .iter()
+                .filter(|t| t.status() == TicketStatus::Ready)
+                .count(),
+            in_progress_tickets: self
+                .tickets
+                .iter()
+                .filter(|t| t.status() == TicketStatus::InProgress)
+                .count(),
+            completed_tickets: self
+                .tickets
+                .iter()
+                .filter(|t| t.status() == TicketStatus::Completed)
+                .count(),
             total_tasks: self.tasks.len(),
-            pending_tasks: self.tasks.iter().filter(|t| t.status() == TaskStatus::Pending).count(),
-            running_tasks: self.tasks.iter().filter(|t| t.status() == TaskStatus::Running).count(),
+            pending_tasks: self
+                .tasks
+                .iter()
+                .filter(|t| t.status() == TaskStatus::Pending)
+                .count(),
+            running_tasks: self
+                .tasks
+                .iter()
+                .filter(|t| t.status() == TaskStatus::Running)
+                .count(),
             total_performers: self.performers.len(),
         }
     }
@@ -399,7 +429,9 @@ mod tests {
         let performer_id = engine.register_performer(performer).unwrap();
 
         // Claim ticket
-        engine.claim_ticket(ticket_id.as_str(), &performer_id).unwrap();
+        engine
+            .claim_ticket(ticket_id.as_str(), &performer_id)
+            .unwrap();
 
         let ticket = engine.get_ticket(ticket_id.as_str()).unwrap();
         assert_eq!(ticket.status(), TicketStatus::InProgress);

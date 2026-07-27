@@ -1,32 +1,36 @@
 name: PR Body Check
+# EPIC-138-B: enforce KALLAX 7-class risk checkbox schema + raw output block
+# Source of truth: .github/PULL_REQUEST_TEMPLATE.md (EPIC-138-A)
+# Validator: scripts/ci/check-pr-body.sh
+#
+# Replaces the pre-138-B version which only checked (test|PASS|pass|coverage),
+# (TASK|TICKET)-N, and body length >= 50 — all subsumed by the 7-class schema
+# (`## 关联 ticket` content + `## 自动验证 (raw output)` code block + risk boxes).
+
 on:
   pull_request:
-    types: [opened, edited, synchronize]
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: pr-body-check-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   check-body:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - name: Write PR body to file
-        run: echo "$BODY" > /tmp/pr-body.txt
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 — pinned by EPIC-136-A
+      - name: Fetch PR body via gh api
         env:
-          BODY: ${{ github.event.pull_request.body }}
-      - name: Validate PR body
+          GH_TOKEN: ${{ github.token }}
         run: |
-          BODY=$(cat /tmp/pr-body.txt)
-          issues=""
-          if ! echo "$BODY" | grep -qiE '(test|PASS|pass|✓|coverage)'; then
-            issues="$issues\n- Missing test evidence"
-          fi
-          if ! echo "$BODY" | grep -qiE '(TASK|TICKET|task|ticket)-[0-9]+'; then
-            issues="$issues\n- Missing ticket reference"
-          fi
-          BODY_LENGTH=$(echo "$BODY" | wc -c)
-          if [ "$BODY_LENGTH" -lt 50 ]; then
-            issues="$issues\n- PR body too short (<50 chars)"
-          fi
-          if [ -n "$issues" ]; then
-            echo "::error::PR body validation failed:$issues"
-            exit 1
-          fi
-          echo "PR body validation passed"
+          gh api "/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" --jq .body > /tmp/pr-body.md
+          echo "PR body bytes: $(wc -c < /tmp/pr-body.md)"
+      - name: Validate PR body against 7-class risk schema
+        run: bash scripts/ci/check-pr-body.sh /tmp/pr-body.md

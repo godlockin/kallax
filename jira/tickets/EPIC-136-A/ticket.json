@@ -1,0 +1,59 @@
+{
+  "ticket_id": "EPIC-136-A",
+  "epic": "EPIC-136",
+  "phase": "PHASE-018",
+  "title": "SHA-pin all GitHub Actions (13 workflows)",
+  "status": "done",
+  "priority": "P0",
+  "type": "chore",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "把 .github/workflows/*.yml 中所有 3rd-party action 引用改为 commit SHA 钉版 + tag 注释, 禁止 @v4 / @main 形式.\n\nCindy 参考: `actions/checkout@3d3c42e5...v7.0.1` (SHA + 注释保留可读性).\n覆盖 13 workflows: ci / cleanup-merged / cli-rule-ci / coverage-gate / dual-engine / kallax-ci / perf-baseline / pr-body-check / pr-reviewer-check / pr-size-check / release / rust-build / rust-test.",
+  "file_scope": {
+    "includes": [
+      ".github/workflows/*.yml"
+    ]
+  },
+  "acceptance": [
+    "所有 uses: <owner>/<action>@<40-hex-sha> # v<ver>  格式",
+    "grep -rE 'uses:.*@v[0-9]+' .github/workflows/ 返回 0",
+    "grep -rE 'uses:.*@main' .github/workflows/ 返回 0",
+    "CI 全绿 (13 workflows 全 pass)"
+  ],
+  "labels": [
+    "borrow-from-cindy",
+    "supply-chain",
+    "security"
+  ],
+  "derived_from": "confluence/decisions/borrow-from-cindy-2026-07-26.md",
+  "verification": {
+    "date": "2026-07-26",
+    "scope": ".github/workflows/*.yml (14 files: 13 in-ticket + cargo-audit.yml)",
+    "unique_actions_pinned": 9,
+    "total_uses_lines_pinned": 76,
+    "pinned_map": {
+      "actions/checkout@v4": "11d5960a326750d5838078e36cf38b85af677262",
+      "actions/setup-node@v4": "49933ea5288caeca8642d1e84afbd3f7d6820020",
+      "actions/upload-artifact@v4": "ea165f8d65b6e75b540449e92b4886f43607fa02",
+      "softprops/action-gh-release@v2": "3bb12739c298aeb8a4eeaf626c5b8d85266b0e65",
+      "Swatinem/rust-cache@v2": "e18b497796c12c097a38f9edb9d0641fb99eee32",
+      "codecov/codecov-action@v4": "b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238",
+      "dtolnay/rust-toolchain@stable": "4cda84d5c5c54efe2404f9d843567869ab1699d4",
+      "ludeeus/action-shellcheck@master": "00b27aa7cb85167568cb48a3838b75f4265f2bca",
+      "taiki-e/install-action@cargo-deny": "0843b7c6f00e5da5a08f795c041bd69dbba2ba6d"
+    },
+    "greps": {
+      "grep -rE 'uses:.*@v[0-9]+' .github/workflows/": "0 lines",
+      "grep -rE 'uses:.*@main' .github/workflows/": "0 lines",
+      "grep -rE 'uses:.*@[a-f0-9]{40}' .github/workflows/ | wc -l": "76 lines"
+    },
+    "notes": [
+      "Branch/moving-tag refs (dtolnay/rust-toolchain@stable, ludeeus/action-shellcheck@master) resolved to current commit SHA with '@ 2026-07-26' comment for readability of drift window.",
+      "taiki-e/install-action@cargo-deny is a lightweight tag ref that gets updated per release; pinned to current commit with 'cargo-deny' comment.",
+      "cargo-audit.yml was in .github/workflows/ scope (14th workflow); its pre-existing '# TODO: 136-A pin' marker was removed after applying the SHA.",
+      "pr-reviewer-check.yml contains no third-party action uses."
+    ]
+  }
+}

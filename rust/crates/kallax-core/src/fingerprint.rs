@@ -92,7 +92,9 @@ pub fn compute_fingerprint(path: impl Into<PathBuf>) -> Result<ContentFingerprin
     let mut hasher = Sha256::new();
     let mut buffer = [0u8; 8192];
     loop {
-        let n = file.read(&mut buffer).map_err(|e| KallaxError::io(&path, e))?;
+        let n = file
+            .read(&mut buffer)
+            .map_err(|e| KallaxError::io(&path, e))?;
         if n == 0 {
             break;
         }
@@ -101,19 +103,14 @@ pub fn compute_fingerprint(path: impl Into<PathBuf>) -> Result<ContentFingerprin
 
     let sha256_hash = format!("{:x}", hasher.finalize());
 
-    let modified_at = metadata
-        .modified()
-        .map_err(|e| KallaxError::io(&path, e))?;
+    let modified_at = metadata.modified().map_err(|e| KallaxError::io(&path, e))?;
 
     let duration = modified_at
         .duration_since(SystemTime::UNIX_EPOCH)
         .map_err(|e| KallaxError::io(&path, e))?;
 
-    let modified_at =
-        DateTime::from_timestamp(duration.as_secs() as i64, duration.subsec_nanos())
-            .ok_or_else(|| {
-                KallaxError::io(&path, "system time is before unix epoch")
-            })?;
+    let modified_at = DateTime::from_timestamp(duration.as_secs() as i64, duration.subsec_nanos())
+        .ok_or_else(|| KallaxError::io(&path, "system time is before unix epoch"))?;
 
     Ok(ContentFingerprint {
         path,
@@ -165,8 +162,7 @@ impl FingerprintStore for MemoryStore {
 
     async fn diff(&self, new_fingerprints: &[ContentFingerprint]) -> Result<Vec<Change>> {
         let mut changes = Vec::new();
-        let new_paths: HashSet<PathBuf> =
-            new_fingerprints.iter().map(|f| f.path.clone()).collect();
+        let new_paths: HashSet<PathBuf> = new_fingerprints.iter().map(|f| f.path.clone()).collect();
 
         // Detect added or modified files
         for fp in new_fingerprints {
@@ -242,7 +238,10 @@ mod tests {
     fn compute_fingerprint_on_directory_returns_validation_error() {
         let result = compute_fingerprint("/tmp");
         assert!(result.is_err());
-        assert!(matches!(result.unwrap_err(), KallaxError::Validation { .. }));
+        assert!(matches!(
+            result.unwrap_err(),
+            KallaxError::Validation { .. }
+        ));
     }
 
     #[test]
@@ -344,7 +343,11 @@ mod tests {
         store.save(&fp).await.unwrap();
 
         let changes = store.diff(&[fp]).await.expect("diff should succeed");
-        assert_eq!(changes.len(), 0, "unchanged files should not appear in diff");
+        assert_eq!(
+            changes.len(),
+            0,
+            "unchanged files should not appear in diff"
+        );
     }
 
     #[tokio::test]
@@ -377,7 +380,10 @@ mod tests {
             modified_at: Utc::now(),
         };
 
-        let changes = store.diff(&[b_modified, c]).await.expect("diff should succeed");
+        let changes = store
+            .diff(&[b_modified, c])
+            .await
+            .expect("diff should succeed");
         assert_eq!(changes.len(), 3);
 
         let types: Vec<ChangeType> = changes.iter().map(|c| c.change_type.clone()).collect();

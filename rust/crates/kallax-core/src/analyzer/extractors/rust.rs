@@ -65,21 +65,30 @@ pub fn extract(content: &str) -> Vec<Symbol> {
         // Try each pattern in priority order
         // EPIC-091 P1-5: unwrap 改 if let (regex 捕获 group 1 一定存在, 但 .unwrap 仍 panic 风险)
         let kind = if let Some(caps) = fn_re.captures(trimmed) {
-            caps.get(1).map(|m| (m.as_str().to_string(), SymbolKind::Function))
+            caps.get(1)
+                .map(|m| (m.as_str().to_string(), SymbolKind::Function))
         } else if let Some(caps) = struct_re.captures(trimmed) {
-            caps.get(1).map(|m| (m.as_str().to_string(), SymbolKind::Class))
+            caps.get(1)
+                .map(|m| (m.as_str().to_string(), SymbolKind::Class))
         } else if let Some(caps) = impl_re.captures(trimmed) {
-            caps.get(1).map(|m| (m.as_str().to_string(), SymbolKind::Method))
+            caps.get(1)
+                .map(|m| (m.as_str().to_string(), SymbolKind::Method))
         } else if let Some(caps) = trait_re.captures(trimmed) {
-            caps.get(1).map(|m| (m.as_str().to_string(), SymbolKind::Interface))
+            caps.get(1)
+                .map(|m| (m.as_str().to_string(), SymbolKind::Interface))
         } else if let Some(caps) = enum_re.captures(trimmed) {
-            caps.get(1).map(|m| (m.as_str().to_string(), SymbolKind::Class))
+            caps.get(1)
+                .map(|m| (m.as_str().to_string(), SymbolKind::Class))
         } else {
             None
         };
 
         if let Some((name, kind)) = kind {
-            symbols.push(Symbol { name, kind, line: i + 1 });
+            symbols.push(Symbol {
+                name,
+                kind,
+                line: i + 1,
+            });
         }
     }
 

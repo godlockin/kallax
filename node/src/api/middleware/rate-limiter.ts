@@ -115,7 +115,7 @@ export function createRateLimiter() {
         success: false,
         error: {
           code: 'RATE_LIMITED',
-          message: `Too many requests. Retry after ${retryAfter} seconds`,
+          message: `Too many requests. Retry after ${String(retryAfter)} seconds`,
         },
         timestamp: now,
       });
