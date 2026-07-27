@@ -132,7 +132,15 @@ export function createAuthMiddleware(apiKey: string) {
 
 /**
  * Extend Express Request to include auth info
+ *
+ * `declare global { namespace Express { ... } }` is the only documented way
+ * to augment Express's Request type from a module (see @types/express).
+ * Converting to module-augmenting interfaces (e.g. `declare module 'express-serve-static-core'`)
+ * would still produce an equivalent global side effect, so the namespace
+ * pattern is preserved here. Disabled locally because the rule's auto-fix
+ * cannot represent this pattern.
  */
+/* eslint-disable @typescript-eslint/no-namespace */
 declare global {
   namespace Express {
     interface Request {
@@ -143,3 +151,4 @@ declare global {
     }
   }
 }
+/* eslint-enable @typescript-eslint/no-namespace */

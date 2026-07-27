@@ -1,0 +1,60 @@
+{
+  "ticket_id": "EPIC-151",
+  "epic": "EPIC-151",
+  "phase": "PHASE-018",
+  "title": "Forbidden Patterns Check — 抓到 `: any` in node/ .ts",
+  "status": "done",
+  "priority": "P1",
+  "type": "bugfix",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "PR #152 canary 抓到 `Forbidden Patterns Check` FAIL. Workflow 用 `grep -rn ': any' --include='*.ts'` 抓 `: any` type usage 在 `node/`.\n\n**跟 CLAUDE.md Rule 1 (Type Safety) 联合**: `any` 是 four-letter word, 禁止.\n\n**Performer 步骤**:\n1. `cd node && grep -rn ': any' --include='*.ts' src/ | grep -v node_modules | grep -v .d.ts` 抓所有位置\n2. 分类修复:\n   - Legit `any` (第三方 API 未定义 type) → `unknown` + type guard\n   - Lazy `any` → 定义 proper interface / union type\n   - Test `any` → 也应该 fix, 但可暂用 `@ts-expect-error` (需注释理由)\n3. 修完 rerun grep, 直到 0 hit\n\n**注意 exclusions**:\n- workflow grep 已 exclude `node_modules` + `.d.ts`\n- 但可能抓到误报 (如 comment 里的 `// : any`, 或 JSDoc `@param name : any`) — Performer 判定\n\n**追责链**: 跟 EPIC-131 TypeScript strict 硬化联动. main 分支 CI 首次真跑 Forbidden Patterns.",
+  "file_scope": {
+    "includes": [
+      "node/src/**/*.ts",
+      "node/src/**/*.tsx"
+    ]
+  },
+  "acceptance": [
+    "cd node && grep -rn ': any' --include='*.ts' src/ | grep -v node_modules | grep -v .d.ts | wc -l = 0",
+    "cd node && npm run typecheck 全绿 (改后 tsc 不炸)",
+    "CI Forbidden Patterns Check PASS"
+  ],
+  "labels": [
+    "cleanup",
+    "canary-finding",
+    "type-safety",
+    "ts-any"
+  ],
+  "derived_from": "PR #152 canary — main branch Forbidden Patterns Check",
+  "verification": {
+    "hit_count_before": 10,
+    "hit_count_before_in_scope": 8,
+    "hit_count_after": 0,
+    "grep_scope_ci": "node/",
+    "grep_scope_ticket": "node/src/**",
+    "files_changed": [
+      "node/src/permissions/conductor-scope.ts",
+      "node/src/permissions/workspace-switcher.ts",
+      "node/src/permissions/role-transition.ts",
+      "node/src/permissions/authz-check.ts",
+      "node/src/permissions/readonly-path.ts",
+      "node/tests/l1-match.test.ts"
+    ],
+    "files_changed_count": 6,
+    "categorization": {
+      "regex_false_positive_jsdoc_rewrite": 10,
+      "unknown_plus_type_guard": 0,
+      "proper_interface": 0,
+      "legitimate_any": 0
+    },
+    "notes": "All 10 hits were JSDoc prose false-positives (CLAUDE.md Stage 1 documented pattern). Rewrote colons in comments to colons/dashes to eliminate the : any substring while preserving meaning. Zero source code any-types touched (there were none). Scope expanded from ticket-declared node/src/** to include node/tests/l1-match.test.ts because CI regex operates on node/ globally — 2 additional JSDoc rewrites needed for CI Forbidden Patterns Check PASS.",
+    "commands": {
+      "typecheck": "cd node && npm run typecheck (exit 0)",
+      "vitest": "cd node && KALLAX_HOOK_API_KEY=test-... npx vitest run (all pass)",
+      "grep_final": "grep -rn \": any\" --include=*.ts --include=*.tsx node/ | grep -v node_modules | grep -v .d.ts | wc -l = 0"
+    }
+  }
+}

@@ -96,7 +96,8 @@ where
         let mut removed = 0;
 
         // Collect keys to remove
-        let expired_keys: Vec<K> = self.store
+        let expired_keys: Vec<K> = self
+            .store
             .iter()
             .filter(|entry| entry.expires_at <= now)
             .map(|entry| entry.key().clone())

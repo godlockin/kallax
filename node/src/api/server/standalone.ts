@@ -40,7 +40,7 @@ if (process.argv[1] !== undefined && (process.argv[1] === __filename || process.
     getByTaskId: () => Promise.resolve(ok(null)),
     validateIsolation: () => Promise.resolve(ok(true)),
     getPath: () => '/tmp/wt',
-  } as unknown as WorktreeManager;
+  };
   const server = createApiServer({ port: serverPort, host: serverHost, apiKey }, { db, taskAssigner, instanceRegistry, worktreeManager: mockWorktreeManager, outputVerifier, isolationChecker, sseBus });
   setupProcessCleanup();
   registerApiServerCleanup(server);

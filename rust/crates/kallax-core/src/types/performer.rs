@@ -4,11 +4,11 @@
 //! PerformerId: opaque newtype wrapper for type-safe performer references.
 //! PerformerStatus: enum of valid performer states (idle, busy, active).
 
+use super::task::TaskId;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
-use super::task::TaskId;
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -40,14 +40,30 @@ impl Performer {
     }
 
     // Getters
-    pub fn id(&self) -> &PerformerId { &self.id }
-    pub fn name(&self) -> &str { &self.name }
-    pub fn status(&self) -> PerformerStatus { self.status }
-    pub fn capabilities(&self) -> &[String] { &self.capabilities }
-    pub fn scope(&self) -> &[PathBuf] { &self.scope }
-    pub fn current_task(&self) -> Option<&TaskId> { self.current_task.as_ref() }
-    pub fn worktree_path(&self) -> Option<&PathBuf> { self.worktree_path.as_ref() }
-    pub fn heartbeat_at(&self) -> DateTime<Utc> { self.heartbeat_at }
+    pub fn id(&self) -> &PerformerId {
+        &self.id
+    }
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+    pub fn status(&self) -> PerformerStatus {
+        self.status
+    }
+    pub fn capabilities(&self) -> &[String] {
+        &self.capabilities
+    }
+    pub fn scope(&self) -> &[PathBuf] {
+        &self.scope
+    }
+    pub fn current_task(&self) -> Option<&TaskId> {
+        self.current_task.as_ref()
+    }
+    pub fn worktree_path(&self) -> Option<&PathBuf> {
+        self.worktree_path.as_ref()
+    }
+    pub fn heartbeat_at(&self) -> DateTime<Utc> {
+        self.heartbeat_at
+    }
 
     /// Set performer capabilities
     pub fn with_capabilities(mut self, capabilities: Vec<String>) -> Self {
@@ -85,12 +101,7 @@ impl Performer {
     /// Release task from performer
     pub fn release_task(&mut self) -> crate::Result<TaskId> {
         let task_id = self.current_task.take().ok_or_else(|| {
-            crate::KallaxError::invalid_state(
-                "performer",
-                self.id.as_str(),
-                "busy",
-                "idle",
-            )
+            crate::KallaxError::invalid_state("performer", self.id.as_str(), "busy", "idle")
         })?;
         self.status = PerformerStatus::Idle;
         Ok(task_id)
@@ -108,7 +119,10 @@ pub struct PerformerId(String);
 
 impl PerformerId {
     pub fn new() -> Self {
-        Self(format!("PERF-{}", Uuid::new_v4().to_string()[..8].to_uppercase()))
+        Self(format!(
+            "PERF-{}",
+            Uuid::new_v4().to_string()[..8].to_uppercase()
+        ))
     }
 
     pub fn from_str(s: impl Into<String>) -> Self {

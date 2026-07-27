@@ -17,9 +17,11 @@ use axum::{
     routing::{get, post, put},
     Json, Router,
 };
-use kallax_core::{KallaxError, Performer, PerformerId, Priority, Ticket};
-use kallax_engine::{AgentPool, ConflictResolver, DagScheduler, EventBus, KnowledgeBase, TicketEngine};
 use kallax_core::TaskId;
+use kallax_core::{KallaxError, Performer, PerformerId, Priority, Ticket};
+use kallax_engine::{
+    AgentPool, ConflictResolver, DagScheduler, EventBus, KnowledgeBase, TicketEngine,
+};
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -180,7 +182,9 @@ impl IntoResponse for AppError {
             KallaxError::AlreadyExists { .. } => (StatusCode::CONFLICT, "already_exists"),
             KallaxError::InvalidState { .. } => (StatusCode::BAD_REQUEST, "invalid_state"),
             KallaxError::Validation { .. } => (StatusCode::BAD_REQUEST, "validation_error"),
-            KallaxError::ResourceExhausted { .. } => (StatusCode::SERVICE_UNAVAILABLE, "resource_exhausted"),
+            KallaxError::ResourceExhausted { .. } => {
+                (StatusCode::SERVICE_UNAVAILABLE, "resource_exhausted")
+            }
             _ => (StatusCode::INTERNAL_SERVER_ERROR, "internal_error"),
         };
 
@@ -313,10 +317,15 @@ async fn register_performer(
     let id = state.pool.register(performer.clone())?;
     state.engine.register_performer(performer)?;
 
-    let registered = state.pool.get(id.as_str())
+    let registered = state
+        .pool
+        .get(id.as_str())
         .ok_or_else(|| KallaxError::internal("Failed to retrieve registered performer"))?;
 
-    Ok((StatusCode::CREATED, Json(PerformerResponse::from(&registered))))
+    Ok((
+        StatusCode::CREATED,
+        Json(PerformerResponse::from(&registered)),
+    ))
 }
 
 async fn performer_heartbeat(
@@ -337,8 +346,7 @@ async fn performer_heartbeat(
 // ─────────────────────────────────────────────────────────────────────────────
 
 fn init_logging() {
-    let filter = EnvFilter::try_from_default_env()
-        .unwrap_or_else(|_| EnvFilter::new("info"));
+    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
 
     tracing_subscriber::registry()
         .with(fmt::layer())
@@ -371,7 +379,13 @@ fn create_router(state: AppState) -> Router {
         // (duplicate stats removed)
         // Middleware
         .layer(TraceLayer::new_for_http())
-        .layer(CorsLayer::new().allow_origin("http://localhost:9877".parse::<axum::http::HeaderValue>().unwrap()))
+        .layer(
+            CorsLayer::new().allow_origin(
+                "http://localhost:9877"
+                    .parse::<axum::http::HeaderValue>()
+                    .unwrap(),
+            ),
+        )
         .with_state(state)
 }
 
@@ -394,7 +408,9 @@ async fn bridge_status(State(state): State<AppState>) -> impl IntoResponse {
     }))
 }
 
-async fn scheduler_status(State(state): State<AppState>) -> Result<Json<serde_json::Value>, AppError> {
+async fn scheduler_status(
+    State(state): State<AppState>,
+) -> Result<Json<serde_json::Value>, AppError> {
     // 跟 v2.7.4 D6.6 联合, 跟 Rule 8 联合, 跟'不埋坑' 5 原则 联合
     // 跟 v2.7.4 check-anti-patterns.sh 联合: unwrap 改 Result, 治根 panic 风险
     let mut s = state.scheduler.lock().map_err(|e| {
@@ -416,8 +432,14 @@ async fn bridge_ticket_create(
     State(state): State<AppState>,
     Json(payload): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, AppError> {
-    let title = payload.get("title").and_then(|v| v.as_str()).unwrap_or("untitled");
-    let desc = payload.get("description").and_then(|v| v.as_str()).unwrap_or("");
+    let title = payload
+        .get("title")
+        .and_then(|v| v.as_str())
+        .unwrap_or("untitled");
+    let desc = payload
+        .get("description")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
     // EPIC-101: 治 EPIC-079 copy-paste bug — engine 是 Arc<TicketEngine> (immutable methods)
     // 错: state.engine.lock() — Arc 没 lock()
     // 对: 直接用 &engine 调方法 (不需要 lock 因为方法内部用 DashMap)
@@ -443,8 +465,14 @@ async fn bridge_task_assign(
     State(state): State<AppState>,
     Json(payload): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, AppError> {
-    let ticket_id = payload.get("ticket_id").and_then(|v| v.as_str()).unwrap_or("");
-    let performer_id_str = payload.get("performer_id").and_then(|v| v.as_str()).unwrap_or("");
+    let ticket_id = payload
+        .get("ticket_id")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
+    let performer_id_str = payload
+        .get("performer_id")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
     let performer_id = kallax_core::PerformerId::from_str(performer_id_str);
     // EPIC-101: 改用真 API claim_ticket (engine immutable, returns Result<()>)
     // 原 EPIC-079 用错 API assign_ticket (不存在, 治跟 v3.8.0 reviewer 1:1 联合)
@@ -462,7 +490,10 @@ async fn bridge_task_complete(
     State(state): State<AppState>,
     Json(payload): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, AppError> {
-    let ticket_id = payload.get("ticket_id").and_then(|v| v.as_str()).unwrap_or("");
+    let ticket_id = payload
+        .get("ticket_id")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
     // EPIC-101: engine immutable
     state.engine.complete_ticket(ticket_id).map_err(AppError)?;
     Ok(Json(serde_json::json!({
@@ -485,7 +516,13 @@ async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let scheduler = Arc::new(std::sync::Mutex::new(DagScheduler::new()));
     let conflicts = Arc::new(ConflictResolver::default());
 
-    let state = AppState { engine, pool, knowledge, scheduler, conflicts };
+    let state = AppState {
+        engine,
+        pool,
+        knowledge,
+        scheduler,
+        conflicts,
+    };
     let app = create_router(state);
 
     // Get port from env or default
@@ -518,7 +555,13 @@ mod tests {
         let knowledge = Arc::new(KnowledgeBase::new());
         let scheduler = Arc::new(std::sync::Mutex::new(DagScheduler::new()));
         let conflicts = Arc::new(ConflictResolver::default());
-        create_router(AppState { engine, pool, knowledge, scheduler, conflicts })
+        create_router(AppState {
+            engine,
+            pool,
+            knowledge,
+            scheduler,
+            conflicts,
+        })
     }
 
     #[tokio::test]
@@ -526,7 +569,12 @@ mod tests {
         let app = create_test_app();
 
         let response = app
-            .oneshot(Request::builder().uri("/health").body(Body::empty()).unwrap())
+            .oneshot(
+                Request::builder()
+                    .uri("/health")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
             .await
             .unwrap();
 

@@ -5,7 +5,7 @@
 use async_trait::async_trait;
 use std::sync::Arc;
 
-use crate::{Result, KallaxError};
+use crate::{KallaxError, Result};
 
 /// Context passed through middleware pipeline
 #[derive(Debug, Clone)]
@@ -36,12 +36,7 @@ where
     Res: Send + 'static,
 {
     /// Process the request and optionally call next middleware
-    async fn process(
-        &self,
-        ctx: &Context,
-        request: Req,
-        next: Next<'_, Req, Res>,
-    ) -> Result<Res>;
+    async fn process(&self, ctx: &Context, request: Req, next: Next<'_, Req, Res>) -> Result<Res>;
 }
 
 /// Next middleware in the chain
@@ -144,12 +139,7 @@ where
     Req: Send + std::fmt::Debug + 'static,
     Res: Send + 'static,
 {
-    async fn process(
-        &self,
-        ctx: &Context,
-        request: Req,
-        next: Next<'_, Req, Res>,
-    ) -> Result<Res> {
+    async fn process(&self, ctx: &Context, request: Req, next: Next<'_, Req, Res>) -> Result<Res> {
         tracing::info!(
             request_id = %ctx.request_id,
             "Processing request"
@@ -198,12 +188,7 @@ where
     Req: Send + 'static,
     Res: Send + 'static,
 {
-    async fn process(
-        &self,
-        ctx: &Context,
-        request: Req,
-        next: Next<'_, Req, Res>,
-    ) -> Result<Res> {
+    async fn process(&self, ctx: &Context, request: Req, next: Next<'_, Req, Res>) -> Result<Res> {
         let timeout = tokio::time::Duration::from_millis(self.timeout_ms);
 
         tokio::time::timeout(timeout, next.run(ctx, request))
@@ -233,12 +218,7 @@ where
     Res: Send + 'static,
     V: Validator<Req> + Send + Sync,
 {
-    async fn process(
-        &self,
-        ctx: &Context,
-        request: Req,
-        next: Next<'_, Req, Res>,
-    ) -> Result<Res> {
+    async fn process(&self, ctx: &Context, request: Req, next: Next<'_, Req, Res>) -> Result<Res> {
         self.validator.validate(&request)?;
         next.run(ctx, request).await
     }
@@ -279,8 +259,8 @@ mod tests {
 
     #[tokio::test]
     async fn middleware_transforms_request() {
-        let pipeline = MiddlewarePipeline::<String, String>::new()
-            .use_middleware(UppercaseMiddleware);
+        let pipeline =
+            MiddlewarePipeline::<String, String>::new().use_middleware(UppercaseMiddleware);
 
         let ctx = Context::new("test-req-1");
         let result = pipeline

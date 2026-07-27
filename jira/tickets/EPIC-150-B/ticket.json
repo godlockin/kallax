@@ -1,0 +1,60 @@
+{
+  "ticket_id": "EPIC-150-B",
+  "epic": "EPIC-150",
+  "phase": "PHASE-018",
+  "title": "eslint --fix 3 auto-fixable — prefer-optional-chain + no-unnecessary-type-assertion",
+  "status": "done",
+  "priority": "P1",
+  "type": "chore",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "3 处 eslint 可 --fix 自动修复:\n- 2× `prefer-optional-chain` (改 `x && x.y` → `x?.y`)\n- 2× `no-unnecessary-type-assertion` (删多余 `as T`)\n\n**修法**: `cd node && npm run lint -- --fix` 一次搞定. Fact-Forcing 检查 diff 全是 whitespace/optional-chain 语法变换, 无语义改动.\n\n**追责链**: EPIC-150 canary 分类中最简单的一批.",
+  "file_scope": {
+    "includes": [
+      "node/src/**/*.ts"
+    ]
+  },
+  "acceptance": [
+    "cd node && npm run lint -- --fix 后 3 auto-fixable violations → 0",
+    "cd node && npm run typecheck exit 0",
+    "cd node && vitest run 无 regression",
+    "git diff 每处证实是安全语法变换"
+  ],
+  "labels": ["auto-fix", "lint-strict", "canary-finding"],
+  "derived_from": "EPIC-150 Option A STRICT",
+  "verification": {
+    "auto_fix_rule_count": {
+      "baseline": 4,
+      "after_fix": 1,
+      "auto_fixed": 3,
+      "remaining_reason": "1 剩余 prefer-optional-chain @ node/src/core/master-election.ts:30 是 `cached !== undefined && cached.status === 'ready'` — eslint 不 auto-fix (suggestOnly, `!== undefined` guard 有语义变换风险). 超 ticket 范围, 留另一 ticket 手改 (EPIC-150-C/D/E 或新 canary)."
+    },
+    "baseline_raw": "/tmp/claude-tasks/lint-baseline-20260726-223700.log (4 hits: standalone.ts:36, dag-executor.ts:133, master-election.ts:30, master-verify/dimensions.ts:212)",
+    "after_fix_raw": "/tmp/claude-tasks/lint-fix-20260726-224537.log (1 hit: master-election.ts:30)",
+    "files_touched_by_fix": [
+      "node/src/api/server/standalone.ts (rm `as unknown as WorktreeManager` — line 43)",
+      "node/src/core/dag-executor.ts (rm `as DagRunState['status']` + `as DagRunState` — line 138+140, 321)",
+      "node/src/core/master-verify/dimensions.ts (`arg === undefined || !arg.startsWith(...)` → `!arg?.startsWith(...)` — line 212)"
+    ],
+    "diff_spot_check": {
+      "safe": true,
+      "summary": "3 changes are pure syntax variants: (1) standalone.ts rm redundant assertion on mock (target type matches structurally); (2) dag-executor.ts replace `as` with explicit union guard `'running' | 'completed' | 'failed'` (type-safer, narrower runtime check); (3) dimensions.ts `x === undefined || !x.startsWith()` → `!x?.startsWith()` (optional-chain equivalent, undefined → false → negated → true continue path preserved)."
+    },
+    "typecheck": {
+      "exit": 0,
+      "output": "> tsc --noEmit\n(clean, no errors)"
+    },
+    "vitest": {
+      "passed": 960,
+      "failed": 0,
+      "skipped": 4,
+      "test_files_passed": 47,
+      "test_files_skipped": 2,
+      "duration_s": 5.33,
+      "raw_summary": "Test Files  47 passed | 2 skipped (49) / Tests  960 passed | 4 skipped (964) / Duration  5.33s",
+      "log_path": "/tmp/claude-tasks/epic150b-vitest-summary.txt"
+    }
+  }
+}

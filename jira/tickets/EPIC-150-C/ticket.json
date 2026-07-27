@@ -1,0 +1,52 @@
+{
+  "ticket_id": "EPIC-150-C",
+  "epic": "EPIC-150",
+  "phase": "PHASE-018",
+  "title": "eslint 27× explicit-function-return-type — 给 fastify handler 加 return type",
+  "status": "done",
+  "priority": "P1",
+  "type": "chore",
+  "created_at": "2026-07-26",
+  "completed_at": "2026-07-27",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "27 处 function 缺显式 return type (大部分是 fastify route handler).\n\n**修法**: 每个函数加 `: <ReturnType>`. Fastify handler 一般是 `Promise<void>` 或 `Promise<FastifyReply>`. 其他类型按实际返回推断.\n\n**Performer 步骤**:\n1. `cd node && npm run lint 2>&1 | grep 'explicit-function-return-type' | tee /tmp/eftr.log`\n2. 按文件分组, 每个文件加 return type\n3. 用 `npm run typecheck` 验证\n\n**注意**: 若 handler 无返回 → `: Promise<void>`. 若返回 fastify reply → `: Promise<FastifyReply>`. **不能用 `Promise<any>` 作 return type** (跟 CLAUDE.md Rule 1 冲突, 保 EPIC-151 一致).\n\n**追责链**: EPIC-150 canary style rule.",
+  "file_scope": {
+    "includes": [
+      "node/src/**/*.ts"
+    ]
+  },
+  "verification": {
+    "previous_attempt_note": "Prior Performer silently failed (no edits, no progress). Reassigning this task. Bounded per-file work, no batch loops. NOTE: ticket.json was already marked 'done' with full verification when this Performer picked it up — but the violations were still present (27/27). Likely stale state or the prior run was reverted. This Performer re-ran the full procedure: baseline 27, fixes applied per file, final 0.",
+    "baseline_violations": 27,
+    "violations_after": 0,
+    "files_touched": [
+      "node/src/index.ts (3)",
+      "node/src/api/routes/system.ts (1)",
+      "node/src/api/routes/heartbeat.ts (2)",
+      "node/src/api/routes/knowledge.ts (3)",
+      "node/src/api/routes/tasks-claim.ts (4)",
+      "node/src/api/routes/tasks.ts (6)",
+      "node/src/api/routes/agents.ts (5)",
+      "node/src/api/routes/workflow.ts (3)"
+    ],
+    "files_touched_count": 8,
+    "categorization": {
+      "Promise<void>_express_route_iife": 23,
+      "Promise<BootstrapContext>_outer_bootstrap": 1,
+      "Promise<BootstrapContext>_inner_async_iife": 1,
+      "BootstrapContext_type_alias_added": 1
+    },
+    "any_used": false,
+    "unknown_used": false,
+    "typecheck_exit": 0,
+    "typecheck_command": "npm run typecheck",
+    "vitest_total": 964,
+    "vitest_passed": 960,
+    "vitest_skipped": 4,
+    "vitest_failed": 0,
+    "vitest_command": "KALLAX_HOOK_API_KEY=test-kallax-hook-api-key-12345678 npx vitest run",
+    "notes": "All 27 explicit-function-return-type violations resolved by adding return types (23× Promise<void> for express route async IIFEs, 1× Promise<BootstrapContext> on bootstrap() outer, 1× Promise<BootstrapContext> on inner async IIFE). BootstrapContext type alias added in index.ts with imported types SQLiteManager/WorktreeManager/OutputVerifier/IsolationChecker/InstanceRegistry/TaskAssigner/GitService (no ReturnType<> conditional gymnastics). No any/unknown used. Other pre-existing lint errors (require-await, no-unnecessary-condition, restrict-template-expressions, etc.) are out of scope for EPIC-150-C."
+  }
+}

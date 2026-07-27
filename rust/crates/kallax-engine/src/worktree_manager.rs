@@ -3,11 +3,11 @@
 //! Manages git worktrees to provide isolated environments for performers.
 
 use kallax_core::{KallaxError, PerformerId, Result};
+use parking_lot::RwLock;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use parking_lot::RwLock;
-use tracing::{info, warn, error};
+use tracing::{error, info, warn};
 
 /// Worktree information
 #[derive(Debug, Clone)]
@@ -83,8 +83,7 @@ impl WorktreeManager {
         let worktree_path = self.config.worktree_base.join(performer_id.as_str());
 
         // Create worktree directory
-        std::fs::create_dir_all(&worktree_path)
-            .map_err(|e| KallaxError::io(&worktree_path, e))?;
+        std::fs::create_dir_all(&worktree_path).map_err(|e| KallaxError::io(&worktree_path, e))?;
 
         // Git worktree add command
         let base = base_ref.unwrap_or("HEAD");
@@ -95,9 +94,9 @@ impl WorktreeManager {
                 "add",
                 "-b",
                 branch_name,
-                worktree_path.to_str().ok_or_else(|| {
-                    KallaxError::internal("Invalid worktree path")
-                })?,
+                worktree_path
+                    .to_str()
+                    .ok_or_else(|| KallaxError::internal("Invalid worktree path"))?,
                 base,
             ])
             .output()
@@ -118,7 +117,9 @@ impl WorktreeManager {
             created_at: chrono::Utc::now(),
         };
 
-        self.worktrees.write().insert(performer_id.as_str().to_string(), worktree.clone());
+        self.worktrees
+            .write()
+            .insert(performer_id.as_str().to_string(), worktree.clone());
 
         info!(
             performer_id = %performer_id,
@@ -137,9 +138,8 @@ impl WorktreeManager {
             worktrees.get(performer_id.as_str()).cloned()
         };
 
-        let worktree = worktree.ok_or_else(|| {
-            KallaxError::not_found("worktree", performer_id.as_str())
-        })?;
+        let worktree =
+            worktree.ok_or_else(|| KallaxError::not_found("worktree", performer_id.as_str()))?;
 
         // Git worktree remove command
         let output = Command::new("git")
@@ -148,9 +148,10 @@ impl WorktreeManager {
                 "worktree",
                 "remove",
                 "--force",
-                worktree.path.to_str().ok_or_else(|| {
-                    KallaxError::internal("Invalid worktree path")
-                })?,
+                worktree
+                    .path
+                    .to_str()
+                    .ok_or_else(|| KallaxError::internal("Invalid worktree path"))?,
             ])
             .output()
             .map_err(|e| KallaxError::io(&self.config.repo_path, e))?;
@@ -310,11 +311,7 @@ mod tests {
             );
         }
 
-        let result = manager.create_worktree(
-            &PerformerId::from_str("new"),
-            "branch-new",
-            None,
-        );
+        let result = manager.create_worktree(&PerformerId::from_str("new"), "branch-new", None);
 
         assert!(matches!(result, Err(KallaxError::ResourceExhausted { .. })));
     }
