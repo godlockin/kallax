@@ -1,0 +1,72 @@
+{
+  "ticket_id": "EPIC-153",
+  "epic": "EPIC-153",
+  "phase": "PHASE-018",
+  "title": "pre-existing typecheck errors — await 在 non-async IIFE (tasks.ts:80/90 + workflow.ts:202)",
+  "status": "done",
+  "priority": "P0",
+  "type": "bugfix",
+  "created_at": "2026-07-27",
+  "completed_at": "2026-07-27",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "EPIC-150-E Performer 报告了 3 个 pre-existing typecheck errors + 2 vitest failures, **NOT caused by EPIC-150-E** (Performer 在 5 个 in-scope lint rule 都 0 了, leaves these untouched).\n\n**Failures (raw)**:\n- `node/src/api/routes/tasks.ts:80` — `await` in non-async IIFE\n- `node/src/api/routes/tasks.ts:90` — 同上\n- `node/src/api/routes/workflow.ts:202` — 同上\n\n**Root cause**: 某个不同时期 (推测 pre-borrow-from-cindy era) 有人/某个 auto-fix 把 `void (async () => {})()` 改成 `(() => {})()` 但留了内层 `await` 调用, 造成 'await is only valid in async functions and async generators' typecheck 错误.\n\n**vitest 2 failures** 也是同一 source: dead-code-sentinel-coverage-d (from EPIC-141) 跑测试时 import 这 2 文件被打断.\n\n**Performer 从 commit history 推测**: 像 commit `2447e8` (从 settings.local.json 同源 dirty) 或 v3.28.0 之前的 release 都可能引入. 总之是 pre-existing.\n\n**修法**:\n- 2 选 1: (A) 给 IIFE 加回 `async` (让 await 合法); (B) 删 `await` (调用本来就可能 sync)\n- 哪个 intent 对看调用 — Promise/then or sync?\n- 删 `await` 通常更安全 (idempotent + 避免意外)\n\n**Fact-Forcing**: Performer 没建议先 re-write, 而是建议 'Master review when bundling' — 警惕! 必须独立诊断, 不能猜.\n\n**追责链**: EPIC-150-E verification block 报告, Master 没自己跑 pre-build 所以漏. EPIC-153 应独立补.",
+  "file_scope": {
+    "includes": [
+      "node/src/api/routes/tasks.ts",
+      "node/src/api/routes/workflow.ts"
+    ]
+  },
+  "acceptance": [
+    "cd node && npm run typecheck exit 0",
+    "cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run 全部 PASS (≤ 2 fail → 0)",
+    "EPIC-150-E 留下的 3 errors 必须为 0",
+    "修法跟 IIFE intent 对 (async fn return Promise vs sync return)"
+  ],
+  "labels": ["real-bug", "canary-finding", "pre-existing"],
+  "derived_from": "EPIC-150-E Performer 报告 (外部 linter 改动副作用)",
+  "verification": {
+    "date": "2026-07-27",
+    "premise_check": "FAIL — ticket's 3 reported errors do not reproduce on disk",
+    "scope_files_inspected": [
+      "node/src/api/routes/tasks.ts",
+      "node/src/api/routes/workflow.ts"
+    ],
+    "typecheck_before": "n/a (could not reproduce)",
+    "typecheck_after": "cd node && npm run typecheck  → exit 0, 0 errors",
+    "typecheck_output_tail": "TSC_EXIT=0 (no diagnostics emitted)",
+    "vitest": "cd node && KALLAX_HOOK_API_KEY=test-kallax-hook-api-key-12345678 npx vitest run  → Test Files 47 passed | 2 skipped (49); Tests 960 passed | 4 skipped (964); 0 failed",
+    "per_location_state_at_run_time": {
+      "tasks.ts:80": "inside `void (async (): Promise<void> => {` (line 47); await deps.taskAssigner.claimNextTask(...) is LEGAL — async IIFE wraps it. No error.",
+      "tasks.ts:90": "same async IIFE (line 47); await deps.taskAssigner.assignTask(...) is LEGAL — no error.",
+      "workflow.ts:202": "inside `void (async (): Promise<void> => {` (line 139); await deps.worktreeManager.list() is LEGAL — no error."
+    },
+    "current_iife_layout_in_scope_files": {
+      "tasks.ts": {
+        "line_47_next_endpoint": "void (async (): Promise<void> => {",
+        "line_131_list_endpoint": "(((): void => {",
+        "line_190_create_endpoint": "(((): void => {",
+        "line_262_get_endpoint": "(((): void => {",
+        "line_301_progress_endpoint": "(((): void => {",
+        "line_373_other": "(((): void => {"
+      },
+      "workflow.ts": {
+        "line_67_dag_endpoint": "(((): void => {",
+        "line_139_status_endpoint": "void (async (): Promise<void> => {",
+        "line_233_run_endpoint": "(((): void => {"
+      }
+    },
+    "diagnosis": {
+      "intent": "Only endpoints that still call Promise-returning deps methods (taskAssigner.*, worktreeManager.list) keep `void (async ...)`; endpoints whose `await` was previously redundant over sync Result<T> methods (db.listTasks/getTask/updateTask/etc.) were converted to `(((): void => {` IIFE.",
+      "alignment_with_call_return_types": "OK — awaits exist only inside async IIFEs; sync IIFEs only call non-await Result<T> methods.",
+      "ambiguous_cases": "None — every `await` in the 2 files is wrapped by an async IIFE on disk."
+    },
+    "files_modified_by_this_ticket": "NONE (per ticket constraint 'DO NOT touch any other file') — ticket resolved by verification only",
+    "error_count_before": 0,
+    "error_count_after": 0,
+    "vitest_fail_before": 0,
+    "vitest_fail_after": 0,
+    "root_cause_trace": "Per EPIC-150-E (ticket.json line 69), the 3 errors were pre-existing at the time EPIC-150-E ran. By the time EPIC-153 started (next day, same branch), the branch worktree had already received either a clean-up commit or uncommitted edits that fixed the IIFEs via two complementary moves: (a) re-annotate async IIFEs with explicit `: Promise<void>` return type for endpoints that still need await; (b) drop `async` for endpoints whose `await` was already dead code. `git status` confirms tasks.ts and workflow.ts are still in the modified-but-uncommitted state when EPIC-153 opened."
+  }
+}

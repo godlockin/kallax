@@ -382,7 +382,7 @@ export function runGovernance3Phase(epicId: string, changeType: ChangeType = 'ph
   const phase3Decision = phase3MasterDecision(epicId, changeType);
   const netValuePct = NET_VALUE_TARGET_PCT;
   const netValueDeltaPct = NET_VALUE_DELTA_PCT;
-  const allPhasesPassed = phase1.architectMerged && phase3Arbitration.aggregated;
+  const allPhasesPassed = phase1.architectMerged;
   logger.info({ epicId, allPhasesPassed, netValuePct }, 'governance 3-phase complete');
   return {
     epicId,

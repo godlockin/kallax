@@ -39,12 +39,12 @@ export function createClaimRoutes(deps: ClaimRouteDependencies): Router {
 
   // POST /api/tasks/:id/claim — claim a task
   router.post('/claim', (req: Request, res: Response): void => {
-    void (async () => {
+    void (async (): Promise<void> => {
       try {
         const taskId = req.params['id'] as string;
         const body = req.body as ClaimTaskRequest;
 
-        if (body.performerId === undefined || typeof body.performerId !== 'string') {
+        if (typeof body.performerId !== 'string') {
           res.status(400).json({
             success: false,
             error: { code: 'VALIDATION_ERROR', message: 'performerId is required' },
@@ -88,7 +88,7 @@ export function createClaimRoutes(deps: ClaimRouteDependencies): Router {
 
   // POST /api/tasks/:id/release — release a claimed task back to pending
   router.post('/release', (req: Request, res: Response): void => {
-    void (async () => {
+    void (async (): Promise<void> => {
       try {
         const taskId = req.params['id'] as string;
 
@@ -113,7 +113,7 @@ export function createClaimRoutes(deps: ClaimRouteDependencies): Router {
 
   // PUT /api/tasks/:id/complete — complete a task
   router.put('/complete', (req: Request, res: Response): void => {
-    void (async () => {
+    void (async (): Promise<void> => {
       try {
         const taskId = req.params['id'] as string;
         const output = (req.body as Record<string, unknown>)['output'] as string | undefined;
@@ -139,7 +139,7 @@ export function createClaimRoutes(deps: ClaimRouteDependencies): Router {
 
   // PUT /api/tasks/:id/fail — fail a task
   router.put('/fail', (req: Request, res: Response): void => {
-    void (async () => {
+    void (async (): Promise<void> => {
       try {
         const taskId = req.params['id'] as string;
         const errorMsg = (req.body as Record<string, unknown>)['error'] as string | undefined ?? 'Task failed via API';

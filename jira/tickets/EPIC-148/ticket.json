@@ -1,0 +1,36 @@
+{
+  "ticket_id": "EPIC-148",
+  "epic": "EPIC-148",
+  "phase": "PHASE-018",
+  "title": "ci.yml TypeScript Type Check job cd 到 node/ 才跑 npm run typecheck",
+  "status": "done",
+  "priority": "P0",
+  "type": "bugfix",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "PR #152 (testing → main) canary 抓到 CI TypeScript Type Check 报 `npm error Missing script: 'typecheck'`. EPIC-144 只改了 script name (type-check → typecheck) 但没改执行路径.\n\n**根因**:\n- `.github/workflows/ci.yml:51` `run: npm run typecheck` 跑在 repo root\n- Root `package.json` scripts 没 `typecheck` (只 node/package.json 有)\n- 应该: `cd node && npm run typecheck` (或 `npm run typecheck -w node` 如 workspaces mode)\n\n**修法**:\n- Option A: `run: cd node && npm run typecheck` (跟 dual-engine.yml 现有模式一致, 见 dual-engine.yml:20 `run: cd node && npx tsc --noEmit`)\n- Option B: root package.json 加 alias `\"typecheck\": \"npm run typecheck -w node\"` (更好, 单入口)\n\n**推荐 Option A** — 保 root package.json 干净, workflow 显式 cd node. dual-engine.yml 已经这么做, 保持一致.\n\n**追责链**: EPIC-144 Performer 只改 script name, 未查 workflow 执行 dir. Master 建卡时 spec 也没提到. 记入 Fact-Forcing 累积 3 例.",
+  "file_scope": {
+    "includes": [
+      ".github/workflows/ci.yml"
+    ]
+  },
+  "acceptance": [
+    ".github/workflows/ci.yml node-typecheck 的 `run: npm run typecheck` 改为 `run: cd node && npm run typecheck` (跟 dual-engine.yml 模式一致)",
+    "CI TypeScript Type Check job PASS",
+    "本地不需要变化 (dual-engine.yml 已是 cd node 模式)"
+  ],
+  "labels": [
+    "cleanup",
+    "canary-finding",
+    "ci-config",
+    "sequel-to-epic-144"
+  ],
+  "derived_from": "PR #152 canary — EPIC-144 fix 不完整",
+  "verification": {
+    "diff": ".github/workflows/ci.yml:51 `run: npm run typecheck` -> `run: cd node && npm run typecheck`",
+    "yaml_load": "OK",
+    "handled_by": "master direct edit (1-line change, not worth performer dispatch)"
+  }
+}
