@@ -28,7 +28,7 @@ export function registerInstallCommands(program: Command): void {
       }
 
       const args: string[] = [];
-      if (opts?.['force']) {
+      if (opts?.['force'] === true) {
         args.push('--force');
       }
 

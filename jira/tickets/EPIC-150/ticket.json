@@ -1,0 +1,101 @@
+{
+  "ticket_id": "EPIC-150",
+  "epic": "EPIC-150",
+  "phase": "PHASE-018",
+  "title": "eslint src/ exit 2 — Node.js Lint diagnose first",
+  "status": "blocked",
+  "priority": "P1",
+  "type": "bugfix",
+  "created_at": "2026-07-26",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "PR #152 canary 抓到 `eslint src/` (via `npm run lint -w node`) exit 2. eslint exit 2 = configuration/parsing error, 不是普通 rule violation (exit 1). 需独立复现看具体错.\n\n**Performer 步骤 (Fact-Forcing)**:\n1. `cd node && npm run lint 2>&1 | tee /tmp/eslint.log` (直接跑)\n2. 或 `cd node && npx eslint src/ 2>&1 | tail -50`\n3. 分析 error 具体是什么: 配置文件缺? plugin 缺? 语法解析错?\n4. 如果是配置问题, 修 .eslintrc*; 如果是 rule violation, 修 source 或加 disable\n\n**注意**: 跟 EPIC-141/145 教训一致, 不能假设根因. exit 2 常见原因:\n- .eslintrc 缺失或配置错\n- eslint plugin (如 @typescript-eslint) 缺 dep\n- 待 parse 的文件是 TS 但没配 parser\n\n**追责链**: main 分支 CI 首次真跑 lint, 之前 miao 从没跑.",
+  "file_scope": {
+    "includes": [
+      "node/**/.eslintrc*",
+      "node/eslint.config.js",
+      "node/package.json",
+      "node/src/**"
+    ]
+  },
+  "acceptance": [
+    "cd node && npm run lint exit 0 或明确报告根因",
+    "如果是配置错, 修配置; 如果是 rule violation, master 拍板严格/放宽",
+    "本地能跑, CI Node.js Lint job PASS"
+  ],
+  "labels": [
+    "cleanup",
+    "canary-finding",
+    "diagnose-first",
+    "eslint"
+  ],
+  "derived_from": "PR #152 canary",
+  "verification": {
+    "diagnosis_phase": "DONE",
+    "original_error": "ERR_MODULE_NOT_FOUND: Cannot find package 'typescript-eslint' imported from node/eslint.config.js (also missing @eslint/js)",
+    "root_cause": "Case B - flat config imports @eslint/js and typescript-eslint (v8 unified package), but package.json declared only legacy @typescript-eslint/parser + @typescript-eslint/eslint-plugin. Neither @eslint/js nor typescript-eslint were installed.",
+    "config_fix_applied": {
+      "files_changed": [
+        "node/package.json",
+        "node/package-lock.json (root workspace)"
+      ],
+      "command": "cd node && npm install --save-dev @eslint/js typescript-eslint",
+      "new_deps": {
+        "@eslint/js": "^8.57.1",
+        "typescript-eslint": "^8.65.0"
+      },
+      "note": "Legacy @typescript-eslint/parser@^7 + @typescript-eslint/eslint-plugin@^7 kept but no longer directly imported (transitively via typescript-eslint v8). Can be pruned in follow-up."
+    },
+    "lint_exit_before_fix": 2,
+    "lint_exit_after_config_fix": 1,
+    "typecheck_regression_check": "PASS (tsc --noEmit exit 0)",
+    "remaining_violations": {
+      "total": 60,
+      "files_touched": 15,
+      "blocker_reason": "Beyond diagnose-first scope - needs master decision on strict/loose per acceptance criterion #2",
+      "by_rule": {
+        "@typescript-eslint/explicit-function-return-type": 27,
+        "@typescript-eslint/require-await": 14,
+        "@typescript-eslint/no-unnecessary-condition": 8,
+        "@typescript-eslint/restrict-template-expressions": 3,
+        "@typescript-eslint/prefer-optional-chain": 2,
+        "@typescript-eslint/no-unnecessary-type-assertion": 2,
+        "@typescript-eslint/strict-boolean-expressions": 1,
+        "@typescript-eslint/no-namespace": 1,
+        "@typescript-eslint/no-floating-promises": 1,
+        "@typescript-eslint/await-thenable": 1
+      },
+      "auto_fixable": 3,
+      "top_5_examples": [
+        "src/index.ts:71 no-floating-promises - top-level main() call needs void or await",
+        "src/core/worktree-manager.ts:46 await-thenable - await on non-Promise value (real bug)",
+        "src/api/routes/*.ts:* explicit-function-return-type - fastify handlers need Promise<X> return",
+        "src/api/middleware/auth.ts:137 no-namespace - declare namespace pattern",
+        "src/core/dag-executor.ts:138,321 no-unnecessary-condition - dead ?? checks"
+      ]
+    },
+    "log_files": [
+      "/tmp/eslint-run.log (before fix, exit 2)",
+      "/tmp/eslint-run2.log (after config fix, exit 1, 60 violations)"
+    ],
+    "master_decision_needed": {
+      "options": [
+        "A. STRICT: fix all 60 violations across ~15 files (large scope, likely spans multiple sub-tickets)",
+        "B. LOOSE: relax rules - e.g. downgrade explicit-function-return-type to warn, disable require-await for fastify handlers (~40+ violations gone)",
+        "C. MIXED: fix real bugs (await-thenable + no-floating-promises + 2 no-unnecessary-condition on dag-executor), then downgrade the noise rules"
+      ],
+      "performer_recommendation": "C. Real bugs (~4 violations) are legitimate correctness issues. explicit-function-return-type on fastify handlers is style noise given TS infers from schema. require-await often indicates future async or interface consistency (safe to warn not error)."
+    }
+  },
+  "resolutions": [
+    {
+      "date": "2026-07-26",
+      "phase": "post-diagnosis",
+      "master_decision": "Option A STRICT — 全修 60 violations",
+      "rationale": "4 real bug + 53 style rule 都要修. 保 CLAUDE.md Rule 1 (Type Safety) + Rule 3 (Error handling) + Rule 8 (Observable) 精神. STRICT 是 KALLAX 长期方向.",
+      "scope_expansion": "从 config-only 扩到 config + 60 violations fix",
+      "sub_tickets_planned": "EPIC-150-A (4 real bug: await-thenable + no-floating-promises + 2×unnecessary-condition), EPIC-150-B (3 auto-fixable via --fix), EPIC-150-C (27 explicit-function-return-type), EPIC-150-D (14 require-await), EPIC-150-E (残余 wa 12: 3×template + 1×boolean + 1×namespace)"
+    }
+  ]
+}

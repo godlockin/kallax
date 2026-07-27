@@ -37,7 +37,7 @@ export function createSystemRoutes(deps: SystemRouteDependencies): Router {
 
   // GET /api/system/doctor — run diagnostics
   router.get('/doctor', (_req: Request, res: Response): void => {
-    void (async () => {
+    void (async (): Promise<void> => {
       try {
         const diagnostics: Record<string, unknown> = {
           timestamp: Date.now(),

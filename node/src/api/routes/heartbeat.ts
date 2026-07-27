@@ -64,7 +64,7 @@ export function createHeartbeatRoutes(deps: HeartbeatRouteDependencies): Router 
    * its status and currentTaskId.
    */
   router.post('/', (req: Request, res: Response): void => {
-    void (async () => {
+    void (async (): Promise<void> => {
       try {
         const body = req.body as HeartbeatRequestBody;
 
@@ -105,28 +105,28 @@ export function createHeartbeatRoutes(deps: HeartbeatRouteDependencies): Router 
         }
 
         // Update status if provided and valid
-        if (body.status !== undefined && typeof body.status === 'string') {
-          if (isValidInstanceStatus(body.status)) {
-            const statusResult = await deps.instanceRegistry.updateStatus(
-              body.performerId,
-              body.status
-            );
-            if (statusResult.isErr()) {
-              logger.warn(
-                { instanceId: body.performerId, status: body.status, error: statusResult.error.message },
-                'failed to update instance status from heartbeat'
-              );
-            }
-          } else {
+        if (isValidInstanceStatus(body.status)) {
+          const statusResult = await deps.instanceRegistry.updateStatus(
+            body.performerId,
+            body.status
+          );
+          if (statusResult.isErr()) {
             logger.warn(
-              { instanceId: body.performerId, status: body.status },
-              'invalid status in heartbeat payload'
+              { instanceId: body.performerId, status: body.status, error: statusResult.error.message },
+              'failed to update instance status from heartbeat'
             );
           }
+        } else {
+          logger.warn(
+            { instanceId: body.performerId, status: body.status },
+            'invalid status in heartbeat payload'
+          );
         }
 
-        // Update current task if provided
-        if (body.currentTaskId !== undefined) {
+        // Update current task
+        // body.currentTaskId is `string | null` per HeartbeatRequestBody type;
+        // null is a valid value (clears the current task assignment).
+        {
           const taskUpdateResult = deps.db.updateInstance(body.performerId, {
             currentTaskId: body.currentTaskId,
           });
@@ -168,7 +168,7 @@ export function createHeartbeatRoutes(deps: HeartbeatRouteDependencies): Router 
    *   thresholdMs=N  —  custom stale threshold (default 60s)
    */
   router.get('/status', (req: Request, res: Response): void => {
-    void (async () => {
+    ((): void => {
       try {
         const staleOnly = req.query['staleOnly'] === 'true';
         const thresholdMsStr = req.query['thresholdMs'] as string | undefined;

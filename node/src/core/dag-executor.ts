@@ -135,10 +135,10 @@ async function loadCheckpoint(stateDir: string, runId: string): Promise<DagRunSt
       epic: typeof parsed['epic'] === 'string' ? parsed['epic'] : '',
       startedAt: typeof parsed['startedAt'] === 'number' ? parsed['startedAt'] : 0,
       updatedAt: typeof parsed['updatedAt'] === 'number' ? parsed['updatedAt'] : 0,
-      status: (parsed['status'] as DagRunState['status']) ?? 'running',
+      status: (parsed['status'] === 'running' || parsed['status'] === 'completed' || parsed['status'] === 'failed') ? parsed['status'] : 'running',
       settings: parsed['settings'] as DagRunState['settings'],
       nodes: new Map(Object.entries(nodesRecord)),
-    } as DagRunState;
+    };
   } catch {
     return null;
   }
@@ -318,7 +318,7 @@ export function createDagExecutor(options: DagExecutorOptions = {}): DagExecutor
         epic: typeof raw['epic'] === 'string' ? raw['epic'] : '',
         startedAt: typeof raw['startedAt'] === 'number' ? raw['startedAt'] : 0,
         updatedAt: typeof raw['updatedAt'] === 'number' ? raw['updatedAt'] : 0,
-        status: (raw['status'] as DagRunState['status']) ?? 'running',
+        status: (raw['status'] === 'running' || raw['status'] === 'completed' || raw['status'] === 'failed') ? raw['status'] : 'running',
         settings: raw['settings'] as DagRunState['settings'],
         nodes: new Map(Object.entries(nodesRecord)),
       };
