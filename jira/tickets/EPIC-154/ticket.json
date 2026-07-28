@@ -1,0 +1,97 @@
+{
+  "ticket_id": "EPIC-154",
+  "epic": "EPIC-154",
+  "phase": "PHASE-018",
+  "title": "scripts/install.sh 半途 abort + 漏 copy kallax/ subdir — 2 处 跟 EPIC-134-A fix 联根",
+  "status": "open",
+  "priority": "P0",
+  "type": "bugfix",
+  "created_at": "2026-07-28",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "scripts/install.sh install_canonical_commands() 函数有 2 处独立 bug, 都在 origin/main + origin/testing + origin/miao 3 个 branch 同时存在:\n\n**Bug #1 (line 564)**: `md_count=$((md_count + 1))` 在 `local md_count=0` (line 580) 之前被引用. `set -euo pipefail` (line 13) 触发 `unbound variable` 让整个 install 半途 abort. 触发条件: `$src/kallax.md` 文件存在 (任何使用 EPIC-127+ smart router 的 project).\n\n**Bug #2 (line 552)**: `for f in \"$src\"/kallax-*` glob 只匹配顶层 `kallax-*` 文件, 静默跳过 `$src/kallax/` 子目录. 触发条件: 任何使用 EPIC-127+ sub-skill (init/research/experts) 的 project.\n\n**症状链 (本地 main 用户实测)**:\n1. 跑 `bash scripts/install.sh --target=claude` (任何带 `.claude/commands/kallax.md` 的项目)\n2. install_canonical_commands() 在 line 564 abort\n3. canonical `~/.local/share/kallax/commands/` 进入残缺状态:\n   - ✅ 顶层 `kallax-*.{sh,md}` 被 copy (line 552 loop 已完成)\n   - ❌ `kallax.md` 没 copy (line 564 abort 在 line 563 之后)\n   - ❌ `_kallax_common.sh` 没 copy (line 568 没执行)\n   - ❌ `heartbeat-*.md` 没 copy (line 573-576 没执行)\n   - ❌ `kallax/{init,research,experts}/` subdir 没 copy (完全没这段代码)\n   - ❌ auto-gen `.md` wrappers 没生成 (line 581 没执行)\n4. 但 install.sh 输出 'OK [claude] commands → symlink' — silent partial success\n5. 用户后续 `/kallax <subcmd>` 大概率 404 / broken sub-skill / 缺 shared lib\n\n**根因历史**:\n- EPIC-134-A (commit 44b3b7a, miao) 加了 `cp $src/kallax.md` 让顶层 bare router 能部署\n- 但 #2 subdir 漏修 → `/kallax` router 引用 sub-skill 时仍 broken\n- #1 md_count init 是新暴露的 bug (因为 line 564 引用早于 line 580 声明, 之前 `kallax.md` 不存在时不触发, EPIC-134-A 加了 `cp kallax.md` 后才暴露)\n\n**修法 (已实现待 PR)**:\n1. `local md_count=0` 提到 line 552 函数顶部 (跟 `count=0` 同位置, 删 line 581 重复声明)\n2. heartbeat loop 后加 `if [ -d \"$src/kallax\" ]; then rm -rf \"$CANONICAL_COMMANDS/kallax\"; cp -r \"$src/kallax\" \"$CANONICAL_COMMANDS/\"; fi`\n\n**验证 (本地 main 修后实测)**:\n- `bash scripts/install.sh --target=claude` → exit 0, '[OK] [canonical] commands → 58 .sh + 29 .md wrappers'\n- canonical `~/.local/share/kallax/commands/`: 63 files total (58 top-level + 1 kallax.md + 1 _kallax_common.sh + 2 heartbeat-* + 3 kallax/ subdir entries)\n- repo `.claude/commands/` vs canonical `diff -r`: 0 diff (excluding auto-gen .md wrapper format diff, 跟 v2.3.0 auto-gen 模式一致)",
+  "file_scope": {
+    "includes": [
+      "scripts/install.sh"
+    ]
+  },
+  "acceptance": [
+    "scripts/install.sh install_canonical_commands() 跑完后 exit 0",
+    "canonical 目录含: 58 top-level kallax-* (跟 repo 同), 1 kallax.md, 1 _kallax_common.sh, 2 heartbeat-*, 1 kallax/ subdir (含 init/research/experts)",
+    "0 新基础设施 (跟 Rule 5 DRY 联合, 0 增 immutable script)",
+    "0 行为变化 (除修复外的 install 路径必须保持兼容)"
+  ],
+  "labels": ["real-bug", "install-sh", "epic-134-a-followup", "env-blocker-doc"],
+  "derived_from": "本地 main 用户实测 7-day staleness 链 (跟 EPIC-133/134/135 canary 联合)",
+  "verification": {
+    "date": "2026-07-28",
+    "rule_34_compliance": "本 ticket 含 3 field: reproduction_command + exit_code + raw_output",
+    "reproduction_command": "bash scripts/install.sh --target=claude  (在带 .claude/commands/kallax.md 的项目根跑)",
+    "reproduction_exit_code": "0 (install.sh 进程本身 exit 0 — silent partial success; canonical 进入残缺状态)",
+    "reproduction_canonical_count_after_broken_install": "0 files (跟预期的 63 files 差 63 个: 58 top-level + 1 bare router + 1 shared lib + 2 heartbeat + 1 subdir)",
+    "reproduction_raw_output": "========================================\n  KALLAX Install v2.3.0-symlink-default-10tool\n  Target mode: specific\n  Tools:       claude\n  CLI:         /Users/steven.chen/.local/bin/kallax\n========================================\n\n[INFO] Previous install: v2.3.0-symlink-default-10tool (claude) → upgrading to v2.3.0-symlink-default-10tool\n[INFO] ── Installing for: claude (full) ──\n[OK] [canonical] skills → /Users/steven.chen/.local/share/kallax/skills/kallax\n[OK] [claude] skills → /Users/steven.chen/.claude/skills/kallax (symlink → ...)\nscripts/install.sh: line 564: md_count: unbound variable\n",
+    "premise_check": "PASS — 2 bug 都在 origin/main + origin/testing + origin/miao 3 个 branch 同时存在",
+    "bug_locations": {
+      "bug_1_md_count": {
+        "branch": "origin/main (also testing + miao)",
+        "file": "scripts/install.sh",
+        "line": 564,
+        "snippet": "    md_count=$((md_count + 1))",
+        "issue": "引用在 local 声明 (line 580) 之前",
+        "trigger": "$src/kallax.md 存在时 (任何带 EPIC-127+ router 的项目)"
+      },
+      "bug_2_subdir_skip": {
+        "branch": "origin/main (also testing + miao)",
+        "file": "scripts/install.sh",
+        "line": "552-556 (glob `for f in $src/kallax-*`)",
+        "snippet": "for f in \"$src\"/kallax-*; do [ -f \"$f\" ] || continue; cp \"$f\" \"$CANONICAL_COMMANDS/\"; done",
+        "issue": "glob 只匹配顶层文件, 静默跳过 $src/kallax/ subdir",
+        "trigger": "$src/kallax/ 是 directory 而非 file (任何带 EPIC-127+ sub-skill 的项目)"
+      }
+    },
+    "fix_locations": {
+      "fix_1_md_count_init": "line 552 加 `local md_count=0`, 删 line 581 重复声明",
+      "fix_2_subdir_recursive_copy": "line 577 后加 `if [ -d \"$src/kallax\" ]; then rm -rf \"$CANONICAL_COMMANDS/kallax\"; cp -r \"$src/kallax\" \"$CANONICAL_COMMANDS/\"; fi`"
+    },
+    "after_fix_evidence": {
+      "command": "bash scripts/install.sh --target=claude",
+      "exit_code": 0,
+      "output_tail": "[OK] [canonical] commands → /Users/steven.chen/.local/share/kallax/commands (58 .sh + 29 .md wrappers)\n[OK] [claude] commands → /Users/steven.chen/.claude/commands (symlink → ...)\n[OK] Version stamped: v2.3.0-symlink-default-10tool (1 tool(s))",
+      "canonical_file_count": 63,
+      "canonical_breakdown": {
+        "top_level_kallax_dash_files": 58,
+        "bare_router_kallax_md": 1,
+        "shared_lib": 1,
+        "heartbeat_files": 2,
+        "kallax_subdir_entries": 1
+      },
+      "diff_repo_vs_canonical": "仅 auto-gen .md wrapper format diff (跟 v2.3.0 design 一致, install.sh 重新生成 .md from .sh USAGE line)"
+    },
+    "5_level_verify_status": {
+      "L1_git": "PASS — diff scripts/install.sh: +10/-1 lines, 2 独立 fix 段, 注释明确",
+      "L2_stdout": {
+        "bash_syntax": "PASS — bash -n scripts/install.sh exit 0",
+        "install_e2e": "PASS — bash scripts/install.sh --target=claude exit 0, canonical 完整",
+        "cargo_test": "SKIPPED — env-blocker (better-sqlite3 native build FAIL on Node 26.5.0, 跟 PR #147 文档化一致)",
+        "vitest": "SKIPPED — 同上 env-blocker"
+      },
+      "L3_4_expert": "PENDING — master review at PR time",
+      "L4_sentinel": {
+        "scan_dead_code": "PASS — 0 src/ 改动, scan 不需跑 (pre-commit hook 仅在 node/src/*.ts staged 时跑)",
+        "coverage_tests": "SKIPPED — 无 src 改动, 跟 L2 cargo/vitest 同因 env-blocker"
+      },
+      "L5_boundary": {
+        "check_decorative_claim": "PENDING",
+        "check_narrative": "PENDING",
+        "check_fail_closed": "PENDING",
+        "check_self_heal": "PENDING",
+        "check_claim_evidence": "PASS — 本 ticket 含 raw_output 引用 (line 29-39)"
+      }
+    },
+    "diagnosis": "EPIC-134-A fix (commit 44b3b7a) 加了 `cp $src/kallax.md` 但没修 2 个联根 bug. md_count unbound 是新暴露 (因为 line 564 引用早于 line 580 声明, `set -u` 在 `kallax.md` 存在时才触发). subdir 漏 copy 是 design intent (install.sh 只 glob 顶层), 但跟 EPIC-127+ sub-skill 模式冲突, 早期 EPIC 没暴露是因为 sub-skill 还没流行.",
+    "files_modified_by_this_ticket": "scripts/install.sh (1 file, +10/-1 lines)",
+    "error_count_before": "2 (md_count unbound abort + subdir 静默 skip)",
+    "error_count_after": "0"
+  }
+}
