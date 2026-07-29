@@ -51,6 +51,7 @@ impl MigrationRunner {
     }
 
     /// Register migrations from an iterator.
+    #[allow(dead_code)] // Reserved for future programmatic migration registration.
     pub fn register_all(&mut self, ms: impl IntoIterator<Item = Box<dyn Migration>>) {
         self.migrations.extend(ms);
     }
