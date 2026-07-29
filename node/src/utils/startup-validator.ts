@@ -27,7 +27,7 @@ export interface StartupValidationResult {
   readonly warningCount: number;
 }
 
-export async function validateStartup(projectRoot: string): Promise<KallaxResult<StartupValidationResult>> {
+export function validateStartup(projectRoot: string): Promise<KallaxResult<StartupValidationResult>> {
   const checks: StartupCheck[] = [];
   let fatalCount = 0;
   let warningCount = 0;
@@ -133,11 +133,11 @@ export async function validateStartup(projectRoot: string): Promise<KallaxResult
   }
 
   if (fatalCount > 0) {
-    return err(new KallaxError(
+    return Promise.resolve(err(new KallaxError(
       KallaxErrorCode.CONFIG_INVALID,
       `${String(fatalCount)} fatal startup check(s) failed`,
       { metadata: { checks: checks.filter((c) => !c.passed) } },
-    ));
+    )));
   }
 
   logger.info(
@@ -145,5 +145,5 @@ export async function validateStartup(projectRoot: string): Promise<KallaxResult
     'startup validation passed',
   );
 
-  return ok(result);
+  return Promise.resolve(ok(result));
 }

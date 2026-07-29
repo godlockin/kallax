@@ -35,15 +35,16 @@ export interface PerformerProfileStore {
 export class InMemoryPerformerProfileStore implements PerformerProfileStore {
   private profiles = new Map<string, PerformerProfile>();
 
-  async save(profile: PerformerProfile): Promise<void> {
+  save(profile: PerformerProfile): Promise<void> {
     this.profiles.set(profile.performerId, profile);
+    return Promise.resolve();
   }
 
-  async load(performerId: string): Promise<PerformerProfile | null> {
-    return this.profiles.get(performerId) ?? null;
+  load(performerId: string): Promise<PerformerProfile | null> {
+    return Promise.resolve(this.profiles.get(performerId) ?? null);
   }
 
-  async searchSimilar(_embedding: number[], _topK: number): Promise<string[]> {
-    return [];
+  searchSimilar(_embedding: number[], _topK: number): Promise<string[]> {
+    return Promise.resolve([]);
   }
 }
