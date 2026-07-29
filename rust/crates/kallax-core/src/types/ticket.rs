@@ -90,6 +90,7 @@ impl Ticket {
     /// Construct a ticket from raw storage values (used by persistence layer).
     /// Does NOT validate state transitions — assumes caller stored valid state.
     #[doc(hidden)]
+    #[allow(clippy::too_many_arguments)]
     pub fn from_storage(
         id: TicketId,
         title: String,
@@ -204,6 +205,7 @@ impl TicketId {
         ))
     }
 
+    #[allow(clippy::should_implement_trait)]
     pub fn from_str(s: impl Into<String>) -> Self {
         Self(s.into())
     }

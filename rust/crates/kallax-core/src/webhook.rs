@@ -58,7 +58,7 @@ impl EndpointId {
     pub fn new() -> Self {
         Self(format!(
             "EP-{}",
-            &uuid::Uuid::new_v4().to_string()[..8].to_uppercase()
+            uuid::Uuid::new_v4().to_string()[..8].to_uppercase()
         ))
     }
 

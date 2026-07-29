@@ -8,8 +8,6 @@
 use super::ticket::TicketId;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::path::PathBuf;
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -129,6 +127,7 @@ impl TaskId {
         ))
     }
 
+    #[allow(clippy::should_implement_trait)]
     pub fn from_str(s: impl Into<String>) -> Self {
         Self(s.into())
     }
