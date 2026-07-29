@@ -31,10 +31,3 @@ pub fn parse_scope(s: &str) -> Vec<PathBuf> {
         .map(PathBuf::from)
         .collect()
 }
-
-pub fn parse_capabilities(s: &str) -> Vec<String> {
-    s.split(',')
-        .filter(|c| !c.is_empty())
-        .map(String::from)
-        .collect()
-}

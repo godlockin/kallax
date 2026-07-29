@@ -26,6 +26,7 @@ impl DagStatus {
         }
     }
 
+    #[allow(clippy::should_implement_trait)]
     pub fn from_str(s: &str) -> Option<Self> {
         match s {
             "pending" => Some(Self::Pending),
@@ -193,6 +194,7 @@ impl DagNodeState {
         self.completed_at = Some(Utc::now());
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn from_storage(
         id: String,
         dag_run_id: String,
