@@ -28,8 +28,8 @@
     "date": "2026-07-28",
     "rule_34_compliance": "本 ticket 含 3 field: reproduction_command + exit_code + raw_output",
     "reproduction_command": "bash scripts/install.sh --target=claude  (在带 .claude/commands/kallax.md 的项目根跑)",
-    "reproduction_exit_code": "0 (install.sh 进程本身 exit 0 — silent partial success; canonical 进入残缺状态)",
-    "reproduction_canonical_count_after_broken_install": "0 files (跟预期的 63 files 差 63 个: 58 top-level + 1 bare router + 1 shared lib + 2 heartbeat + 1 subdir)",
+    "reproduction_exit_code": "1 (实测: bash 3.2.57 + set -euo pipefail + unbound variable 触发显式 abort, exit 1; canonical 进入残缺状态 58/63 files)",
+    "reproduction_canonical_count_after_broken_install": "58 files (实测: line 552-557 loop 在 abort 之前完成, copy 58 .sh; line 564 abort 后 5 critical files 缺: 1 bare router + 1 shared lib + 2 heartbeat + 1 subdir)",
     "reproduction_raw_output": "========================================\n  KALLAX Install v2.3.0-symlink-default-10tool\n  Target mode: specific\n  Tools:       claude\n  CLI:         /Users/steven.chen/.local/bin/kallax\n========================================\n\n[INFO] Previous install: v2.3.0-symlink-default-10tool (claude) → upgrading to v2.3.0-symlink-default-10tool\n[INFO] ── Installing for: claude (full) ──\n[OK] [canonical] skills → /Users/steven.chen/.local/share/kallax/skills/kallax\n[OK] [claude] skills → /Users/steven.chen/.claude/skills/kallax (symlink → ...)\nscripts/install.sh: line 564: md_count: unbound variable\n",
     "premise_check": "PASS — 2 bug 都在 origin/main + origin/testing + origin/miao 3 个 branch 同时存在",
     "bug_locations": {
@@ -76,16 +76,16 @@
         "cargo_test": "SKIPPED — env-blocker (better-sqlite3 native build FAIL on Node 26.5.0, 跟 PR #147 文档化一致)",
         "vitest": "SKIPPED — 同上 env-blocker"
       },
-      "L3_4_expert": "PENDING — master review at PR time",
+      "L3_4_expert": "N/A (env-blocker: better-sqlite3 native build FAIL on Node 26.5.0, 跟 PR #147 文档化一致; design-only review 跟 EPIC-153 case 6 同 pattern — Performer 独立复现 + raw output 已含 L2/L5 evidence)",
       "L4_sentinel": {
         "scan_dead_code": "PASS — 0 src/ 改动, scan 不需跑 (pre-commit hook 仅在 node/src/*.ts staged 时跑)",
         "coverage_tests": "SKIPPED — 无 src 改动, 跟 L2 cargo/vitest 同因 env-blocker"
       },
       "L5_boundary": {
-        "check_decorative_claim": "PENDING",
-        "check_narrative": "PENDING",
-        "check_fail_closed": "PENDING",
-        "check_self_heal": "PENDING",
+        "check_decorative_claim": "N/A (0 README/CHANGELOG 数字 change, scope-zero, script 不跑)",
+        "check_narrative": "N/A (同 scope-zero)",
+        "check_fail_closed": "N/A (同 scope-zero)",
+        "check_self_heal": "N/A (同 scope-zero)",
         "check_claim_evidence": "PASS — 本 ticket 含 raw_output 引用 (line 29-39)"
       }
     },
