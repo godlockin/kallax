@@ -26,10 +26,12 @@ KALLAX dead-code scanner — EPIC-131-B
   3. Coverage sentinel — 检查 export module 是否 vitest 文件提到 (sentinel)
 
 退出码:
-  0 = 全 PASS (3 阶段)
-  1 = 1+ 阶段 FAIL
-  2 = 环境异常 (node_modules 缺失 等)
+  0 = 全 PASS (3 阶段都实际跑了)
+  1 = 1+ 阶段 FAIL (真发现违规)
+  2 = 环境异常 (BLOCKED-env: node_modules 缺失 等, 阶段被跳过)
 
+修复 BLOCKED-env: cd node && npm install
+  (P0-7 治理: 禁止 BLOCKED 时谎报 '3/3 PASS' + exit 0)
 EOF
 }
 
@@ -41,12 +43,16 @@ info() { echo -e "\033[1;34m[INFO]\033[0m $*"; }
 ok()   { echo -e "\033[1;32m[OK]\033[0m $*"; }
 
 FAIL_COUNT=0
+BLOCKED_COUNT=0  # P0-7: 阶段被跳过 (env-blocker, 不算 PASS, exit 2)
+STAGE_RAN=0       # 实际跑的阶段数 (真跑过的, 用来精确报告 N/M PASS)
+STAGE_TOTAL=3     # 总阶段数
 
 # ============================================================================
 # Stage 1 — Static scan (cheap, fast)
 # ============================================================================
 stage_static() {
   info "Stage 1: Static scan (undefined / ignore / TODO / FIXME)"
+  STAGE_RAN=$((STAGE_RAN + 1))
 
   # 1a. active @ts-ignore / @ts-expect-error / @ts-nocheck directives — Rule 1 禁
   # Exclude matches inside /** ... */ doc comments (false positive "no @ts-ignore" prose)
@@ -103,9 +109,12 @@ stage_tsc() {
   info "Stage 2: npx tsc strict mode (zero-error gate)"
 
   if [ ! -d node/node_modules ]; then
-    warn "node_modules 缺失, 跳过 tsc"
+    err "[BLOCKED-env] Stage 2 SKIPPED: node/node_modules 缺失"
+    echo "[BLOCKED-env] 修复: cd node && npm install  (better-sqlite3 native build 在 Node 26.5.0 可能 FAIL, 跟 EPIC-154 ticket.json:75 一致)"
+    BLOCKED_COUNT=$((BLOCKED_COUNT + 1))
     return 0
   fi
+  STAGE_RAN=$((STAGE_RAN + 1))
 
   local tsc_out
   tsc_out=$(cd node && npx tsc --noEmit 2>&1 || true)
@@ -131,9 +140,12 @@ stage_sentinel() {
   info "Stage 3: Sentinel coverage (each exported module must be imported by tests)"
 
   if [ ! -d node/node_modules ]; then
-    warn "node_modules 缺失, 跳过 sentinel"
+    err "[BLOCKED-env] Stage 3 SKIPPED: node/node_modules 缺失"
+    echo "[BLOCKED-env] 修复: cd node && npm install"
+    BLOCKED_COUNT=$((BLOCKED_COUNT + 1))
     return 0
   fi
+  STAGE_RAN=$((STAGE_RAN + 1))
 
   # 列出 src/**\/*.ts 文件 (排除 types.ts, *.d.ts, *.test.ts)
   local modules
@@ -186,12 +198,19 @@ case "$MODE" in
     stage_tsc
     stage_sentinel
     echo ""
-    if [ "$FAIL_COUNT" -eq 0 ]; then
-      ok "EPIC-131-B dead-code sentinel: 3/3 阶段 PASS"
-      exit 0
-    else
-      err "EPIC-131-B: $FAIL_COUNT 阶段 FAIL"
+    # P0-7 治理: 区分 FAIL (exit 1) vs BLOCKED-env (exit 2) vs PASS (exit 0)
+    # 不再谎报 '3/3 PASS' 当实际只跑了 1/3 阶段
+    if [ "$BLOCKED_COUNT" -gt 0 ]; then
+      err "EPIC-131-B dead-code sentinel: BLOCKED-env ($BLOCKED_COUNT 阶段跳过, $STAGE_RAN/$STAGE_TOTAL 实际跑)"
+      err "FAIL_COUNT=$FAIL_COUNT (真违规), BLOCKED_COUNT=$BLOCKED_COUNT (env-blocker)"
+      err "修复 env-blocker: cd node && npm install"
+      exit 2
+    elif [ "$FAIL_COUNT" -gt 0 ]; then
+      err "EPIC-131-B dead-code sentinel: $FAIL_COUNT 阶段 FAIL ($STAGE_RAN/$STAGE_TOTAL 阶段实跑)"
       exit 1
+    else
+      ok "EPIC-131-B dead-code sentinel: $STAGE_RAN/$STAGE_TOTAL 阶段 PASS"
+      exit 0
     fi
     ;;
   -h|--help|help) usage ;;
