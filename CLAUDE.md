@@ -20,11 +20,15 @@ Conductor / Performer + 4 sub-roles (coder / reviewer / tester / docs)
 - 可视化: W5 Hook + W6 Dashboard
 
 ## 4 不可更改 法律 (immutable scripts)
-- check-decorative-claim.sh (0 装饰 引用)
-- check-narrative.sh (0 narrative 包装)
-- check-fail-closed.sh (0 fail-open)
-- check-self-heal.sh (self-heal pattern)
-- **check-claim-evidence.sh** (v3.8.1 EPIC-069-D 新增, README/CHANGELOG 数字必带 raw test output 引用)
+> **P0-7 路径澄清 (v3.32.1)**: 5 个 immutable scripts **不**全部在 `scripts/permission/`. 实际分布:
+> - 4 个在 `scripts/verify/` — `check-decorative-claim.sh`, `check-narrative.sh`, `check-fail-closed.sh`, `check-self-heal.sh`
+> - 1 个在 `scripts/hooks/` — `check-claim-evidence.sh` (pre-commit hook 上下文, 仅扫 staged files)
+> - 退出码契约: 0=PASS, 1=FAIL (fail-closed, 禁止 print FAIL + exit 0); `scan-dead-code.sh` 加 2=BLOCKED-env (P0-7 治理)
+- check-decorative-claim.sh (`scripts/verify/`, 0 装饰 引用)
+- check-narrative.sh (`scripts/verify/`, 0 narrative 包装)
+- check-fail-closed.sh (`scripts/verify/`, 0 fail-open)
+- check-self-heal.sh (`scripts/verify/`, self-heal pattern)
+- **check-claim-evidence.sh** (`scripts/hooks/`, v3.8.1 EPIC-069-D 新增, README/CHANGELOG 数字必带 raw test output 引用, pre-commit hook)
 
 ## Q18 决策矩阵 (对齐诚实修正战略)
 - 5 levels × 4 roles = 25 cells

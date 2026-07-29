@@ -134,6 +134,13 @@ if [ ${#SELF_HEAL_MISSING[@]} -gt 0 ]; then
   echo ""
   echo "REQUIREMENT: chmod 600/700 后必须 self-heal (if ! verify then chmod)."
   echo "Reference: V310-B S-003 + V350-B S-005/S-006 1:1 联合"
+  echo "[ERR] FAIL-detected → exit 1 (fail-closed, P0-7 治理: 禁止 print FAIL + exit 0)"
+  exit 1
+fi
+
+# Defense-in-depth (P0-7): if any pattern marker leaked to end of script, fail-closed.
+if grep -qE '^FAIL: [0-9]+ missing self-heal patterns' /tmp/.check-self-heal.fail-marker 2>/dev/null; then
+  echo "[ERR] Defensive: FAIL marker seen, forcing exit 1"
   exit 1
 fi
 
