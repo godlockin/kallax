@@ -17,7 +17,6 @@ use axum::{
     routing::{get, post, put},
     Json, Router,
 };
-use kallax_core::TaskId;
 use kallax_core::{KallaxError, Performer, PerformerId, Priority, Ticket};
 use kallax_engine::{
     AgentPool, ConflictResolver, DagScheduler, EventBus, KnowledgeBase, TicketEngine,
@@ -25,7 +24,7 @@ use kallax_engine::{
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 use std::sync::Arc;
-use tower_http::cors::{Any, CorsLayer};
+use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 use tracing::info;
 use tracing_subscriber::{fmt, prelude::*, EnvFilter};
