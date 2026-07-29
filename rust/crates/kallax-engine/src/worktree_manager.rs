@@ -5,9 +5,9 @@
 use kallax_core::{KallaxError, PerformerId, Result};
 use parking_lot::RwLock;
 use std::collections::HashMap;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::process::Command;
-use tracing::{error, info, warn};
+use tracing::{info, warn};
 
 /// Worktree information
 #[derive(Debug, Clone)]

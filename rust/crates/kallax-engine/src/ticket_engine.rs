@@ -109,7 +109,7 @@ impl TicketEngine {
         let mut out: Vec<Ticket> = self
             .tickets
             .iter()
-            .filter(|t| status.map_or(true, |s| t.status() == s))
+            .filter(|t| status.is_none_or(|s| t.status() == s))
             .map(|t| (*t.value()).clone())
             .collect();
 

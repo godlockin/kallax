@@ -77,17 +77,14 @@ impl KnowledgeBase {
         // Index words from title and content
         let words = self.tokenize(&format!("{} {}", entry.title, entry.content));
         for word in words {
-            self.word_index
-                .entry(word)
-                .or_insert_with(HashSet::new)
-                .insert(id.clone());
+            self.word_index.entry(word).or_default().insert(id.clone());
         }
 
         // Index tags
         for tag in &entry.tags {
             self.tag_index
                 .entry(tag.to_lowercase())
-                .or_insert_with(HashSet::new)
+                .or_default()
                 .insert(id.clone());
         }
 
