@@ -214,7 +214,7 @@ impl WebhookManager {
     ) -> Result<Vec<DeliveryResult>> {
         let event_id = format!(
             "EVT-{}",
-            &uuid::Uuid::new_v4().to_string()[..8].to_uppercase()
+            uuid::Uuid::new_v4().to_string()[..8].to_uppercase()
         );
 
         // Collect matching endpoints while holding the read lock briefly
@@ -246,7 +246,7 @@ impl WebhookManager {
                     &event_type,
                     &payload,
                     max_retries,
-                    &*logs,
+                    &logs,
                 )
                 .await
             }));
