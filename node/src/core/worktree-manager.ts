@@ -4,13 +4,16 @@
  */
 
 import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import { err, ok } from 'neverthrow';
 import { KallaxError, KallaxErrorCode, type KallaxResult } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 
-// execFile already returns Promise in Node 24+
+// execFile has callback-only types in @types/node; wrap with util.promisify to get a typed Promise<{stdout,stderr}>.
+// EPIC-133: Node 22+ deprecated callback-only form, but the types still match the callback signature.
+const execFileAsync = promisify(execFile);
 
 export interface WorktreeConfig {
   readonly projectRoot: string;
@@ -43,7 +46,7 @@ async function gitCommand(
 ): Promise<KallaxResult<string>> {
   // EPIC-133: Promise-based execFile (Node 22+ deprecated callback-only form)
   try {
-    const result = await execFile('git', args, { cwd, encoding: 'utf8' });
+    const result = await execFileAsync('git', args, { cwd, encoding: 'utf8' }) as { stdout: string | Buffer };
     // EPIC-133: stdout may be string (default utf8) or Buffer (when encoding unset) — accept both
     const stdout = typeof result.stdout === 'string' ? result.stdout : Buffer.isBuffer(result.stdout) ? result.stdout.toString('utf8') : '';
     return ok(stdout.trim());
