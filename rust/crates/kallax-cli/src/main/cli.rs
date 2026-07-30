@@ -10,7 +10,7 @@ mod sub_enums;
 use clap::Parser;
 use std::sync::Arc;
 
-use enums::{Cli, Commands, OutputFormat};
+use enums::{Cli, Commands};
 use handlers::{
     handle_conductor_action, handle_isolation_action, handle_knowledge_action,
     handle_performer_action, handle_system_action, handle_task_action, handle_verify_action,
@@ -18,7 +18,6 @@ use handlers::{
 use output::output_result;
 use parsers::init_logging;
 
-use kallax_core::error::Result;
 use kallax_engine::event_bus::EventBus;
 use kallax_engine::ticket_engine::TicketEngine;
 

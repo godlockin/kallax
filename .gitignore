@@ -14,6 +14,11 @@
 !.kallax/state/*.yaml
 .kallax/*.db
 .kallax/inbox/*.processed
+# Legacy double-nested .kallax/.kallax/ (early EKET 残留, 非主路径, 主路径在 .kallax/state/)
+.kallax/.kallax/
+# EKET runtime state (SQLite db, 跟 .kallax/*.db 同质)
+.eket/
+.eket/*.db
 # Same paths under node/ (跟 EPIC-053-A l3-l4-consistency.sh 落地一致, 跟 EPIC-053-B 联动)
 **/.kallax/data/
 **/.kallax/*.db

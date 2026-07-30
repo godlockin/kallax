@@ -2,10 +2,9 @@
 //!
 //! Manages performer lifecycle and allocation.
 
-use chrono::{DateTime, Duration, Utc};
+use chrono::{Duration, Utc};
 use dashmap::DashMap;
 use kallax_core::{KallaxError, Performer, PerformerId, PerformerStatus, Result, TaskId};
-use std::sync::Arc;
 use tracing::{info, warn};
 
 /// Agent pool configuration
@@ -116,7 +115,7 @@ impl AgentPool {
                     .all(|cap| entry.capabilities().contains(cap));
                 if has_all_caps || required_capabilities.is_empty() {
                     // 真正 reserve — 在 pool 标记为 Busy, caller 必须 release/commit_task
-                    entry.assign_task(TaskId::from_str("reserved"));
+                    let _ = entry.assign_task(TaskId::from_str("reserved"));
                     return Some(entry.value().clone());
                 }
             }
@@ -130,7 +129,7 @@ impl AgentPool {
         let timeout = self.config.heartbeat_timeout;
         let mut marked_offline = Vec::new();
 
-        for mut entry in self.performers.iter_mut() {
+        for entry in self.performers.iter_mut() {
             let last_heartbeat = entry.heartbeat_at();
             if now.signed_duration_since(last_heartbeat) > timeout {
                 // Mark as offline (we can't directly modify status, so we track IDs)

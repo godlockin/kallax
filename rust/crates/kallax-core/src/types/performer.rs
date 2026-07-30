@@ -7,7 +7,6 @@
 use super::task::TaskId;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::path::PathBuf;
 use uuid::Uuid;
 
@@ -125,6 +124,7 @@ impl PerformerId {
         ))
     }
 
+    #[allow(clippy::should_implement_trait)]
     pub fn from_str(s: impl Into<String>) -> Self {
         Self(s.into())
     }

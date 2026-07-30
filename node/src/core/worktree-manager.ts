@@ -10,8 +10,6 @@ import { err, ok } from 'neverthrow';
 import { KallaxError, KallaxErrorCode, type KallaxResult } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 
-// execFile already returns Promise in Node 24+
-
 export interface WorktreeConfig {
   readonly projectRoot: string;
   readonly worktreeBasePath: string;
@@ -43,7 +41,10 @@ async function gitCommand(
 ): Promise<KallaxResult<string>> {
   // EPIC-133: Promise-based execFile (Node 22+ deprecated callback-only form)
   try {
-    const result = await execFile('git', args, { cwd, encoding: 'utf8' });
+    // Cast to Promise<{stdout, stderr}>: @types/node still declares callback signature for execFile,
+    // but Node 22+ returns a Promise directly. The cast satisfies @typescript-eslint/await-thenable
+    // (the rule does not respect @ts-expect-error) while preserving runtime behavior.
+    const result = await (execFile('git', args, { cwd, encoding: 'utf8' }) as unknown as Promise<{ stdout: string | Buffer; stderr: string | Buffer }>);
     // EPIC-133: stdout may be string (default utf8) or Buffer (when encoding unset) — accept both
     const stdout = typeof result.stdout === 'string' ? result.stdout : Buffer.isBuffer(result.stdout) ? result.stdout.toString('utf8') : '';
     return ok(stdout.trim());

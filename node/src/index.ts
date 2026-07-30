@@ -38,6 +38,7 @@ import { registerInstallCommands } from './commands/install-cmd.js';
 import { registerRouteCommands } from './commands/route-cmd.js';
 import { registerRoleCommands } from './commands/role-cmd.js';
 import { registerLoadCommands } from './commands/load-cmd.js';
+import type { AppContext } from './cli-context.js';
 function findProjectRoot(): string {
   let dir = process.cwd();
   while (dir !== '/') {
@@ -47,9 +48,9 @@ function findProjectRoot(): string {
   return process.cwd();
 }
 
-function bootstrap() {
+function bootstrap(): Promise<AppContext> {
   const projectRoot = findProjectRoot();
-  return (async () => {
+  return (async (): Promise<AppContext> => {
     const validation = await validateStartup(projectRoot);
     if (validation.isErr()) { logger.fatal({ error: validation.error }, 'startup validation failed'); process.exit(1); }
     const dbResult = createSQLiteManager({ path: '.kallax/data/kallax.db' });
@@ -68,7 +69,7 @@ function bootstrap() {
 }
 
 setupProcessCleanup();
-(async () => {
+void (async (): Promise<void> => {
   const ctx = await bootstrap();
   const program = new Command();
   program.name('kallax').description('KALLAX — Knowledge-Augmented Leveraged Learning Agent eXecutor').version('1.0.0');

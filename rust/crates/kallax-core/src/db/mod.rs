@@ -17,12 +17,10 @@ pub(crate) use serialization::{
 
 use crate::error::{KallaxError, Result};
 use crate::types::*;
-use chrono::{DateTime, Utc};
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
 use rusqlite::params;
-use std::collections::HashMap;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 // ---------------------------------------------------------------------------
 // SqliteClient
