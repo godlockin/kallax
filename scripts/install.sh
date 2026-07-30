@@ -549,6 +549,7 @@ install_canonical_commands() {
   mkdir -p "$CANONICAL_COMMANDS"
 
   local count=0
+  local md_count=0
   for f in "$src"/kallax-*; do
     [ -f "$f" ] || continue
     cp "$f" "$CANONICAL_COMMANDS/"
@@ -575,9 +576,17 @@ install_canonical_commands() {
     cp "$f" "$CANONICAL_COMMANDS/"
   done
 
+  # v2.3.1: Recursive copy of $src/kallax/ subdir (sub-skills: init, research, experts).
+  # install.sh L552 only globs `kallax-*` (top-level files), so the subdir was
+  # silently skipped — `/kallax` smart router references sub-skill docs that
+  # never got installed for new sessions.
+  if [ -d "$src/kallax" ]; then
+    rm -rf "$CANONICAL_COMMANDS/kallax"
+    cp -r "$src/kallax" "$CANONICAL_COMMANDS/"
+  fi
+
   # v2.1.1: .md wrappers for .sh commands (Claude Code 2.1+ compat)
   # v2.3.0: Auto-extract argument-hint from USAGE: line in .sh file (跟 scripts/refresh-arg-hints.sh 模式 一致)
-  local md_count=0
   for f in "$CANONICAL_COMMANDS"/kallax-*.sh; do
     [ -f "$f" ] || continue
     local name desc usage_line args md_target
