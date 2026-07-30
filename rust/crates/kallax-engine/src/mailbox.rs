@@ -30,7 +30,7 @@ impl Message {
         payload: serde_json::Value,
     ) -> Self {
         Self {
-            id: format!("MSG-{}", &Uuid::new_v4().to_string()[..8].to_uppercase()),
+            id: format!("MSG-{}", Uuid::new_v4().to_string()[..8].to_uppercase()),
             from,
             to,
             message_type,

@@ -2,7 +2,7 @@
 //!
 //! Uses tokio broadcast for event distribution.
 
-use kallax_core::{Event, EventType, KallaxError, Result};
+use kallax_core::{Event, EventType, Result};
 use parking_lot::RwLock;
 use std::collections::HashMap;
 use std::sync::Arc;

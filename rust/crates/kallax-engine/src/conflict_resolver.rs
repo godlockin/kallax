@@ -7,7 +7,6 @@ use dashmap::DashMap;
 use kallax_core::{KallaxError, PerformerId, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
-use std::path::PathBuf;
 
 /// A conflict between performers
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -67,6 +66,10 @@ pub enum ConflictResolution {
 #[derive(Debug, Clone)]
 struct ResourceLock {
     performer_id: PerformerId,
+    // Reserved for future lock-age tracking / stale-lock detection.
+    // Currently set on acquire but not read; marked dead_code to satisfy clippy
+    // without losing the field (downstream consumers may add age checks later).
+    #[allow(dead_code)]
     locked_at: DateTime<Utc>,
 }
 
@@ -116,7 +119,7 @@ impl ConflictResolver {
         // Track performer's locks
         self.performer_locks
             .entry(performer_id.as_str().to_string())
-            .or_insert_with(HashSet::new)
+            .or_default()
             .insert(resource.to_string());
 
         Ok(())

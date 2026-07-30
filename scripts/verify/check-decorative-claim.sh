@@ -117,6 +117,15 @@ if [ ${#FOUND[@]} -gt 0 ]; then
   echo ""
   echo "REQUIREMENT: 0 装饰 引用. Cite raw stdout or git log SHA, not 联合/闭环/战略 一致."
   echo "Reference: V350-LESSONS §4.6 (P-001/P-003 治根 联合)"
+  echo "[ERR] FAIL-detected → exit 1 (fail-closed, P0-7 治理: 禁止 print FAIL + exit 0)"
+  exit 1
+fi
+
+# Defense-in-depth (P0-7): if any pattern marker leaked to end of script, fail-closed.
+# Should never trigger because the above branch already captured FOUND>0, but defensive
+# in case future refactor drops the early `exit 1`.
+if grep -qE '^FAIL: [0-9]+ decorative claim patterns detected' /tmp/.check-decorative-claim.fail-marker 2>/dev/null; then
+  echo "[ERR] Defensive: FAIL marker seen, forcing exit 1"
   exit 1
 fi
 

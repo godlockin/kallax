@@ -43,14 +43,14 @@ function checkpointIntervalFromMastery(level: MasteryLevel): CheckpointInterval 
  * Compute performer's mastery level from historical ticket abandonment rate.
  * Data source: SQLite tasks created for this performer within 30 days.
  */
-async function computePerformerMastery(
+function computePerformerMastery(
   db: SQLiteManager,
   performerId: string
 ): Promise<MasteryLevel> {
   const tasksResult = db.listTasks({});
   if (tasksResult.isErr()) {
     logger.warn({ performerId, error: tasksResult.error.message }, 'computePerformerMastery: listTasks failed, defaulting to L2');
-    return 'L2';
+    return Promise.resolve('L2');
   }
 
   const now = Date.now();
@@ -61,7 +61,7 @@ async function computePerformerMastery(
     (t) => t.performerId === performerId && t.createdAt >= cutoff
   );
 
-  if (performerTasks.length === 0) return 'L2';
+  if (performerTasks.length === 0) return Promise.resolve('L2');
 
   const abandoned = performerTasks.filter((t) => t.status === TaskStatus.FAILED).length;
   const completed = performerTasks.filter((t) => t.status === TaskStatus.COMPLETED).length;
@@ -69,7 +69,7 @@ async function computePerformerMastery(
   const abandonmentRate = total > 0 ? (abandoned / total) * 100 : 0;
 
   logger.info({ performerId, abandonmentRate: abandonmentRate.toFixed(1), abandoned, completed, total }, 'computePerformerMastery');
-  return masteryLevelFromAbandonment(abandonmentRate);
+  return Promise.resolve(masteryLevelFromAbandonment(abandonmentRate));
 }
 
 export interface TaskAssigner {

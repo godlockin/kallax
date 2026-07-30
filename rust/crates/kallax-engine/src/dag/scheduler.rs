@@ -44,7 +44,7 @@ impl DagScheduler {
         for dep in dependencies {
             self.dependents
                 .entry(dep.as_str().to_string())
-                .or_insert_with(HashSet::new)
+                .or_default()
                 .insert(id.clone());
         }
         if dep_count == 0 {
@@ -61,7 +61,7 @@ impl DagScheduler {
         let old_heap = std::mem::take(&mut self.ready_heap);
         let mut ready: Vec<String> = Vec::new();
         for (priority, Reverse(task_id)) in old_heap.into_iter() {
-            if self.in_degree.get(&task_id).map_or(false, |&d| d == 0) {
+            if self.in_degree.get(&task_id).is_some_and(|&d| d == 0) {
                 ready.push(task_id);
             } else {
                 // EPIC-092 治根: 非 ready task 放回 heap (防丢失)
@@ -148,7 +148,7 @@ impl DagScheduler {
     pub fn topological_sort(&self) -> Result<Vec<TaskId>> {
         if let Some(cycle) = self.detect_cycle() {
             return Err(KallaxError::Validation {
-                field: "dependencies".into(),
+                field: "dependencies",
                 message: format!("Cycle: {:?}", cycle),
             });
         }
@@ -249,10 +249,7 @@ impl DagScheduler {
         let mut deps_map: HashMap<String, HashSet<String>> = HashMap::new();
         for (dep, dependents) in &self.dependents {
             for d in dependents {
-                deps_map
-                    .entry(d.clone())
-                    .or_insert_with(HashSet::new)
-                    .insert(dep.clone());
+                deps_map.entry(d.clone()).or_default().insert(dep.clone());
             }
         }
         self.in_degree
