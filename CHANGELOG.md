@@ -62,6 +62,59 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Performer H: worktree-manager vitest regression (commit de1a595, PR #168)
 - Re-merge 57669b6 (commit 052990c) with proper DCO committer email
 
+## [3.32.0] - 2026-07-27
+
+### Release: Doc-only — CLAUDE.md lazy load + 38 docs archive (主公策略 A 拍板, EPIC-154)
+
+> **Note**: This release was doc-only (0 src/ changes). It bypassed 4-branch flow (direct commits to miao, see CLAUDE.md "5 release PR追溯 record" `❌ 跳过 (历史)`). EPIC-155 retroactive remediation 计划中.
+
+#### Changed (CLAUDE.md ergonomics, EPIC-154, commit `1482ffa`)
+
+- **CLAUDE.md trim 224 → 110 行** (-51%, reader 精力节省): 详细 hard-requirement 块 lazy load 到 `docs/reference/*.md`. 启动加载 cost 减半, follow-up read 路径明示
+  - 5 immutable scripts + 5-Level Verify L1-L5 + 4-branch 强制流程 + Q18 决策矩阵 + Rule 34 全保留
+  - 历史 / 细节全 6 篇按需 link (per 跟 eket 极简哲学 联合)
+
+#### Added (Active replacement docs/reference/, commit `1482ffa`)
+
+- `docs/reference/branch-flow-history.md` (89 行) — 5 release PR record + 4-branch sync record (含 v3.29.0/30.0/30.1/31.0 历史)
+- `docs/reference/5-level-verify-harden.md` (98 行) — tsconfig strict / dead-code sentinel / Stage 1 false-positives
+- `docs/reference/cli-execution-rules.md` (82 行) — 5 background-exec rules + nohup 逃逸路径
+- `docs/reference/state-json-path-conventions.md` (44 行) — multi-instance + state authz path
+- `docs/reference/test-anti-patterns.md` (43 行) — 3 项 live test 反模式 (跟 Rule 34 区分 layer)
+- `docs/reference/dco-and-licensing.md` (NEW, 67 行) — Apache-2.0 + DCO 三闸门 + --allow-pre-cutoff
+
+#### Changed (38 docs archive to `_archived/`, commit `a8da33f`, 主公策略 A 拍板)
+
+- 8 docs/*/release-specific v3.0-v3.5 era (KARPATHY/RTK-CAVEMAN/V350/RELEASE-INDEX/phase-index/phase-review)
+- 3 docs/decisions/epic-132-* (v3.27 era already done)
+- 2 docs/architecture/_DEPRECATED + _index (3-tier metadata placeholders)
+- 1 docs/superpowers/_archived (re-saved as `docs/_archived/superpowers-pre-archive/`)
+- 5 confluence/decisions/retrospective-v3.22-v3.27 era
+- 4 v3.28 era (epic-130/131/133/135)
+- 5 transient (branch-flow-governance + branch-recovery + branch-sync + release-automation + TODO-backlog 7.9-7.20)
+- 10 EPIC-117..124 retros
+- 6 confluence/pitfalls/ v3.0-v3.7 era
+- 5 templates/ root (deleted, duplicate of template/)
+
+#### Template isolation (主公拍板确认)
+
+- `template/CLAUDE-TEMPLATE.md` 0 change (跟主仓 CLAUDE.md 完全隔离)
+- `install.sh` 不拷贝根 CLAUDE.md (隔离完好, 主仓 root CLAUDE.md 修改不影响他项目)
+
+#### Known debt (acknowledged in this release)
+
+- 0 src/ 改动, 0 行为变化 — pure documentation
+- 跟 4-branch flow 1:1 跟 v3.30.1 ❌ 跳过 pattern (CLAUDE.md:60-69) — `❌ 跳过 (历史)` 备案
+- EPIC-155 计划 retroactive remediation (Q3 2026, 创 feature branch re-promote 3 commits 通过 4-PR)
+- 2 commits (a8da33f + 1482ffa) Author 是 `Agent <agent@kallax.test>` (无 DCO sign-off, 历史 commit, EPIC-155 一起修)
+
+#### Verification
+
+- 0 src/ 改动 → 0 cargo test / vitest 跑
+- CLAUDE.md 224 → 110 行 (-51%), root entry 保持 5 不可变 scripts + 4 roles + 5-Level Verify 全部 reference
+- 6 新建 + 3 升级 docs/reference/* 落地, 历史段 全部 archive (per 主公 1 line 策略 review)
+- 跟 v3.30.1 → v3.32.0 时间窗 兼容 (force-push testing→miao EPIC-142 pattern 一致)
+
 ## [3.22.0] - 2026-07-12
 
 ### Release: EPIC-114 CI Debt Cleanup + Vitest E2E Isolation
