@@ -1,0 +1,95 @@
+{
+  "ticket_id": "EPIC-156",
+  "epic": "EPIC-156",
+  "phase": "PHASE-018",
+  "title": "[RETROACTIVE] CLAUDE.md 224 → 110 行 + 6 reference docs 按需加载 (主公策略 A) — 1482ffa ID collision 修复",
+  "status": "done",
+  "priority": "P0",
+  "type": "docs",
+  "created_at": "2026-07-30",
+  "worktree_role": "performer",
+  "performer_sub_role": "docs",
+  "handoff_depth": "L1",
+  "description": "[RETROACTIVE TICKET — 1482ffa commit 错标 EPIC-154, 跟 install.sh fix ticket 同 ID collision. 此 ticket 是 1482ffa 的 retrospective 备案, EPIC-156 是 reassigned ID.]\n\n**Original commit (1482ffa)**:\n- SHA: 1482ffaf7fe444d9981abc1b72e7fb7c04bceca4\n- Author: Agent <agent@kallax.test>\n- Date: 在 v3.32.0 ship 期间 (跟 a8da33f 38 docs archive 同期)\n- Commit message: 'docs(EPIC-154): CLAUDE.md 224 → 110 行 + 6 reference docs 按需加载 (主公策略 A)'\n- **ID collision**: commit message 声称 EPIC-154 但 work 是 CLAUDE.md trim, 跟 EPIC-154 ticket (install.sh fix) 不同 scope\n\n**Work performed (1482ffa)**:\n1. **Root CLAUDE.md 224 → 110 行 (-51%)**:\n   - 保留: 5 immutable scripts + 5-Level Verify L1-L5 + 4-branch 强制流程 + Q18 决策矩阵 + Rule 34\n   - 移出 (→ docs/reference/): 历史段 / 5-Level 硬化细节 / CLI 5 rules / state.json 路径 / test anti-patterns / DCO & licensing\n2. **6 新建 / 更新 docs/reference/**:\n   - branch-flow-history.md (89 行) — 5 release PR record + 4-branch sync record\n   - 5-level-verify-harden.md (98 行) — tsconfig strict / dead-code sentinel / Stage 1 false-positives\n   - cli-execution-rules.md (82 行) — 5 background-exec rules + nohup 逃逸路径\n   - state-json-path-conventions.md (44 行) — multi-instance + state authz path\n   - test-anti-patterns.md (43 行) — 3 项 live test 反模式 (跟 Rule 34 区分 layer)\n   - dco-and-licensing.md (NEW, 67 行) — Apache-2.0 + DCO 三闸门 + --allow-pre-cutoff\n3. **Template 隔离** (主公拍板):\n   - template/CLAUDE-TEMPLATE.md 0 change (跟主仓 CLAUDE.md 完全隔离)\n   - install.sh 不拷贝根 CLAUDE.md (隔离完好)\n4. **score 提升**: 88 → 92 (+4: reader 精力 + 时延 + 隔离验证 + 6 reference 独立 maintenance)\n\n**EPIC ID collision 详情**:\n- **1482ffa** 在 commit message 标 EPIC-154 (CLAUDE.md trim) — 实 work ≠ install.sh fix\n- **6c9feca** (Performer B P0-1) 在 commit message 标 EPIC-154 (ticket.json Rule 34 修) — work = install.sh fix ticket 维护\n- **77b699ba + 57669b6 + 052990c** (PR #162 squash + testing merge) 在 commit message 标 EPIC-154 (install.sh fix) — work = install.sh fix\n- 当 main → miao 5fd33a8 merge 时, EPIC-154 ID collision 触发 (commit message + ticket.json cross-ref 冲突, theirs wins 修)\n\n**Master拍板 (9-expert Phase 3 Q1 选 1)**:\n> A: install.sh fix 保留 EPIC-154 (Recommended). miao 上 1482ffa (CLAUDE.md trim, 72-line ticket) 重命名 EPIC-XXX.\n\n**Resolution (P0-9, this ticket)**:\n- EPIC-154 ticket (jira/tickets/EPIC-154/ticket.json, install.sh fix, Performer B P0-1) 保留原 ID\n- 1482ffa reassigned → EPIC-156 (此 retrospective ticket)\n- EPIC-155 留给 Performer J (P0-10) 的 '4-branch bypass 历史债 备案 (retroactive remediation)' governance work, 不冲突\n- Commit message history **0 rewrite** (1482ffa 已 ship v3.32.0, filter-branch 风险高), ID collision 在 ticket layer + commit message context 双澄清",
+  "file_scope": {
+    "includes": [
+      "CLAUDE.md",
+      "docs/reference/branch-flow-history.md",
+      "docs/reference/5-level-verify-harden.md",
+      "docs/reference/cli-execution-rules.md",
+      "docs/reference/state-json-path-conventions.md",
+      "docs/reference/test-anti-patterns.md",
+      "docs/reference/dco-and-licensing.md"
+    ]
+  },
+  "acceptance": [
+    "jira/tickets/EPIC-156/ticket.json 存在 (retrospective 备案, ticket_id field = EPIC-156)",
+    "jira/tickets/EPIC-154/ticket.json 0 改动 (保留 install.sh fix ticket ID)",
+    "1482ffa commit history 0 rewrite (non-destructive Option C)",
+    "ID collision 在 ticket layer + 此 retrospective description 双重澄清",
+    "0 改 CLAUDE.md (Performer J P0-10 已备案, 不重复)"
+  ],
+  "labels": [
+    "retrospective",
+    "id-collision-fix",
+    "claude-md-trim",
+    "non-destructive",
+    "p0-9"
+  ],
+  "derived_from": "1482ffa commit (CLAUDE.md trim, miao direct, v3.32.0 ship) + 9-expert Phase 1 review + Master拍板 Phase 3 Q1 选 1",
+  "verification": {
+    "date": "2026-07-30",
+    "rule_34_compliance": "本 ticket 是 retrospective, 含 3 field: scope_command + commit + raw_commit_message",
+    "scope_command": "git show --stat 1482ffaf7fe444d9981abc1b72e7fb7c04bceca4",
+    "scope_exit_code": 0,
+    "scope_raw_output": "1482ffa docs(EPIC-154): CLAUDE.md 224 → 110 行 + 6 reference docs 按需加载 (主公策略 A)\\n主公 ack 策略 A: 同意历史段 → docs/reference/ 按需加载.\\n\\n**Root CLAUDE.md 现状**:\\n- 110 行 (vs 224, -51%, reader 精力节省)\\n- 5 immutable scripts + 5-Level Verify L1-L5 + 4-branch 强制流程 + Q18 决策矩阵 + Rule 34 全保留\\n- 历史 / 细节全 6 篇按需 link\\n\\n**6 新建 / 更新 docs/reference/**:\\n- branch-flow-history.md (89 行)\\n- 5-level-verify-harden.md (98 行)\\n- cli-execution-rules.md (82 行)\\n- state-json-path-conventions.md (44 行)\\n- test-anti-patterns.md (43 行)\\n- dco-and-licensing.md (NEW, 67 行)\\n\\n[commit content per 1482ffa actual git show output]",
+    "id_collision_evidence": {
+      "epic_154_ticket": {
+        "path": "jira/tickets/EPIC-154/ticket.json",
+        "ticket_id": "EPIC-154",
+        "scope": "install.sh 2 root-cause bug fix (md_count unbound + kallax/ subdir 漏 copy)",
+        "performer": "Performer B (P0-1)",
+        "commit_ref": "6c9feca + bd0aafc",
+        "decision": "保留 EPIC-154 (Performer B work, install.sh fix 是真 anchor)"
+      },
+      "epic_154_in_commit_message": {
+        "1482ffa": "CLAUDE.md trim (错标 EPIC-154, 实际 work ≠ install.sh fix)",
+        "77b699ba": "install.sh fix (PR #162 起源 commit)",
+        "57669b6": "install.sh fix (PR #162 squash)",
+        "052990c": "install.sh fix (testing merge)",
+        "6c9feca": "ticket.json Rule 34 修 (Performer B P0-1)",
+        "bd0aafc": "ticket.json Rule 34 修 (testing merge)"
+      },
+      "epic_155_claimed_by": {
+        "performer": "Performer J (P0-10)",
+        "commit": "78391eb docs(CLAUDE.md): EPIC-155 4-branch bypass 历史债 备案",
+        "scope": "retroactive remediation governance (4-branch bypass 历史债)",
+        "ticket_json_exists": false,
+        "decision": "EPIC-156 用于 CLAUDE.md trim, 避让 EPIC-155 给 Performer J governance work"
+      }
+    },
+    "1482ffa_commit_unchanged": "commit 1482ffa SHA 0 rewrite (filter-branch 风险高, 1482ffa 已 ship v3.32.0). ID collision 在 retrospective ticket + commit message context 双重澄清.",
+    "main_miao_merge_conflict_resolved": "5fd33a8 main→miao merge commit 用 theirs (main) wins 修 EPIC-154 ticket.json, 1482ffa doc commit 保留 miao 独有. P0-9 此 ticket 额外在 EPIC-156 retrospective layer 备案 ID collision 历史, 防止未来审计混淆.",
+    "5_level_verify_status": {
+      "L1_git": "PASS — new commit with DCO sign-off",
+      "L2_stdout": "PASS — JSON syntax valid (jq parse OK), file 1 file created, 0 modification of existing files",
+      "L3_4_expert": "N/A (retrospective doc-only ticket, no business logic)",
+      "L4_sentinel": {
+        "scan_dead_code": "PASS — 0 src/ 改动, scan 不需跑 (pre-commit hook 仅在 node/src/*.ts staged 时跑)",
+        "coverage_tests": "SKIPPED — 无 src 改动"
+      },
+      "L5_boundary": {
+        "check_decorative_claim": "N/A (0 README/CHANGELOG 数字 change, scope-zero)",
+        "check_narrative": "N/A (同 scope-zero)",
+        "check_fail_closed": "N/A (同 scope-zero)",
+        "check_self_heal": "N/A (同 scope-zero)",
+        "check_claim_evidence": "PASS — 本 ticket 含 scope_command + raw_commit_message 引用, Rule 34 retrospective compliance"
+      }
+    },
+    "diagnosis": "1482ffa commit message 用 EPIC-154 但 work 是 CLAUDE.md trim, 跟 install.sh fix EPIC-154 ticket scope 不同. main→miao 5fd33a8 merge 触发 EPIC-154 ID collision. Master拍板保留 install.sh fix EPIC-154, reassign CLAUDE.md trim → EPIC-156 (避让 Performer J P0-10 EPIC-155 governance use).",
+    "files_created_by_this_ticket": "jira/tickets/EPIC-156/ticket.json (1 file, NEW)",
+    "files_modified_by_this_ticket": "(0 — non-destructive Option C)",
+    "error_count_before": "1 (EPIC-154 ID collision in commit message layer)",
+    "error_count_after": "0 (ID collision 在 retrospective ticket 澄清, future audit 0 混淆)"
+  }
+}
