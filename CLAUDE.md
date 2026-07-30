@@ -71,6 +71,36 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 | v3.9.2 | feature/v3.9.2-EPIC-073 | ❌ 跳过 (历史) |
 | v3.29.0 | feature/v3.29.0-EPIC-136-to-139 | PR #148 → base=miao (testing 首次 sync via EPIC-142) |
 | v3.30.0 | feature/v3.30.0-EPIC-140-to-142 | PR #149 → testing (merged 4307d2f2); PR #150 → main (closed 因 debt) → force-push (EPIC-146) |
+| v3.30.1 | feature/v3.30.1-EPIC-143-to-147 | PR #158 → testing (history-sync, EPIC-146 force-push 时 absorb) |
+| v3.32.0-doc-merge | `3105046` transient merge commit on main | ❌ 跳过 (历史) — `Merge remote-tracking branch 'origin/main'`, 跟 v3.32.1 cleanup 一起 accept, main→miao 流程自动 absorb |
+| v3.32.0 | `a8da33f` + `1482ffa` direct commits to miao | ❌ 跳过 (历史) — EPIC-155 retroactive remediation 计划中 (CLAUDE.md lazy load + 38 docs archive, 主公策略 A 拍板) |
+| v3.32.1-fixup | `40e2b8e` direct commit to main | ❌ 跳过 (历史) — gitignore 清理 (.eket + .kallax/.kallax + settings.local.json 冲突解), 内容 trivial, 主公接受丢失 |
+
+## 4-branch bypass 历史债 备案 (EPIC-155, 2026-07-29 备案)
+
+**3 commits bypass 4-branch flow (v3.10.0+ 0 容忍)**:
+
+1. `a8da33f` (miao direct) — archive 38 outdated docs to `_archived/` (v3.32.0 cleanup)
+2. `1482ffa` (miao direct) — CLAUDE.md 224→110 + 6 reference docs lazy load (主公策略 A, v3.32.0)
+3. `40e2b8e` (main direct) — gitignore 清理 (.eket + .kallax/.kallax + settings.local.json)
+
+**Root cause**:
+- `a8da33f` + `1482ffa`: 在 EPIC-142 testing sync 之后 + v3.32.1 main→miao 流程之前, v3.32.0 doc 单独 ship 跳 testing+main
+- `40e2b8e`: main 本地 uncommitted 清理, 内容 trivial (gitignore 3 行), 跟 testing→main 流程并行
+
+**Acceptance**:
+- 主公拍接受丢失 (Phase 3 拍板) — content trivial OR 已 absorb 进 v3.32.1
+- `1482ffa` 错标 "EPIC-154" (实际是 CLAUDE.md trim, 跟 install.sh fix 的 EPIC-154 ticket 不同 scope) → P0-9 重命名
+
+**Retroactive remediation** (P0-10):
+- 本条目已 documentation 化进 CLAUDE.md
+- EPIC-155 计划 (Q3 2026) 创 feature branch retroactively re-promote 3 commits 通过 4-branch flow
+- 0 新 强制 4-PR 流程修改 — 跟 established pattern (v3.30.1 ❌ 跳过) 1:1
+
+**跟 v3.30.1 治理债 联根**:
+- v3.30.1 (PR #158) 已补 record 到上表 (testing 吸收, EPIC-146 force-push 落地)
+- 跟当前 4-branch bypass 同 pattern: 历史 ship 跳流程, 备案 + accept, 不修改现 强制 4-PR 流程
+- 跟 EPIC-146 "main 分支 sync record (2026-07-26)" 1:1 — main↔miao 同步用 force-push pattern
 
 **testing 分支 sync 记录 (EPIC-142, 2026-07-26)**:
 - 首次 4-branch flow 落地时 testing 已落后 miao 6 commit (EPIC-133/134/135 系列, 均未 Signed-off-by, DCO 上线前的历史)
