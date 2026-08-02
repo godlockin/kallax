@@ -584,13 +584,39 @@ See [§2.4](#kallax-resume--resume-from-a-saved-session) for full reference.
 |---|---|
 | **Syntax** | `/kallax-phase-review [PHASE]` |
 | **Args** | `PHASE` (default: `all`) |
-| **What it does** | Shows completed tasks / open PRs counts and 5-point review checklist |
-| **Output** | `phase_review_<timestamp>.md` template in `.kallax/inbox/` |
+| **What it does** | Shows completed tasks / open PRs counts, 5-point review checklist, **and EPIC-157 expert binding consistency report** (`binding-tracker.sh report`) saved to `.kallax/inbox/binding_consistency_<timestamp>.md` |
+| **Output** | `phase_review_<timestamp>.md` template + `binding_consistency_<timestamp>.md` (if any tickets have `expert_binding`) |
 | **When to use** | You reach a milestone and want to do a formal phase review |
 | **Example** | `/kallax-phase-review PHASE-011` |
 | **Role required** | **Conductor** |
-| **Related** | `/kallax-check-progress`, `/kallax-review-pr` |
+| **Related** | `/kallax-check-progress`, `/kallax-review-pr`, `scripts/binding/binding-tracker.sh` |
 | **Source** | `.claude/commands/kallax-phase-review.sh` |
+
+> **EPIC-157 (v3.32.2+)**: phase-review 自动调 `scripts/binding/binding-tracker.sh report`, 输出 `mis_dispatch_binding_rate` (北极星指标副输出, 跟 EPIC-023-C mis_dispatch_rate 联合). 历史 ticket (无 `expert_binding`) 自动跳过.
+
+### Expert Binding Tracker (EPIC-157, v3.32.2+)
+
+```
+scripts/binding/binding-tracker.sh <subcommand> [args]
+
+Subcommands:
+  suggest <ticket-id> --expert <name>     # Master 拆卡时建议
+  actual <ticket-id> --expert <name> [--reason <text>]  # Performer binding
+  validate <ticket-id>                      # 校验 4 字段 + 一致性
+  validate-all [--dir <path>]               # 批量校验 (历史 ticket 跳过)
+  report [--epic <EPIC-XXX>]                # mis_dispatch_binding_rate 一致率报告
+
+Exit codes: 0=PASS, 1=FAIL (校验失败 / 偏离无 reason), 2=用户错误
+```
+
+| ticket.json 字段 | 类型 | 必填时机 | 说明 |
+|---|---|---|---|
+| `expert_binding.suggested_expert` | string\|null | Master 拆卡时 | 枚举: 4 default + 5 extended + 15 local + `custom:<name>` |
+| `expert_binding.actual_expert` | string\|null | Performer claim 时 | 必填 |
+| `expert_binding.expert_binding_at` | ISO8601 | Performer claim 时 | 自动 timestamp |
+| `expert_binding.binding_change_reason` | string | 当 actual ≠ suggested | 必填非空 (治 silent 改 expert) |
+
+**跟 EPIC-023-C 联合**: `mis_dispatch_binding_rate` 北极星指标从 `jira/tickets/EPIC-*/ticket.json` expert_binding 字段直接读取, 历史 ticket 跳过不计入分母.
 
 ---
 

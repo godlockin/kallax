@@ -67,6 +67,17 @@ echo "  4. Docs        — are docs and ADRs up to date?"
 echo "  5. Lessons     — what did we learn? Add to confluence/memory/"
 echo ""
 
+# EPIC-157 — Expert binding consistency report (per phase)
+BINDING_REPORT="${KALLAX_DIR}/inbox/binding_consistency_${TIMESTAMP}.md"
+if [ -x "${KALLAX_ROOT}/scripts/binding/binding-tracker.sh" ]; then
+  echo "  ${BOLD}Expert Binding Consistency (EPIC-157)${NC}"
+  "${KALLAX_ROOT}/scripts/binding/binding-tracker.sh" report --dir "${KALLAX_ROOT}/jira/tickets" 2>/dev/null \
+    | tee "$BINDING_REPORT" \
+    | sed -n '1,3p;/mis_dispatch_rate/p;/Cross-specialization/p;/Divergent/p;/Consistent/p'
+  echo "  → Saved to: $BINDING_REPORT"
+  echo ""
+fi
+
 PHASE_DIR="${KALLAX_DIR}/inbox"
 mkdir -p "$PHASE_DIR"
 

@@ -1,0 +1,82 @@
+{
+  "ticket_id": "EPIC-157",
+  "epic": "EPIC-157",
+  "phase": "PHASE-018",
+  "title": "Expert Binding Tracking — Master 建议 + Performer 实际 + Review 复盘",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "feature",
+  "created_at": "2026-08-02",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L2",
+  "description": "EPIC-157 — ticket.json schema 加 4 字段跟踪 expert binding, 让 mis_dispatch_rate 真正可测.\n\n**Context**: 主公 2026-08-02 review 决定 — Master 拆卡时给 `suggested_expert`, Performer 领卡时 binding `actual_expert` + `expert_binding_at`, 偏离时 `binding_change_reason` 必填. 等任务完成, 通过 `phase-review` 复盘一致率, 通过 `sprint-metrics` 暴露 mis_dispatch_rate (<10% 阈值).\n\n**设计 (跟 BE-14 + EPIC-054-A + EPIC-023-C 联合, 0 冲突)**:\n1. `suggested_expert` — Master 拆卡时填, 枚举: 4 default + 5 extended + extended pool (15 local). 可选, 留空 = 不建议\n2. `actual_expert` — Performer claim 时填, 必填. Performer 可覆盖 Master 建议\n3. `expert_binding_at` — ISO8601 timestamp, `/kallax-claim` 时戳\n4. `binding_change_reason` — 当 actual != suggested 时, 必填非空文本 (治根: Performer 不能 silent 改 expert)\n\n**北极星打通**: EPIC-023-C mis_dispatch_rate 之前缺数据源, 加这 4 字段后直接复用.\n\n**跟 BE-14 关系**: 不冲突. 1 ticket 1 subagent 串行仍是 baseline. 这 4 字段是 ticket-level metadata, 不改变派单模式.\n\n**跟 EPIC-054-A 关系**: 不冲突. worktree 隔离仍是 N ticket = N worktree. 这 4 字段加在 ticket.json 里, worktree 路径不变.\n\n**历史 ticket 处理**: 仅新 ticket 强制. 历史 EPIC-001~EPIC-156 ticket 跳过 (留空 = legacy-no-binding).\n",
+  "file_scope": {
+    "includes": [
+      "node/src/schema/ticket-schema*",
+      "node/src/api/**/expert*",
+      "node/src/cli/**/expert*",
+      "node/src/cli/**/claim*",
+      "node/src/cli/**/submit*",
+      "scripts/metrics/sprint-metrics.sh",
+      "scripts/metrics/lib/metrics.sh",
+      "scripts/audit/governance-3phase.sh",
+      "tests/integration/expert-binding-tracking*",
+      "docs/reference/slash-commands.md",
+      "CLAUDE.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: ticket.json schema 加 suggested_expert/actual_expert/expert_binding_at/binding_change_reason 4 字段, 向后兼容 (字段均可选, 旧 ticket 不破)",
+    "AC2: validator: suggested_expert 在枚举内 (4 default + 5 extended + 15 local), actual_expert 必填, change_reason 仅当 actual != suggested 时必填",
+    "AC3: /kallax-claim 读 suggested_expert → 写 actual_expert + expert_binding_at (ISO8601). Performer 改 actual 时提示写 binding_change_reason",
+    "AC4: /kallax-submit-pr 校验 actual_expert 必填, 若跟 suggested 不同必填 binding_change_reason 非空",
+    "AC5: sprint-metrics.sh mis_dispatch_rate 读 ticket.json, 输出 <10% PASS / ≥10% FAIL. 历史 ticket (无 suggested_expert) 跳过不计入分母",
+    "AC6: phase-review 输出 binding_consistency_report: 一致率 + 偏离列表 + change_reason 文本聚合",
+    "AC7: tests/integration/expert-binding-tracking.test.sh ≥6 case PASS (suggested=actual, 偏离带 reason, 偏离无 reason FAIL, 历史 ticket 跳过, 提交时校验, validator 枚举校验)",
+    "AC8: vitest sentinel tests PASS (npm run build exit 0, vitest exit 0)",
+    "AC9: 5-Level Verify L1-L5 PASS (scan-dead-code=0, build=0, cargo test=0, sentinel=0, check-claim-evidence=0)",
+    "AC10: 历史 ticket 不破 (load 旧 ticket.json 跳过校验, 不报错)",
+    "AC11: docs/reference/slash-commands.md 加 --claim 跟 --submit-pr 行为说明 + binding 字段表",
+    "AC12: CLAUDE.md 加 EPIC-157 引用 (跟 Rule 34 + EPIC-023-C 联合, 0 增 Rule)"
+  ],
+  "labels": [
+    "feature",
+    "expert-binding",
+    "mis-dispatch",
+    "north-star-metric",
+    "phase-018"
+  ],
+  "expert_binding": {
+    "suggested_expert": "backend",
+    "actual_expert": "frontend",
+    "expert_binding_at": "2026-08-02T14:45:03Z",
+    "binding_change_reason": "scope covers both backend + frontend"
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行 — 不破, 这 4 字段是 metadata)",
+    "EPIC-054-A (worktree 隔离 — 不破)",
+    "EPIC-023-C (mis_dispatch_rate 北极星 — 数据源打通)",
+    "EPIC-059-F (派遣 Checklist 11 项 — 可选加第 12 项 binding 记录)",
+    "Rule 34 (bugfix 独立复现 — 互补, 不冲突)",
+    "EPIC-119 (OpenAI 3-Class tool taxonomy — 不改)"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": "node/src/* + scripts/metrics/* + tests/* + docs/*"
+  },
+  "deliverables": [
+    "node/src/schema/ticket-schema.ts (新)",
+    "node/src/schema/ticket-validator.ts (新)",
+    "node/src/cli/commands/claim.ts 改 (读 suggested_expert → 写 actual)",
+    "node/src/cli/commands/submit-pr.ts 改 (校验 actual_expert 必填 + change_reason 条件必填)",
+    "scripts/metrics/lib/metrics.sh 加 mis_dispatch_rate 字段",
+    "tests/integration/expert-binding-tracking.test.sh (新, ≥6 case)",
+    "node/tests/schema/ticket-validator.test.ts (新)",
+    "docs/reference/slash-commands.md 改",
+    "CLAUDE.md 改 (加 EPIC-157 引用段)"
+  ],
+  "estimated_hours": 5,
+  "created_by": "master (主公 2026-08-02 review 拍板: suggested/actual/reason/change_reason 4 字段 + mis_dispatch_rate 阈值 <10%)"
+}

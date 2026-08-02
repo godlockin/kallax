@@ -256,3 +256,28 @@ cargo install kallax / kallax init / kallax master:start
 **覆盖 ticket 模板 (`jira/tickets/EPIC-XXX/ticket.json`)**: 下方 `verification` block 必含上述 3 field. Master commit 时如 ticket 缺, 分支 fail.
 
 **升级路径**: 此 Rule 在 v3.31.0 起强制 (5 immutable scripts 不增, doc-level enforcement + culture enforcement, 跟 v3.29.0 borrow-from-cindy 模式一致).
+
+## EPIC-157 — Expert Binding Tracking (v3.32.2+, 主公 2026-08-02 拍板)
+
+> **起源**: 主公 review 当前框架能否"同类多实例并行"时拍板 — Master 拆卡时建议 expert, Performer 领卡时 binding 实际 expert, 偏离必填 reason, 完成时 review 一致率. 4 字段直接打通 EPIC-023-C `mis_dispatch_rate` 北极星指标数据源.
+
+**4 字段** (`jira/tickets/EPIC-XXX/ticket.json` `expert_binding` 对象):
+
+| 字段 | 必填时机 | 治根 |
+|---|---|---|
+| `suggested_expert` | Master 拆卡时 | Master 主动分类, 不靠 Performer 猜 |
+| `actual_expert` | Performer claim 时 (必填) | 强制 Performer 选定 expert pool |
+| `expert_binding_at` | claim 时 (ISO8601 自动) | 审计 trail |
+| `binding_change_reason` | 当 actual ≠ suggested (必填非空) | 治 silent 改 expert, 强制 Performer 解释 |
+
+**跟现有 Rule 联合 (0 冲突)**:
+- BE-14 1 ticket 1 subagent 串行: ✅ 不破 (metadata 不改派单模式)
+- EPIC-054-A worktree 隔离: ✅ 不破 (字段在 ticket.json, 不动 git worktree)
+- EPIC-023-C mis_dispatch_rate: ✅ **直接打通数据源** (新 metric: `mis_dispatch_binding_rate`)
+- Rule 34 bugfix 独立复现: ✅ 互补 (binding 字段 + reproduction_command 字段正交)
+
+**工具**: `scripts/binding/binding-tracker.sh` 提供 `suggest` / `actual` / `validate` / `validate-all` / `report` 5 子命令. 退出码 0=PASS, 1=FAIL, 2=用户错误.
+
+**Metric 副输出**: `bash scripts/metrics/sprint-metrics.sh --epic EPIC-XXX` 新增 `mis_dispatch_binding_rate` 字段 (跟原 `mis_dispatch_rate` 并列, 不替换). 历史 ticket (无 `expert_binding`) 跳过不计入分母.
+
+**0 增 Rule, 0 增 immutable script** (跟 v2.4.1 Rule 合并反思一致). 约定层 enforcement + culture enforcement (跟 Rule 34 模式 1:1).

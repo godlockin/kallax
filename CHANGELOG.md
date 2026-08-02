@@ -4,6 +4,47 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.32.2] - 2026-08-02
+
+### Release: Expert Binding Tracking (EPIC-157)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Added (4 ticket.json 字段 + 北极星打通)
+
+- **`expert_binding.suggested_expert`** — Master 拆卡时建议 expert (枚举: 4 default + 5 extended + 15 local + `custom:<name>`)
+- **`expert_binding.actual_expert`** — Performer claim 时 binding (必填)
+- **`expert_binding.expert_binding_at`** — ISO8601 timestamp 自动写入 (claim 时)
+- **`expert_binding.binding_change_reason`** — 当 actual ≠ suggested 时必填非空 (治 silent 改 expert)
+
+**Schema 层**: `node/src/core/schema-validator.ts` 加 `ExpertBindingSchema` (4 字段 + 一致性 superRefine) 跟 `TicketSchema.expert_binding` 可选字段 (向后兼容历史 ticket)
+
+**工具**: `scripts/binding/binding-tracker.sh` 新增 (5 子命令: suggest / actual / validate / validate-all / report; 退出码 0=PASS / 1=FAIL / 2=用户错误)
+
+**北极星打通**: `scripts/metrics/lib/metrics.sh` 新增 `compute_mis_dispatch_binding_rate` 函数, `format_json_metrics` 接入新副指标, `sprint-metrics.sh` JSON 输出新增 `mis_dispatch_binding_rate` 字段 (跟原 `mis_dispatch_rate` 并列). 历史 ticket (无 `expert_binding`) 跳过不计入分母 (per EPIC-157 design).
+
+**Phase review 联合**: `.claude/commands/kallax-phase-review.sh` 自动调 `binding-tracker.sh report`, 输出 `binding_consistency_<timestamp>.md` 到 `.kallax/inbox/`
+
+#### Tests (AC7: ≥6 case)
+
+- `tests/integration/expert-binding-tracking.test.sh` (新): **11/11 PASS** (raw output: `bash tests/integration/expert-binding-tracking.test.sh` → `Expert Binding Tracking Tests: 11 passed, 0 failed`)
+- `node/tests/schema/expert-binding.test.ts` (新): **9/9 vitest PASS** (raw output: `cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run tests/schema/expert-binding.test.ts` → `Test Files 1 passed (1) / Tests 9 passed (9)`)
+- 5-Level Verify L4 sentinel: **103/103 PASS** (raw output: `cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run tests/dead-code-sentinel-coverage{,-d,-e}.test.ts tests/dead-code-master-verify.test.ts tests/schema/expert-binding.test.ts` → `Test Files 5 passed (5) / Tests 103 passed (103)`)
+- 5-Level Verify L4 scan-dead-code: **3/3 PASS** (raw output: `bash scripts/scan-dead-code.sh` → `EPIC-131-B dead-code sentinel: 3/3 阶段 PASS`)
+- 5-Level Verify L2 npm build: **0 errors** (raw output: `cd node && npm run build` → exit 0, no errors)
+- 5-Level Verify L2 cargo test: skip (无 Rust 改动, `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Docs
+
+- `CLAUDE.md` 加 EPIC-157 段 (跟 BE-14 + EPIC-054-A + EPIC-023-C + Rule 34 联合, 0 冲突, 0 增 Rule, 0 增 immutable script)
+- `docs/reference/slash-commands-2026-06-19.md` 加 `/kallax-phase-review` 输出说明 + Expert Binding Tracker 子段
+
+#### Compatibility
+
+- 历史 ticket.json (EPIC-001 ~ EPIC-156) **0 改动**: 无 `expert_binding` 字段, validator 加载 + sprint-metrics 计算均跳过, 不破
+- `node/src/core/schema-validator.ts` `ExpertBindingSchema` 接受 `custom:<name>` 任意自定义 expert (扩展点)
+- `mis_dispatch_binding_rate` 跟原 `mis_dispatch_rate` 并列, 不替换. 未来可分别调整阈值
+
 ## [3.32.1] - 2026-07-29
 
 ### Release: P0 Hotfix — install.sh silent partial success (EPIC-154)
