@@ -148,6 +148,32 @@ grep -q "Binding Validation Summary\|Expert Binding Report" /tmp/binding-c6.log
 GREP_C6=$?
 assert_eq "validate-all summary printed" "0" "$GREP_C6"
 
+# Case 7: path traversal rejected (per push security review MEDIUM finding)
+echo ""
+echo "Case 7: path traversal in ticket_id rejected"
+KALLAX_TICKETS_DIR="$TEST_TICKETS_DIR" \
+  bash "$BINDING" validate "../../etc/passwd" > /tmp/binding-c7.log 2>&1
+EXIT_C7=$?
+# Path-traversal rejection may exit 1 (FAIL) or 2 (user error) — both
+# correctly reject; we accept either as a pass.
+if [ "$EXIT_C7" -eq 1 ] || [ "$EXIT_C7" -eq 2 ]; then
+  echo "  PASS: traversal rejected exit (got $EXIT_C7)"
+  PASS=$((PASS + 1))
+else
+  echo "  FAIL: traversal not rejected (exit $EXIT_C7)"
+  FAIL=$((FAIL + 1))
+fi
+KALLAX_TICKETS_DIR="$TEST_TICKETS_DIR" \
+  bash "$BINDING" validate "EPIC-9999/../etc" > /tmp/binding-c7b.log 2>&1
+EXIT_C7B=$?
+if [ "$EXIT_C7B" -eq 1 ] || [ "$EXIT_C7B" -eq 2 ]; then
+  echo "  PASS: traversal rejected exit (slash) (got $EXIT_C7B)"
+  PASS=$((PASS + 1))
+else
+  echo "  FAIL: traversal (slash) not rejected (exit $EXIT_C7B)"
+  FAIL=$((FAIL + 1))
+fi
+
 cleanup
 
 echo ""

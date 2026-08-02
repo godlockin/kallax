@@ -8,9 +8,18 @@
 # Expects TICKETS_DIR env var (defaults to $KALLAX_ROOT/jira/tickets).
 
 # Resolve ticket_id (e.g. EPIC-157 or EPIC-157-A) to its ticket.json path.
-# Returns 0 + echoes path on success, 1 on not found.
+# Returns 0 + echoes path on success, 1 on not found or invalid id.
 find_ticket_file() {
   local ticket_id="$1"
+  # Path-traversal guard (per push security review): ticket_id must be
+  # alphanumeric + dash only, no `..` or path separators.
+  case "$ticket_id" in
+    *..*|*/*|*\\*) return 1 ;;
+  esac
+  case "$ticket_id" in
+    EPIC-[0-9]*[-A-Za-z0-9]*) ;;
+    *) return 1 ;;
+  esac
   local prefix="${ticket_id%%-*}"  # EPIC
   local found=""
   for d in "$TICKETS_DIR/${ticket_id}" "$TICKETS_DIR/${prefix}"; do
