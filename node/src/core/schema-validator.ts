@@ -140,6 +140,79 @@ const FileScopeSchema = z.object({
   excludes: z.array(z.string()).default([]),
 });
 
+// ============================================================================
+// ExpertBindingSchema — EPIC-157 ticket.json expert binding tracking
+// 4 字段: suggested_expert (Master 拆卡建议) + actual_expert (Performer binding)
+// + expert_binding_at (ISO8601 timestamp) + binding_change_reason (偏离必填)
+// ============================================================================
+
+/**
+ * EPIC-157 — Allowed expert pool for binding (Master 建议 + Performer 实际).
+ * Pool = 4 default (backend/frontend/ux/product) + 5 extended
+ * (security-tool-bypass/process-engineering-self-verify/auditor-independent-witness/
+ * compliance-rule-merge/decision-gate-complex-only) + 15 local experts
+ * (从 docs/experts/data.json 引用, 此处枚举主框架高频出现的).
+ *
+ * 备注: 完整 15 local 在 docs/experts/data.json, 这里列代表性子集。
+ * validator 接受 ExpertPool + 'custom:<name>' 任意非空字符串 (向后兼容新增 expert).
+ */
+export const ExpertPool = [
+  // 4 default
+  'backend', 'frontend', 'ux', 'product',
+  // 5 extended
+  'security-tool-bypass', 'process-engineering-self-verify',
+  'auditor-independent-witness', 'compliance-rule-merge',
+  'decision-gate-complex-only',
+  // 15 local (主高频子集; 实际接受任意 'custom:<name>')
+  'architect', 'sre', 'devops', 'security', 'performance',
+  'database', 'aiml', 'mlops', 'data-analyst', 'tester',
+  'reviewer', 'docs-writer', 'tech-lead', 'conductor', 'master',
+] as const;
+
+export type ExpertPoolMember = (typeof ExpertPool)[number];
+
+const ExpertNameSchema = z
+  .string()
+  .min(1, 'expert name must be non-empty')
+  .refine(
+    (v) => v.startsWith('custom:') || (ExpertPool as readonly string[]).includes(v),
+    { message: `expert must be one of ExpertPool (${ExpertPool.join(', ')}) or 'custom:<name>'` },
+  );
+
+const ISO8601Timestamp = z.string().refine(
+  (v) => !Number.isNaN(Date.parse(v)),
+  { message: 'expert_binding_at must be valid ISO8601 timestamp' },
+);
+
+export const ExpertBindingSchema = z
+  .object({
+    suggested_expert: ExpertNameSchema.nullable().optional(),
+    actual_expert: ExpertNameSchema.nullable().optional(),
+    expert_binding_at: ISO8601Timestamp.nullable().optional(),
+    binding_change_reason: z.string().nullable().optional(),
+  })
+  .refine(
+    (b) => {
+      // 若 actual_expert 已填 且 suggested_expert 已填 且 两者不相等
+      // → binding_change_reason 必填非空 (治 silent 改 expert)
+      if (
+        b.actual_expert != null
+        && b.suggested_expert != null
+        && b.actual_expert !== b.suggested_expert
+      ) {
+        return typeof b.binding_change_reason === 'string' && b.binding_change_reason.trim().length > 0;
+      }
+      return true;
+    },
+    {
+      message:
+        'binding_change_reason is required when actual_expert differs from suggested_expert',
+      path: ['binding_change_reason'],
+    },
+  );
+
+export type ExpertBinding = z.infer<typeof ExpertBindingSchema>;
+
 export const TicketSchema = z.object({
   id: z.string().min(1, 'ticket.id is required'),
   epicId: z.string().min(1, 'ticket.epicId is required'),
@@ -158,6 +231,8 @@ export const TicketSchema = z.object({
   acceptance_criteria: z.array(z.string()).default([]),
   estimated_hours: z.number().nonnegative().optional(),
   actual_hours: z.number().nonnegative().optional(),
+  // EPIC-157 — expert binding tracking (向后兼容: 4 字段均 optional)
+  expert_binding: ExpertBindingSchema.optional(),
 });
 
 export type Ticket = z.infer<typeof TicketSchema>;

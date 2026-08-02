@@ -505,6 +505,95 @@ compute_mis_dispatch_rate() {
   return 0
 }
 
+# EPIC-157 — mis_dispatch_rate (binding) variant
+# 用 ticket.json expert_binding 字段: actual_expert 跟 suggested_expert 不一致
+# 且 prefix 不同 (cross-specialization) 视为 mis_dispatch.
+# 数据源: jira/tickets/EPIC-*/ticket.json expert_binding 字段.
+# 历史 ticket (无 expert_binding) 跳过不计入分母.
+# 调用方: --include-binding 标志启用; 默认仍用原 compute_mis_dispatch_rate.
+compute_mis_dispatch_binding_rate() {
+  local epic_id="$1"
+  validate_epic_id "$epic_id" || return 1
+
+  local epic_num="${epic_id#EPIC-}"
+  local total=0
+  local mis=0
+  local reason_binding_divergent=0
+  local reason_binding_unset=0
+
+  # 同时支持 EPIC-XXX/ticket.json (root) 跟 EPIC-XXX-A/ticket.json (sub-ticket)
+  for ticket_dir in "${JIRA_TICKETS_DIR}/EPIC-${epic_num}" "${JIRA_TICKETS_DIR}/EPIC-${epic_num}-"*/; do
+    [ -d "$ticket_dir" ] || continue
+    local tj="${ticket_dir%/}/ticket.json"
+    [ -f "$tj" ] || continue
+
+    # 历史 ticket (无 expert_binding) 跳过不计入分母 (per EPIC-157 design)
+    local has_binding
+    has_binding="$(jq 'has("expert_binding")' "$tj" 2>/dev/null || echo "false")"
+    if [ "$has_binding" = "false" ]; then
+      continue
+    fi
+
+    total=$((total + 1))
+
+    local suggested actual
+    suggested="$(jq -r '.expert_binding.suggested_expert // empty' "$tj" 2>/dev/null || echo "")"
+    actual="$(jq -r '.expert_binding.actual_expert // empty' "$tj" 2>/dev/null || echo "")"
+
+    # actual 未填视为未派单 (binding 未完成)
+    if [ -z "$actual" ]; then
+      mis=$((mis + 1))
+      reason_binding_unset=$((reason_binding_unset + 1))
+      continue
+    fi
+
+    # actual 偏离 suggested 且 prefix 不同 → cross-specialization mis_dispatch
+    if [ -n "$suggested" ] && [ "$actual" != "$suggested" ]; then
+      local s_prefix="${suggested%%-*}"
+      local a_prefix="${actual%%-*}"
+      if [ "$s_prefix" != "$a_prefix" ] \
+         && [ "$s_prefix" != "custom" ] \
+         && [ "$a_prefix" != "custom" ]; then
+        mis=$((mis + 1))
+        reason_binding_divergent=$((reason_binding_divergent + 1))
+      fi
+    fi
+  done
+
+  if [ "$total" -eq 0 ]; then
+    log_warn "mis_dispatch_binding_rate" "epic=${epic_id} reason=no_tickets_with_binding"
+    jq -n \
+      --argjson target "$MIS_DISPATCH_TARGET_PCT" \
+      --arg epic "$epic_id" \
+      '{metric:"mis_dispatch_binding_rate", epic:$epic, mis_pct:0, target:$target, status:"NO_DATA", total:0, mis_dispatched:0, breakdown:{}}'
+    return 0
+  fi
+
+  local mis_pct=$(( (mis * 100) / total ))
+  local status="FAIL"
+  if [ "$mis_pct" -lt "$MIS_DISPATCH_TARGET_PCT" ]; then
+    status="PASS"
+  fi
+
+  local breakdown_json
+  breakdown_json="$(jq -n \
+    --argjson d "$reason_binding_divergent" \
+    --argjson u "$reason_binding_unset" \
+    '{binding_divergent:$d, binding_unset:$u}')"
+
+  jq -n \
+    --arg epic "$epic_id" \
+    --argjson mis "$mis_pct" \
+    --argjson target "$MIS_DISPATCH_TARGET_PCT" \
+    --argjson total "$total" \
+    --argjson mm "$mis" \
+    --argjson bd "$breakdown_json" \
+    --arg status "$status" \
+    '{metric:"mis_dispatch_binding_rate", epic:$epic, mis_pct:$mis, target:$target, status:$status, total:$total, mis_dispatched:$mm, breakdown:$bd}'
+
+  return 0
+}
+
 # ─── Metric 5: abandonment_rate ────────────────────────────────────────────────
 
 # Performer abandonment rate: assigned 但超 48h 无 PR 的 ticket 占比
@@ -635,12 +724,14 @@ infer_specialization() {
 # 合并 4 个 metric 为单一 JSON (machine-readable)
 format_json_metrics() {
   local epic_id="$1"
-  local m1 m2 m3 m4 m5
+  local m1 m2 m3 m4 m5 m4b
   m1="$(compute_expert_activation_rate "$epic_id")"
   m2="$(compute_cross_epic_reuse_rate "$epic_id")"
   m3="$(compute_ab_hit_rate "$epic_id")"
   m4="$(compute_mis_dispatch_rate "$epic_id")"
   m5="$(compute_abandonment_rate "$epic_id")"
+  # EPIC-157 — 新增 mis_dispatch_binding_rate 副指标 (binding tracking 数据源)
+  m4b="$(compute_mis_dispatch_binding_rate "$epic_id")"
 
   jq -n \
     --arg epic "$epic_id" \
@@ -650,6 +741,7 @@ format_json_metrics() {
     --argjson m3 "$m3" \
     --argjson m4 "$m4" \
     --argjson m5 "$m5" \
+    --argjson m4b "$m4b" \
     '{
       epic: $epic,
       generated_at: $generated_at,
@@ -658,6 +750,7 @@ format_json_metrics() {
         $m2,
         $m3,
         $m4,
+        $m4b,
         $m5
       ]
     }'
