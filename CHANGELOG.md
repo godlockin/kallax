@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Release: Expert Binding Tracking (EPIC-157)
 
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
 #### Added (4 ticket.json 字段 + 北极星打通)
 
 - **`expert_binding.suggested_expert`** — Master 拆卡时建议 expert (枚举: 4 default + 5 extended + 15 local + `custom:<name>`)
