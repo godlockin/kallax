@@ -4,6 +4,45 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.32.6] - 2026-08-03
+
+### Release: Retrospective Routine 6 stages (EPIC-161)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Added (6 阶段 routine 脚本)
+
+- **`scripts/retrospective-routine.sh`**: 6 sub-command (retrospect/consolidate/review-docs/upgrade/archive/delete) + `--dry-run` / `--apply` / `--phase` / `--stages` / `--json` flag
+- **6 stage function**:
+  1. `stage_retrospect()` — 列 CHANGELOG.md 最近 10 release
+  2. `stage_consolidate()` — CLAUDE.md 行数 (≤ 200) + duplicate files + _archived/ size
+  3. `stage_review_docs()` — .claude/rules/ + docs/reference/ + confluence/decisions/ count + paths: frontmatter check
+  4. `stage_upgrade()` — node/rustc version + Cargo.toml/package.json + install.sh Omnibus --inventory
+  5. `stage_archive()` — DEPRECATED/ABANDONED markers + _archived/ dir
+  6. `stage_delete()` — 0-byte files + scan-dead-code.sh exit
+
+#### Tests (AC6: ≥6 case)
+
+- [x] **17/17 PASS** — `tests/integration/retrospective-routine.test.sh`
+  - raw: `bash tests/integration/retrospective-routine.test.sh` → `EPIC-161 Retrospective Routine Tests: 17 passed, 0 failed`
+- [x] **103/103 PASS** — L4 vitest sentinel (无 regression)
+  - raw: `cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run tests/dead-code-sentinel-coverage{,-d,-e}.test.ts tests/dead-code-master-verify.test.ts tests/schema/expert-binding.test.ts` → `Test Files 5 passed (5) / Tests 103 passed (103)`
+- [x] **0 errors** — L2 npm build
+  - raw: `cd node && npm run build` → exit 0
+
+#### Docs
+
+- `CLAUDE.md` 加 EPIC-161 段
+- `.claude/rules/retrospective.md` (path-scoped, paths: `scripts/retrospective-routine.sh`, `scripts/post-process.sh`, `confluence/decisions/**`)
+- `docs/reference/retrospective-routine-2026-08-03.md` (lazy-load ref doc)
+
+#### Compatibility
+
+- **0 改 source code** (`kallax/node/src/*` 完全不动)
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-059-E Post-Process 11 步骤 兼容** (Case 6 test PASS)
+- **跟 EPIC-160 install.sh Omnibus 1:1 pattern** (Stage 4 upgrade 复用 --inventory)
+
 ## [3.32.5] - 2026-08-03
 
 ### Release: install.sh Omnibus (EPIC-160)

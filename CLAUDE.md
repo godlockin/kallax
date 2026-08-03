@@ -92,14 +92,8 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 **if-then 详细规则** (4 阶段 × 5 验证站): 详见 `.claude/rules/branch-flow.md`
 
 **4-branch bypass 历史债 备案 (EPIC-155, 2026-07-29 备案)**:
-3 commits bypass 4-branch flow (v3.10.0+ 0 容忍):
-1. `a8da33f` (miao direct) — archive 38 outdated docs to `_archived/` (v3.32.0 cleanup)
-2. `1482ffa` (miao direct) — CLAUDE.md 224→110 + 6 reference docs lazy load (主公策略 A)
-3. `40e2b8e` (main direct) — gitignore 清理 (内容 trivial, 主公接受丢失)
-
-主公拍接受丢失 (Phase 3 拍板) — content trivial OR 已 absorb 进 v3.32.1. EPIC-155 计划 (Q3 2026) 创 feature branch retroactively re-promote. 详细: `confluence/decisions/branch-flow-governance-2026-07-09.md`
-
-**Testing / Main 分支 sync 记录**: EPIC-142 (testing) + EPIC-146 (main) force-push pattern 1:1, 备案已 documentation 化.
+3 commits bypass (a8da33f / 1482ffa / 40e2b8e), 主公拍接受丢失 (Phase 3 拍板). EPIC-155 计划 Q3 2026 retractively re-promote.
+Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push pattern 1:1. 详细: `confluence/decisions/branch-flow-governance-2026-07-09.md`
 
 ## 5. 4 不可更改 法律 (immutable scripts)
 
@@ -116,57 +110,17 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 | `check-self-heal.sh` | `scripts/verify/` | self-heal pattern |
 | `check-claim-evidence.sh` | `scripts/hooks/` | EPIC-069-D, README/CHANGELOG 数字必带 raw test output, pre-commit |
 
-## 6. EPIC-157 — Expert Binding Tracking (v3.32.2+, 主公 2026-08-02 拍板)
+## 6. Recent EPICs (v3.32.2 → v3.32.6, 主公 2026-08-02/03 拍板)
 
-**4 字段** (`jira/tickets/EPIC-XXX/ticket.json` `expert_binding` 对象):
+| EPIC | Version | 关键 | 工具 / 文件 |
+|---|---|---|---|
+| EPIC-157 | v3.32.2 | ticket.json 4 expert binding 字段 + mis_dispatch_binding_rate 北极星打通 | `scripts/binding/binding-tracker.sh`, `sprint-metrics.sh` |
+| EPIC-158 | v3.32.3 | Forbidden Patterns regex false-positive + sqlite skipIf (CI debt) | `.github/workflows/ci.yml`, `skipIfNoSqlite` |
+| EPIC-159 | v3.32.4 | CLAUDE.md 307→160 行 + `.claude/rules/*.md` path-scoped lazy load | `.claude/rules/{state-json,testing,branch-flow,strict-tsconfig}.md` |
+| EPIC-160 | v3.32.5 | install.sh Omnibus — 全部件 deploy + `--inventory`/`--update`/3 skip flag | `scripts/install.sh`, 95 files |
+| EPIC-161 | v3.32.6 | retrospective-routine.sh 6 阶段 routine (复盘/整理/review/升级/归档/删除) | `scripts/retrospective-routine.sh`, `--json` |
 
-| 字段 | 必填时机 | 治根 |
-|---|---|---|
-| `suggested_expert` | Master 拆卡时 | Master 主动分类, 不靠 Performer 猜 |
-| `actual_expert` | Performer claim 时 (必填) | 强制 Performer 选定 expert pool |
-| `expert_binding_at` | claim 时 (ISO8601 自动) | 审计 trail |
-| `binding_change_reason` | 当 actual ≠ suggested (必填非空) | 治 silent 改 expert |
-
-**工具**: `scripts/binding/binding-tracker.sh` 提供 `suggest` / `actual` / `validate` / `validate-all` / `report` 5 子命令. 退出码 0=PASS, 1=FAIL, 2=用户错误.
-
-**Metric 副输出**: `bash scripts/metrics/sprint-metrics.sh --epic EPIC-XXX` 新增 `mis_dispatch_binding_rate` 字段 (跟原 `mis_dispatch_rate` 并列). 历史 ticket 跳过不计入分母.
-
-**0 增 Rule, 0 增 immutable script** (跟 v2.4.1 Rule 合并反思一致).
-
-## 7. EPIC-158 — Pre-existing CI Debt Fix (v3.32.3+, 主公 2026-08-03 拍板)
-
-**Debt 1: Forbidden Patterns Check regex false-positive**:
-- `.github/workflows/ci.yml` `grep -rn ': any'` 抓 JSDoc prose `fail-closed: any error` 等 (8 处 pre-existing)
-- 修复: `grep -v -E '^[^:]+:[0-9]+:\s*\*'` 跟 `grep -v -E '^[^:]+:[0-9]+:\s*//'` 后置 filter
-- 影响: PR #176 + #177 + #179 都因这个 false-positive fail, EPIC-158 修复后全 filter
-
-**Debt 2: expert-invocations-queue.test.ts CI env fail**:
-- 测试期望 `'sqlite'` 但 CI 环境无 SQLite 时 backend 自动降级 file
-- 修复: `skipIfNoSqlite` helper 包裹 5 个 sqlite 依赖 it (跟 EPIC-114 live test guard 一致)
-- 行为: `KALLAX_TEST_SQLITE_AVAILABLE=1` 时执行, 否则 skip
-
-**0 改 source code**. CI workflow + test 改动 + EPIC-158 ticket 文档.
-
-## 8. EPIC-160 — install.sh Omnibus (v3.32.5+, 主公 2026-08-03 拍板)
-
-> **起源**: 主公拍板 framework 全部件 (commands/rules/experts/skills/hooks) 在新环境 onboarding + update 时一并部署+升级.
-
-**核心改动** (install.sh ~50 lines):
-- **`--inventory` flag**: 列 source→target 映射表 (跟 EPIC-069-D 透明可验证 1:1)
-- **`--update` flag**: 升级 update 模式, 走 symlink 不破坏 user files (per install.sh:235)
-- **`--skip-rules` / `--skip-experts` / `--skip-hooks`**: 3 新 skip flag
-- **4 install function**: `install_rules_for_tool` / `install_experts_for_tool` / `install_hooks_for_tool` / `print_inventory`
-
-**Inventory 95 files**:
-- `.claude/skills/` (20) + `.claude/commands/` (62) + `.claude/rules/` (5, EPIC-159) + `experts/` (5) + `.claude/hooks/` (2) + `.claude/settings.json` (1)
-
-**跟现有 Rule 联合 (0 冲突)**:
-- EPIC-069-D check-claim-evidence: ✅ `--inventory` 透明可验证
-- EPIC-074 4-branch flow: ✅ install.sh 改动走 4-PR
-- EPIC-159 .claude/rules/*.md: ✅ 跟 .claude/skills/ 1:1 install
-- install.sh:235 symlink mode: ✅ `--update` 复用
-
-**0 增 Rule, 0 增 immutable script, 0 改 source code**. install.sh + tests + docs 改动.
+**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 5 EPICs. Full docs + tests + scripts in each.
 
 ## 9. 引用 (lazy load on-demand)
 
