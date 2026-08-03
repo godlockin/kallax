@@ -4,6 +4,42 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.32.3] - 2026-08-03
+
+### Release: Pre-existing CI debt fix (EPIC-158)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Fixed (CI 算法债, 跟 EPIC-157 暴露的 pre-existing issue)
+
+- **`.github/workflows/ci.yml` Forbidden Patterns Check regex**: `grep -v -E '^[^:]+:[0-9]+:\s*\*'` 跟 `grep -v -E '^[^:]+:[0-9]+:\s*//'` 排除 JSDoc prose (8 处 pre-existing false-positive 全 filter, 跟 CLAUDE.md Stage 1 沉淀 1:1 应用)
+  - raw: `grep -rn ': any' --include="*.ts" --include="*.tsx" node/ | grep -v 'node_modules' | grep -v '.d.ts' | grep -v -E '^[^:]+:[0-9]+:\s*\*' | grep -v -E '^[^:]+:[0-9]+:\s*//'` → empty output (0 false-positive)
+- **`node/tests/expert-invocations-queue.test.ts`**: `skipIfNoSqlite` helper 包裹 5 个 sqlite 依赖 it (跟 EPIC-114 live test guard 模式一致)
+  - raw: `cd node && KALLAX_HOOK_API_KEY=test npx vitest run tests/expert-invocations-queue.test.ts` → `Test Files 1 passed (1) / Tests 9 passed | 5 skipped (14)`
+
+#### Tests (AC3: ≥4 case)
+
+- [x] **5/5 PASS** — `tests/integration/ci-debt-fix.test.sh`
+  - raw: `bash tests/integration/ci-debt-fix.test.sh` → `EPIC-158 CI Debt Fix Tests: 5 passed, 0 failed`
+- [x] **103/103 PASS** — L4 vitest sentinel + EPIC-157 schema test (无 regression)
+  - raw: `cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run tests/dead-code-sentinel-coverage{,-d,-e}.test.ts tests/dead-code-master-verify.test.ts tests/schema/expert-binding.test.ts` → `Test Files 5 passed (5) / Tests 103 passed (103)`
+- [x] **3/3 PASS** — L4 scan-dead-code
+  - raw: `bash scripts/scan-dead-code.sh` → `EPIC-131-B dead-code sentinel: 3/3 阶段 PASS`
+- [x] **0 errors** — L2 npm build
+  - raw: `cd node && npm run build` → exit 0, no errors
+- [x] **0 errors** — L2 cargo test (skip, 无 Rust 改动)
+
+#### Docs
+
+- `CLAUDE.md` 加 EPIC-158 段 (跟 BE-14 + EPIC-114 + Stage 1 沉淀 联合, 0 冲突, 0 增 Rule, 0 增 immutable script)
+- `jira/tickets/EPIC-158/{ticket.json,ticket.md}` schema + acceptance
+
+#### Compatibility
+
+- **0 改 source code** (`kallax/node/src/*` 完全不动)
+- **Scope 限定**: test + workflow + docs (跟 EPIC-157 feature scope 分离, 不混)
+- **`KALLAX_TEST_SQLITE_AVAILABLE=1`** env var 可重新启用 sqlite 测试 (在已装 sqlite 环境下)
+
 ## [3.32.2] - 2026-08-02
 
 ### Release: Expert Binding Tracking (EPIC-157)

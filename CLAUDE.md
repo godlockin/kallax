@@ -281,3 +281,27 @@ cargo install kallax / kallax init / kallax master:start
 **Metric 副输出**: `bash scripts/metrics/sprint-metrics.sh --epic EPIC-XXX` 新增 `mis_dispatch_binding_rate` 字段 (跟原 `mis_dispatch_rate` 并列, 不替换). 历史 ticket (无 `expert_binding`) 跳过不计入分母.
 
 **0 增 Rule, 0 增 immutable script** (跟 v2.4.1 Rule 合并反思一致). 约定层 enforcement + culture enforcement (跟 Rule 34 模式 1:1).
+
+## EPIC-158 — Pre-existing CI Debt Fix (v3.32.3+, 主公 2026-08-03 拍板)
+
+> **起源**: EPIC-157 (v3.32.2) 4-branch flow 暴露 2 个 pre-existing CI 算法债. 主公拍板独立 EPIC 治理, scope 限定 test + workflow + docs, **0 改 source code**.
+
+**Debt 1: Forbidden Patterns Check regex false-positive**
+- 现状: `.github/workflows/ci.yml` `grep -rn ': any'` 抓 JSDoc prose `fail-closed: any error` 等非类型断言
+- CLAUDE.md "Stage 1 false-positive 沉淀" 已记录 regex 排除 `^\s*\*\s` 跟 `^\s*//\s`, 但 CI workflow 实际规则仅排除 `.d.ts`, 未应用 `path:N:\s*\*` / `path:N:\s*//` 精确排除
+- 修复: grep 后置 filter `grep -v -E '^[^:]+:[0-9]+:\s*\*'` 跟 `grep -v -E '^[^:]+:[0-9]+:\s*//'`
+- 影响: PR #176 + #177 + #179 都因这个 false-positive fail, EPIC-158 修复后 JSDoc prose 全 filter
+
+**Debt 2: expert-invocations-queue.test.ts:120 CI env fail**
+- 现状: 测试期望 `'sqlite'` 但 CI 环境无 SQLite 时 backend 自动降级 file
+- 修复: `skipIfNoSqlite` helper 包裹 5 个 sqlite 依赖 it (跟 EPIC-114 live test guard 模式一致)
+- 行为: `KALLAX_TEST_SQLITE_AVAILABLE=1` 时执行, 否则 skip
+- 影响: PR #176 coverage gate 因这个 fail exit 1, EPIC-158 修复后 skip 优雅
+
+**跟现有 Rule 联合 (0 冲突)**:
+- EPIC-114 live test skipIf: ✅ 复用模式
+- CLAUDE.md Stage 1 false-positive 沉淀: ✅ 应用
+- Rule 7 scope-check: ✅ 独立 EPIC, 不混 EPIC-157
+- EPIC-069-D check-claim-evidence: ✅ raw output refs (5/5 ci-debt-fix.test.sh PASS)
+
+**0 增 Rule, 0 增 immutable script, 0 改 source code**. CI workflow + test 改动 + EPIC-158 ticket 文档.
