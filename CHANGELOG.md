@@ -4,6 +4,51 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.32.5] - 2026-08-03
+
+### Release: install.sh Omnibus (EPIC-160)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Added (install.sh 全部件 deploy + update)
+
+- **`--inventory` flag**: 列 source→target 映射表 (跟 EPIC-069-D 透明可验证 1:1)
+- **`--update` flag**: 升级 update 模式, symlink 不破坏 user files (per install.sh:235)
+- **`--skip-rules` / `--skip-experts` / `--skip-hooks`**: 3 新 skip flag, 跟现有 `--skip-cli/skills/commands` 1:1
+- **4 install function** (rules/experts/hooks/inventory): 全部 framework 部件 deploy 到 `~/.claude/{rules,experts,hooks}/`
+
+#### Inventory (95 files total)
+
+- `.claude/skills/` → `~/.claude/skills/` (20 files, 含 kallax + caveman)
+- `.claude/commands/` → `~/.claude/commands/` (62 files, 30 .md + 32 .sh)
+- `.claude/rules/` → `~/.claude/rules/` (5 files, EPIC-159 + installation.md)
+- `experts/` → `~/.claude/experts/` (5 files, 4 .md + 1 .yml index)
+- `.claude/hooks/` → `~/.claude/hooks/` (2 files, post-edit + UserPromptSubmit)
+- `.claude/settings.json` → `~/.claude/settings.json` (1 file)
+
+#### Tests (AC4: ≥6 case)
+
+- [x] **13/13 PASS** — `tests/integration/install-omnibus.test.sh`
+  - raw: `bash tests/integration/install-omnibus.test.sh` → `EPIC-160 Install Omnibus Tests: 13 passed, 0 failed`
+- [x] **103/103 PASS** — L4 vitest sentinel (无 regression)
+  - raw: `cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run tests/dead-code-sentinel-coverage{,-d,-e}.test.ts tests/dead-code-master-verify.test.ts tests/schema/expert-binding.test.ts` → `Test Files 5 passed (5) / Tests 103 passed (103)`
+- [x] **0 errors** — L2 npm build
+  - raw: `cd node && npm run build` → exit 0
+
+#### Docs
+
+- `CLAUDE.md` 加 EPIC-160 段 (跟 EPIC-159 1:1 pattern)
+- `.claude/rules/installation.md` (path-scoped, paths: `scripts/install*.sh`)
+- `docs/reference/installation-2026-08-03.md` (新 lazy-load ref doc)
+- `CHANGELOG.md` ([3.32.5] entry with raw_output refs)
+
+#### Compatibility
+
+- **0 改 source code** (`kallax/node/src/*` 完全不动)
+- **0 增 Rule, 0 增 immutable script**
+- **Backward compat**: 现有 `--skip-cli/skills/commands` 1:1 保留, 新 skip flag opt-in
+- **`--update` 默认 symlink mode**: 不破坏 user-customized files
+
 ## [3.32.4] - 2026-08-03
 
 ### Release: CLAUDE.md 治理 2.0 (EPIC-159)

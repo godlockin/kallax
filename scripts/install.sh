@@ -35,6 +35,9 @@ INTERACTIVE=false
 WIZARD=false
 DRY_RUN=false
 SKIP_CLI=false; SKIP_SKILLS=false; SKIP_COMMANDS=false
+# EPIC-160: framework 全部件 deploy (rules/experts/hooks)
+SKIP_RULES=false; SKIP_EXPERTS=false; SKIP_HOOKS=false
+INVENTORY_ONLY=false
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; BOLD='\033[1m'; DIM='\033[2m'; NC='\033[0m'
 log()  { echo -e "${BLUE}[INFO]${NC} $1"; }
@@ -242,7 +245,11 @@ parse_args() {
       --skip-cli)         SKIP_CLI=true; shift ;;
       --skip-skills)      SKIP_SKILLS=true; shift ;;
       --skip-commands)    SKIP_COMMANDS=true; shift ;;
-      --upgrade)          INSTALL_MODE="upgrade"; shift ;;
+      --skip-rules)       SKIP_RULES=true; shift ;;
+      --skip-experts)     SKIP_EXPERTS=true; shift ;;
+      --skip-hooks)       SKIP_HOOKS=true; shift ;;
+      --inventory)        INVENTORY_ONLY=true; shift ;;
+      --update)           INSTALL_MODE="update"; shift ;;
       --symlink)          INSTALL_METHOD="symlink"; shift ;;
       --copy)             INSTALL_METHOD="copy"; shift ;;
       --wizard)           WIZARD=true; shift ;;
@@ -717,6 +724,140 @@ EOF
   fi
 }
 
+# ── EPIC-160: framework 全部件 deploy (rules/experts/hooks) ──────────────
+#
+# 4 个 install function 跟现有 SKILLS / COMMANDS 1:1 模式:
+#   - rules (path-scoped lazy load, EPIC-159)
+#   - experts (15 local + 5 extended + 4 default — 跟 /kallax-expert 配合)
+#   - hooks (settings.json 引用)
+#   - inventory (列 source→target 映射, 跟 EPIC-069-D 透明可验证 1:1)
+
+install_rules_for_tool() {
+  local tool="$1" dst count
+  dst="$HOME/.claude/rules"
+  [ "$tool" != "claude" ] && return 0  # Claude Code only (其他 tool 暂不支持 path-scoped rules)
+  if $DRY_RUN; then
+    log "[dry-run] would deploy rules/ → $dst"
+    return 0
+  fi
+  if [ -d "$PROJECT_ROOT/.claude/rules" ]; then
+    mkdir -p "$dst"
+    if [ "${INSTALL_METHOD:-symlink}" = "copy" ]; then
+      cp -r "$PROJECT_ROOT/.claude/rules/." "$dst/" 2>/dev/null || true
+    else
+      # Symlink per-file (不破坏 user-customized files)
+      for f in "$PROJECT_ROOT"/.claude/rules/*.md; do
+        [ -f "$f" ] || continue
+        ln -sf "$f" "$dst/$(basename "$f")" 2>/dev/null || true
+      done
+    fi
+    count=$(find "$dst" -maxdepth 1 -type l -o -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
+    ok "[$tool] rules/ deployed → $dst ($count files)"
+  else
+    warn "[$tool] no $PROJECT_ROOT/.claude/rules/ found, skipping"
+  fi
+}
+
+install_experts_for_tool() {
+  local tool="$1" dst count
+  dst="$HOME/.claude/experts"
+  [ "$tool" != "claude" ] && return 0
+  if $DRY_RUN; then
+    log "[dry-run] would deploy experts/ → $dst"
+    return 0
+  fi
+  if [ -d "$PROJECT_ROOT/experts" ]; then
+    mkdir -p "$dst"
+    if [ "${INSTALL_METHOD:-symlink}" = "copy" ]; then
+      cp -r "$PROJECT_ROOT/experts/." "$dst/" 2>/dev/null || true
+    else
+      # Symlink per-file + per-dir (experts/index/ sub-dir 1:1)
+      for f in "$PROJECT_ROOT"/experts/*.md; do
+        [ -f "$f" ] || continue
+        ln -sf "$f" "$dst/$(basename "$f")" 2>/dev/null || true
+      done
+      if [ -d "$PROJECT_ROOT/experts/index" ]; then
+        mkdir -p "$dst/index"
+        for f in "$PROJECT_ROOT"/experts/index/*; do
+          [ -f "$f" ] || continue
+          ln -sf "$f" "$dst/index/$(basename "$f")" 2>/dev/null || true
+        done
+      fi
+    fi
+    count=$(find "$dst" -maxdepth 2 -type l -o -maxdepth 2 -type f 2>/dev/null | wc -l | tr -d ' ')
+    ok "[$tool] experts/ deployed → $dst ($count files)"
+  else
+    warn "[$tool] no $PROJECT_ROOT/experts/ found, skipping"
+  fi
+}
+
+install_hooks_for_tool() {
+  local tool="$1" dst count
+  dst="$HOME/.claude/hooks"
+  [ "$tool" != "claude" ] && return 0
+  if $DRY_RUN; then
+    log "[dry-run] would deploy hooks/ → $dst"
+    return 0
+  fi
+  if [ -d "$PROJECT_ROOT/.claude/hooks" ]; then
+    mkdir -p "$dst"
+    if [ "${INSTALL_METHOD:-symlink}" = "copy" ]; then
+      cp -r "$PROJECT_ROOT/.claude/hooks/." "$dst/" 2>/dev/null || true
+    else
+      for f in "$PROJECT_ROOT"/.claude/hooks/*; do
+        [ -f "$f" ] || continue
+        ln -sf "$f" "$dst/$(basename "$f")" 2>/dev/null || true
+      done
+    fi
+    count=$(find "$dst" -maxdepth 1 -type l -o -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
+    ok "[$tool] hooks/ deployed → $dst ($count files)"
+  else
+    warn "[$tool] no $PROJECT_ROOT/.claude/hooks/ found, skipping"
+  fi
+}
+
+print_inventory() {
+  log "Inventory — KALLAX framework parts (EPIC-160)"
+  echo ""
+  printf '  %-50s %-50s %s\n' "SOURCE" "TARGET (Claude Code)" "FILES"
+  printf '  %s\n' "────────────────────────────────────────────────────────────────────────────────────────────────────"
+  # skills
+  local skills_count=0
+  if [ -d "$PROJECT_ROOT/.claude/skills" ]; then
+    skills_count=$(find "$PROJECT_ROOT/.claude/skills" -type l -o -type f 2>/dev/null | wc -l | tr -d ' ')
+  fi
+  printf '  %-50s %-50s %s\n' ".claude/skills/" "~/.claude/skills/" "$skills_count"
+  # commands
+  local cmd_count=0
+  if [ -d "$PROJECT_ROOT/.claude/commands" ]; then
+    cmd_count=$(find "$PROJECT_ROOT/.claude/commands" -maxdepth 1 -type l -o -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
+  fi
+  printf '  %-50s %-50s %s\n' ".claude/commands/" "~/.claude/commands/" "$cmd_count"
+  # rules (EPIC-159)
+  local rules_count=0
+  if [ -d "$PROJECT_ROOT/.claude/rules" ]; then
+    rules_count=$(find "$PROJECT_ROOT/.claude/rules" -maxdepth 1 -type l -o -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
+  fi
+  printf '  %-50s %-50s %s\n' ".claude/rules/ (EPIC-159)" "~/.claude/rules/" "$rules_count"
+  # experts
+  local experts_count=0
+  if [ -d "$PROJECT_ROOT/experts" ]; then
+    experts_count=$(find "$PROJECT_ROOT/experts" -maxdepth 2 -type l -o -maxdepth 2 -type f 2>/dev/null | wc -l | tr -d ' ')
+  fi
+  printf '  %-50s %-50s %s\n' "experts/" "~/.claude/experts/" "$experts_count"
+  # hooks
+  local hooks_count=0
+  if [ -d "$PROJECT_ROOT/.claude/hooks" ]; then
+    hooks_count=$(find "$PROJECT_ROOT/.claude/hooks" -maxdepth 1 -type l -o -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
+  fi
+  printf '  %-50s %-50s %s\n' ".claude/hooks/" "~/.claude/hooks/" "$hooks_count"
+  # settings
+  printf '  %-50s %-50s %s\n' ".claude/settings.json" "~/.claude/settings.json" "1"
+  echo ""
+  local total=$((skills_count + cmd_count + rules_count + experts_count + hooks_count + 1))
+  printf '  Total: %d files (EPIC-160 omnibus deploy)\n' "$total"
+}
+
 # For tools that don't have slash commands (aider/continue), install a config
 # file that points to the skills/ directory so the tool can find them.
 install_config_for_tool() {
@@ -753,8 +894,11 @@ install_for_tool() {
   support="${TOOL_SUPPORT[$i]}"
   echo ""
   log "── Installing for: $tool (${support}) ──"
-  if ! $SKIP_SKILLS;   then install_skills_for_tool "$tool"; fi
-  if ! $SKIP_COMMANDS; then install_commands_for_tool "$tool"; fi
+  if ! $SKIP_SKILLS;    then install_skills_for_tool "$tool"; fi
+  if ! $SKIP_COMMANDS;  then install_commands_for_tool "$tool"; fi
+  if ! $SKIP_RULES;     then install_rules_for_tool "$tool"; fi
+  if ! $SKIP_EXPERTS;   then install_experts_for_tool "$tool"; fi
+  if ! $SKIP_HOOKS;     then install_hooks_for_tool "$tool"; fi
   install_config_for_tool "$tool"
 }
 
@@ -1002,6 +1146,12 @@ if $DRY_RUN; then
 fi
 
 check_upgrade
+
+# EPIC-160: --inventory mode 列 source→target 映射后 exit 0
+if $INVENTORY_ONLY; then
+  print_inventory
+  exit 0
+fi
 
 tool=""
 for tool in "${TARGET_TOOLS[@]}"; do

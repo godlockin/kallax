@@ -147,7 +147,28 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 **0 改 source code**. CI workflow + test 改动 + EPIC-158 ticket 文档.
 
-## 8. 引用 (lazy load on-demand)
+## 8. EPIC-160 — install.sh Omnibus (v3.32.5+, 主公 2026-08-03 拍板)
+
+> **起源**: 主公拍板 framework 全部件 (commands/rules/experts/skills/hooks) 在新环境 onboarding + update 时一并部署+升级.
+
+**核心改动** (install.sh ~50 lines):
+- **`--inventory` flag**: 列 source→target 映射表 (跟 EPIC-069-D 透明可验证 1:1)
+- **`--update` flag**: 升级 update 模式, 走 symlink 不破坏 user files (per install.sh:235)
+- **`--skip-rules` / `--skip-experts` / `--skip-hooks`**: 3 新 skip flag
+- **4 install function**: `install_rules_for_tool` / `install_experts_for_tool` / `install_hooks_for_tool` / `print_inventory`
+
+**Inventory 95 files**:
+- `.claude/skills/` (20) + `.claude/commands/` (62) + `.claude/rules/` (5, EPIC-159) + `experts/` (5) + `.claude/hooks/` (2) + `.claude/settings.json` (1)
+
+**跟现有 Rule 联合 (0 冲突)**:
+- EPIC-069-D check-claim-evidence: ✅ `--inventory` 透明可验证
+- EPIC-074 4-branch flow: ✅ install.sh 改动走 4-PR
+- EPIC-159 .claude/rules/*.md: ✅ 跟 .claude/skills/ 1:1 install
+- install.sh:235 symlink mode: ✅ `--update` 复用
+
+**0 增 Rule, 0 增 immutable script, 0 改 source code**. install.sh + tests + docs 改动.
+
+## 9. 引用 (lazy load on-demand)
 
 **Anthropic Memory docs** (≤ 200 行硬阈值): https://code.claude.com/docs/en/memory
 
