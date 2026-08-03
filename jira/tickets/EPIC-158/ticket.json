@@ -1,0 +1,66 @@
+{
+  "ticket_id": "EPIC-158",
+  "epic": "EPIC-158",
+  "phase": "PHASE-018",
+  "title": "Pre-existing CI debt — Forbidden Patterns regex + expert-invocations-queue CI env skipIf",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "refactor",
+  "created_at": "2026-08-03",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "description": "EPIC-158 — 修 EPIC-157 (v3.32.2) 4-branch flow 暴露的 2 个 pre-existing CI 算法债. 独立 ticket, 不混 EPIC-157 scope (per Rule 7 scope-check).\n\n**Debt 1: Forbidden Patterns Check regex false-positive** (.github/workflows/kallax-ci.yml)\n- 现状: `grep -rn ': any' --include=\"*.ts\"` 抓 JSDoc prose `fail-closed: any error` 等非类型断言 (e.g. node/src/permissions/authz-check.ts:5, node/tests/l1-match.test.ts:9)\n- CLAUDE.md \"Stage 1 regex false-positive 沉淀\" 已记录, 但 workflow 实际规则仅排除 `.d.ts`, 未应用 `^\\s*\\*\\s` 跟 `^\\s*//\\s` 排除\n- 修复: 在 Forbidden Patterns Check 步骤加 `--exclude-dir node_modules` + grep 后置 filter `grep -v -E '^\\s*(\\*|//)\\s'`\n- 影响: PR #176 + #177 + #179 都因这个 false-positive fail (跟 EPIC-157 内容无关)\n\n**Debt 2: expert-invocations-queue.test.ts:120 CI env fail** (node/tests/expert-invocations-queue.test.ts)\n- 现状: 测试期望 `'sqlite'` 但 CI 环境无 SQLite 时 backend 自动降级 file, 测试 fail\n- 错误: `expect(result._unsafeUnwrap()).toBe('sqlite')` vs `queue.health().backend === 'file'`\n- 修复: 加 `describe.skipIf(!process.env.KALLAX_TEST_SQLITE_AVAILABLE)` 跟 check-live-test-guard.sh 模式一致 (per EPIC-114)\n- 影响: PR #176 coverage gate 因这个 fail exit 1\n\n**跟现有 Rule 联合 (0 冲突)**:\n- EPIC-114 live test skipIf pattern: ✅ 复用\n- CLAUDE.md Stage 1 false-positive 沉淀: ✅ 应用\n- Rule 7 scope-check: ✅ 独立 EPIC, 不混 EPIC-157\n- EPIC-069-D check-claim-evidence: ✅ 0 README/CHANGELOG 数字 change, scope-zero\n\n**scope**:\n- 改: .github/workflows/kallax-ci.yml (regex), node/tests/expert-invocations-queue.test.ts (skipIf)\n- 不改: source code (kallax/node/src/*), docs (CLAUDE.md 仅加 EPIC-158 段)\n- 不动: EPIC-157 任何文件\n",
+  "file_scope": {
+    "includes": [
+      ".github/workflows/kallax-ci.yml",
+      "node/tests/expert-invocations-queue.test.ts",
+      "tests/integration/ci-debt-fix.test.sh",
+      "jira/tickets/EPIC-158/",
+      "CHANGELOG.md",
+      "CLAUDE.md",
+      "docs/reference/slash-commands-2026-06-19.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: Forbidden Patterns Check 跑通 (exit 0) on miao tip with all pre-existing JSDoc prose (authz-check.ts:5 等 8 处)",
+    "AC2: expert-invocations-queue.test.ts:120 在无 sqlite 环境下 skipIf 跳过 (exit 0 或 skip, 非 fail)",
+    "AC3: tests/integration/ci-debt-fix.test.sh ≥4 case PASS (regex 排除 JSDoc, 验证 sqlite skipIf 跳过)",
+    "AC4: vitest sentinel + scan-dead-code 仍 PASS",
+    "AC5: npm build 0 errors",
+    "AC6: docs/reference/slash-commands-2026-06-19.md + CLAUDE.md 加 EPIC-158 段 (跟 Stage 1 沉淀 1:1)",
+    "AC7: CHANGELOG [3.32.3] entry with raw_output refs (per EPIC-069-D check-claim-evidence)",
+    "AC8: 4-branch flow 走完 (feature → testing → main → miao)",
+    "AC9: 0 增 Rule, 0 增 immutable script (跟 v2.4.1 Rule 合并反思一致)",
+    "AC10: 0 改 source code (kallax/node/src/*), scope 限定在 test + workflow + docs"
+  ],
+  "labels": [
+    "refactor",
+    "ci-debt",
+    "false-positive-fix",
+    "phase-018"
+  ],
+  "rule_references": [
+    "EPIC-114 (live test skipIf pattern — 复用)",
+    "CLAUDE.md Stage 1 false-positive 沉淀 (治根)",
+    "Rule 7 scope-check (独立 EPIC, 不混 EPIC-157)",
+    "EPIC-069-D check-claim-evidence (raw output refs)",
+    "EPIC-157 (parent — 暴露的 debt, 但独立治理)"
+  ],
+  "verification": {
+    "diagnosis_phase": "DONE",
+    "debt_1_root_cause": "Forbidden Patterns Check grep regex 未排除 JSDoc prose 'fail-closed: any error' 等字面 (跟 Rule 3 fail-closed 风格冲突)",
+    "debt_2_root_cause": "expert-invocations-queue.test.ts:120 期望 sqlite backend, 但 CI 环境无 SQLite 时 backend 自动降级 file (factory pattern 跟 test 期望不一致, 跟 EPIC-114 live-test-guard 不一致未应用)"
+  },
+  "deliverables": [
+    ".github/workflows/kallax-ci.yml (改 grep regex 加 JSDoc 排除)",
+    "node/tests/expert-invocations-queue.test.ts (改 describe.skipIf)",
+    "tests/integration/ci-debt-fix.test.sh (新, ≥4 case)",
+    "jira/tickets/EPIC-158/{ticket.json,ticket.md} (新)",
+    "CHANGELOG.md ([3.32.3] entry with raw_output)",
+    "CLAUDE.md (加 EPIC-158 段, 跟 Stage 1 沉淀 1:1)",
+    "docs/reference/slash-commands-2026-06-19.md (加 EPIC-158 引用)"
+  ],
+  "estimated_hours": 2,
+  "created_by": "master (主公 2026-08-03 处理 EPIC-157 暴露的 pre-existing CI debt, 独立 EPIC 治理)"
+}

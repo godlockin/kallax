@@ -172,7 +172,14 @@ jobs:
       - name: Check for 'any' type in TypeScript
         run: |
           echo "Checking for 'any' type..."
-          if grep -rn ': any' --include="*.ts" --include="*.tsx" node/ 2>/dev/null | grep -v 'node_modules' | grep -v '.d.ts' | grep -v -E '^\s*\*\s?' | grep -v -E '^\s*//\s?'; then
+          # EPIC-158: regex 排除 JSDoc prose 'fail-closed: any error' 等
+          # grep 输出格式 `path:N: content`, JSDoc 行 format `path:N: * ...`
+          # 排除规则: 行首(在 grep 输出格式 `:` 前)以空格+`*` 或空格+`//` 开头, OR 内容以 `* ` 或 `// ` 开头(JSDoc prose)
+          if grep -rn ': any' --include="*.ts" --include="*.tsx" node/ 2>/dev/null \
+            | grep -v 'node_modules' \
+            | grep -v '.d.ts' \
+            | grep -v -E '^[^:]+:[0-9]+:\s*\*' \
+            | grep -v -E '^[^:]+:[0-9]+:\s*//'; then
             echo "::error::Found 'any' type usage. Please use proper types."
             exit 1
           fi

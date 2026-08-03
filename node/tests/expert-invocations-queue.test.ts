@@ -13,6 +13,11 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
+
+// EPIC-158: skipIf when sqlite not available in CI (跟 EPIC-114 live test guard 一致)
+// CI 环境若 KALLAX_TEST_SQLITE_AVAILABLE != "1", 跳过 SQLite 依赖的 case
+const SQLITE_AVAILABLE = process.env.KALLAX_TEST_SQLITE_AVAILABLE === '1';
+const skipIfNoSqlite = SQLITE_AVAILABLE ? it : it.skip;
 import os from 'node:os';
 import {
   createExpertInvocationsQueue,
@@ -102,7 +107,7 @@ describe('ExpertInvocationsQueue — L1 Redis', () => {
     expect(queue.health().backend).toBe('redis');
   });
 
-  it('falls back to L2 SQLite when Redis op exceeds L1 latency threshold', async () => {
+  skipIfNoSqlite('falls back to L2 SQLite when Redis op exceeds L1 latency threshold', async () => {
     const fakeRedis = createFakeRedis({
       xaddBehavior: () => new Promise<string>((resolve) => {
         setTimeout(() => resolve('late-id'), L1_LATENCY_THRESHOLD_MS + 200);
@@ -123,7 +128,7 @@ describe('ExpertInvocationsQueue — L1 Redis', () => {
     expect(queue.health().lastError).toContain('exceeded');
   });
 
-  it('falls back to L2 SQLite when Redis throws', async () => {
+  skipIfNoSqlite('falls back to L2 SQLite when Redis throws', async () => {
     const fakeRedis = createFakeRedis({
       xaddBehavior: () => Promise.reject(new Error('ECONNREFUSED')),
     });
@@ -164,7 +169,7 @@ describe('ExpertInvocationsQueue — L1 Redis', () => {
 // ─── L2 SQLite backend ──────────────────────────────────────────────────────
 
 describe('ExpertInvocationsQueue — L2 SQLite', () => {
-  it('writes to SQLite when no Redis configured', async () => {
+  skipIfNoSqlite('writes to SQLite when no Redis configured', async () => {
     const queue = createExpertInvocationsQueue({ sqlitePath, filePath });
 
     const result = await queue.emit(makeInvocation('kallax.backend.001', 'EPIC-021-F'));
@@ -202,7 +207,7 @@ describe('ExpertInvocationsQueue — L2 SQLite', () => {
     expect(drainAgain._unsafeUnwrap().length).toBe(0);
   });
 
-  it('survives degraded-then-recovered state across multiple emits', async () => {
+  skipIfNoSqlite('survives degraded-then-recovered state across multiple emits', async () => {
     let redisHealthy = false;
     const fakeRedis = createFakeRedis({
       xaddBehavior: async (payload: string) => {
@@ -321,7 +326,7 @@ describe('ExpertInvocationsQueue — health & recovery', () => {
     expect(pingCount).toBe(0);
   });
 
-  it('probeRecovery attempts Redis when degraded and Redis healthy', async () => {
+  skipIfNoSqlite('probeRecovery attempts Redis when degraded and Redis healthy', async () => {
     const fakeRedis = createFakeRedis({
       xaddBehavior: () => Promise.reject(new Error('down')),
       pingBehavior: async () => {},
