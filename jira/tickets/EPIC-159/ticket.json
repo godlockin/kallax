@@ -1,0 +1,74 @@
+{
+  "ticket_id": "EPIC-159",
+  "epic": "EPIC-159",
+  "phase": "PHASE-018",
+  "title": "CLAUDE.md 治理 2.0 — trim + 顶部重排 + .claude/rules/*.md path-scoped",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "refactor",
+  "created_at": "2026-08-03",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L2",
+  "description": "EPIC-159 — CLAUDE.md 治理 2.0 (主公 2026-08-03 拍板).\n\n**Context**: Anthropic 官方 CLAUDE.md 硬阈值 ≤ 200 行 (Memory docs: \"Files over 200 lines consume more context and may reduce adherence\"). 当前 CLAUDE.md 实测 307 行 / 19KB / 17 sections — 超阈值 53%. 7 个 release 累加 (含 v3.8.1 / v3.27.0 / v3.31.0 / EPIC-155 / EPIC-157 / EPIC-158) 致 18KB 全量 always-load.\n\n**Research 来源** (research-summary 2026-08-03):\n- Anthropic Context Engineering Blog + Memory Docs + Long Context Tips\n- arxiv 2307.03172 (Lost in the Middle) + 2404.06654 (RULER) + 2402.12249 (NoLiMa)\n- 社区共识: Lean on subagents, don't make CLAUDE.md encyclopedia\n\n**核心改动**:\n\n1. **Trim 到 ≤ 200 行** (Anthropic 硬阈值)\n   - 可 trim (Claude 自主可 derive):\n     - Setup 3 步 (cargo install / init / master:start — `kallax --help` 已有)\n     - 3 根本价值观 / 5 levels / 4 roles / 4 根本价值 自我描述元信息 (Claude 已在调用 skills derive)\n   - 必须保留 (pitfalls / 主公拍板, Claude derive 不到):\n     - 5-Level Verify 新规 (EPIC-069-D 假 PASS 教训)\n     - Rule 34 (EPIC-152 独立复现)\n     - 4-branch flow + 备案 (EPIC-074 + EPIC-155)\n     - 5-Level 硬化 (EPIC-131/132 教训)\n     - CLI 执行规范 (whisper-cpp + EPIC-026-A 教训)\n     - state.json 路径约定 (EPIC-068-A 9 script 实战坑)\n\n2. **顶部按 frequency 重排** (U-shape bias + Lost-in-the-Middle 教训)\n   - 顶部放高频 / 高失败成本: CLI → 5-Level Verify → Rule 34 → 4-branch flow\n   - 中段放低频 / reference: 5 价值 / 4 immutable / state.json / EPIC-114 / 备案\n\n3. **拆 `.claude/rules/*.md`** (Anthropic path-scoped lazy load 机制)\n   - `.claude/rules/state-json.md` (paths: `.kallax/**`, `scripts/permission/**`) — EPIC-068-A 路径约定\n   - `.claude/rules/testing.md` (paths: `**/*.test.ts`, `rust/**/tests/**`) — EPIC-114 test 反模式\n   - `.claude/rules/branch-flow.md` (paths: `.github/workflows/**`, `**/CHANGELOG.md`) — 4-branch flow if-then 详细\n   - `.claude/rules/strict-tsconfig.md` (paths: `node/**/tsconfig.json`, `node/**/*.ts`) — 5-Level Verify 硬化 tsconfig 规则\n\n**NO XML tags** (主公 2026-08-03 拍板 skip XML tag 包装)\n\n**scope**:\n- 改: CLAUDE.md (307→≤200 行), 加 4 个 .claude/rules/*.md\n- 不动: docs/reference/* (15 个 lazy load doc 已存在), 任何 source code, immutable scripts\n- 不动: EPIC-157 / EPIC-158 任何文件\n\n**0 改 source code, 0 增 Rule, 0 增 immutable script** (跟 § \"0 增\" 治理哲学一致)",
+  "file_scope": {
+    "includes": [
+      "CLAUDE.md",
+      ".claude/rules/state-json.md",
+      ".claude/rules/testing.md",
+      ".claude/rules/branch-flow.md",
+      ".claude/rules/strict-tsconfig.md",
+      "jira/tickets/EPIC-159/",
+      "tests/integration/claudemd-trim.test.sh",
+      "CHANGELOG.md",
+      "docs/reference/slash-commands-2026-06-19.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: CLAUDE.md ≤ 200 行 (raw: `wc -l CLAUDE.md` → ≤ 200)",
+    "AC2: CLAUDE.md 关键段 100% 保留: 5-Level Verify 新规, Rule 34, 4-branch flow, 4-branch bypass 备案, 5-Level 硬化, CLI 执行规范, state.json 路径约定",
+    "AC3: .claude/rules/*.md 4 文件存在 + 每文件有 paths: frontmatter (raw: `ls .claude/rules/*.md` → 4 files)",
+    "AC4: tests/integration/claudemd-trim.test.sh ≥6 case PASS (line count, key sections preserved, rules files exist + paths frontmatter, 5-Level Verify + Rule 34 content grep OK)",
+    "AC5: vitest sentinel 仍 PASS (0 regression)",
+    "AC6: scan-dead-code 仍 exit 0 (无 path paint)",
+    "AC7: npm build 0 errors",
+    "AC8: CHANGELOG [3.32.4] entry with raw_output refs",
+    "AC9: docs/reference/slash-commands-2026-06-19.md 加 EPIC-159 引用",
+    "AC10: 4-branch flow 走完 (feature → testing → main → miao)"
+  ],
+  "labels": [
+    "refactor",
+    "governance",
+    "claude-md",
+    "lazy-load",
+    "phase-018"
+  ],
+  "rule_references": [
+    "Anthropic Memory docs (CLAUDE.md ≤ 200 行硬阈值)",
+    "EPIC-155 (4-branch bypass 备案 — 主公接受 pattern)",
+    "EPIC-069-D (check-claim-evidence — raw output refs)",
+    "EPIC-068-A (state.json 路径约定 — 主公拍板)",
+    "EPIC-114 (test 反模式 — 0 复发)",
+    "EPIC-131/132 (5-Level Verify 硬化)",
+    "EPIC-152 (Rule 34 独立复现)",
+    "EPIC-074 (4-branch flow 主公拍板)"
+  ],
+  "verification": {
+    "diagnosis_phase": "DONE",
+    "research_complete": true,
+    "scope": "CLAUDE.md + .claude/rules/*.md (docs only, 0 source code)"
+  },
+  "deliverables": [
+    "CLAUDE.md (trim 307→≤200 行, 顶部重排)",
+    ".claude/rules/state-json.md (新, ~30 行)",
+    ".claude/rules/testing.md (新, ~15 行)",
+    ".claude/rules/branch-flow.md (新, ~40 行)",
+    ".claude/rules/strict-tsconfig.md (新, ~10 行)",
+    "jira/tickets/EPIC-159/{ticket.json,ticket.md} (新)",
+    "tests/integration/claudemd-trim.test.sh (新, ≥6 case)",
+    "CHANGELOG.md ([3.32.4] entry)",
+    "docs/reference/slash-commands-2026-06-19.md (更新 EPIC-159 引用)"
+  ],
+  "estimated_hours": 2,
+  "created_by": "master (主公 2026-08-03 review 当前 307 行 CLAUDE.md + 派 research expert 调研 2025-2026 prompt 工程最佳实践, 拍板 trim + .claude/rules/*.md path-scoped, NO XML tags)"
+}

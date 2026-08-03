@@ -4,6 +4,57 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.32.4] - 2026-08-03
+
+### Release: CLAUDE.md 治理 2.0 (EPIC-159)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Changed (CLAUDE.md 主文件 trim + .claude/rules/*.md path-scoped)
+
+- **CLAUDE.md 主文件**: 307 → **160 行** (Anthropic 硬阈值 ≤ 200 行)
+  - 删除: 3 价值观 / 5 levels / 4 roles / 4 根本价值 / Setup 3 步 / Q18 决策矩阵 (Claude 自主 derive)
+  - 顶部重排 (按 frequency): CLI → 5-Level Verify → Rule 34 → 4-branch flow → 4 immutable → EPIC-157 → EPIC-158 → 引用
+  - raw: `wc -l CLAUDE.md` → `160 CLAUDE.md` (was 307, 减 48%)
+- **`.claude/rules/*.md` 4 文件** (Anthropic path-scoped lazy load 机制):
+  - `.claude/rules/state-json.md` (27 行, paths: `.kallax/**`, `scripts/permission/**`)
+  - `.claude/rules/testing.md` (32 行, paths: `**/*.test.ts`, `rust/**/tests/**`)
+  - `.claude/rules/branch-flow.md` (52 行, paths: `.github/workflows/**`, `**/CHANGELOG.md`)
+  - `.claude/rules/strict-tsconfig.md` (44 行, paths: `node/**/tsconfig.json`, `node/**/*.ts`)
+  - raw: `ls .claude/rules/*.md | wc -l` → `4`
+  - raw: `wc -l .claude/rules/*.md` → `155 total` (path-scoped lazy load content)
+
+#### Research 来源
+
+- [Anthropic Memory docs](https://code.claude.com/docs/en/memory) — CLAUDE.md ≤ 200 行硬阈值
+- [Anthropic Context Engineering Blog](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) — 1.7K token 范例 + sub-agent pattern
+- [Lost in the Middle (Liu et al., 2023)](https://arxiv.org/abs/2307.03172) — U-shape position bias → 顶部放高频
+- [RULER (Hsieh et al., 2024)](https://arxiv.org/abs/2404.06654) — claimed vs effective context gap
+
+#### Tests (AC4: ≥6 case)
+
+- [x] **23/23 PASS** — `tests/integration/claudemd-trim.test.sh`
+  - raw: `bash tests/integration/claudemd-trim.test.sh` → `EPIC-159 CLAUDE.md Trim Tests: 23 passed, 0 failed`
+- [x] **0 errors** — L2 npm build
+  - raw: `cd node && npm run build` → exit 0
+- [x] **3/3 PASS** — L4 scan-dead-code
+  - raw: `bash scripts/scan-dead-code.sh` → `EPIC-131-B dead-code sentinel: 3/3 阶段 PASS`
+- [x] **103/103 PASS** — L4 vitest sentinel (无 regression)
+  - raw: `cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run tests/dead-code-sentinel-coverage{,-d,-e}.test.ts tests/dead-code-master-verify.test.ts tests/schema/expert-binding.test.ts` → `Test Files 5 passed (5) / Tests 103 passed (103)`
+
+#### Docs
+
+- `CLAUDE.md` (主文件 trim + 顶部重排)
+- `.claude/rules/*.md` (4 个 path-scoped lazy load doc)
+- `tests/integration/claudemd-trim.test.sh` (7 case 验证)
+- `CHANGELOG.md` ([3.32.4] entry with raw_output refs)
+
+#### Compatibility
+
+- **0 改 source code** (`kallax/node/src/*` 完全不动)
+- **0 增 Rule, 0 增 immutable script**
+- **Scope 限定**: docs only (CLAUDE.md + .claude/rules/*.md + tests)
+
 ## [3.32.3] - 2026-08-03
 
 ### Release: Pre-existing CI debt fix (EPIC-158)
