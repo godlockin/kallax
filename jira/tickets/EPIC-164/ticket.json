@@ -1,0 +1,78 @@
+{
+  "ticket_id": "EPIC-164",
+  "epic": "EPIC-164",
+  "phase": "PHASE-019",
+  "title": "Self-Repair Skill — kallax-self-repair/SKILL.md + 5 步 repair loop",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "feature",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L2",
+  "description": "EPIC-164 — 借鉴 loopx `skills/loopx-self-repair/SKILL.md` (5 步 repair loop + dream-up 机制), 给 KALLAX 补 self-repair skill.\n\n**Context**: 主公 2026-08-05 review loopx 后拍板 (P1, ROI 中) — 当前 KALLAX 无 self-repair skill. `check-self-heal.sh` 仅检查 self-heal pattern (禁止用 self-heal 绕过问题), 不是修复工具. `retrospective-routine.sh` (EPIC-161) 可做 consolidate/archive/delete, 但非针对运行时行为异常的自修复. 跟 loopx 对比见 confluence/decisions/loopx-vs-kallax-skill-gap-2026-08-05.md.\n\n**设计 (跟 loopx-self-repair 1:1)**:\n1. `skills/kallax-self-repair/SKILL.md` — 5 步 repair loop: pause delivery → build evidence packet → classify failure → assign responsible layer → repair at lowest durable layer\n2. dream-up 机制: 重复错误视为 product/process gap, 更新 skill / docs / projection / smoke. **禁止**通过降低 gate / workaround / commit private logs 来\"解决\" self-repair\n3. 配套 smoke test (跟 EPIC-160/161 1:1 pattern)\n4. install.sh 自动部署 (跟 EPIC-160 Omnibus 1:1)\n\n**0 增 Rule, 0 改 source code 之外**: 跟 EPIC-161 retrospective-routine 互补不冲突 (EPIC-161 = 阶段性回顾, EPIC-164 = 运行时自修复).",
+  "file_scope": {
+    "includes": [
+      ".claude/skills/kallax-self-repair/SKILL.md",
+      ".claude/skills/kallax-self-repair/.kallax-skill-scope",
+      ".claude/skills/kallax-self-repair/agents/*.md",
+      "tests/integration/kallax-self-repair.test.sh",
+      "scripts/install.sh",
+      "CLAUDE.md",
+      "docs/reference/kallax-self-repair-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: skills/kallax-self-repair/SKILL.md frontmatter 跟 loopx-self-repair 1:1 (name + description + trigger keywords)",
+    "AC2: SKILL.md 5 步 repair loop 跟 loopx 1:1: pause delivery → build evidence packet → classify failure → assign responsible layer → repair at lowest durable layer",
+    "AC3: dream-up 机制明文: 重复错误视为 product/process gap, 更新 skill / docs / projection / smoke. 禁止降 gate / workaround / commit private logs",
+    "AC4: skill 包含 `.kallax-skill-scope` 8 字节文件 + `agents/` 子目录 (跟 EPIC-162 1:1 pattern)",
+    "AC5: SKILL.md 含 evidence discipline 段 (不读 raw private logs / 不 solve contradictory by guessing / 不 hide primary blocker)",
+    "AC6: SKILL.md 含 vision/replan writeback 段 (跟 loopx 1:1, 写回 active state)",
+    "AC7: SKILL.md 含 reference routes 段 (跟 loopx 1:1, 链接 confluence/decisions/ + docs/)",
+    "AC8: tests/integration/kallax-self-repair.test.sh ≥6 case PASS (5 步 repair / dream-up / evidence discipline / vision writeback / scope 标记 / install.sh 集成)",
+    "AC9: install.sh Omnibus 自动 install kallax-self-repair (跟 EPIC-160 1:1)",
+    "AC10: docs/reference/kallax-self-repair-2026-08-05.md 加用法 + 5 步详解",
+    "AC11: CLAUDE.md 加 EPIC-164 引用 (跟 EPIC-161 1:1 pattern, 互补不冲突)",
+    "AC12: vitest sentinel + 5-Level Verify L1-L5 PASS",
+    "AC13: 0 改 source code, 0 增 Rule"
+  ],
+  "labels": [
+    "feature",
+    "self-repair",
+    "loopx-borrow",
+    "P1",
+    "phase-019"
+  ],
+  "expert_binding": {
+    "suggested_expert": "process-engineering",
+    "actual_expert": "process-engineering",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行 — 不破)",
+    "EPIC-054-A (worktree 隔离 — 不破)",
+    "EPIC-161 (retrospective-routine — 互补, 不冲突: 阶段性回顾 vs 运行时自修复)",
+    "EPIC-160 (install.sh Omnibus pattern — install 集成)",
+    "EPIC-162 (skill 插件化 — 跟 EPIC-164 1:1 pattern, 同时落地)",
+    "Rule 34 (bugfix 独立复现 — 互补, 不冲突)",
+    "loopx skills/loopx-self-repair/SKILL.md (5 步 repair loop 1:1)"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": ".claude/skills/kallax-self-repair/* + tests/* + scripts/install.sh + docs/* + CLAUDE.md"
+  },
+  "deliverables": [
+    ".claude/skills/kallax-self-repair/SKILL.md (新, 跟 loopx-self-repair 1:1)",
+    ".claude/skills/kallax-self-repair/.kallax-skill-scope (新, 8 字节)",
+    ".claude/skills/kallax-self-repair/agents/*.md (新, ≥1 agent)",
+    "tests/integration/kallax-self-repair.test.sh (新, ≥6 case)",
+    "scripts/install.sh 改 (加 --install-skill kallax-self-repair)",
+    "docs/reference/kallax-self-repair-2026-08-05.md (新)",
+    "CLAUDE.md 改 (加 EPIC-164 引用段)"
+  ],
+  "estimated_hours": 8,
+  "created_by": "master (主公 2026-08-05 review loopx self-repair 拍板 P1: Self-Repair skill)"
+}
