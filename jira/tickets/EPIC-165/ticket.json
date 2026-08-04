@@ -1,0 +1,85 @@
+{
+  "ticket_id": "EPIC-165",
+  "epic": "EPIC-165",
+  "phase": "PHASE-019",
+  "title": "Showcase catalog + 英文 README — 对外叙事层国际化",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "feature",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "docs",
+  "handoff_depth": "L2",
+  "description": "EPIC-165 — 借鉴 loopx showcase catalog (7 真实轨迹 + json 驱动) + 中英双语 README (24KB EN + 24KB CN), 给 KALLAX 补对外叙事层.\n\n**Context**: 主公 2026-08-05 review loopx README + showcase 后拍板 (P1, ROI 高) — 当前 KALLAX 17.8KB README 仅中文, 无 showcase catalog, 无 hosted frontstage, 无法对外展示价值. 跟 loopx 对比见 confluence/decisions/loopx-vs-kallax-product-gap-2026-08-05.md.\n\n**设计 (跟 loopx showcase catalog 1:1)**:\n1. `docs/showcases/README.md` — showcase catalog 索引 (跟 loopx 1:1)\n2. `docs/showcases/cases/*.md` — 真实 EPIC 轨迹案例 (从 EPIC-157 binding tracker 数据生成, 复用现有 governance debt trace)\n3. `docs/showcases/showcase-catalog.json` — json 驱动 (跟 loopx 1:1, 7 case 起步)\n4. `README.en.md` — 英文 README 国际化基础 (4-section: Why / Try / Capabilities / Docs Index)\n5. `docs/i18n/README.md` — i18n 索引 (说明 EN/CN 同步规则)\n\n**0 增 Rule, 0 改 source code 之外**: 跟 EPIC-159 CLAUDE.md trim 1:1 pattern, 新 docs 资产 + 翻译版本.\n\n**跟 BE-14 关系**: 不冲突.\n**跟 EPIC-054-A 关系**: 不冲突.\n**跟 EPIC-159 关系**: 互补 (EPIC-159 = CLAUDE.md trim, EPIC-165 = showcase + i18n).",
+  "file_scope": {
+    "includes": [
+      "docs/showcases/README.md",
+      "docs/showcases/cases/EPIC-*.md",
+      "docs/showcases/showcase-catalog.json",
+      "README.en.md",
+      "docs/i18n/README.md",
+      "CLAUDE.md",
+      "tests/integration/showcase-catalog.test.sh"
+    ]
+  },
+  "acceptance": [
+    "AC1: docs/showcases/README.md 索引 (跟 loopx 1:1, 列 ≥7 case + 每个 case 链 MD + json)",
+    "AC2: docs/showcases/showcase-catalog.json (跟 loopx 1:1 schema: id / title / scope / evidence_label / pattern_tags / links)",
+    "AC3: ≥7 showcase case (从现有 governance trace 生成: EPIC-069-D check-claim-evidence / EPIC-152 Rule 34 bugfix repro / EPIC-155 4-branch bypass retro / EPIC-157 expert binding / EPIC-158 sqlite skipIf / EPIC-160 install omnibus / EPIC-161 retrospective routine)",
+    "AC4: 每个 case 含: ticket.json 链 + 5-Level verify 输出 + 4-branch flow 轨迹截图 + 主公拍板记录",
+    "AC5: README.en.md 英文版 (4-section: Why / Try / Capabilities / Docs Index), 跟中文 README 同步",
+    "AC6: docs/i18n/README.md i18n 索引 (说明 EN/CN 同步规则, 引用 loopx 中英双语 1:1 pattern)",
+    "AC7: tests/integration/showcase-catalog.test.sh ≥5 case PASS (catalog 存在 / json 合法 / ≥7 case / 每个 case 链 ticket / docs/i18n 索引存在)",
+    "AC8: vitest sentinel + 5-Level Verify L1-L5 PASS",
+    "AC9: CLAUDE.md 加 EPIC-165 引用 (跟 EPIC-159 1:1 pattern)",
+    "AC10: 0 改 source code, 0 增 Rule"
+  ],
+  "labels": [
+    "feature",
+    "showcase",
+    "i18n",
+    "loopx-borrow",
+    "P1",
+    "phase-019",
+    "external-narrative"
+  ],
+  "expert_binding": {
+    "suggested_expert": "product",
+    "actual_expert": "product",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行 — 不破)",
+    "EPIC-054-A (worktree 隔离 — 不破)",
+    "EPIC-157 (binding tracker — showcase 数据源)",
+    "EPIC-159 (CLAUDE.md trim — 互补, 不冲突)",
+    "EPIC-160 (install.sh Omnibus — 互补, 国际化基础)",
+    "Rule 34 (bugfix 独立复现 — 互补, showcase 用)",
+    "loopx docs/showcases/README.md (7 真实轨迹 case 1:1)",
+    "loopx docs/showcases/showcase-catalog.json (json 驱动 schema 1:1)",
+    "loopx README.md (24KB 中英双语 1:1)"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": "docs/showcases/* + README.en.md + docs/i18n/* + tests/* + CLAUDE.md"
+  },
+  "deliverables": [
+    "docs/showcases/README.md (新, 索引)",
+    "docs/showcases/showcase-catalog.json (新, ≥7 case 1:1 schema)",
+    "docs/showcases/cases/EPIC-069-D-check-claim-evidence.md (新)",
+    "docs/showcases/cases/EPIC-152-rule-34-bugfix-repro.md (新)",
+    "docs/showcases/cases/EPIC-155-4branch-bypass-retro.md (新)",
+    "docs/showcases/cases/EPIC-157-expert-binding.md (新)",
+    "docs/showcases/cases/EPIC-158-sqlite-skipif.md (新)",
+    "docs/showcases/cases/EPIC-160-install-omnibus.md (新)",
+    "docs/showcases/cases/EPIC-161-retrospective-routine.md (新)",
+    "README.en.md (新, 英文国际化基础)",
+    "docs/i18n/README.md (新, i18n 索引)",
+    "tests/integration/showcase-catalog.test.sh (新, ≥5 case)",
+    "CLAUDE.md 改 (加 EPIC-165 引用段)"
+  ],
+  "estimated_hours": 12,
+  "created_by": "master (主公 2026-08-05 review loopx showcase 拍板 P1: Showcase catalog + i18n)"
+}
