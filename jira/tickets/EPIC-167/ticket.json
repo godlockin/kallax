@@ -1,0 +1,88 @@
+{
+  "ticket_id": "EPIC-167",
+  "epic": "EPIC-167",
+  "phase": "PHASE-019",
+  "title": "kallax-experts submodule 化 — 独立升级 + 互配合 (主公 2026-08-05 拍板)",
+  "status": "in_progress",
+  "priority": "P0",
+  "type": "feature",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L2",
+  "description": "EPIC-167 — 借鉴主公 2026-08-05 新指令, 把独立仓库 `kallax-experts` (https://github.com/godlockin/kallax-experts) 加为 KALLAX 的 git submodule, 独立升级 + 互配合维护 experts 和额外 skills.\n\n**Context**: 主公 2026-08-05 review loopx + 跟当前项目对比时, 发现 `kallax-experts` 独立仓库之前在某次升级时被废弃 (commit 2760a66 refactor iter3 删 3 装饰目录 + 同时删 5 个 default expert `.md`), 但仓库本身仍存在 (`/Users/chenchen/working/sourcecode/tools/dev-tools/kallax-experts`) + 已部署 GitHub Pages (15 expert 可搜索) + 已有 `install.sh` 工具. 主公拍板: 改为 submodule 模式, **独立升级 + 互配合**, 补充 experts 和额外 skills 维护.\n\n**跟 loopx 对比**:\n- loopx 6 独立 skill 包 (同仓库内拆分) — 升级粒度 = 单 skill\n- KALLAX 当前 monolith — 升级粒度 = 整个 skill\n- 改进 = submodule + 同仓库 plugin 混合 — **双层升级粒度** (submodule = 跨仓库批量, plugin = 同仓库细粒度)\n\n**跟 EPIC-162 协同**:\n- EPIC-162 = 同仓库 skill 插件化 (拆 9 expert monolith)\n- EPIC-167 = 跨仓库 submodule 化 (引用独立 kallax-experts 仓库)\n- 两者 1:1 互补, EPIC-162 改造 monolith → plugin, EPIC-167 引入 submodule → 跨仓库升级\n- skill-manager.sh 同时管理 plugin + submodule\n\n**设计 (跟 EPIC-160 install.sh Omnibus 1:1 pattern)**:\n1. `.gitmodules` — 加 submodule 配置 (path = `external/kallax-experts/`, url = `https://github.com/godlockin/kallax-experts.git`, branch = `main`)\n2. `external/kallax-experts/` — submodule 路径, 独立升级\n3. `scripts/skill/skill-manager.sh` — 加 `submodule-init/update/status` 子命令 (跟 EPIC-162 install/status/uninstall 1:1 pattern)\n4. `scripts/install.sh` — 加 `--install-submodule` + `--update-submodule` 阶段 (跟 EPIC-160 Omnibus 1:1)\n5. CLAUDE.md — 加 EPIC-167 引用 (跟 EPIC-160/161/162 1:1 pattern)\n\n**0 增 Rule, 0 改 source code 之外**: 跟 EPIC-160/161/162 1:1 pattern, 仅新 git 关联 + install 集成.\n\n**跟 BE-14 关系**: 不冲突.\n**跟 EPIC-054-A 关系**: 不冲突.\n**跟 EPIC-160 关系**: 1:1 pattern (install 集成).\n**跟 EPIC-162 关系**: 1:1 协同 (plugin + submodule 双层).\n**跟 EPIC-119 关系**: submodule init/update 是 action class.\n\n**互配合机制**:\n- `kallax-experts` 仓库自身维护 15+ expert (tech/ai/design/marketing/research/business) + 3 配套 skill (expert-search/arena/compose)\n- KALLAX 主项目通过 submodule 引用, `git submodule update --remote` 拉最新\n- 跨仓库升级 = `cd external/kallax-experts && git pull` (独立 commit/PR)\n- 跨仓库配合 = KALLAX 主项目迭代时, skill-manager.sh 同时管理 内部 plugin + 外部 submodule",
+  "file_scope": {
+    "includes": [
+      ".gitmodules",
+      "external/kallax-experts/",
+      "scripts/skill/skill-manager.sh",
+      "scripts/install.sh",
+      "tests/integration/kallax-experts-submodule.test.sh",
+      "docs/reference/kallax-experts-submodule-2026-08-05.md",
+      "CLAUDE.md",
+      "docs/process.md",
+      ".gitignore"
+    ]
+  },
+  "acceptance": [
+    "AC1: .gitmodules 加 submodule 配置: path = external/kallax-experts/, url = https://github.com/godlockin/kallax-experts.git, branch = main",
+    "AC2: `git submodule add` 成功, external/kallax-experts/ 含 15 expert + 3 skill (跟独立仓库 HEAD 一致)",
+    "AC3: `git submodule status` 输出 clean (no - / + / U 前缀)",
+    "AC4: scripts/skill/skill-manager.sh 加 submodule-init/update/status 3 子命令 (跟 EPIC-162 install/status/uninstall 1:1 pattern)",
+    "AC5: `submodule-update --remote` 拉 latest commit, lock file (.gitmodules) 记录",
+    "AC6: scripts/install.sh 加 --install-submodule + --update-submodule 阶段 (跟 EPIC-160 Omnibus 1:1)",
+    "AC7: 旧 monolith expert (9 expert 内嵌在 .claude/skills/kallax/) 保持向后兼容 (fallback 到 submodule + monolith 二选一)",
+    "AC8: .gitignore 加 external/kallax-experts/ (submodule 自管理, 不污染主项目 ignore)",
+    "AC9: tests/integration/kallax-experts-submodule.test.sh ≥8 case PASS (submodule-init / submodule-update / submodule-status / 跟 EPIC-162 skill-manager 集成 / 跟 EPIC-160 install 集成 / 向后兼容 / .gitmodules 合法 / 跨仓库配合机制)",
+    "AC10: docs/reference/kallax-experts-submodule-2026-08-05.md 加用法 + 互配合机制详解 + 独立升级流程",
+    "AC11: docs/process.md 加 submodule 升级流程 (跨仓库 commit / PR / merge 1:1 pattern)",
+    "AC12: CLAUDE.md 加 EPIC-167 引用 (跟 EPIC-160/161/162 1:1 pattern, 互补不冲突)",
+    "AC13: vitest sentinel + 5-Level Verify L1-L5 PASS",
+    "AC14: 0 改 source code, 0 增 Rule (跟 EPIC-160/161/162 1:1 pattern)",
+    "AC15: 互配合机制 — `kallax-experts` 仓库自身迭代时, KALLAX 主项目 submodule 自动同步 (git submodule update --remote)"
+  ],
+  "labels": [
+    "feature",
+    "submodule",
+    "kallax-experts",
+    "expert-pool",
+    "loopx-borrow",
+    "P0",
+    "phase-019"
+  ],
+  "expert_binding": {
+    "suggested_expert": "architect",
+    "actual_expert": "architect",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行 — 不破)",
+    "EPIC-054-A (worktree 隔离 — 不破, submodule 跟 worktree 共存)",
+    "EPIC-160 (install.sh Omnibus — install 集成, 1:1 pattern)",
+    "EPIC-161 (retrospective-routine — 1:1 pattern)",
+    "EPIC-162 (skill 插件化 — 1:1 协同, plugin + submodule 双层)",
+    "EPIC-119 (OpenAI 3-Class tool taxonomy — submodule init/update 是 action class)",
+    "Rule 34 (bugfix 独立复现 — 互补, 不冲突)",
+    "loopx 6 独立 skill 包 (submodule 模式 1:1 思路, loopx 同仓库拆分, KALLAX 跨仓库)",
+    "kallax-experts 独立仓库 (https://github.com/godlockin/kallax-experts — 已部署 GitHub Pages, 15 expert + 3 skill)"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": ".gitmodules + external/kallax-experts/ + scripts/{skill,install}.sh + tests/* + docs/* + CLAUDE.md + .gitignore"
+  },
+  "deliverables": [
+    ".gitmodules (新, submodule 配置)",
+    "external/kallax-experts/ (新, submodule 内容, 独立升级)",
+    "scripts/skill/skill-manager.sh 改 (加 submodule-init/update/status 子命令)",
+    "scripts/install.sh 改 (加 --install-submodule + --update-submodule 阶段)",
+    ".gitignore 改 (加 external/kallax-experts/ 注释)",
+    "tests/integration/kallax-experts-submodule.test.sh (新, ≥8 case)",
+    "docs/reference/kallax-experts-submodule-2026-08-05.md (新)",
+    "docs/process.md 改 (加 submodule 升级流程)",
+    "CLAUDE.md 改 (加 EPIC-167 引用段)"
+  ],
+  "estimated_hours": 10,
+  "created_by": "master (主公 2026-08-05 拍板: kallax-experts submodule 化, 独立升级 + 互配合)"
+}
