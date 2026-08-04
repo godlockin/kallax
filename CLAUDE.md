@@ -119,8 +119,9 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | EPIC-159 | v3.32.4 | CLAUDE.md 307→160 行 + `.claude/rules/*.md` path-scoped lazy load | `.claude/rules/{state-json,testing,branch-flow,strict-tsconfig}.md` |
 | EPIC-160 | v3.32.5 | install.sh Omnibus — 全部件 deploy + `--inventory`/`--update`/3 skip flag | `scripts/install.sh`, 95 files |
 | EPIC-161 | v3.32.6 | retrospective-routine.sh 6 阶段 routine (复盘/整理/review/升级/归档/删除) | `scripts/retrospective-routine.sh`, `--json` |
+| EPIC-165 | v3.32.10 | showcase catalog 7 case + README.en.md 国际化 + docs/i18n 索引 (loopx 借鉴) | `docs/showcases/`, `README.en.md`, `docs/i18n/` |
 
-**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 5 EPICs. Full docs + tests + scripts in each.
+**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 6 EPICs. Full docs + tests + scripts in each.
 
 ## 9. 引用 (lazy load on-demand)
 

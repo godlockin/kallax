@@ -1,0 +1,110 @@
+{
+  "$schema": "https://kallax.dev/schemas/showcase-catalog-v1.json",
+  "version": "1.0.0",
+  "generated_at": "2026-08-05",
+  "generated_by": "EPIC-165",
+  "description": "KALLAX governance showcase catalog — real EPIC traces with evidence",
+  "cases": [
+    {
+      "id": "EPIC-069-D-check-claim-evidence",
+      "title": "check-claim-evidence: Prevent decorative PASS claims",
+      "scope": "pre-commit hook + README/CHANGELOG fact-forcing",
+      "evidence_label": "5-Level Verify raw_output enforcement",
+      "pattern_tags": ["fact-forcing", "pre-commit", "decorative-claim-prevention", "v3.8.1-lesson"],
+      "links": {
+        "ticket": "jira/tickets/EPIC-069-D/ticket.json",
+        "decision": "confluence/decisions/fact-forcing-independent-repro-2026-07-26.md",
+        "script": "scripts/hooks/check-claim-evidence.sh",
+        "test": "tests/integration/showcase-catalog.test.sh"
+      }
+    },
+    {
+      "id": "EPIC-152-rule-34-bugfix-repro",
+      "title": "Rule 34: Bugfix tickets require independent reproduction",
+      "scope": "CLAUDE.md governance rule + 3 canary cases",
+      "evidence_label": "canary chain 7 performers corrected Master mis-diagnosis",
+      "pattern_tags": ["rule", "bugfix", "independent-reproduction", "canary-chain", "fact-forcing"],
+      "links": {
+        "ticket": "jira/tickets/EPIC-152/ticket.json",
+        "decision": "confluence/decisions/fact-forcing-independent-repro-2026-07-26.md",
+        "rule": "CLAUDE.md §3",
+        "test": "tests/integration/showcase-catalog.test.sh"
+      }
+    },
+    {
+      "id": "EPIC-155-4branch-bypass-retro",
+      "title": "4-branch bypass retrospective: 3 commits, full trace",
+      "scope": "v3.30.0 → v3.31.1 bypass备案 + Phase 3 accept",
+      "evidence_label": "EPIC-155 4-branch bypass retro remediation + Q3 2026 re-promote plan",
+      "pattern_tags": ["retro-remediation", "bypass-acceptance", "4-branch-flow", "historical-debt"],
+      "links": {
+        "ticket": "jira/tickets/EPIC-155/",
+        "decision": "confluence/decisions/branch-flow-governance-2026-07-09.md",
+        "rule": ".claude/rules/branch-flow.md",
+        "test": "tests/integration/showcase-catalog.test.sh"
+      }
+    },
+    {
+      "id": "EPIC-157-expert-binding",
+      "title": "Expert binding 4-field: mis_dispatch_rate north-star打通",
+      "scope": "ticket.json schema + sprint-metrics.sh + phase-review",
+      "evidence_label": "suggested_expert + actual_expert + expert_binding_at + binding_change_reason",
+      "pattern_tags": ["metric-wiring", "north-star", "expert-dispatch", "binding-tracking", "v3.32.2"],
+      "links": {
+        "ticket": "jira/tickets/EPIC-157/ticket.json",
+        "metrics": "scripts/binding/binding-tracker.sh",
+        "sprint_metrics": "scripts/metrics/sprint-metrics.sh",
+        "test": "tests/integration/showcase-catalog.test.sh"
+      }
+    },
+    {
+      "id": "EPIC-158-sqlite-skipif",
+      "title": "Pre-existing CI debt: Forbidden Patterns regex + sqlite skipIf",
+      "scope": ".github/workflows/kallax-ci.yml + expert-invocations-queue.test.ts",
+      "evidence_label": "v3.32.3: regex false-positive fix + CI env skipIf (per EPIC-114 pattern)",
+      "pattern_tags": ["debt-cleanup", "ci-optimization", "false-positive-fix", "skipif-pattern", "v3.32.3"],
+      "links": {
+        "ticket": "jira/tickets/EPIC-158/ticket.json",
+        "workflow": ".github/workflows/kallax-ci.yml",
+        "test": "tests/integration/showcase-catalog.test.sh"
+      }
+    },
+    {
+      "id": "EPIC-160-install-omnibus",
+      "title": "install.sh Omnibus: 95 files, --inventory + --update + 3 skip flags",
+      "scope": "scripts/install.sh + rules/experts/hooks/skills commands framework deployment",
+      "evidence_label": "v3.32.5: 13/13 integration test PASS + 103/103 vitest sentinel",
+      "pattern_tags": ["framework-distribution", "deployment", "omnibus-install", "symlink-mode", "v3.32.5"],
+      "links": {
+        "ticket": "jira/tickets/EPIC-160/ticket.json",
+        "script": "scripts/install.sh",
+        "test": "tests/integration/install-omnibus.test.sh",
+        "ref": "docs/reference/installation-2026-08-03.md"
+      }
+    },
+    {
+      "id": "EPIC-161-retrospective-routine",
+      "title": "retrospective-routine.sh: 6-stage periodic review (v3.32.6)",
+      "scope": "retrospect + consolidate + review-docs + upgrade + archive + delete",
+      "evidence_label": "v3.32.6: 17/17 integration test PASS + 103/103 vitest sentinel",
+      "pattern_tags": ["periodic-review", "6-stage", "retrospective", "governance-routine", "v3.32.6"],
+      "links": {
+        "ticket": "jira/tickets/EPIC-161/ticket.json",
+        "script": "scripts/retrospective-routine.sh",
+        "test": "tests/integration/retrospective-routine.test.sh",
+        "ref": "docs/reference/retrospective-routine-2026-08-03.md"
+      }
+    }
+  ],
+  "stats": {
+    "total_cases": 7,
+    "by_pattern": {
+      "fact-forcing": 2,
+      "retro-remediation": 1,
+      "metric-wiring": 1,
+      "debt-cleanup": 1,
+      "framework-distribution": 1,
+      "periodic-review": 1
+    }
+  }
+}
