@@ -227,6 +227,26 @@ cargo test
 
 ---
 
+## Security Rules
+
+### Private Context
+
+Before committing, run the private context scanner:
+
+```bash
+bash scripts/check-private-context.sh
+```
+
+This checks for:
+- Credentials (api_key, token, password, secret)
+- Private paths (/Users/*/, ~/.local/, /tmp/claude-tasks/)
+- Raw logs (>1MB .log/.jsonl files)
+- Sub-agent prompts
+
+**Never commit**: credentials, tokens, local paths, raw logs, or agent prompts.
+
+---
+
 ## 获取帮助
 
 - 查看 [文档](./docs/)

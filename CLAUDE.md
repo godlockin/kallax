@@ -110,7 +110,7 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | `check-self-heal.sh` | `scripts/verify/` | self-heal pattern |
 | `check-claim-evidence.sh` | `scripts/hooks/` | EPIC-069-D, README/CHANGELOG 数字必带 raw test output, pre-commit |
 
-## 6. Recent EPICs (v3.32.2 → v3.32.6, 主公 2026-08-02/03 拍板)
+## 6. Recent EPICs (v3.32.2 → v3.32.7, 主公 2026-08-05 拍板)
 
 | EPIC | Version | 关键 | 工具 / 文件 |
 |---|---|---|---|
@@ -119,8 +119,24 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | EPIC-159 | v3.32.4 | CLAUDE.md 307→160 行 + `.claude/rules/*.md` path-scoped lazy load | `.claude/rules/{state-json,testing,branch-flow,strict-tsconfig}.md` |
 | EPIC-160 | v3.32.5 | install.sh Omnibus — 全部件 deploy + `--inventory`/`--update`/3 skip flag | `scripts/install.sh`, 95 files |
 | EPIC-161 | v3.32.6 | retrospective-routine.sh 6 阶段 routine (复盘/整理/review/升级/归档/删除) | `scripts/retrospective-routine.sh`, `--json` |
+| EPIC-163 | v3.32.7 | Public/Private Boundary + check-private-context.sh | `scripts/check-private-context.sh`, `docs/public-private-boundary.md` |
 
-**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 5 EPICs. Full docs + tests + scripts in each.
+**0 增 Rule, 0 增 immutable script, 0 改 source code** for all EPICs.
+
+## 7. Security Rules (EPIC-163)
+
+**明文规定**:
+1. **不授权凭证** — Never commit credentials, tokens, API keys, secrets
+2. **不代发布** — Never publish artifacts or releases on behalf of others
+3. **scan before staging** — Run `scripts/check-private-context.sh` before `git add`
+
+**Private context 定义** (`docs/public-private-boundary.md`):
+- Local paths: `/Users/*/`, `~/.local/`, `/tmp/claude-tasks/`
+- Raw logs: `*.log`, `*.jsonl` > 1MB
+- Credentials: api_key, token, password, secret, AWS keys
+- Sub-agent prompts: system prompts, agent instructions
+
+**检测工具**: `scripts/check-private-context.sh` (exit: 0=PASS, 1=FAIL, 2=BLOCKED-env) Full docs + tests + scripts in each.
 
 ## 9. 引用 (lazy load on-demand)
 
