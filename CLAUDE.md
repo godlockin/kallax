@@ -119,6 +119,8 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | EPIC-159 | v3.32.4 | CLAUDE.md 307→160 行 + `.claude/rules/*.md` path-scoped lazy load | `.claude/rules/{state-json,testing,branch-flow,strict-tsconfig}.md` |
 | EPIC-160 | v3.32.5 | install.sh Omnibus — 全部件 deploy + `--inventory`/`--update`/3 skip flag | `scripts/install.sh`, 95 files |
 | EPIC-161 | v3.32.6 | retrospective-routine.sh 6 阶段 routine (复盘/整理/review/升级/归档/删除) | `scripts/retrospective-routine.sh`, `--json` |
+| EPIC-162 | v3.32.7 | skill 插件化 — 9 expert monolith → plugin (同仓库, 细粒度升级) | `.claude/skills/kallax-experts/`, `scripts/skill/skill-manager.sh` |
+| EPIC-167 | v3.32.12 | kallax-experts submodule 化 — 独立升级 + 互配合 (跨仓库双层) | `.gitmodules`, `external/kallax-experts/`, `scripts/skill/skill-manager.sh` |
 
 **0 增 Rule, 0 增 immutable script, 0 改 source code** for all 5 EPICs. Full docs + tests + scripts in each.
 

@@ -1,0 +1,4 @@
+[submodule "external/kallax-experts"]
+	path = external/kallax-experts
+	url = https://github.com/godlockin/kallax-experts.git
+	branch = miao

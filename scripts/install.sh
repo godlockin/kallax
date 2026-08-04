@@ -37,6 +37,9 @@ DRY_RUN=false
 SKIP_CLI=false; SKIP_SKILLS=false; SKIP_COMMANDS=false
 # EPIC-160: framework 全部件 deploy (rules/experts/hooks)
 SKIP_RULES=false; SKIP_EXPERTS=false; SKIP_HOOKS=false
+# EPIC-167: submodule deploy (external/kallax-experts)
+SKIP_SUBMODULE=false
+INSTALL_SUBMODULE=false; UPDATE_SUBMODULE=false
 INVENTORY_ONLY=false
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; BOLD='\033[1m'; DIM='\033[2m'; NC='\033[0m'
@@ -248,6 +251,9 @@ parse_args() {
       --skip-rules)       SKIP_RULES=true; shift ;;
       --skip-experts)     SKIP_EXPERTS=true; shift ;;
       --skip-hooks)       SKIP_HOOKS=true; shift ;;
+      --skip-submodule)   SKIP_SUBMODULE=true; shift ;;
+      --install-submodule) INSTALL_SUBMODULE=true; shift ;;
+      --update-submodule)  UPDATE_SUBMODULE=true; shift ;;
       --inventory)        INVENTORY_ONLY=true; shift ;;
       --update)           INSTALL_MODE="update"; shift ;;
       --symlink)          INSTALL_METHOD="symlink"; shift ;;
@@ -816,6 +822,58 @@ install_hooks_for_tool() {
   fi
 }
 
+# ── EPIC-167: submodule deploy (external/kallax-experts) ──────────────────
+#
+# Submodule is a global install (shared across all tools), not per-tool.
+# Runs after tool-specific installs. Can be triggered by:
+#   --install-submodule  (initial clone/register)
+#   --update-submodule   (git submodule update --remote)
+
+install_submodule() {
+  local sm_path="$PROJECT_ROOT/external/kallax-experts"
+  if $SKIP_SUBMODULE; then
+    dim "  [submodule] skipped (--skip-submodule)"
+    return 0
+  fi
+  if ! $INSTALL_SUBMODULE && ! $UPDATE_SUBMODULE; then
+    return 0
+  fi
+  if $DRY_RUN; then
+    log "[dry-run] submodule: would init/update external/kallax-experts"
+    return 0
+  fi
+  if [ ! -f "$PROJECT_ROOT/.gitmodules" ]; then
+    warn "[submodule] .gitmodules not found — skipping"
+    return 0
+  fi
+  echo ""
+  hdr "Submodule (EPIC-167)"
+  if $INSTALL_SUBMODULE; then
+    if [ -d "$sm_path" ] && [ -d "$sm_path/.git" ]; then
+      ok "Submodule already initialized: $sm_path"
+    else
+      git submodule init 2>/dev/null || true
+      git submodule update 2>/dev/null || true
+      ok "Submodule initialized: external/kallax-experts/"
+    fi
+  fi
+  if $UPDATE_SUBMODULE; then
+    if [ ! -d "$sm_path" ]; then
+      warn "[submodule] not initialized — run --install-submodule first"
+    else
+      local before after
+      before=$(git -C "$sm_path" rev-parse HEAD 2>/dev/null || echo "unknown")
+      git submodule update --remote external/kallax-experts 2>/dev/null || true
+      after=$(git -C "$sm_path" rev-parse HEAD 2>/dev/null || echo "unknown")
+      if [ "$before" != "$after" ]; then
+        ok "Submodule updated: ${before:0:8} → ${after:0:8}"
+      else
+        ok "Submodule already at latest: ${after:0:8}"
+      fi
+    fi
+  fi
+}
+
 print_inventory() {
   log "Inventory — KALLAX framework parts (EPIC-160)"
   echo ""
@@ -1135,8 +1193,10 @@ fi
 echo "========================================"
 echo ""
 
-# If dry-run, exit before any actual install
+# If dry-run, exit before any actual install (but run submodule for visibility)
 if $DRY_RUN; then
+  # EPIC-167: show submodule intent even in dry-run
+  install_submodule
   ok "Dry-run complete. No files were installed."
   echo ""
   echo "  To actually install, run without --dry-run:"
@@ -1157,6 +1217,9 @@ tool=""
 for tool in "${TARGET_TOOLS[@]}"; do
   install_for_tool "$tool"
 done
+
+# EPIC-167: submodule deploy (runs after per-tool installs)
+install_submodule
 
 echo ""
 if ! $SKIP_CLI; then install_cli; fi

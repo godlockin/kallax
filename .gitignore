@@ -166,3 +166,11 @@ jira/tickets/**/*.tmp
 # KALLAX runtime artifacts (跟"翻篇&精进" 战略 一致, 跟 v1.3.3 ONRAMP-test-* 模式 一致)
 .kallax/audit/
 .kallax/inbox/
+
+# ============================================================
+# External Submodules (EPIC-167)
+# ============================================================
+# external/kallax-experts/ — git submodule (自管理, 不污染主项目 ignore)
+# Submodule content tracked by .gitmodules + parent commit's submodule ref.
+# To update: git submodule update --remote external/kallax-experts
+# DO NOT add exclusion rules here — submodule refs are git-tracked artifacts.

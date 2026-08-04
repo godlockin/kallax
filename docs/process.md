@@ -67,3 +67,38 @@
 ---
 
 **跟决策者 §2 explicit 拍板,配合, 跟"同类症状" 完整完成, 跟"诚实修正评估",配合, 跟"独立" 拍 explicit 约束,配合, 跟 Rule 11/14/15/16,配合, 跟"流程逻辑 > 扩充配置" 战略 一致, 配合 EPIC-055-B 拍板分级,配合, 配合 EPIC-056-A 3 阶段,配合, 配合 EPIC-056-B 3 KPI,配合**
+
+## Submodule 升级流程 (EPIC-167 — 跨仓库 commit/PR/merge 1:1 pattern)
+
+**场景**: `kallax-experts` 独立仓库迭代时, KALLAX 主项目通过 submodule 引用同步.
+
+**流程**:
+1. **kallax-experts 仓库**: 独立迭代 → commit → PR → merge to main
+2. **KALLAX 主项目**: `git submodule update --remote external/kallax-experts` 拉最新 commit
+3. **KALLAX 主项目**: commit `.gitmodules` 变更 (submodule ref 更新) → PR → merge
+4. **Lock file**: `.gitmodules` 记录 submodule HEAD commit (parent commit = lock file)
+
+**双层升级粒度**:
+| 层级 | 来源 | 升级方式 |
+|------|------|----------|
+| Plugin 级 | `.claude/skills/kallax-experts/<role>/` | 同仓库 git commit/PR |
+| Submodule 级 | `external/kallax-experts/` | 跨仓库 commit/PR/merge + `git submodule update --remote` |
+| Monolith 级 | `.claude/skills/kallax/` | 主项目整体 git commit/PR |
+
+**互配合机制**:
+- `kallax-experts` 仓库维护 15 expert (tech/ai/design/marketing/research/business) + 9 tools
+- KALLAX 主项目通过 `external/kallax-experts/` 引用, skill-manager.sh 管理
+- 独立仓库迭代不阻塞主项目; 主项目可选择 `git submodule update --remote` 时机
+
+**CLI 工具**:
+```bash
+# skill-manager.sh (EPIC-167)
+./scripts/skill/skill-manager.sh submodule-init      # clone/register
+./scripts/skill/skill-manager.sh submodule-update    # pull latest
+./scripts/skill/skill-manager.sh submodule-status    # show commit + branch
+
+# install.sh (EPIC-167)
+./scripts/install.sh --install-submodule   # init during install
+./scripts/install.sh --update-submodule    # update during upgrade
+./scripts/install.sh --skip-submodule      # opt-out
+```
