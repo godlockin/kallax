@@ -1,0 +1,99 @@
+{
+  "ticket_id": "EPIC-166",
+  "epic": "EPIC-166",
+  "phase": "PHASE-019",
+  "title": "Heartbeat Daemon + Quota-aware 调度 + Run History Event Ledger",
+  "status": "in_progress",
+  "priority": "P0",
+  "type": "feature",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L2",
+  "description": "EPIC-166 — 借鉴 loopx 心跳调度 + 6 层 quota 系统 + append-only event ledger, 给 KALLAX 补 daemon 自动化能力.\n\n**Context**: 主公 2026-08-05 review loopx 后拍板 (P0, 解决 Master 派单瓶颈) — 当前 KALLAX 心跳 5 问 (Q1-Q5) 需人工触发, 无 daemon; ticket 数量增长时 Master 成为派单瓶颈; 无 quota-aware 调度; 无持久化 event ledger, PR 描述碎片化. 跟 loopx 对比见 confluence/decisions/loopx-vs-kallax-architecture-gap-2026-08-05.md.\n\n**设计 (跟 loopx `loopx quota should-run` + heartbeat-prompt + run-history 1:1)**:\n1. `scripts/heartbeat/heartbeat-daemon.sh` — 后台 daemon, 定时调 `quota should-run`, 返回 next allowed transition (跟 loopx 1:1)\n2. `scripts/heartbeat/quota.sh` — quota-aware 调度 (per-ticket compute quota + spend ledger + eligible/throttled/paused 状态机, 跟 loopx 6 层 quota 1:1)\n3. `scripts/heartbeat/scheduler-hint.sh` — P0/P1/P2 priority stack (truth-safety / human-decision / product-UX)\n4. `scripts/heartbeat/run-history.sh` — append-only event ledger (4 类 event: work/decision/accounting/evidence, 跟 loopx 1:1)\n5. `state/run-history.jsonl` — ledger 持久化 (append-only, work/decision/accounting/evidence 4 类 event)\n\n**0 增 Rule, 0 改 source code 之外**: 跟 EPIC-161 retrospective-routine 1:1 pattern (6 阶段), 复用 immutable check scripts 退出码契约.\n\n**跟 BE-14 关系**: 不冲突.\n**跟 EPIC-054-A 关系**: 不冲突.\n**跟 EPIC-161 关系**: 互补 (EPIC-161 = 阶段性回顾, EPIC-166 = 实时 daemon).\n**跟 EPIC-023-C 关系**: 跟 4 北极星 metric 直接打通 (daemon 自动 emit work/decision/accounting event).",
+  "file_scope": {
+    "includes": [
+      "scripts/heartbeat/heartbeat-daemon.sh",
+      "scripts/heartbeat/quota.sh",
+      "scripts/heartbeat/scheduler-hint.sh",
+      "scripts/heartbeat/run-history.sh",
+      "state/run-history.jsonl",
+      ".claude/heartbeat-conductor.md",
+      ".claude/heartbeat-performer.md",
+      "tests/integration/heartbeat-daemon.test.sh",
+      "tests/integration/quota-scheduler.test.sh",
+      "tests/integration/run-history-ledger.test.sh",
+      "scripts/install.sh",
+      "CLAUDE.md",
+      "docs/reference/heartbeat-daemon-2026-08-05.md",
+      "confluence/decisions/loopx-vs-kallax-architecture-gap-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: scripts/heartbeat/heartbeat-daemon.sh 后台 daemon (跟 loopx heartbeat-prompt 1:1), 定时调 quota should-run, 返回 next allowed transition, 默认 60s 间隔 (可调)",
+    "AC2: daemon 退出码契约: 0=PASS (continue), 1=FAIL (stop, 报 Master), 2=BLOCKED-env (跟 scan-dead-code 1:1)",
+    "AC3: scripts/heartbeat/quota.sh per-ticket compute quota + spend ledger + eligible/throttled/paused 状态机 (跟 loopx 6 层 quota 1:1)",
+    "AC4: scripts/heartbeat/scheduler-hint.sh P0/P1/P2 priority stack (truth-safety / human-decision / product-UX, 跟 loopx 1:1)",
+    "AC5: scripts/heartbeat/run-history.sh append-only event ledger (4 类 event: work/decision/accounting/evidence, 跟 loopx 1:1)",
+    "AC6: state/run-history.jsonl 持久化 (append-only, schema 跟 loopx 1:1: event_type / agent_id / ticket_id / timestamp / payload)",
+    "AC7: .claude/heartbeat-conductor.md + .claude/heartbeat-performer.md 已有 — 跟 daemon 集成 (daemon 自动调用, 不再手动 Q1-Q5)",
+    "AC8: install.sh Omnibus 加 daemon install + daemon start 阶段 (跟 EPIC-160 1:1 pattern)",
+    "AC9: tests/integration/heartbeat-daemon.test.sh ≥8 case PASS (daemon start / stop / quota should-run / P0/P1/P2 优先级 / 4 类 event / ledger append-only / 安装集成 / 跟北极星 metric 联动)",
+    "AC10: tests/integration/quota-scheduler.test.sh ≥5 case PASS (eligible / throttled / paused / spend ledger / priority stack)",
+    "AC11: tests/integration/run-history-ledger.test.sh ≥5 case PASS (work event / decision event / accounting event / evidence event / append-only 不变)",
+    "AC12: vitest sentinel + 5-Level Verify L1-L5 PASS",
+    "AC13: docs/reference/heartbeat-daemon-2026-08-05.md 加用法 + 6 quota 层详解 + 4 类 event schema",
+    "AC14: CLAUDE.md 加 EPIC-166 引用 (跟 EPIC-161 retrospective-routine 1:1 pattern, 互补不冲突)",
+    "AC15: 0 改 source code, 0 增 Rule (跟 EPIC-161 1:1 pattern)",
+    "AC16: daemon 跟 EPIC-023-C 北极星 4 指标打通 (自动 emit work/accounting event)"
+  ],
+  "labels": [
+    "feature",
+    "heartbeat-daemon",
+    "quota-aware-scheduler",
+    "run-history-ledger",
+    "loopx-borrow",
+    "P0",
+    "phase-019"
+  ],
+  "expert_binding": {
+    "suggested_expert": "backend",
+    "actual_expert": "backend",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行 — 不破)",
+    "EPIC-054-A (worktree 隔离 — 不破)",
+    "EPIC-161 (retrospective-routine — 互补, 阶段性 vs 实时)",
+    "EPIC-160 (install.sh Omnibus — install 集成)",
+    "EPIC-023-C (4 北极星 metric — 直接打通数据源)",
+    "EPIC-131/132 (scan-dead-code — 退出码契约 0/1/2 1:1)",
+    "EPIC-159 (CLAUDE.md trim — 1:1 pattern)",
+    "Rule 34 (bugfix 独立复现 — 互补, 不冲突)",
+    "loopx loopx quota should-run (per-goal compute quota + spend ledger)",
+    "loopx heartbeat-prompt (thin query → daemon loop)",
+    "loopx run-history (append-only event ledger, 4 类 event)"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": "scripts/heartbeat/* + state/* + tests/* + docs/* + CLAUDE.md"
+  },
+  "deliverables": [
+    "scripts/heartbeat/heartbeat-daemon.sh (新, daemon 主体)",
+    "scripts/heartbeat/quota.sh (新, per-ticket compute quota)",
+    "scripts/heartbeat/scheduler-hint.sh (新, P0/P1/P2 优先级)",
+    "scripts/heartbeat/run-history.sh (新, append-only ledger)",
+    "state/run-history.jsonl (新, 持久化 ledger)",
+    "scripts/install.sh 改 (加 daemon install + start 阶段)",
+    "tests/integration/heartbeat-daemon.test.sh (新, ≥8 case)",
+    "tests/integration/quota-scheduler.test.sh (新, ≥5 case)",
+    "tests/integration/run-history-ledger.test.sh (新, ≥5 case)",
+    "docs/reference/heartbeat-daemon-2026-08-05.md (新)",
+    "CLAUDE.md 改 (加 EPIC-166 引用段)",
+    "confluence/decisions/loopx-vs-kallax-architecture-gap-2026-08-05.md (新, 拍板记录)"
+  ],
+  "estimated_hours": 20,
+  "created_by": "master (主公 2026-08-05 review loopx heartbeat/quota/run-history 拍板 P0: 解决 Master 派单瓶颈)"
+}
