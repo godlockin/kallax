@@ -1,0 +1,77 @@
+{
+  "ticket_id": "EPIC-163",
+  "epic": "EPIC-163",
+  "phase": "PHASE-019",
+  "title": "Public/Private Boundary — docs + check-private-context.sh + Security Rules",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "feature",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L2",
+  "description": "EPIC-163 — 借鉴 loopx `docs/public-private-boundary.md` + `loopx check` 扫描器, 给 KALLAX 补 public/private 边界治理.\n\n**Context**: 主公 2026-08-05 review loopx AGENTS.md 后拍板 (P1, ROI 高) — 当前 KALLAX 无 public-private boundary 检查, 没有专门的文档定义边界, 没有 scanner 工具检查 credentials / private state / local paths / raw logs. 跟 loopx 对比见 confluence/decisions/loopx-vs-kallax-governance-gap-2026-08-05.md.\n\n**设计 (跟 loopx `loopx check` 1:1)**:\n1. `docs/public-private-boundary.md` — 定义 Public (schema / CLI / adapter lifecycle / generic coordination rules) vs Private (local paths / raw logs / task IDs / credentials / person names / sub-agent prompts / trajectories)\n2. `scripts/check-private-context.sh` — 扫描器, treats boundary as file-state (tracked vs untracked), 不是 path 过滤. 退出码 0=PASS / 1=FAIL / 2=BLOCKED-env\n3. CLAUDE.md Section 7 — 加 Security Rules 明文规定 (不授权凭证 / 不代发布 / scan credentials before staging)\n4. CONTRIBUTING.md — 加贡献前扫描 private state 要求\n\n**0 增 Rule, 0 改 source code 之外**: 跟 EPIC-069-D check-claim-evidence 1:1 pattern, 新 immutable check script.\n\n**跟 BE-14 关系**: 不冲突.\n**跟 EPIC-054-A 关系**: 不冲突.\n**跟 Rule 34 关系**: 互补 (Rule 34 = reproduction 必填, EPIC-163 = private context 必扫).",
+  "file_scope": {
+    "includes": [
+      "docs/public-private-boundary.md",
+      "scripts/check-private-context.sh",
+      "scripts/hooks/pre-commit",
+      "CONTRIBUTING.md",
+      "CLAUDE.md",
+      "tests/integration/check-private-context.test.sh",
+      "confluence/decisions/loopx-vs-kallax-governance-gap-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: docs/public-private-boundary.md 定义 public/private 分类清单 (跟 loopx 1:1 schema: schema / CLI / adapter lifecycle / generic coordination rules vs local paths / raw logs / task IDs / credentials / person names / sub-agent prompts / trajectories)",
+    "AC2: scripts/check-private-context.sh 扫描器 (跟 loopx `loopx check` 1:1): tracked vs untracked 双层检查",
+    "AC3: scanner 检测 4 类: credentials (api_key/token/password/secret) / private paths (/Users/.../.local/...) / raw logs (.log/.jsonl > 1MB) / sub-agent prompts (含 \"system prompt\" 关键词)",
+    "AC4: scanner 退出码契约: 0=PASS, 1=FAIL (fail-closed, 禁止 print FAIL + exit 0), 2=BLOCKED-env",
+    "AC5: pre-commit hook 集成 `scripts/check-private-context.sh`, staged files 必扫",
+    "AC6: CONTRIBUTING.md 加贡献前扫描 private state 要求 (引用 loopx CONTRIBUTING.md 1:1 pattern)",
+    "AC7: CLAUDE.md Section 7 加 Security Rules (不授权凭证 / 不代发布 / scan credentials before staging)",
+    "AC8: tests/integration/check-private-context.test.sh ≥8 case PASS (正常文件 / 含 credential / 含 private path / 含 raw log / 含 sub-agent prompt / 边界值 / 退出码契约 / pre-commit hook 集成)",
+    "AC9: vitest sentinel + 5-Level Verify L1-L5 PASS",
+    "AC10: 0 改 source code, 0 增 Rule (跟 EPIC-069-D 1:1 pattern)"
+  ],
+  "labels": [
+    "feature",
+    "public-private-boundary",
+    "loopx-borrow",
+    "P1",
+    "phase-019",
+    "security"
+  ],
+  "expert_binding": {
+    "suggested_expert": "security-tool-bypass",
+    "actual_expert": "security-tool-bypass",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行 — 不破)",
+    "EPIC-054-A (worktree 隔离 — 不破)",
+    "EPIC-069-D (check-claim-evidence pattern — 1:1 复用)",
+    "EPIC-131/132 (scan-dead-code pattern — 退出码契约 0/1/2 1:1)",
+    "Rule 34 (bugfix 独立复现 — 互补, 不冲突)",
+    "loopx docs/public-private-boundary.md (Public/Private 分类定义 1:1)",
+    "loopx AGENTS.md (Public/Private Boundary 章节 1:1)",
+    "loopx `loopx check` (treats boundary as file-state tracked/untracked, 不是 path 过滤)"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": "docs/* + scripts/{check-private-context.sh,hooks/pre-commit} + CONTRIBUTING.md + CLAUDE.md + tests/* + confluence/decisions/*"
+  },
+  "deliverables": [
+    "docs/public-private-boundary.md (新, 跟 loopx 1:1 schema)",
+    "scripts/check-private-context.sh (新, 4 类检测 + 退出码契约 0/1/2)",
+    "scripts/hooks/pre-commit 改 (加 check-private-context 阶段)",
+    "CONTRIBUTING.md 改 (贡献前扫描 private state 要求)",
+    "CLAUDE.md 改 (Section 7 Security Rules)",
+    "tests/integration/check-private-context.test.sh (新, ≥8 case)",
+    "confluence/decisions/loopx-vs-kallax-governance-gap-2026-08-05.md (新, 拍板记录)"
+  ],
+  "estimated_hours": 8,
+  "created_by": "master (主公 2026-08-05 review loopx AGENTS.md 拍板 P1: Public/Private Boundary check)"
+}
