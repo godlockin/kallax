@@ -1,0 +1,99 @@
+{
+  "ticket_id": "EPIC-162",
+  "epic": "EPIC-162",
+  "phase": "PHASE-019",
+  "title": "Skill 插件化 (同仓库 plugin) — 跟 EPIC-167 submodule 双层升级粒度",
+  "status": "in_progress",
+  "priority": "P0",
+  "type": "feature",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L2",
+  "description": "EPIC-162 — 借鉴 https://github.com/huangruiteng/loopx skill 体系 (6 独立 skill 包 + install/status/uninstall CLI + activation gate + cross-host surface), 把 KALLAX 1 主 skill + 9 expert monolith 改造为可独立 install 的 plugin 架构.\n\n**跟 EPIC-167 协同 (双层升级粒度)**:\n- EPIC-162 = 同仓库 plugin 化 (拆 9 expert monolith → 独立 skill 包)\n- EPIC-167 = 跨仓库 submodule 化 (kallax-experts 独立仓库 → submodule)\n- 两者 1:1 互补, skill-manager.sh 同时管理 plugin + submodule\n\n**Context**: 主公 2026-08-05 review loopx 后拍板 (P0, ROI 最高) — 当前 KALLAX `.claude/skills/kallax/` 是单一 skill, 9 expert (default/extended) 全部内嵌. 无法跨 host (Codex/Cursor/OpenCode), 无 install/uninstall CLI, 无 activation gate. 跟 loopx skill 体系对比见 confluence/decisions/loopx-vs-kallax-skill-gap-2026-08-05.md.\n\n**设计 (跟 EPIC-160 install.sh Omnibus + EPIC-161 retrospective-routine + EPIC-167 submodule 1:1 pattern)**:\n1. **独立 skill 包** — 把 9 expert 拆成独立 skill 包, 每个有 SKILL.md + agents/ + .kallax-skill-scope 8 字节标记 (跟 loopx `.loopx-skill-scope` 1:1)\n2. **skill CLI** — `scripts/skill/skill-manager.sh` 提供 `install/status/uninstall/list/enabled/disable` 6 子命令 + EPIC-167 `submodule-init/update/status` 3 子命令\n3. **activation gate** — 每个 skill 加 frontmatter `enabled_policy: true/false`, 运行时检查, 缺则 dry-run 提示\n4. **cross-host surface** — `--surface codex/claude-code/opencode/cursor` 抽象层, skill 可适配 4 host\n5. **install.sh 集成** — EPIC-160 Omnibus 加 skill scan/install 阶段 + EPIC-167 submodule install/update 阶段\n\n**0 增 Rule, 0 改 source code 之外**: 跟 EPIC-160/EPIC-161/EPIC-167 1:1 pattern, 仅新 docs + scripts + skill 包拆分.\n\n**跟 BE-14 关系**: 不冲突. 1 ticket 1 subagent 仍是 baseline.\n**跟 EPIC-054-A 关系**: 不冲突. worktree 隔离仍 N ticket = N worktree.\n**跟 EPIC-119 (OpenAI 3-Class tool taxonomy)**: skill install 是 action class, 不影响 orchestration/data 分类.\n**跟 EPIC-167 关系**: 1:1 协同 (plugin + submodule 双层升级粒度).",
+  "file_scope": {
+    "includes": [
+      ".claude/skills/kallax-experts/architect/SKILL.md",
+      ".claude/skills/kallax-experts/backend/SKILL.md",
+      ".claude/skills/kallax-experts/frontend/SKILL.md",
+      ".claude/skills/kallax-experts/ux/SKILL.md",
+      ".claude/skills/kallax-experts/product/SKILL.md",
+      ".claude/skills/kallax-experts/security-tool-bypass/SKILL.md",
+      ".claude/skills/kallax-experts/process-engineering/SKILL.md",
+      ".claude/skills/kallax-experts/auditor/SKILL.md",
+      ".claude/skills/kallax-experts/compliance/SKILL.md",
+      ".claude/skills/kallax-experts/decision-gate/SKILL.md",
+      "scripts/skill/skill-manager.sh",
+      "scripts/install.sh",
+      "tests/integration/skill-plugin.test.sh",
+      "docs/reference/skill-plugin-2026-08-05.md",
+      "CLAUDE.md",
+      "confluence/decisions/loopx-vs-kallax-skill-gap-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: 9 expert 各拆成独立 skill 包, 路径 `.claude/skills/kallax-experts/<role>/SKILL.md`, 跟主 skill 解耦",
+    "AC2: 每个独立 skill 包有 `.kallax-skill-scope` 8 字节文件 (跟 loopx `.loopx-skill-scope` 1:1), 标记 skill scope",
+    "AC3: 每个独立 skill 包有 `agents/` 子目录 (跟 loopx `agents/` 1:1), 至少含 1 个 agent 角色 markdown",
+    "AC4: SKILL.md frontmatter 加 `enabled_policy: true/false` 字段, 运行时检查",
+    "AC5: `scripts/skill/skill-manager.sh` 提供 install/status/uninstall/list/enabled/disable 6 子命令, 退出码 0=PASS / 1=FAIL / 2=用户错误",
+    "AC6: `--surface codex/claude-code/opencode/cursor` 4 host 抽象, install 时生成对应 host 的 .md wrapper",
+    "AC7: `bash scripts/install.sh --update` 自动 scan + install 新 skill, 跟 EPIC-160 Omnibus 1:1 pattern",
+    "AC8: activation gate 5 步验证 (跟 loopx 1:1): resolve project → confirm todo → check boundary → architecture check → owner-gated",
+    "AC9: tests/integration/skill-plugin.test.sh ≥10 case PASS (install / status / uninstall / list / enabled / disable / cross-host / activation gate 5 步 / scope 标记 / 旧 monolith 向后兼容)",
+    "AC10: vitest sentinel tests PASS (build + sentinel)",
+    "AC11: 5-Level Verify L1-L5 PASS",
+    "AC12: 旧 `/kallax-expert` 路径向后兼容 (fallback 到 monolith skill)",
+    "AC13: docs/reference/skill-plugin-2026-08-05.md 加 skill-manager 用法 + activation gate 详解",
+    "AC14: CLAUDE.md 加 EPIC-162 引用 (跟 EPIC-160/EPIC-161 1:1 pattern)",
+    "AC15: 0 改 source code, 0 增 Rule"
+  ],
+  "labels": [
+    "feature",
+    "skill-plugin",
+    "loopx-borrow",
+    "P0",
+    "phase-019"
+  ],
+  "expert_binding": {
+    "suggested_expert": "architect",
+    "actual_expert": "architect",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行 — 不破)",
+    "EPIC-054-A (worktree 隔离 — 不破)",
+    "EPIC-160 (install.sh Omnibus pattern — install 集成)",
+    "EPIC-161 (retrospective-routine.sh pattern — 6 子命令)",
+    "EPIC-167 (kallax-experts submodule 化 — 1:1 协同, plugin + submodule 双层)",
+    "EPIC-119 (OpenAI 3-Class tool taxonomy — install 是 action class)",
+    "Rule 34 (bugfix 独立复现 — 互补, 不冲突)",
+    "loopx skill 体系 (6 独立 skill 包 + install/status/uninstall CLI + activation gate + .loopx-skill-scope 8 字节标记 + agents/ 子目录)"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": ".claude/skills/* + scripts/skill/* + scripts/install.sh + tests/* + docs/* + CLAUDE.md"
+  },
+  "deliverables": [
+    ".claude/skills/kallax-experts/architect/{SKILL.md,agents/*.md,.kallax-skill-scope}",
+    ".claude/skills/kallax-experts/backend/{SKILL.md,agents/*.md,.kallax-skill-scope}",
+    ".claude/skills/kallax-experts/frontend/{SKILL.md,agents/*.md,.kallax-skill-scope}",
+    ".claude/skills/kallax-experts/ux/{SKILL.md,agents/*.md,.kallax-skill-scope}",
+    ".claude/skills/kallax-experts/product/{SKILL.md,agents/*.md,.kallax-skill-scope}",
+    ".claude/skills/kallax-experts/security-tool-bypass/{SKILL.md,agents/*.md,.kallax-skill-scope}",
+    ".claude/skills/kallax-experts/process-engineering/{SKILL.md,agents/*.md,.kallax-skill-scope}",
+    ".claude/skills/kallax-experts/auditor/{SKILL.md,agents/*.md,.kallax-skill-scope}",
+    ".claude/skills/kallax-experts/compliance/{SKILL.md,agents/*.md,.kallax-skill-scope}",
+    ".claude/skills/kallax-experts/decision-gate/{SKILL.md,agents/*.md,.kallax-skill-scope}",
+    "scripts/skill/skill-manager.sh (新, 6 子命令)",
+    "scripts/install.sh 改 (加 --scan-skill + --install-skill)",
+    "tests/integration/skill-plugin.test.sh (新, ≥10 case)",
+    "docs/reference/skill-plugin-2026-08-05.md (新)",
+    "CLAUDE.md 改 (加 EPIC-162 引用段)",
+    "confluence/decisions/loopx-vs-kallax-skill-gap-2026-08-05.md (新, 拍板记录)"
+  ],
+  "estimated_hours": 14,
+  "created_by": "master (主公 2026-08-05 review loopx 拍板 P0: skill 插件化 ROI 最高)"
+}
