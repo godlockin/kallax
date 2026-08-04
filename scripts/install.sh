@@ -37,6 +37,8 @@ DRY_RUN=false
 SKIP_CLI=false; SKIP_SKILLS=false; SKIP_COMMANDS=false
 # EPIC-160: framework 全部件 deploy (rules/experts/hooks)
 SKIP_RULES=false; SKIP_EXPERTS=false; SKIP_HOOKS=false
+# EPIC-164: self-repair skill install
+INSTALL_SKILL=""
 INVENTORY_ONLY=false
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; BOLD='\033[1m'; DIM='\033[2m'; NC='\033[0m'
@@ -248,6 +250,7 @@ parse_args() {
       --skip-rules)       SKIP_RULES=true; shift ;;
       --skip-experts)     SKIP_EXPERTS=true; shift ;;
       --skip-hooks)       SKIP_HOOKS=true; shift ;;
+      --install-skill)    INSTALL_SKILL="${2:-}"; [[ -z "$INSTALL_SKILL" ]] && { err "--install-skill requires a skill name"; exit 1; }; shift 2 ;;
       --inventory)        INVENTORY_ONLY=true; shift ;;
       --update)           INSTALL_MODE="update"; shift ;;
       --symlink)          INSTALL_METHOD="symlink"; shift ;;
@@ -816,6 +819,35 @@ install_hooks_for_tool() {
   fi
 }
 
+# ── EPIC-164: install specific skill (kallax-self-repair, etc.) ────────────
+install_skill_for_tool() {
+  local tool="$1" skill_name="$2"
+  if [ -z "$skill_name" ]; then return 0; fi
+  local src="$PROJECT_ROOT/.claude/skills/$skill_name"
+  local dst="$HOME/.claude/skills/$skill_name"
+  if $DRY_RUN; then
+    log "[dry-run] would deploy skill $skill_name → $dst"
+    return 0
+  fi
+  if [ ! -d "$src" ]; then
+    warn "[$tool] skill $skill_name not found at $src, skipping"
+    return 0
+  fi
+  mkdir -p "$(dirname "$dst")"
+  if [ "${INSTALL_METHOD:-symlink}" = "symlink" ]; then
+    rm -rf "$dst"
+    ln -sfn "$src" "$dst"
+    ok "[$tool] skill $skill_name → $dst (symlink)"
+  else
+    rm -rf "$dst"
+    cp -r "$src" "$dst"
+    ok "[$tool] skill $skill_name → $dst"
+  fi
+  local count
+  count=$(find "$dst" -type f 2>/dev/null | wc -l | tr -d ' ')
+  ok "[$tool] skill $skill_name deployed: $count files"
+}
+
 print_inventory() {
   log "Inventory — KALLAX framework parts (EPIC-160)"
   echo ""
@@ -899,6 +931,7 @@ install_for_tool() {
   if ! $SKIP_RULES;     then install_rules_for_tool "$tool"; fi
   if ! $SKIP_EXPERTS;   then install_experts_for_tool "$tool"; fi
   if ! $SKIP_HOOKS;     then install_hooks_for_tool "$tool"; fi
+  if [[ -n "$INSTALL_SKILL" ]]; then install_skill_for_tool "$tool" "$INSTALL_SKILL"; fi
   install_config_for_tool "$tool"
 }
 
