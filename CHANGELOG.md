@@ -4,6 +4,44 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.32.20] - 2026-08-05
+
+### Release: Smoke Retention Policy (EPIC-174)
+
+**Scope**: 0 core + 0 engine + 0 server (无 Rust 改动, 仅 scripts + docs + tests)
+
+#### Added (smoke retention policy)
+
+- **`docs/process/smoke-retention-policy.md`** — 新, ≥80 行, 5 条规则详化 (跟 loopx AGENTS.md 1:1)
+- **`scripts/check-smoke-retention.sh`** — 新, scanner 检测 >=500 行 smoke, 退出码 0=PASS/1=FAIL/2=BLOCKED-env
+- **`scripts/audit/smoke-size-report.sh`** — 新, 报告所有 smoke 状态 (行数 + 价值判定)
+- **`tests/integration/smoke-retention.test.sh`** — 新, ≥9 case PASS
+
+#### 5 条保留规则
+
+1. **Rule 1**: 保留 shipped CLI/runtime behavior
+2. **Rule 2**: 保留 reusable control-plane contract
+3. **Rule 3**: 保留 public/private boundary enforcement
+4. **Rule 4**: 保留 regression that stranded automation
+5. **Rule 5**: >=500 行 smoke 拆 / aggregate 替代
+
+#### 5-Level Verify (AC6: ≥5 case)
+
+- [x] **9/9 PASS** — `bash tests/integration/smoke-retention.test.sh`
+- [x] **0 改 source code** — 仅 scripts + docs + tests
+
+#### Docs
+
+- `CLAUDE.md` Section 5 加 smoke retention 引用
+- `docs/PROCESS.md` 加 smoke retention 段
+- `confluence/decisions/epic-174-smoke-retention-2026-08-05.md` (拍板记录)
+
+#### Compatibility
+
+- **0 改 source code**
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-131/132 scan-dead-code 退出码 1:1 兼容** (2=BLOCKED-env)
+
 ## [3.32.15] - 2026-08-05
 
 ### Release: Public Path (EPIC-169)

@@ -62,6 +62,22 @@
 
 详细: `docs/process/A-B-REVIEW.md`
 
+## Smoke Retention Policy (EPIC-174, 配合)
+
+**来源**: loopx AGENTS.md Smoke Retention Policy (借鉴)
+**拍板**: 主公 2026-08-05 Phase 5 D
+
+**5 条保留规则** (详细: `docs/process/smoke-retention-policy.md`):
+
+1. **Rule 1**: 保留 shipped CLI/runtime behavior
+2. **Rule 2**: 保留 reusable control-plane contract
+3. **Rule 3**: 保留 public/private boundary enforcement
+4. **Rule 4**: 保留 regression that stranded automation
+5. **Rule 5**: >=500 行 smoke 拆 / aggregate 替代
+
+**Scanner**: `scripts/check-smoke-retention.sh` (exit 0=PASS/1=FAIL/2=BLOCKED-env)
+**Report**: `scripts/audit/smoke-size-report.sh`
+
 > v2.0.3 EPIC-056-A 改造: A+B review 合并为 Phase 2 (4+5 专家并行), 不再是"先 A 后 B" 串行.
 
 ---

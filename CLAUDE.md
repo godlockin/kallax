@@ -95,12 +95,14 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 3 commits bypass (a8da33f / 1482ffa / 40e2b8e), 主公拍接受丢失 (Phase 3 拍板). EPIC-155 计划 Q3 2026 retractively re-promote.
 Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push pattern 1:1. 详细: `confluence/decisions/branch-flow-governance-2026-07-09.md`
 
-## 5. 4 不可更改 法律 (immutable scripts)
+## 5. 4 不可更改 法律 (immutable scripts) + smoke retention
 
 > **P0-7 路径澄清 (v3.32.1)**: 5 个 immutable scripts **不**全部在 `scripts/permission/`. 实际分布:
 > - 4 个在 `scripts/verify/` — `check-decorative-claim.sh`, `check-narrative.sh`, `check-fail-closed.sh`, `check-self-heal.sh`
 > - 1 个在 `scripts/hooks/` — `check-claim-evidence.sh` (pre-commit hook 上下文, 仅扫 staged files)
 > - 退出码契约: 0=PASS, 1=FAIL (fail-closed, 禁止 print FAIL + exit 0); `scan-dead-code.sh` 加 2=BLOCKED-env (P0-7 治理)
+>
+> **smoke retention (v3.32.20)**: `docs/process/smoke-retention-policy.md` — 5 条规则治理 smoke 测试膨胀 (>=500 行告警)
 
 | Script | Path | 职责 |
 |--------|------|------|
@@ -109,6 +111,8 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | `check-fail-closed.sh` | `scripts/verify/` | 0 fail-open |
 | `check-self-heal.sh` | `scripts/verify/` | self-heal pattern |
 | `check-claim-evidence.sh` | `scripts/hooks/` | EPIC-069-D, README/CHANGELOG 数字必带 raw test output, pre-commit |
+| `check-smoke-retention.sh` | `scripts/` | EPIC-174, smoke >=500 行检测 |
+| `smoke-size-report.sh` | `scripts/audit/` | EPIC-174, smoke 状态报告 |
 
 ## 6. Recent EPICs (v3.32.2 → v3.32.18, 主公 2026-08-02/03/05 拍板)
 
