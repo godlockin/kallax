@@ -2,6 +2,7 @@
 id: kallax.backend.001
 name: 💻 后端
 tier: default
+enabled_policy: default
 worktree_role: performer
 review_group: A
 phase: 2

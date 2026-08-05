@@ -2,6 +2,7 @@
 id: kallax.frontend.001
 name: 🎨 前端
 tier: default
+enabled_policy: default
 worktree_role: performer
 review_group: B
 phase: 2
