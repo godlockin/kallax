@@ -250,6 +250,40 @@ Clean, tracks `miao` 分支 (跟 KALLAX 主项目稳定分支对齐)
 - **跟 EPIC-162 skill 插件化 1:1 协同** (plugin + submodule 双层)
 - **跟 EPIC-119 3-Class tool taxonomy** (submodule init/update 是 action class)
 
+## [3.32.14] - 2026-08-05
+
+### Release: Dashboard Daemon Fix + North Star闭环 (EPIC-168-BG)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Bug Fixes (EPIC-166 4 真 bug, EPIC-168-F 抓)
+
+| Bug | File | Issue | Fix |
+|-----|------|-------|-----|
+| Bug 1 | `heartbeat-daemon.sh:104` | quota 调用缺 ticket_id | 加 `resolve_active_ticket()` 找 in_progress ticket |
+| Bug 2 | daemon → scheduler | 4 priority 全返回 P2 | daemon 传 ticket_id 而非完整 quota 输出 |
+| Bug 3 | `run-history.sh` emit | jq --argjson 失败 | 改直接字符串拼接 |
+| Bug 4 | `run-history.sh` emit | 无 flock 并发保护 | 加 `flock -x` 保护 append |
+
+#### Added (Phase 5 G 北极星 dashboard 闭环 EPIC-023-C)
+
+- **`scripts/dashboard/dashboard-metrics.sh`** — 4 北极星 + 4 event counts 聚合 (`expert_activation` / `cross_epic_reuse` / `ab_hit_rate` / `mis_dispatch_binding_rate`)
+- **`web/dashboard-metrics.html`** — 静态 HTML dashboard (vanilla JS + fetch)
+- **`tests/integration/dashboard-metrics.test.sh`** — 7-case dashboard 测试
+
+#### Tests (AC6~AC13: ≥13 case)
+
+- [x] **8/8 PASS** — `bash tests/integration/heartbeat-daemon-runtime.test.sh` (升级自 EPIC-168-F)
+- [x] **7/7 PASS** — `bash tests/integration/dashboard-metrics.test.sh`
+- **Total: 15/15 PASS**
+
+#### Compatibility
+
+- **0 改 source code** (仅 scripts/ + docs/ + web/)
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-023-C 北极星 1:1 打通**
+- **跟 EPIC-166 heartbeat daemon 互补**
+
 ## [3.32.6] - 2026-08-03
 
 ### Release: Retrospective Routine 6 stages (EPIC-161)
