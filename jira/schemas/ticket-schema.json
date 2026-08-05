@@ -84,6 +84,33 @@
       "type": "number",
       "minimum": 0,
       "description": "Actual effort in hours (set on completion)"
+    },
+    "verification": {
+      "type": "object",
+      "description": "Verification fields for EPIC-173 first-screen gate + EPIC-152 bugfix",
+      "properties": {
+        "first_screen_preview": {
+          "type": "string",
+          "description": "Preview URL or description for first-screen changes (EPIC-173)"
+        },
+        "first_screen_approved_by": {
+          "type": "string",
+          "description": "Approver ID who approved first-screen changes (EPIC-173)"
+        },
+        "reproduction_command": {
+          "type": "string",
+          "description": "Bugfix reproduction command (EPIC-152)"
+        },
+        "reproduction_exit_code": {
+          "type": "integer",
+          "description": "Bugfix reproduction exit code (EPIC-152)"
+        },
+        "reproduction_raw_output": {
+          "type": "string",
+          "description": "Bugfix reproduction raw output (EPIC-152)"
+        }
+      },
+      "additionalProperties": true
     }
   },
   "additionalProperties": true
