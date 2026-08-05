@@ -109,6 +109,7 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | `check-fail-closed.sh` | `scripts/verify/` | 0 fail-open |
 | `check-self-heal.sh` | `scripts/verify/` | self-heal pattern |
 | `check-claim-evidence.sh` | `scripts/hooks/` | EPIC-069-D, README/CHANGELOG 数字必带 raw test output, pre-commit |
+| `check-first-screen.sh` | `scripts/` | EPIC-173, README/dashboard 改前主公预览 (跟 EPIC-163 1:1) |
 
 ## 6. Recent EPICs (v3.32.2 → v3.32.18, 主公 2026-08-02/03/05 拍板)
 
@@ -125,8 +126,9 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | EPIC-170 | v3.32.16 | Expert plugin complete — enabled_policy + activation gates (9 expert 1:1 loopx) | `scripts/skill/skill-manager.sh`, `scripts/skill/skill-policy.sh` |
 | EPIC-171 | v3.32.17 | 战略沉淀 — 3 视角 (PR+CTO+Marketing) 定位文档 + README "Why vs Claude Code?" | `confluence/research/kallax-positioning-2026-08-05.md`, `README.md` |
 | EPIC-172 | v3.32.18 | 公开化协同 — Lark/WeChat 群 + hosted frontstage + growth loop | `docs/community/`, `web/showcase/`, `confluence/research/kallax-growth-loop-2026-08-05.md` |
+| EPIC-173 | v3.32.19 | First-Screen Review Gate — README/dashboard 改前主公预览机制 | `scripts/check-first-screen.sh`, `.claude/rules/first-screen-gate.md` |
 
-**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 8 EPICs. Full docs + tests + scripts in each.
+**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 9 EPICs. Full docs + tests + scripts in each.
 
 ## 9. 引用 (lazy load on-demand)
 

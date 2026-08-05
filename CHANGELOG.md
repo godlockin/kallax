@@ -4,6 +4,57 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.32.19] - 2026-08-05
+
+### Release: First-Screen Review Gate (EPIC-173)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust/TS 改动, raw output: `git diff --stat` → 仅 scripts + docs + CLAUDE.md)
+
+#### Added (first-screen gate)
+
+- **`scripts/check-first-screen.sh`** — 新, scanner 检测 5 first-screen paths (README.md / README.en.md / web/index.html / web/showcase/index.html / docs/showcases/README.md), 退出码 0=PASS / 1=FAIL / 2=BLOCKED-env (跟 EPIC-163 1:1)
+- **`.claude/rules/first-screen-gate.md`** — 新, path-scoped lazy load (跟 EPIC-159 1:1)
+- **`docs/reference/first-screen-gate-2026-08-05.md`** — 新, reference doc (跟 loopx AGENTS.md 1:1)
+- **`jira/schemas/ticket-schema.json`** 改 — 加 `verification.first_screen_preview` + `verification.first_screen_approved_by` 字段 (跟 EPIC-152/163 verification 1:1)
+- **`scripts/hooks/pre-commit`** 改 — 集成 check-first-screen 阶段 (跟 EPIC-163 1:1)
+
+#### 5 First-Screen Paths
+
+| # | Path | Description |
+|---|------|-------------|
+| 1 | `README.md` | 主入口 |
+| 2 | `README.en.md` | English version |
+| 3 | `web/index.html` | hosted frontstage |
+| 4 | `web/showcase/index.html` | showcase index |
+| 5 | `docs/showcases/README.md` | showcase catalog |
+
+#### Approval Flow
+
+```bash
+# 方式1: env var
+KALLAX_FIRST_SCREEN_APPROVED=1 git commit ...
+
+# 方式2: marker file
+echo "approved_by: master" > .first-screen-approved
+```
+
+#### Tests (AC6: ≥6 case)
+
+- [x] **12/12 PASS** — `bash tests/integration/check-first-screen.test.sh`
+
+#### Docs
+
+- `CLAUDE.md` Section 5 加 check-first-screen.sh entry, Section 6 加 EPIC-173 entry
+- `confluence/decisions/epic-173-first-screen-gate-2026-08-05.md` (拍板记录)
+
+#### Compatibility
+
+- **0 改 source code** (仅 jira/schemas/ticket-schema.json 改)
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-163 check-private-context 1:1**
+- **跟 EPIC-159 path-scoped lazy load 1:1**
+- **跟 loopx AGENTS.md First-Screen Review Gate 1:1**
+
 ## [3.32.15] - 2026-08-05
 
 ### Release: Public Path (EPIC-169)
