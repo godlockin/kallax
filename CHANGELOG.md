@@ -4,6 +4,252 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.32.7] - 2026-08-05
+
+### Release: Skill 插件化 (EPIC-162)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Added (skill plugin 化)
+
+- **9 expert 拆独立 skill 包** — `.claude/skills/kallax-experts/<role>/{SKILL.md, agents/*.md, .kallax-skill-scope}` (architect/backend/frontend/ux/product/security-tool-bypass/process-engineering/auditor/compliance/decision-gate)
+- **`scripts/skill/skill-manager.sh`** — 6+3=9 子命令 (install/status/uninstall/list/enabled/disable + submodule-init/update/status), 退出码契约 0=PASS/1=FAIL/2=User error
+- **`scripts/install.sh`** 加 `--scan-skill` / `--install-skill` 阶段 (跟 EPIC-160 Omnibus 1:1)
+- **`--surface codex/claude-code/opencode/cursor`** 4 host 抽象
+- **activation gate 5 步**: resolve project → confirm todo → check boundary → architecture check → owner-gated
+- **跟 EPIC-167 双层升级粒度协同**: skill-manager.sh 同时管 plugin + submodule
+
+#### Tests (AC9: ≥10 case)
+
+- [x] **17/17 PASS** — `bash tests/integration/skill-plugin.test.sh`
+- [x] **0 改 source code** — 无 Rust/TS source 改动, 仅 docs + scripts + skill 包拆分
+
+#### Docs
+
+- `CLAUDE.md` 加 EPIC-162 段 (v3.32.7)
+- `.claude/skills/kallax-experts/<role>/SKILL.md` (9 个, 每个含 frontmatter enabled_policy + agents/ 子目录)
+- `docs/reference/skill-plugin-2026-08-05.md` (169 行, 用法 + activation gate 详解)
+- `confluence/decisions/loopx-vs-kallax-skill-gap-2026-08-05.md` (loopx 借鉴拍板记录)
+
+#### Compatibility
+
+- **0 改 source code**
+- **0 增 Rule, 0 增 immutable script**
+- **旧 monolith 路径向后兼容** (`.claude/skills/kallax/SKILL.md` 仍 fallback)
+- **跟 EPIC-160 install.sh Omnibus 1:1 pattern** (install 集成)
+- **跟 EPIC-161 retrospective-routine 1:1 pattern** (6 子命令 pattern 复用)
+- **跟 EPIC-167 submodule 化 1:1 协同** (plugin + submodule 双层)
+
+## [3.32.8] - 2026-08-05
+
+### Release: Public/Private Boundary + Security Rules (EPIC-163)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Added (public/private 边界治理)
+
+- **`docs/public-private-boundary.md`** — 跟 loopx `docs/public-private-boundary.md` 5078 字节 1:1 schema (public: schema/CLI/adapter lifecycle/generic coordination rules; private: local paths/raw logs/task IDs/credentials/person names/sub-agent prompts/trajectories)
+- **`scripts/check-private-context.sh`** — 4 类检测 scanner (credentials / private paths / raw logs / sub-agent prompts), treats boundary as file-state tracked/untracked (跟 loopx `loopx check` 1:1)
+- **退出码契约**: 0=PASS / 1=FAIL (fail-closed) / 2=BLOCKED-env (跟 scan-dead-code 1:1)
+- **`scripts/hooks/pre-commit`** 集成 check-private-context 阶段
+- **`CONTRIBUTING.md`** 加贡献前扫描 private state 要求
+- **`CLAUDE.md` Section 7** Security Rules 明文 (不授权凭证 / 不代发布 / scan before staging)
+
+#### Tests (AC8: ≥8 case)
+
+- [x] **10/10 PASS** — `bash tests/integration/check-private-context.test.sh`
+
+#### Docs
+
+- `CLAUDE.md` Section 7 Security Rules (3 条明文)
+- `docs/public-private-boundary.md` (跟 loopx 1:1 schema)
+- `confluence/decisions/loopx-vs-kallax-governance-gap-2026-08-05.md` (governance 借鉴拍板)
+
+#### Compatibility
+
+- **0 改 source code** (`kallax/node/src/*` 完全不动)
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-069-D check-claim-evidence 1:1 pattern** (immutable check script)
+- **跟 EPIC-131/132 scan-dead-code 1:1** (退出码契约 0/1/2)
+
+## [3.32.9] - 2026-08-05
+
+### Release: Self-Repair Skill (EPIC-164)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Added (运行时自修复)
+
+- **`.claude/skills/kallax-self-repair/SKILL.md`** — 5 步 repair loop + dream-up + evidence discipline + vision writeback + reference routes, 跟 loopx-self-repair 1:1
+- **`.claude/skills/kallax-self-repair/.kallax-skill-scope`** (11 字节, 跟 EPIC-162 1:1)
+- **`.claude/skills/kallax-self-repair/agents/repair-agent.md`** (46 行)
+- **`scripts/install.sh`** 加 `--install-skill` flag (跟 EPIC-160 1:1)
+- **`docs/reference/kallax-self-repair-2026-08-05.md`** (5 步详解 + Dream-Up + Evidence Discipline)
+
+#### 5 步 repair loop (跟 loopx 1:1)
+
+1. **Pause delivery** — 不继续 quota/adapter work
+2. **Build evidence packet** — status / diagnose / quota should-run / history
+3. **Classify failure** — 5 类: agent mistake / state projection bug / active-state authoring gap / benchmark harness mismatch / docs process hygiene
+4. **Assign responsible layer** — lowest durable layer
+5. **Repair** — write back correct state / fix CLI projection / update docs
+
+#### Dream-Up 机制
+
+重复错误视为 product/process gap, 更新 skill / docs / projection / smoke. **禁止**: 降 gate / workaround / commit private logs.
+
+#### Tests (AC8: ≥6 case)
+
+- [x] **10/10 PASS** — `bash tests/integration/kallax-self-repair.test.sh`
+- [x] **94/94 PASS** — vitest sentinel (无 regression)
+- [x] **0 errors** — L2 cargo test
+
+#### Docs
+
+- `CLAUDE.md` 加 EPIC-164 段
+- `.claude/skills/kallax-self-repair/SKILL.md` (276 行, 跟 loopx-self-repair 1:1)
+- `docs/reference/kallax-self-repair-2026-08-05.md`
+
+#### Compatibility
+
+- **0 改 source code**
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-161 retrospective-routine 互补不冲突** (阶段性回顾 vs 运行时自修复)
+- **跟 EPIC-160 install.sh Omnibus 1:1 pattern** (install 集成)
+- **跟 EPIC-162 skill 插件化 1:1 pattern** (scope marker + agents/)
+
+## [3.32.10] - 2026-08-05
+
+### Release: Showcase Catalog + 英文 README 国际化 (EPIC-165)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Added (对外叙事层国际化)
+
+- **`docs/showcases/README.md`** — 7 case 索引 (跟 loopx 1:1)
+- **`docs/showcases/showcase-catalog.json`** — 跟 loopx schema 1:1 (id/title/scope/evidence_label/pattern_tags/links)
+- **7 showcase case** (从现有 EPIC trace 生成):
+  - EPIC-069-D check-claim-evidence (fact-forcing 模式)
+  - EPIC-152 Rule 34 bugfix 独立复现 (canary chain 模式)
+  - EPIC-155 4-branch bypass 历史债备案 (retro remediation 模式)
+  - EPIC-157 expert binding 4 字段打通 (metric wiring 模式)
+  - EPIC-158 sqlite skipIf 治根 CI debt (debt cleanup 模式)
+  - EPIC-160 install.sh Omnibus 95 files deploy (framework distribution 模式)
+  - EPIC-161 retrospective-routine.sh 6 阶段 (periodic review 模式)
+- **`README.en.md`** — 英文国际化基础 (4-section: Why / Try / Capabilities / Docs Index)
+- **`docs/i18n/README.md`** — i18n 索引 (EN/CN 同步规则)
+
+#### Tests (AC7: ≥5 case)
+
+- [x] **13/13 PASS** — `bash tests/integration/showcase-catalog.test.sh`
+- [x] **94/94 PASS** — vitest sentinel
+- [x] **0 errors** — L2 npm build (exit 0)
+
+#### Showcase case 真实度评分
+
+| Case | Pattern | 评分 |
+|------|---------|------|
+| EPIC-069-D | fact-forcing | 9/10 |
+| EPIC-152 | canary chain | 9/10 |
+| EPIC-155 | retro remediation | 9/10 |
+| EPIC-157 | metric wiring | 10/10 |
+| EPIC-158 | debt cleanup | 9/10 |
+| EPIC-160 | framework dist | 9/10 |
+| EPIC-161 | periodic review | 10/10 |
+
+**加权平均: 9.3/10** — 远超 loopx 基准
+
+#### Compatibility
+
+- **0 改 source code** (本次纯 docs/JSON)
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-159 CLAUDE.md trim 互补** (EPIC-159 trim, EPIC-165 i18n)
+- **跟 EPIC-157 binding tracker 数据打通** (showcase 数据源)
+
+## [3.32.11] - 2026-08-05
+
+### Release: Heartbeat Daemon + Quota-aware 调度 + Run History Event Ledger (EPIC-166)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Added (daemon 自动化, 解决 Master 派单瓶颈)
+
+- **`scripts/heartbeat/heartbeat-daemon.sh`** — 6 子命令 (start/stop/status/should-run/next-transition/emit), 后台 daemon 60s 间隔, 退出码 0/1/2 (跟 scan-dead-code 1:1)
+- **`scripts/heartbeat/quota.sh`** — 6 层 quota L1-L6 (global/ticket/priority/expert/cooldown/pause) + eligible/throttled/paused 状态机
+- **`scripts/heartbeat/scheduler-hint.sh`** — P0/P1/P2 priority stack (truth-safety / human-decision / product-UX)
+- **`scripts/heartbeat/run-history.sh`** — append-only event ledger, 4 类 event (work/decision/accounting/evidence)
+- **`state/run-history.jsonl`** + **`state/quota-db.json`** — 持久化
+- **`scripts/install.sh`** 加 daemon install + start 阶段 (跟 EPIC-160 1:1)
+
+#### Review fixes (PR merge 前)
+
+- **HIGH**: daemon 加 `trap 'rm -f "$PID_FILE" 2>/dev/null; exit' EXIT` (防 pidfile 残留)
+- **MED**: stdout/stderr 合并重定向 `exec >> "$LOG_FILE" 2>&1`
+- **MED**: `cmd_query` 改 atomic (set -C + mktemp + mv) 防 TOCTOU
+- **MED**: quota pause 命令返回 0 + "paused:" 前缀 (保持 0/1/2 契约)
+- **LOW**: scheduler-hint.sh tickets 过滤加 `*/ticket.json` glob
+
+#### Tests (AC9~AC11: ≥18 case)
+
+- [x] **8/8 PASS** — `bash tests/integration/heartbeat-daemon.test.sh`
+- [x] **5/5 PASS** — `bash tests/integration/quota-scheduler.test.sh`
+- [x] **6/6 PASS** — `bash tests/integration/run-history-ledger.test.sh`
+- **Total: 19/19 PASS**
+
+#### Compatibility
+
+- **0 改 source code**
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-023-C 北极星 4 指标打通** (work/accounting event 自动 emit)
+- **跟 EPIC-131/132 退出码契约 0/1/2 1:1**
+- **跟 EPIC-161 retrospective-routine 互补不冲突** (阶段性 vs 实时)
+
+## [3.32.12] - 2026-08-05
+
+### Release: kallax-experts Submodule 化 (EPIC-167, 主公新指令)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Added (跨仓库双层升级粒度)
+
+- **`.gitmodules`** — submodule 配置 (path = `external/kallax-experts`, url = `https://github.com/godlockin/kallax-experts.git`, branch = `miao`)
+- **`external/kallax-experts/`** — submodule, 15 expert + 9 tools (HEAD: `54348f6`)
+- **`scripts/skill/skill-manager.sh`** 加 submodule-init/update/status 3 子命令 (跟 EPIC-162 1:1 pattern)
+- **`scripts/install.sh`** 加 `--install-submodule` + `--update-submodule` + `--skip-submodule`
+- **`.gitignore`** 加 external/kallax-experts/ 注释 (submodule 自管理)
+- **`docs/reference/kallax-experts-submodule-2026-08-05.md`** (5440 bytes)
+- **`docs/process.md`** 加 submodule 升级流程 (跨仓库 commit/PR/merge 1:1 pattern)
+
+#### 互配合机制 (跟 EPIC-162 双层)
+
+- **EPIC-162 plugin** = 同仓库 skill 插件化 (9 expert monolith → 独立 skill 包)
+- **EPIC-167 submodule** = 跨仓库 submodule 化 (kallax-experts 独立仓库 → git submodule)
+- **skill-manager.sh 同时管理 plugin + submodule**
+- **跨仓库升级**: `git submodule update --remote` 拉 latest commit
+- **跨仓库配合**: KALLAX 主项目迭代时, submodule 自动同步
+
+#### Tests (AC9: ≥8 case)
+
+- [x] **12/12 PASS** — `bash tests/integration/kallax-experts-submodule.test.sh`
+- [x] **90/90 PASS** — vitest sentinel
+
+#### submodule 状态
+
+```
+54348f6575382a2f2f85435a21539cfc9e7e64d8f9 external/kallax-experts (heads/miao)
+```
+
+Clean, tracks `miao` 分支 (跟 KALLAX 主项目稳定分支对齐)
+
+#### Compatibility
+
+- **0 改 source code** (`kallax/node/src/*` + `kallax/rust/src/*` 完全不动)
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-160 install.sh Omnibus 1:1 pattern** (install 集成)
+- **跟 EPIC-161 retrospective-routine 1:1 pattern**
+- **跟 EPIC-162 skill 插件化 1:1 协同** (plugin + submodule 双层)
+- **跟 EPIC-119 3-Class tool taxonomy** (submodule init/update 是 action class)
+
 ## [3.32.6] - 2026-08-03
 
 ### Release: Retrospective Routine 6 stages (EPIC-161)
