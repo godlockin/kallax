@@ -1,77 +1,123 @@
-# KALLAX Sponsor
+# KALLAX Sponsor Program
 
-Thank you for considering sponsoring KALLAX!
+Support the development of KALLAX and help build the future of AI-assisted development.
 
----
+## Why Sponsor KALLAX?
 
-## Why Sponsor?
+KALLAX is an open-source project that brings professional-grade multi-agent orchestration to every developer. Your sponsorship helps:
 
-KALLAX is a multi-agent collaboration framework developed and maintained by the community. Your sponsorship helps:
+- **Maintainers:** Fund core development and maintenance
+- **Infrastructure:** Cover hosting, CI/CD, and tooling costs
+- **Community:** Support community events, documentation, and outreach
+- **Innovation:** Enable research into new AI development patterns
 
-- Cover hosting and infrastructure costs
-- Support ongoing development
-- Recognize contributor efforts
+## Sponsorship Tiers
 
----
+### Gold Sponsor ($500/month)
 
-## Ways to Sponsor
+- Logo placement on KALLAX homepage
+- Priority feature request queue
+- Direct line to maintainers
+- Monthly development updates
+- Social media shoutouts
+- Sponsor page listing
+
+### Silver Sponsor ($200/month)
+
+- Logo on sponsor page
+- Feature request priority
+- Quarterly updates
+- Community recognition
+- Sponsor page listing
+
+### Bronze Sponsor ($50/month)
+
+- Sponsor page listing
+- Community recognition
+- Early access to new features
+- Input on roadmap
+
+### Individual Supporter ($10/month)
+
+- GitHub sponsor badge
+- Community recognition
+- Know you're supporting OSS
+
+## How to Sponsor
 
 ### GitHub Sponsors
 
-The easiest way to sponsor is via GitHub Sponsors:
+The easiest way to sponsor is through GitHub Sponsors:
 
-- **GitHub Sponsors Page**: [github.com/sponsors/godlockin](https://github.com/sponsors/godlockin)
+1. Visit [github.com/sponsors/your-org](https://github.com/sponsors/your-org)
+2. Select your tier
+3. Complete payment via GitHub
 
-### One-time Donations
+### Open Collective
 
-For one-time donations, please contact us:
+For organizations that prefer alternative payment methods:
 
-- **WeChat**: huangrt00 (备注 "KALLAX 赞助")
+1. Visit [opencollective.com/kallax](https://opencollective.com/kallax)
+2. Create account or contribute as guest
+3. Select contribution type
+
+### Enterprise Sponsorship
+
+For larger enterprise sponsorships or custom arrangements:
+
+Email: sponsors@kallax.example.com
+
+## Current Sponsors
+
+We gratefully acknowledge our sponsors. To be added to this list, become a sponsor and submit a PR.
+
+*No sponsors yet — be the first!*
+
+## What Your Sponsorship Goes Toward
+
+| Category | Monthly Cost | Notes |
+|----------|--------------|-------|
+| CI/CD | $50 | GitHub Actions minutes |
+| Hosting | $100 | GitHub Pages, CDN |
+| Tools | $50 | Design, productivity tools |
+| Events | $200 | Virtual meetups, conferences |
+| Development | Variable | Maintainer stipends |
+
+## Benefits Summary
+
+| Benefit | Gold | Silver | Bronze | Individual |
+|---------|------|--------|--------|------------|
+| Homepage Logo | ✓ | - | - | - |
+| Sponsor Page | ✓ | ✓ | ✓ | ✓ |
+| Feature Priority | High | Medium | Low | - |
+| Direct Access | ✓ | - | - | - |
+| Monthly Updates | ✓ | - | - | - |
+| Quarterly Updates | - | ✓ | - | - |
+| Social Shoutout | ✓ | ✓ | - | - |
+| Early Access | ✓ | ✓ | ✓ | ✓ |
+
+## Recognition
+
+All sponsors are recognized:
+
+- **GitHub Sponsors profile:** Listed on our GitHub profile
+- **README:** Featured in our README sponsor section
+- **Website:** Listed on [web/index.html](../web/index.html)
+- **Release Notes:** Mentioned in monthly changelog
+
+## Questions?
+
+Contact us at sponsors@kallax.example.com
+
+## Commitment
+
+KALLAX is committed to:
+
+- **Transparency:** Regular financial updates
+- **Community First:** Sponsorship doesn't buy influence over open decisions
+- **Open Source:** All sponsored features remain open
+- **Sustainability:** Long-term project health over short-term gains
 
 ---
 
-## Sponsor Tiers
-
-| Tier | Amount | Benefits |
-|------|--------|----------|
-| Star | $5/month | Name in README |
-| Supporter | $20/month | Name in README + CHANGELOG |
-| Bronze | $50/month | Logo on website + special thanks |
-| Silver | $100/month | All above + early access to features |
-| Gold | $500/month | All above + direct line to maintainers |
-
----
-
-## Sponsors
-
-### Current Sponsors
-
-*No sponsors yet. Be the first!*
-
-### Past Sponsors
-
-*None yet.*
-
----
-
-## Use of Funds
-
-Sponsorship funds will be used for:
-
-1. **Infrastructure**: Domain, hosting, CI/CD
-2. **Development**: Time for maintainers
-3. **Community**: Events, meetups, swag
-
----
-
-## Contact
-
-- **Email**: (TBD)
-- **GitHub**: [godlockin/kallax](https://github.com/godlockin/kallax)
-- **WeChat**: huangrt00
-
----
-
-## Thank You!
-
-Your support makes KALLAX possible. Thank you!
+*Thank you for supporting KALLAX!*

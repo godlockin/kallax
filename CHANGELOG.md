@@ -114,6 +114,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **跟 EPIC-165 Showcase 1:1 structure** (8 sections, ≥300 行)
 - **跟 EPIC-069-D/074/152/159/162/163/164/169/172 协同** (战略沉淀引用)
 
+## [3.32.18] - 2026-08-05
+
+### Release: 公开化协同 (EPIC-172)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust/TS 改动, raw output: `git diff --stat` → 仅 docs + web + CONTRIBUTING.md)
+
+#### Added (公开化协同, 跟 loopx 1:1)
+
+- **`docs/community/README.md`** — Lark + WeChat 群入口 (跟 loopx 1:1, 125 行)
+- **`docs/community/lark-qr-placeholder.md`** + **`wechat-qr-placeholder.md`** — QR code 占位 (53 + 52 行)
+- **`docs/community/growth-loop.md`** — GitHub star → Lark 群 → hosted showcase → 真实 use case → viral narrative 路径 (228 行)
+- **`docs/sponsor/README.md`** — 赞助信息 (123 行)
+- **`web/showcase/index.html`** — hosted frontstage scaffold (256 行)
+- **`confluence/research/kallax-growth-loop-2026-08-05.md`** — loopx 公开化路径分析 + KALLAX 90/180 天 KPI (441 行)
+
+#### 90/180 天 KPI
+
+- **90 天**: 100 stars + 50 Lark + 30 WeChat + 1 showcase + 3 articles + 5 early adopter
+- **180 天**: 500 stars + 200 Lark + 100 WeChat + 10 showcase + 12 articles + 20 early adopter
+
+#### Tests (AC7: ≥6 case)
+
+- [x] **7/7 PASS** — `bash tests/integration/public-coord-assets.test.sh`
+
+#### Compatibility
+
+- **0 改 source code** (仅 docs + web + CONTRIBUTING)
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-169 公开化路径 1:1 协同** (README.en + CONTRIBUTING + .github 基础设施)
+- **跟 EPIC-171 战略沉淀 1:1 协同** (ICP + elevator pitch 复用)
+- **跟 loopx 1.5k stars 公开化路径 1:1** (Lark + WeChat + GitHub Pages)
+
 ## [3.32.7] - 2026-08-05
 
 ### Release: Skill 插件化 (EPIC-162)
