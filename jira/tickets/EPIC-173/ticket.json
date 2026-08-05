@@ -1,0 +1,78 @@
+{
+  "ticket_id": "EPIC-173",
+  "epic": "EPIC-173",
+  "phase": "PHASE-022",
+  "title": "First-Screen Review Gate — README/dashboard 改前主公预览机制",
+  "status": "in_progress",
+  "priority": "P2",
+  "type": "feature",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "docs",
+  "handoff_depth": "L2",
+  "description": "EPIC-173 — 借鉴 loopx AGENTS.md First-Screen Review Gate: README/dashboard 改前主公预览机制.\n\n**Context**: 主公 2026-08-05 Phase 5 D 拍板. loopx AGENTS.md 规定: 'Before committing, pushing, or self-merging changes that alter the first viewport, hero block, primary CTA, or opening navigation of README, hosted frontstage, showcase index pages... show the user a preview first and wait for approval.'\n\n**设计 (跟 EPIC-163 check-private-context 1:1)**:\n1. **scripts/check-first-screen.sh** — scanner 检测 first-screen 改动 (README.md, README.en.md, web/index.html, web/showcase/index.html, hosted frontstage 等)\n2. **trigger**: 当 staged diff 命中 first-screen paths → 提示主公预览, 等批准\n3. **pre-commit hook 集成**: 检查 staged first-screen files → 触发 master approval 流程\n4. **ticket.json schema**: 改 first-screen 加 `verification.first_screen_preview` + `verification.first_screen_approved_by` 字段\n5. **0 增 Rule, 0 改 source code** (仅新 scripts + docs + ticket schema)\n\n**跟 EPIC-163 check-private-context 1:1 协同** (immutable check script + pre-commit 集成)\n**跟 EPIC-069-D check-claim-evidence 1:1 协同** (boundary check)\n**跟 EPIC-074 4-branch flow 联合** (first-screen PR 必走 4-PR)",
+  "file_scope": {
+    "includes": [
+      "scripts/check-first-screen.sh",
+      "scripts/hooks/pre-commit",
+      ".claude/rules/first-screen-gate.md",
+      "node/src/schema/ticket-schema.ts",
+      "tests/integration/check-first-screen.test.sh",
+      "docs/reference/first-screen-gate-2026-08-05.md",
+      "CLAUDE.md",
+      "CHANGELOG.md",
+      "confluence/decisions/epic-173-first-screen-gate-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: scripts/check-first-screen.sh scanner 检测 5 first-screen path (README.md + README.en.md + web/index.html + web/showcase/index.html + hosted frontstage)",
+    "AC2: scanner 退出码 0=PASS / 1=FAIL (fail-closed) / 2=BLOCKED-env",
+    "AC3: pre-commit hook 集成 check-first-screen 阶段 (staged first-screen files 检测)",
+    "AC4: ticket.json schema 加 first_screen_preview + first_screen_approved_by 字段 (跟 EPIC-163 verification 1:1)",
+    "AC5: .claude/rules/first-screen-gate.md path-scoped lazy load (跟 EPIC-159 1:1)",
+    "AC6: tests/integration/check-first-screen.test.sh ≥6 case PASS",
+    "AC7: 5-Level Verify L1-L5",
+    "AC8: 4-PR 全程 (跟 EPIC-074 1:1)",
+    "AC9: 0 改 source code, 0 增 Rule, 0 增 immutable script"
+  ],
+  "labels": [
+    "feature",
+    "first-screen-gate",
+    "loopx-borrow",
+    "P2",
+    "phase-022"
+  ],
+  "expert_binding": {
+    "suggested_expert": "process-engineering",
+    "actual_expert": "process-engineering",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行)",
+    "EPIC-054-A (worktree 隔离)",
+    "EPIC-074 (4-branch flow)",
+    "EPIC-159 (path-scoped lazy load)",
+    "EPIC-163 (check-private-context 1:1)",
+    "EPIC-069-D (check-claim-evidence 1:1)",
+    "loopx AGENTS.md First-Screen Review Gate"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": "scripts/check-first-screen.sh + .claude/rules/ + ticket-schema + tests + docs"
+  },
+  "deliverables": [
+    "scripts/check-first-screen.sh (新, scanner)",
+    "scripts/hooks/pre-commit 改 (加 check-first-screen 阶段)",
+    ".claude/rules/first-screen-gate.md (新, path-scoped)",
+    "node/src/schema/ticket-schema.ts 改 (加 first_screen 字段)",
+    "tests/integration/check-first-screen.test.sh (新, ≥6 case)",
+    "docs/reference/first-screen-gate-2026-08-05.md (新)",
+    "CLAUDE.md 改",
+    "CHANGELOG.md 改 ([3.32.19])",
+    "confluence/decisions/epic-173-first-screen-gate-2026-08-05.md (新)"
+  ],
+  "estimated_hours": 8,
+  "created_by": "master (主公 2026-08-05 Phase 5 D 拍板: loopx First-Screen Review Gate 借鉴)"
+}
