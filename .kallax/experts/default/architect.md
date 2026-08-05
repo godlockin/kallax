@@ -2,6 +2,7 @@
 id: kallax.architect.001
 name: 🏗️ 架构
 tier: default
+enabled_policy: default
 worktree_role: conductor
 review_group: A
 phase: 1

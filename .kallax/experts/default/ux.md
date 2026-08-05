@@ -2,6 +2,7 @@
 id: kallax.ux.001
 name: 🖌️ UX
 tier: default
+enabled_policy: default
 worktree_role: performer
 review_group: B
 phase: 2

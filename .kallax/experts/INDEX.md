@@ -62,3 +62,17 @@
 - Symptom 关键词每 2 周 review (master 主导, 增删症状)
 - "预留" 角色启用条件: 激活率 > 5% (用 EPIC-021-F expert_invocations 数据)
 - 新角色加入: 更新此 INDEX + 建对应 `experts/default/<role>.md`
+
+## Extended Tier Experts
+
+Extended experts are specialized, domain-specific skills that complement the default tier:
+
+| Expert | Domain | Trigger |
+|--------|--------|---------|
+| auditor | compliance | audit, verify, evidence |
+| process-engineering | governance | process, workflow, rule |
+| security-tool-bypass | security | bypass, injection |
+| compliance | legal | GDPR, SOX |
+| decision-gate | review | decision, rationale |
+
+See `experts/extended/` for detailed expert files.

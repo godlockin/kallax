@@ -1,0 +1,75 @@
+{
+  "ticket_id": "EPIC-170",
+  "epic": "EPIC-170",
+  "phase": "PHASE-022",
+  "title": "EPIC-162 Expert Plugin Complete — 1 Expert 1 Skill Package + Activation Gates",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "feature",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L2",
+  "description": "EPIC-170 — EPIC-162 完整 plugin 化升级: 把已拆的 9 expert (default+extended) 完全 plugin 化, 1 expert 1 skill 包, 跟 loopx 6 独立 skill 1:1 模式.\n\n**Context**: EPIC-162 已完成 9 expert 拆包, 但未完全 plugin 化. 本 EPIC 升级到完整 plugin:\n1. 每个 expert skill 包加 `enabled_policy` 配置机制\n2. skill-manager.sh 加 enable/disable 持久化\n3. skill 包加 `activation_gates` 字段 (5 步 gate)\n4. skill-manager.sh 加 validate 子命令\n\n**核心改动**:\n\n1. **enabled_policy 机制**: 每个 expert skill 包加 `.kallax-skill-policy.json` 或 SKILL.md frontmatter `enabled_policy` 字段 (default/enabled/disabled/owner-gated).\n\n2. **skill-policy.sh (新)**: 持久化 policy 到 `state/skill-policy.json`. 子命令: enable/disable/list/check.\n\n3. **5 步 activation gates**:\n   - Gate 1: resolve_project — 确认 .kallax/state/state.json 存在\n   - Gate 2: confirm_todo — 确认 jira/tickets/ 下有 in_progress ticket\n   - Gate 3: check_boundary — 确认 ticket file_scope 覆盖当前文件\n   - Gate 4: architecture_check — 确认 .kallax/experts/INDEX.md 存在\n   - Gate 5: owner_gated — 确认 skill owner 授权 (owner-gated policy 专用)\n\n4. **skill-manager.sh 增强**: 加 validate/list/enable/disable 4 子命令.\n\n**scope**:\n- 改: scripts/skill/skill-manager.sh (+enable/disable/validate 子命令)\n- 加: scripts/skill/skill-policy.sh (新, 持久化 policy)\n- 改: .kallax/experts/default/* (加 enabled_policy frontmatter)\n- 改: .kallax/experts/extended/* (加 enabled_policy frontmatter)\n- 加: tests/integration/skill-plugin-complete.test.sh (≥6 case)\n- 加: docs/reference/skill-plugin-complete-2026-08-05.md\n- 改: CHANGELOG.md + CLAUDE.md\n- 不改: source code / immutable scripts",
+  "file_scope": {
+    "includes": [
+      "scripts/skill/skill-manager.sh",
+      "scripts/skill/skill-policy.sh",
+      ".kallax/experts/default/*.md",
+      ".kallax/experts/extended/*.md",
+      "tests/integration/skill-plugin-complete.test.sh",
+      "docs/reference/skill-plugin-complete-2026-08-05.md",
+      "jira/tickets/EPIC-170/",
+      "CHANGELOG.md",
+      "CLAUDE.md",
+      "confluence/decisions/epic-170-complete-plugin-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: 9 expert skill 包加 enabled_policy frontmatter (default/enabled/disabled/owner-gated)",
+    "AC2: skill-policy.sh enable/disable/list/check 子命令 PASS",
+    "AC3: policy 持久化到 state/skill-policy.json",
+    "AC4: skill-manager.sh validate 子命令检查 5 步 gate",
+    "AC5: tests/integration/skill-plugin-complete.test.sh ≥6 case PASS",
+    "AC6: 跨 package 互引用验证 PASS",
+    "AC7: policy 失效回退机制 PASS",
+    "AC8: docs/reference/skill-plugin-complete-2026-08-05.md 新建",
+    "AC9: CHANGELOG [3.32.16] entry",
+    "AC10: CLAUDE.md 加 EPIC-170 引用",
+    "AC11: confluence/decisions/epic-170-complete-plugin-2026-08-05.md 新建",
+    "AC12: 4-branch flow 走完 (feature → testing → main → miao)",
+    "AC13: 0 改 source code (kallax/node/src/*, kallax/rust/* 完全不动)"
+  ],
+  "labels": [
+    "feature",
+    "plugin",
+    "expert",
+    "skill",
+    "phase-022"
+  ],
+  "rule_references": [
+    "EPIC-162 (9 expert 拆包基础)",
+    "EPIC-159 (.claude/rules/*.md path-scoped lazy load)",
+    "EPIC-069-D (check-claim-evidence 透明可验证)",
+    "EPIC-074 (4-branch flow)"
+  ],
+  "verification": {
+    "diagnosis_phase": "DONE",
+    "inventory_complete": true,
+    "scope": "scripts/skill + experts + tests + docs"
+  },
+  "deliverables": [
+    "scripts/skill/skill-manager.sh (改, +enable/disable/validate)",
+    "scripts/skill/skill-policy.sh (新, 持久化 policy)",
+    ".kallax/experts/default/*.md (改, +enabled_policy frontmatter)",
+    ".kallax/experts/extended/*.md (改, +enabled_policy frontmatter)",
+    "tests/integration/skill-plugin-complete.test.sh (新, ≥6 case)",
+    "docs/reference/skill-plugin-complete-2026-08-05.md (新)",
+    "jira/tickets/EPIC-170/{ticket.json,ticket.md} (新)",
+    "CHANGELOG.md ([3.32.16] entry)",
+    "CLAUDE.md (加 EPIC-170 段)",
+    "confluence/decisions/epic-170-complete-plugin-2026-08-05.md (新)"
+  ],
+  "estimated_hours": 4,
+  "created_by": "master (Phase 5C 拍板: EPIC-162 完整 plugin 化)"
+}

@@ -4,6 +4,7 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+<<<<<<< HEAD
 ## [3.32.15] - 2026-08-05
 
 ### Release: Public Path (EPIC-169)
@@ -38,6 +39,46 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **0 增 Rule, 0 增 immutable script**
 - **跟 EPIC-165 showcase + i18n 1:1 兼容**
 
+## [3.32.16] - 2026-08-05
+
+### Release: Expert Plugin Complete (EPIC-170)
+
+**Scope**: 0 core + 0 engine + 0 server (无 Rust 改动, 仅 skill + scripts + docs)
+
+#### Added (expert plugin complete)
+
+- **`scripts/skill/skill-policy.sh`** — 新, enabled_policy 持久化 (enable/disable/list/check/reset 子命令)
+- **`scripts/skill/skill-manager.sh`** — 增强, validate 子命令检查 5 步 activation gate
+- **9 expert enabled_policy frontmatter** — architect/backend/frontend/pm/product/security/ux (default) + auditor/process-engineering (extended)
+- **state/skill-policy.json** — policy 持久化存储
+
+#### 5-Step Activation Gates
+
+- Gate1: resolve_project (state.json exists)
+- Gate2: confirm_todo (in_progress ticket)
+- Gate3: check_boundary (file in scope)
+- Gate4: architecture_check (INDEX.md exists)
+- Gate5: owner_gated (owner authorization)
+
+#### Tests (AC5: ≥6 case)
+
+- [x] **12/12 PASS** — `bash tests/integration/skill-plugin-complete.test.sh`
+- [x] **0 改 source code** — 仅 skill 包 + scripts + docs
+
+#### Docs
+
+- `docs/reference/skill-plugin-complete-2026-08-05.md` (新, activation gate 详解)
+- `confluence/decisions/epic-170-complete-plugin-2026-08-05.md` (新, decision record)
+- `CLAUDE.md` 加 EPIC-170 段 (v3.32.16)
+
+#### Compatibility
+
+- **0 改 source code**
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-162 1:1 协同** (EPIC-162 拆包, EPIC-170 complete plugin 化)
+- **跟 loopx 6-skill pattern 1:1** (1 expert 1 skill 包)
+
+=======
 ## [3.32.7] - 2026-08-05
 
 ### Release: Skill 插件化 (EPIC-162)
