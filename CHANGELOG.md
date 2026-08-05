@@ -152,6 +152,63 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **跟 EPIC-165 Showcase 1:1 structure** (8 sections, ≥300 行)
 - **跟 EPIC-069-D/074/152/159/162/163/164/169/172 协同** (战略沉淀引用)
 
+## [3.32.21] - 2026-08-05
+
+### Release: Security Rules Extended (EPIC-175)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust/TS 改动, raw output: `git diff --stat` → 仅 docs + scripts + tests + CHANGELOG + CLAUDE.md)
+
+#### Added (Security Rules 强化, 跟 loopx 1:1)
+
+- **`scripts/check-release-capability.sh`** — Release Capability Usage Gate scanner (4 字段检测: activation / privacy / rollback / link)
+- **`scripts/automation-monitor-todos.sh`** — Heartbeat 集成 automation monitor (跟 EPIC-166 daemon 1:1, generic heartbeat prompt rules)
+- **`scripts/check-benchmark-smoke.sh`** — Benchmark smoke 分类 (boundary / ledger / classifier / adapter 4 类)
+- **`docs/reference/capability-placement.md`** — Capability placement 决策树 (5 个 placement 选项: name / extend / built-in / extension provider / package)
+- **`docs/process/projection-sink-design.md`** — Projection sink 设计原则 (stable input / lineage / public-safe 3 原则)
+
+#### Community Contributors Section (AC1)
+
+- **CHANGELOG.md** 加 Community Contributors 模板 (中英双语, 跟 loopx 1:1):
+  ```markdown
+  ### Community Contributors (社区贡献者)
+
+  感谢以下贡献者参与本版本:
+  - [@username](https://github.com/username) — PR #XXX: 功能描述
+  ```
+
+#### Tests (AC7: ≥5 case)
+
+- [x] **≥5 case PASS** — `bash tests/integration/security-rules-extended.test.sh`
+- [x] **0 改 source code** — 无 Rust/TS source 改动, 仅 docs + scripts + tests
+
+#### Community Contributors (社区贡献者)
+
+本版本感谢以下贡献者 (跟 loopx Community Contributors 1:1):
+
+> **模板**:
+> ```markdown
+> ### Community Contributors
+>
+> Thanks to our contributors:
+> - [@username](https://github.com/username) — PR #XXX: Description
+> ```
+>
+> **中文版**:
+> ```markdown
+> ### 社区贡献者
+>
+> 感谢以下贡献者参与本版本:
+> - [@username](https://github.com/username) — PR #XXX: 功能描述
+> ```
+
+#### Compatibility
+
+- **0 改 source code** (仅 docs + scripts + tests + CHANGELOG + CLAUDE.md)
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-163 Security Rules 1:1 协同** (Public/Private Boundary 扩展)
+- **跟 EPIC-166 Heartbeat Daemon 1:1 协同** (automation monitor 集成)
+- **跟 loopx Security Rules 1:1** (Release Contributor Attribution + Release Capability Usage Gate + Capability Placement)
+
 ## [3.32.18] - 2026-08-05
 
 ### Release: 公开化协同 (EPIC-172)

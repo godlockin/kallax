@@ -114,7 +114,7 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | `check-smoke-retention.sh` | `scripts/` | EPIC-174, smoke >=500 行检测 |
 | `smoke-size-report.sh` | `scripts/audit/` | EPIC-174, smoke 状态报告 |
 
-## 6. Recent EPICs (v3.32.2 → v3.32.18, 主公 2026-08-02/03/05 拍板)
+## 6. Recent EPICs (v3.32.2 → v3.32.21, 主公 2026-08-02/03/05 拍板)
 
 | EPIC | Version | 关键 | 工具 / 文件 |
 |---|---|---|---|
@@ -129,8 +129,9 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | EPIC-170 | v3.32.16 | Expert plugin complete — enabled_policy + activation gates (9 expert 1:1 loopx) | `scripts/skill/skill-manager.sh`, `scripts/skill/skill-policy.sh` |
 | EPIC-171 | v3.32.17 | 战略沉淀 — 3 视角 (PR+CTO+Marketing) 定位文档 + README "Why vs Claude Code?" | `confluence/research/kallax-positioning-2026-08-05.md`, `README.md` |
 | EPIC-172 | v3.32.18 | 公开化协同 — Lark/WeChat 群 + hosted frontstage + growth loop | `docs/community/`, `web/showcase/`, `confluence/research/kallax-growth-loop-2026-08-05.md` |
+| EPIC-175 | v3.32.21 | Security Rules 强化 — Release Capability Usage Gate + Contributor Attribution + Capability Placement 决策树 | `scripts/check-release-capability.sh`, `scripts/automation-monitor-todos.sh`, `scripts/check-benchmark-smoke.sh`, `docs/reference/capability-placement.md`, `docs/process/projection-sink-design.md` |
 
-**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 8 EPICs. Full docs + tests + scripts in each.
+**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 9 EPICs. Full docs + tests + scripts in each.
 
 ## 9. 引用 (lazy load on-demand)
 
