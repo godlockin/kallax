@@ -27,7 +27,7 @@
 #   curl -fsSL <raw-url>/scripts/install.sh | bash
 set -euo pipefail
 
-VERSION="2.3.0-symlink-default-10tool"
+VERSION="2.4.0-skill-plugin-EPIC-162"
 INSTALL_MODE="install"  # install | upgrade
 TARGET_MODE="auto"      # auto | all | specific-list
 INSTALL_METHOD="symlink"   # symlink (DEFAULT v2.3.0) | copy (legacy)
@@ -37,6 +37,8 @@ DRY_RUN=false
 SKIP_CLI=false; SKIP_SKILLS=false; SKIP_COMMANDS=false
 # EPIC-160: framework 全部件 deploy (rules/experts/hooks)
 SKIP_RULES=false; SKIP_EXPERTS=false; SKIP_HOOKS=false
+# EPIC-162: skill plugin scan/install
+SKIP_SKILL=false; SCAN_SKILL=false; INSTALL_SKILL=""
 INVENTORY_ONLY=false
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; BOLD='\033[1m'; DIM='\033[2m'; NC='\033[0m'
@@ -248,6 +250,9 @@ parse_args() {
       --skip-rules)       SKIP_RULES=true; shift ;;
       --skip-experts)     SKIP_EXPERTS=true; shift ;;
       --skip-hooks)       SKIP_HOOKS=true; shift ;;
+      --skip-skill)       SKIP_SKILL=true; shift ;;
+      --scan-skill)       SCAN_SKILL=true; shift ;;
+      --install-skill)    INSTALL_SKILL="$2"; shift 2 ;;
       --inventory)        INVENTORY_ONLY=true; shift ;;
       --update)           INSTALL_MODE="update"; shift ;;
       --symlink)          INSTALL_METHOD="symlink"; shift ;;
@@ -816,6 +821,46 @@ install_hooks_for_tool() {
   fi
 }
 
+# ── EPIC-162: skill plugin install (9 expert packages) ───────────────────
+
+install_skill_plugins_for_tool() {
+  local tool="$1" dst count
+  dst="$HOME/.claude/skills/kallax-experts"
+  if $DRY_RUN; then
+    log "[dry-run] would deploy kallax-experts/ → $dst"
+    return 0
+  fi
+  if [ -d "$PROJECT_ROOT/.claude/skills/kallax-experts" ]; then
+    mkdir -p "$dst"
+    if [ "${INSTALL_METHOD:-symlink}" = "copy" ]; then
+      cp -r "$PROJECT_ROOT/.claude/skills/kallax-experts/." "$dst/" 2>/dev/null || true
+    else
+      # Symlink per-file (不破坏 user-customized files)
+      for f in "$PROJECT_ROOT"/.claude/skills/kallax-experts/*/SKILL.md; do
+        [ -f "$f" ] || continue
+        local skill_name
+        skill_name=$(basename "$(dirname "$f")")
+        mkdir -p "$dst/$skill_name"
+        ln -sf "$f" "$dst/$skill_name/SKILL.md" 2>/dev/null || true
+        # Copy agents dir
+        if [ -d "$(dirname "$f")/agents" ]; then
+          rm -rf "$dst/$skill_name/agents"
+          cp -r "$(dirname "$f")/agents" "$dst/$skill_name/" 2>/dev/null || true
+        fi
+      done
+    fi
+    count=$(find "$dst" -maxdepth 2 -type l -o -maxdepth 2 -type f 2>/dev/null | wc -l | tr -d ' ')
+    ok "[$tool] kallax-experts/ deployed → $dst ($count files)"
+  else
+    warn "[$tool] no $PROJECT_ROOT/.claude/skills/kallax-experts/ found, skipping"
+  fi
+
+  # EPIC-167: submodule status check
+  if [ -f "$PROJECT_ROOT/.gitmodules" ]; then
+    log "[$tool] .gitmodules detected — run 'bash scripts/skill/skill-manager.sh submodule-init' to initialize"
+  fi
+}
+
 print_inventory() {
   log "Inventory — KALLAX framework parts (EPIC-160)"
   echo ""
@@ -899,6 +944,7 @@ install_for_tool() {
   if ! $SKIP_RULES;     then install_rules_for_tool "$tool"; fi
   if ! $SKIP_EXPERTS;   then install_experts_for_tool "$tool"; fi
   if ! $SKIP_HOOKS;     then install_hooks_for_tool "$tool"; fi
+  if ! $SKIP_SKILL;     then install_skill_plugins_for_tool "$tool"; fi
   install_config_for_tool "$tool"
 }
 
