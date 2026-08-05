@@ -1,0 +1,53 @@
+{
+  "cases": [
+    {
+      "id": 1,
+      "title": "Epic-Driven Development",
+      "description": "KALLAX EPIC 4-Piece: A+B review + README + lessons + signoff",
+      "path": "../EPIC/",
+      "evidence": "jira/tickets/EPIC-XXX/"
+    },
+    {
+      "id": 2,
+      "title": "5-Level Verify Pipeline",
+      "description": "L1 git → L2 stdout → L3 4-expert → L4 independent → L5 boundary",
+      "path": "../../scripts/verify/",
+      "evidence": "scripts/verify/level-{1..5}.sh"
+    },
+    {
+      "id": 3,
+      "title": "Multi-Agent Collaboration",
+      "description": "Conductor + Performer + 4 sub-roles (coder/reviewer/tester/docs)",
+      "path": "../../scripts/conductor/",
+      "evidence": "scripts/conductor/dispatch.sh --sub-role=..."
+    },
+    {
+      "id": 4,
+      "title": "Hash-Chain Audit Trail",
+      "description": "SHA256 hash chain for immutable audit",
+      "path": "../../scripts/verify/hash-chain.sh",
+      "evidence": "scripts/verify/hash-chain.sh"
+    },
+    {
+      "id": 5,
+      "title": "Worktree Isolation",
+      "description": "Isolated worktrees per feature, zero main branch pollution",
+      "path": ".worktrees/",
+      "evidence": "git worktree add -b feature/..."
+    },
+    {
+      "id": 6,
+      "title": "Decision Matrix",
+      "description": "5×4=25 cells, all verified, 0 fake metrics",
+      "path": "../../docs/process/q18-decision-model.md",
+      "evidence": "docs/process/q18-decision-model.md"
+    },
+    {
+      "id": 7,
+      "title": "Skill Plugin System",
+      "description": "9 expert skills as plugins, hot-swappable",
+      "path": "../../.claude/skills/",
+      "evidence": ".claude/skills/kallax-experts/<role>/"
+    }
+  ]
+}

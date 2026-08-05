@@ -110,7 +110,12 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | `check-self-heal.sh` | `scripts/verify/` | self-heal pattern |
 | `check-claim-evidence.sh` | `scripts/hooks/` | EPIC-069-D, README/CHANGELOG 数字必带 raw test output, pre-commit |
 
+<<<<<<< HEAD
 ## 6. Recent EPICs (v3.32.2 → v3.32.14, 主公 2026-08-02/03/05 拍板)
+||||||| 81db847
+## 6. Recent EPICs (v3.32.2 → v3.32.6, 主公 2026-08-02/03 拍板)
+=======
+## 6. Recent EPICs (v3.32.2 → v3.32.15, 主公 2026-08-02/03/05 拍板)
 
 | EPIC | Version | 关键 | 工具 / 文件 |
 |---|---|---|---|
@@ -119,7 +124,9 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | EPIC-159 | v3.32.4 | CLAUDE.md 307→160 行 + `.claude/rules/*.md` path-scoped lazy load | `.claude/rules/{state-json,testing,branch-flow,strict-tsconfig}.md` |
 | EPIC-160 | v3.32.5 | install.sh Omnibus — 全部件 deploy + `--inventory`/`--update`/3 skip flag | `scripts/install.sh`, 95 files |
 | EPIC-161 | v3.32.6 | retrospective-routine.sh 6 阶段 routine (复盘/整理/review/升级/归档/删除) | `scripts/retrospective-routine.sh`, `--json` |
+| EPIC-168-F | v3.32.13 | daemon 真跑验证 — 抓 3 真 bug (review 漏抓) | `tests/integration/heartbeat-daemon-runtime.test.sh` (10/16 → 抓 3 bug) |
 | EPIC-168-BG | v3.32.14 | 修 EPIC-166 4 真 bug + 建北极星 dashboard | `heartbeat-daemon.sh`, `scheduler-hint.sh`, `run-history.sh`, `dashboard-metrics.sh`, `dashboard-metrics.html` |
+| EPIC-169 | v3.32.15 | 公开化路径: README.en + frontstage + Lark/WeChat 群 | `README.en.md`, `web/showcase/`, `docs/community/`, `docs/sponsor/` |
 
 **0 增 Rule, 0 增 immutable script, 0 改 source code** for all 5 EPICs. Full docs + tests + scripts in each.
 
