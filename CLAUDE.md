@@ -110,7 +110,7 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | `check-self-heal.sh` | `scripts/verify/` | self-heal pattern |
 | `check-claim-evidence.sh` | `scripts/hooks/` | EPIC-069-D, README/CHANGELOG 数字必带 raw test output, pre-commit |
 
-## 6. Recent EPICs (v3.32.2 → v3.32.16, 主公 2026-08-02/03/05 拍板)
+## 6. Recent EPICs (v3.32.2 → v3.32.17, 主公 2026-08-02/03/05 拍板)
 
 | EPIC | Version | 关键 | 工具 / 文件 |
 |---|---|---|---|
@@ -123,8 +123,9 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | EPIC-168-BG | v3.32.14 | 修 EPIC-166 4 真 bug + 建北极星 dashboard | `heartbeat-daemon.sh`, `scheduler-hint.sh`, `run-history.sh`, `dashboard-metrics.sh`, `dashboard-metrics.html` |
 | EPIC-169 | v3.32.15 | 公开化路径: README.en + frontstage + Lark/WeChat 群 | `README.en.md`, `web/showcase/`, `docs/community/`, `docs/sponsor/` |
 | EPIC-170 | v3.32.16 | Expert plugin complete — enabled_policy + activation gates (9 expert 1:1 loopx) | `scripts/skill/skill-manager.sh`, `scripts/skill/skill-policy.sh` |
+| EPIC-171 | v3.32.17 | 战略沉淀 — 3 视角 (PR+CTO+Marketing) 定位文档 + README "Why vs Claude Code?" | `confluence/research/kallax-positioning-2026-08-05.md`, `README.md` |
 
-**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 6 EPICs. Full docs + tests + scripts in each.
+**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 7 EPICs. Full docs + tests + scripts in each.
 
 ## 9. 引用 (lazy load on-demand)
 

@@ -4,7 +4,6 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-<<<<<<< HEAD
 ## [3.32.15] - 2026-08-05
 
 ### Release: Public Path (EPIC-169)
@@ -78,7 +77,43 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **跟 EPIC-162 1:1 协同** (EPIC-162 拆包, EPIC-170 complete plugin 化)
 - **跟 loopx 6-skill pattern 1:1** (1 expert 1 skill 包)
 
-=======
+## [3.32.17] - 2026-08-05
+
+### Release: 战略沉淀 (EPIC-171)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust/TS 改动, raw output: `git diff --stat` → 仅 docs + CHANGELOG + CLAUDE.md)
+
+#### Added (战略文档)
+
+- **`confluence/research/kallax-positioning-2026-08-05.md`** — 3 视角 (PR+CTO+Marketing) 战略报告, 8 sections ≥300 行 (主公三问 / elevator pitch / PR 视角 / CTO 视角 / Marketing 视角 / Master 仲裁 / 综合定位 / 使用判断表)
+- **`README.md` Why KALLAX vs Claude Code? 段** — 5 维度对比表 + 1 句话 elevator + 3 句使用判断 + trigger signals (约 50 行)
+- **`confluence/decisions/epic-171-strategy-deposit-2026-08-05.md`** — 拍板记录 (主公 2026-08-05 拍板, 3 视角 raw output 摘要)
+
+#### 3 视角定位
+
+| 视角 | 核心 | 结论 |
+|------|------|------|
+| **PR** | 5-Level Verify 防假 PASS + 4-PR Chain 防死锁 | trigger signals 入口 |
+| **CTO** | KALLAX = Governance Layer, Claude Code = Runtime | 正交叠加 |
+| **Marketing** | Pro $10/人/月 vs Claude Code $20 | 定价锚点 |
+
+#### Docs
+
+- `confluence/research/kallax-positioning-2026-08-05.md` (≥300 行, 8 sections)
+- `README.md` Section "Why KALLAX vs Claude Code?" (≥30 行)
+- `confluence/decisions/epic-171-strategy-deposit-2026-08-05.md` (拍板记录)
+
+#### Tests
+
+- [x] **≥5 case PASS** — `bash tests/integration/strategy-deposit-assets.test.sh`
+
+#### Compatibility
+
+- **0 改 source code** (仅 docs + CHANGELOG + CLAUDE.md)
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-165 Showcase 1:1 structure** (8 sections, ≥300 行)
+- **跟 EPIC-069-D/074/152/159/162/163/164/169/172 协同** (战略沉淀引用)
+
 ## [3.32.7] - 2026-08-05
 
 ### Release: Skill 插件化 (EPIC-162)

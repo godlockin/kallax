@@ -1,0 +1,75 @@
+{
+  "ticket_id": "EPIC-171",
+  "epic": "EPIC-171",
+  "phase": "PHASE-021",
+  "title": "战略沉淀 — 3 视角 (PR+CTO+Marketing) 报告落 confluence/research + README.en 加 Why KALLAX vs Claude Code? 段",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "feature",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "docs",
+  "handoff_depth": "L2",
+  "description": "EPIC-171 — 主公 2026-08-05 拍板: 把 PR/CTO/Marketing 3 视角战略报告沉淀 + README.en.md 加 'Why KALLAX vs Claude Code?' 段.\n\n**Context**: 主公 '召唤 pr、cto 和 marketing 负责人一起构思一个问题, 本项目的目标用户是谁? 这个项目能给出什么价值? 为什么不用 claude code/trae 等等原生的框架而需要叠加这个框架使用?'\n\n3 视角 subagent (PR + CTO + Marketing) 已出报告, Master 综合战略回答已出 (含 3 大核心价值 + ICP 4 类 + 叠加非替代定位 + 1 句话 elevator pitch).\n\n**设计**:\n1. **confluence/research/kallax-positioning-2026-08-05.md** 新建 — 沉淀 3 视角战略回答 + Master 仲裁 (跟 EPIC-165 showcase 1:1 structure, raw output 引用)\n2. **README.en.md** 加 'Why KALLAX vs Claude Code?' 段 (跟现有 7-section 1:1)\n3. **CHANGELOG [3.32.17]** entry (跟 EPIC-069-D 1:1 raw_output)\n4. **CLAUDE.md** 加 EPIC-171 引用 (跟 EPIC-157~161 1:1)\n5. **0 改 source code** (纯 docs 沉淀)\n\n**跟 EPIC-169 协同**: 战略沉淀供 EPIC-169 公开化 README 跟 docs/community 复用\n**跟 EPIC-172 协同**: EPIC-172 公开化协同 (Lark 群 + hosted frontstage) 直接复用战略答案",
+  "file_scope": {
+    "includes": [
+      "confluence/research/kallax-positioning-2026-08-05.md",
+      "README.en.md",
+      "CLAUDE.md",
+      "CHANGELOG.md",
+      "tests/integration/strategy-deposit-assets.test.sh",
+      "confluence/decisions/epic-171-strategy-deposit-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: confluence/research/kallax-positioning-2026-08-05.md ≥300 行 含 3 视角 (PR+CTO+Marketing) 报告 + Master 仲裁",
+    "AC2: README.en.md 加 'Why KALLAX vs Claude Code?' 段 ≥30 行 (4 表 + elevator pitch)",
+    "AC3: CHANGELOG [3.32.17] entry (跟 EPIC-069-D 1:1 raw_output + 3-crate scope)",
+    "AC4: CLAUDE.md 加 EPIC-171 引用 (跟 EPIC-157~161 1:1 pattern)",
+    "AC5: confluence/decisions/epic-171-strategy-deposit-2026-08-05.md (拍板记录含 3 视角 raw output)",
+    "AC6: tests/integration/strategy-deposit-assets.test.sh ≥5 case PASS (research 存在 / 行数 / README 段 / CHANGELOG entry / 0 source code change)",
+    "AC7: 5-Level Verify L1-L5 PASS",
+    "AC8: 0 改 source code, 0 增 Rule, 0 增 immutable script"
+  ],
+  "labels": [
+    "feature",
+    "strategy-deposit",
+    "positioning",
+    "docs",
+    "P1",
+    "phase-021"
+  ],
+  "expert_binding": {
+    "suggested_expert": "product",
+    "actual_expert": "product",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行)",
+    "EPIC-054-A (worktree 隔离)",
+    "EPIC-159 (CLAUDE.md trim 1:1)",
+    "EPIC-165 (showcase + i18n 1:1 pattern)",
+    "EPIC-169 (公开化路径 协同)",
+    "EPIC-172 (公开化协同 协同)",
+    "EPIC-069-D (5-Level Verify + raw_output 1:1)",
+    "PR 视角战略报告 (主公 2026-08-05 召唤)",
+    "CTO 视角战略报告 (主公 2026-08-05 召唤)",
+    "Marketing 视角战略报告 (主公 2026-08-05 召唤)"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": "confluence/research/* + README.en.md + CLAUDE.md + CHANGELOG.md + tests/*"
+  },
+  "deliverables": [
+    "confluence/research/kallax-positioning-2026-08-05.md (新, ≥300 行)",
+    "README.en.md 改 (加 Why KALLAX vs Claude Code? 段)",
+    "CLAUDE.md 改 (加 EPIC-171 引用)",
+    "CHANGELOG.md 改 ([3.32.17] entry)",
+    "confluence/decisions/epic-171-strategy-deposit-2026-08-05.md (新)",
+    "tests/integration/strategy-deposit-assets.test.sh (新, ≥5 case)"
+  ],
+  "estimated_hours": 6,
+  "created_by": "master (主公 2026-08-05 拍板: 战略沉淀到 confluence/research + README.en)"
+}
