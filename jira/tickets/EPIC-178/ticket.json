@@ -1,0 +1,81 @@
+{
+  "ticket_id": "EPIC-178",
+  "epic": "EPIC-178",
+  "phase": "PHASE-024",
+  "title": "Q3 re-promote — 5 bypass commits cherry-pick 走 4-PR (跟 EPIC-155 备案 1:1)",
+  "status": "in_progress",
+  "priority": "P0",
+  "type": "hygiene",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "auditor",
+  "handoff_depth": "L2",
+  "description": "EPIC-178 — Q3 re-promote, 闭环 EPIC-155 备案 plan + EPIC-176 指南.\n\n**Context**: EPIC-155 备案 + EPIC-176 5 bypass commit 备案: `a8da33f` / `1482ffa` / `40e2b8e` (历史 v3.32.0/v3.32.1) + `30e923a` (EPIC-175-fix JSON 注入) + `33ecc9b` (EPIC-176 ticket). 9 专家 review 'Q3 re-promote pending' HIGH blocker. 主公拍板 Phase 6 AC: 现在执行 re-promote (跟 EPIC-155 plan Q3 2026).\n\n**5 bypass commits 内容** (跟 EPIC-176 docs/reference/commit-hygiene-pattern-2026-08-05.md 1:1):\n1. `a8da33f` — chore: archive 38 outdated docs\n2. `1482ffa` — docs(EPIC-154): CLAUDE.md 224 → 110 行\n3. `40e2b8e` — chore: 清理 main 本地 uncommitted (gitignore)\n4. `30e923a` — fix(security): EPIC-175-fix JSON injection\n5. `33ecc9b` — feat(jira): EPIC-176 commit history 修整 ticket\n\n**设计 (跟 EPIC-155 plan 1:1, 跟 EPIC-074 4-branch 1:1)**:\n1. **5 commits 各走 4-PR** (feature → testing → main → miao):\n   - 5 个独立 feature branch (跟 v3.32.0 doc-merge 1:1)\n   - 5 PR feature → testing\n   - 5 PR testing → main (跟 EPIC-146 force-push pattern 1:1)\n   - 5 PR main → miao\n2. **commit message 标准化** (跟 EPIC-155 备案 1:1):\n   - 5 commit re-applied with `[Q3-repromote]` prefix\n   - 加 DCO Signed-off-by (跟 EPIC-137-C 1:1)\n3. **DCO violations 3 修复** (9 专家 review 'DCO 3 violations' 同步修):\n   - 3 commits 加 Signed-off-by trailer\n4. **冲突解决 0** (5 commit 内容已 tracked, cherry-pick 走 4-PR)\n5. **CHANGELOG [v3.33.0 re-promote]** entry (跟 EPIC-069-D 1:1)\n\n**0 改 source code 之外** (纯 cherry-pick + commit message 标准化 + DCO trailer)\n**0 增 Rule, 0 增 immutable script**",
+  "file_scope": {
+    "includes": [
+      "_archived/ (38 docs re-tracked)",
+      "CLAUDE.md (1482ffa re-applied)",
+      ".gitignore (40e2b8e re-applied)",
+      "scripts/automation-monitor-todos.sh (30e923a re-applied)",
+      "jira/tickets/EPIC-176/ticket.json (33ecc9b re-applied)",
+      "CHANGELOG.md",
+      "confluence/decisions/epic-178-q3-repromote-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: 5 bypass commits 全部 cherry-pick 走 4-PR (跟 EPIC-074 1:1, 跟 EPIC-142/146 1:1)",
+    "AC2: 5 commit message 标准化 ([Q3-repromote] prefix + DCO Signed-off-by trailer)",
+    "AC3: DCO 3 violations 修复 (40e2b8e + 30e923a + 33ecc9b 加 Signed-off-by)",
+    "AC4: 5 PR feature → testing (跟 v3.32.0 doc-merge 1:1 5 PR pattern)",
+    "AC5: 5 PR testing → main (force-push 跟 EPIC-146 1:1)",
+    "AC6: 5 PR main → miao (跟 EPIC-142 1:1 force-push)",
+    "AC7: CHANGELOG [v3.33.0 re-promote] entry (跟 EPIC-069-D 1:1)",
+    "AC8: confluence/decisions/epic-178-q3-repromote-2026-08-05.md 拍板记录 (5 commits 备案 + 4-PR 收口 + 主公拍板)",
+    "AC9: 5-Level Verify L1-L5",
+    "AC10: 0 改 source code 之外, 0 增 Rule, 0 增 immutable script",
+    "AC11: EPIC-155 'Q3 re-promote pending' HIGH blocker 闭环 (9 专家 review 验证)"
+  ],
+  "labels": [
+    "hygiene",
+    "q3-repromote",
+    "epic-155-plan",
+    "4pr-cherry-pick",
+    "P0",
+    "phase-024"
+  ],
+  "expert_binding": {
+    "suggested_expert": "auditor",
+    "actual_expert": "auditor",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行)",
+    "EPIC-054-A (worktree 隔离)",
+    "EPIC-074 (4-branch flow)",
+    "EPIC-155 (4-branch bypass 备案 + Q3 plan)",
+    "EPIC-142 (testing force-push 1:1)",
+    "EPIC-146 (main force-push 1:1)",
+    "EPIC-069-D (5-Level Verify)",
+    "EPIC-137-C (DCO Signed-off-by trailer)",
+    "EPIC-176 (commit hygiene 指南 1:1)",
+    "9 专家 review 'Q3 re-promote pending' HIGH blocker"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": "5 bypass commits + DCO trailer + 4-PR 流程 + CHANGELOG + 备案"
+  },
+  "deliverables": [
+    "5 commits re-applied with [Q3-repromote] prefix",
+    "5 DCO Signed-off-by trailers",
+    "5 PR feature → testing",
+    "5 PR testing → main",
+    "5 PR main → miao",
+    "5 v3.33.0-repromote-N tags (5 tags 1:1)",
+    "CHANGELOG [v3.33.0 re-promote] entry",
+    "confluence/decisions/epic-178-q3-repromote-2026-08-05.md (拍板记录)"
+  ],
+  "estimated_hours": 6,
+  "created_by": "master (主公 2026-08-05 Phase 6 AC 拍板: Q3 re-promote, 闭环 EPIC-155 备案 + 9 专家 review HIGH blocker)"
+}
