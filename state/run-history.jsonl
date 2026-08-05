@@ -1,35 +1,24 @@
-{"event_type":"work","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:43:44Z","payload":{\"action\":\"test\"}}
-{"event_type":"decision","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:43:44Z","payload":{\"action\":\"test\"}}
-{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:43:44Z","payload":{\"action\":\"test\"}}
-{"event_type":"evidence","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:43:44Z","payload":{\"action\":\"test\"}}
-
-{"event_type":"work","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:44:24Z","payload":{\"action\":\"test\"}}
-{"event_type":"decision","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:44:24Z","payload":{\"action\":\"test\"}}
-{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:44:24Z","payload":{\"action\":\"test\"}}
-{"event_type":"evidence","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:44:24Z","payload":{\"action\":\"test\"}}
-
-{"event_type":"work","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:44:33Z","payload":{}}
-{"event_type":"decision","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:44:33Z","payload":{}}
-{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:44:33Z","payload":{}}
-{"event_type":"evidence","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:44:33Z","payload":{}}
-{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"heartbeat-daemon","timestamp":"2026-08-05T05:45:28Z","payload":{}}
-{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"heartbeat-daemon","timestamp":"2026-08-05T05:45:38Z","payload":{}}
-{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"heartbeat-daemon","timestamp":"2026-08-05T05:45:47Z","payload":{}}
-{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"heartbeat-daemon","timestamp":"2026-08-05T05:45:58Z","payload":{}}
-{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"heartbeat-daemon","timestamp":"2026-08-05T05:46:08Z","payload":{}}
-{"event_type":"work","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:46:10Z","payload":{\"action\":\"test\"}}
-{"event_type":"decision","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:46:10Z","payload":{\"action\":\"test\"}}
-{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:46:10Z","payload":{\"action\":\"test\"}}
-{"event_type":"evidence","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:46:10Z","payload":{\"action\":\"test\"}}
-
-{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"heartbeat-daemon","timestamp":"2026-08-05T05:46:18Z","payload":{}}
-{"event_type":"work","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:46:27Z","payload":{\"action\":\"test\"}}
-{"event_type":"decision","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:46:27Z","payload":{\"action\":\"test\"}}
-{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:46:27Z","payload":{\"action\":\"test\"}}
-{"event_type":"evidence","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:46:27Z","payload":{\"action\":\"test\"}}
-
-{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"heartbeat-daemon","timestamp":"2026-08-05T05:46:28Z","payload":{}}
-{"event_type":"work","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:46:31Z","payload":{}}
-{"event_type":"decision","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:46:31Z","payload":{}}
-{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:46:31Z","payload":{}}
-{"event_type":"evidence","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-168-BG-test","timestamp":"2026-08-05T05:46:31Z","payload":{}}
+0
+{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-177G-TEST-A","timestamp":"2026-08-05T14:27:28Z","payload":{
+  \"suggested_expert\": \"\",
+  \"actual_expert\": \"backend\",
+  \"action\": \"actual_binding\"
+}}
+{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"test-fix","timestamp":"2026-08-05T14:28:26Z","payload":{}}
+{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"test-fix","timestamp":"2026-08-05T14:28:31Z","payload":{"key":"value"}}
+{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-177G-TEST-A","timestamp":"2026-08-05T14:28:57Z","payload":{
+  "suggested_expert": "",
+  "actual_expert": "backend",
+  "action": "actual_binding"
+}}
+{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"test-fix-2","timestamp":"2026-08-05T14:29:40Z","payload":{"key":"value"}}
+{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-177G-TEST-A","timestamp":"2026-08-05T14:37:57Z","payload":{
+  "suggested_expert": "backend",
+  "actual_expert": "backend",
+  "action": "actual_binding"
+}}
+{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-177G-TEST-A","timestamp":"2026-08-05T14:38:05Z","payload":{
+  "suggested_expert": "backend",
+  "actual_expert": "backend",
+  "action": "actual_binding"
+}}

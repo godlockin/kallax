@@ -102,18 +102,16 @@ cmd_emit() {
         # Empty payload - build directly
         record="{\"event_type\":\"${event_type}\",\"agent_id\":\"${agent_id}\",\"ticket_id\":\"${ticket_id}\",\"timestamp\":\"${timestamp}\",\"payload\":{}}"
     else
-        # Payload with content - escape for JSON
-        local escaped_payload
-        escaped_payload=$(echo "$payload" | sed 's/\\/\\\\/g; s/"/\\"/g')
-        record="{\"event_type\":\"${event_type}\",\"agent_id\":\"${agent_id}\",\"ticket_id\":\"${ticket_id}\",\"timestamp\":\"${timestamp}\",\"payload\":${escaped_payload}}"
+        # Payload with content - already valid JSON from jq -n, use as-is
+        # (jq -n outputs properly escaped JSON strings)
+        record="{\"event_type\":\"${event_type}\",\"agent_id\":\"${agent_id}\",\"ticket_id\":\"${ticket_id}\",\"timestamp\":\"${timestamp}\",\"payload\":${payload}}"
     fi
 
     # Append-only to ledger with flock protection
     if command -v flock >/dev/null 2>&1; then
-        flock -x "$LEDGER" -c "echo '$record' >> '$LEDGER'"
+        flock -x "$LEDGER" -c "printf '%s\n' \"$record\" >> '$LEDGER'"
     else
-        # Fallback without flock
-        echo "$record" >> "$LEDGER"
+        printf '%s\n' "$record" >> "$LEDGER"
     fi
     exit $EXIT_PASS
 }

@@ -95,16 +95,15 @@
   <p class="updated">Last updated: <span id="updated_at">—</span></p>
 
   <script>
-    const METRICS_SCRIPT = '../state/../scripts/dashboard/dashboard-metrics.sh';
-    const METRICS_EPIC_DIR = '../state/../scripts/dashboard/dashboard-metrics.sh';
+    // EPIC-177-G: Fetch from pre-generated JSON (updated by dashboard-metrics.sh)
+    const METRICS_JSON = '../web/dashboard-metrics.json';
 
     async function fetchMetrics() {
       try {
-        // Try to fetch via file:// for local dev
-        const resp = await fetch(dashboardMetricsScript());
-        if (!resp.ok) throw new Error('Script not accessible');
-        const text = await resp.text();
-        parseAndRender(JSON.parse(text));
+        const resp = await fetch(METRICS_JSON);
+        if (!resp.ok) throw new Error('JSON not accessible');
+        const data = await resp.json();
+        parseAndRender(data);
       } catch (e) {
         // Fallback: use indicator panel
         document.getElementById('expert_activation').textContent = 'N/A';
@@ -114,12 +113,6 @@
         document.getElementById('daemon_status').textContent = 'unavailable';
         document.getElementById('updated_at').textContent = new Date().toISOString();
       }
-    }
-
-    function dashboardMetricsScript() {
-      // Resolve relative to current HTML location
-      const path = window.location.pathname.replace(/\/web\/.*/, '/scripts/dashboard/dashboard-metrics.sh');
-      return path;
     }
 
     function parseAndRender(data) {

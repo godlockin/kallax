@@ -27,6 +27,9 @@ for arg in "$@"; do
     esac
 done
 
+# EPIC-177-G: Pre-generate JSON for dashboard HTML
+OUTPUT_JSON="${KALLAX_ROOT}/web/dashboard-metrics.json"
+
 # ── Helpers ─────────────────────────────────────────────────────────────────
 
 get_daemon_status() {
@@ -156,6 +159,11 @@ output_json() {
   }
 }
 EOF
+    # EPIC-177-G: Pre-generate JSON for HTML dashboard
+    if [ -n "${OUTPUT_JSON:-}" ]; then
+        mkdir -p "$(dirname "$OUTPUT_JSON")"
+        cat > "$OUTPUT_JSON"
+    fi
 }
 
 output_text() {

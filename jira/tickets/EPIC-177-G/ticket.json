@@ -1,0 +1,9 @@
+{
+  "ticket_id": "EPIC-177-G",
+  "status": "todo",
+  "expert_binding": {
+    "suggested_expert": "backend",
+    "actual_expert": "backend",
+    "expert_binding_at": "2026-08-05T14:23:44Z"
+  }
+}

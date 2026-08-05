@@ -33,6 +33,12 @@ QUOTA_SCRIPT="${SCRIPT_DIR}/quota.sh"
 SCHEDULER_SCRIPT="${SCRIPT_DIR}/scheduler-hint.sh"
 RUN_HISTORY_SCRIPT="${SCRIPT_DIR}/run-history.sh"
 
+# EPIC-177-G: Frequency counters for multi-event emit
+#   work/decision: every 60s (1x per interval)
+#   accounting:    every 5s  (12x per interval)
+#   evidence:      every 600s (1x per 10min)
+COUNTER_FILE="${STATE_DIR}/heartbeat-counter.json"
+
 # Exit code constants
 readonly EXIT_PASS=0
 readonly EXIT_FAIL=1
@@ -131,8 +137,39 @@ cmd_start() {
         while true; do
             sleep "$interval"
 
-            # Emit heartbeat accounting event
+            # EPIC-177-G: Read/update counter for multi-event frequency control
+            local tick_count=0
+            if [ -f "$COUNTER_FILE" ]; then
+                tick_count=$(jq -r '.tick_count // 0' "$COUNTER_FILE" 2>/dev/null || echo 0)
+            fi
+            tick_count=$((tick_count + 1))
+
+            # Emit accounting event every tick (every 5s per interval)
             "$RUN_HISTORY_SCRIPT" emit accounting "heartbeat-daemon" "{}" >> "$LOG_FILE" 2>&1 || true
+
+            # EPIC-177-G: Emit work event every 60s (1x per interval)
+            if [ $((tick_count % 12)) -eq 0 ]; then
+                local work_payload
+                work_payload=$(jq -n --arg ticket "$active_ticket" '{heartbeat_tick: $ticket, type: "daemon_heartbeat"}')
+                "$RUN_HISTORY_SCRIPT" emit work "heartbeat-daemon" "$work_payload" >> "$LOG_FILE" 2>&1 || true
+            fi
+
+            # EPIC-177-G: Emit decision event every 60s (1x per interval)
+            if [ $((tick_count % 12)) -eq 0 ]; then
+                local decision_payload
+                decision_payload=$(jq -n --arg ticket "$active_ticket" '{quota_check: $ticket, type: "scheduling_decision"}')
+                "$RUN_HISTORY_SCRIPT" emit decision "heartbeat-daemon" "$decision_payload" >> "$LOG_FILE" 2>&1 || true
+            fi
+
+            # EPIC-177-G: Emit evidence event every 600s (1x per 10 intervals)
+            if [ $((tick_count % 120)) -eq 0 ]; then
+                local evidence_payload
+                evidence_payload=$(jq -n --arg ticket "$active_ticket" '{status_snapshot: $ticket, type: "daemon_evidence"}')
+                "$RUN_HISTORY_SCRIPT" emit evidence "heartbeat-daemon" "$evidence_payload" >> "$LOG_FILE" 2>&1 || true
+            fi
+
+            # Save counter
+            echo "{\"tick_count\": $tick_count}" > "$COUNTER_FILE"
 
             # Quota check (resolve active ticket first)
             local active_ticket

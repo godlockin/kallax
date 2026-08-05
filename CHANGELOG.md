@@ -4,6 +4,54 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.33.0] - 2026-08-05
+
+### Release: run-history emit integration (EPIC-177-G)
+
+**Scope**: 0 core + 0 engine + 0 server (无 Rust 改动, 仅 scripts + docs)
+
+#### Problem (9 专家 review HIGH blocker)
+
+`state/run-history.jsonl` had 0 production events, only 35 test lines. 4 north star metrics (expert_activation / cross_epic_reuse / ab_hit_rate / mis_dispatch_binding_rate) couldn't be computed.
+
+#### Solution (跟 EPIC-166/175-fix 1:1)
+
+Integrated emit hooks into 6 main scripts:
+
+| Script | Emit Hook | Event Type |
+|--------|-----------|------------|
+| binding-tracker.sh | cmd_actual | accounting |
+| binding-tracker.sh | cmd_validate | accounting |
+| binding-tracker.sh | cmd_validate_all | decision |
+| heartbeat-daemon.sh | main loop | work/decision (60s) + accounting (5s) + evidence (10min) |
+| post-process.sh | final | work + decision |
+| branch-4pr.sh | each PR | decision (4 stages) |
+| install.sh | stamp_version | evidence |
+| skill-manager.sh | enable/disable | work |
+
+#### Dashboard Integration
+
+- `scripts/dashboard/dashboard-metrics.sh` — pre-generates `web/dashboard-metrics.json`
+- `web/dashboard-metrics.html` — fetches pre-generated JSON
+
+#### Added
+
+- **`tests/integration/run-history-emit-integration.test.sh`** — 12 test cases
+- **`docs/reference/run-history-emit-integration-2026-08-05.md`** — emit integration docs
+- **`confluence/decisions/epic-177-g-northstar-emit-2026-08-05.md`** — decision record
+
+#### Changed
+
+- **`scripts/binding/binding-tracker.sh`** — 3 emit hooks (AC1)
+- **`scripts/heartbeat/heartbeat-daemon.sh`** — 4 event types with frequency control (AC2)
+- **`scripts/post-process.sh`** — 2 emit hooks (AC3)
+- **`scripts/branch-4pr.sh`** — 4 emit hooks (AC4)
+- **`scripts/install.sh`** — 1 emit hook (AC5)
+- **`scripts/skill/skill-manager.sh`** — 2 emit hooks (AC6)
+- **`scripts/dashboard/dashboard-metrics.sh`** — pre-generate JSON (AC8)
+- **`web/dashboard-metrics.html`** — fetch JSON instead of script
+- **`CLAUDE.md`** — Section 6 added EPIC-177-G reference
+
 ## [3.32.23] - 2026-08-05
 
 ### Release: Commit Hygiene 备案 + 未来指南 (EPIC-176)

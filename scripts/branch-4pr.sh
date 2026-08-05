@@ -82,6 +82,16 @@ if [[ $SKIP_TESTS -eq 0 ]]; then
   fi
 fi
 
+# EPIC-177-G: Emit decision event for PR 1 (feature→testing)
+if [[ $DRY_RUN -eq 0 ]]; then
+  RUN_HISTORY="${REPO_ROOT}/scripts/heartbeat/run-history.sh"
+  if [ -f "$RUN_HISTORY" ]; then
+    local pr1_payload
+    pr1_payload=$(jq -n --arg branch "$FEATURE" '{pr_stage: "feature_to_testing", branch: $branch, action: "pr_created"}')
+    "$RUN_HISTORY" emit decision "$FEATURE" "$pr1_payload" >/dev/null 2>&1 || true
+  fi
+fi
+
 # PR 1: feature → testing
 echo ""
 echo "=== PR 1/3: $FEATURE → testing ==="
@@ -95,6 +105,14 @@ if [[ $DRY_RUN -eq 0 ]]; then
   fi
   echo "  PR: $PR1_URL"
   gh pr merge "$PR1_URL" --merge --delete-branch=false 2>&1 | tail -1
+
+  # EPIC-177-G: Emit decision event for PR 2 (testing→main)
+  RUN_HISTORY="${REPO_ROOT}/scripts/heartbeat/run-history.sh"
+  if [ -f "$RUN_HISTORY" ]; then
+    local pr2_payload
+    pr2_payload=$(jq -n '{pr_stage: "testing_to_main", action: "pr_merged"}')
+    "$RUN_HISTORY" emit decision "$FEATURE" "$pr2_payload" >/dev/null 2>&1 || true
+  fi
 else
   echo "  (dry-run)"
   PR1_URL="https://github.com/dryrun/PR1"
@@ -112,6 +130,14 @@ if [[ $DRY_RUN -eq 0 ]]; then
   fi
   echo "  PR: $PR2_URL"
   gh pr merge "$PR2_URL" --merge --delete-branch=false 2>&1 | tail -1
+
+  # EPIC-177-G: Emit decision event for PR 3 (main→miao)
+  RUN_HISTORY="${REPO_ROOT}/scripts/heartbeat/run-history.sh"
+  if [ -f "$RUN_HISTORY" ]; then
+    local pr3_payload
+    pr3_payload=$(jq -n '{pr_stage: "main_to_miao", action: "pr_merged"}')
+    "$RUN_HISTORY" emit decision "$FEATURE" "$pr3_payload" >/dev/null 2>&1 || true
+  fi
 else
   echo "  (dry-run)"
   PR2_URL="https://github.com/dryrun/PR2"
@@ -129,6 +155,16 @@ if [[ $DRY_RUN -eq 0 ]]; then
   fi
   echo "  PR: $PR3_URL"
   gh pr merge "$PR3_URL" --merge --delete-branch=false 2>&1 | tail -1
+
+  # EPIC-177-G: Emit decision event for all 4-PR complete
+  RUN_HISTORY="${REPO_ROOT}/scripts/heartbeat/run-history.sh"
+  if [ -f "$RUN_HISTORY" ]; then
+    local complete_payload
+    complete_payload=$(jq -n \
+      --arg branch "$FEATURE" \
+      '{pr_stage: "all_complete", branch: $branch, action: "4pr_flow_complete"}')
+    "$RUN_HISTORY" emit decision "$FEATURE" "$complete_payload" >/dev/null 2>&1 || true
+  fi
 else
   echo "  (dry-run)"
   PR3_URL="https://github.com/dryrun/PR3"

@@ -93,6 +93,16 @@ cmd_actual() {
   mv "$tmp" "$file"
   echo "OK actual_expert='$expert' written to $file"
   if [ -n "$reason" ]; then echo "  reason: $reason"; fi
+
+  # EPIC-177-G: emit accounting event for actual binding
+  local run_history="${SCRIPT_DIR}/../heartbeat/run-history.sh"
+  if [ -f "$run_history" ]; then
+    local payload
+    payload=$(jq -n --arg suggested "$suggested" --arg actual "$expert" \
+      '{suggested_expert: $suggested, actual_expert: $actual, action: "actual_binding"}')
+    "$run_history" emit accounting "$ticket_id" "$payload" >/dev/null 2>&1 || true
+  fi
+
   return 0
 }
 
@@ -128,6 +138,18 @@ cmd_validate() {
   fi
   echo "FAIL binding invalid: $ticket_id"
   for e in "${errors[@]}"; do echo "  - $e"; done
+
+  # EPIC-177-G: emit accounting event for validation status
+  local run_history="${SCRIPT_DIR}/../heartbeat/run-history.sh"
+  if [ -f "$run_history" ]; then
+    local is_valid=0
+    [ ${#errors[@]} -eq 0 ] && is_valid=1
+    local payload
+    payload=$(jq -n --argjson is_valid "$is_valid" \
+      '{validation_status: (if $is_valid == 1 then "valid" else "invalid" end), error_count: (if $is_valid == 1 then 0 else 1 end)}')
+    "$run_history" emit accounting "$ticket_id" "$payload" >/dev/null 2>&1 || true
+  fi
+
   return 1
 }
 
@@ -164,6 +186,20 @@ cmd_validate_all() {
   echo "Skipped:       $skipped (legacy-no-binding)"
   echo "================================================"
   [ $failed -gt 0 ] && { echo "FAILED tickets:"; for f in "${failed_files[@]}"; do echo "  - $f"; done; return 1; }
+
+  # EPIC-177-G: emit decision event for validation-all complete
+  local run_history="${SCRIPT_DIR}/../heartbeat/run-history.sh"
+  if [ -f "$run_history" ]; then
+    local payload
+    payload=$(jq -n \
+      --argjson total "$total" \
+      --argjson passed "$passed" \
+      --argjson failed "$failed" \
+      --argjson skipped "$skipped" \
+      '{validation_all_complete: true, total: $total, passed: $passed, failed: $failed, skipped: $skipped}')
+    "$run_history" emit decision "binding-tracker" "$payload" >/dev/null 2>&1 || true
+  fi
+
   return 0
 }
 
