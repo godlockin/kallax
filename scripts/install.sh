@@ -37,6 +37,8 @@ DRY_RUN=false
 SKIP_CLI=false; SKIP_SKILLS=false; SKIP_COMMANDS=false
 # EPIC-160: framework 全部件 deploy (rules/experts/hooks)
 SKIP_RULES=false; SKIP_EXPERTS=false; SKIP_HOOKS=false
+# EPIC-166: heartbeat daemon install
+SKIP_HEARTBEAT=false
 INVENTORY_ONLY=false
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; BOLD='\033[1m'; DIM='\033[2m'; NC='\033[0m'
@@ -248,6 +250,8 @@ parse_args() {
       --skip-rules)       SKIP_RULES=true; shift ;;
       --skip-experts)     SKIP_EXPERTS=true; shift ;;
       --skip-hooks)       SKIP_HOOKS=true; shift ;;
+      # EPIC-166: skip heartbeat daemon install
+      --skip-heartbeat)   SKIP_HEARTBEAT=true; shift ;;
       --inventory)        INVENTORY_ONLY=true; shift ;;
       --update)           INSTALL_MODE="update"; shift ;;
       --symlink)          INSTALL_METHOD="symlink"; shift ;;
@@ -816,6 +820,45 @@ install_hooks_for_tool() {
   fi
 }
 
+# EPIC-166: Heartbeat Daemon install
+install_heartbeat_daemon() {
+  log "Installing Heartbeat Daemon (EPIC-166)"
+  local src="${PROJECT_ROOT}/scripts/heartbeat"
+  local dst="${PROJECT_ROOT}/state"
+
+  if $DRY_RUN; then
+    log "[dry-run] would install heartbeat scripts: $src → $dst"
+    return 0
+  fi
+
+  if [ ! -d "$src" ]; then
+    warn "No heartbeat scripts found at $src, skipping"
+    return 0
+  fi
+
+  mkdir -p "$dst"
+
+  # Install heartbeat scripts
+  for script in heartbeat-daemon.sh quota.sh scheduler-hint.sh run-history.sh; do
+    if [ -f "$src/$script" ]; then
+      chmod +x "$src/$script"
+      ok "heartbeat/$script installed"
+    fi
+  done
+
+  # Initialize run-history ledger
+  if [ ! -f "$dst/run-history.jsonl" ]; then
+    touch "$dst/run-history.jsonl"
+    ok "state/run-history.jsonl initialized"
+  fi
+
+  echo ""
+  hdr "Heartbeat Daemon (EPIC-166)"
+  log "Start daemon: bash scripts/heartbeat/heartbeat-daemon.sh start"
+  log "Check status: bash scripts/heartbeat/heartbeat-daemon.sh status"
+  log "View ledger:  bash scripts/heartbeat/run-history.sh stats"
+}
+
 print_inventory() {
   log "Inventory — KALLAX framework parts (EPIC-160)"
   echo ""
@@ -1160,6 +1203,12 @@ done
 
 echo ""
 if ! $SKIP_CLI; then install_cli; fi
+echo ""
+
+# EPIC-166: Heartbeat Daemon install
+if ! $SKIP_HEARTBEAT; then
+  install_heartbeat_daemon
+fi
 echo ""
 
 tool=""

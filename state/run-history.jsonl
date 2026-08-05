@@ -1,0 +1,165 @@
+{
+  "event_type": "work",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166-TEST",
+  "timestamp": "2026-08-05T00:39:56Z",
+  "payload": {
+    "test": true
+  }
+}
+{
+  "event_type": "decision",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166-TEST",
+  "timestamp": "2026-08-05T00:39:56Z",
+  "payload": {
+    "test": true
+  }
+}
+{
+  "event_type": "accounting",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166-TEST",
+  "timestamp": "2026-08-05T00:39:56Z",
+  "payload": {
+    "test": true
+  }
+}
+{
+  "event_type": "evidence",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166-TEST",
+  "timestamp": "2026-08-05T00:39:56Z",
+  "payload": {
+    "test": true
+  }
+}
+{
+  "event_type": "work",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166-VERIFY",
+  "timestamp": "2026-08-05T00:39:57Z",
+  "payload": {
+    "test": "append-only"
+  }
+}
+{
+  "event_type": "accounting",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166",
+  "timestamp": "2026-08-05T00:39:57Z",
+  "payload": {
+    "metric": "quota_spent",
+    "value": 1
+  }
+}
+{
+  "event_type": "work",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166-TEST",
+  "timestamp": "2026-08-05T00:40:40Z",
+  "payload": {
+    "test": true
+  }
+}
+{
+  "event_type": "decision",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166-TEST",
+  "timestamp": "2026-08-05T00:40:40Z",
+  "payload": {
+    "test": true
+  }
+}
+{
+  "event_type": "accounting",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166-TEST",
+  "timestamp": "2026-08-05T00:40:40Z",
+  "payload": {
+    "test": true
+  }
+}
+{
+  "event_type": "evidence",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166-TEST",
+  "timestamp": "2026-08-05T00:40:40Z",
+  "payload": {
+    "test": true
+  }
+}
+{
+  "event_type": "work",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166-VERIFY",
+  "timestamp": "2026-08-05T00:40:40Z",
+  "payload": {
+    "test": "append-only"
+  }
+}
+{
+  "event_type": "accounting",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166",
+  "timestamp": "2026-08-05T00:40:41Z",
+  "payload": {
+    "metric": "quota_spent",
+    "value": 1
+  }
+}
+{
+  "event_type": "work",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166-TEST",
+  "timestamp": "2026-08-05T00:40:52Z",
+  "payload": {
+    "test": true
+  }
+}
+{
+  "event_type": "decision",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166-TEST",
+  "timestamp": "2026-08-05T00:40:52Z",
+  "payload": {
+    "test": true
+  }
+}
+{
+  "event_type": "accounting",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166-TEST",
+  "timestamp": "2026-08-05T00:40:52Z",
+  "payload": {
+    "test": true
+  }
+}
+{
+  "event_type": "evidence",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166-TEST",
+  "timestamp": "2026-08-05T00:40:52Z",
+  "payload": {
+    "test": true
+  }
+}
+{
+  "event_type": "work",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166-VERIFY",
+  "timestamp": "2026-08-05T00:40:52Z",
+  "payload": {
+    "test": "append-only"
+  }
+}
+{
+  "event_type": "accounting",
+  "agent_id": "agent-StevendeMacBook-Pro.local",
+  "ticket_id": "EPIC-166",
+  "timestamp": "2026-08-05T00:40:52Z",
+  "payload": {
+    "metric": "quota_spent",
+    "value": 1
+  }
+}
