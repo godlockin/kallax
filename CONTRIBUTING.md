@@ -235,4 +235,21 @@ cargo test
 
 ---
 
+## 社区
+
+加入我们的开发者社区:
+
+- **Lark 群 (飞书)**: [docs/community/lark-qr-placeholder.md](docs/community/lark-qr-placeholder.md)
+- **WeChat 群**: [docs/community/wechat-qr-placeholder.md](docs/community/wechat-qr-placeholder.md)
+- **社区首页**: [docs/community/README.md](docs/community/README.md)
+
+### 社区准则
+
+- 保持友善和尊重
+- 提问前先搜索已有讨论
+- 使用问题模板获得更快响应
+- 分享你的使用经验，帮助他人
+
+---
+
 感谢你的贡献！

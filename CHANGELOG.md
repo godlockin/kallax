@@ -4,6 +4,46 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.32.18] - 2026-08-05
+
+### Release: Public Coordination (EPIC-172)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, docs-only release)
+
+#### Added (公开化协同)
+
+- **docs/community/README.md** — 社区首页 (142 行), 含 Lark/WeChat 群入口 + 入群流程 + 群规 + 提问模板
+- **docs/community/lark-qr-placeholder.md** — Lark 群二维码占位符
+- **docs/community/wechat-qr-placeholder.md** — WeChat 群二维码占位符 (WeChat ID: huangrt00)
+- **docs/community/growth-loop.md** — 增长飞轮文档, 含 5 阶段 + ICP 1-4 + 90/180/365 天 KPI
+- **confluence/research/kallax-growth-loop-2026-08-05.md** — 公开化战略 (300+ 行), 含 loopx 1.5k stars 路径分析 + Phase 1/2/3 路线图 + 竞争定位
+- **confluence/decisions/epic-172-public-coord-2026-08-05.md** — EPIC-172 拍板记录 + 90/180 天 KPI
+- **web/showcase/index.html** — 7 case 卡片 showcase gallery
+- **docs/sponsor/README.md** — Sponsor 计划文档 (≥30 行)
+- **CONTRIBUTING.md** 加社区入口章节
+
+#### Tests (AC10: ≥6 case)
+
+- [x] **6/6 PASS** — `bash tests/integration/public-coord-assets.test.sh`
+  - Lark 群入口存在
+  - WeChat 群入口存在
+  - hosted frontstage 文件存在
+  - growth loop 文档存在
+  - confluence/research 行数 ≥200
+  - ICP 4 类提及
+
+#### Docs
+
+- `CLAUDE.md` Section 6 加 EPIC-172 引用
+
+#### Compatibility
+
+- **0 改 source code**
+- **0 增 Rule, 0 增 immutable script**
+- **0 改 Rust/Node source code**
+- **跟 EPIC-169 公开化路径 1:1 协同** (README 结构, CONTRIBUTING, web 基础设施)
+- **跟 EPIC-171 战略沉淀 1:1 协同** (ICP 定义, 竞争定位)
+
 ## [3.32.7] - 2026-08-05
 
 ### Release: Skill 插件化 (EPIC-162)
