@@ -4,6 +4,31 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.32.22] - 2026-08-05
+
+### Security Fix: JSON Injection MEDIUM (EPIC-175-fix)
+
+**Scope**: 0 core + 0 engine + 0 server (仅 scripts + tests + docs)
+
+#### Fixed (automation-monitor security)
+
+- **`scripts/automation-monitor-todos.sh`** — 修 2 处 JSON 注入 MEDIUM (emit_event + cmd_emit 用 jq -n 替代 printf 拼 JSON)
+
+#### Added (security tests)
+
+- **`tests/integration/automation-monitor-json-injection.test.sh`** — 新, ≥4 case PASS (normal / single quote / double quote / newline injection)
+
+#### 5-Level Verify (AC5: 4/4 PASS)
+
+- [x] **4/4 PASS** — `bash tests/integration/automation-monitor-json-injection.test.sh`
+
+#### References
+
+- EPIC-175 (Security Rules 强化 1:1 fix)
+- EPIC-168-BG (jq -n pattern 1:1)
+
+---
+
 ## [3.32.20] - 2026-08-05
 
 ### Release: Smoke Retention Policy (EPIC-174)
