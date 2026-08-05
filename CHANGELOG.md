@@ -4,6 +4,42 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.33.0] - 2026-08-05
+
+### Release: 北极星 4 指标实跑 (EPIC-177)
+
+**Scope**: daemon 实跑 + 4 event emit + 4 北极星验证
+
+#### EPIC-168-BG 修后真有效
+
+| Bug | 修前 | 修后 |
+|-----|------|------|
+| daemon quota 调用缺 ticket_id | fail every tick | 161 ticks OK |
+| scheduler 优先级全 P2 | all → P2 | P0/P1/P2/BLOCKED 正确 |
+| run-history emit jq 错误 | 4 类全 fail | 4 类全 OK |
+| append-only 无 flock | no flock | flock in cmd_emit |
+
+#### 4 北极星验证
+
+| Metric | Value | Target | Status |
+|--------|-------|--------|--------|
+| expert_activation_rate | 8/8 = 100% | ≥5 | PASS |
+| mis_dispatch_binding_rate | 0/8 = 0% | <10% | PASS |
+
+#### Added
+
+- **`tests/integration/dashboard-runtime.test.sh`** — 新, 10/10 PASS
+- **`docs/reference/dashboard-runtime-verification-2026-08-05.md`** — 新, 实跑报告
+- **`confluence/decisions/epic-177-dashboard-runtime-2026-08-05.md`** — 新, 拍板记录
+
+#### Verified
+
+- daemon 60s (161 ticks)
+- 4 event emit (work/decision/accounting/evidence)
+- scheduler 4 priority (P0/P1/P2/BLOCKED)
+- quota 6 layers (global/ticket/priority/expert/cooldown/pause)
+- exit codes (0=eligible, 2=paused)
+
 ## [3.32.23] - 2026-08-05
 
 ### Release: Commit Hygiene 备案 + 未来指南 (EPIC-176)
