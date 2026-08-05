@@ -62,10 +62,14 @@ emit_event() {
   local ts
   ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-  # Simple JSON event (compatible with run-history.sh format)
+  # Safe JSON construction using jq (prevents injection)
   local entry
-  entry=$(printf '{"ts":"%s","type":"%s","ticket_id":"%s","payload":%s}' \
-    "$ts" "$event_type" "$ticket_id" "$payload")
+  entry=$(jq -n \
+    --arg ts "$ts" \
+    --arg type "$event_type" \
+    --arg ticket_id "$ticket_id" \
+    --argjson payload "$payload" \
+    '{ts: $ts, type: $type, ticket_id: $ticket_id, payload: $payload}')
 
   flock -x "$LEDGER" -c "echo '$entry' >> '$LEDGER'" 2>/dev/null || \
     echo "$entry" >> "$LEDGER"
@@ -138,7 +142,10 @@ cmd_emit() {
   local status="${2:-in_progress}"
 
   ensure_state
-  emit_event "automation-monitor" "$ticket_id" "{\"status\":\"$status\"}"
+  # Safe JSON construction using jq (prevents injection)
+  local payload
+  payload=$(jq -n --arg status "$status" '{status: $status}')
+  emit_event "automation-monitor" "$ticket_id" "$payload"
   echo "Emitted: automation-monitor event for $ticket_id"
   exit $EXIT_PASS
 }
