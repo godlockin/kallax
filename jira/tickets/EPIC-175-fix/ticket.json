@@ -1,0 +1,65 @@
+{
+  "ticket_id": "EPIC-175-fix",
+  "epic": "EPIC-175-fix",
+  "phase": "PHASE-022",
+  "title": "EPIC-175 JSON 注入 MEDIUM 修复 — automation-monitor-todos.sh 用 jq 替代 printf 拼 JSON",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "bugfix",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L2",
+  "description": "EPIC-175-fix — 修 EPIC-175 commit `d40e5a7` security review 抓的 2 个 MEDIUM JSON 注入.\n\n**Context**: security-guidance plugin review `scripts/automation-monitor-todos.sh`:\n- MEDIUM #1: `entry=$(printf '{\"ts\":\"%s\"...\"payload\":%s}' \"$ts\" \"$event_type\" \"$ticket_id\" \"$payload\")` — JSON injection risk\n- MEDIUM #2: `emit_event \"automation-monitor\" \"$ticket_id\" \"{\\\"status\\\":\\\"$status\\\"}\"` — JSON injection risk\n\n**修法** (跟 EPIC-168-BG 修 EPIC-166 1:1 pattern):\n- 用 `jq -n` 替代 printf 拼 JSON\n- 安全 escape 特殊字符\n- 加 integration test 覆盖 injection 攻击 case\n\n**0 改 source code 之外** (本 EPIC 修 EPIC-175 实施产物, 跟 EPIC-175 1:1)\n**0 增 Rule**",
+  "file_scope": {
+    "includes": [
+      "scripts/automation-monitor-todos.sh",
+      "tests/integration/automation-monitor-json-injection.test.sh",
+      "CHANGELOG.md",
+      "confluence/decisions/epic-175-fix-json-injection-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: 修 MEDIUM #1 — emit_event 用 jq -n 安全构造 JSON",
+    "AC2: 修 MEDIUM #2 — monitor 内部 status payload 用 jq -n 安全构造",
+    "AC3: tests/integration/automation-monitor-json-injection.test.sh ≥4 case PASS (normal / single quote / double quote / newline injection)",
+    "AC4: 5-Level Verify L1-L5",
+    "AC5: 4-PR 全程 (跟 EPIC-074 1:1)",
+    "AC6: 0 改 source code 之外, 0 增 Rule, 0 增 immutable script"
+  ],
+  "labels": [
+    "bugfix",
+    "json-injection",
+    "security-review",
+    "P1",
+    "phase-022"
+  ],
+  "expert_binding": {
+    "suggested_expert": "security-tool-bypass",
+    "actual_expert": "security-tool-bypass",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行)",
+    "EPIC-054-A (worktree 隔离)",
+    "EPIC-074 (4-branch flow)",
+    "EPIC-166 (run-history 4 类 event 1:1)",
+    "EPIC-175 (Security Rules 强化 1:1)",
+    "EPIC-168-BG (修 review 抓 bug 1:1 pattern)",
+    "security-guidance plugin review (MEDIUM #1 + #2)"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": "scripts/automation-monitor-todos.sh + tests/integration/* + CHANGELOG.md"
+  },
+  "deliverables": [
+    "scripts/automation-monitor-todos.sh 改 (2 处 jq -n 替代 printf)",
+    "tests/integration/automation-monitor-json-injection.test.sh (新, ≥4 case)",
+    "CHANGELOG.md 改 ([3.32.22])",
+    "confluence/decisions/epic-175-fix-json-injection-2026-08-05.md (新)"
+  ],
+  "estimated_hours": 2,
+  "created_by": "master (主公 2026-08-05 security review fix: EPIC-175 2 JSON 注入 MEDIUM)"
+}
