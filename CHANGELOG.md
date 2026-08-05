@@ -4,6 +4,69 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.32.23] - 2026-08-05
+
+### Release: Commit Hygiene 备案 + 未来指南 (EPIC-176)
+
+**Scope**: 0 core + 0 engine + 0 server (无 Rust 改动, 仅 docs + CLAUDE.md)
+
+#### 4-branch bypass 历史债 备案扩展 (主公 Phase 5 A 拍板)
+
+跟 EPIC-155 1:1 pattern, 主公拍板 **"commit history 时间顺序修整, 跟 EPIC-155 1:1 pattern"**:
+- **接受 hygiene issue documented** — 3 类问题详化备案
+- **不强 rebase 改写 history** — 保留原始 commit 链
+- **改为写 hygiene 备案 + 未来指南** — 新增 docs + CLAUDE.md 扩展
+
+#### 3 类问题详化备案
+
+| 问题 | EPIC | 违反 Pattern | 修复措施 |
+|------|------|-------------|----------|
+| amend 后 SHA 错乱 | EPIC-163 | Pattern 1 | 不用 amend 改 commit message |
+| ticket 误路径 | EPIC-167 | Pattern 3 | worktree ticket 永远走 main repo force-add |
+| 3-way conflict | EPIC-168-BG | Pattern 4 | merge conflict 优先 ours + 手工加新 entries |
+
+#### 5 兜底 commit 备案 (EPIC-155 + EPIC-176)
+
+| Commit | Message | 备案 EPIC |
+|--------|---------|-----------|
+| `a8da33f` | merge: EPIC-155 4-branch bypass 备案 | EPIC-155 |
+| `1482ffa` | docs(EPIC-155): 4-branch bypass 备案 | EPIC-155 |
+| `40e2b8e` | docs(EPIC-155): 4-branch bypass 备案 | EPIC-155 |
+| `30e923a` | fix(security): EPIC-175-fix JSON injection MEDIUM | EPIC-176 |
+| `33ecc9b` | feat(jira): EPIC-176 commit history 修整 ticket | EPIC-176 |
+
+#### 5 条 Commit Hygiene Pattern (未来指南)
+
+1. **不用 amend 改 commit message** (防止 SHA 错乱)
+2. **不用 reset --hard 改 history** (防止丢失工作)
+3. **worktree ticket 永远走 main repo force-add** (防止路径错误)
+4. **merge conflict 优先 ours + 手工加新 entries** (防止段重复)
+5. **4-PR 收口跟 EPIC-142/146 force-push 1:1** (防止 bypass 复发)
+
+#### Added
+
+- **`confluence/decisions/commit-hygiene-2026-08-05.md`** — 新, ≥150 行, 3 类问题 + 5 commits 备案 + 拍板理由
+- **`docs/reference/commit-hygiene-pattern-2026-08-05.md`** — 新, 5 条 pattern 未来指南
+
+#### Modified
+
+- **`CLAUDE.md`** Section 4 (4-branch bypass 段) 扩展 5 兜底 commit 备案
+- **`CLAUDE.md`** Section 6 加 EPIC-176 entry (v3.32.23)
+
+#### 5-Level Verify (AC5: 5-Level)
+
+- [x] **L1 git**: commit + push + raw test output
+- [x] **L2 stdout**: `git status` + `git log --oneline -5`
+- [x] **L3 4-expert**: auditor expert review
+- [x] **L4 independent**: 5-Level Verify 脚本
+- [x] **L5 boundary**: CLAUDE.md Rule check
+
+#### Compatibility
+
+- **0 改 source code**
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-155 备案 1:1 兼容** (Phase 3 + Phase 5 A 拍板)
+
 ## [3.32.20] - 2026-08-05
 
 ### Release: Smoke Retention Policy (EPIC-174)

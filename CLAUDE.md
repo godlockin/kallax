@@ -91,9 +91,9 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 **if-then 详细规则** (4 阶段 × 5 验证站): 详见 `.claude/rules/branch-flow.md`
 
-**4-branch bypass 历史债 备案 (EPIC-155, 2026-07-29 备案)**:
-3 commits bypass (a8da33f / 1482ffa / 40e2b8e), 主公拍接受丢失 (Phase 3 拍板). EPIC-155 计划 Q3 2026 retractively re-promote.
-Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push pattern 1:1. 详细: `confluence/decisions/branch-flow-governance-2026-07-09.md`
+**4-branch bypass 历史债 备案 (EPIC-155 + EPIC-176, 主公 Phase 3/5 A 拍板)**:
+5 commits bypass (a8da33f / 1482ffa / 40e2b8e / 30e923a / 33ecc9b), 主公拍接受丢失 (Phase 3 + Phase 5 A 拍板). EPIC-155/176 计划 Q3 2026 retractively re-promote.
+Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push pattern 1:1. 详细: `confluence/decisions/branch-flow-governance-2026-07-09.md` + `confluence/decisions/commit-hygiene-2026-08-05.md`
 
 ## 5. 4 不可更改 法律 (immutable scripts) + smoke retention
 
@@ -114,7 +114,7 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | `check-smoke-retention.sh` | `scripts/` | EPIC-174, smoke >=500 行检测 |
 | `smoke-size-report.sh` | `scripts/audit/` | EPIC-174, smoke 状态报告 |
 
-## 6. Recent EPICs (v3.32.2 → v3.32.21, 主公 2026-08-02/03/05 拍板)
+## 6. Recent EPICs (v3.32.2 → v3.32.23, 主公 2026-08-02/03/05 拍板)
 
 | EPIC | Version | 关键 | 工具 / 文件 |
 |---|---|---|---|
@@ -130,8 +130,9 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | EPIC-171 | v3.32.17 | 战略沉淀 — 3 视角 (PR+CTO+Marketing) 定位文档 + README "Why vs Claude Code?" | `confluence/research/kallax-positioning-2026-08-05.md`, `README.md` |
 | EPIC-172 | v3.32.18 | 公开化协同 — Lark/WeChat 群 + hosted frontstage + growth loop | `docs/community/`, `web/showcase/`, `confluence/research/kallax-growth-loop-2026-08-05.md` |
 | EPIC-175 | v3.32.21 | Security Rules 强化 — Release Capability Usage Gate + Contributor Attribution + Capability Placement 决策树 | `scripts/check-release-capability.sh`, `scripts/automation-monitor-todos.sh`, `scripts/check-benchmark-smoke.sh`, `docs/reference/capability-placement.md`, `docs/process/projection-sink-design.md` |
+| EPIC-176 | v3.32.23 | Commit Hygiene 备案 + 未来指南 (跟 EPIC-155 1:1 pattern) | `confluence/decisions/commit-hygiene-2026-08-05.md`, `docs/reference/commit-hygiene-pattern-2026-08-05.md` |
 
-**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 9 EPICs. Full docs + tests + scripts in each.
+**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 10 EPICs. Full docs + tests + scripts in each.
 
 ## 9. 引用 (lazy load on-demand)
 
