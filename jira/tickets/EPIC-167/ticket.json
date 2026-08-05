@@ -25,7 +25,7 @@
     ]
   },
   "acceptance": [
-    "AC1: .gitmodules 加 submodule 配置: path = external/kallax-experts/, url = https://github.com/godlockin/kallax-experts.git, branch = main",
+    "AC1: .gitmodules 加 submodule 配置: path = external/kallax-experts/, url = https://github.com/godlockin/kallax-experts.git, branch = miao",
     "AC2: `git submodule add` 成功, external/kallax-experts/ 含 15 expert + 3 skill (跟独立仓库 HEAD 一致)",
     "AC3: `git submodule status` 输出 clean (no - / + / U 前缀)",
     "AC4: scripts/skill/skill-manager.sh 加 submodule-init/update/status 3 子命令 (跟 EPIC-162 install/status/uninstall 1:1 pattern)",
