@@ -1,0 +1,81 @@
+{
+  "ticket_id": "EPIC-177",
+  "epic": "EPIC-177",
+  "phase": "PHASE-024",
+  "title": "Phase 6 D — 北极星 4 指标实跑 — EPIC-168-BG dashboard 真跑 60s daemon + 算 4 北极星",
+  "status": "in_progress",
+  "priority": "P0",
+  "type": "feature",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "tester",
+  "handoff_depth": "L2",
+  "description": "EPIC-177 — Phase 6 D (主公拍板): 北极星 4 指标实跑, 验证 EPIC-168-BG 修后真有效.\n\n**Context**: 主公 2026-08-05 拍板 Phase 6 D 闭环. EPIC-166 实施原版有 3 真 bug (review 漏抓), EPIC-168-BG 修后 (R1 trap EXIT + R2 quota 退出码 + R3 stdout+stderr + R4 atomic query + R5 ticket.json filter). 验证修后真有效 + 算 4 北极星.\n\n**设计**:\n1. **daemon 真跑 60s** — `bash scripts/heartbeat/heartbeat-daemon.sh start` → sleep 65 → status → stop\n2. **4 类 event emit 验证** — work / decision / accounting / evidence 4 类 (各 ≥1)\n3. **run-history 真跑 emit + query** — 4 类 emit 全成功 (无 jq --argjson 错误)\n4. **scheduler 4 priority 真测** — P0/P1/P2/BLOCKED 4 priority 真返回不同 priority\n5. **quota 6 层真测** — global/ticket/priority/expert/cooldown/pause 6 层\n6. **4 北极星 算**:\n   - expert_activation_rate (≥5 distinct experts / EPIC)\n   - cross_epic_reuse_rate (≥60% 跨 EPIC 文件复用)\n   - ab_hit_rate (< 15% 2-Group review 推荐 vs 实际 mismatch)\n   - mis_dispatch_binding_rate (< 10% Performer 错派率)\n7. **dashboard HTML 验证** — 4 metrics 数字 + 4 event 计数 + daemon 状态显示\n8. **CHANGELOG [3.33.0]** entry (v3.33.0 milestone 整合 + 4 北极星验证)\n\n**0 改 source code 之外** (除 dashboard 真跑验证 + metrics 算 + docs)\n**0 增 Rule**\n**0 增 immutable script**",
+  "file_scope": {
+    "includes": [
+      "scripts/heartbeat/heartbeat-daemon.sh",
+      "scripts/heartbeat/quota.sh",
+      "scripts/heartbeat/scheduler-hint.sh",
+      "scripts/heartbeat/run-history.sh",
+      "scripts/dashboard/dashboard-metrics.sh",
+      "scripts/metrics/sprint-metrics.sh",
+      "tests/integration/dashboard-runtime.test.sh",
+      "web/dashboard-metrics.html",
+      "state/run-history.jsonl",
+      "state/quota-db.json",
+      "docs/reference/dashboard-runtime-verification-2026-08-05.md",
+      "CHANGELOG.md",
+      "confluence/decisions/epic-177-dashboard-runtime-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: daemon 真跑 60s 后 log ≥1 tick + 0 failed lines (验证 EPIC-168-BG 修后真有效)",
+    "AC2: run-history 4 类 event emit 全成功 (work/decision/accounting/evidence, 无 jq --argjson 错误)",
+    "AC3: scheduler 4 priority 返回不同 priority (P0 highest, P2 lowest, BLOCKED 中间)",
+    "AC4: quota 6 层 + 3 状态 (eligible/throttled/paused) 真测",
+    "AC5: 4 北极星 算 + 报告 (expert_activation / cross_epic_reuse / ab_hit / mis_dispatch_binding)",
+    "AC6: dashboard HTML 渲染 4 metrics + 4 event 计数 + daemon 状态",
+    "AC7: tests/integration/dashboard-runtime.test.sh ≥8 case PASS",
+    "AC8: CHANGELOG [3.33.0] entry (v3.33.0 milestone 整合 + 4 北极星验证)",
+    "AC9: 5-Level Verify L1-L5",
+    "AC10: 4-PR 全程 (跟 EPIC-074 1:1)"
+  ],
+  "labels": [
+    "feature",
+    "dashboard-runtime",
+    "north-star-metric",
+    "phase-6",
+    "P0",
+    "v3.33.0-milestone"
+  ],
+  "expert_binding": {
+    "suggested_expert": "auditor",
+    "actual_expert": "auditor",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行)",
+    "EPIC-054-A (worktree 隔离)",
+    "EPIC-074 (4-branch flow)",
+    "EPIC-069-D (5-Level Verify)",
+    "EPIC-131/132 (scan-dead-code)",
+    "EPIC-166 (Heartbeat — 真跑验证对象)",
+    "EPIC-168-F (daemon 真跑验证 抓 3 bug 1:1)",
+    "EPIC-168-BG (修 3 bug 1:1)",
+    "EPIC-023-C (4 北极星 metric 1:1)"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": "scripts/heartbeat/* + scripts/dashboard/* + scripts/metrics/* + state/* + web/dashboard-metrics.html + tests/* + CHANGELOG.md"
+  },
+  "deliverables": [
+    "tests/integration/dashboard-runtime.test.sh (新, ≥8 case)",
+    "docs/reference/dashboard-runtime-verification-2026-08-05.md (新)",
+    "CHANGELOG.md 改 ([3.33.0] v3.33.0 milestone)",
+    "confluence/decisions/epic-177-dashboard-runtime-2026-08-05.md (新)"
+  ],
+  "estimated_hours": 6,
+  "created_by": "master (主公 2026-08-05 Phase 6 D 拍板: 北极星 4 指标实跑, 闭环 EPIC-023-C)"
+}
