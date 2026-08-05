@@ -1,0 +1,77 @@
+{
+  "ticket_id": "EPIC-174",
+  "epic": "EPIC-174",
+  "phase": "PHASE-022",
+  "title": "Smoke Retention Policy — 5 条规则治理测试膨胀",
+  "status": "in_progress",
+  "priority": "P2",
+  "type": "feature",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "tester",
+  "handoff_depth": "L2",
+  "description": "EPIC-174 — 借鉴 loopx AGENTS.md Smoke Retention Policy: 5 条规则治理测试膨胀.\n\n**Context**: 主公 2026-08-05 Phase 5 D 拍板. loopx AGENTS.md 规定 5 条 smoke retention 规则:\n1. 保留 shipped CLI/runtime behavior\n2. 保留 reusable control-plane contract\n3. 保留 public/private boundary enforcement\n4. 保留 regression that stranded automation\n5. 5xx 行 smoke 拆 / aggregate 替代\n\n**设计**:\n1. **docs/process/smoke-retention-policy.md** — 5 条规则详化 (跟 loopx 1:1)\n2. **scripts/check-smoke-retention.sh** — scanner 检测 5xx 行 smoke + suggest 拆\n3. **scripts/audit/smoke-size-report.sh** — 报告 5xx 行 smoke\n4. **rename / 整合** — 当前 tests/integration 超过 5xx 行的 smoke 列出 (跟 loopx 1:1 'Pre-existing CI debt' 处理)\n5. **CLAUDE.md / docs/PROCESS.md** 引用 smoke retention policy\n\n**0 增 Rule, 0 改 source code** (仅 docs + scripts + 测试重组)",
+  "file_scope": {
+    "includes": [
+      "docs/process/smoke-retention-policy.md",
+      "scripts/check-smoke-retention.sh",
+      "scripts/audit/smoke-size-report.sh",
+      "tests/integration/*-smoke.test.sh",
+      "docs/PROCESS.md",
+      "CLAUDE.md",
+      "CHANGELOG.md",
+      "tests/integration/smoke-retention.test.sh",
+      "confluence/decisions/epic-174-smoke-retention-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: docs/process/smoke-retention-policy.md ≥80 行 含 5 条规则详化 (跟 loopx 1:1)",
+    "AC2: scripts/check-smoke-retention.sh 检测 ≥5xx 行 smoke + 输出告警",
+    "AC3: scripts/audit/smoke-size-report.sh 列当前所有 smoke 状态 (行数 + 价值判定)",
+    "AC4: docs/PROCESS.md 加 smoke retention 段 + 引用",
+    "AC5: CLAUDE.md Section 5 加 smoke retention policy 引用",
+    "AC6: tests/integration/smoke-retention.test.sh ≥5 case PASS",
+    "AC7: 5-Level Verify L1-L5",
+    "AC8: 4-PR 全程",
+    "AC9: 0 改 source code, 0 增 Rule, 0 增 immutable script"
+  ],
+  "labels": [
+    "feature",
+    "smoke-retention",
+    "test-hygiene",
+    "loopx-borrow",
+    "P2",
+    "phase-022"
+  ],
+  "expert_binding": {
+    "suggested_expert": "auditor",
+    "actual_expert": "auditor",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行)",
+    "EPIC-054-A (worktree 隔离)",
+    "EPIC-074 (4-branch flow)",
+    "EPIC-114 (test 反模式)",
+    "EPIC-131/132 (scan-dead-code sentinel)",
+    "loopx AGENTS.md Smoke Retention Policy"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": "docs/process/* + scripts/{check,audit}/* + tests/integration/*"
+  },
+  "deliverables": [
+    "docs/process/smoke-retention-policy.md (新, ≥80 行)",
+    "scripts/check-smoke-retention.sh (新, scanner)",
+    "scripts/audit/smoke-size-report.sh (新, 报告)",
+    "docs/PROCESS.md 改 (加 smoke retention 段)",
+    "CLAUDE.md 改 (Section 5 加 smoke retention 引用)",
+    "CHANGELOG.md 改 ([3.32.20])",
+    "tests/integration/smoke-retention.test.sh (新, ≥5 case)",
+    "confluence/decisions/epic-174-smoke-retention-2026-08-05.md (新)"
+  ],
+  "estimated_hours": 6,
+  "created_by": "master (主公 2026-08-05 Phase 5 D 拍板: loopx Smoke Retention Policy 借鉴)"
+}
