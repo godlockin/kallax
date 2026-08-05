@@ -4,6 +4,40 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.32.15] - 2026-08-05
+
+### Release: Public Path (EPIC-169)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Added (公开化路径)
+
+- **README.en.md** — English version 7-section (Why/Try/Capabilities/Documentation/Community/Contributing/License), ≥250 行
+- **web/showcase/index.html** — 7 case cards scaffold (Epics/5-Level/Multi-Agent/Hash-Chain/Worktree/Decision/Skill)
+- **docs/community/README.md** — 社区入口 (Lark 群 QR 占位 + WeChat huangrt00 + GitHub Discussions)
+- **docs/sponsor/README.md** — 赞助信息
+- **.github/FUNDING.yml** — GitHub Sponsors 入口
+- **.github/ISSUE_TEMPLATE/bug_report.md** — Bug report template
+- **.github/ISSUE_TEMPLATE/feature_request.md** — Feature request template
+- **docs/i18n/README.md** — i18n sync rule 详化
+- **docs/showcases/** — 7 case showcase catalog (README.md + showcase-catalog.json)
+
+#### 5-Level Verify (AC9: ≥6 case)
+
+- [x] **16/16 PASS** — `bash tests/integration/public-path-assets.test.sh`
+- [x] **0 改 source code** — 无 Rust/TS source 改动, 仅 docs + web + .github
+
+#### Docs
+
+- `CLAUDE.md` Section 6 加 EPIC-169 entry (v3.32.15)
+- `confluence/decisions/epic-169-public-path-2026-08-05.md` (拍板记录)
+
+#### Compatibility
+
+- **0 改 source code**
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-165 showcase + i18n 1:1 兼容**
+
 ## [3.32.7] - 2026-08-05
 
 ### Release: Skill 插件化 (EPIC-162)

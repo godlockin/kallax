@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KALLAX Showcase</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      color: #888;
+      font-size: 1.1rem;
+    }
+    .badge {
+      display: inline-block;
+      background: #4CAF50;
+      color: #fff;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .card h2 {
+      font-size: 1.25rem;
+      color: #fff;
+      margin-bottom: 0.75rem;
+    }
+    .card p {
+      color: #aaa;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+    .card-meta {
+      font-size: 0.8rem;
+      color: #666;
+    }
+    .card-link {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: rgba(76,175,80,0.2);
+      border: 1px solid #4CAF50;
+      color: #4CAF50;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+    .card-link:hover {
+      background: rgba(76,175,80,0.3);
+    }
+    footer {
+      text-align: center;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      color: #666;
+      font-size: 0.9rem;
+    }
+    footer a {
+      color: #4CAF50;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>KALLAX Showcase</h1>
+      <p class="subtitle">7 Real-World Cases Demonstrating Multi-Agent Collaboration</p>
+      <span class="badge">v3.32.15</span>
+    </header>
+
+    <div class="grid">
+      <!-- Case 1 -->
+      <div class="card">
+        <div class="card-icon">📋</div>
+        <h2>Epic-Driven Development</h2>
+        <p>KALLAX EPIC 4-Piece: A+B review + README + lessons + signoff. Standardized delivery process for complex features.</p>
+        <div class="card-meta">Case #1 | Process</div>
+        <a href="../docs/showcases/" class="card-link">View Details</a>
+      </div>
+
+      <!-- Case 2 -->
+      <div class="card">
+        <div class="card-icon">✅</div>
+        <h2>5-Level Verify Pipeline</h2>
+        <p>L1 git → L2 stdout → L3 4-expert → L4 independent → L5 boundary. Zero fake metrics, all verified.</p>
+        <div class="card-meta">Case #2 | Quality</div>
+        <a href="../docs/5-levels.md" class="card-link">View Details</a>
+      </div>
+
+      <!-- Case 3 -->
+      <div class="card">
+        <div class="card-icon">🤖</div>
+        <h2>Multi-Agent Collaboration</h2>
+        <p>Conductor + Performer + 4 sub-roles (coder/reviewer/tester/docs). 1:4 capacity multiplier.</p>
+        <div class="card-meta">Case #3 | Architecture</div>
+        <a href="../docs/4-roles.md" class="card-link">View Details</a>
+      </div>
+
+      <!-- Case 4 -->
+      <div class="card">
+        <div class="card-icon">🔗</div>
+        <h2>Hash-Chain Audit Trail</h2>
+        <p>SHA256 hash chain for immutable audit. Every change traced and verifiable.</p>
+        <div class="card-meta">Case #4 | Security</div>
+        <a href="../scripts/verify/hash-chain.sh" class="card-link">View Details</a>
+      </div>
+
+      <!-- Case 5 -->
+      <div class="card">
+        <div class="card-icon">🌳</div>
+        <h2>Worktree Isolation</h2>
+        <p>Isolated worktrees per feature. Zero main branch pollution.</p>
+        <div class="card-meta">Case #5 | DevOps</div>
+        <a href="../.claude/rules/branch-flow.md" class="card-link">View Details</a>
+      </div>
+
+      <!-- Case 6 -->
+      <div class="card">
+        <div class="card-icon">🎯</div>
+        <h2>Decision Matrix</h2>
+        <p>5×4=25 cells, all verified. Clear authority, no ambiguity.</p>
+        <div class="card-meta">Case #6 | Governance</div>
+        <a href="../docs/process/q18-decision-model.md" class="card-link">View Details</a>
+      </div>
+
+      <!-- Case 7 -->
+      <div class="card">
+        <div class="card-icon">🔌</div>
+        <h2>Skill Plugin System</h2>
+        <p>9 expert skills as plugins, hot-swappable. Extend without fork.</p>
+        <div class="card-meta">Case #7 | Extensibility</div>
+        <a href="../docs/reference/skill-plugin-2026-08-05.md" class="card-link">View Details</a>
+      </div>
+    </div>
+
+    <footer>
+      <p>KALLAX v3.32.15 — Knowledge-Augmented Leveraged Learning Agent eXecutor</p>
+      <p>
+        <a href="../README.md">Documentation</a> |
+        <a href="../README.en.md">English</a> |
+        <a href="../docs/community/">Community</a> |
+        <a href="https://github.com/godlockin/kallax">GitHub</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>
