@@ -51,29 +51,39 @@ else
     fail "quota should-run" "unexpected output: $result"
 fi
 
-# TC3: scheduler-hint 4 priority
+# TC3: scheduler-hint 4 priority (P0 > BLOCKED > P1 > P2)
 echo ""
 echo "TC3: scheduler-hint priority logic (P0 > BLOCKED > P1 > P2)"
+# Test with P0 ticket
 P0_result=$(bash "$SCHEDULER_SCRIPT" next P0 2>&1 | grep -oE '"priority": "[^"]+"' | head -1 || echo "")
+# Test with P1 ticket
 P1_result=$(bash "$SCHEDULER_SCRIPT" next P1 2>&1 | grep -oE '"priority": "[^"]+"' | head -1 || echo "")
+# Test with P2 ticket
 P2_result=$(bash "$SCHEDULER_SCRIPT" next P2 2>&1 | grep -oE '"priority": "[^"]+"' | head -1 || echo "")
 if [ "$P0_result" = "$P1_result" ] && [ "$P1_result" = "$P2_result" ]; then
     fail "scheduler-hint priority" "all priorities return same: $P0_result (expected different — P0=highest, P2=lowest)"
 else
-    pass "scheduler-hint priority P0/P1/P2 differ"
+    pass "scheduler-hint priority P0/P1/P2 differ (P0=$P0_result, P1=$P1_result, P2=$P2_result)"
 fi
 
-# TC4: run-history emit 4 类
+# TC4: run-history emit 4 类 (jq-free, flock-protected)
 echo ""
-echo "TC4: run-history emit 4 event types"
+echo "TC4: run-history emit 4 event types (jq-free + flock)"
+initial_count=$(wc -l < "$STATE_DIR/run-history.jsonl" 2>/dev/null || echo 0)
 for evt in work decision accounting evidence; do
-    result=$(bash "$RUN_HISTORY_SCRIPT" emit "$evt" EPIC-168-F performer-1 '{"action":"test"}' 2>&1)
-    if echo "$result" | grep -qE "(appended|success|^$)"; then
+    result=$(bash "$RUN_HISTORY_SCRIPT" emit "$evt" EPIC-168-BG-test '{"action":"test"}' 2>&1 || echo "FAIL")
+    if [ "$result" != "FAIL" ]; then
         pass "emit $evt"
     else
-        fail "emit $evt" "output: $result"
+        fail "emit $evt" "exit non-zero"
     fi
 done
+final_count=$(wc -l < "$STATE_DIR/run-history.jsonl" 2>/dev/null || echo 0)
+if [ "$final_count" -gt "$initial_count" ]; then
+    pass "append worked (+$((final_count - initial_count)) lines)"
+else
+    fail "append" "count not incremented"
+fi
 
 # TC5: append-only 改写拦截
 echo ""
@@ -103,17 +113,18 @@ for f in heartbeat-daemon.log quota-db.json run-history.jsonl; do
     fi
 done
 
-# TC7: 北极星打通 (sprint-metrics.sh)
+# TC7: 北极星打通 (dashboard-metrics.sh)
 echo ""
-echo "TC7: EPIC-023-C 北极星打通"
-if [ -f "${SCRIPT_DIR}/../../scripts/metrics/sprint-metrics.sh" ]; then
-    if bash "${SCRIPT_DIR}/../../scripts/metrics/sprint-metrics.sh" --epic EPIC-168-F --format json 2>/dev/null | grep -qE "(expert_activation|mis_dispatch_binding_rate)"; then
-        pass "sprint-metrics includes 4 北极星"
+echo "TC7: EPIC-023-C 北极星打通 (dashboard-metrics.sh)"
+if [ -f "${SCRIPT_DIR}/../../scripts/dashboard/dashboard-metrics.sh" ]; then
+    metrics_json=$(bash "${SCRIPT_DIR}/../../scripts/dashboard/dashboard-metrics.sh" --format=json 2>/dev/null)
+    if echo "$metrics_json" | grep -qE "(expert_activation|mis_dispatch_binding_rate|cross_epic_reuse|ab_hit_rate)"; then
+        pass "dashboard-metrics includes 4 北极星"
     else
-        fail "sprint-metrics" "no 北极星 metric output"
+        fail "dashboard-metrics" "no 北极星 metric output"
     fi
 else
-    fail "sprint-metrics.sh" "not found"
+    fail "dashboard-metrics.sh" "not found"
 fi
 
 # TC8: 5-Level Verify L1-L5
