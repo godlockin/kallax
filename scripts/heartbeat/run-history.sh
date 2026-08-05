@@ -155,13 +155,23 @@ cmd_query() {
         filter_expr="${filter_expr} | select(.ticket_id == \"$ticket_filter\")"
     fi
 
-    # Output as JSON array
-    echo "[" > "${LEDGER}.tmp"
-    jq -r "$filter_expr" "$LEDGER" 2>/dev/null | jq -s '.' >> "${LEDGER}.tmp" 2>/dev/null || true
-    echo "]" >> "${LEDGER}.tmp"
+    # Output as JSON array (atomic: set -C + mktemp + mv)
+    set -C
+    local out_file
+    out_file=$(mktemp "${LEDGER}.query_out.XXXXXX") 2>/dev/null || {
+        out_file="${LEDGER}.query_out.$$"
+        touch "$out_file"
+    }
+    set +C
 
-    cat "${LEDGER}.tmp"
-    rm -f "${LEDGER}.tmp"
+    {
+        echo "[" > "${out_file}"
+        jq -r "$filter_expr" "$LEDGER" 2>/dev/null | jq -s '.' >> "${out_file}" 2>/dev/null || true
+        echo "]" >> "${out_file}"
+    }
+    mv -f "${out_file}" "${LEDGER}.query_out"
+    cat "${LEDGER}.query_out"
+    rm -f "${LEDGER}.query_out"
     exit $EXIT_PASS
 }
 

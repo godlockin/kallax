@@ -86,7 +86,8 @@ cmd_start() {
 
     # Daemonize
     (
-        exec 2>> "$LOG_FILE"
+        exec >> "$LOG_FILE" 2>&1
+        trap 'rm -f "$PID_FILE" 2>/dev/null; exit' EXIT
         log "heartbeat-daemon starting (interval=${interval}s)"
 
         # Write PID

@@ -144,13 +144,14 @@ EOF
 
     # Then blocked tickets
     local blocked_tickets=()
-    for ticket_dir in "${TICKETS_DIR}"/*; do
-        if [ -d "$ticket_dir" ] && [ -f "${ticket_dir}/ticket.json" ]; then
-            local status
-            status=$(jq -r '.status // "todo"' "${ticket_dir}/ticket.json" 2>/dev/null || echo "todo")
-            if [ "$status" = "blocked" ]; then
-                blocked_tickets+=("$(basename "$ticket_dir")")
-            fi
+    for ticket_dir in "${TICKETS_DIR}"/*/ticket.json; do
+        [ -f "$ticket_dir" ] || continue
+        local dir
+        dir=$(dirname "$ticket_dir")
+        local status
+        status=$(jq -r '.status // "todo"' "$ticket_dir" 2>/dev/null || echo "todo")
+        if [ "$status" = "blocked" ]; then
+            blocked_tickets+=("$(basename "$dir")")
         fi
     done
 
