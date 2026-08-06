@@ -1,0 +1,82 @@
+{
+  "ticket_id": "EPIC-175",
+  "epic": "EPIC-175",
+  "phase": "PHASE-022",
+  "title": "Security Rules 强化 — 扩展明文 + Release Capability Usage Gate + Contributor Attribution",
+  "status": "in_progress",
+  "priority": "P2",
+  "type": "feature",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L2",
+  "description": "EPIC-175 — 借鉴 loopx AGENTS.md Security Rules 强化 + Release Capability Usage Gate + Contributor Attribution.\n\n**Context**: 主公 2026-08-05 Phase 5 D 拍板. loopx AGENTS.md 包含:\n1. Public/Private Boundary (EPIC-163 已借鉴)\n2. PR Review Comments 公共化\n3. Release Contributor Attribution\n4. Release Capability Usage Gate\n5. Engineering Quality And Right-Sized Scope\n6. Capability And Extension Placement 决策树\n7. Automation And Monitor Todos\n8. Projection Sink Design\n9. Benchmark Smoke Classification\n\n**本 EPIC 借鉴剩余 3 项**:\n1. **Release Contributor Attribution** — CHANGELOG 加 community contributors 段, dual-language (中英)\n2. **Release Capability Usage Gate** — release 引入新能力必含激活/禁用/隐私/链接\n3. **Capability And Extension Placement 决策树** — docs/reference 加 capability-placement.md\n\n**设计**:\n1. **CHANGELOG 加 Community Contributors section** — 模板 + 激活指南\n2. **scripts/check-release-capability.sh** — release PR 含 capability activation + privacy + rollback\n3. **docs/reference/capability-placement.md** — 决策树 (跟 loopx 1:1)\n4. **scripts/automation-monitor-todos.sh** — heartbeat 集成 automation monitor (跟 EPIC-166 daemon 1:1)\n5. **scripts/check-benchmark-smoke.sh** — benchmark smoke 分类 (跟 EPIC-131/132 1:1)\n\n**0 增 Rule, 0 改 source code**",
+  "file_scope": {
+    "includes": [
+      "CHANGELOG.md",
+      "scripts/check-release-capability.sh",
+      "scripts/automation-monitor-todos.sh",
+      "scripts/check-benchmark-smoke.sh",
+      "docs/reference/capability-placement.md",
+      "docs/process/projection-sink-design.md",
+      "tests/integration/security-rules-extended.test.sh",
+      "CLAUDE.md",
+      "CHANGELOG.md",
+      "confluence/decisions/epic-175-security-extended-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: CHANGELOG 加 Community Contributors 模板 (中英双语, 跟 loopx 1:1)",
+    "AC2: scripts/check-release-capability.sh scanner 检测 release capability 4 字段 (activation / privacy / rollback / link)",
+    "AC3: scripts/automation-monitor-todos.sh 集成 heartbeat daemon (跟 EPIC-166 1:1)",
+    "AC4: scripts/check-benchmark-smoke.sh benchmark smoke 分类 (boundary / ledger / classifier / adapter)",
+    "AC5: docs/reference/capability-placement.md 决策树 (跟 loopx docs/reference/extensions.md 1:1)",
+    "AC6: docs/process/projection-sink-design.md (跟 loopx docs/concepts/interaction-pattern-catalog.md 1:1)",
+    "AC7: tests/integration/security-rules-extended.test.sh ≥5 case PASS",
+    "AC8: 5-Level Verify L1-L5",
+    "AC9: 4-PR 全程",
+    "AC10: 0 改 source code, 0 增 Rule, 0 增 immutable script"
+  ],
+  "labels": [
+    "feature",
+    "security-rules-extended",
+    "release-gate",
+    "loopx-borrow",
+    "P2",
+    "phase-022"
+  ],
+  "expert_binding": {
+    "suggested_expert": "compliance",
+    "actual_expert": "compliance",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行)",
+    "EPIC-054-A (worktree 隔离)",
+    "EPIC-074 (4-branch flow)",
+    "EPIC-163 (Public/Private Boundary 1:1 协同)",
+    "EPIC-166 (heartbeat daemon 1:1)",
+    "EPIC-131/132 (scan-dead-code sentinel 1:1)",
+    "loopx AGENTS.md Security Rules + Release Capability Usage Gate"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": "CHANGELOG.md + scripts/* + docs/reference/* + docs/process/* + tests/*"
+  },
+  "deliverables": [
+    "CHANGELOG.md 改 (加 Community Contributors section)",
+    "scripts/check-release-capability.sh (新, scanner)",
+    "scripts/automation-monitor-todos.sh (新, heartbeat 集成)",
+    "scripts/check-benchmark-smoke.sh (新, 分类)",
+    "docs/reference/capability-placement.md (新, 决策树)",
+    "docs/process/projection-sink-design.md (新)",
+    "tests/integration/security-rules-extended.test.sh (新, ≥5 case)",
+    "CLAUDE.md 改 (加 EPIC-175 引用)",
+    "CHANGELOG.md 改 ([3.32.21])",
+    "confluence/decisions/epic-175-security-extended-2026-08-05.md (新)"
+  ],
+  "estimated_hours": 10,
+  "created_by": "master (主公 2026-08-05 Phase 5 D 拍板: loopx Security Rules 强化借鉴)"
+}

@@ -91,16 +91,18 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 **if-then 详细规则** (4 阶段 × 5 验证站): 详见 `.claude/rules/branch-flow.md`
 
-**4-branch bypass 历史债 备案 (EPIC-155, 2026-07-29 备案)**:
-3 commits bypass (a8da33f / 1482ffa / 40e2b8e), 主公拍接受丢失 (Phase 3 拍板). EPIC-155 计划 Q3 2026 retractively re-promote.
-Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push pattern 1:1. 详细: `confluence/decisions/branch-flow-governance-2026-07-09.md`
+**4-branch bypass 历史债 备案 (EPIC-155 + EPIC-176, 主公 Phase 3/5 A 拍板)**:
+5 commits bypass (a8da33f / 1482ffa / 40e2b8e / 30e923a / 33ecc9b), 主公拍接受丢失 (Phase 3 + Phase 5 A 拍板). EPIC-155/176 计划 Q3 2026 retractively re-promote.
+Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push pattern 1:1. 详细: `confluence/decisions/branch-flow-governance-2026-07-09.md` + `confluence/decisions/commit-hygiene-2026-08-05.md`
 
-## 5. 4 不可更改 法律 (immutable scripts)
+## 5. 4 不可更改 法律 (immutable scripts) + smoke retention
 
 > **P0-7 路径澄清 (v3.32.1)**: 5 个 immutable scripts **不**全部在 `scripts/permission/`. 实际分布:
 > - 4 个在 `scripts/verify/` — `check-decorative-claim.sh`, `check-narrative.sh`, `check-fail-closed.sh`, `check-self-heal.sh`
 > - 1 个在 `scripts/hooks/` — `check-claim-evidence.sh` (pre-commit hook 上下文, 仅扫 staged files)
 > - 退出码契约: 0=PASS, 1=FAIL (fail-closed, 禁止 print FAIL + exit 0); `scan-dead-code.sh` 加 2=BLOCKED-env (P0-7 治理)
+>
+> **smoke retention (v3.32.20)**: `docs/process/smoke-retention-policy.md` — 5 条规则治理 smoke 测试膨胀 (>=500 行告警)
 
 | Script | Path | 职责 |
 |--------|------|------|
@@ -109,8 +111,10 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | `check-fail-closed.sh` | `scripts/verify/` | 0 fail-open |
 | `check-self-heal.sh` | `scripts/verify/` | self-heal pattern |
 | `check-claim-evidence.sh` | `scripts/hooks/` | EPIC-069-D, README/CHANGELOG 数字必带 raw test output, pre-commit |
+| `check-smoke-retention.sh` | `scripts/` | EPIC-174, smoke >=500 行检测 |
+| `smoke-size-report.sh` | `scripts/audit/` | EPIC-174, smoke 状态报告 |
 
-## 6. Recent EPICs (v3.32.2 → v3.32.6, 主公 2026-08-02/03 拍板)
+## 6. Recent EPICs (v3.32.2 → v3.32.23, 主公 2026-08-02/03/05 拍板)
 
 | EPIC | Version | 关键 | 工具 / 文件 |
 |---|---|---|---|
@@ -119,8 +123,17 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | EPIC-159 | v3.32.4 | CLAUDE.md 307→160 行 + `.claude/rules/*.md` path-scoped lazy load | `.claude/rules/{state-json,testing,branch-flow,strict-tsconfig}.md` |
 | EPIC-160 | v3.32.5 | install.sh Omnibus — 全部件 deploy + `--inventory`/`--update`/3 skip flag | `scripts/install.sh`, 95 files |
 | EPIC-161 | v3.32.6 | retrospective-routine.sh 6 阶段 routine (复盘/整理/review/升级/归档/删除) | `scripts/retrospective-routine.sh`, `--json` |
+| EPIC-168-F | v3.32.13 | daemon 真跑验证 — 抓 3 真 bug (review 漏抓) | `tests/integration/heartbeat-daemon-runtime.test.sh` (10/16 → 抓 3 bug) |
+| EPIC-168-BG | v3.32.14 | 修 EPIC-166 4 真 bug + 建北极星 dashboard | `heartbeat-daemon.sh`, `scheduler-hint.sh`, `run-history.sh`, `dashboard-metrics.sh`, `dashboard-metrics.html` |
+| EPIC-169 | v3.32.15 | 公开化路径: README.en + frontstage + Lark/WeChat 群 | `README.en.md`, `web/showcase/`, `docs/community/`, `docs/sponsor/` |
+| EPIC-170 | v3.32.16 | Expert plugin complete — enabled_policy + activation gates (9 expert 1:1 loopx) | `scripts/skill/skill-manager.sh`, `scripts/skill/skill-policy.sh` |
+| EPIC-171 | v3.32.17 | 战略沉淀 — 3 视角 (PR+CTO+Marketing) 定位文档 + README "Why vs Claude Code?" | `confluence/research/kallax-positioning-2026-08-05.md`, `README.md` |
+| EPIC-172 | v3.32.18 | 公开化协同 — Lark/WeChat 群 + hosted frontstage + growth loop | `docs/community/`, `web/showcase/`, `confluence/research/kallax-growth-loop-2026-08-05.md` |
+| EPIC-175 | v3.32.21 | Security Rules 强化 — Release Capability Usage Gate + Contributor Attribution + Capability Placement 决策树 | `scripts/check-release-capability.sh`, `scripts/automation-monitor-todos.sh`, `scripts/check-benchmark-smoke.sh`, `docs/reference/capability-placement.md`, `docs/process/projection-sink-design.md` |
+| EPIC-176 | v3.32.23 | Commit Hygiene 备案 + 未来指南 (跟 EPIC-155 1:1 pattern) | `confluence/decisions/commit-hygiene-2026-08-05.md`, `docs/reference/commit-hygiene-pattern-2026-08-05.md` |
+| EPIC-177-G | v3.33.0 | run-history emit integration — 6 脚本 emit hook 闭环 4 北极星 | `binding-tracker.sh`, `heartbeat-daemon.sh`, `post-process.sh`, `branch-4pr.sh`, `install.sh`, `skill-manager.sh` |
 
-**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 5 EPICs. Full docs + tests + scripts in each.
+**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 11 EPICs. Full docs + tests + scripts in each.
 
 ## 9. 引用 (lazy load on-demand)
 

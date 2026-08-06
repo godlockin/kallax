@@ -28,19 +28,35 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 FEATURE="${1:-}"
 SKIP_TESTS=0
 EMERGENCY=0
+EMERGENCY_REASON=""
 DRY_RUN=0
 
 shift || true
-for arg in "$@"; do
-  case "$arg" in
-    --skip-tests) SKIP_TESTS=1 ;;
-    --emergency) EMERGENCY=1 ;;
-    --dry-run) DRY_RUN=1 ;;
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --skip-tests) SKIP_TESTS=1; shift ;;
+    --emergency)
+      EMERGENCY=1
+      shift
+      if [[ $# -eq 0 || -z "$1" || "$1" == --* ]]; then
+        echo "ERROR: --emergency requires a non-empty reason"
+        exit 2
+      fi
+      EMERGENCY_REASON="$1"
+      shift
+      ;;
+    --dry-run) DRY_RUN=1; shift ;;
+    *) echo "ERROR: unknown argument: $1"; exit 2 ;;
   esac
 done
 
+if [[ $SKIP_TESTS -eq 1 && ($EMERGENCY -eq 0 || -z "$EMERGENCY_REASON") ]]; then
+  echo "ERROR: --skip-tests requires --emergency <non-empty reason>"
+  exit 2
+fi
+
 if [[ -z "$FEATURE" || "$FEATURE" == "--help" || "$FEATURE" == "-h" ]]; then
-  echo "Usage: $0 <feature-branch> [--skip-tests] [--emergency] [--dry-run]"
+  echo "Usage: $0 <feature-branch> [--skip-tests --emergency <reason>] [--dry-run]"
   echo ""
   echo "  4-PR 流程 (EPIC-074 新规):"
   echo "    1. feature/<name> → testing  (UAT)"
@@ -71,14 +87,26 @@ fi
 
 # 5-Level Verify L2 强制 (除非 --skip-tests)
 if [[ $SKIP_TESTS -eq 0 ]]; then
-  echo "=== 5-Level Verify (新规: cargo test 不是 build) ==="
+  echo "=== 5-Level Verify (新规: cargo test --workspace --release) ==="
   if [[ $DRY_RUN -eq 0 ]]; then
-    (cd rust && cargo test --release 2>&1 | tail -5) || {
-      echo "❌ cargo test --release 失败, abort"
+    if ! cargo test --workspace --release; then
+      echo "❌ cargo test --workspace --release 失败, abort"
       exit 1
-    }
+    fi
   else
     echo "  (dry-run: 跳过 cargo test)"
+  fi
+else
+  echo "⚠️  tests skipped under emergency: ${EMERGENCY_REASON}"
+fi
+
+# EPIC-177-G: Emit decision event for PR 1 (feature→testing)
+if [[ $DRY_RUN -eq 0 ]]; then
+  RUN_HISTORY="${REPO_ROOT}/scripts/heartbeat/run-history.sh"
+  if [ -f "$RUN_HISTORY" ]; then
+    local pr1_payload
+    pr1_payload=$(jq -cn --arg branch "$FEATURE" '{pr_stage: "feature_to_testing", branch: $branch, action: "pr_created"}')
+    "$RUN_HISTORY" emit decision "$FEATURE" "$pr1_payload" >/dev/null 2>&1
   fi
 fi
 
@@ -95,6 +123,14 @@ if [[ $DRY_RUN -eq 0 ]]; then
   fi
   echo "  PR: $PR1_URL"
   gh pr merge "$PR1_URL" --merge --delete-branch=false 2>&1 | tail -1
+
+  # EPIC-177-G: Emit decision event for PR 2 (testing→main)
+  RUN_HISTORY="${REPO_ROOT}/scripts/heartbeat/run-history.sh"
+  if [ -f "$RUN_HISTORY" ]; then
+    local pr2_payload
+    pr2_payload=$(jq -cn '{pr_stage: "testing_to_main", action: "pr_merged"}')
+    "$RUN_HISTORY" emit decision "$FEATURE" "$pr2_payload" >/dev/null 2>&1
+  fi
 else
   echo "  (dry-run)"
   PR1_URL="https://github.com/dryrun/PR1"
@@ -112,6 +148,14 @@ if [[ $DRY_RUN -eq 0 ]]; then
   fi
   echo "  PR: $PR2_URL"
   gh pr merge "$PR2_URL" --merge --delete-branch=false 2>&1 | tail -1
+
+  # EPIC-177-G: Emit decision event for PR 3 (main→miao)
+  RUN_HISTORY="${REPO_ROOT}/scripts/heartbeat/run-history.sh"
+  if [ -f "$RUN_HISTORY" ]; then
+    local pr3_payload
+    pr3_payload=$(jq -cn '{pr_stage: "main_to_miao", action: "pr_merged"}')
+    "$RUN_HISTORY" emit decision "$FEATURE" "$pr3_payload" >/dev/null 2>&1
+  fi
 else
   echo "  (dry-run)"
   PR2_URL="https://github.com/dryrun/PR2"
@@ -129,6 +173,16 @@ if [[ $DRY_RUN -eq 0 ]]; then
   fi
   echo "  PR: $PR3_URL"
   gh pr merge "$PR3_URL" --merge --delete-branch=false 2>&1 | tail -1
+
+  # EPIC-177-G: Emit decision event for all 4-PR complete
+  RUN_HISTORY="${REPO_ROOT}/scripts/heartbeat/run-history.sh"
+  if [ -f "$RUN_HISTORY" ]; then
+    local complete_payload
+    complete_payload=$(jq -cn \
+      --arg branch "$FEATURE" \
+      '{pr_stage: "all_complete", branch: $branch, action: "4pr_flow_complete"}')
+    "$RUN_HISTORY" emit decision "$FEATURE" "$complete_payload" >/dev/null 2>&1
+  fi
 else
   echo "  (dry-run)"
   PR3_URL="https://github.com/dryrun/PR3"

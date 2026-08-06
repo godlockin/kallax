@@ -1,0 +1,96 @@
+{
+  "ticket_id": "EPIC-177-G",
+  "epic": "EPIC-177-G",
+  "phase": "PHASE-024",
+  "title": "run-history emit integration — 闭环 EPIC-023-C 4 北极星 (0 production events fix)",
+  "status": "in_progress",
+  "priority": "P0",
+  "type": "feature",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L2",
+  "description": "EPIC-177-G — Phase 6 D EPIC-177 9 专家 review HIGH blocker: 'run-history.jsonl 0 production events, only 35 test lines' → 修. 闭环 EPIC-023-C 4 北极星.\n\n**Context**: 9 专家 review (480 行 Master 报告) 抓 1 HIGH: 'run-history.jsonl empty, North star 0 data'. EPIC-023-C 4 北极星 (expert_activation / cross_epic_reuse / ab_hit_rate / mis_dispatch_binding_rate) 没法算, 因为 emit 没集成到主流程.\n\n**设计 (跟 EPIC-166 heartbeat + EPIC-157 binding tracker 1:1)**:\n1. **scripts/binding/binding-tracker.sh** 集成 emit — 每次 claim / submit-pr / validate emit accounting event\n2. **scripts/heartbeat/heartbeat-daemon.sh** 主循环 emit 已有 (acme work / decision / accounting / evidence), 验证频率\n3. **scripts/post-process.sh** (EPIC-059-E) emit — 每次 EPIC done emit 1 work + 1 decision event\n4. **scripts/branch-4pr.sh** (EPIC-074) emit — 每次 4 阶段 PR emit 1 decision event\n5. **scripts/install.sh** (EPIC-160) emit — install/uninstall emit 1 evidence event\n6. **scripts/skill-manager.sh** (EPIC-162) emit — skill install/uninstall emit 1 work event\n7. **北极星 4 指标 真算** — 用 emit 数据算 expert_activation / cross_epic_reuse / ab_hit / mis_dispatch_binding\n8. **dashboard HTML 渲染真数据** — pre-generate web/dashboard-metrics.json\n9. **0 改 source code** (除 5 script 加 emit hook + dashboard)\n10. **0 增 Rule, 0 增 immutable script**\n\n**跟现有 EPIC 联合 (0 冲突)**:\n- EPIC-166 (heartbeat daemon): 主循环 emit 1:1\n- EPIC-023-C (4 北极星): 数据源打通\n- EPIC-157 (binding tracker): accounting event hook\n- EPIC-160 (install.sh): evidence event hook\n- EPIC-162 (skill-manager.sh): work event hook\n- EPIC-074 (4-branch flow): decision event hook",
+  "file_scope": {
+    "includes": [
+      "scripts/binding/binding-tracker.sh",
+      "scripts/heartbeat/heartbeat-daemon.sh",
+      "scripts/post-process.sh",
+      "scripts/branch-4pr.sh",
+      "scripts/install.sh",
+      "scripts/skill/skill-manager.sh",
+      "scripts/metrics/sprint-metrics.sh",
+      "scripts/dashboard/dashboard-metrics.sh",
+      "web/dashboard-metrics.html",
+      "tests/integration/run-history-emit-integration.test.sh",
+      "docs/reference/run-history-emit-integration-2026-08-05.md",
+      "CLAUDE.md",
+      "CHANGELOG.md",
+      "confluence/decisions/epic-177-g-northstar-emit-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: binding-tracker.sh 集成 emit (claim / submit-pr / validate 3 触发点 emit accounting)",
+    "AC2: heartbeat-daemon.sh 主循环 emit 频率验证 (1 work/decision + 4 accounting/min, 1 evidence/10min)",
+    "AC3: post-process.sh emit (EPIC done emit 1 work + 1 decision)",
+    "AC4: branch-4pr.sh emit (4 阶段 PR emit 1 decision each)",
+    "AC5: install.sh emit (install/uninstall emit 1 evidence)",
+    "AC6: skill-manager.sh emit (install/uninstall emit 1 work)",
+    "AC7: 4 北极星 算用真 emit 数据 (expert_activation ≥5 / cross_epic_reuse ≥60% / ab_hit < 15% / mis_dispatch_binding < 10%)",
+    "AC8: dashboard HTML 渲染真数据 (pre-generate web/dashboard-metrics.json)",
+    "AC9: tests/integration/run-history-emit-integration.test.sh ≥10 case PASS (6 脚本 emit hook + 4 北极星算)",
+    "AC10: CHANGELOG [v3.33.0 patch] entry (跟 EPIC-069-D 1:1)",
+    "AC11: 5-Level Verify L1-L5",
+    "AC12: 4-PR 全程 (跟 EPIC-074 1:1)",
+    "AC13: 0 改 source code, 0 增 Rule, 0 增 immutable script"
+  ],
+  "labels": [
+    "feature",
+    "run-history-emit",
+    "northstar-loop",
+    "epic-177",
+    "P0",
+    "phase-024"
+  ],
+  "expert_binding": {
+    "suggested_expert": "backend",
+    "actual_expert": "backend",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行)",
+    "EPIC-054-A (worktree 隔离)",
+    "EPIC-074 (4-branch flow)",
+    "EPIC-157 (binding tracker 1:1)",
+    "EPIC-160 (install.sh 1:1)",
+    "EPIC-162 (skill-manager.sh 1:1)",
+    "EPIC-166 (heartbeat daemon 1:1)",
+    "EPIC-023-C (4 北极星 metric 1:1)",
+    "EPIC-177 (北板星实跑 1:1)",
+    "EPIC-175-fix (JSON injection fix 1:1, 用 jq -n)"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": "scripts/{binding,heartbeat,post-process,branch-4pr,install,skill,metrics,dashboard}/* + web/dashboard-metrics.html + tests/* + docs/* + CHANGELOG.md"
+  },
+  "deliverables": [
+    "scripts/binding/binding-tracker.sh 改 (3 emit hook)",
+    "scripts/heartbeat/heartbeat-daemon.sh 改 (频率验证)",
+    "scripts/post-process.sh 改 (1 work + 1 decision emit)",
+    "scripts/branch-4pr.sh 改 (1 decision emit)",
+    "scripts/install.sh 改 (1 evidence emit)",
+    "scripts/skill/skill-manager.sh 改 (1 work emit)",
+    "scripts/metrics/sprint-metrics.sh 改 (用 emit data 算 4 北极星)",
+    "scripts/dashboard/dashboard-metrics.sh 改 (pre-generate JSON)",
+    "web/dashboard-metrics.html 改 (渲染真数据)",
+    "tests/integration/run-history-emit-integration.test.sh (新, ≥10 case)",
+    "docs/reference/run-history-emit-integration-2026-08-05.md (新)",
+    "CLAUDE.md 改 (加 EPIC-177-G 引用)",
+    "CHANGELOG.md 改 ([v3.33.0 patch])",
+    "confluence/decisions/epic-177-g-northstar-emit-2026-08-05.md (新)"
+  ],
+  "estimated_hours": 4,
+  "created_by": "master (主公 2026-08-05 拍板 Phase 6 G 闭环: run-history emit integration, 修 9 专家 review HIGH blocker)"
+}

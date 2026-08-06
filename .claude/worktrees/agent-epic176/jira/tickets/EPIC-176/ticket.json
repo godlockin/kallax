@@ -1,0 +1,69 @@
+{
+  "ticket_id": "EPIC-176",
+  "epic": "EPIC-176",
+  "phase": "PHASE-023",
+  "title": "Commit History 时间顺序修整 — 跟 EPIC-155 retroactive remediation 1:1 pattern",
+  "status": "in_progress",
+  "priority": "P3",
+  "type": "hygiene",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "docs",
+  "handoff_depth": "L2",
+  "description": "EPIC-176 — Commit history 时间顺序修整. 跟 EPIC-155 retroactive remediation 1:1 pattern (主公拍板 Phase 5 A).\n\n**Context**: KALLAX commit history 在 v3.32.6 之后存在 3 类问题:\n1. **EPIC-163 amend 后 SHA 错乱** — `b672998` 跟后续 6 EPIC merge 顺序混乱 (commit `30e923a` 修复时 `f178da1` 是最新)\n2. **EPIC-167 ticket 误路径** — 早期 worktree 内部 add 时 force-add 误写 `.claude/worktrees/.../jira/...` 路径\n3. **EPIC-168-BG 跟 EPIC-170 3-way conflict** — 多次 merge 后 CLAUDE.md / CHANGELOG 段重复 + 顺序错\n\n**设计 (跟 EPIC-155 1:1 pattern)**:\n1. **rebase interactive (i)** — 调整 v3.32.6~22 commit 时间顺序 + message 1:1 统一\n2. **不重写 history** — `--no-rewrite` 模式, 保留原始 commit 链 (跟 EPIC-155 备案 1:1)\n3. **新增 `confluence/decisions/commit-hygiene-2026-08-05.md`** — 备案 3 类问题 + 拍板接受丢失 (主公 Phase 5 拍板)\n4. **CLAUDE.md 4-branch bypass 段扩展** — 加 5 兜底 commit 备案 (跟 EPIC-155 3 commits 1:1)\n5. **不新增 tag** (历史 tag 保留)\n\n**跟 EPIC-155 备案 1:1 哲学**: `4-PR 全程 strict` + `0 静默跳过`. 本 EPIC 是 **hygiene 备案**, 不强 rebase 改写. 主公拍板后直接 force-push.\n\n**0 改 source code, 0 增 Rule, 0 增 immutable script** (纯 hygiene + 备案 docs)",
+  "file_scope": {
+    "includes": [
+      "confluence/decisions/commit-hygiene-2026-08-05.md",
+      "CLAUDE.md",
+      "CHANGELOG.md",
+      "docs/reference/commit-hygiene-pattern-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: confluence/decisions/commit-hygiene-2026-08-05.md ≥150 行 备案 3 类问题 (跟 EPIC-155 备案 1:1)",
+    "AC2: CLAUDE.md 4-branch bypass 段扩展 5+ 兜底 commit 备案 (跟 EPIC-155 3 commits 1:1)",
+    "AC3: docs/reference/commit-hygiene-pattern-2026-08-05.md 指南 (未来 EPIC 写 commit 时参考)",
+    "AC4: CHANGELOG [3.32.23] entry 记录 hygiene 备案 (跟 EPIC-155 备案 1:1)",
+    "AC5: 5-Level Verify L1-L5",
+    "AC6: 4-PR 全程 (跟 EPIC-074 1:1)",
+    "AC7: 0 改 source code, 0 增 Rule, 0 增 immutable script",
+    "AC8: 22 tag 全部保留 (不重写 tag)"
+  ],
+  "labels": [
+    "hygiene",
+    "commit-history",
+    "retroactive",
+    "epic-155-pattern",
+    "P3",
+    "phase-023"
+  ],
+  "expert_binding": {
+    "suggested_expert": "auditor",
+    "actual_expert": "auditor",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行)",
+    "EPIC-054-A (worktree 隔离)",
+    "EPIC-074 (4-branch flow)",
+    "EPIC-155 (4-branch bypass 备案 pattern 1:1)",
+    "EPIC-069-D (5-Level Verify)",
+    "EPIC-163 (commit amend SHA 错乱)",
+    "EPIC-167 (ticket 误路径)",
+    "EPIC-168-BG (3-way conflict)"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": "confluence/decisions/* + CLAUDE.md + CHANGELOG.md + docs/reference/*"
+  },
+  "deliverables": [
+    "confluence/decisions/commit-hygiene-2026-08-05.md (新, ≥150 行)",
+    "CLAUDE.md 改 (4-branch bypass 段扩展)",
+    "CHANGELOG.md 改 ([3.32.23])",
+    "docs/reference/commit-hygiene-pattern-2026-08-05.md (新)"
+  ],
+  "estimated_hours": 4,
+  "created_by": "master (主公 2026-08-05 Phase 5 A 拍板: commit history 修整, 跟 EPIC-155 1:1 pattern)"
+}

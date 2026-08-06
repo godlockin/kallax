@@ -1,0 +1,92 @@
+{
+  "ticket_id": "EPIC-172",
+  "epic": "EPIC-172",
+  "phase": "PHASE-021",
+  "title": "公开化协同 — 借鉴 loopx 1.5k stars 路径, 落地 Lark 群 + hosted frontstage",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "feature",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "docs",
+  "handoff_depth": "L2",
+  "description": "EPIC-172 — 主公 2026-08-05 拍板: 借鉴 loopx 1.5k stars 路径, 落地 Lark 群 + hosted frontstage (跟 EPIC-169 公开化路径协同).\n\n**Context**: 主公 '召唤 pr/cto/marketing 3 视角战略' 拍板. Marketing 视角报告: 'KALLAX 公开化路径: GitHub star → Lark 群 → hosted showcase → 真实 use case → viral narrative (跟 loopx 1:1)'. loopx 1.5k stars 6 个月, KALLAX 90 天目标 100 stars (慢启动, 质量 > 数量).\n\n**设计**:\n1. **Lark 群建立** — docs/community/README.md 含 Lark 群 QR code 占位 + 入群流程 (跟 loopx 1:1)\n2. **WeChat 群** — 主公 WeChat 入口 (跟 loopx 1:1)\n3. **Hosted frontstage** — github.io/kallax 静态站点 (跟 loopx huangruiteng.github.io/loopx 1:1), 复用 EPIC-169 web/index.html\n4. **公开化 checklist** — 公开化路线图 (跟 EPIC-169 1:1)\n5. **Growth loop 文档** — confluence/research/kallax-growth-loop-2026-08-05.md (跟 EPIC-171 战略沉淀 1:1)\n6. **Marketing KPIs** — 90/180 天目标 (跟 Marketing 视角报告 1:1)\n\n**0 改 source code** (除 docs + web)\n\n**跟 EPIC-169 公开化路径 1:1 协同**:\n- EPIC-169 提供基础设施 (README.en + CONTRIBUTING + .github/FUNDING.yml + ISSUE_TEMPLATE + showcase + community)\n- EPIC-172 提供落地路径 (Lark 群 + WeChat + hosted frontstage + growth loop)\n\n**跟 EPIC-171 战略沉淀 1:1 协同**:\n- EPIC-171 提供战略答案 + ICP + elevator pitch\n- EPIC-172 落地到 Lark 群 hosted showcase",
+  "file_scope": {
+    "includes": [
+      "docs/community/README.md",
+      "docs/community/lark-qr-placeholder.md",
+      "docs/community/wechat-qr-placeholder.md",
+      "docs/community/growth-loop.md",
+      "confluence/research/kallax-growth-loop-2026-08-05.md",
+      "web/index.html",
+      "web/showcase/index.html",
+      "docs/sponsor/README.md",
+      "CONTRIBUTING.md",
+      "CLAUDE.md",
+      "CHANGELOG.md",
+      "tests/integration/public-coord-assets.test.sh",
+      "confluence/decisions/epic-172-public-coord-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: docs/community/README.md 含 Lark 群 + WeChat 群入口 + 入群流程 + QR code 占位 (跟 loopx 1:1)",
+    "AC2: docs/community/lark-qr-placeholder.md + wechat-qr-placeholder.md 新建 (跟 loopx 1:1 structure)",
+    "AC3: docs/community/growth-loop.md 新建 (GitHub star → Lark 群 → hosted showcase → 真实 use case → viral narrative 路径)",
+    "AC4: confluence/research/kallax-growth-loop-2026-08-05.md ≥200 行 (跟 EPIC-171 positioning 1:1 协同, 90/180 天 KPIs)",
+    "AC5: web/index.html + web/showcase/index.html hosted frontstage scaffold (GitHub Pages ready)",
+    "AC6: CONTRIBUTING.md + docs/sponsor/README.md 扩展 (跟 loopx 1:1)",
+    "AC7: tests/integration/public-coord-assets.test.sh ≥6 case PASS (Lark 群入口 / WeChat 群入口 / hosted frontstage 文件存在 / growth loop 文档 / ICP 4 类 / KPI 测量)",
+    "AC8: CHANGELOG [3.32.18] entry (跟 EPIC-069-D 1:1 raw_output + 3-crate scope)",
+    "AC9: CLAUDE.md 加 EPIC-172 引用 (跟 EPIC-157~161 1:1 pattern)",
+    "AC10: confluence/decisions/epic-172-public-coord-2026-08-05.md (拍板记录, 含 90/180 天 KPI)",
+    "AC11: 5-Level Verify L1-L5 PASS",
+    "AC12: 0 改 source code, 0 增 Rule, 0 增 immutable script"
+  ],
+  "labels": [
+    "feature",
+    "public-coord",
+    "lark",
+    "wechat",
+    "hosted-frontstage",
+    "loopx-borrow",
+    "P1",
+    "phase-021"
+  ],
+  "expert_binding": {
+    "suggested_expert": "product",
+    "actual_expert": "product",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行)",
+    "EPIC-054-A (worktree 隔离)",
+    "EPIC-165 (showcase + i18n 1:1)",
+    "EPIC-169 (公开化路径 1:1 协同)",
+    "EPIC-171 (战略沉淀 1:1 协同)",
+    "EPIC-069-D (5-Level Verify 1:1)",
+    "loopx 公开化路径 (1:1 借鉴, Lark 群 + WeChat + GitHub Pages)"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": "docs/community/* + web/* + confluence/research/* + CONTRIBUTING.md + CLAUDE.md + CHANGELOG.md + tests/*"
+  },
+  "deliverables": [
+    "docs/community/README.md 扩展 (Lark + WeChat 群入口 + QR 占位)",
+    "docs/community/lark-qr-placeholder.md (新)",
+    "docs/community/wechat-qr-placeholder.md (新)",
+    "docs/community/growth-loop.md (新)",
+    "confluence/research/kallax-growth-loop-2026-08-05.md (新, ≥200 行)",
+    "web/index.html hosted frontstage scaffold (扩展)",
+    "web/showcase/index.html (扩展)",
+    "docs/sponsor/README.md 扩展",
+    "CONTRIBUTING.md 扩展 (群入口)",
+    "tests/integration/public-coord-assets.test.sh (新, ≥6 case)",
+    "CLAUDE.md 改 (EPIC-172 引用)",
+    "CHANGELOG.md 改 ([3.32.18] entry)",
+    "confluence/decisions/epic-172-public-coord-2026-08-05.md (新, 含 90/180 天 KPI)"
+  ],
+  "estimated_hours": 12,
+  "created_by": "master (主公 2026-08-05 拍板: 借鉴 loopx 1.5k stars 路径, 落地 Lark 群 + hosted frontstage)"
+}

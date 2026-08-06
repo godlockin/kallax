@@ -118,7 +118,8 @@
       "Bash(gh workflow *)",
       "Bash(KALLAX_HOOK_API_KEY=test-key npx vitest run tests/dead-code-sentinel-coverage-d.test.ts)",
       "Bash(gh pr *)",
-      "Bash(awk '$2==\"\" {print $1}')"
+      "Bash(awk '$2==\"\" {print $1}')",
+      "Bash(awk '{print $1}')"
     ]
   }
 }

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KALLAX Dashboard — North Stars</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --green: #22c55e;
+      --yellow: #eab308;
+      --red: #ef4444;
+      --blue: #3b82f6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .subtitle { color: var(--muted); margin-bottom: 2rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.5rem; }
+    .card-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.5rem; }
+    .card-value { font-size: 2rem; font-weight: 700; }
+    .status-running { color: var(--green); }
+    .status-down { color: var(--red); }
+    .status-paused { color: var(--yellow); }
+    .events-section { margin-top: 2rem; }
+    .event-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    .event-card { background: var(--card); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; text-align: center; }
+    .event-count { font-size: 2rem; font-weight: 700; }
+    .event-type { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; }
+    .refresh { background: var(--blue); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer; margin-bottom: 1rem; }
+    .refresh:hover { opacity: 0.9; }
+    .updated { color: var(--muted); font-size: 0.75rem; margin-top: 1rem; }
+    @media (max-width: 768px) { .event-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <h1>KALLAX North Star Dashboard</h1>
+  <p class="subtitle">EPIC-168-BG — Heartbeat Daemon &amp; Metrics (v3.32.14)</p>
+  <button class="refresh" onclick="fetchMetrics()">Refresh</button>
+
+  <div class="grid" id="north-stars">
+    <div class="card">
+      <div class="card-label">expert_activation</div>
+      <div class="card-value" id="expert_activation">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">cross_epic_reuse</div>
+      <div class="card-value" id="cross_epic_reuse">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">ab_hit_rate</div>
+      <div class="card-value" id="ab_hit_rate">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">mis_dispatch_binding_rate</div>
+      <div class="card-value" id="mis_dispatch_binding_rate">—</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 2rem;">
+    <div class="card-label">Daemon Status</div>
+    <div class="card-value">
+      <span id="daemon_status">—</span>
+      <span id="paused_status" style="font-size: 1rem; margin-left: 1rem;"></span>
+    </div>
+  </div>
+
+  <div class="events-section">
+    <h2 style="margin-bottom: 1rem;">Event Counts</h2>
+    <div class="event-grid">
+      <div class="event-card">
+        <div class="event-count" id="event_work">—</div>
+        <div class="event-type">work</div>
+      </div>
+      <div class="event-card">
+        <div class="event-count" id="event_decision">—</div>
+        <div class="event-type">decision</div>
+      </div>
+      <div class="event-card">
+        <div class="event-count" id="event_accounting">—</div>
+        <div class="event-type">accounting</div>
+      </div>
+      <div class="event-card">
+        <div class="event-count" id="event_evidence">—</div>
+        <div class="event-type">evidence</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="updated">Last updated: <span id="updated_at">—</span></p>
+
+  <script>
+    // EPIC-177-G: Fetch from pre-generated JSON (updated by dashboard-metrics.sh)
+    const METRICS_JSON = '../web/dashboard-metrics.json';
+
+    async function fetchMetrics() {
+      try {
+        const resp = await fetch(METRICS_JSON);
+        if (!resp.ok) throw new Error('JSON not accessible');
+        const data = await resp.json();
+        parseAndRender(data);
+      } catch (e) {
+        // Fallback: use indicator panel
+        document.getElementById('expert_activation').textContent = 'N/A';
+        document.getElementById('cross_epic_reuse').textContent = 'N/A';
+        document.getElementById('ab_hit_rate').textContent = 'N/A';
+        document.getElementById('mis_dispatch_binding_rate').textContent = 'N/A';
+        document.getElementById('daemon_status').textContent = 'unavailable';
+        document.getElementById('updated_at').textContent = new Date().toISOString();
+      }
+    }
+
+    function parseAndRender(data) {
+      // North stars
+      const ns = data.north_stars || {};
+      document.getElementById('expert_activation').textContent = (ns.expert_activation || 0) + '%';
+      document.getElementById('cross_epic_reuse').textContent = (ns.cross_epic_reuse || 0) + '%';
+      document.getElementById('ab_hit_rate').textContent = (ns.ab_hit_rate || 0) + '%';
+      document.getElementById('mis_dispatch_binding_rate').textContent = (ns.mis_dispatch_binding_rate || 0) + '%';
+
+      // Daemon status
+      const status = data.daemon_status || 'unknown';
+      const statusEl = document.getElementById('daemon_status');
+      statusEl.textContent = status;
+      statusEl.className = status === 'running' ? 'status-running' : 'status-down';
+
+      const paused = data.paused ? ' (PAUSED)' : '';
+      document.getElementById('paused_status').textContent = paused;
+
+      // Events
+      const ev = data.events || {};
+      document.getElementById('event_work').textContent = ev.work || 0;
+      document.getElementById('event_decision').textContent = ev.decision || 0;
+      document.getElementById('event_accounting').textContent = ev.accounting || 0;
+      document.getElementById('event_evidence').textContent = ev.evidence || 0;
+
+      // Updated time
+      document.getElementById('updated_at').textContent = data.generated_at || new Date().toISOString();
+    }
+
+    // Auto-refresh every 30s
+    fetchMetrics();
+    setInterval(fetchMetrics, 30000);
+  </script>
+</body>
+</html>

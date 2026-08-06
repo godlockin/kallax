@@ -32,6 +32,49 @@ KALLAX v3.0.0 是一个**多智能体协作框架 (持续演进中, v3.8.1 部�
 | **武器 5** | Hook Server 回放 + Audit | 多 AI 工具集成 + replay endpoints | 无 | 多 AI 工具协同缺口 |
 | **武器 6** | Web Dashboard | 1 page ≤ 500 LOC | 无 | FE-001 XSS |
 
+---
+
+## Why KALLAX vs Claude Code?
+
+> **1 句话 Elevator Pitch**: KALLAX 是 AI 工程界的 "CI/CD for AI agents" — Claude Code 解决 "AI 怎么写代码", KALLAX 解决 "AI 写的代码怎么进 prod".
+
+### 5 维度对比表
+
+| 维度 | Claude Code | KALLAX | 关系 |
+|------|-------------|--------|------|
+| **职责** | AI Runtime (代码生成/补全) | Governance Layer (审计/验证/治理) | **正交叠加** |
+| **sub-agent** | 单 session | 多 worktree 隔离 | KALLAX 并行 |
+| **PR 流程** | 无 (单角色) | 4-PR Chain (feature→testing→main→miao) | KALLAX 强制 |
+| **失败追溯** | session 关闭即丢失 | Hash-Chain Audit + Memory L0-L4 | KALLAX 持久 |
+| **Verify** | 无 | 5-Level Fact-Forcing (L1-L5 独立) | KALLAX 防假 PASS |
+
+### 3 句使用判断
+
+| 场景 | 推荐 | 理由 |
+|------|------|------|
+| **单人开发, 简单脚本** | Claude Code | overhead > value, 直接够用 |
+| **team ≥ 3 人, 长期项目 (6+ 月)** | KALLAX | 5-Level Verify + 4-PR Chain 价值最大化 |
+| **Enterprise, 合规审计** | KALLAX 必须 | Audit trail + self-heal 满足合规 |
+
+### Trigger Signals (出现任一则推荐 KALLAX)
+
+- "上次 prod 假 PASS"
+- "team 多人在做, 分不清谁做了什么"
+- "PR 经常 skip review"
+- "bug 修过 3 次复发"
+- "Claude Code session 关了上下文丢"
+
+### 详细定位
+
+> **KALLAX = AI Engineering Governance Platform**
+> - **入口**: 解决假 PASS 痛点
+> - **差异化**: 治理层 vs runtime
+> - **技术 Moat**: 18 release 积累 + 0 假 PASS 文化 + 北极星 4 指标
+
+**完整定位文档**: [confluence/research/kallax-positioning-2026-08-05.md](confluence/research/kallax-positioning-2026-08-05.md)
+
+---
+
 **6 武器 1:1 验证**:
 - 武器 1: `scripts/verify/hash-chain.sh` + `audit:verify` CLI 命令
 - 武器 2: `scripts/verify/level-{1..5}.sh` 5 独立脚本

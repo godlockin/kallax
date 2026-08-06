@@ -1,0 +1,67 @@
+{
+  "ticket_id": "EPIC-168-F",
+  "epic": "EPIC-168-F",
+  "phase": "PHASE-020",
+  "title": "EPIC-166 daemon 真跑验证 — 防止假 PASS",
+  "status": "in_progress",
+  "priority": "P0",
+  "type": "verification",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "tester",
+  "handoff_depth": "L2",
+  "description": "EPIC-168-F — 验证 EPIC-166 (Heartbeat Daemon + Quota-aware 调度 + Run History Event Ledger) 真跑有效. 防止假 PASS (跟 EPIC-069-D 5-Level Verify 1:1).\n\n**Context**: 主公 2026-08-05 拍板 Phase 5 F — EPIC-166 实施完成但未真跑过 daemon. 跟 EPIC-069-D 5-Level Verify 一致, 必须真跑 60s 循环验证 6 子命令 (start/stop/status/should-run/next-transition/emit) + quota 6 层 + scheduler P0/P1/P2 + run-history 4 类 event append-only 真有效.\n\n**任务**:\n1. **daemon 真跑 60s 循环** — `heartbeat-daemon.sh start`, 60s 后 `status` 验证, `stop`\n2. **quota 真测** — `quota.sh check --ticket-id EPIC-XXX --agent-id performer-X` 6 层 (L1-L6) + 3 状态 (eligible/throttled/paused)\n3. **scheduler-hint 真测** — `scheduler-hint.sh next --priority P0/P1/P2` 看优先级顺序\n4. **run-history 真测** — emit work + decision + accounting + evidence 4 类 event, query 验证\n5. **append-only 真测** — 试图改写已写入行, 验证真 append-only\n6. **state 持久化真验** — daemon stop 后 state/run-history.jsonl + quota-db.json 保留\n7. **跟 EPIC-023-C 北极星 4 指标打通真验** — accounting event emit 后能算 mis_dispatch_binding_rate\n8. **5-Level Verify L1-L5 跑实** (跟 EPIC-157~161 1:1)\n\n**0 改 source code, 0 增 Rule, 0 增 immutable script** (纯 verification, 1 个 test script)\n\n**跟 BE-14 关系**: 不冲突. 1 ticket 1 subagent 串行.\n**跟 EPIC-054-A 关系**: 不冲突. worktree 隔离.",
+  "file_scope": {
+    "includes": [
+      "tests/integration/heartbeat-daemon-runtime.test.sh",
+      "state/run-history.jsonl",
+      "state/quota-db.json",
+      "confluence/decisions/epic-166-daemon-runtime-verification-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: daemon start 60s 后 status 报告已 emit ≥1 tick",
+    "AC2: quota check 6 层 L1-L6 各返回对应码 + 3 状态 eligible/throttled/paused 都触发",
+    "AC3: scheduler-hint next 优先级 P0 > BLOCKED > P1 > P2 严格排序",
+    "AC4: run-history emit 4 类 event (work/decision/accounting/evidence) + query 全返回",
+    "AC5: append-only 真验 — 试图改写既有行, 失败退出非 0 + 内容未变",
+    "AC6: daemon stop 后 state/run-history.jsonl + quota-db.json 持久化 (ls -la 显示文件存在 + 大小 > 0)",
+    "AC7: 跟 EPIC-023-C 打通真验 — accounting event emit 后能算 mis_dispatch_binding_rate",
+    "AC8: 5-Level Verify L1-L5 跑实 (L2: 跑 test 真通过, L4: 跑 scan-dead-code + 算北极大指标, L5: check-claim-evidence)",
+    "AC9: integration test ≥8 case PASS",
+    "AC10: confluence/decisions 拍板记录 (含 raw output)"
+  ],
+  "labels": [
+    "verification",
+    "daemon-runtime",
+    "anti-fake-pass",
+    "epic-166-verify",
+    "P0",
+    "phase-020"
+  ],
+  "expert_binding": {
+    "suggested_expert": "process-engineering",
+    "actual_expert": "process-engineering",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行 — 不破)",
+    "EPIC-054-A (worktree 隔离 — 不破)",
+    "EPIC-069-D (5-Level Verify — 1:1 防止假 PASS)",
+    "EPIC-131/132 (scan-dead-code — exit 0/1/2 1:1)",
+    "EPIC-166 (Heartbeat Daemon + Quota + Run History — 本次验证对象)",
+    "EPIC-023-C (4 北极星 metric — 数据源打通)"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": "tests/integration + state/* + confluence/decisions"
+  },
+  "deliverables": [
+    "tests/integration/heartbeat-daemon-runtime.test.sh (新, ≥8 case)",
+    "confluence/decisions/epic-166-daemon-runtime-verification-2026-08-05.md (新, 含 raw output)"
+  ],
+  "estimated_hours": 3,
+  "created_by": "master (主公 2026-08-05 拍板 Phase 5 F: EPIC-166 daemon 真跑验证)"
+}

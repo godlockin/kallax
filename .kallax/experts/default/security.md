@@ -2,6 +2,7 @@
 id: kallax.security.001
 name: 🛡️ 安全
 tier: default
+enabled_policy: enabled
 worktree_role: performer
 review_group: B
 phase: 2

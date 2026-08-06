@@ -2,6 +2,7 @@
 id: kallax.pm.001
 name: 🧭 PM
 tier: default
+enabled_policy: default
 worktree_role: conductor
 review_group: A
 phase: 3

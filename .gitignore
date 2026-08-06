@@ -30,6 +30,8 @@
 .kallax/worktrees/
 .worktrees/
 performer-EPIC-*/
+# Exception: jira/tickets/ inside worktrees must be tracked (跟 EPIC-162~169 ticket 1:1)
+!.claude/worktrees/*/jira/
 
 # ============================================================
 # 构建产物

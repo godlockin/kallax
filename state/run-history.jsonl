@@ -1,0 +1,24 @@
+0
+{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-177G-TEST-A","timestamp":"2026-08-05T14:27:28Z","payload":{
+  \"suggested_expert\": \"\",
+  \"actual_expert\": \"backend\",
+  \"action\": \"actual_binding\"
+}}
+{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"test-fix","timestamp":"2026-08-05T14:28:26Z","payload":{}}
+{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"test-fix","timestamp":"2026-08-05T14:28:31Z","payload":{"key":"value"}}
+{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-177G-TEST-A","timestamp":"2026-08-05T14:28:57Z","payload":{
+  "suggested_expert": "",
+  "actual_expert": "backend",
+  "action": "actual_binding"
+}}
+{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"test-fix-2","timestamp":"2026-08-05T14:29:40Z","payload":{"key":"value"}}
+{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-177G-TEST-A","timestamp":"2026-08-05T14:37:57Z","payload":{
+  "suggested_expert": "backend",
+  "actual_expert": "backend",
+  "action": "actual_binding"
+}}
+{"event_type":"accounting","agent_id":"agent-StevendeMacBook-Pro.local","ticket_id":"EPIC-177G-TEST-A","timestamp":"2026-08-05T14:38:05Z","payload":{
+  "suggested_expert": "backend",
+  "actual_expert": "backend",
+  "action": "actual_binding"
+}}
