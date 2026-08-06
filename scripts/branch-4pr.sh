@@ -105,7 +105,7 @@ if [[ $DRY_RUN -eq 0 ]]; then
   RUN_HISTORY="${REPO_ROOT}/scripts/heartbeat/run-history.sh"
   if [ -f "$RUN_HISTORY" ]; then
     local pr1_payload
-    pr1_payload=$(jq -n --arg branch "$FEATURE" '{pr_stage: "feature_to_testing", branch: $branch, action: "pr_created"}')
+    pr1_payload=$(jq -cn --arg branch "$FEATURE" '{pr_stage: "feature_to_testing", branch: $branch, action: "pr_created"}')
     "$RUN_HISTORY" emit decision "$FEATURE" "$pr1_payload" >/dev/null 2>&1
   fi
 fi
@@ -128,7 +128,7 @@ if [[ $DRY_RUN -eq 0 ]]; then
   RUN_HISTORY="${REPO_ROOT}/scripts/heartbeat/run-history.sh"
   if [ -f "$RUN_HISTORY" ]; then
     local pr2_payload
-    pr2_payload=$(jq -n '{pr_stage: "testing_to_main", action: "pr_merged"}')
+    pr2_payload=$(jq -cn '{pr_stage: "testing_to_main", action: "pr_merged"}')
     "$RUN_HISTORY" emit decision "$FEATURE" "$pr2_payload" >/dev/null 2>&1
   fi
 else
@@ -153,7 +153,7 @@ if [[ $DRY_RUN -eq 0 ]]; then
   RUN_HISTORY="${REPO_ROOT}/scripts/heartbeat/run-history.sh"
   if [ -f "$RUN_HISTORY" ]; then
     local pr3_payload
-    pr3_payload=$(jq -n '{pr_stage: "main_to_miao", action: "pr_merged"}')
+    pr3_payload=$(jq -cn '{pr_stage: "main_to_miao", action: "pr_merged"}')
     "$RUN_HISTORY" emit decision "$FEATURE" "$pr3_payload" >/dev/null 2>&1
   fi
 else
@@ -178,7 +178,7 @@ if [[ $DRY_RUN -eq 0 ]]; then
   RUN_HISTORY="${REPO_ROOT}/scripts/heartbeat/run-history.sh"
   if [ -f "$RUN_HISTORY" ]; then
     local complete_payload
-    complete_payload=$(jq -n \
+    complete_payload=$(jq -cn \
       --arg branch "$FEATURE" \
       '{pr_stage: "all_complete", branch: $branch, action: "4pr_flow_complete"}')
     "$RUN_HISTORY" emit decision "$FEATURE" "$complete_payload" >/dev/null 2>&1
