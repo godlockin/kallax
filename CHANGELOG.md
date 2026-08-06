@@ -4,7 +4,37 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [3.33.1] - 2026-08-05
+## [3.33.2] - 2026-08-06
+
+### 智能路由 (EPIC-180-A) + 4-PR 硬化 (EPIC-181)
+
+**Scope**: 0 core + 0 engine + 0 server (新增 scripts/skill/test)
+
+#### EPIC-180-A: frame-task.sh — 4 档路由 + 9 类破坏性拦
+
+主公 2026-08-06 拍板智能路由 (4 档: TRIVIAL/SIMPLE/MEDIUM/COMPLEX + 9 类破坏性操作硬拦):
+- `scripts/frame-task.sh` — heuristic 路由判定器 + FRAME 表单渲染 + `--self-test`
+- `.claude/skills/kallax/lib/frame-prompt.md` — LLM 替换模板 (后续 v2)
+- `tests/integration/frame-task.test.sh` — 14 用例 / 21 断言 / PASS
+
+9 类破坏性操作硬拦: 删文件 / reset --hard / force push / rebase / 公开化 (README/CHANGELOG) / Rule 改 (CLAUDE.md/SKILL.md) / 5 immutable scripts / 网络发布 (gh pr create / npm publish / docker push)
+
+#### EPIC-181: 4-PR wrapper 硬化 R1-R5
+
+主公 2026-08-06 拍板 4-PR 错乱 5 漏洞治根:
+- R1: `--epic` 必填 + regex 校验 + body placeholder 替换
+- R2: pr 前 `git fetch` + `git ls-remote` 校验 base SHA 同步
+- R3: merge 后 `gh pr view --json state` 校验 state=MERGED
+- R4: `--delete-branch=true` 默认清残留 feature/*
+- R5: 退出码契约 0=PASS / 1=PR_FAIL / 2=PARAM_FAIL / 3=STATE_FAIL
+- `tests/integration/branch-4pr-harden.test.sh` — 21 断言 / PASS
+
+#### 验证
+
+- 42/42 测试 PASS (跟 Rule 9 KPI X/Y 格式)
+- 0 增 Rule / 0 增 immutable script / 0 改 source code
+- 4-PR 全闭环: PR #219 + #220 (feature→testing) → #221 (testing→main) → #222 (main→miao)
+- wrapper R2 真验证: merge 触发 CONFLICTING 正是 wrapper 治根场景
 
 ### Q3 Re-promote: 5 bypass commits cherry-pick 走 4-PR (EPIC-178)
 
