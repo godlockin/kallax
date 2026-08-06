@@ -1,0 +1,91 @@
+{
+  "ticket_id": "EPIC-168-BG",
+  "epic": "EPIC-168-BG",
+  "phase": "PHASE-020",
+  "title": "EPIC-166 daemon 3 bug 修复 + 北极星 dashboard (主公 Phase 5 G 闭环 EPIC-023-C)",
+  "status": "in_progress",
+  "priority": "P0",
+  "type": "feature",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L2",
+  "description": "EPIC-168-BG — 合并 Phase 5 B (daemon 强化) + G (北极星 dashboard). 修 EPIC-168-F 抓的 3 真 bug + 建 dashboard.\n\n**Context**: EPIC-168-F 真跑验证抓 3 真 bug (review 漏抓):\n1. daemon quota 调用缺 ticket_id (heartbeat-daemon.sh:104) — HIGH\n2. scheduler 4 priority 全返回 P2 — HIGH\n3. run-history emit 4 类 jq --argjson 失败 (run-history.sh:87) — HIGH\n\n北极星 4 指标 (EPIC-023-C) 数据源 = run-history emit 的 accounting event. emit 不可用 → 北极星数据断 → sprint-metrics mis_dispatch_binding_rate 算不出. 必须先修 B 才能 G.\n\n**设计 (跟 EPIC-160 install.sh Omnibus + EPIC-166 1:1)**:\n1. **修 Bug 1**: heartbeat-daemon.sh quota 调用 — 加 active ticket resolve (从 jira/tickets/EPIC-XXX*/ 找最新 in_progress ticket, 或从 .kallax/state.json), 然后传 ticket_id\n2. **修 Bug 2**: scheduler-hint.sh cmd_next — 读 quota-db.json + paused tickets, 按 P0 > BLOCKED > P1 > P2 严格排序选 highest priority (跟 loopx 1:1)\n3. **修 Bug 3**: run-history.sh cmd_emit — 改直接 append + sed 提取 timestamp, 不依赖 jq (jq --argjson 兼容性 issue 1:1)\n4. **加 append-only flock**: run-history.sh cmd_emit 加 `flock -x` 保护 (R4 fix 扩展)\n5. **建 dashboard**: `web/dashboard-metrics.html` — 静态 HTML + JSON data feed from `state/run-history.jsonl` 4 类 event 聚合 + 4 北极星指标实时显示\n6. **5-Level Verify L1-L5 + 真跑 60s daemon**: EPIC-168-F 测试套件全过 (16/16)\n\n**0 增 Rule, 0 改 source code** (只修 EPIC-166 4 script + 新 dashboard 文件)",
+  "file_scope": {
+    "includes": [
+      "scripts/heartbeat/heartbeat-daemon.sh",
+      "scripts/heartbeat/quota.sh",
+      "scripts/heartbeat/scheduler-hint.sh",
+      "scripts/heartbeat/run-history.sh",
+      "scripts/metrics/sprint-metrics.sh",
+      "scripts/metrics/lib/metrics.sh",
+      "web/dashboard-metrics.html",
+      "scripts/dashboard/dashboard-metrics.sh",
+      "tests/integration/heartbeat-daemon-runtime.test.sh",
+      "tests/integration/dashboard-metrics.test.sh",
+      "docs/reference/dashboard-metrics-2026-08-05.md",
+      "CLAUDE.md",
+      "CHANGELOG.md",
+      "confluence/decisions/epic-168-bg-bug-fix-and-dashboard-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: Bug 1 修 — heartbeat-daemon.sh quota 调用传 ticket_id. 60s tick 后 log 期望 quota 行 (不再 failed)",
+    "AC2: Bug 2 修 — scheduler-hint.sh cmd_next P0/P1/P2/BLOCKED 4 priority 返回不同 priority",
+    "AC3: Bug 3 修 — run-history.sh cmd_emit 4 类 (work/decision/accounting/evidence) 全成功",
+    "AC4: append-only flock — run-history.sh cmd_emit 加 flock -x",
+    "AC5: web/dashboard-metrics.html — 静态 HTML 显示 4 北极星 + 4 类 event + daemon 状态",
+    "AC6: scripts/dashboard/dashboard-metrics.sh — 聚合 4 metrics 输出 JSON",
+    "AC7: 5-Level Verify L1-L5 + EPIC-168-F 测试 16/16 PASS",
+    "AC8: 60s daemon 真跑验证 — log 期望 quota + scheduler + emit 4 类全成功",
+    "AC9: tests/integration/dashboard-metrics.test.sh ≥5 case PASS",
+    "AC10: docs/reference/dashboard-metrics-2026-08-05.md",
+    "AC11: CLAUDE.md 加 EPIC-168-BG 引用",
+    "AC12: CHANGELOG [3.32.14] entry",
+    "AC13: 0 改 source code, 0 增 Rule, 0 增 immutable script"
+  ],
+  "labels": [
+    "feature",
+    "daemon-fix",
+    "dashboard",
+    "north-star-metric",
+    "epic-166-followup",
+    "P0",
+    "phase-020"
+  ],
+  "expert_binding": {
+    "suggested_expert": "backend",
+    "actual_expert": "backend",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行)",
+    "EPIC-054-A (worktree 隔离)",
+    "EPIC-069-D (5-Level Verify)",
+    "EPIC-131/132 (scan-dead-code)",
+    "EPIC-160 (install.sh Omnibus)",
+    "EPIC-166 (Heartbeat — 修复对象)",
+    "EPIC-023-C (4 北极星 metric)",
+    "EPIC-168-F (daemon 真跑验证)"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": "scripts/heartbeat/* + scripts/dashboard/* + web/* + tests/* + docs/* + CLAUDE.md + CHANGELOG.md"
+  },
+  "deliverables": [
+    "scripts/heartbeat/heartbeat-daemon.sh 修 (Bug 1)",
+    "scripts/heartbeat/scheduler-hint.sh 修 (Bug 2)",
+    "scripts/heartbeat/run-history.sh 修 (Bug 3 + Bug 4)",
+    "scripts/dashboard/dashboard-metrics.sh (新)",
+    "web/dashboard-metrics.html (新)",
+    "tests/integration/dashboard-metrics.test.sh (新)",
+    "docs/reference/dashboard-metrics-2026-08-05.md (新)",
+    "CLAUDE.md 改",
+    "CHANGELOG.md 改",
+    "confluence/decisions/epic-168-bg-2026-08-05.md (新)"
+  ],
+  "estimated_hours": 12,
+  "created_by": "master (主公 2026-08-05 Phase 5 G 闭环 EPIC-023-C)"
+}

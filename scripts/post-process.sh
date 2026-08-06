@@ -572,4 +572,19 @@ if [ "$FAIL_COUNT" -gt 0 ]; then
     exit 1
 fi
 
+# EPIC-177-G: emit work + decision events for post-process complete
+_postprocess_emit() {
+    local run_history="${KALLAX_ROOT}/scripts/heartbeat/run-history.sh"
+    [ ! -f "$run_history" ] && return 0
+    local epic_id="post-process"
+    local work_payload decision_payload
+    work_payload=$(jq -n --argjson pass "$PASS_COUNT" --argjson fail "$FAIL_COUNT" \
+      '{post_process_complete: true, pass_count: $pass, fail_count: $fail}')
+    decision_payload=$(jq -n --argjson pass "$PASS_COUNT" --argjson fail "$FAIL_COUNT" \
+      '{post_process_complete: true, all_passed: (if $fail == 0 then true else false end)}')
+    "$run_history" emit work "$epic_id" "$work_payload" >/dev/null 2>&1 || true
+    "$run_history" emit decision "$epic_id" "$decision_payload" >/dev/null 2>&1 || true
+}
+_postprocess_emit
+
 exit 0

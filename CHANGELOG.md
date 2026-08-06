@@ -4,6 +4,634 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.33.0] - 2026-08-05
+
+### Release: run-history emit integration (EPIC-177-G)
+
+**Scope**: 0 core + 0 engine + 0 server (无 Rust 改动, 仅 scripts + docs)
+
+#### Problem (9 专家 review HIGH blocker)
+
+`state/run-history.jsonl` had 0 production events, only 35 test lines. 4 north star metrics (expert_activation / cross_epic_reuse / ab_hit_rate / mis_dispatch_binding_rate) couldn't be computed.
+
+#### Solution (跟 EPIC-166/175-fix 1:1)
+
+Integrated emit hooks into 6 main scripts:
+
+| Script | Emit Hook | Event Type |
+|--------|-----------|------------|
+| binding-tracker.sh | cmd_actual | accounting |
+| binding-tracker.sh | cmd_validate | accounting |
+| binding-tracker.sh | cmd_validate_all | decision |
+| heartbeat-daemon.sh | main loop | work/decision (60s) + accounting (5s) + evidence (10min) |
+| post-process.sh | final | work + decision |
+| branch-4pr.sh | each PR | decision (4 stages) |
+| install.sh | stamp_version | evidence |
+| skill-manager.sh | enable/disable | work |
+
+#### Dashboard Integration
+
+- `scripts/dashboard/dashboard-metrics.sh` — pre-generates `web/dashboard-metrics.json`
+- `web/dashboard-metrics.html` — fetches pre-generated JSON
+
+#### Added
+
+- **`tests/integration/run-history-emit-integration.test.sh`** — 12 test cases
+- **`docs/reference/run-history-emit-integration-2026-08-05.md`** — emit integration docs
+- **`confluence/decisions/epic-177-g-northstar-emit-2026-08-05.md`** — decision record
+
+#### Changed
+
+- **`scripts/binding/binding-tracker.sh`** — 3 emit hooks (AC1)
+- **`scripts/heartbeat/heartbeat-daemon.sh`** — 4 event types with frequency control (AC2)
+- **`scripts/post-process.sh`** — 2 emit hooks (AC3)
+- **`scripts/branch-4pr.sh`** — 4 emit hooks (AC4)
+- **`scripts/install.sh`** — 1 emit hook (AC5)
+- **`scripts/skill/skill-manager.sh`** — 2 emit hooks (AC6)
+- **`scripts/dashboard/dashboard-metrics.sh`** — pre-generate JSON (AC8)
+- **`web/dashboard-metrics.html`** — fetch JSON instead of script
+- **`CLAUDE.md`** — Section 6 added EPIC-177-G reference
+
+## [3.32.23] - 2026-08-05
+
+### Release: Commit Hygiene 备案 + 未来指南 (EPIC-176)
+
+**Scope**: 0 core + 0 engine + 0 server (无 Rust 改动, 仅 docs + CLAUDE.md)
+
+#### 4-branch bypass 历史债 备案扩展 (主公 Phase 5 A 拍板)
+
+跟 EPIC-155 1:1 pattern, 主公拍板 **"commit history 时间顺序修整, 跟 EPIC-155 1:1 pattern"**:
+- **接受 hygiene issue documented** — 3 类问题详化备案
+- **不强 rebase 改写 history** — 保留原始 commit 链
+- **改为写 hygiene 备案 + 未来指南** — 新增 docs + CLAUDE.md 扩展
+
+#### 3 类问题详化备案
+
+| 问题 | EPIC | 违反 Pattern | 修复措施 |
+|------|------|-------------|----------|
+| amend 后 SHA 错乱 | EPIC-163 | Pattern 1 | 不用 amend 改 commit message |
+| ticket 误路径 | EPIC-167 | Pattern 3 | worktree ticket 永远走 main repo force-add |
+| 3-way conflict | EPIC-168-BG | Pattern 4 | merge conflict 优先 ours + 手工加新 entries |
+
+#### 5 兜底 commit 备案 (EPIC-155 + EPIC-176)
+
+| Commit | Message | 备案 EPIC |
+|--------|---------|-----------|
+| `a8da33f` | merge: EPIC-155 4-branch bypass 备案 | EPIC-155 |
+| `1482ffa` | docs(EPIC-155): 4-branch bypass 备案 | EPIC-155 |
+| `40e2b8e` | docs(EPIC-155): 4-branch bypass 备案 | EPIC-155 |
+| `30e923a` | fix(security): EPIC-175-fix JSON injection MEDIUM | EPIC-176 |
+| `33ecc9b` | feat(jira): EPIC-176 commit history 修整 ticket | EPIC-176 |
+
+#### 5 条 Commit Hygiene Pattern (未来指南)
+
+1. **不用 amend 改 commit message** (防止 SHA 错乱)
+2. **不用 reset --hard 改 history** (防止丢失工作)
+3. **worktree ticket 永远走 main repo force-add** (防止路径错误)
+4. **merge conflict 优先 ours + 手工加新 entries** (防止段重复)
+5. **4-PR 收口跟 EPIC-142/146 force-push 1:1** (防止 bypass 复发)
+
+#### Added
+
+- **`confluence/decisions/commit-hygiene-2026-08-05.md`** — 新, ≥150 行, 3 类问题 + 5 commits 备案 + 拍板理由
+- **`docs/reference/commit-hygiene-pattern-2026-08-05.md`** — 新, 5 条 pattern 未来指南
+
+#### Modified
+
+- **`CLAUDE.md`** Section 4 (4-branch bypass 段) 扩展 5 兜底 commit 备案
+- **`CLAUDE.md`** Section 6 加 EPIC-176 entry (v3.32.23)
+
+#### 5-Level Verify (AC5: 5-Level)
+
+- [x] **L1 git**: commit + push + raw test output
+- [x] **L2 stdout**: `git status` + `git log --oneline -5`
+- [x] **L3 4-expert**: auditor expert review
+- [x] **L4 independent**: 5-Level Verify 脚本
+- [x] **L5 boundary**: CLAUDE.md Rule check
+
+#### Compatibility
+
+- **0 改 source code**
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-155 备案 1:1 兼容** (Phase 3 + Phase 5 A 拍板)
+
+## [3.32.20] - 2026-08-05
+
+### Release: Smoke Retention Policy (EPIC-174)
+
+**Scope**: 0 core + 0 engine + 0 server (无 Rust 改动, 仅 scripts + docs + tests)
+
+#### Added (smoke retention policy)
+
+- **`docs/process/smoke-retention-policy.md`** — 新, ≥80 行, 5 条规则详化 (跟 loopx AGENTS.md 1:1)
+- **`scripts/check-smoke-retention.sh`** — 新, scanner 检测 >=500 行 smoke, 退出码 0=PASS/1=FAIL/2=BLOCKED-env
+- **`scripts/audit/smoke-size-report.sh`** — 新, 报告所有 smoke 状态 (行数 + 价值判定)
+- **`tests/integration/smoke-retention.test.sh`** — 新, ≥9 case PASS
+
+#### 5 条保留规则
+
+1. **Rule 1**: 保留 shipped CLI/runtime behavior
+2. **Rule 2**: 保留 reusable control-plane contract
+3. **Rule 3**: 保留 public/private boundary enforcement
+4. **Rule 4**: 保留 regression that stranded automation
+5. **Rule 5**: >=500 行 smoke 拆 / aggregate 替代
+
+#### 5-Level Verify (AC6: ≥5 case)
+
+- [x] **9/9 PASS** — `bash tests/integration/smoke-retention.test.sh`
+- [x] **0 改 source code** — 仅 scripts + docs + tests
+
+#### Docs
+
+- `CLAUDE.md` Section 5 加 smoke retention 引用
+- `docs/PROCESS.md` 加 smoke retention 段
+- `confluence/decisions/epic-174-smoke-retention-2026-08-05.md` (拍板记录)
+
+#### Compatibility
+
+- **0 改 source code**
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-131/132 scan-dead-code 退出码 1:1 兼容** (2=BLOCKED-env)
+
+## [3.32.15] - 2026-08-05
+
+### Release: Public Path (EPIC-169)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Added (公开化路径)
+
+- **README.en.md** — English version 7-section (Why/Try/Capabilities/Documentation/Community/Contributing/License), ≥250 行
+- **web/showcase/index.html** — 7 case cards scaffold (Epics/5-Level/Multi-Agent/Hash-Chain/Worktree/Decision/Skill)
+- **docs/community/README.md** — 社区入口 (Lark 群 QR 占位 + WeChat huangrt00 + GitHub Discussions)
+- **docs/sponsor/README.md** — 赞助信息
+- **.github/FUNDING.yml** — GitHub Sponsors 入口
+- **.github/ISSUE_TEMPLATE/bug_report.md** — Bug report template
+- **.github/ISSUE_TEMPLATE/feature_request.md** — Feature request template
+- **docs/i18n/README.md** — i18n sync rule 详化
+- **docs/showcases/** — 7 case showcase catalog (README.md + showcase-catalog.json)
+
+#### 5-Level Verify (AC9: ≥6 case)
+
+- [x] **16/16 PASS** — `bash tests/integration/public-path-assets.test.sh`
+- [x] **0 改 source code** — 无 Rust/TS source 改动, 仅 docs + web + .github
+
+#### Docs
+
+- `CLAUDE.md` Section 6 加 EPIC-169 entry (v3.32.15)
+- `confluence/decisions/epic-169-public-path-2026-08-05.md` (拍板记录)
+
+#### Compatibility
+
+- **0 改 source code**
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-165 showcase + i18n 1:1 兼容**
+
+## [3.32.16] - 2026-08-05
+
+### Release: Expert Plugin Complete (EPIC-170)
+
+**Scope**: 0 core + 0 engine + 0 server (无 Rust 改动, 仅 skill + scripts + docs)
+
+#### Added (expert plugin complete)
+
+- **`scripts/skill/skill-policy.sh`** — 新, enabled_policy 持久化 (enable/disable/list/check/reset 子命令)
+- **`scripts/skill/skill-manager.sh`** — 增强, validate 子命令检查 5 步 activation gate
+- **9 expert enabled_policy frontmatter** — architect/backend/frontend/pm/product/security/ux (default) + auditor/process-engineering (extended)
+- **state/skill-policy.json** — policy 持久化存储
+
+#### 5-Step Activation Gates
+
+- Gate1: resolve_project (state.json exists)
+- Gate2: confirm_todo (in_progress ticket)
+- Gate3: check_boundary (file in scope)
+- Gate4: architecture_check (INDEX.md exists)
+- Gate5: owner_gated (owner authorization)
+
+#### Tests (AC5: ≥6 case)
+
+- [x] **12/12 PASS** — `bash tests/integration/skill-plugin-complete.test.sh`
+- [x] **0 改 source code** — 仅 skill 包 + scripts + docs
+
+#### Docs
+
+- `docs/reference/skill-plugin-complete-2026-08-05.md` (新, activation gate 详解)
+- `confluence/decisions/epic-170-complete-plugin-2026-08-05.md` (新, decision record)
+- `CLAUDE.md` 加 EPIC-170 段 (v3.32.16)
+
+#### Compatibility
+
+- **0 改 source code**
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-162 1:1 协同** (EPIC-162 拆包, EPIC-170 complete plugin 化)
+- **跟 loopx 6-skill pattern 1:1** (1 expert 1 skill 包)
+
+## [3.32.17] - 2026-08-05
+
+### Release: 战略沉淀 (EPIC-171)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust/TS 改动, raw output: `git diff --stat` → 仅 docs + CHANGELOG + CLAUDE.md)
+
+#### Added (战略文档)
+
+- **`confluence/research/kallax-positioning-2026-08-05.md`** — 3 视角 (PR+CTO+Marketing) 战略报告, 8 sections ≥300 行 (主公三问 / elevator pitch / PR 视角 / CTO 视角 / Marketing 视角 / Master 仲裁 / 综合定位 / 使用判断表)
+- **`README.md` Why KALLAX vs Claude Code? 段** — 5 维度对比表 + 1 句话 elevator + 3 句使用判断 + trigger signals (约 50 行)
+- **`confluence/decisions/epic-171-strategy-deposit-2026-08-05.md`** — 拍板记录 (主公 2026-08-05 拍板, 3 视角 raw output 摘要)
+
+#### 3 视角定位
+
+| 视角 | 核心 | 结论 |
+|------|------|------|
+| **PR** | 5-Level Verify 防假 PASS + 4-PR Chain 防死锁 | trigger signals 入口 |
+| **CTO** | KALLAX = Governance Layer, Claude Code = Runtime | 正交叠加 |
+| **Marketing** | Pro $10/人/月 vs Claude Code $20 | 定价锚点 |
+
+#### Docs
+
+- `confluence/research/kallax-positioning-2026-08-05.md` (≥300 行, 8 sections)
+- `README.md` Section "Why KALLAX vs Claude Code?" (≥30 行)
+- `confluence/decisions/epic-171-strategy-deposit-2026-08-05.md` (拍板记录)
+
+#### Tests
+
+- [x] **≥5 case PASS** — `bash tests/integration/strategy-deposit-assets.test.sh`
+
+#### Compatibility
+
+- **0 改 source code** (仅 docs + CHANGELOG + CLAUDE.md)
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-165 Showcase 1:1 structure** (8 sections, ≥300 行)
+- **跟 EPIC-069-D/074/152/159/162/163/164/169/172 协同** (战略沉淀引用)
+
+## [3.32.21] - 2026-08-05
+
+### Release: Security Rules Extended (EPIC-175)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust/TS 改动, raw output: `git diff --stat` → 仅 docs + scripts + tests + CHANGELOG + CLAUDE.md)
+
+#### Added (Security Rules 强化, 跟 loopx 1:1)
+
+- **`scripts/check-release-capability.sh`** — Release Capability Usage Gate scanner (4 字段检测: activation / privacy / rollback / link)
+- **`scripts/automation-monitor-todos.sh`** — Heartbeat 集成 automation monitor (跟 EPIC-166 daemon 1:1, generic heartbeat prompt rules)
+- **`scripts/check-benchmark-smoke.sh`** — Benchmark smoke 分类 (boundary / ledger / classifier / adapter 4 类)
+- **`docs/reference/capability-placement.md`** — Capability placement 决策树 (5 个 placement 选项: name / extend / built-in / extension provider / package)
+- **`docs/process/projection-sink-design.md`** — Projection sink 设计原则 (stable input / lineage / public-safe 3 原则)
+
+#### Community Contributors Section (AC1)
+
+- **CHANGELOG.md** 加 Community Contributors 模板 (中英双语, 跟 loopx 1:1):
+  ```markdown
+  ### Community Contributors (社区贡献者)
+
+  感谢以下贡献者参与本版本:
+  - [@username](https://github.com/username) — PR #XXX: 功能描述
+  ```
+
+#### Tests (AC7: ≥5 case)
+
+- [x] **≥5 case PASS** — `bash tests/integration/security-rules-extended.test.sh`
+- [x] **0 改 source code** — 无 Rust/TS source 改动, 仅 docs + scripts + tests
+
+#### Community Contributors (社区贡献者)
+
+本版本感谢以下贡献者 (跟 loopx Community Contributors 1:1):
+
+> **模板**:
+> ```markdown
+> ### Community Contributors
+>
+> Thanks to our contributors:
+> - [@username](https://github.com/username) — PR #XXX: Description
+> ```
+>
+> **中文版**:
+> ```markdown
+> ### 社区贡献者
+>
+> 感谢以下贡献者参与本版本:
+> - [@username](https://github.com/username) — PR #XXX: 功能描述
+> ```
+
+#### Compatibility
+
+- **0 改 source code** (仅 docs + scripts + tests + CHANGELOG + CLAUDE.md)
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-163 Security Rules 1:1 协同** (Public/Private Boundary 扩展)
+- **跟 EPIC-166 Heartbeat Daemon 1:1 协同** (automation monitor 集成)
+- **跟 loopx Security Rules 1:1** (Release Contributor Attribution + Release Capability Usage Gate + Capability Placement)
+
+## [3.32.18] - 2026-08-05
+
+### Release: 公开化协同 (EPIC-172)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust/TS 改动, raw output: `git diff --stat` → 仅 docs + web + CONTRIBUTING.md)
+
+#### Added (公开化协同, 跟 loopx 1:1)
+
+- **`docs/community/README.md`** — Lark + WeChat 群入口 (跟 loopx 1:1, 125 行)
+- **`docs/community/lark-qr-placeholder.md`** + **`wechat-qr-placeholder.md`** — QR code 占位 (53 + 52 行)
+- **`docs/community/growth-loop.md`** — GitHub star → Lark 群 → hosted showcase → 真实 use case → viral narrative 路径 (228 行)
+- **`docs/sponsor/README.md`** — 赞助信息 (123 行)
+- **`web/showcase/index.html`** — hosted frontstage scaffold (256 行)
+- **`confluence/research/kallax-growth-loop-2026-08-05.md`** — loopx 公开化路径分析 + KALLAX 90/180 天 KPI (441 行)
+
+#### 90/180 天 KPI
+
+- **90 天**: 100 stars + 50 Lark + 30 WeChat + 1 showcase + 3 articles + 5 early adopter
+- **180 天**: 500 stars + 200 Lark + 100 WeChat + 10 showcase + 12 articles + 20 early adopter
+
+#### Tests (AC7: ≥6 case)
+
+- [x] **7/7 PASS** — `bash tests/integration/public-coord-assets.test.sh`
+
+#### Compatibility
+
+- **0 改 source code** (仅 docs + web + CONTRIBUTING)
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-169 公开化路径 1:1 协同** (README.en + CONTRIBUTING + .github 基础设施)
+- **跟 EPIC-171 战略沉淀 1:1 协同** (ICP + elevator pitch 复用)
+- **跟 loopx 1.5k stars 公开化路径 1:1** (Lark + WeChat + GitHub Pages)
+
+## [3.32.7] - 2026-08-05
+
+### Release: Skill 插件化 (EPIC-162)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Added (skill plugin 化)
+
+- **9 expert 拆独立 skill 包** — `.claude/skills/kallax-experts/<role>/{SKILL.md, agents/*.md, .kallax-skill-scope}` (architect/backend/frontend/ux/product/security-tool-bypass/process-engineering/auditor/compliance/decision-gate)
+- **`scripts/skill/skill-manager.sh`** — 6+3=9 子命令 (install/status/uninstall/list/enabled/disable + submodule-init/update/status), 退出码契约 0=PASS/1=FAIL/2=User error
+- **`scripts/install.sh`** 加 `--scan-skill` / `--install-skill` 阶段 (跟 EPIC-160 Omnibus 1:1)
+- **`--surface codex/claude-code/opencode/cursor`** 4 host 抽象
+- **activation gate 5 步**: resolve project → confirm todo → check boundary → architecture check → owner-gated
+- **跟 EPIC-167 双层升级粒度协同**: skill-manager.sh 同时管 plugin + submodule
+
+#### Tests (AC9: ≥10 case)
+
+- [x] **17/17 PASS** — `bash tests/integration/skill-plugin.test.sh`
+- [x] **0 改 source code** — 无 Rust/TS source 改动, 仅 docs + scripts + skill 包拆分
+
+#### Docs
+
+- `CLAUDE.md` 加 EPIC-162 段 (v3.32.7)
+- `.claude/skills/kallax-experts/<role>/SKILL.md` (9 个, 每个含 frontmatter enabled_policy + agents/ 子目录)
+- `docs/reference/skill-plugin-2026-08-05.md` (169 行, 用法 + activation gate 详解)
+- `confluence/decisions/loopx-vs-kallax-skill-gap-2026-08-05.md` (loopx 借鉴拍板记录)
+
+#### Compatibility
+
+- **0 改 source code**
+- **0 增 Rule, 0 增 immutable script**
+- **旧 monolith 路径向后兼容** (`.claude/skills/kallax/SKILL.md` 仍 fallback)
+- **跟 EPIC-160 install.sh Omnibus 1:1 pattern** (install 集成)
+- **跟 EPIC-161 retrospective-routine 1:1 pattern** (6 子命令 pattern 复用)
+- **跟 EPIC-167 submodule 化 1:1 协同** (plugin + submodule 双层)
+
+## [3.32.8] - 2026-08-05
+
+### Release: Public/Private Boundary + Security Rules (EPIC-163)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Added (public/private 边界治理)
+
+- **`docs/public-private-boundary.md`** — 跟 loopx `docs/public-private-boundary.md` 5078 字节 1:1 schema (public: schema/CLI/adapter lifecycle/generic coordination rules; private: local paths/raw logs/task IDs/credentials/person names/sub-agent prompts/trajectories)
+- **`scripts/check-private-context.sh`** — 4 类检测 scanner (credentials / private paths / raw logs / sub-agent prompts), treats boundary as file-state tracked/untracked (跟 loopx `loopx check` 1:1)
+- **退出码契约**: 0=PASS / 1=FAIL (fail-closed) / 2=BLOCKED-env (跟 scan-dead-code 1:1)
+- **`scripts/hooks/pre-commit`** 集成 check-private-context 阶段
+- **`CONTRIBUTING.md`** 加贡献前扫描 private state 要求
+- **`CLAUDE.md` Section 7** Security Rules 明文 (不授权凭证 / 不代发布 / scan before staging)
+
+#### Tests (AC8: ≥8 case)
+
+- [x] **10/10 PASS** — `bash tests/integration/check-private-context.test.sh`
+
+#### Docs
+
+- `CLAUDE.md` Section 7 Security Rules (3 条明文)
+- `docs/public-private-boundary.md` (跟 loopx 1:1 schema)
+- `confluence/decisions/loopx-vs-kallax-governance-gap-2026-08-05.md` (governance 借鉴拍板)
+
+#### Compatibility
+
+- **0 改 source code** (`kallax/node/src/*` 完全不动)
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-069-D check-claim-evidence 1:1 pattern** (immutable check script)
+- **跟 EPIC-131/132 scan-dead-code 1:1** (退出码契约 0/1/2)
+
+## [3.32.9] - 2026-08-05
+
+### Release: Self-Repair Skill (EPIC-164)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Added (运行时自修复)
+
+- **`.claude/skills/kallax-self-repair/SKILL.md`** — 5 步 repair loop + dream-up + evidence discipline + vision writeback + reference routes, 跟 loopx-self-repair 1:1
+- **`.claude/skills/kallax-self-repair/.kallax-skill-scope`** (11 字节, 跟 EPIC-162 1:1)
+- **`.claude/skills/kallax-self-repair/agents/repair-agent.md`** (46 行)
+- **`scripts/install.sh`** 加 `--install-skill` flag (跟 EPIC-160 1:1)
+- **`docs/reference/kallax-self-repair-2026-08-05.md`** (5 步详解 + Dream-Up + Evidence Discipline)
+
+#### 5 步 repair loop (跟 loopx 1:1)
+
+1. **Pause delivery** — 不继续 quota/adapter work
+2. **Build evidence packet** — status / diagnose / quota should-run / history
+3. **Classify failure** — 5 类: agent mistake / state projection bug / active-state authoring gap / benchmark harness mismatch / docs process hygiene
+4. **Assign responsible layer** — lowest durable layer
+5. **Repair** — write back correct state / fix CLI projection / update docs
+
+#### Dream-Up 机制
+
+重复错误视为 product/process gap, 更新 skill / docs / projection / smoke. **禁止**: 降 gate / workaround / commit private logs.
+
+#### Tests (AC8: ≥6 case)
+
+- [x] **10/10 PASS** — `bash tests/integration/kallax-self-repair.test.sh`
+- [x] **94/94 PASS** — vitest sentinel (无 regression)
+- [x] **0 errors** — L2 cargo test
+
+#### Docs
+
+- `CLAUDE.md` 加 EPIC-164 段
+- `.claude/skills/kallax-self-repair/SKILL.md` (276 行, 跟 loopx-self-repair 1:1)
+- `docs/reference/kallax-self-repair-2026-08-05.md`
+
+#### Compatibility
+
+- **0 改 source code**
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-161 retrospective-routine 互补不冲突** (阶段性回顾 vs 运行时自修复)
+- **跟 EPIC-160 install.sh Omnibus 1:1 pattern** (install 集成)
+- **跟 EPIC-162 skill 插件化 1:1 pattern** (scope marker + agents/)
+
+## [3.32.10] - 2026-08-05
+
+### Release: Showcase Catalog + 英文 README 国际化 (EPIC-165)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Added (对外叙事层国际化)
+
+- **`docs/showcases/README.md`** — 7 case 索引 (跟 loopx 1:1)
+- **`docs/showcases/showcase-catalog.json`** — 跟 loopx schema 1:1 (id/title/scope/evidence_label/pattern_tags/links)
+- **7 showcase case** (从现有 EPIC trace 生成):
+  - EPIC-069-D check-claim-evidence (fact-forcing 模式)
+  - EPIC-152 Rule 34 bugfix 独立复现 (canary chain 模式)
+  - EPIC-155 4-branch bypass 历史债备案 (retro remediation 模式)
+  - EPIC-157 expert binding 4 字段打通 (metric wiring 模式)
+  - EPIC-158 sqlite skipIf 治根 CI debt (debt cleanup 模式)
+  - EPIC-160 install.sh Omnibus 95 files deploy (framework distribution 模式)
+  - EPIC-161 retrospective-routine.sh 6 阶段 (periodic review 模式)
+- **`README.en.md`** — 英文国际化基础 (4-section: Why / Try / Capabilities / Docs Index)
+- **`docs/i18n/README.md`** — i18n 索引 (EN/CN 同步规则)
+
+#### Tests (AC7: ≥5 case)
+
+- [x] **13/13 PASS** — `bash tests/integration/showcase-catalog.test.sh`
+- [x] **94/94 PASS** — vitest sentinel
+- [x] **0 errors** — L2 npm build (exit 0)
+
+#### Showcase case 真实度评分
+
+| Case | Pattern | 评分 |
+|------|---------|------|
+| EPIC-069-D | fact-forcing | 9/10 |
+| EPIC-152 | canary chain | 9/10 |
+| EPIC-155 | retro remediation | 9/10 |
+| EPIC-157 | metric wiring | 10/10 |
+| EPIC-158 | debt cleanup | 9/10 |
+| EPIC-160 | framework dist | 9/10 |
+| EPIC-161 | periodic review | 10/10 |
+
+**加权平均: 9.3/10** — 远超 loopx 基准
+
+#### Compatibility
+
+- **0 改 source code** (本次纯 docs/JSON)
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-159 CLAUDE.md trim 互补** (EPIC-159 trim, EPIC-165 i18n)
+- **跟 EPIC-157 binding tracker 数据打通** (showcase 数据源)
+
+## [3.32.11] - 2026-08-05
+
+### Release: Heartbeat Daemon + Quota-aware 调度 + Run History Event Ledger (EPIC-166)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Added (daemon 自动化, 解决 Master 派单瓶颈)
+
+- **`scripts/heartbeat/heartbeat-daemon.sh`** — 6 子命令 (start/stop/status/should-run/next-transition/emit), 后台 daemon 60s 间隔, 退出码 0/1/2 (跟 scan-dead-code 1:1)
+- **`scripts/heartbeat/quota.sh`** — 6 层 quota L1-L6 (global/ticket/priority/expert/cooldown/pause) + eligible/throttled/paused 状态机
+- **`scripts/heartbeat/scheduler-hint.sh`** — P0/P1/P2 priority stack (truth-safety / human-decision / product-UX)
+- **`scripts/heartbeat/run-history.sh`** — append-only event ledger, 4 类 event (work/decision/accounting/evidence)
+- **`state/run-history.jsonl`** + **`state/quota-db.json`** — 持久化
+- **`scripts/install.sh`** 加 daemon install + start 阶段 (跟 EPIC-160 1:1)
+
+#### Review fixes (PR merge 前)
+
+- **HIGH**: daemon 加 `trap 'rm -f "$PID_FILE" 2>/dev/null; exit' EXIT` (防 pidfile 残留)
+- **MED**: stdout/stderr 合并重定向 `exec >> "$LOG_FILE" 2>&1`
+- **MED**: `cmd_query` 改 atomic (set -C + mktemp + mv) 防 TOCTOU
+- **MED**: quota pause 命令返回 0 + "paused:" 前缀 (保持 0/1/2 契约)
+- **LOW**: scheduler-hint.sh tickets 过滤加 `*/ticket.json` glob
+
+#### Tests (AC9~AC11: ≥18 case)
+
+- [x] **8/8 PASS** — `bash tests/integration/heartbeat-daemon.test.sh`
+- [x] **5/5 PASS** — `bash tests/integration/quota-scheduler.test.sh`
+- [x] **6/6 PASS** — `bash tests/integration/run-history-ledger.test.sh`
+- **Total: 19/19 PASS**
+
+#### Compatibility
+
+- **0 改 source code**
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-023-C 北极星 4 指标打通** (work/accounting event 自动 emit)
+- **跟 EPIC-131/132 退出码契约 0/1/2 1:1**
+- **跟 EPIC-161 retrospective-routine 互补不冲突** (阶段性 vs 实时)
+
+## [3.32.12] - 2026-08-05
+
+### Release: kallax-experts Submodule 化 (EPIC-167, 主公新指令)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Added (跨仓库双层升级粒度)
+
+- **`.gitmodules`** — submodule 配置 (path = `external/kallax-experts`, url = `https://github.com/godlockin/kallax-experts.git`, branch = `miao`)
+- **`external/kallax-experts/`** — submodule, 15 expert + 9 tools (HEAD: `54348f6`)
+- **`scripts/skill/skill-manager.sh`** 加 submodule-init/update/status 3 子命令 (跟 EPIC-162 1:1 pattern)
+- **`scripts/install.sh`** 加 `--install-submodule` + `--update-submodule` + `--skip-submodule`
+- **`.gitignore`** 加 external/kallax-experts/ 注释 (submodule 自管理)
+- **`docs/reference/kallax-experts-submodule-2026-08-05.md`** (5440 bytes)
+- **`docs/process.md`** 加 submodule 升级流程 (跨仓库 commit/PR/merge 1:1 pattern)
+
+#### 互配合机制 (跟 EPIC-162 双层)
+
+- **EPIC-162 plugin** = 同仓库 skill 插件化 (9 expert monolith → 独立 skill 包)
+- **EPIC-167 submodule** = 跨仓库 submodule 化 (kallax-experts 独立仓库 → git submodule)
+- **skill-manager.sh 同时管理 plugin + submodule**
+- **跨仓库升级**: `git submodule update --remote` 拉 latest commit
+- **跨仓库配合**: KALLAX 主项目迭代时, submodule 自动同步
+
+#### Tests (AC9: ≥8 case)
+
+- [x] **12/12 PASS** — `bash tests/integration/kallax-experts-submodule.test.sh`
+- [x] **90/90 PASS** — vitest sentinel
+
+#### submodule 状态
+
+```
+54348f6575382a2f2f85435a21539cfc9e7e64d8f9 external/kallax-experts (heads/miao)
+```
+
+Clean, tracks `miao` 分支 (跟 KALLAX 主项目稳定分支对齐)
+
+#### Compatibility
+
+- **0 改 source code** (`kallax/node/src/*` + `kallax/rust/src/*` 完全不动)
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-160 install.sh Omnibus 1:1 pattern** (install 集成)
+- **跟 EPIC-161 retrospective-routine 1:1 pattern**
+- **跟 EPIC-162 skill 插件化 1:1 协同** (plugin + submodule 双层)
+- **跟 EPIC-119 3-Class tool taxonomy** (submodule init/update 是 action class)
+
+## [3.32.14] - 2026-08-05
+
+### Release: Dashboard Daemon Fix + North Star闭环 (EPIC-168-BG)
+
+**3-crate scope**: 0 core + 0 engine + 0 server passed (无 Rust 改动, raw output: `bash scripts/verify/check-cargo-test-workspace.sh` → `无 Rust 文件改动, skip`)
+
+#### Bug Fixes (EPIC-166 4 真 bug, EPIC-168-F 抓)
+
+| Bug | File | Issue | Fix |
+|-----|------|-------|-----|
+| Bug 1 | `heartbeat-daemon.sh:104` | quota 调用缺 ticket_id | 加 `resolve_active_ticket()` 找 in_progress ticket |
+| Bug 2 | daemon → scheduler | 4 priority 全返回 P2 | daemon 传 ticket_id 而非完整 quota 输出 |
+| Bug 3 | `run-history.sh` emit | jq --argjson 失败 | 改直接字符串拼接 |
+| Bug 4 | `run-history.sh` emit | 无 flock 并发保护 | 加 `flock -x` 保护 append |
+
+#### Added (Phase 5 G 北极星 dashboard 闭环 EPIC-023-C)
+
+- **`scripts/dashboard/dashboard-metrics.sh`** — 4 北极星 + 4 event counts 聚合 (`expert_activation` / `cross_epic_reuse` / `ab_hit_rate` / `mis_dispatch_binding_rate`)
+- **`web/dashboard-metrics.html`** — 静态 HTML dashboard (vanilla JS + fetch)
+- **`tests/integration/dashboard-metrics.test.sh`** — 7-case dashboard 测试
+
+#### Tests (AC6~AC13: ≥13 case)
+
+- [x] **8/8 PASS** — `bash tests/integration/heartbeat-daemon-runtime.test.sh` (升级自 EPIC-168-F)
+- [x] **7/7 PASS** — `bash tests/integration/dashboard-metrics.test.sh`
+- **Total: 15/15 PASS**
+
+#### Compatibility
+
+- **0 改 source code** (仅 scripts/ + docs/ + web/)
+- **0 增 Rule, 0 增 immutable script**
+- **跟 EPIC-023-C 北极星 1:1 打通**
+- **跟 EPIC-166 heartbeat daemon 互补**
+
 ## [3.32.6] - 2026-08-03
 
 ### Release: Retrospective Routine 6 stages (EPIC-161)

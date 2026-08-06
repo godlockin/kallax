@@ -1172,6 +1172,21 @@ verify_install
 
 stamp_version
 
+# EPIC-177-G: emit evidence event for install complete
+_emit_install_evidence() {
+    local run_history="${PROJECT_ROOT}/scripts/heartbeat/run-history.sh"
+    [ ! -f "$run_history" ] && return 0
+    local install_payload
+    install_payload=$(jq -n \
+      --arg version "$VERSION" \
+      --arg mode "$INSTALL_MODE" \
+      --arg method "$INSTALL_METHOD" \
+      --argjson count "${#TARGET_TOOLS[@]}" \
+      '{install_complete: true, version: $version, mode: $mode, method: $method, tool_count: $count}')
+    "$run_history" emit evidence "install" "$install_payload" >/dev/null 2>&1 || true
+}
+_emit_install_evidence
+
 echo ""
 echo "Done. KALLAX skills + slash commands available across:"
 for tool in "${TARGET_TOOLS[@]}"; do

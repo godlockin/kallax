@@ -2,6 +2,7 @@
 id: kallax.product.001
 name: 📋 产品
 tier: default
+enabled_policy: default
 worktree_role: conductor
 review_group: A
 phase: 1

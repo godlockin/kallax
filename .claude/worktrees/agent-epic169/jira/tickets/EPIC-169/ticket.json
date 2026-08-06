@@ -1,0 +1,93 @@
+{
+  "ticket_id": "EPIC-169",
+  "epic": "EPIC-169",
+  "phase": "PHASE-020",
+  "title": "公开化路径 — README.en.md 完善 + hosted frontstage + Lark/WeChat 群",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "feature",
+  "created_at": "2026-08-05",
+  "worktree_role": "performer",
+  "performer_sub_role": "docs",
+  "handoff_depth": "L2",
+  "description": "EPIC-169 — 借鉴 loopx 公开化路径 (loopx 1.5k stars + Lark 群 + WeChat huangrt00 + GitHub Pages), 给 KALLAX 补对外可见性基础设施.\n\n**Context**: 主公 2026-08-05 拍板 Phase 5 E — 公开化路径. loopx 有 hosted frontstage (huangruiteng.github.io/loopx/frontstage/) + showcase catalog + Lark 群 + WeChat huangrt00. KALLAX 当前 internal (0 stars), 缺这些公开化基础设施.\n\n**设计 (跟 loopx 1:1)**:\n1. **README.en.md 完善** — 当前 139 行 (4-section), 扩到 250+ 行 (Why / Try / Capabilities / Documentation / Community / Contributing / License 7-section)\n2. **hosted frontstage scaffold** — `web/index.html` + `web/showcase/index.html` 仿 loopx frontstage, GitHub Pages deploy ready\n3. **CONTRIBUTING.md 完善** — 扩展到含 Lark/WeChat 群入口 + Contributing workflow + Code of Conduct 引用\n4. **`docs/i18n/README.md`** 已有 (EPIC-165), 扩到含 sync rule 详化\n5. **`docs/community/README.md`** — 社区入口文档 (Lark 群 + WeChat + GitHub Discussions)\n6. **`.github/FUNDING.yml`** + **`docs/sponsor/README.md`** — 赞助入口 (跟 loopx 1:1)\n\n**0 改 source code, 0 增 Rule, 0 增 immutable script** (纯 docs + web)",
+  "file_scope": {
+    "includes": [
+      "README.en.md",
+      "CONTRIBUTING.md",
+      "docs/i18n/README.md",
+      "docs/community/README.md",
+      "docs/sponsor/README.md",
+      "web/index.html",
+      "web/showcase/index.html",
+      ".github/FUNDING.yml",
+      ".github/ISSUE_TEMPLATE/bug_report.md",
+      ".github/ISSUE_TEMPLATE/feature_request.md",
+      "tests/integration/public-path-assets.test.sh",
+      "CLAUDE.md",
+      "CHANGELOG.md",
+      "confluence/decisions/epic-169-public-path-2026-08-05.md"
+    ]
+  },
+  "acceptance": [
+    "AC1: README.en.md ≥250 行 7-section (Why/Try/Capabilities/Documentation/Community/Contributing/License)",
+    "AC2: web/index.html hosted frontstage scaffold (loopx 1:1 style, 含 KALLAX 简介 + 文档入口)",
+    "AC3: web/showcase/index.html hosted showcase (7 case 卡片 + clickable 链)",
+    "AC4: CONTRIBUTING.md ≥100 行 含 Lark 群 + WeChat + Lark 群 QR code 占位",
+    "AC5: docs/community/README.md 群入口 + GitHub Discussions 链接",
+    "AC6: docs/sponsor/README.md + .github/FUNDING.yml (GitHub Sponsor 入口)",
+    "AC7: docs/i18n/README.md 扩展 (sync rule 详化 + 当前 7 case showcase 链接)",
+    "AC8: .github/ISSUE_TEMPLATE/bug_report.md + feature_request.md (跟 loopx 1:1)",
+    "AC9: tests/integration/public-path-assets.test.sh ≥6 case PASS (README.en 行数 / web 文件存在 / FUNDING.yml 合法 / ISSUE_TEMPLATE 合法)",
+    "AC10: 5-Level Verify L1-L5 + EPIC-165 showcase 1:1 verify",
+    "AC11: CLAUDE.md 加 EPIC-169 引用",
+    "AC12: CHANGELOG [3.32.15] entry (跟 EPIC-069-D 1:1 raw_output)",
+    "AC13: 0 改 source code, 0 增 Rule, 0 增 immutable script"
+  ],
+  "labels": [
+    "feature",
+    "public-path",
+    "showcase",
+    "loopx-borrow",
+    "P1",
+    "phase-020"
+  ],
+  "expert_binding": {
+    "suggested_expert": "product",
+    "actual_expert": "product",
+    "expert_binding_at": "2026-08-05T00:00:00Z",
+    "binding_change_reason": ""
+  },
+  "rule_references": [
+    "BE-14 (1 ticket 1 subagent 串行)",
+    "EPIC-054-A (worktree 隔离)",
+    "EPIC-159 (CLAUDE.md trim — 1:1 pattern)",
+    "EPIC-160 (install.sh Omnibus — 1:1 pattern)",
+    "EPIC-165 (showcase + i18n — 1:1 pattern)",
+    "EPIC-069-D (5-Level Verify — 1:1)",
+    "loopx 1:1 (hosted frontstage + showcase + Lark 群 + WeChat)"
+  ],
+  "verification": {
+    "diagnosis_phase": "TODO",
+    "design_complete": true,
+    "scope": "README.en.md + CONTRIBUTING.md + docs/community/* + web/* + .github/* + tests/*"
+  },
+  "deliverables": [
+    "README.en.md (≥250 行, 7-section)",
+    "CONTRIBUTING.md (≥100 行, 含 Lark/WeChat)",
+    "docs/community/README.md (群入口)",
+    "docs/sponsor/README.md",
+    ".github/FUNDING.yml",
+    ".github/ISSUE_TEMPLATE/bug_report.md",
+    ".github/ISSUE_TEMPLATE/feature_request.md",
+    "docs/i18n/README.md (扩展)",
+    "web/index.html (frontstage)",
+    "web/showcase/index.html (showcase)",
+    "tests/integration/public-path-assets.test.sh (新, ≥6 case)",
+    "CLAUDE.md 改",
+    "CHANGELOG.md 改",
+    "confluence/decisions/epic-169-public-path-2026-08-05.md"
+  ],
+  "estimated_hours": 10,
+  "created_by": "master (主公 2026-08-05 Phase 5 E: 公开化路径)"
+}
