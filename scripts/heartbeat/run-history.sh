@@ -23,7 +23,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 STATE_DIR="${KALLAX_ROOT}/state"
-LEDGER="${STATE_DIR}/run-history.jsonl"
+LEDGER="${KALLAX_RUN_HISTORY_LEDGER:-${STATE_DIR}/run-history.jsonl}"
 
 # Valid event types
 readonly VALID_EVENT_TYPES="work decision accounting evidence"
@@ -87,92 +87,89 @@ get_agent_id() {
 cmd_emit() {
     local event_type="${1:?Usage: run-history.sh emit <event_type> <ticket_id> [payload_json]}"
     local ticket_id="${2:?Usage: run-history.sh emit <event_type> <ticket_id> [payload_json]}"
-    local payload="${3:-}"
+    local payload="${3:-{}}"
 
     validate_event_type "$event_type"
     ensure_ledger
-
-    local agent_id timestamp
-    agent_id=$(get_agent_id)
-    timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-
-    local agent_id timestamp
-    agent_id=$(get_agent_id)
-    timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-
-    if [ -z "$payload" ]; then
-        payload='{}'
+    if ! command -v jq >/dev/null 2>&1; then
+        log "jq is required to validate and append events"
+        exit $EXIT_BLOCKED_ENV
     fi
     if ! jq -e 'type == "object"' >/dev/null 2>&1 <<<"$payload"; then
         log "payload must be a valid JSON object"
         exit $EXIT_FAIL
     fi
 
-    # jq owns JSON encoding for every field and payload remains an object.
-    local record
-    record=$(jq -cn \
+    local agent_id timestamp record
+    agent_id=$(get_agent_id)
+    timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+    if ! record=$(jq -cn \
         --arg event_type "$event_type" \
         --arg agent_id "$agent_id" \
         --arg ticket_id "$ticket_id" \
         --arg timestamp "$timestamp" \
         --argjson payload "$payload" \
-        '{event_type: $event_type, agent_id: $agent_id, ticket_id: $ticket_id, timestamp: $timestamp, payload: $payload}')
+        '{timestamp: $timestamp, event_type: $event_type, agent_id: $agent_id, ticket_id: $ticket_id, payload: $payload}'); then
+        log "failed to construct event record"
+        exit $EXIT_FAIL
+    fi
 
-    # Append while holding an advisory lock on a dedicated lock file; no shell
-    # command string is re-parsed.
     if command -v flock >/dev/null 2>&1; then
         local lock_fd
         exec {lock_fd}>"${LEDGER}.lock"
         flock -x "$lock_fd"
-        printf '%s\n' "$record" >> "$LEDGER"
+        if ! printf '%s\n' "$record" >> "$LEDGER"; then
+            flock -u "$lock_fd"
+            exec {lock_fd}>&-
+            log "failed to append event to ledger"
+            exit $EXIT_FAIL
+        fi
         flock -u "$lock_fd"
         exec {lock_fd}>&-
-    else
-        printf '%s\n' "$record" >> "$LEDGER"
+    elif ! printf '%s\n' "$record" >> "$LEDGER"; then
+        log "failed to append event to ledger"
+        exit $EXIT_FAIL
     fi
     exit $EXIT_PASS
 }
 
 cmd_query() {
-    local type_filter="${1:-}"
-    local agent_filter="${2:-}"
-    local ticket_filter="${3:-}"
+    local type_filter="" agent_filter="" ticket_filter="" arg
+    while [ "$#" -gt 0 ]; do
+        arg="$1"
+        shift
+        case "$arg" in
+            --type=*) type_filter="${arg#--type=}" ;;
+            --agent=*) agent_filter="${arg#--agent=}" ;;
+            --ticket=*) ticket_filter="${arg#--ticket=}" ;;
+            *) log "unknown query option: $arg"; exit $EXIT_FAIL ;;
+        esac
+    done
 
     ensure_ledger
-
     if [ ! -s "$LEDGER" ]; then
         echo "[]"
         exit $EXIT_PASS
     fi
 
     local filter_expr='.'
+    local -a jq_args=()
     if [ -n "$type_filter" ]; then
-        filter_expr="${filter_expr} | select(.event_type == \"$type_filter\")"
+        filter_expr+=' | map(select(.event_type == $type_filter))'
+        jq_args+=(--arg type_filter "$type_filter")
     fi
     if [ -n "$agent_filter" ]; then
-        filter_expr="${filter_expr} | select(.agent_id == \"$agent_filter\")"
+        filter_expr+=' | map(select(.agent_id == $agent_filter))'
+        jq_args+=(--arg agent_filter "$agent_filter")
     fi
     if [ -n "$ticket_filter" ]; then
-        filter_expr="${filter_expr} | select(.ticket_id == \"$ticket_filter\")"
+        filter_expr+=' | map(select(.ticket_id == $ticket_filter))'
+        jq_args+=(--arg ticket_filter "$ticket_filter")
     fi
-
-    # Output as JSON array (atomic: set -C + mktemp + mv)
-    set -C
-    local out_file
-    out_file=$(mktemp "${LEDGER}.query_out.XXXXXX") 2>/dev/null || {
-        out_file="${LEDGER}.query_out.$$"
-        touch "$out_file"
-    }
-    set +C
-
-    {
-        echo "[" > "${out_file}"
-        jq -r "$filter_expr" "$LEDGER" 2>/dev/null | jq -s '.' >> "${out_file}" 2>/dev/null || true
-        echo "]" >> "${out_file}"
-    }
-    mv -f "${out_file}" "${LEDGER}.query_out"
-    cat "${LEDGER}.query_out"
-    rm -f "${LEDGER}.query_out"
+    if ! jq -s "${jq_args[@]}" "$filter_expr" "$LEDGER"; then
+        log "query failed: invalid ledger JSONL"
+        exit $EXIT_FAIL
+    fi
     exit $EXIT_PASS
 }
 
@@ -260,11 +257,10 @@ cmd_verify() {
                 break
             fi
         done
-        if [ "$valid" = "false" ]; then
-            log "FAIL: line $line_num invalid event_type: $has_type"
+        if ! printf '%s' "$line" | jq -e '.payload | type == "object"' >/dev/null 2>&1; then
+            log "FAIL: line $line_num payload must be JSON object"
             errors=$((errors + 1))
         fi
-
     done < "$LEDGER"
 
     if [ "$errors" -gt 0 ]; then

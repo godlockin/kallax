@@ -228,6 +228,16 @@ if [[ "$HOOK_BYPASS" -eq 0 ]]; then
   fi
 fi
 
+# ── EPIC-069-D: claim evidence gate ─────────────────────────────────────
+# README/CHANGELOG numeric claims must cite raw test output; fail closed.
+if [[ "$HOOK_BYPASS" -eq 0 ]]; then
+  CLAIM_EVIDENCE_CHECK="${KALLAX_ROOT}/scripts/hooks/check-claim-evidence.sh"
+  if [[ ! -x "$CLAIM_EVIDENCE_CHECK" ]] || ! KALLAX_STAGED_ONLY=1 bash "$CLAIM_EVIDENCE_CHECK"; then
+    echo "BLOCKED: claim evidence check failed or is unavailable: $CLAIM_EVIDENCE_CHECK" >&2
+    exit 1
+  fi
+fi
+
 # ── Only enforce miao-specific rules on miao branch ───────────────────
 if [ "$BRANCH" != "miao" ]; then
   exit 0

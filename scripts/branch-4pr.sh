@@ -88,7 +88,7 @@ if [[ $DRY_RUN -eq 0 ]]; then
   if [ -f "$RUN_HISTORY" ]; then
     local pr1_payload
     pr1_payload=$(jq -n --arg branch "$FEATURE" '{pr_stage: "feature_to_testing", branch: $branch, action: "pr_created"}')
-    "$RUN_HISTORY" emit decision "$FEATURE" "$pr1_payload" >/dev/null 2>&1 || true
+    "$RUN_HISTORY" emit decision "$FEATURE" "$pr1_payload" >/dev/null 2>&1
   fi
 fi
 
@@ -111,7 +111,7 @@ if [[ $DRY_RUN -eq 0 ]]; then
   if [ -f "$RUN_HISTORY" ]; then
     local pr2_payload
     pr2_payload=$(jq -n '{pr_stage: "testing_to_main", action: "pr_merged"}')
-    "$RUN_HISTORY" emit decision "$FEATURE" "$pr2_payload" >/dev/null 2>&1 || true
+    "$RUN_HISTORY" emit decision "$FEATURE" "$pr2_payload" >/dev/null 2>&1
   fi
 else
   echo "  (dry-run)"
@@ -136,7 +136,7 @@ if [[ $DRY_RUN -eq 0 ]]; then
   if [ -f "$RUN_HISTORY" ]; then
     local pr3_payload
     pr3_payload=$(jq -n '{pr_stage: "main_to_miao", action: "pr_merged"}')
-    "$RUN_HISTORY" emit decision "$FEATURE" "$pr3_payload" >/dev/null 2>&1 || true
+    "$RUN_HISTORY" emit decision "$FEATURE" "$pr3_payload" >/dev/null 2>&1
   fi
 else
   echo "  (dry-run)"
@@ -163,7 +163,7 @@ if [[ $DRY_RUN -eq 0 ]]; then
     complete_payload=$(jq -n \
       --arg branch "$FEATURE" \
       '{pr_stage: "all_complete", branch: $branch, action: "4pr_flow_complete"}')
-    "$RUN_HISTORY" emit decision "$FEATURE" "$complete_payload" >/dev/null 2>&1 || true
+    "$RUN_HISTORY" emit decision "$FEATURE" "$complete_payload" >/dev/null 2>&1
   fi
 else
   echo "  (dry-run)"
