@@ -68,6 +68,24 @@ cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run \
 
 **跟现有 Rule 联合 (0 增)**: 跟 Rule 5 DRY, Rule 9 KPI (X/Y 格式), Rule 33 decision-gate 1:1 一致, 不冲突.
 
+## 3.1. Rule 35 — Sprint 规划时间盒 (EPIC-190, v3.34.2)
+
+**起因**: 主公 2026-08-07 拍板 (EPIC-185 subagent-5 rule-add), 防止 Sprint 期间超大任务破坏节奏.
+
+**Rule (强制)**:
+1. **Sprint 容量上限**: 每个 Sprint 最多 5 个 EPIC, 每个 EPIC 最多 10 commits, 每个 commit ≤ 500 行 (跟 Rule 8 Rule-of-500 联合)
+2. **0 超大任务**: 任何任务触及 4 个以上模块 / 涉及 5 个以上文件 → 必须拆 EPIC, 不接受单 PR 兜底
+3. **时间盒**: 单 EPIC 必走 4-PR 全闭环 (跟 Rule 4 联合), 不接受 0 静默跳过阶段 (testing / main / miao 任一)
+4. **0 跨 Sprint 累积**: 未完成 EPIC 不延期, 必在当前 Sprint 关闭 (done / blocked / archived, 跟 EPIC-188 retrospective 联合)
+
+**跟现有 Rule 联合 (0 增)**:
+- Rule 4 (4-branch flow): Sprint 内 EPIC 必走 4-PR 全闭环
+- Rule 5 (DRY): 单 EPIC 不重复造轮子, 跨 EPIC 复用 ≥ 60% (跟 EPIC-023-C 北极星 #2 联合)
+- Rule 8 (Rule-of-500): 单 commit ≤ 500 行
+- Rule 9 (KPI X/Y): Sprint 总结必带 X/Y 格式测试结果
+- Rule 13 (3 模式 decision-gate): Sprint 边界触发 ASK
+- Rule 34 (Bugfix 独立复现): Sprint 内修 bug 必带 reproduction
+
 ## 4. Branch Flow Governance (EPIC-074, 主公拍板 2026-07-09)
 
 **4-branch 强制流程** (v3.10.0+ 强制, 0 容忍):
