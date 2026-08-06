@@ -4,6 +4,37 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.34.0] - 2026-08-07
+
+### EPIC-188 Retrospective Routine 6 阶段实操
+
+**Scope**: 1 决策文件 (confluence/decisions/) + 0 core + 0 engine + 0 server
+
+跟主公 2026-08-07 拍板 (复盘 + 整理 + 归档 + release) 联合, 跑 `scripts/retrospective-routine.sh --apply` 6 阶段:
+
+1. **retrospect** — 8 EPIC 累计经验 (180-A → 187), 4 决策 + 4 痛点改进
+2. **consolidate** — CLAUDE.md ≤200 行 (PASS 190 行) + 20 duplicate candidates
+3. **review-docs** — `.claude/rules/` + `docs/reference/` + `confluence/decisions/` 验证
+4. **upgrade** — node v24.15.0 / rustc 1.97.1 (latest, 不需升级)
+5. **archive** — 创建 `_archived/` 目录, 1 DEPRECATED marker
+6. **delete** — 1 0-byte file (agent worktree)
+
+#### 释放总结
+
+| 维度 | 数字 |
+|------|------|
+| EPIC 累计 | 8 (180-A → 187) |
+| 测试 PASS | 188/188 (12 suite) |
+| PR 全闭环 | 24 (8 EPIC × 3 步) |
+| miao HEAD | 3933b6ae → (v3.34.0) |
+| 0 副作用 | source / Rule / immutable 全 0 |
+
+#### 联动 ticket
+
+- `confluence/decisions/epic-188-retrospective-2026-08-07.md` — 完整 6 阶段报告
+- EPIC-161 retrospective-routine.sh — 本次实操脚本
+- EPIC-187 AUTO-PERMS — "简单不需要问" 框架基础
+
 ## [3.33.9] - 2026-08-07
 
 ### 8 EPIC 闭环 (180-A → 187)
