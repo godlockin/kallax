@@ -271,7 +271,8 @@ else
 
     # 回写 PR URL to ticket.json (跟 L4 verify 联动, 0 隐藏)
     if command -v jq &>/dev/null; then
-      jq ".pr_url = \"${PR_URL}\" | .pr_submitted_at = \"${NOW}\" | .pr_branch = \"${BRANCH}\"" \
+      jq --arg pr_url "${PR_URL}" --arg now "${NOW}" --arg branch "${BRANCH}" \
+        '.pr_url = $pr_url | .pr_submitted_at = $now | .pr_branch = $branch' \
         "${TICKET_FILE}" > "${TICKET_FILE}.tmp" && mv "${TICKET_FILE}.tmp" "${TICKET_FILE}"
       git add "${TICKET_FILE}"
       # Amend commit to include ticket.json PR metadata
@@ -296,7 +297,8 @@ if ! command -v jq &>/dev/null; then
   echo "[FAIL] jq not available, ticket status remains in_progress"
   exit 1
 fi
-if ! jq ".status = \"done\" | .completed_at = \"${NOW}\" | .delivery_branch = \"${BRANCH}\"" \
+if ! jq --arg now "${NOW}" --arg branch "${BRANCH}" \
+  '.status = "done" | .completed_at = $now | .delivery_branch = $branch' \
   "${TICKET_FILE}" > "${TICKET_FILE}.tmp"; then
   rm -f "${TICKET_FILE}.tmp"
   echo "[FAIL] Could not update ticket status; ticket remains in_progress"

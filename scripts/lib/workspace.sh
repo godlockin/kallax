@@ -25,15 +25,23 @@ CHECKPOINT_DIR=""
 
 workspace_resolve_path() {
   local path="${1:?path required}"
-  case "$path" in
-    /*|..|../*|*/../*|*/..) return 1 ;;
-  esac
-  local candidate
-  candidate="$(realpath -m "${WORKSPACE_CWD}/${path}")" || return 1
-  case "$candidate" in
-    "$WORKSPACE_CWD"|"$WORKSPACE_CWD"/*) printf '%s\n' "$candidate" ;;
-    *) return 1 ;;
-  esac
+  python3 - "$WORKSPACE_CWD" "$path" <<'PY'
+import os
+import sys
+
+root, path = sys.argv[1:]
+if os.path.isabs(path) or ".." in path.split(os.sep):
+    raise SystemExit("ERROR: path must be workspace-relative and cannot contain ..")
+root_real = os.path.realpath(root)
+resolved = os.path.realpath(os.path.join(root_real, path))
+try:
+    contained = os.path.commonpath((root_real, resolved)) == root_real
+except ValueError:
+    contained = False
+if not contained:
+    raise SystemExit("ERROR: path escapes workspace root")
+print(resolved)
+PY
 }
 
 # === Init ===
