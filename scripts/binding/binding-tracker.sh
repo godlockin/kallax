@@ -98,9 +98,9 @@ cmd_actual() {
   local run_history="${SCRIPT_DIR}/../heartbeat/run-history.sh"
   if [ -f "$run_history" ]; then
     local payload
-    payload=$(jq -n --arg suggested "$suggested" --arg actual "$expert" \
+    payload=$(jq -cn --arg suggested "$suggested" --arg actual "$expert" \
       '{suggested_expert: $suggested, actual_expert: $actual, action: "actual_binding"}')
-    "$run_history" emit accounting "$ticket_id" "$payload" >/dev/null 2>&1 || true
+    "$run_history" emit accounting "$ticket_id" "$payload" >/dev/null 2>&1
   fi
 
   return 0
@@ -133,23 +133,20 @@ cmd_validate() {
     errors+=("binding_change_reason missing (actual '$actual' differs from suggested '$suggested')")
   [ -n "$suggested" ] && ! is_allowed_expert "$suggested" && errors+=("suggested_expert '$suggested' not in ExpertPool")
   [ -n "$actual" ] && ! is_allowed_expert "$actual" && errors+=("actual_expert '$actual' not in ExpertPool")
-  if [ ${#errors[@]} -eq 0 ]; then
-    echo "OK binding valid: $ticket_id (suggested=$suggested actual=$actual)"; return 0
-  fi
-  echo "FAIL binding invalid: $ticket_id"
-  for e in "${errors[@]}"; do echo "  - $e"; done
-
-  # EPIC-177-G: emit accounting event for validation status
+  # EPIC-177-G: emit accounting event for validation status (valid OR invalid)
   local run_history="${SCRIPT_DIR}/../heartbeat/run-history.sh"
   if [ -f "$run_history" ]; then
-    local is_valid=0
-    [ ${#errors[@]} -eq 0 ] && is_valid=1
+    local is_valid=1
+    [ ${#errors[@]} -gt 0 ] && is_valid=0
     local payload
-    payload=$(jq -n --argjson is_valid "$is_valid" \
+    payload=$(jq -cn --argjson is_valid "$is_valid" \
       '{validation_status: (if $is_valid == 1 then "valid" else "invalid" end), error_count: (if $is_valid == 1 then 0 else 1 end)}')
-    "$run_history" emit accounting "$ticket_id" "$payload" >/dev/null 2>&1 || true
+    "$run_history" emit accounting "$ticket_id" "$payload" >/dev/null 2>&1
   fi
 
+  if [ ${#errors[@]} -eq 0 ]; then
+    return 0
+  fi
   return 1
 }
 
@@ -185,21 +182,22 @@ cmd_validate_all() {
   echo "Failed:        $failed"
   echo "Skipped:       $skipped (legacy-no-binding)"
   echo "================================================"
-  [ $failed -gt 0 ] && { echo "FAILED tickets:"; for f in "${failed_files[@]}"; do echo "  - $f"; done; return 1; }
+  [ $failed -gt 0 ] && { echo "FAILED tickets:"; for f in "${failed_files[@]}"; do echo "  - $f"; done; }
 
-  # EPIC-177-G: emit decision event for validation-all complete
+  # EPIC-177-G: emit decision event for validation-all complete (always)
   local run_history="${SCRIPT_DIR}/../heartbeat/run-history.sh"
   if [ -f "$run_history" ]; then
     local payload
-    payload=$(jq -n \
+    payload=$(jq -cn \
       --argjson total "$total" \
       --argjson passed "$passed" \
       --argjson failed "$failed" \
       --argjson skipped "$skipped" \
       '{validation_all_complete: true, total: $total, passed: $passed, failed: $failed, skipped: $skipped}')
-    "$run_history" emit decision "binding-tracker" "$payload" >/dev/null 2>&1 || true
+    "$run_history" emit decision "binding-tracker" "$payload" >/dev/null 2>&1
   fi
 
+  [ $failed -gt 0 ] && return 1
   return 0
 }
 

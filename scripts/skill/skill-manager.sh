@@ -229,8 +229,8 @@ cmd_enable() {
     local run_history="${KALLAX_ROOT}/scripts/heartbeat/run-history.sh"
     if [ -f "$run_history" ]; then
         local payload
-        payload=$(jq -n --arg e "$expert" '{action: "skill_enable", expert: $e}')
-        "$run_history" emit work "skill-manager" "$payload" >/dev/null 2>&1 || true
+        payload=$(jq -cn --arg e "$expert" '{action: "skill_enable", expert: $e}')
+        "$run_history" emit work "skill-manager" "$payload" >/dev/null 2>&1
     fi
 }
 
@@ -246,8 +246,8 @@ cmd_disable() {
     local run_history="${KALLAX_ROOT}/scripts/heartbeat/run-history.sh"
     if [ -f "$run_history" ]; then
         local payload
-        payload=$(jq -n --arg e "$expert" '{action: "skill_disable", expert: $e}')
-        "$run_history" emit work "skill-manager" "$payload" >/dev/null 2>&1 || true
+        payload=$(jq -cn --arg e "$expert" '{action: "skill_disable", expert: $e}')
+        "$run_history" emit work "skill-manager" "$payload" >/dev/null 2>&1
     fi
 }
 

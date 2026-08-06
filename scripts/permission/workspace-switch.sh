@@ -105,12 +105,8 @@ case " $VALID_WORKSPACES " in
     ;;
 esac
 
-# P0 fix: role MUST come from state.json (--role CLI removed, PHASE-002 9c)
-# KALLAX_CURRENT_ROLE 仅作 test seam 兜底 (PHASE-002 §9d 留)
-ROLE="${KALLAX_CURRENT_ROLE:-}"
-if [[ -z "$ROLE" ]]; then
-  ROLE="$(jq -r '.role // ""' "$REAL_STATE_FILE" 2>/dev/null)"
-fi
+# P0 fix: role comes only from authoritative state.json.
+ROLE="$(jq -r '.role // ""' "$REAL_STATE_FILE" 2>/dev/null)"
 if [[ -z "$ROLE" ]]; then
   echo "ERROR: No role in state.json ($REAL_STATE_FILE)" >&2
   exit 1
@@ -153,7 +149,7 @@ log_workspace_switch() {
 
   # P0 fix: flock 串行化 audit log (治 KALLAX 并发)
   if command -v flock >/dev/null 2>&1; then
-    if ! flock -n "${AUDIT_DB}.log.lock" bash -c 'cat >> "${AUDIT_DB}.log"' 2>/dev/null <<<"$log_entry"; then
+    if ! flock -n "${AUDIT_DB}.log.lock" bash -c 'cat >> "$1"' bash "$AUDIT_DB.log" 2>/dev/null <<<"$log_entry"; then
       # Fallback: best-effort append (read-only action so we don't fail-closed)
       printf '%s\n' "$log_entry" >> "${AUDIT_DB}.log.fallback" 2>/dev/null || \
         echo "WARN: audit log write failed for workspace_switch $from_role→$to_workspace" >&2

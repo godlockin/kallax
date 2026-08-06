@@ -144,36 +144,38 @@ cmd_start() {
             fi
             tick_count=$((tick_count + 1))
 
+            # Resolve before constructing any tick-12/tick-120 payload.
+            local active_ticket
+            active_ticket=$(resolve_active_ticket)
+
             # Emit accounting event every tick (every 5s per interval)
-            "$RUN_HISTORY_SCRIPT" emit accounting "heartbeat-daemon" "{}" >> "$LOG_FILE" 2>&1 || true
+            "$RUN_HISTORY_SCRIPT" emit accounting "heartbeat-daemon" "{}" >> "$LOG_FILE" 2>&1
 
             # EPIC-177-G: Emit work event every 60s (1x per interval)
             if [ $((tick_count % 12)) -eq 0 ]; then
                 local work_payload
-                work_payload=$(jq -n --arg ticket "$active_ticket" '{heartbeat_tick: $ticket, type: "daemon_heartbeat"}')
-                "$RUN_HISTORY_SCRIPT" emit work "heartbeat-daemon" "$work_payload" >> "$LOG_FILE" 2>&1 || true
+                work_payload=$(jq -cn --arg ticket "$active_ticket" '{heartbeat_tick: $ticket, type: "daemon_heartbeat"}')
+                "$RUN_HISTORY_SCRIPT" emit work "heartbeat-daemon" "$work_payload" >> "$LOG_FILE" 2>&1
             fi
 
             # EPIC-177-G: Emit decision event every 60s (1x per interval)
             if [ $((tick_count % 12)) -eq 0 ]; then
                 local decision_payload
-                decision_payload=$(jq -n --arg ticket "$active_ticket" '{quota_check: $ticket, type: "scheduling_decision"}')
-                "$RUN_HISTORY_SCRIPT" emit decision "heartbeat-daemon" "$decision_payload" >> "$LOG_FILE" 2>&1 || true
+                decision_payload=$(jq -cn --arg ticket "$active_ticket" '{quota_check: $ticket, type: "scheduling_decision"}')
+                "$RUN_HISTORY_SCRIPT" emit decision "heartbeat-daemon" "$decision_payload" >> "$LOG_FILE" 2>&1
             fi
 
             # EPIC-177-G: Emit evidence event every 600s (1x per 10 intervals)
             if [ $((tick_count % 120)) -eq 0 ]; then
                 local evidence_payload
-                evidence_payload=$(jq -n --arg ticket "$active_ticket" '{status_snapshot: $ticket, type: "daemon_evidence"}')
-                "$RUN_HISTORY_SCRIPT" emit evidence "heartbeat-daemon" "$evidence_payload" >> "$LOG_FILE" 2>&1 || true
+                evidence_payload=$(jq -cn --arg ticket "$active_ticket" '{status_snapshot: $ticket, type: "daemon_evidence"}')
+                "$RUN_HISTORY_SCRIPT" emit evidence "heartbeat-daemon" "$evidence_payload" >> "$LOG_FILE" 2>&1
             fi
 
             # Save counter
             echo "{\"tick_count\": $tick_count}" > "$COUNTER_FILE"
 
-            # Quota check (resolve active ticket first)
-            local active_ticket
-            active_ticket=$(resolve_active_ticket)
+            # Quota check (active ticket resolved before event payloads)
             local quota_result
             quota_result=$("$QUOTA_SCRIPT" should-run "$active_ticket" 2>&1) || {
                 log "quota check failed for $active_ticket: $quota_result"

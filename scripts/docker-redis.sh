@@ -53,18 +53,15 @@ start_redis() {
     # Create data directory
     mkdir -p "$REDIS_DATA_DIR"
 
-    # Build command
-    local cmd="docker run -d --name $CONTAINER_NAME"
-    cmd+=" -p $REDIS_PORT:6379"
-    cmd+=" -v $REDIS_DATA_DIR:/data"
-    cmd+=" --restart unless-stopped"
+    # Build command as an argv array; never re-parse untrusted values through eval.
+    local -a cmd=(docker run -d --name "$CONTAINER_NAME"
+        -p "${REDIS_PORT}:6379"
+        -v "${REDIS_DATA_DIR}:/data"
+        --restart unless-stopped
+        redis:7-alpine redis-server --appendonly yes)
 
-    # Add password if set
     if [[ -n "$REDIS_PASSWORD" ]]; then
-        cmd+=" -e REDIS_PASSWORD=$REDIS_PASSWORD"
-        cmd+=" redis:7-alpine redis-server --appendonly yes --requirepass $REDIS_PASSWORD"
-    else
-        cmd+=" redis:7-alpine redis-server --appendonly yes"
+        cmd+=(--requirepass "$REDIS_PASSWORD")
     fi
 
     if container_exists; then
@@ -72,7 +69,7 @@ start_redis() {
         docker start "$CONTAINER_NAME"
     else
         log_info "Creating new Redis container..."
-        eval "$cmd"
+        "${cmd[@]}"
     fi
 
     # Wait for Redis to be ready
