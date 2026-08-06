@@ -96,20 +96,37 @@ cmd_emit() {
     agent_id=$(get_agent_id)
     timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-    # Build JSON record using direct string concat (avoid jq --argjson failures)
-    local record
-    if [ -z "$payload" ] || [ "$payload" = "{}" ] || [ "$payload" = "\"\"" ]; then
-        # Empty payload - build directly
-        record="{\"event_type\":\"${event_type}\",\"agent_id\":\"${agent_id}\",\"ticket_id\":\"${ticket_id}\",\"timestamp\":\"${timestamp}\",\"payload\":{}}"
-    else
-        # Payload with content - already valid JSON from jq -n, use as-is
-        # (jq -n outputs properly escaped JSON strings)
-        record="{\"event_type\":\"${event_type}\",\"agent_id\":\"${agent_id}\",\"ticket_id\":\"${ticket_id}\",\"timestamp\":\"${timestamp}\",\"payload\":${payload}}"
+    local agent_id timestamp
+    agent_id=$(get_agent_id)
+    timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+    if [ -z "$payload" ]; then
+        payload='{}'
+    fi
+    if ! jq -e 'type == "object"' >/dev/null 2>&1 <<<"$payload"; then
+        log "payload must be a valid JSON object"
+        exit $EXIT_FAIL
     fi
 
-    # Append-only to ledger with flock protection
+    # jq owns JSON encoding for every field and payload remains an object.
+    local record
+    record=$(jq -cn \
+        --arg event_type "$event_type" \
+        --arg agent_id "$agent_id" \
+        --arg ticket_id "$ticket_id" \
+        --arg timestamp "$timestamp" \
+        --argjson payload "$payload" \
+        '{event_type: $event_type, agent_id: $agent_id, ticket_id: $ticket_id, timestamp: $timestamp, payload: $payload}')
+
+    # Append while holding an advisory lock on a dedicated lock file; no shell
+    # command string is re-parsed.
     if command -v flock >/dev/null 2>&1; then
-        flock -x "$LEDGER" -c "printf '%s\n' \"$record\" >> '$LEDGER'"
+        local lock_fd
+        exec {lock_fd}>"${LEDGER}.lock"
+        flock -x "$lock_fd"
+        printf '%s\n' "$record" >> "$LEDGER"
+        flock -u "$lock_fd"
+        exec {lock_fd}>&-
     else
         printf '%s\n' "$record" >> "$LEDGER"
     fi

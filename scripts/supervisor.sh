@@ -36,23 +36,23 @@ echo ""
 echo $$ > "$SUPERVISOR_PID_FILE"
 trap 'rm -f "$SUPERVISOR_PID_FILE"; info "Supervisor stopped"' EXIT
 
-# Determine the server command
-SERVER_CMD=""
+# Determine the server command as argv plus optional working directory.
+SERVER_CWD="$PROJECT_ROOT"
+SERVER_CMD=()
 if [ -x "${PROJECT_ROOT}/node/bin/server.js" ]; then
-  SERVER_CMD="node ${PROJECT_ROOT}/node/bin/server.js"
+  SERVER_CMD=(node "${PROJECT_ROOT}/node/bin/server.js")
 elif [ -f "${PROJECT_ROOT}/node/package.json" ]; then
-  # Try npm start
-  SERVER_CMD="npm --prefix ${PROJECT_ROOT}/node run start"
+  SERVER_CMD=(npm --prefix "${PROJECT_ROOT}/node" run start)
 elif [ -x "${PROJECT_ROOT}/rust/target/release/kallax-server" ]; then
-  SERVER_CMD="${PROJECT_ROOT}/rust/target/release/kallax-server"
+  SERVER_CMD=("${PROJECT_ROOT}/rust/target/release/kallax-server")
 elif [ -x "${PROJECT_ROOT}/rust/target/debug/kallax-server" ]; then
-  SERVER_CMD="${PROJECT_ROOT}/rust/target/debug/kallax-server"
+  SERVER_CMD=("${PROJECT_ROOT}/rust/target/debug/kallax-server")
 else
-  # Fallback: try cargo run
-  SERVER_CMD="cd ${PROJECT_ROOT}/rust && cargo run"
+  SERVER_CWD="${PROJECT_ROOT}/rust"
+  SERVER_CMD=(cargo run)
 fi
 
-info "Server command: ${SERVER_CMD}"
+info "Server command: ${SERVER_CMD[*]}"
 info "Starting supervision (max ${MAX_RESTARTS} restarts)..."
 echo ""
 
@@ -67,9 +67,7 @@ while [ $RESTART_COUNT -le $MAX_RESTARTS ]; do
   info "Starting server..."
   START_TIME=$(date +%s)
 
-  # Execute server in background, capture PID
-  # EPIC-070-B2: 删 eval (环境注入即 RCE), 改用 bash -c 单引号包裹
-  bash -c "$SERVER_CMD" >> "$SERVER_LOG" 2>&1 &
+  (cd "$SERVER_CWD" && "${SERVER_CMD[@]}") >> "$SERVER_LOG" 2>&1 &
   SERVER_PID=$!
   info "Server PID: ${SERVER_PID}"
 
