@@ -82,7 +82,7 @@ log_readonly_check() {
     '{timestamp: $ts, event: "readonly_check", path: $path, role: $role, actor: $actor, result: $result}')
 
   if command -v flock >/dev/null 2>&1; then
-    if ! flock -n "${AUDIT_DB}.log.lock" bash -c 'cat >> "${AUDIT_DB}.log"' 2>/dev/null <<<"$log_entry"; then
+    if ! flock -n "${AUDIT_DB}.log.lock" bash -c 'cat >> "$1"' bash "$AUDIT_DB.log" 2>/dev/null <<<"$log_entry"; then
       printf '%s\n' "$log_entry" >> "${AUDIT_DB}.log.fallback" 2>/dev/null || \
         echo "WARN: audit log write failed for readonly_check $path" >&2
     fi
@@ -105,13 +105,13 @@ is_readonly_for_role() {
       ;;
     conductor)
       # conductor cannot write to miao/
-      [[ "$path" == "miao/"* ]] || [[ "$path" == "miao" ]]
+      path_is_under "$MIAO_ROOT" "$path"
       ;;
     performer)
       # performer cannot write to miao/, .git/hooks/, .kallax/config/
-      [[ "$path" == "miao/"* ]] || [[ "$path" == "miao" ]] || \
-      [[ "$path" == ".git/hooks/"* ]] || [[ "$path" == ".git/hooks" ]] || \
-      [[ "$path" == ".kallax/config/"* ]] || [[ "$path" == ".kallax/config" ]]
+      path_is_under "$MIAO_ROOT" "$path" || \
+      path_is_under "$GIT_HOOKS_ROOT" "$path" || \
+      path_is_under "$CONFIG_ROOT" "$path"
       ;;
     readonly|auditor)
       return 0  # all paths are readonly
@@ -179,20 +179,33 @@ if [[ ! -f "$REAL_STATE_FILE" ]]; then
   exit 1
 fi
 
-# P0 fix: role MUST come from state.json (--role CLI removed, PHASE-002 9c)
-# KALLAX_CURRENT_ROLE 仅作 test seam 兜底 (PHASE-002 §9d 留)
-ROLE="${KALLAX_CURRENT_ROLE:-}"
-if [[ -z "$ROLE" ]]; then
-  ROLE="$(jq -r '.role // ""' "$REAL_STATE_FILE" 2>/dev/null)"
-fi
+# P0 fix: role comes only from authoritative state.json.
+ROLE="$(jq -r '.role // ""' "$REAL_STATE_FILE" 2>/dev/null)"
 if [[ -z "$ROLE" ]]; then
   echo "ERROR: No role in state.json ($REAL_STATE_FILE)" >&2
   exit 1
 fi
 
-# P0 fix: path realpath 解析 (防 symlink 绕过 BE-19)
-# 跟 EPIC-022-C p0_fixes[0] "realpath 执行顺序在前" 联合
-REAL_PATH="$(realpath -m "$TARGET_PATH" 2>/dev/null || echo "$TARGET_PATH")"
+canonical_absolute() {
+  local input="$1" absolute
+  if [[ "$input" == /* ]]; then
+    absolute="$input"
+  else
+    absolute="${KALLAX_ROOT}/${input}"
+  fi
+
+  # Python handles symlink parents, nonexistent trailing components, and dot
+  # segments on macOS where BSD realpath lacks GNU --canonicalize-missing.
+  python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$absolute"
+}
+REAL_PATH="$(canonical_absolute "$TARGET_PATH")"
+path_is_under() {
+  local root="$1" path="$2"
+  [[ "$path" == "$root" || "$path" == "$root"/* ]]
+}
+MIAO_ROOT="$(canonical_absolute "${KALLAX_ROOT}/miao")"
+GIT_HOOKS_ROOT="$(canonical_absolute "${KALLAX_ROOT}/.git/hooks")"
+CONFIG_ROOT="$(canonical_absolute "${KALLAX_ROOT}/.kallax/config")"
 
 # Fail-closed: unknown role is denied (readonly)
 if [[ " $ROLE_ALLOWLIST " != *" $ROLE "* ]]; then

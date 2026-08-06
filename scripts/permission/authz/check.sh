@@ -172,8 +172,7 @@ log_audit() {
 
   local audit_ok=false
   if command -v flock >/dev/null 2>&1; then
-    # Issue 3 fix: herestring avoids variable expansion in bash -c (prevents injection)
-    if flock -n "${AUDIT_DB}.log.lock" bash -c 'cat >> "${AUDIT_DB}.log"' 2>/dev/null <<<"$log_entry"; then
+    if flock -n "${AUDIT_DB}.log.lock" bash -c 'cat >> "$1"' bash "$AUDIT_DB.log" 2>/dev/null <<<"$log_entry"; then
       audit_ok=true
     else
       # Primary flock failed (contention). Try fallback before fail-closed.

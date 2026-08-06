@@ -197,10 +197,30 @@ else
 fi
 
 # ============================================================
-# Summary
+# Test 6: Role cannot be supplied by environment
 # ============================================================
 echo ""
-echo "=== Summary ==="
+echo "[Test 6] Environment role is ignored"
+set_role "performer"
+if KALLAX_CURRENT_ROLE=master bash "$SWITCH_SCRIPT" --workspace "conductor" --actor "env-test" 2>/dev/null; then
+  echo "  FAIL: environment role bypassed state.json"
+  FAIL=$((FAIL + 1))
+else
+  echo "  PASS: environment role ignored"
+  PASS=$((PASS + 1))
+fi
+
+# Absolute canonical protected path must remain readonly.
+MIAO_ABS="$(cd "$KALLAX_ROOT" && pwd)/miao/test.txt"
+if bash "$READONLY_SCRIPT" --path "$MIAO_ABS" --actor "absolute-test" 2>/dev/null; then
+  echo "  FAIL: absolute protected path was writable"
+  FAIL=$((FAIL + 1))
+else
+  echo "  PASS: absolute protected path readonly"
+  PASS=$((PASS + 1))
+fi
+
+
 echo "PASS: $PASS"
 echo "FAIL: $FAIL"
 

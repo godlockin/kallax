@@ -30,6 +30,26 @@ count_lines() {
     [ -f "$f" ] && wc -l < "$f" | awk '{print $1}' || echo "0"
 }
 
+test_payload_is_object_and_escaped() {
+    local tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' RETURN
+    mkdir -p "$tmp/scripts/heartbeat"
+    cp "$RUN_HISTORY" "$tmp/scripts/heartbeat/run-history.sh"
+    chmod +x "$tmp/scripts/heartbeat/run-history.sh"
+    AGENT_ID='agent"quoted' "$tmp/scripts/heartbeat/run-history.sh" emit work 'ticket"quoted' '{"message":"safe \"value\""}' >/dev/null
+    if AGENT_ID='agent' "$tmp/scripts/heartbeat/run-history.sh" emit work ticket '[1]' >/dev/null 2>&1; then
+        log_test "run-history rejects array payload" "FAIL"; TESTS_FAILED=$((TESTS_FAILED + 1)); return
+    fi
+    if jq -e 'select(.payload|type != "object")' "$tmp/state/run-history.jsonl" >/dev/null 2>&1; then
+        log_test "run-history payload object schema" "FAIL"; TESTS_FAILED=$((TESTS_FAILED + 1)); return
+    fi
+    if jq -e 'select(.agent_id == "agent\"quoted" and .payload.message == "safe \"value\"")' "$tmp/state/run-history.jsonl" >/dev/null; then
+        log_test "run-history jq escaping" "PASS"; TESTS_PASSED=$((TESTS_PASSED + 1))
+    else
+        log_test "run-history jq escaping" "FAIL"; TESTS_FAILED=$((TESTS_FAILED + 1))
+    fi
+}
+
+
 test_binding_tracker_actual_emit() {
     local test_ticket="EPIC-177G-TEST-A"
     local test_dir="${KALLAX_ROOT}/jira/tickets/${test_ticket}"
@@ -211,6 +231,7 @@ main() {
     echo "=========================================="
     mkdir -p "$STATE_DIR"; touch "$LEDGER"
     echo "Running tests..."
+    test_payload_is_object_and_escaped
     test_binding_tracker_actual_emit
     test_binding_tracker_validate_emit
     test_binding_tracker_validate_all_emit
