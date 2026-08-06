@@ -87,7 +87,8 @@ get_agent_id() {
 cmd_emit() {
     local event_type="${1:?Usage: run-history.sh emit <event_type> <ticket_id> [payload_json]}"
     local ticket_id="${2:?Usage: run-history.sh emit <event_type> <ticket_id> [payload_json]}"
-    local payload="${3:-{}}"
+    local payload="${3:-}"
+    if [ -z "$payload" ]; then payload='{}'; fi
 
     validate_event_type "$event_type"
     ensure_ledger
