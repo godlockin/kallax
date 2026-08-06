@@ -23,10 +23,33 @@ WORKSPACE_CWD=""
 WORKSPACE_HOME="${HOME}/.kallax/workspace"
 CHECKPOINT_DIR=""
 
+workspace_resolve_path() {
+  local path="${1:?path required}"
+  python3 - "$WORKSPACE_CWD" "$path" <<'PY'
+import os
+import sys
+
+root, path = sys.argv[1:]
+if os.path.isabs(path) or ".." in path.split(os.sep):
+    raise SystemExit("ERROR: path must be workspace-relative and cannot contain ..")
+root_real = os.path.realpath(root)
+resolved = os.path.realpath(os.path.join(root_real, path))
+try:
+    contained = os.path.commonpath((root_real, resolved)) == root_real
+except ValueError:
+    contained = False
+if not contained:
+    raise SystemExit("ERROR: path escapes workspace root")
+print(resolved)
+PY
+}
+
 # === Init ===
 workspace_init() {
-  WORKSPACE_CWD="${1:?workspace_init requires cwd}"
-  CHECKPOINT_DIR="${WORKSPACE_HOME}/$(echo "$WORKSPACE_CWD" | tr '/' '_')/checkpoints"
+  local cwd="${1:?workspace_init requires cwd}"
+  WORKSPACE_CWD="$(realpath "$cwd")" || return 1
+  [[ -d "$WORKSPACE_CWD" ]] || return 1
+  CHECKPOINT_DIR="${WORKSPACE_HOME}/$(printf '%s' "$WORKSPACE_CWD" | tr '/' '_')/checkpoints"
   mkdir -p "$CHECKPOINT_DIR" 2>/dev/null || true
 }
 
@@ -34,7 +57,8 @@ workspace_init() {
 
 workspace_fs_read() {
   local path="$1"
-  local full_path="${WORKSPACE_CWD}/${path}"
+  local full_path
+  full_path="$(workspace_resolve_path "$path")" || { echo "ERROR: path outside workspace: $path" >&2; return 1; }
   if [[ ! -f "$full_path" ]]; then
     echo "ERROR: file not found: $full_path" >&2
     return 1
@@ -45,7 +69,8 @@ workspace_fs_read() {
 workspace_fs_write() {
   local path="$1"
   local content="$2"
-  local full_path="${WORKSPACE_CWD}/${path}"
+  local full_path
+  full_path="$(workspace_resolve_path "$path")" || { echo "ERROR: path outside workspace: $path" >&2; return 1; }
   mkdir -p "$(dirname "$full_path")" 2>/dev/null || true
   # EPIC-122-D: use temp+mv for atomic write (参照 CheckpointStore)
   local tmp="${full_path}.tmp.$$"
@@ -55,18 +80,22 @@ workspace_fs_write() {
 
 workspace_fs_exists() {
   local path="$1"
-  local full_path="${WORKSPACE_CWD}/${path}"
+  local full_path
+  full_path="$(workspace_resolve_path "$path")" || { echo "ERROR: path outside workspace: $path" >&2; return 1; }
   [[ -f "$full_path" ]]
 }
 
 workspace_fs_list() {
   local pattern="${1:-*}"
-  ls "${WORKSPACE_CWD}/${pattern}" 2>/dev/null || true
+  local full_path
+  full_path="$(workspace_resolve_path "$pattern")" || { echo "ERROR: path outside workspace: $pattern" >&2; return 1; }
+  ls "$full_path" 2>/dev/null || true
 }
 
 workspace_fs_stat() {
   local path="$1"
-  local full_path="${WORKSPACE_CWD}/${path}"
+  local full_path
+  full_path="$(workspace_resolve_path "$path")" || { echo "ERROR: path outside workspace: $path" >&2; return 1; }
   if [[ ! -e "$full_path" ]]; then
     echo "ERROR: path not found: $full_path" >&2
     return 1

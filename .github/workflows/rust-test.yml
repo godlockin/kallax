@@ -55,7 +55,6 @@ jobs:
 
       - name: Run tests (no default features)
         run: cargo test --no-default-features
-        continue-on-error: true
 
   doc-test:
     name: cargo test --doc
