@@ -4,6 +4,44 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.33.1] - 2026-08-05
+
+### Q3 Re-promote: 5 bypass commits cherry-pick 走 4-PR (EPIC-178)
+
+**Scope**: 0 core + 0 engine + 0 server (仅 docs + scripts hygiene)
+
+#### 闭环 EPIC-155 备案 (主公 Phase 6 AC 拍板)
+
+跟 EPIC-155 plan Q3 2026 retractively re-promote, 主公拍板 "现在执行 re-promote, 闭环 EPIC-155 备案 + 9 专家 review HIGH blocker"。
+
+#### 5 commits re-applied (DCO Signed-off-by 修复)
+
+| # | Source SHA | New SHA | Content |
+|---|------------|---------|---------|
+| 1 | a8da33f | 43228dc | chore(v3.32.0): archive 38 outdated docs to _archived/ |
+| 2 | 1482ffa | 668082e | docs(EPIC-154): CLAUDE.md 224 → 110 行 + 6 reference docs 按需加载 |
+| 3 | 40e2b8e | afc55f4 | chore: 清理 main 本地 uncommitted — gitignore .eket + .kallax/.kallax + 解 settings.local.json 冲突 |
+| 4 | 30e923a | abb6e44 | fix(security): EPIC-175-fix JSON injection MEDIUM (2 处 jq -n 替代 printf) |
+| 5 | 33ecc9b | b7737c6 | feat(jira): EPIC-176 commit history 修整 ticket |
+
+#### 9 专家 review HIGH blocker 闭环
+
+- EPIC-155 'Q3 re-promote pending' → **闭环**
+- EPIC-176 'DCO 3 violations' → **修复** (40e2b8e + 30e923a + 33ecc9b 加 Signed-off-by)
+
+#### 4-PR 流程 (跟 EPIC-074 1:1)
+
+- 5 feature branches → testing (PR #206-210)
+- testing → main (PR #211, force-push 跟 EPIC-146 1:1)
+- main → miao (PR #212, force-push 跟 EPIC-142 1:1)
+- 5 tags: v3.33.0-repromote-1/2/3/4/5
+
+#### References
+
+- **EPIC-178 ticket**: `jira/tickets/EPIC-178/ticket.json`
+- **EPIC-155 备案**: `confluence/decisions/branch-flow-governance-2026-07-09.md`
+- **EPIC-176 指南**: `docs/reference/commit-hygiene-pattern-2026-08-05.md`
+
 ## [3.33.0] - 2026-08-05
 
 ### Release: run-history emit integration (EPIC-177-G)
