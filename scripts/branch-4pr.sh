@@ -28,19 +28,35 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 FEATURE="${1:-}"
 SKIP_TESTS=0
 EMERGENCY=0
+EMERGENCY_REASON=""
 DRY_RUN=0
 
 shift || true
-for arg in "$@"; do
-  case "$arg" in
-    --skip-tests) SKIP_TESTS=1 ;;
-    --emergency) EMERGENCY=1 ;;
-    --dry-run) DRY_RUN=1 ;;
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --skip-tests) SKIP_TESTS=1; shift ;;
+    --emergency)
+      EMERGENCY=1
+      shift
+      if [[ $# -eq 0 || -z "$1" || "$1" == --* ]]; then
+        echo "ERROR: --emergency requires a non-empty reason"
+        exit 2
+      fi
+      EMERGENCY_REASON="$1"
+      shift
+      ;;
+    --dry-run) DRY_RUN=1; shift ;;
+    *) echo "ERROR: unknown argument: $1"; exit 2 ;;
   esac
 done
 
+if [[ $SKIP_TESTS -eq 1 && ($EMERGENCY -eq 0 || -z "$EMERGENCY_REASON") ]]; then
+  echo "ERROR: --skip-tests requires --emergency <non-empty reason>"
+  exit 2
+fi
+
 if [[ -z "$FEATURE" || "$FEATURE" == "--help" || "$FEATURE" == "-h" ]]; then
-  echo "Usage: $0 <feature-branch> [--skip-tests] [--emergency] [--dry-run]"
+  echo "Usage: $0 <feature-branch> [--skip-tests --emergency <reason>] [--dry-run]"
   echo ""
   echo "  4-PR 流程 (EPIC-074 新规):"
   echo "    1. feature/<name> → testing  (UAT)"
@@ -71,15 +87,17 @@ fi
 
 # 5-Level Verify L2 强制 (除非 --skip-tests)
 if [[ $SKIP_TESTS -eq 0 ]]; then
-  echo "=== 5-Level Verify (新规: cargo test 不是 build) ==="
+  echo "=== 5-Level Verify (新规: cargo test --workspace --release) ==="
   if [[ $DRY_RUN -eq 0 ]]; then
-    (cd rust && cargo test --release 2>&1 | tail -5) || {
-      echo "❌ cargo test --release 失败, abort"
+    if ! cargo test --workspace --release; then
+      echo "❌ cargo test --workspace --release 失败, abort"
       exit 1
-    }
+    fi
   else
     echo "  (dry-run: 跳过 cargo test)"
   fi
+else
+  echo "⚠️  tests skipped under emergency: ${EMERGENCY_REASON}"
 fi
 
 # EPIC-177-G: Emit decision event for PR 1 (feature→testing)
