@@ -134,8 +134,14 @@ Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push patter
 | EPIC-177-G | v3.33.0 | run-history emit integration — 6 脚本 emit hook 闭环 4 北极星 | `binding-tracker.sh`, `heartbeat-daemon.sh`, `post-process.sh`, `branch-4pr.sh`, `install.sh`, `skill-manager.sh` |
 | EPIC-180-A | v3.33.2 | frame-task.sh — 4 档路由 (TRIVIAL/SIMPLE/MEDIUM/COMPLEX) + 9 类破坏性拦 + FRAME 表单 | `scripts/frame-task.sh`, `.claude/skills/kallax/lib/frame-prompt.md`, `tests/integration/frame-task.test.sh` |
 | EPIC-181 | v3.33.2 | 4-PR wrapper 硬化 R1-R5 — `--epic` 必填 + base 同步校验 + state 验证 + 默认删 branch + 退出码契约 0/1/2/3 | `scripts/branch-4pr.sh`, `tests/integration/branch-4pr-harden.test.sh` |
+| EPIC-182 | v3.33.4 | 4-PR 实战回归 28 用例 (wrapper R1-R5 + Check 2.7 + branch allowlist + 9 类 + frame preamble) | `tests/integration/4pr-regression.test.sh` |
+| EPIC-183 | v3.33.5 | release-entry.sh CHANGELOG 自动生成 + emit decision (跟 EPIC-177-G 联合) | `scripts/release-entry.sh`, `tests/integration/release-entry.test.sh` |
+| EPIC-184 | v3.33.6 | frame-task multi-turn clarify (partial/answer/complete) — COMPLEX 档多轮主公澄清 | `scripts/frame-task.sh`, `tests/integration/multi-turn-clarify.test.sh` |
+| EPIC-185 | v3.33.7 | 8 subagent 并行派单实测 (frame-task + emit + ledger 跨 agent 查询) | `tests/integration/multi-agent-dispatch.test.sh` |
+| EPIC-186 | v3.33.8 | frame-llm.sh LLM v2 入口 + claude-haiku prompt 模板 (跟 heuristic 1:1 兼容) | `scripts/frame-llm.sh`, `tests/integration/frame-llm.test.sh` |
+| EPIC-187 | v3.33.9 | AUTO-PERMS 扩展 — git fetch/pull/log/diff 等 read-only 命令默认通过 | `.claude/skills/kallax/SKILL.md`, `.claude/skills/kallax/lib/frame-prompt.md`, `tests/integration/auto-perms-expand.test.sh` |
 
-**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 11 EPICs. Full docs + tests + scripts in each.
+**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 19 EPICs. Full docs + tests + scripts in each.
 
 ## 9. 引用 (lazy load on-demand)
 
