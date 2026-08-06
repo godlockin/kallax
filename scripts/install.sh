@@ -1150,7 +1150,7 @@ if $DRY_RUN; then
       --arg method "$INSTALL_METHOD" \
       --argjson count "${#TARGET_TOOLS[@]}" \
       '{install_complete: true, version: $version, mode: $mode, method: $method, tool_count: $count}')
-    "${PROJECT_ROOT}/scripts/heartbeat/run-history.sh" emit evidence "install" "$install_payload" >/dev/null 2>&1 || true
+    "${PROJECT_ROOT}/scripts/heartbeat/run-history.sh" emit evidence "install" "$install_payload" >/dev/null 2>&1
   fi
   exit 0
 fi

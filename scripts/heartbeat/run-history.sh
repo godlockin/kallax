@@ -258,6 +258,10 @@ cmd_verify() {
                 break
             fi
         done
+        if [ "$valid" = "false" ]; then
+            log "FAIL: line $line_num invalid event_type: $has_type (must be one of: $VALID_EVENT_TYPES)"
+            errors=$((errors + 1))
+        fi
         if ! printf '%s' "$line" | jq -e '.payload | type == "object"' >/dev/null 2>&1; then
             log "FAIL: line $line_num payload must be JSON object"
             errors=$((errors + 1))
