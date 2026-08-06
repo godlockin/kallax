@@ -4,6 +4,46 @@ All notable changes to KALLAX will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [3.33.9] - 2026-08-07
+
+### 8 EPIC 闭环 (180-A → 187)
+
+**Scope**: 0 core + 0 engine + 0 server (新增 scripts/skill/hook/test)
+
+#### EPIC-180-A — 智能路由 (heuristic v1)
+跟主公 2026-08-06 拍板 (frame 表单 + 4 档 + 9 类破坏性拦) 联合
+- `scripts/frame-task.sh` — heuristic 路由判定器 + FRAME 渲染
+- `.claude/skills/kallax/lib/frame-prompt.md` — LLM 替换模板
+
+#### EPIC-181 — 4-PR wrapper 硬化 R1-R5
+- R1 `--epic` 必填 / R2 base 同步 / R3 merge state 验证 / R4 默认删 branch / R5 退出码契约
+
+#### EPIC-182 — 实战回归 28 用例
+wrapper R1-R5 + Check 2.7 + branch allowlist + force-push + 9 类破坏性全验证
+
+#### EPIC-183 — release entry 自动生成
+- `scripts/release-entry.sh` — git log → CHANGELOG.md 顶部插入
+- 跟 EPIC-177-G 联合 emit decision event
+
+#### EPIC-184 — 多轮澄清界面 (partial/answer/complete)
+COMPLEX 档支持多轮主公澄清
+
+#### EPIC-185 — 8 subagent 并行派单实测
+13 用例验证 frame-task 在 subagent 上下文 + emit + ledger 跨 agent 查询
+
+#### EPIC-186 — LLM v2 入口
+- `scripts/frame-llm.sh` — claude-haiku prompt 模板 (mock mode)
+- 跟 heuristic 1:1 兼容 (4 维评分 + tier 公式)
+
+#### EPIC-187 — AUTO-PERMS 扩展 (主公 8-07 拍板)
+SKILL.md + frame-prompt.md 加 read-only 命令 (git fetch/pull/log/diff 等) 0 阻塞
+
+#### 测试
+
+- 188/188 测试 PASS (12 个 suite)
+- 0 改 source code / 0 增 Rule / 0 增 immutable script
+- 21 PR 全闭环 (8 EPIC × 4-PR feature→testing→main→miao, EPIC-180/181/182 各 1 PR, EPIC-183+ 增量)
+
 ## [3.33.2] - 2026-08-06
 
 ### 智能路由 (EPIC-180-A) + 4-PR 硬化 (EPIC-181)
