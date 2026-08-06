@@ -7,9 +7,44 @@ triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专�
 
 > **EPIC-127 一键入口**: `/kallax <任意诉求>` 由 `.claude/commands/kallax.md` 自动路由到 26 sub-command。描述见命令文件, 主公只打 `/kallax <要求>` 即可。
 
+> **EPIC-180-A/B 智能路由 (Frame)**: 每条 `/kallax <诉求>` 进入后, **第一时间** 跑 `bash scripts/frame-task.sh classify "<诉求>"` 输出 FRAME 表单 + 4 档判定 + 9 类破坏性检测. 详见 `lib/frame-prompt.md`.
+
 # KALLAX Skills 命令索引
 
 > 快速查找所有 /kallax-* 斜杠命令
+
+## Frame 入口决策树 (EPIC-180-B, 4 档路由)
+
+> **跑第一**: 收到任何诉求, 先 `bash scripts/frame-task.sh classify "<msg>"`. 输出表格 + score + 档位 + 9 类 BLOCKED-OPS.
+
+| 档位 | score (0-10) | 行为 | 主公介入 |
+|------|-------|------|----------|
+| **TRIVIAL** | < 2 | 1 行 diff preview → **直接做** | 0 阻塞 |
+| **SIMPLE** | 2-4 | 6 字段表单 1 句 → **直接做** | 0 阻塞 |
+| **MEDIUM** | 5-7 | 6 字段 + score + 路径 → **主公确认 → 做** | 1 次确认 |
+| **COMPLEX** | ≥ 8 | partial + Q3-Q6 多轮问 → **主公确认 → 做** | 多轮澄清 |
+
+### 9 类破坏性操作 (无论档位, 默认停下问)
+
+```
+1. 删文件 / rm -rf / git rm
+2. reset --hard / checkout -- <file>
+3. push --force / --force-with-lease / -f
+4. rebase / merge --no-ff
+5. 主分支 push (testing/main/miao)
+6. 公开化路径 (README.md / CHANGELOG.md)
+7. Rule 改 (CLAUDE.md / SKILL.md)
+8. immutable scripts (5 verify + 1 hook = 6)
+9. 网络发布 (gh pr create / npm publish / docker push)
+```
+
+### AUTO-PERMS (默认通过, 0 阻塞)
+
+```
+读: Read, Glob, Grep, Bash (cat/ls/jq), WebFetch, WebSearch
+写非破坏: Write, Edit, Bash (git add/commit/checkout/branch/worktree), gh (issue create/comment, pr view/list)
+查: gh pr view / list / status
+```
 
 ## Quick Reference (11 类, 30 命令, 跟 v2.3.0 install.sh 联合, EPIC-023-C 加 metrics)
 
