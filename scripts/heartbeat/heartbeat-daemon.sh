@@ -154,21 +154,21 @@ cmd_start() {
             # EPIC-177-G: Emit work event every 60s (1x per interval)
             if [ $((tick_count % 12)) -eq 0 ]; then
                 local work_payload
-                work_payload=$(jq -n --arg ticket "$active_ticket" '{heartbeat_tick: $ticket, type: "daemon_heartbeat"}')
+                work_payload=$(jq -cn --arg ticket "$active_ticket" '{heartbeat_tick: $ticket, type: "daemon_heartbeat"}')
                 "$RUN_HISTORY_SCRIPT" emit work "heartbeat-daemon" "$work_payload" >> "$LOG_FILE" 2>&1
             fi
 
             # EPIC-177-G: Emit decision event every 60s (1x per interval)
             if [ $((tick_count % 12)) -eq 0 ]; then
                 local decision_payload
-                decision_payload=$(jq -n --arg ticket "$active_ticket" '{quota_check: $ticket, type: "scheduling_decision"}')
+                decision_payload=$(jq -cn --arg ticket "$active_ticket" '{quota_check: $ticket, type: "scheduling_decision"}')
                 "$RUN_HISTORY_SCRIPT" emit decision "heartbeat-daemon" "$decision_payload" >> "$LOG_FILE" 2>&1
             fi
 
             # EPIC-177-G: Emit evidence event every 600s (1x per 10 intervals)
             if [ $((tick_count % 120)) -eq 0 ]; then
                 local evidence_payload
-                evidence_payload=$(jq -n --arg ticket "$active_ticket" '{status_snapshot: $ticket, type: "daemon_evidence"}')
+                evidence_payload=$(jq -cn --arg ticket "$active_ticket" '{status_snapshot: $ticket, type: "daemon_evidence"}')
                 "$RUN_HISTORY_SCRIPT" emit evidence "heartbeat-daemon" "$evidence_payload" >> "$LOG_FILE" 2>&1
             fi
 

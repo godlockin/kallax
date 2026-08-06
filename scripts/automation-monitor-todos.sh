@@ -142,7 +142,7 @@ cmd_emit() {
   ensure_state
   # Safe JSON construction using jq (prevents injection)
   local payload
-  payload=$(jq -n --arg status "$status" '{status: $status}')
+  payload=$(jq -cn --arg status "$status" '{status: $status}')
   emit_event "accounting" "$ticket_id" "$payload"
   echo "Emitted: accounting event for $ticket_id"
   exit $EXIT_PASS

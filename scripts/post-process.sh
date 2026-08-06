@@ -373,7 +373,7 @@ if [ "$UNPUSHED" -eq 0 ]; then
 else
     echo "  → 当前分支 ${CURRENT_BRANCH} 有 ${UNPUSHED} commit 未 push"
     echo "  → 提示: scripts/sync-branches.sh 或 git push origin ${CURRENT_BRANCH}"
-    check_step 2 "FAIL"
+    check_step 2 "FAIL" || true
     FAIL_COUNT=$((FAIL_COUNT + 1))
     EXIT_CODE=1
 fi
@@ -391,13 +391,13 @@ if [ -d "confluence/decisions" ] && ls confluence/decisions/*-LESSONS*.md >/dev/
         PASS_COUNT=$((PASS_COUNT + 1))
     else
         echo "  → 未找到 lessons 文件, 提示 创建 confluence/decisions/<EPIC>-LESSONS-*.md"
-        check_step 3 "FAIL"
+        check_step 3 "FAIL" || true
         FAIL_COUNT=$((FAIL_COUNT + 1))
         EXIT_CODE=1
     fi
 else
     echo "  → confluence/decisions/ 缺 lessons, 提示 创建"
-    check_step 3 "FAIL"
+    check_step 3 "FAIL" || true
     FAIL_COUNT=$((FAIL_COUNT + 1))
     EXIT_CODE=1
 fi
@@ -433,7 +433,7 @@ if [ -f "$GLOSSARY_FILE" ]; then
     PASS_COUNT=$((PASS_COUNT + 1))
 else
     echo "  → ${GLOSSARY_FILE} 不存在, 提示 创建"
-    check_step 5 "FAIL"
+    check_step 5 "FAIL" || true
     FAIL_COUNT=$((FAIL_COUNT + 1))
     EXIT_CODE=1
 fi
@@ -450,7 +450,7 @@ if [ -f "$PHASE_INDEX_FILE" ]; then
     PASS_COUNT=$((PASS_COUNT + 1))
 else
     echo "  → ${PHASE_INDEX_FILE} 不存在"
-    check_step 6 "FAIL"
+    check_step 6 "FAIL" || true
     FAIL_COUNT=$((FAIL_COUNT + 1))
     EXIT_CODE=1
 fi
@@ -467,7 +467,7 @@ if [ -f "$ACCUMULATED_FILE" ]; then
     PASS_COUNT=$((PASS_COUNT + 1))
 else
     echo "  → ${ACCUMULATED_FILE} 不存在"
-    check_step 7 "FAIL"
+    check_step 7 "FAIL" || true
     FAIL_COUNT=$((FAIL_COUNT + 1))
     EXIT_CODE=1
 fi
@@ -502,7 +502,7 @@ if [ -f "$CLAUDE_MD_FILE" ]; then
     PASS_COUNT=$((PASS_COUNT + 1))
 else
     echo "  → ${CLAUDE_MD_FILE} 不存在"
-    check_step 9 "FAIL"
+    check_step 9 "FAIL" || true
     FAIL_COUNT=$((FAIL_COUNT + 1))
     EXIT_CODE=1
 fi
@@ -569,22 +569,23 @@ if [ "$FAIL_COUNT" -gt 0 ]; then
     echo "║  解法: (a) 修复 FAIL 步骤; (b) 跑 --apply 实际执行             ║"
     echo "║  联动: scripts/sync-branches.sh / docs/PHASE-INDEX.md 段       ║"
     echo "╚══════════════════════════════════════════════════════════════╝"
-    exit 1
 fi
 
-# EPIC-177-G: emit work + decision events for post-process complete
+# EPIC-177-G: emit work + decision events for post-process complete (always)
 _postprocess_emit() {
     local run_history="${KALLAX_ROOT}/scripts/heartbeat/run-history.sh"
     [ ! -f "$run_history" ] && return 0
     local epic_id="post-process"
     local work_payload decision_payload
-    work_payload=$(jq -n --argjson pass "$PASS_COUNT" --argjson fail "$FAIL_COUNT" \
+    work_payload=$(jq -cn --argjson pass "$PASS_COUNT" --argjson fail "$FAIL_COUNT" \
       '{post_process_complete: true, pass_count: $pass, fail_count: $fail}')
-    decision_payload=$(jq -n --argjson pass "$PASS_COUNT" --argjson fail "$FAIL_COUNT" \
+    decision_payload=$(jq -cn --argjson pass "$PASS_COUNT" --argjson fail "$FAIL_COUNT" \
       '{post_process_complete: true, all_passed: (if $fail == 0 then true else false end)}')
     "$run_history" emit work "$epic_id" "$work_payload" >/dev/null 2>&1
     "$run_history" emit decision "$epic_id" "$decision_payload" >/dev/null 2>&1
 }
 _postprocess_emit
 
+# Honor non-zero FAIL exit code AFTER emit (so ledger reflects state)
+[ "$FAIL_COUNT" -gt 0 ] && exit 1
 exit 0
