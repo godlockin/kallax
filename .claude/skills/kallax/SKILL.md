@@ -38,12 +38,39 @@ triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专�
 9. 网络发布 (gh pr create / npm publish / docker push)
 ```
 
-### AUTO-PERMS (默认通过, 0 阻塞)
+### AUTO-PERMS (默认通过, 0 阻塞, EPIC-187 扩展)
 
 ```
-读: Read, Glob, Grep, Bash (cat/ls/jq), WebFetch, WebSearch
-写非破坏: Write, Edit, Bash (git add/commit/checkout/branch/worktree), gh (issue create/comment, pr view/list)
-查: gh pr view / list / status
+读 (read-only):
+  Read, Glob, Grep, WebFetch, WebSearch
+  Bash (cat, ls, jq, head, tail, wc, less, file, find, sort, uniq, awk, sed -n)
+
+Git read-only (跟 main/miao/testing 同步但不改):
+  git fetch, git pull --ff-only, git log, git diff, git status, git show,
+  git ls-files, git ls-remote, git rev-parse, git branch --list, git remote -v
+
+Git 写非破坏 (feature/* 分支内允许):
+  git add, git commit, git checkout (feature/*), git switch (feature/*),
+  git branch (new), git worktree add/remove, git stash list/show/pop,
+  git tag (annotated, non-protected), git notes add
+
+Bash 实用:
+  mkdir, touch (空文件), chmod +x (脚本), cp, mv (跨 worktree),
+  which, type, pwd, date, env, echo (无重定向), printf (无副作用)
+
+GitHub 查询:
+  gh pr view / list / status / checks / diff / api (GET)
+  gh issue view / list / status
+  gh repo view
+
+写非破坏 (新文件 / 修改非破坏):
+  Write, Edit, NotebookEdit, MultiEdit
+
+跳过的网络发布 (9 类破坏性 #9):
+  gh pr create / merge (PR 创建合并)
+  gh issue create (issue 创建)
+  npm publish, docker push
+  API POST/PUT/DELETE (外部)
 ```
 
 ## Quick Reference (11 类, 30 命令, 跟 v2.3.0 install.sh 联合, EPIC-023-C 加 metrics)
