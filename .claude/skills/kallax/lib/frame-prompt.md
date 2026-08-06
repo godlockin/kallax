@@ -68,6 +68,41 @@ total = (4 * step_score + 3 * blast_score + 3 * (10 - ambiguity_score)) / 10
 | EPIC-177-G | run-history emit — frame 后 emit decision 事件到 run-history.jsonl |
 | EPIC-074 | 4-branch — frame 触发 worktree + 4-PR 流程 |
 | EPIC-180-A.1 | LLM 替换 v2 — heuristic → LLM 语义理解 (后续 ticket) |
+| EPIC-187 | AUTO-PERMS 扩展 — git fetch/pull/log/diff 等 read-only 命令默认通过 |
+
+## AUTO-PERMS 详细清单 (EPIC-187, 跟 SKILL.md 1:1)
+
+> 跟 SKILL.md "AUTO-PERMS" 段同步, 0 改 source code, 0 增 Rule.
+
+```
+读 (read-only):
+  Read, Glob, Grep, WebFetch, WebSearch
+  Bash (cat, ls, jq, head, tail, wc, less, file, find, sort, uniq, awk, sed -n)
+
+Git read-only:
+  git fetch, git pull --ff-only, git log, git diff, git status, git show,
+  git ls-files, git ls-remote, git rev-parse, git branch --list, git remote -v
+
+Git 写非破坏 (feature/* 分支内):
+  git add, git commit, git checkout (feature/*), git switch (feature/*),
+  git branch (new), git worktree add/remove, git stash list/show/pop,
+  git tag (annotated), git notes add
+
+Bash 实用:
+  mkdir, touch (空), chmod +x (脚本), cp, mv (跨 worktree),
+  which, type, pwd, date, env, echo, printf
+
+GitHub 查询 (GET only):
+  gh pr view / list / status / checks / diff / api
+  gh issue view / list / status
+  gh repo view
+
+写非破坏:
+  Write, Edit, NotebookEdit, MultiEdit
+
+跳过的网络发布 (9 类 #9):
+  gh pr create / merge, gh issue create, npm publish, docker push
+```
 
 ## 跟 Rule 联合 (0 增)
 
