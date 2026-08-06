@@ -248,15 +248,16 @@ jobs:
 
       - name: NPM Audit
         run: npm audit --audit-level=high
-        continue-on-error: true
 
       - name: Check for secrets
         run: |
           echo "Checking for potential secrets..."
-          # Check for common secret patterns - safe grep without user input
-          if grep -rE "(password|secret|api_key|apikey|token)[\s]*=[\s]*['\"][^'\"]+['\"]" --include="*.ts" --include="*.js" --include="*.json" . 2>/dev/null | grep -v "node_modules" | grep -v ".example"; then
-            echo "::warning::Potential secrets found in code. Please review."
+          # Fail closed: any tracked source/config match blocks CI for review.
+          if git grep -n -I -E '(password|secret|api[_-]?key|token)[[:space:]]*=[[:space:]]*["'"'][^"'"']+["'"']' -- '*.ts' '*.tsx' '*.js' '*.jsx' '*.json' ':!*.example*'; then
+            echo "::error::Potential secret found in tracked source. Remove it or use environment configuration."
+            exit 1
           fi
+          echo "No potential secrets found."
 
   # ============================================================
   # Integration

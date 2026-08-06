@@ -177,19 +177,15 @@ if [ -n "${TS_FILES}" ]; then
 fi
 
 echo "  Self-test result: ${SELF_TEST_RESULT}"
-
-# ── Step 3: Update ticket status (强制 jq + git add, 跟 BE-12 复发 联合 0 隐藏) ──
-echo ""
-echo "── Step 3/${TOTAL_STEPS}: Update ticket ──"
-if command -v jq &>/dev/null; then
-  jq ".status = \"done\" | .completed_at = \"${NOW}\" | .delivery_branch = \"${BRANCH}\"" \
-    "${TICKET_FILE}" > "${TICKET_FILE}.tmp" && mv "${TICKET_FILE}.tmp" "${TICKET_FILE}"
-  git add "${TICKET_FILE}"
-  echo "  ✓ ticket.json: status → done (staged for next commit)"
-else
-  echo "[FAIL] jq not available, ticket status not updated (Rule 16 Step 3 mandatory)"
+if [ "${SELF_TEST_RESULT}" != "pass" ]; then
+  echo "[FAIL] Self-test gate failed; ticket remains in_progress"
   exit 1
 fi
+
+# ── Step 3: Gate checkpoint (status is written only after every gate passes) ──
+echo ""
+echo "── Step 3/${TOTAL_STEPS}: Self-test gate passed; defer ticket update ──"
+echo "  Ticket status remains '${TICKET_STATUS}' until docs, review, and PR gates pass"
 
 # ── Step 4: Write review request to conductor inbox ────────────────────────
 echo ""
@@ -279,9 +275,11 @@ else
         "${TICKET_FILE}" > "${TICKET_FILE}.tmp" && mv "${TICKET_FILE}.tmp" "${TICKET_FILE}"
       git add "${TICKET_FILE}"
       # Amend commit to include ticket.json PR metadata
-      git commit --amend --no-edit >/tmp/performer-amend.log 2>&1 || {
-        echo "[WARN] Could not amend commit to include PR metadata (non-fatal)"
-      }
+      if ! git commit --amend --no-edit >/tmp/performer-amend.log 2>&1; then
+        echo "[FAIL] Could not amend commit to include PR metadata"
+        head -20 /tmp/performer-amend.log
+        exit 1
+      fi
       echo "  ✓ ticket.json: pr_url → ${PR_URL} (staged + amended)"
     fi
   else
@@ -290,6 +288,23 @@ else
     exit 1
   fi
 fi
+
+# ── Final status transition: only after self-test, docs, review, and PR gates ──
+echo ""
+echo "── Final gate: Update ticket status ──"
+if ! command -v jq &>/dev/null; then
+  echo "[FAIL] jq not available, ticket status remains in_progress"
+  exit 1
+fi
+if ! jq ".status = \"done\" | .completed_at = \"${NOW}\" | .delivery_branch = \"${BRANCH}\"" \
+  "${TICKET_FILE}" > "${TICKET_FILE}.tmp"; then
+  rm -f "${TICKET_FILE}.tmp"
+  echo "[FAIL] Could not update ticket status; ticket remains in_progress"
+  exit 1
+fi
+mv "${TICKET_FILE}.tmp" "${TICKET_FILE}"
+git add "${TICKET_FILE}"
+echo "  ✓ All gates passed; ticket.json: status → done"
 
 # ── Step 8: Final delivery summary ────────────────────────────────────────
 echo ""
