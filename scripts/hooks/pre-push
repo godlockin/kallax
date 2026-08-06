@@ -106,4 +106,59 @@ if [ -n "$ARTIFACT_TRACKED" ]; then
   # Warning only — not blocking (historical pollution needs filter-repo)
 fi
 
+# ── Check 4: EPIC-181-A branch allowlist + force-push 保护 ──
+# 主分支 push (testing/main/miao) 强制:
+#   - 仅允许 fast-forward 或 PR merge (不允许直 push)
+#   - force push 必须 --force-with-lease + 主公 explicit 批准
+# 治根: 4-PR 必走, 主分支不接受直 push + 错误 force
+while IFS= read -r line; do
+  # 解析 pre-push stdin: <local_ref> <local_sha> <remote_ref> <remote_sha>
+  local_ref=$(echo "$line" | awk '{print $1}')
+  remote_ref=$(echo "$line" | awk '{print $3}')
+
+  # 提取目标分支
+  target_branch="${remote_ref#refs/heads/}"
+
+  # 主分支 push 检测 (testing/main/miao)
+  case "$target_branch" in
+    testing|main|miao)
+      echo "╔══════════════════════════════════════════════════════════════╗"
+      echo "║  WARNING: Direct push to '$target_branch' detected (EPIC-181-A)  ║"
+      echo "║                                                            ║"
+      echo "║  主分支应通过 PR merge 落地, 不接受 direct push:           ║"
+      echo "║    feature → PR → testing → PR → main → PR → miao         ║"
+      echo "║                                                            ║"
+      echo "║  Force push 必须 --force-with-lease + 主公 explicit 批准:  ║"
+      echo "║    KALLAX_HOOK_BYPASS=1 + 主公 '主公拍板: <reason>'        ║"
+      echo "║                                                            ║"
+      echo "║  继续 push (warning, 不 block):                            ║"
+      echo "║    检查: gh pr view --json state 校验 PR 已 MERGED         ║"
+      echo "╚══════════════════════════════════════════════════════════════╝"
+      # Warning only — 不 block (给主公 self-correction 空间)
+      ;;
+  esac
+
+  # Force push 检测 (覆盖主分支更危险)
+  if [ -n "$GIT_PUSH_OPTION_COUNT" ]; then
+    for i in $(seq 0 $((GIT_PUSH_OPTION_COUNT - 1))); do
+      opt=$(eval echo "\$GIT_PUSH_OPTION_$i")
+      if echo "$opt" | grep -qE "^--force(-with-lease)?$|^-f$"; then
+        if [ "$target_branch" = "miao" ] || [ "$target_branch" = "main" ]; then
+          echo "╔══════════════════════════════════════════════════════════════╗"
+          echo "║  BLOCKED: Force push to '$target_branch' PROHIBITED.         ║"
+          echo "║                                                            ║"
+          echo "║  治根: miao/main 是 stable release, 不接受 force push.       ║"
+          echo "║                                                            ║"
+          echo "║  例外 (主公 explicit): KALLAX_HOOK_BYPASS=1 + 显式 reason. ║"
+          echo "║    跟 EPIC-181-A 9 类破坏性 #3 force-push 联合.            ║"
+          echo "╚══════════════════════════════════════════════════════════════╝"
+          if [ "${KALLAX_HOOK_BYPASS:-0}" != "1" ]; then
+            exit 1
+          fi
+        fi
+      fi
+    done
+  fi
+done
+
 exit 0

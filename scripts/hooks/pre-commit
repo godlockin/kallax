@@ -450,4 +450,25 @@ if [ -n "$BLOCKED_FILES" ]; then
   exit 1
 fi
 
+# ── Check 2.7: EPIC-181-A testing 分支保护 (跟 wrapper R2 互补) ──
+# Wrapper R2 只在 PR 创建前校验 base, pre-commit Check 2.7 拦截直接 commit 到 testing
+# 治根: 0 跳过 4-branch, testing 分支必须经 PR merge, 不接受直接 commit
+if [ "$BRANCH" = "testing" ]; then
+  echo "╔══════════════════════════════════════════════════════════════╗"
+  echo "║  BLOCKED: Direct commit to testing is PROHIBITED.           ║"
+  echo "║                                                            ║"
+  echo "║  Code must flow through PR (EPIC-181-A):                    ║"
+  echo "║    feature/<name> → PR → testing                           ║"
+  echo "║                                                            ║"
+  echo "║  testing 是 UAT 集成验证分支, 必须 PR 进来:               ║"
+  echo "║    1. 在 feature/* 分支开发                                 ║"
+  echo "║    2. gh pr create --base testing --head <feature>         ║"
+  echo "║    3. 等 CI + 集成测试通过                                  ║"
+  echo "║    4. PR merge 自动落 testing                               ║"
+  echo "║                                                            ║"
+  echo "║  例外: --no-verify + 主公 explicit 批准 (CLAUDE.md §4)    ║"
+  echo "╚══════════════════════════════════════════════════════════════╝"
+  exit 1
+fi
+
 exit 0
