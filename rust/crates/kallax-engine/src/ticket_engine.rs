@@ -135,32 +135,33 @@ impl TicketEngine {
         out
     }
 
-    /// Claim a ticket for a performer
+    /// Claim a ticket for a performer.
+    ///
+    /// Performer and ticket transitions are committed as one in-memory operation:
+    /// the performer is reserved first, and is released again if ticket assignment
+    /// fails. This prevents one performer from claiming multiple tickets.
     pub fn claim_ticket(&self, ticket_id: &str, performer_id: &PerformerId) -> Result<()> {
-        let mut ticket = self
-            .tickets
-            .get_mut(ticket_id)
-            .ok_or_else(|| KallaxError::not_found("ticket", ticket_id))?;
-
-        // Validate performer exists and is idle
-        let performer = self
+        let mut performer = self
             .performers
-            .get(performer_id.as_str())
+            .get_mut(performer_id.as_str())
             .ok_or_else(|| KallaxError::not_found("performer", performer_id.as_str()))?;
 
-        if performer.status() != kallax_core::PerformerStatus::Idle {
-            return Err(KallaxError::invalid_state(
-                "performer",
-                performer_id.as_str(),
-                "idle",
-                performer.status().as_str(),
-            ));
+        let task_id = TaskId::from_str(ticket_id);
+        performer.assign_task(task_id)?;
+
+        let mut ticket = match self.tickets.get_mut(ticket_id) {
+            Some(ticket) => ticket,
+            None => {
+                let _ = performer.release_task();
+                return Err(KallaxError::not_found("ticket", ticket_id));
+            }
+        };
+
+        if let Err(error) = ticket.assign(performer_id.clone()) {
+            let _ = performer.release_task();
+            return Err(error);
         }
 
-        // Assign ticket
-        ticket.assign(performer_id.clone())?;
-
-        // Emit event
         let event = Event::new(
             EventType::TicketAssigned,
             serde_json::json!({
@@ -170,24 +171,33 @@ impl TicketEngine {
         );
         let _ = self.event_bus.publish(event);
 
-        info!(
-            ticket_id = %ticket_id,
-            performer_id = %performer_id,
-            "Ticket claimed"
-        );
+        info!(ticket_id = %ticket_id, performer_id = %performer_id, "Ticket claimed");
         Ok(())
     }
 
-    /// Complete a ticket
+    /// Complete a ticket and release its performer back to idle.
     pub fn complete_ticket(&self, ticket_id: &str) -> Result<()> {
+        let performer_id = self
+            .tickets
+            .get(ticket_id)
+            .and_then(|ticket| ticket.assigned_to().cloned())
+            .ok_or_else(|| KallaxError::not_found("ticket", ticket_id))?;
+        let mut performer = self
+            .performers
+            .get_mut(performer_id.as_str())
+            .ok_or_else(|| KallaxError::not_found("performer", performer_id.as_str()))?;
         let mut ticket = self
             .tickets
             .get_mut(ticket_id)
             .ok_or_else(|| KallaxError::not_found("ticket", ticket_id))?;
 
         ticket.complete()?;
+        if let Err(error) = performer.release_task() {
+            // Ticket completion cannot be rolled back through the public Ticket API.
+            // Return an error instead of reporting success, making inconsistency visible.
+            return Err(error);
+        }
 
-        // Emit event
         let event = Event::new(
             EventType::TicketCompleted,
             serde_json::json!({ "ticket_id": ticket_id }),
@@ -443,6 +453,27 @@ mod tests {
         assert_eq!(ticket.status(), TicketStatus::Completed);
     }
 
+    #[test]
+    fn performer_can_claim_only_one_ticket_and_is_released_on_completion() {
+        let engine = create_engine();
+        let first_id = engine.create_ticket(Ticket::new("First", "Description")).unwrap();
+        let second_id = engine.create_ticket(Ticket::new("Second", "Description")).unwrap();
+        let performer_id = engine.register_performer(Performer::new("Agent-1")).unwrap();
+
+        engine.claim_ticket(first_id.as_str(), &performer_id).unwrap();
+        let performer = engine.get_performer(performer_id.as_str()).unwrap();
+        assert_eq!(performer.status(), kallax_core::PerformerStatus::Busy);
+        assert_eq!(performer.current_task().map(TaskId::as_str), Some(first_id.as_str()));
+
+        let second_claim = engine.claim_ticket(second_id.as_str(), &performer_id);
+        assert!(matches!(second_claim, Err(KallaxError::InvalidState { .. })));
+        assert_eq!(engine.get_ticket(second_id.as_str()).unwrap().status(), TicketStatus::Ready);
+
+        engine.complete_ticket(first_id.as_str()).unwrap();
+        let performer = engine.get_performer(performer_id.as_str()).unwrap();
+        assert_eq!(performer.status(), kallax_core::PerformerStatus::Idle);
+        assert!(performer.current_task().is_none());
+    }
     #[test]
     fn task_creation_requires_ticket() {
         let engine = create_engine();

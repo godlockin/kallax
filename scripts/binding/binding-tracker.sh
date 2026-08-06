@@ -100,7 +100,7 @@ cmd_actual() {
     local payload
     payload=$(jq -n --arg suggested "$suggested" --arg actual "$expert" \
       '{suggested_expert: $suggested, actual_expert: $actual, action: "actual_binding"}')
-    "$run_history" emit accounting "$ticket_id" "$payload" >/dev/null 2>&1 || true
+    "$run_history" emit accounting "$ticket_id" "$payload" >/dev/null 2>&1
   fi
 
   return 0
@@ -147,7 +147,7 @@ cmd_validate() {
     local payload
     payload=$(jq -n --argjson is_valid "$is_valid" \
       '{validation_status: (if $is_valid == 1 then "valid" else "invalid" end), error_count: (if $is_valid == 1 then 0 else 1 end)}')
-    "$run_history" emit accounting "$ticket_id" "$payload" >/dev/null 2>&1 || true
+    "$run_history" emit accounting "$ticket_id" "$payload" >/dev/null 2>&1
   fi
 
   return 1
@@ -197,7 +197,7 @@ cmd_validate_all() {
       --argjson failed "$failed" \
       --argjson skipped "$skipped" \
       '{validation_all_complete: true, total: $total, passed: $passed, failed: $failed, skipped: $skipped}')
-    "$run_history" emit decision "binding-tracker" "$payload" >/dev/null 2>&1 || true
+    "$run_history" emit decision "binding-tracker" "$payload" >/dev/null 2>&1
   fi
 
   return 0

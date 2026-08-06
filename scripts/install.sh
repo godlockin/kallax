@@ -1183,7 +1183,7 @@ _emit_install_evidence() {
       --arg method "$INSTALL_METHOD" \
       --argjson count "${#TARGET_TOOLS[@]}" \
       '{install_complete: true, version: $version, mode: $mode, method: $method, tool_count: $count}')
-    "$run_history" emit evidence "install" "$install_payload" >/dev/null 2>&1 || true
+    "$run_history" emit evidence "install" "$install_payload" >/dev/null 2>&1
 }
 _emit_install_evidence
 

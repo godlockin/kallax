@@ -582,8 +582,8 @@ _postprocess_emit() {
       '{post_process_complete: true, pass_count: $pass, fail_count: $fail}')
     decision_payload=$(jq -n --argjson pass "$PASS_COUNT" --argjson fail "$FAIL_COUNT" \
       '{post_process_complete: true, all_passed: (if $fail == 0 then true else false end)}')
-    "$run_history" emit work "$epic_id" "$work_payload" >/dev/null 2>&1 || true
-    "$run_history" emit decision "$epic_id" "$decision_payload" >/dev/null 2>&1 || true
+    "$run_history" emit work "$epic_id" "$work_payload" >/dev/null 2>&1
+    "$run_history" emit decision "$epic_id" "$decision_payload" >/dev/null 2>&1
 }
 _postprocess_emit
 

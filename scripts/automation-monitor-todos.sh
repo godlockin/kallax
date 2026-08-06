@@ -19,7 +19,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+KALLAX_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 STATE_DIR="${KALLAX_ROOT}/state"
 LEDGER="${STATE_DIR}/run-history.jsonl"
 
@@ -51,28 +51,26 @@ ensure_state() {
   fi
 }
 
-# Emit event to run-history ledger
+# Emit valid accounting event through central run-history schema.
 emit_event() {
   local event_type="$1"
   local ticket_id="$2"
-  local payload="${3:-{}}"
+  local payload="${3:-}"
+  local run_history="${KALLAX_ROOT}/scripts/heartbeat/run-history.sh"
 
-  ensure_state
-
-  local ts
-  ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-
-  # Safe JSON construction using jq (prevents injection)
-  local entry
-  entry=$(jq -n \
-    --arg ts "$ts" \
-    --arg type "$event_type" \
-    --arg ticket_id "$ticket_id" \
-    --argjson payload "$payload" \
-    '{ts: $ts, type: $type, ticket_id: $ticket_id, payload: $payload}')
-
-  flock -x "$LEDGER" -c "echo '$entry' >> '$LEDGER'" 2>/dev/null || \
-    echo "$entry" >> "$LEDGER"
+  if [ -z "$payload" ]; then
+    payload='{}'
+  fi
+  if [ "$event_type" != "accounting" ] && [ "$event_type" != "work" ] && \
+     [ "$event_type" != "decision" ] && [ "$event_type" != "evidence" ]; then
+    log_msg "FAIL: invalid event type: $event_type"
+    return $EXIT_FAIL
+  fi
+  if ! printf '%s' "$payload" | jq -e 'type == "object"' >/dev/null 2>&1; then
+    log_msg "FAIL: payload must be JSON object"
+    return $EXIT_FAIL
+  fi
+  "$run_history" emit "$event_type" "$ticket_id" "$payload"
 }
 
 # ── Commands ─────────────────────────────────────────────────────────────────
@@ -145,8 +143,8 @@ cmd_emit() {
   # Safe JSON construction using jq (prevents injection)
   local payload
   payload=$(jq -n --arg status "$status" '{status: $status}')
-  emit_event "automation-monitor" "$ticket_id" "$payload"
-  echo "Emitted: automation-monitor event for $ticket_id"
+  emit_event "accounting" "$ticket_id" "$payload"
+  echo "Emitted: accounting event for $ticket_id"
   exit $EXIT_PASS
 }
 
