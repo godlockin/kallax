@@ -328,6 +328,67 @@ cmd_check_blocked() {
 
 # ── self-test: 内置自测 (≥6 用例) ──
 
+cmd_emit_all() {
+    # emit-all <file> — 从文件读 multi-line 用户消息, 每行 classify + emit
+    local file="${1:-}"
+    if [[ -z "$file" ]] || [[ ! -f "$file" ]]; then
+        echo "ERROR: emit-all requires file arg" >&2
+        exit 2
+    fi
+
+    local run_history="${SCRIPT_DIR}/heartbeat/run-history.sh"
+    local emitted=0
+    while IFS= read -r line; do
+        [[ -z "$line" || "$line" =~ ^# ]] && continue
+
+        # extract tier + blocked from classify output
+        local tier blocked
+        tier=$(classify "$line" 2>&1 | grep -oE '→ (TRIVIAL|SIMPLE|MEDIUM|COMPLEX) 档' | awk '{print $2}')
+        blocked=$(classify "$line" 2>&1 | grep -A 1 "BLOCKED-OPS:" | tail -1 | tr -d '│ \n' | head -c 200)
+
+        # emit decision
+        local payload
+        payload=$(jq -cn --arg tier "$tier" --arg msg "$line" --arg blocked "$blocked" \
+            '{action: "frame_decision", tier: $tier, blocked: $blocked, user_msg: $msg}')
+        if [ -f "$run_history" ]; then
+            "$run_history" emit decision "frame-task" "$payload" >/dev/null 2>&1 || true
+        fi
+        emitted=$((emitted + 1))
+    done < "$file"
+
+    echo "✓ emit-all 完成: $emitted 事件"
+    exit 0
+}
+
+cmd_classify_emit() {
+    # classify + emit decision (跟 EPIC-177-G 联合)
+    # 用法: bash scripts/frame-task.sh classify --emit "<user_msg>"
+    local msg="${1:-}"
+    if [[ -z "$msg" ]]; then
+        echo "ERROR: classify --emit requires user_msg" >&2
+        exit 2
+    fi
+
+    # 先跑 classify (输出 frame)
+    classify "$msg"
+
+    # extract tier + blocked for emit payload
+    local tier blocked
+    tier=$(classify "$msg" 2>&1 | grep -oE '→ (TRIVIAL|SIMPLE|MEDIUM|COMPLEX) 档' | awk '{print $2}')
+    blocked=$(classify "$msg" 2>&1 | grep "BLOCKED-OPS:" | tail -1 | sed 's/.*BLOCKED-OPS: //' | head -c 200)
+
+    # emit decision to run-history
+    local run_history="${SCRIPT_DIR}/heartbeat/run-history.sh"
+    if [ -f "$run_history" ]; then
+        local payload
+        payload=$(jq -cn --arg tier "$tier" --arg msg "$msg" --arg blocked "$blocked" \
+            '{action: "frame_decision", tier: $tier, blocked: $blocked, user_msg: $msg}')
+        "$run_history" emit decision "frame-task" "$payload" >/dev/null 2>&1 || true
+        echo "[emit] decision 事件 → run-history ledger"
+    fi
+    exit 0
+}
+
 cmd_self_test() {
     local failed=0
 
@@ -471,13 +532,21 @@ main() {
 
     case "$cmd" in
         classify)
-            classify "$@"
+            # --emit flag: classify + emit decision to run-history
+            if [[ "${1:-}" == "--emit" ]]; then
+                cmd_classify_emit "${@:2}"
+            else
+                classify "$@"
+            fi
             ;;
         render)
             echo "render: TBD (用 classify 输出即可)"
             ;;
         check-blocked)
             cmd_check_blocked "$@"
+            ;;
+        emit-all)
+            cmd_emit_all "$@"
             ;;
         partial)
             cmd_partial "$@"
