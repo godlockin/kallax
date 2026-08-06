@@ -33,11 +33,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # 4 档阈值 (跟 v3.33.2 EPIC-180-A 拍板, 0-10 scale)
 readonly SCORE_TRIVIAL=2
-readonly SCORE_SIMPLE_MIN=2
 readonly SCORE_MEDIUM_MIN=5
 readonly SCORE_COMPLEX_MIN=8
 
@@ -546,7 +544,7 @@ cmd_partial() {
     echo "│ 下一轮: bash scripts/frame-task.sh answer /tmp/frame-state.json \\"
     echo "│                       --field Q3 '<答>' --field Q4 '<答>' ..."
     echo "└──────────────────────────────────────────────────────────┘"
-    exit $EXIT_PASS
+    exit "$EXIT_PASS"
 }
 
 cmd_answer() {
