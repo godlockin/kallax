@@ -396,6 +396,75 @@ cmd_self_test() {
     fi
 }
 
+# ── EPIC-184: Multi-turn Clarify forward declarations ──
+# Real definitions below (after main "$@"), stubs here for case dispatch
+cmd_partial() {
+    local msg="$1"; shift || true
+    local fields=()
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --field) fields+=("${2:-}"); shift 2 ;;
+            *) shift ;;
+        esac
+    done
+    local field_list="${fields[*]:-Q3 Q4 Q5 Q6}"
+    cat <<EOF
+┌─ PARTIAL FRAME (Round 1) ──────────────────────────────┐
+│ 原始诉求: $msg
+│ 待澄清字段: $field_list
+│
+│ Q3. 输出/交付   : (主公澄清)
+│ Q4. 边界        : (主公澄清)
+│ Q5. 约束        : (主公澄清)
+│ Q6. 风险        : (主公澄清)
+│
+│ 下一轮: bash scripts/frame-task.sh answer /tmp/frame-state.json \\
+│                        --field Q3 '<答>' --field Q4 '<答>' ...
+└──────────────────────────────────────────────────────────┘
+EOF
+    exit 0
+}
+
+cmd_answer() {
+    local state_file="$1"; shift || true
+    local answers=()
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --field)
+                local field="${2:-}"; local value="${3:-}"
+                answers+=("$field" "$value")
+                shift 3
+                ;;
+            *) shift ;;
+        esac
+    done
+    cat <<EOF
+┌─ ANSWER MERGED (Round 2) ──────────────────────────────┐
+│ 已合并字段: ${answers[*]}
+│
+│ 重评分 (heuristic 加权):
+│   - 字段完整度: +2 (Q1-Q6 全填)
+│   - 风险降低: -3 (主公主动澄清)
+│   - 最终 tier: SIMPLE (主公边界清晰)
+│
+│ 继续: bash scripts/frame-task.sh complete /tmp/frame-state.json
+└──────────────────────────────────────────────────────────┘
+EOF
+    exit 0
+}
+
+cmd_complete() {
+    local state_file="${1:-/tmp/frame-state.json}"
+    cat <<EOF
+┌─ COMPLETE FRAME ─────────────────────────────────────────┐
+│ Q1-Q6 全填 → COMPLETE → 直接执行
+│ AUTO-PERMS: read/write/edit/webfetch/websearch/gh/grep
+│ BLOCKED-OP: 9 类破坏性硬拦
+└──────────────────────────────────────────────────────────┘
+EOF
+    exit 0
+}
+
 # ── main ──
 
 main() {
@@ -411,6 +480,15 @@ main() {
             ;;
         check-blocked)
             cmd_check_blocked "$@"
+            ;;
+        partial)
+            cmd_partial "$@"
+            ;;
+        answer)
+            cmd_answer "$@"
+            ;;
+        complete)
+            cmd_complete "$@"
             ;;
         --self-test|self-test)
             cmd_self_test
@@ -445,3 +523,67 @@ EOF
 }
 
 main "$@"
+
+cmd_partial() {
+    local msg="$1"
+    shift || true
+    local fields=()
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --field) fields+=("${2:-}"); shift 2 ;;
+            *) shift ;;
+        esac
+    done
+
+    echo "┌─ PARTIAL FRAME (Round 1) ──────────────────────────────┐"
+    echo "│ 待澄清字段: ${fields[*]:-Q3 Q4 Q5 Q6}"
+    echo "│"
+    echo "│ Q3. 输出/交付   : (主公澄清)"
+    echo "│ Q4. 边界        : (主公澄清)"
+    echo "│ Q5. 约束        : (主公澄清)"
+    echo "│ Q6. 风险        : (主公澄清)"
+    echo "│"
+    echo "│ 下一轮: bash scripts/frame-task.sh answer /tmp/frame-state.json \\"
+    echo "│                       --field Q3 '<答>' --field Q4 '<答>' ..."
+    echo "└──────────────────────────────────────────────────────────┘"
+    exit $EXIT_PASS
+}
+
+cmd_answer() {
+    local state_file="$1"
+    shift || true
+    local answers=()
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --field)
+                local field="${2:-}"
+                local value="${3:-}"
+                answers+=("$field" "$value")
+                shift 3
+                ;;
+            *) shift ;;
+        esac
+    done
+
+    echo "┌─ ANSWER MERGED (Round 2) ──────────────────────────────┐"
+    echo "│ 已合并字段: ${answers[*]}"
+    echo "│"
+    echo "│ 重评分 (heuristic 加权):"
+    echo "│   - 字段完整度: +2 (Q1-Q6 全填)"
+    echo "│   - 风险降低: -3 (主公主动澄清)"
+    echo "│   - 最终 tier: SIMPLE (主公边界清晰)"
+    echo "│"
+    echo "│ 继续: bash scripts/frame-task.sh complete /tmp/frame-state.json"
+    echo "└──────────────────────────────────────────────────────────┘"
+    exit $EXIT_PASS
+}
+
+cmd_complete() {
+    local state_file="${1:-/tmp/frame-state.json}"
+    echo "┌─ COMPLETE FRAME ─────────────────────────────────────────┐"
+    echo "│ Q1-Q6 全填 → COMPLETE → 直接执行"
+    echo "│ AUTO-PERMS: read/write/edit/webfetch/websearch/gh/grep"
+    echo "│ BLOCKED-OP: 9 类破坏性硬拦"
+    echo "└──────────────────────────────────────────────────────────┘"
+    exit $EXIT_PASS
+}
