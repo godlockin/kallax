@@ -1,5 +1,9 @@
 # KALLAX PHASE Review (v2.0.0, 跟"同类症状",配合, 跟"独立" 拍 explicit 约束,配合)
 
+> **DEPRECATED (2026-08-07, EPIC-199)**: v2.0.0 流程, 已由 v2.0.3 EPIC-056-A 3 阶段治理 + EPIC-059-E Post-Process 11 步骤取代。
+> **现代替代**: `confluence/decisions/workflow-8step-2026-08-07.md` (主公拍板 8 步流程) + `docs/process/9-hard-rules.md`
+> **保留原因**: 历史 reference, 0 删 (跟 EPIC-196 v2 1:1 archive-not-delete)
+
 > 跟决策者 §3 拍板,配合, 跟 Rule 6/7,配合, 跟"反哺框架" 战略 一致, 跟"诚实修正评估",配合.
 
 ## 频率 (跟"同类症状",配合, 跟 Rule 7 现状)

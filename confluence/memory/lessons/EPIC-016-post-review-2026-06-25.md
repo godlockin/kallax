@@ -396,7 +396,7 @@
 
 | # | User AC | 状态 | 证据 |
 |---|---------|------|------|
-| 1 | docs/expert-extension/EPIC-016-post-review-2026-06-25.md exists | ✅ PASS | 本 file (file:line `docs/expert-extension/EPIC-016-post-review-2026-06-25.md:1-300`) |
+| 1 | confluence/memory/lessons/EPIC-016-post-review-2026-06-25.md exists | ✅ PASS | 本 file (file:line `confluence/memory/lessons/EPIC-016-post-review-2026-06-25.md:1-300`) |
 | 2 | Documents 9 expert reviews (配合 v2.0.3 EPIC-056-A 模式,配合) | ✅ PASS | §3.2 9 专家 (4 default + 5 extended, 配合 v2.0.3 EPIC-056-A 模式 对照验证) |
 | 3 | Identifies optimization results + regression risks | ✅ PASS | §2.2 (results) + §4 (HIGH/MED/LOW risks 列表) |
 | 4 | 配合 EPIC-016-A through EPIC-016-R results,配合 | ✅ PASS | §2.1 (10 tickets status table) + §5.2 (对照验证 9/10 = 90%) |
@@ -433,7 +433,7 @@
 
 | File | Status | Purpose | Lines |
 |------|--------|---------|-------|
-| `docs/expert-extension/EPIC-016-post-review-2026-06-25.md` | NEW | 本 doc (主 评审 报告) | ~300 |
+| `confluence/memory/lessons/EPIC-016-post-review-2026-06-25.md` | NEW | 本 doc (主 评审 报告) | ~300 |
 | `confluence/decisions/EPIC-016-postreview.md` | NEW | 关联 decision 总结 doc | 跟 本 doc 双向 链接, 对照验证 |
 
 **2/2 files new**, 跟 User AC 5 项 file scope 对照验证, 0 production code 改动 (跟 baseline,0 hidden).

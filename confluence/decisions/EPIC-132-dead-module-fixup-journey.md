@@ -38,7 +38,7 @@
 
 **动作**: 
 - 跑 `scripts/scan-dead-code.sh > docs/test-baseline-2026-07-20.txt`
-- 写 `docs/decisions/epic-132-dead-module-fixup-plan.md` (4 phase plan)
+- 写 `confluence/decisions/EPIC-132-dead-module-fixup-plan.md` (4 phase plan)
 - 写 `docs/decisions/epic-132-dead-modules-baseline.txt` (29 unique list)
 
 **主公拍板**: "直接 Phase B 开干" (2026-07-20 7:35pm)
