@@ -11,8 +11,8 @@
 | git mv | 7 (跨目录归类: process 类 → docs/process/, reference 类 → docs/reference/, decision 类 → confluence/decisions/) |
 | git rm | 1 (docs/structure.md 跟 REPOSITORY-LAYOUT.md 重复) |
 | ADD_DEPRECATED_HEADER | 15 |
-| Internal stale ref 修复 | 96 stale links (across 27 files) → 0 stale |
-| check-internal-refs.cjs 终态 | 92 refs, 0 stale (当时, EPIC-202-A 后变 98) |
+| Internal stale ref 修复 | 96 stale links (across 27 files) → 0 stale (EPIC-202-A 修后跑复 `Fixed 96` 验证, 跟 Auditor 挑刺一致) |
+| check-internal-refs.cjs 终态 | 92 refs, 0 stale (当时, EPIC-202-A 后变 98 含 web/ scope) |
 | 4-PR | 3 (testing + main + miao, PR #283-285) |
 
 ## 5 Lessons (跟原 retrospective 一致 + 补)
