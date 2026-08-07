@@ -1,9 +1,11 @@
-# TODO/FIXME Backlog (2026-07-19)
+# TODO/FIXME Backlog (2026-07-19 → 2026-08-07 refresh)
+
+> **2026-08-07 refresh (EPIC-196)**: 重跑 grep,当前剩余 1 实质项 (HIGH: `ticket-board.sh:247`)
 
 ## Summary
 
 Total grep hits: 60
-Filtered to actual TODO/FIXME items: 4
+Filtered to actual TODO/FIXME items: 4 (2026-07-19) → **1** (2026-08-07 refresh)
 (excludes: mktemp `.XXXXXX` patterns, EPIC-XXX placeholders in comments/docs, scan-pattern definitions)
 
 ---

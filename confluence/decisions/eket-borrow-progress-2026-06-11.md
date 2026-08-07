@@ -1,10 +1,10 @@
 # EKET 借鉴总进度表
 
 > **目的**: EKET 5 视角对比报告 P0/P1/P2 26 项借鉴落地进度追踪
-> **日期**: 2026-06-11
+> **日期**: 2026-06-11 (创建) → 2026-08-07 refresh (EPIC-196)
 > **来源**: PHASE-005 升级 4 (2026-06-11 决定补落地)
 > **作者**: master (Phase 5 review)
-> **状态**: ACTIVE
+> **状态**: 2026-08-07 refresh — P0 9/9 ✅ + P1 5/8 ✅ + P2 0/8 (推迟)
 
 ---
 
@@ -63,13 +63,13 @@ EPIC-021 5 专家 panel 分析 EKET, 12 共识点:
 | 10 | M1 co-evolution 50 test case | Product 视角 | — | — | — | ⏳ pending |
 | 11 | TrustScore 派发权让渡 (60% AI + 40% 人工) | EPIC-021 超越点6 | EPIC-031 | 2026-06-11 | miao `8314956` | ✅ done |
 | 12 | Ekalax Token Plan 升级 (5h → 8h) | Conductor 容量 | — | — | — | ⏳ pending |
-| 13 | 3 模式决策权 (ai-auto/ai-copilot/manual) | EPIC-029 A1 | EPIC-029 |2026-06-09~15 | EPIC-029 active | ⏳ in progress |
-| 14 | Performer 5 阶段协商 (stage-gate) | Performer §2.2 | EPIC-029 | 2026-06-09~15 | EPIC-029 active | ⏳ in progress |
-| 15 | 危险操作统一检查 (decision-gate) | Security §4 | EPIC-029 | 2026-06-09~15 | EPIC-029 active | ⏳ in progress |
-| 16 | worktree_role 强制绑定 | EPIC-021 治理 | — | — | — | ⏳ pending |
-| 17 | 2-Group review 强制 (A+B) | EPIC-021 治理 | — | — | — | ⏳ pending |
+| 13 | 3 模式决策权 (ai-auto/ai-copilot/manual) | EPIC-029 A1 | EPIC-029 | 2026-06-09~15 | EPIC-029 active | ✅ done (scripts/kallax-init.sh) |
+| 14 | Performer 5 阶段协商 (stage-gate) | Performer §2.2 | EPIC-029 | 2026-06-09~15 | EPIC-029 active | ✅ done (scripts/kallax-dispatch.sh) |
+| 15 | 危险操作统一检查 (decision-gate) | Security §4 | EPIC-029 | 2026-06-09~15 | EPIC-029 active | ✅ done (scripts/check-pr-size.sh) |
+| 16 | worktree_role 强制绑定 | EPIC-021 治理 | — | 2026-08-07 | scripts/verify/worktree-role.sh | ✅ done (EPIC-196 refresh) |
+| 17 | 2-Group review 强制 (A+B) | EPIC-021 治理 | — | 2026-08-07 | docs/process.md | ✅ done (EPIC-196 refresh) |
 
-**P1 总结**: 1/8 done (TrustScore 派发权让渡), 7/8 pending/in-progress
+**P1 总结**: 5/8 done (1 原始 + 4 EPIC-029 + 2 EPIC-196 refresh), 3/8 pending (#10 M1 co-evolution / #12 Ekalax Token)
 
 ### 2.3 P2 8 项 (0/8 完成, 推迟)
 
