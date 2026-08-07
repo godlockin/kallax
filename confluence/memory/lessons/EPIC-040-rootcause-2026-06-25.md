@@ -312,7 +312,7 @@ fi
 
 | AC | 状态 | 证据 |
 |----|------|------|
-| AC1 docs/investigation/EPIC-040-rootcause-2026-06-25.md 存在 | ✅ | this file (10 sections, 跟 5 Why + 5 思路 + 5 方法,配合) |
+| AC1 confluence/memory/lessons/EPIC-040-rootcause-2026-06-25.md 存在 | ✅ | this file (10 sections, 跟 5 Why + 5 思路 + 5 方法,配合) |
 | AC2 识别根因 (思路+方法+强制限制流程) | ✅ | §2 (5 Why) + §3 (5 思路) + §4 (5 方法) + §5 (Rule 16) |
 | AC3 performer-complete.sh 加强制更新 step | ✅ | scripts/performer-complete.sh v1.0.0 → v1.1.0 (Step 6 docs verify + Step 7 PR submission) |
 | AC4 跟 "同类症状" + "诚实修正评估" 战略,0 隐藏 | ✅ | §6 + §9 (0 隐藏 governance gap, BE-27 新模式 暴露) |

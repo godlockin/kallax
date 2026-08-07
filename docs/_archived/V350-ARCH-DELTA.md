@@ -1,5 +1,9 @@
 # v3.5.0 Architecture Delta (跟 B 组 U-001 从根源修复,配合)
 
+> **DEPRECATED (2026-08-07, EPIC-199)**: v3.5.0 Delta 文档, ARCHITECTURE.md 已进化到 v3.33+。
+> **现代替代**: `docs/ARCHITECTURE.md` (当前版本) + `CHANGELOG.md` (版本增量记录)
+> **保留原因**: 历史 reference, 0 删 (跟 EPIC-196 v2 1:1 archive-not-delete)
+
 > **跟主约束联合**: ❌ 不改 docs/ARCHITECTURE.md / docs/CHEATSHEET.md / CLAUDE.md (Iter 2 锁定)
 > **B 组 U-001 从根源修复方案**: 本 DELTA 文档 (新) 显式 list v3.5.0 增量, 待 v3.6.0 整合到 ARCHITECTURE.md
 > **跟 V310-B U-005 / U-007 配合**

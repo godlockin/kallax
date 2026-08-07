@@ -25,3 +25,14 @@ docs/ARCHITECTURE.md (423 行, 12 章节) — 唯一 architecture 入口
 - v3.0.0 → v3.5.0: 0 architecture 跳 (主文档 稳定)
 - v3.6.0: 14 sub-doc → 0 (1 主文档 入口)
 - 例外: online-deploy-2026-06-30/ (P-004 ERRATA 待决策者拍)
+
+## §6 4 DEPRECATED 子文档 (v3.0.0 整合, EPIC-199 归并)
+
+| 子文档 | 替代主文档章节 | 整合时间 |
+|--------|----------------|----------|
+| `framework.md` | `docs/ARCHITECTURE.md` §3.1 + §9 | v3.0.0 (Iter 11) |
+| `three-repo-architecture.md` | `docs/ARCHITECTURE.md` §3.1 + §12.3 | v3.0.0 (Iter 11) |
+| `workflow-engine.md` | `docs/ARCHITECTURE.md` §5 + §8 | v3.0.0 (Iter 11) |
+| `verification-protocol.md` | `docs/ARCHITECTURE.md` §6 + §11 | v3.0.0 (Iter 11) |
+
+内容 100% 整合到 `docs/ARCHITECTURE.md` 跟 `docs/5-levels.md`, 0 active 引用。保留 git history 不删。

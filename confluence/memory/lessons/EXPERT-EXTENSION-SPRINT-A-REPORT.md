@@ -190,7 +190,7 @@ function l1Match(keywords: string[], expertTriggers: Set<string>): boolean {
 | File | Status | Purpose |
 |------|--------|---------|
 | `node/tests/l1-match.test.ts` | NEW | 411 L1 match test cases |
-| `docs/expert-extension/EXPERT-EXTENSION-SPRINT-A-REPORT.md` | NEW | This report |
+| `confluence/memory/lessons/EXPERT-EXTENSION-SPRINT-A-REPORT.md` | NEW | This report |
 
 **No production code changed.** Test-only delivery.
 
