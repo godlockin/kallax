@@ -303,8 +303,8 @@ Subsequent turns: 0 tokens (cached in context)
 
 ## Related
 
-- [EPIC-016-I: On-Demand Discovery Mechanism](../epics/EPIC-016-I.md) -- Design doc
-- [ADR-016-A: MCP Server Lazy Loading](./ADR-016-A-mcp-lazy-loading.md) -- Companion ADR
-- [EPIC-016-F: Skill Metadata Schema](../epics/EPIC-016-F.md) -- Implementation spec
+- `../epics/EPIC-016-I.md` -- Design doc
+- `./ADR-016-A-mcp-lazy-loading.md` -- Companion ADR
+- `../epics/EPIC-016-F.md` -- Implementation spec
 - `~/.claude/skills/kallax/metadata.json` -- Example metadata
 - `node/src/core/skill-loader.ts` -- Skill loading implementation

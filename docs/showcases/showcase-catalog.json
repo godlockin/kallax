@@ -39,8 +39,8 @@
       "id": 6,
       "title": "Decision Matrix",
       "description": "5×4=25 cells, all verified, 0 fake metrics",
-      "path": "../../docs/process/q18-decision-model.md",
-      "evidence": "docs/process/q18-decision-model.md"
+      "path": "../../docs/process/q18-decision.md",
+      "evidence": "docs/process/q18-decision.md"
     },
     {
       "id": 7,

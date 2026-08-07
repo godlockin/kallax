@@ -1,3 +1,7 @@
+> **DEPRECATED (2026-08-07, EPIC-200)**: 64→35 术语压缩历史 (v2.7.5)
+> **现代替代**: `docs/CHEATSHEET.md` + `docs/5-levels.md` + `docs/4-roles.md`
+> **保留原因**: 历史 reference, 0 删 (跟 EPIC-196 v2 1:1 archive-not-delete)
+>
 # ARCHIVED 2026-06-29: 35 术语已砍, 见 docs/CHEATSHEET.md + 5-levels.md + 4-roles.md (Q16 决策)
 # KALLAX 黑话词典 (v2.7.5, 跟"同类症状" 完整完成, 跟"诚实修正评估",配合, 跟"独立" 拍 explicit 约束,配合)
 

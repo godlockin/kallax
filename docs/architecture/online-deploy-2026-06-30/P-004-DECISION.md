@@ -1,3 +1,7 @@
+> **DEPRECATED (2026-08-07, EPIC-200)**: v3.3.0 部署决策记录 (选项 C 落地), 已归档
+> **现代替代**: `docs/ARCHITECTURE.md` §"deployment" 章节
+> **保留原因**: 历史 reference (P-004 决策 trace), 0 删 (跟 EPIC-196 v2 1:1 archive-not-delete)
+>
 # P-004 DECISION: 保留 nested dir (选项 C 落地, 配合 v3.5.0 现状 1:1)
 
 > **拍板**: 决策者 2026-07-01 拍 A 选项 C (保留 nested dir + 显式 mark 历史 reference)

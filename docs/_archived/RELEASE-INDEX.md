@@ -12,21 +12,21 @@
 
 | Release | 主 release doc | spec | LESSONS-LEARNED | evidence |
 |---------|---------------|------|----------------|----------|
-| **v3.5.0** (实战 eket 1 次) | [V350-RELEASE-2026-06-30.md](./V350-RELEASE-2026-06-30.md) | [spec](../docs/superpowers/specs/2026-06-30-v350-eket-parity-实战-design.md) | [v350-实战-eket-1次-2026-06-30.md](../confluence/decisions/v350-实战-eket-1次-2026-06-30.md) | [evidence/v3.5.0/](../evidence/v3.5.0/) |
-| **v3.4.0** (21 release 累计 + eket parity 1 项) | (v340-21-release-eket-parity-2026-06-30.md 在 confluence/) | [v340 spec](../docs/superpowers/specs/2026-06-30-v340-21-release-eket-parity-design.md) | [v340 LESSONS](../confluence/decisions/v340-21-release-eket-parity-2026-06-30.md) | [evidence/v3.4.0/](../evidence/v3.4.0/) |
+| **v3.5.0** (实战 eket 1 次) | [V350-RELEASE-2026-06-30.md](./V350-RELEASE-2026-06-30.md) | `../docs/superpowers/specs/2026-06-30-v350-eket-parity-实战-design.md` | `../confluence/decisions/v350-实战-eket-1次-2026-06-30.md` | [evidence/v3.5.0/](../evidence/v3.5.0/) |
+| **v3.4.0** (21 release 累计 + eket parity 1 项) | (v340-21-release-eket-parity-2026-06-30.md 在 confluence/) | `../docs/superpowers/specs/2026-06-30-v340-21-release-eket-parity-design.md` | `../confluence/decisions/v340-21-release-eket-parity-2026-06-30.md` | [evidence/v3.4.0/](../evidence/v3.4.0/) |
 | **v3.3.0** (A1+A2+B+C+E 根治 + eket 对齐) | (docs/_archived/ 或 confluence/decisions/15629cd + 03c0e7f) | — | — | — |
-| **v3.2.0** (rtk + caveman + U-002 重写 4 DEPRECATED) | (RTK-CAVEMAN-KALLAX-2026-06-29.md) | [rtk-caveman spec](../docs/superpowers/specs/2026-06-29-rtk-caveman-kallax-integration-design.md) | — | [evidence/v3.2.0/](../evidence/v3.2.0/) |
-| **v3.1.0** (16 hotfix + Iter 12 不删) | [RELEASE-v3.1.0-2026-06-29.md](../confluence/decisions/RELEASE-v3.1.0-2026-06-29.md) (在 confluence/decisions/ 或 docs/_archived/) | — | [v310 LESSONS](../confluence/decisions/V310-B-REVIEW-2026-06-29.md) | — |
+| **v3.2.0** (rtk + caveman + U-002 重写 4 DEPRECATED) | (RTK-CAVEMAN-KALLAX-2026-06-29.md) | `../docs/superpowers/specs/2026-06-29-rtk-caveman-kallax-integration-design.md` | — | [evidence/v3.2.0/](../evidence/v3.2.0/) |
+| **v3.1.0** (16 hotfix + Iter 12 不删) | `../confluence/decisions/RELEASE-v3.1.0-2026-06-29.md` (在 confluence/decisions/ 或 docs/_archived/) | — | `../confluence/decisions/V310-B-REVIEW-2026-06-29.md` | — |
 | **v3.0.0** (6 武器 + Iter 11 整合) | (配合 v3.0.0 1 release 入口 doc,配合) | — | — | — |
 
 ## 5 release 累计 引用 入口 doc
 
 | 入口 doc | 用途 | 配合 v3.5.0 hotfix,配合 |
 |---------|------|---------------------|
-| [4-roles.md](./4-roles.md) (5.3K) | master + Conductor + Performer + 1+4 容量 | ✅ 跟 U-004,配合 (caveman 入口) |
-| [5-levels.md](./5-levels.md) (4.0K) | 5-Level Fact-Forcing (L1 git SHA / L2 stdout / L3 4-expert / L4 witness / L5 boundary) | ✅ 跟 S-001 / P-002,配合 |
-| [ARCHITECTURE.md](./ARCHITECTURE.md) (20.8K) | 主架构 doc (跟"独立" 拍板,配合, Iter 2 锁定, 不在本 hotfix 范围) | ⚠️ U-001 stale (P1, 下个 sprint 修) |
-| [CHEATSHEET.md](./CHEATSHEET.md) (1.7K) | 1 页 cheatsheet | ⚠️ U-001 stale (P1, 下个 sprint 修) |
+| `./4-roles.md` (5.3K) | master + Conductor + Performer + 1+4 容量 | ✅ 跟 U-004,配合 (caveman 入口) |
+| `./5-levels.md` (4.0K) | 5-Level Fact-Forcing (L1 git SHA / L2 stdout / L3 4-expert / L4 witness / L5 boundary) | ✅ 跟 S-001 / P-002,配合 |
+| `./ARCHITECTURE.md` (20.8K) | 主架构 doc (跟"独立" 拍板,配合, Iter 2 锁定, 不在本 hotfix 范围) | ⚠️ U-001 stale (P1, 下个 sprint 修) |
+| `./CHEATSHEET.md` (1.7K) | 1 页 cheatsheet | ⚠️ U-001 stale (P1, 下个 sprint 修) |
 | [RTK-CAVEMAN-KALLAX-2026-06-29.md](./RTK-CAVEMAN-KALLAX-2026-06-29.md) (3.5K) | rtk + caveman + KALLAX 整合 doc | ✅ 跟 U-004 / P-005,配合 (caveman README) |
 | [V350-RELEASE-2026-06-30.md](./V350-RELEASE-2026-06-30.md) (3.0K) | v3.5.0 release 整合 | ✅ 跟 U-003 自打脸,配合 (ERRATA 段 待 加) |
 

@@ -1,3 +1,7 @@
+> **DEPRECATED (2026-08-07, EPIC-200)**: v2.0.7 8 Gap 修复 design, v3.x 已 1:1 落地
+> **现代替代**: `docs/ARCHITECTURE.md` (主架构) + `confluence/_archived/KARPATHY-VS-KALLAX-2026-06-27.md` (gap 分析历史)
+> **保留原因**: 历史 reference, 0 删 (跟 EPIC-196 v2 1:1 archive-not-delete)
+>
 # KALLAX v2.0.7 — 8 Gap 修复 Design (跟"同类症状",配合, 跟"诚实修正评估",配合, 跟"独立" 拍 explicit 约束,配合)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.

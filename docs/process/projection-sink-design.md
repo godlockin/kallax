@@ -160,7 +160,7 @@ function sanitizeForPublic(output: ProjectedOutput): PublicOutput {
 
 ## Security Rules for Projection Sinks
 
-**From [EPIC-163 Public/Private Boundary](../public-private-boundary.md)**:
+**From `../public-private-boundary.md`**:
 
 | Field Type | Private | Public-Safe |
 |------------|---------|-------------|
@@ -187,6 +187,6 @@ Projection sinks integrate with the automation monitor (EPIC-175) via:
 ## References
 
 - [loopx interaction-pattern-catalog.md](https://github.com/godlockin/loopx/blob/main/docs/concepts/interaction-pattern-catalog.md)
-- [EPIC-163 Public/Private Boundary](../public-private-boundary.md)
-- [EPIC-166 Heartbeat Daemon](./heartbeat-daemon-2026-08-05.md)
-- [EPIC-175 Security Rules Extended](./epic-175-security-extended-2026-08-05.md)
+- `../public-private-boundary.md`
+- `./heartbeat-daemon-2026-08-05.md`
+- `./epic-175-security-extended-2026-08-05.md`

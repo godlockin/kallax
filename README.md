@@ -117,7 +117,7 @@ KALLAX v3.0.0 是一个**多智能体协作框架 (持续演进中, v3.8.1 部�
 
 **主公拍 cells** (5 cells, 不可 AI 自主): L4 全部 4 个 Performer sub-roles + L4 Conductor (跨 subagent 独立)
 
-**详细 SOP**: [docs/process/q18-decision-model.md](docs/process/q18-decision-model.md) (543 行)
+**详细 SOP**: `docs/process/q18-decision-model.md` (543 行)
 
 ---
 
@@ -402,8 +402,8 @@ bash tests/integration/decision-matrix-test.sh
 - [Q18 决策模型 (1:1 锁定 law)](scripts/permission/decision-matrix.sh)
 - [CLAUDE.md (1.1KB cold start)](CLAUDE.md)
 - [AGENTS.md](AGENTS.md)
-- [KALLAX v3.5.0 Release Notes](confluence/decisions/RELEASE-v3.5.0-2026-06-29.md)
-- [KALLAX v3.7.0 LESSONS](confluence/decisions/LESSONS-LEARNED-v3.7.0-2026-07-01.md)
+- `confluence/decisions/RELEASE-v3.5.0-2026-06-29.md`
+- `confluence/decisions/LESSONS-LEARNED-v3.7.0-2026-07-01.md`
 - [CHANGELOG.md](CHANGELOG.md)
 
 ---

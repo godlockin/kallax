@@ -248,4 +248,4 @@ export class WorktreeManager {
 ## 参考
 
 - [架构经验教训](../research/architecture-lessons-learned.md)
-- [Ticket Schema - File Scope](../../jira/schemas/ticket-schema.md#file-scope-规则-kallax-新增)
+- `../../jira/schemas/ticket-schema.md#file-scope-规则-kallax-新增`

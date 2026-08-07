@@ -436,6 +436,6 @@ This document outlines KALLAX's public coordination strategy, leveraging lessons
 ## References
 
 - [LoopX GitHub](https://github.com/loopx-ai/loopx)
-- [EPIC-172 Decision Record](../confluence/decisions/epic-172-public-coord-2026-08-05.md)
-- [Community README](../docs/community/README.md)
-- [Growth Loop](../docs/community/growth-loop.md)
+- [EPIC-172 Decision Record](../decisions/epic-172-public-coord-2026-08-05.md)
+- [Community README](../../docs/community/README.md)
+- [Growth Loop](../../docs/community/growth-loop.md)
