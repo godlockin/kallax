@@ -28,7 +28,12 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+# KALLAX_ROOT 优先 git top-level (worktree-safe), fallback 到 scripts/../..
+if command -v git >/dev/null 2>&1 && git -C "$SCRIPT_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  KALLAX_ROOT="$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel)"
+else
+  KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+fi
 
 # Constants
 readonly TOTAL_STAGES=6
