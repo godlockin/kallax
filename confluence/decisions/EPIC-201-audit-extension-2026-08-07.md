@@ -9,7 +9,7 @@
 **之前**: 仅扫 .md 文件 → 漏掉 experts HTML, showcase-catalog.json, evidence .txt, scripts .sh
 **之后**: 支持 .md / .html / .json / .sh / .cjs / .js
 **Pattern 改进**:
-- markdown: `[text](path.md)`
+- markdown: `` `path.md` ``
 - HTML: `href="path.md"`
 - JSON: `"key": "path.md"`
 - 收紧: ref 必须含 `/` 或 `.md`/`.txt` 结尾, 不含空格 (避免中英文本误报)

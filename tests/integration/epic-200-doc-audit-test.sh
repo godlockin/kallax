@@ -60,9 +60,12 @@ for f in "${SAMPLE_HEADERS[@]}"; do
   fi
 done
 
-# 4. 0 stale ref 验证
-STALE_COUNT=$(node scripts/check-internal-refs.cjs 2>&1 | grep "FAIL" | head -1 | awk '{print $2}')
-if [ "$STALE_COUNT" = "0" ] || [ -z "$STALE_COUNT" ]; then
+# 4. 0 stale ref 验证 (修复 EPIC-202-A: 之前 grep "FAIL" | awk '{print $2}' 在非 --json 输出下假 PASS)
+STALE_COUNT=$(node scripts/check-internal-refs.cjs --json 2>&1 | jq -r '.stale_refs // empty')
+if [ -z "$STALE_COUNT" ]; then
+  echo "  [FAIL] stale check 不可解析 (jq 输出为空)"
+  FAIL=$((FAIL+1))
+elif [ "$STALE_COUNT" = "0" ]; then
   echo "  [OK] 0 stale refs (check-internal-refs.cjs)"
   PASS=$((PASS+1))
 else

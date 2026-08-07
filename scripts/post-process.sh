@@ -65,7 +65,8 @@ readonly STEP_LABELS=(
 # 文件路径 (Step 5/6/7/9 验证)
 # 注 (EPIC-200, 2026-08-07): 下面 3 个 path 是 v3.0-v3.7 era 历史 ref,
 # 当前文件已不存在 (GLOSSARY 64→35 压缩, PHASE-INDEX 归 confluence/decisions/, ACCUMULATED 删).
-# 保留 var 跟 if [ -f ] 检查是为了 fail-soft: 文件不存在时 step 仍 graceful 跳过.
+# 注 (EPIC-202-A, 2026-08-07): 脚本实际 fail-fast (set -euo pipefail, 失败 step `|| true` 兜底).
+# 设计意图 = dry-run mode 默认 OK, --apply 才真执行; 单 step 失败不 abort 整个 step sequence (跟 11 步骤 1:1 兼容).
 readonly GLOSSARY_FILE="docs/KALLAX-GLOSSARY.md"  # DEPRECATED path, v3.8+ 不存在
 readonly PHASE_INDEX_FILE="docs/PHASE-INDEX.md"    # DEPRECATED path, v3.8+ 不存在
 readonly ACCUMULATED_FILE="confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md"  # DEPRECATED, v3.32 删
