@@ -108,20 +108,20 @@ Every PR must pass 5-Level Verify before merge.
 
 | Doc | Description |
 |-----|-------------|
-| [README.md](../README.md) | Chinese version (主文档) |
+| `../README.md` | Chinese version (主文档) |
 | [docs/showcases/](showcases/) | 7 case showcase catalog |
 | [docs/i18n/](i18n/) | Internationalization sync rules |
 | [docs/community/](community/) | Community channels (Lark/WeChat/GitHub) |
 | [docs/sponsor/](sponsor/) | Sponsorship information |
-| [CONTRIBUTING.md](../CONTRIBUTING.md) | Contribution guidelines |
-| [SECURITY.md](../SECURITY.md) | Security policy |
+| `../CONTRIBUTING.md` | Contribution guidelines |
+| `../SECURITY.md` | Security policy |
 
 ### Quick Links
 
-- [Architecture](../docs/architecture/ARCHITECTURE.md)
-- [Process](../docs/process.md)
-- [CLI Reference](../docs/reference/cli-reference-2026-06-19.md)
-- [Phase Index](../docs/phase-index.md)
+- `../docs/architecture/ARCHITECTURE.md`
+- `../docs/process.md`
+- `../docs/reference/cli-reference-2026-06-19.md`
+- `../docs/phase-index.md`
 
 ---
 
@@ -154,7 +154,7 @@ See [docs/showcases/](showcases/) for details.
 
 ## Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](../CONTRIBUTING.md) for:
+We welcome contributions! See `../CONTRIBUTING.md` for:
 
 - Development environment setup
 - Branch strategy (4-branch flow)
@@ -358,4 +358,4 @@ Legend:
 | v3.32.5 | 2026-08-03 | EPIC-160: install.sh Omnibus |
 | v3.32.4 | 2026-08-02 | EPIC-159: CLAUDE.md ≤200 lines |
 
-Full changelog: [CHANGELOG.md](../CHANGELOG.md)
+Full changelog: `../CHANGELOG.md`

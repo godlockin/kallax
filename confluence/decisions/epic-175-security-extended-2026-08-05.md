@@ -106,5 +106,5 @@
 
 - [loopx AGENTS.md Security Rules](https://github.com/godlockin/loopx/blob/main/AGENTS.md)
 - [loopx docs/reference/extensions.md](https://github.com/godlockin/loopx/blob/main/docs/reference/extensions.md)
-- [EPIC-163 Public/Private Boundary](confluence/decisions/loopx-vs-kallax-governance-gap-2026-08-05.md)
-- [EPIC-166 Heartbeat Daemon](confluence/decisions/epic-166-daemon-runtime-verification-2026-08-05.md)
+- `loopx-vs-kallax-governance-gap-2026-08-05.md`
+- [EPIC-166 Heartbeat Daemon](epic-166-daemon-runtime-verification-2026-08-05.md)

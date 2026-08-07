@@ -1,3 +1,7 @@
+> **DEPRECATED (2026-08-07, EPIC-200)**: v3.1-v3.5 release 索引, GitHub Releases tab 提供更好体验
+> **现代替代**: GitHub Releases (https://github.com/godlockin/kallax/releases) + `CHANGELOG.md`
+> **保留原因**: 历史 reference, 0 删 (跟 EPIC-196 v2 1:1 archive-not-delete)
+>
 # KALLAX 5 release 累计 INDEX (跟 B 组 U-002 从根源修复,配合)
 
 > v3.5.0 hotfix (跟 B 组 Attack Review U-002 从根源修复,配合, 跟 V310-B U-002 配合):
@@ -8,11 +12,11 @@
 
 | Release | 主 release doc | spec | LESSONS-LEARNED | evidence |
 |---------|---------------|------|----------------|----------|
-| **v3.5.0** (实战 eket 1 次) | [V350-RELEASE-2026-06-30.md](./V350-RELEASE-2026-06-30.md) | [spec](../docs/superpowers/specs/2026-06-30-v350-eket-parity-实战-design.md) | [v350-实战-eket-1次-2026-06-30.md](../confluence/decisions/v350-实战-eket-1次-2026-06-30.md) | [evidence/v3.5.0/](../evidence/v3.5.0/) |
-| **v3.4.0** (21 release 累计 + eket parity 1 项) | (v340-21-release-eket-parity-2026-06-30.md 在 confluence/) | [v340 spec](../docs/superpowers/specs/2026-06-30-v340-21-release-eket-parity-design.md) | [v340 LESSONS](../confluence/decisions/v340-21-release-eket-parity-2026-06-30.md) | [evidence/v3.4.0/](../evidence/v3.4.0/) |
+| **v3.5.0** (实战 eket 1 次) | [V350-RELEASE-2026-06-30.md](./V350-RELEASE-2026-06-30.md) | [spec](../docs/superpowers/specs/2026-06-30-v350-eket-parity-实战-design.md) | `../confluence/decisions/v350-实战-eket-1次-2026-06-30.md` | [evidence/v3.5.0/](../evidence/v3.5.0/) |
+| **v3.4.0** (21 release 累计 + eket parity 1 项) | (v340-21-release-eket-parity-2026-06-30.md 在 confluence/) | [v340 spec](../docs/superpowers/specs/2026-06-30-v340-21-release-eket-parity-design.md) | `../confluence/decisions/v340-21-release-eket-parity-2026-06-30.md` | [evidence/v3.4.0/](../evidence/v3.4.0/) |
 | **v3.3.0** (A1+A2+B+C+E 根治 + eket 对齐) | (docs/_archived/ 或 confluence/decisions/15629cd + 03c0e7f) | — | — | — |
-| **v3.2.0** (rtk + caveman + U-002 重写 4 DEPRECATED) | (RTK-CAVEMAN-KALLAX-2026-06-29.md) | [rtk-caveman spec](../docs/superpowers/specs/2026-06-29-rtk-caveman-kallax-integration-design.md) | — | [evidence/v3.2.0/](../evidence/v3.2.0/) |
-| **v3.1.0** (16 hotfix + Iter 12 不删) | [RELEASE-v3.1.0-2026-06-29.md](../confluence/decisions/RELEASE-v3.1.0-2026-06-29.md) (在 confluence/decisions/ 或 docs/_archived/) | — | [v310 LESSONS](../confluence/decisions/V310-B-REVIEW-2026-06-29.md) | — |
+| **v3.2.0** (rtk + caveman + U-002 重写 4 DEPRECATED) | (RTK-CAVEMAN-KALLAX-2026-06-29.md) | `../docs/superpowers/specs/2026-06-29-rtk-caveman-kallax-integration-design.md` | — | [evidence/v3.2.0/](../evidence/v3.2.0/) |
+| **v3.1.0** (16 hotfix + Iter 12 不删) | `../confluence/decisions/RELEASE-v3.1.0-2026-06-29.md` (在 confluence/decisions/ 或 docs/_archived/) | — | `../confluence/decisions/V310-B-REVIEW-2026-06-29.md` | — |
 | **v3.0.0** (6 武器 + Iter 11 整合) | (配合 v3.0.0 1 release 入口 doc,配合) | — | — | — |
 
 ## 5 release 累计 引用 入口 doc

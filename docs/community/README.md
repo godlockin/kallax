@@ -69,7 +69,7 @@ What are you trying to achieve?
 
 ### Community Rules
 
-1. **Be respectful** — Follow the [Code of Conduct](CODE_OF_CONDUCT.md)
+1. **Be respectful** — Follow the `CODE_OF_CONDUCT.md`
 2. **Stay on topic** — Keep discussions relevant to KALLAX
 3. **No spam** — Self-promotion requires prior approval
 4. **Help others** — Share your knowledge and experience
@@ -77,7 +77,7 @@ What are you trying to achieve?
 
 ## Contributing
 
-See [CONTRIBUTING.md](../CONTRIBUTING.md) for:
+See `../CONTRIBUTING.md` for:
 
 - Development setup
 - Code standards
@@ -101,18 +101,18 @@ Share your KALLAX workflow and get featured on our [showcase page](../web/showca
 ## Resources
 
 - [GitHub Repository](https://github.com/your-org/kallax)
-- [Documentation](../README.md)
+- `../README.md`
 - [Growth Loop Strategy](growth-loop.md)
-- [Sponsor Program](sponsor/README.md)
+- `sponsor/README.md`
 
 ## Getting Started
 
 New to KALLAX? Start here:
 
-1. [Quick Start Guide](../docs/getting-started.md)
-2. [Architecture Overview](../docs/architecture.md)
+1. `../docs/getting-started.md`
+2. `../docs/architecture.md`
 3. [Examples Repository](https://github.com/your-org/kallax-examples)
-4. [Video Tutorials](./tutorials/README.md)
+4. `./tutorials/README.md`
 
 ## Stay Connected
 

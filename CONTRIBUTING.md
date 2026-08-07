@@ -323,7 +323,7 @@ bash scripts/check-private-context.sh
 - Raw logs（完整 stack trace）
 - Sub-agent prompts
 
-详见 [docs/public-private-boundary.md](docs/public-private-boundary.md)。
+详见 `docs/public-private-boundary.md`。
 
 ---
 

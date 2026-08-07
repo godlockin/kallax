@@ -1,6 +1,6 @@
 # L3 — 全局模式 (Global Patterns)
 
-> **Layer**: **L3** 全局模式 (Global Patterns) — 跟 [LAYERS.md](../LAYERS.md),配合
+> **Layer**: **L3** 全局模式 (Global Patterns) — 跟 `../LAYERS.md`,配合
 > **升级路径**: L2 (confluence/memory/lessons/) 跨 release 累计 ≥ 3 → **L3** (本目录, patterns/) → L4 (confluence/memory/research/) PHASE review 升级
 > **已存在 files** (跟"借鉴方法论而非直接复制代码",配合, 0 重写):
 > - `isolation-strategy.md` — Worktree + File Scope 并行隔离策略
@@ -18,4 +18,4 @@
 - ✅ Master 拍板 (跟 PROCESS.md:25-26,配合)
 - ✅ 写 `confluence/memory/patterns/{pattern-name}.md` + frontmatter layer: L3
 
-**Rule 引用**: Rule 5 (DRY) + Rule 6 (经验沉淀) — [CLAUDE.md](../../CLAUDE.md)
+**Rule 引用**: Rule 5 (DRY) + Rule 6 (经验沉淀) — `../../CLAUDE.md`

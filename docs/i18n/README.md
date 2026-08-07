@@ -99,6 +99,6 @@ After machine translation, verify:
 
 ## Links
 
-- [README.md (Chinese)](../README.md)
-- [README.en.md (English)](README.en.md)
+- `../README.md`
+- `README.en.md`
 - [Community (Chinese)](../community/)

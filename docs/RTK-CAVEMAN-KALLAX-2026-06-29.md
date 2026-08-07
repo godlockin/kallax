@@ -1,3 +1,7 @@
+> **DEPRECATED (2026-08-07, EPIC-200)**: v3.2.0 rtk + caveman 整合, 历史版本
+> **现代替代**: `docs/cli-rule.md` (跟 CLAUDE.md §1 联合) + `docs/token-economy.md`
+> **保留原因**: 历史 reference, 0 删 (跟 EPIC-196 v2 1:1 archive-not-delete)
+>
 # rtk + caveman 跟 KALLAX v3.2.0 整合 (跟"同类症状" 完整完成)
 
 > 跟决策者 2026-06-29 拍板"搜 rtk + caveman 装 跟 实战 配合 kallax" explicit 授权,配合, 跟"同类症状" 完整完成, 跟"诚实修正评估",配合, 跟"独立" 拍 explicit 约束,配合, 跟"反哺框架" 战略 一致, 跟"翻篇&精进" 战略 一致, 跟"流程逻辑 > 扩充配置" 战略 一致.

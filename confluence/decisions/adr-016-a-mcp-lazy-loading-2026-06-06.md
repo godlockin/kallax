@@ -230,8 +230,8 @@ Turn 3: no MCP needed → 0 tokens
 
 ## Related
 
-- [EPIC-016-B: MCP Registry Enhancement](../epics/EPIC-016-B.md) -- Implementation spec
-- [EPIC-016-I: On-Demand Discovery Mechanism](../epics/EPIC-016-I.md) -- Design doc
-- [ADR-016-B: Skill Metadata On-Demand Discovery](./ADR-016-B-skill-metadata-discovery.md) -- Companion ADR
+- `../epics/EPIC-016-B.md` -- Implementation spec
+- `../epics/EPIC-016-I.md` -- Design doc
+- `./ADR-016-B-skill-metadata-discovery.md` -- Companion ADR
 - `.kallax/mcp.json` -- Project-level MCP configuration
 - `node/src/core/mcp-registry.ts` -- MCP server registry implementation

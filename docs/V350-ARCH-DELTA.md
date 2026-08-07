@@ -1,3 +1,7 @@
+> **DEPRECATED (2026-08-07, EPIC-200)**: v3.5.0 architecture delta, 已整合到 main ARCHITECTURE.md
+> **现代替代**: `docs/ARCHITECTURE.md` (主架构)
+> **保留原因**: 历史 reference, 0 删 (跟 EPIC-196 v2 1:1 archive-not-delete)
+>
 # v3.5.0 Architecture Delta (跟 B 组 U-001 从根源修复,配合)
 
 > **跟主约束联合**: ❌ 不改 docs/ARCHITECTURE.md / docs/CHEATSHEET.md / CLAUDE.md (Iter 2 锁定)

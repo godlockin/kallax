@@ -60,7 +60,7 @@
 
 **Solution**: 5×4=25 cells, all verified
 
-**Evidence**: `docs/process/q18-decision-model.md`
+**Evidence**: `docs/process/q18-decision.md`
 
 ---
 
@@ -84,7 +84,7 @@
     {"id": 3, "title": "Multi-Agent Collaboration", "path": "../../scripts/conductor/"},
     {"id": 4, "title": "Hash-Chain Audit Trail", "path": "../../scripts/verify/hash-chain.sh"},
     {"id": 5, "title": "Worktree Isolation", "path": ".worktrees/"},
-    {"id": 6, "title": "Decision Matrix", "path": "../../docs/process/q18-decision-model.md"},
+    {"id": 6, "title": "Decision Matrix", "path": "../../docs/process/q18-decision.md"},
     {"id": 7, "title": "Skill Plugin System", "path": "../../.claude/skills/"}
   ]
 }
