@@ -1,5 +1,9 @@
 # KALLAX 5 release 累计 INDEX (跟 B 组 U-002 从根源修复,配合)
 
+> **DEPRECATED (2026-08-07, EPIC-199)**: v3.1-v3.5 release 索引, GitHub Releases tab 提供更好体验。
+> **现代替代**: GitHub Releases (https://github.com/godlockin/kallax/releases) + `CHANGELOG.md`
+> **保留原因**: 历史 reference (evidence 路径引用), 0 删 (跟 EPIC-196 v2 1:1 archive-not-delete)
+
 > v3.5.0 hotfix (跟 B 组 Attack Review U-002 从根源修复,配合, 跟 V310-B U-002 配合):
 > 5 release 累计 release doc 散落 (V350 / V340 / V330 / V320 / V310 / V300), 跟踪困难.
 > 本 INDEX 给 user 1 页入口 (配合 v3.1.0 P-006 "12 Operational Summaries" 模式 1:1).

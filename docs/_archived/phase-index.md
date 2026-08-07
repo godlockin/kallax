@@ -1,5 +1,9 @@
 # KALLAX PHASE Review 索引 (跟 KALLAX-GLOSSARY.md 模式 一致, 跟"同类症状" 完整完成)
 
+> **DEPRECATED (2026-08-07, EPIC-199)**: 内容为 v2.7.4 era, 引用不存在的 KALLAX-GLOSSARY.md, 流程过时。
+> **现代替代**: `confluence/decisions/` (L1 SoT) + `confluence/memory/lessons/` (L2 lessons)
+> **保留原因**: 历史 reference, 0 删 (跟 EPIC-196 v2 1:1 archive-not-delete)
+
 > **跟"同类症状",配合, 跟"反哺框架" 战略 一致, 跟"诚实修正评估",配合, 跟"独立" 拍 explicit 约束,配合**
 
 ## 🆕 新手 导引 (跟"反哺框架" 战略,配合, 跟 P1-2,配合 立刻 fix)

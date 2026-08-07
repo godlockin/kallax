@@ -18,7 +18,7 @@
 bash scripts/check-anti-patterns.sh 2>&1 | grep -A 10 "Anti-Pattern 4"
 # [WARN] Found 8 hardcoded /Users/ in docs (consider $HOME or relative)
 # ./CHANGELOG.md
-# ./docs/expert-extension/EXPERT-EXTENSION-SPRINT-A-REPORT.md
+# ./confluence/memory/lessons/EXPERT-EXTENSION-SPRINT-A-REPORT.md
 # ./jira/tickets/EPIC-057-C/implementation-plan.md
 # ./jira/tickets/EPIC-057-D/pass-report-EPIC-057-D.md
 # ./jira/tickets/EPIC-057-B/implementation-plan.md
@@ -39,7 +39,7 @@ bash scripts/check-anti-patterns.sh 2>&1 | grep -A 10 "Anti-Pattern 4"
 | 9 | `jira/tickets/EPIC-057-B/implementation-plan.md:19` | `/Users/chenchen/.opencode/bin/opencode` | 工具 binary 实测 |
 | 10 | `jira/tickets/EPIC-057-C/implementation-plan.md:40` | `/Users/chenchen/.opencode/bin/opencode` | 工具 binary 实测 |
 
-**`docs/expert-extension/EXPERT-EXTENSION-SPRINT-A-REPORT.md` + `jira/tickets/EPIC-057-D/pass-report-EPIC-057-D.md`** 包含 KALLAX_TEST_HOME 跟 `KALLAX_TEST_HOME: /Users/chenchen` 路径, 跟 baseline 对照验证 0 NEW.
+**`confluence/memory/lessons/EXPERT-EXTENSION-SPRINT-A-REPORT.md` + `jira/tickets/EPIC-057-D/pass-report-EPIC-057-D.md`** 包含 KALLAX_TEST_HOME 跟 `KALLAX_TEST_HOME: /Users/chenchen` 路径, 跟 baseline 对照验证 0 NEW.
 
 ---
 
@@ -115,7 +115,7 @@ bash scripts/check-anti-patterns.sh 2>&1 | grep -A 10 "Anti-Pattern 4"
 
 | # | AC | 状态 | 证据 |
 |---|----|------|------|
-| 1 | `docs/refactor/EPIC-065-users-paths-cleanup-2026-06-25.md` exists | ✅ | `docs/refactor/EPIC-065-users-paths-cleanup-2026-06-25.md:1` (跟 baseline,0 NEW) |
+| 1 | `confluence/memory/lessons/EPIC-065-users-paths-cleanup-2026-06-25.md` exists | ✅ | `confluence/memory/lessons/EPIC-065-users-paths-cleanup-2026-06-25.md:1` (跟 baseline,0 NEW) |
 | 2 | Documents 10 /Users/ paths 从根源修复 | ✅ | §1 10 /Users/ paths 累计 table (跟 `confluence/decisions/1-ticket-1-subagent-serial-validation-2026-06-25.md:248` 对照验证) |
 | 3 | 配合 EPIC-061-A mode,配合 (1 票 1 验证 baseline) | ✅ | §2 配合 EPIC-061-A "1 票 1 验证 baseline" 模式,配合 (跟 baseline,0 NEW) |
 | 4 | 跟 baseline,0 NEW | ✅ | §3.3 baseline 0 NEW 验证 table (6/6 项 0 NEW) |

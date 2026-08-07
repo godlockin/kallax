@@ -1,5 +1,9 @@
 # Karpathy 4 大核心 vs KALLAX 23 Rule 对比 (跟"同类症状",配合, 跟"诚实修正评估",配合, 跟"独立" 拍 explicit 约束,配合, 跟"反哺框架" 战略 一致, 跟"翻篇&精进" 战略 一致, 跟"流程逻辑 > 扩充配置" 战略 一致)
 
+> **DEPRECATED (2026-08-07, EPIC-199)**: v3.0 era 8 Gap 分析, Karpathy 引用版本可能已过期。
+> **现代替代**: `docs/ARCHITECTURE.md` + `confluence/decisions/kallax-timeline-2026-08-07.md`
+> **保留原因**: 历史 reference, 0 删 (跟 EPIC-196 v2 1:1 archive-not-delete)
+
 > 跟决策者 2026-06-27 拍板"对比 Karpathy 文档 vs KALLAX" explicit 授权,配合. 跟 17 release + 23 Rule + 5 default + 5 extended 累计,配合.
 
 ## 1. 5 expert 评估 (跟"同类症状",配合, 跟"诚实修正评估",配合, 跟"独立" 拍 explicit 约束,配合)

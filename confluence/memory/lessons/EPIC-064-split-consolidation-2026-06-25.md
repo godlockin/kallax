@@ -170,7 +170,7 @@ node/src/core/
 
 | AC | Status | Evidence |
 |----|--------|----------|
-| **AC1**: docs/refactor/EPIC-064-split-consolidation-2026-06-25.md 存在 | ✅ | 本文件 |
+| **AC1**: confluence/memory/lessons/EPIC-064-split-consolidation-2026-06-25.md 存在 | ✅ | 本文件 |
 | **AC2**: 跟 raft.rs + expert-queue + brief-inference Rule 8 拆分 模式,配合 | ✅ | §1 + §2 + §3 + §4 (3 cases 配合) |
 | **AC3**: 跟 baseline,0 NEW | ✅ | §6 (0 增 Rule, 0 增 命令, 0 增 阈值) |
 | **AC4**: 跟"翻篇&精进" 战略,0 简单 记录 | ✅ | §6 (0 强制 升级, 1 拍 explicit 拍板) |
