@@ -28,44 +28,49 @@ function walk(dir) {
 }
 
 const allFiles = new Set();
-for (const d of ['docs', 'confluence']) {
+for (const d of ['docs', 'confluence', 'web']) {
   for (const f of walk(d)) allFiles.add(f);
 }
-// 根目录所有文件 (.md, .txt)
+// 根目录 .md / .txt / .json / .html
 for (const f of readdirSync('.')) {
-  if (f.endsWith('.md') || f.endsWith('.txt')) allFiles.add(f);
+  if (/\.(md|txt|json|html)$/.test(f)) allFiles.add(f);
 }
 
 // 提取引用
 // 匹配 Markdown/HTML/JSON link 语法: [text](path.md) 或 [text](path.txt) 或 html href="path.md" 或 json "key":"path.md"
 // 收紧: ref 必须含 / 或 .md/.txt 结尾, 且不含空格 (避免误报中英文本)
 const mdRefPattern = /\[([^\]]*)\]\(([^)]*\.(?:md|txt)[^)]*)\)/g;
-const htmlRefPattern = /href=["']([^"']*\.(?:md|txt)[^"']*)["']/g;
+// 修复 EPIC-202-A 对抗 review: htmlRefPattern 含 backtick (fix-stale-links 输出 href="`path`" 形式)
+const htmlRefPattern = /href=["'`]([^"'`]*\.(?:md|txt)[^"'`]*)["'`]/g;
 const jsonRefPattern = /"([\w./-]+\.(?:md|txt))"/g;
 const stale = [];
 let totalRefs = 0;
 
 function checkRef(filePath, lineNum, ref) {
-  // 去锚点
-  ref = ref.replace(/#.*$/, '');
+  // 去锚点 + query string (修复 EPIC-202-A: `#?tab=active` 跟 `?query=value` 都被认作非 path 部分)
+  ref = ref.replace(/[?#].*$/, '');
   if (!ref || /^https?:\/\//.test(ref)) return;
   // 收紧: 必须看起来像路径 (含 / 或 以 .md/.txt 结尾), 不含空格
   if (!/[\w./-]+\.(?:md|txt)$/.test(ref) && !ref.includes('/')) return;
   if (/\s/.test(ref)) return;
 
   let resolved;
+  const ext = filePath.split('.').pop();
+  const isHtmlOrJson = ext === 'html' || ext === 'json';
   const srcDir = dirname(filePath);
+
   if (ref.startsWith('/')) {
     resolved = normalize(ref.slice(1));
+  } else if (isHtmlOrJson) {
+    // HTML/JSON ref 期望相对 REPO_ROOT (跟 markdown 相对 srcDir 不同).
+    // 例: web/showcase/index.html 写 `../docs/community/README.md` → docs/community/README.md
+    // 直接 normalize (保留 ../) + 去 REPO_ROOT 前缀
+    resolved = normalize(ref);
+    // 去掉前导 ../
+    while (resolved.startsWith('../')) resolved = resolved.slice(3);
   } else {
-    // 去重双前缀: 如果 ref 已含 srcDir 完整路径前缀, 直接用 ref
-    let resolved0 = normalize(join(srcDir, ref));
-    // 如果 resolved0 含双重目录 (e.g. docs/docs/), 优先检查 ref 本身
-    if (allFiles.has(normalize(ref))) {
-      resolved = normalize(ref);
-    } else {
-      resolved = resolved0;
-    }
+    // markdown 相对 srcDir
+    resolved = normalize(join(srcDir, ref));
   }
 
   totalRefs++;
@@ -100,7 +105,9 @@ function collectRefs(dir) {
       pattern.lastIndex = 0;
       let match;
       while ((match = pattern.exec(line)) !== null) {
-        const ref = match[1] || match[2];
+        // 修复 EPIC-202-A: ref 取 path 部分 (match[2] 是 (path), match[1] 是 [text])
+        // 不同 pattern 结构不同, 这里按 pattern 顺序取最后一个非空 group
+        const ref = match[2] || match[1];
         checkRef(filePath, li + 1, ref);
       }
     }
@@ -110,6 +117,7 @@ function collectRefs(dir) {
 collectRefs('docs');
 collectRefs('confluence');
 if (includeScripts) collectRefs('scripts');
+collectRefs('web');  // EPIC-202-A: web/ HTML scope 总是开启
 
 // Output
 const scopeNote = includeScripts ? ' (scope: docs+confluence+scripts[loose])' : '';

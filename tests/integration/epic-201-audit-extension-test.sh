@@ -18,10 +18,13 @@ else
   FAIL=$((FAIL+1))
 fi
 
-STALE=$(node scripts/check-internal-refs.cjs 2>&1 | grep "FAIL" | head -1 | awk '{print $2}')
-if [ -z "$STALE" ] || [ "$STALE" = "0" ]; then
+STALE=$(node scripts/check-internal-refs.cjs --json 2>&1 | jq -r '.stale_refs // empty')
+if [ "$STALE" = "0" ]; then
   echo "  [OK] A: 0 stale (docs+confluence scope)"
   PASS=$((PASS+1))
+elif [ -z "$STALE" ]; then
+  echo "  [FAIL] A: stale check 不可解析"
+  FAIL=$((FAIL+1))
 else
   echo "  [FAIL] A: $STALE stale"
   FAIL=$((FAIL+1))
