@@ -1,6 +1,6 @@
 # KALLAX Lessons Learned — 总结 + 索引
 
-> **Layer**: **L2** 项目知识 (Project Knowledge) — 跟 [LAYERS.md](../LAYERS.md),配合
+> **Layer**: **L2** 项目知识 (Project Knowledge) — 跟 `../LAYERS.md`,配合
 > **升级路径**: L1 (confluence/decisions/) → **L2** (本目录, lessons/) → L3 (confluence/memory/patterns/) 跨 release 累计
 > **目的**: 沉淀 KALLAX 多 Agent 框架跨 EPIC 教训, 统一文件名格式 + 便于搜索
 > **作者**: master (PHASE-002 整理, 决策者 2026-06-09 拍板)

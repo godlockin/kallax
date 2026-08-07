@@ -261,4 +261,4 @@ export class OutputVerifier {
 ## 参考
 
 - [架构经验教训](./architecture-lessons-learned.md)
-- [Gate Review 协议](../../template/docs/GATE-REVIEW-PROTOCOL.md)
+- `../../template/docs/GATE-REVIEW-PROTOCOL.md`

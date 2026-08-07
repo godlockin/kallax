@@ -193,6 +193,6 @@ external/
 ## References
 
 - [loopx extensions.md](https://github.com/godlockin/loopx/blob/main/docs/reference/extensions.md)
-- [EPIC-162 Skill Plugin](./skill-plugin-2026-08-05.md)
+- `./skill-plugin-2026-08-05.md`
 - [EPIC-170 Expert Plugin Complete](./skill-plugin-complete-2026-08-05.md)
-- [EPIC-175 Security Rules Extended](./epic-175-security-extended-2026-08-05.md)
+- `./epic-175-security-extended-2026-08-05.md`

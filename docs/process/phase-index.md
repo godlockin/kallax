@@ -31,14 +31,14 @@ KALLAX 文档 Single Source of Truth (SoT) — 修订前查 SoT 边界, 避免�
 
 | SoT 文件 | 内容 | 适用场景 |
 |---|---|---|
-| [CLAUDE.md](../CLAUDE.md) | **Rule SoT** — 规则/红线/必读 (Rule 1-18 + 30-31) | 改 Rule / 加红线 / 必读章节 |
-| [KALLAX-GLOSSARY.md](KALLAX-GLOSSARY.md) | **术语 SoT** — 黑话/概念/术语 (39 个, 配合 v2.0.6 升级 +5 multi-tool) | 改术语定义 / 加新黑话 |
-| [PHASE-INDEX.md](PHASE-INDEX.md) | **PHASE 文档索引** (本文档) | 引用 PHASE review / 决策文档 |
+| `../CLAUDE.md` | **Rule SoT** — 规则/红线/必读 (Rule 1-18 + 30-31) | 改 Rule / 加红线 / 必读章节 |
+| `KALLAX-GLOSSARY.md` | **术语 SoT** — 黑话/概念/术语 (39 个, 配合 v2.0.6 升级 +5 multi-tool) | 改术语定义 / 加新黑话 |
+| `PHASE-INDEX.md` | **PHASE 文档索引** (本文档) | 引用 PHASE review / 决策文档 |
 
 **修订规则**:
 - 改 Rule → 只改 CLAUDE.md (Rule SoT)
 - 改术语定义 → 只改 KALLAX-GLOSSARY.md (术语 SoT)
-- 跨 SoT 引用 → 用相对路径 + anchor link (e.g. `[CLAUDE.md Rule 16](../CLAUDE.md#16-...)`)
+- 跨 SoT 引用 → 用相对路径 + anchor link (e.g. ``../CLAUDE.md#16-...``)
 - ❌ **禁止**: 在 GLOSSARY 复制 Rule 全文, 或在 CLAUDE.md 复制术语全文
 
 **联动 ticket**: EPIC-055-A (CLAUDE.md + KALLAX-GLOSSARY.md 去重, 单一 SoT, 治 A5 重复知识, Rule 5 DRY 落地)

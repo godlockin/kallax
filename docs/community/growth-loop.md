@@ -282,6 +282,6 @@ More GitHub Stars
 
 ## Resources
 
-- [EPIC-172 Decision Record](../confluence/decisions/epic-172-public-coord-2026-08-05.md)
-- [Full Strategy Document](../confluence/research/kallax-growth-loop-2026-08-05.md)
+- `../confluence/decisions/epic-172-public-coord-2026-08-05.md`
+- `../confluence/research/kallax-growth-loop-2026-08-05.md`
 - [Community README](README.md)

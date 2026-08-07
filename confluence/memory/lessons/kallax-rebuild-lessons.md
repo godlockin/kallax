@@ -281,5 +281,5 @@ CI scan results (monthly):
 - [Background Agent Hallucination](background-agent-hallucination-2026-06-19.md)
 - [Verification Matters](verification-matters-2026-06-19.md)
 - [Isolation Strategy](../patterns/isolation-strategy.md)
-- [Degradation Strategy](../../architecture/DEGRADATION-STRATEGY.md)
-- [Framework White Paper](../../architecture/FRAMEWORK.md)
+- `../../architecture/DEGRADATION-STRATEGY.md`
+- `../../architecture/FRAMEWORK.md`

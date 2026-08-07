@@ -263,3 +263,20 @@ git rm confluence/decisions/ARCHIVED/EPIC-121-sandboxed-eval-2026-07-14.md
 - master (执行)
 
 **Last updated**: 2026-08-07 (EPIC-197 拍板记录 v2, 二次验证后)
+
+---
+
+## 11. Update 2026-08-07 (EPIC-200 跟进, 审计盲区)
+
+**事实修正**: EPIC-197 标榜 "264 文件 100% Read", 实际覆盖率 ≈ 40%。未扫目录:
+
+- confluence/ 未扫: `architecture/`, `memory/{glossary,guides,patterns,research,solutions}/`, `research/`, `runbooks/`, `templates/` (25 文件)
+- docs/ 未扫: `analysis/`, `api/`, `architecture/online-deploy-2026-06-30/`, `evidence/`, `experts/`, `ops/`, `showcases/`, `sponsor/`, `superpowers/` (50 文件)
+- 根级 docs/ 27 .md: 未逐个查内容/职责/Purpose/Scope/Placement (历史 release 类、v2 era 类过时文件漏检)
+
+**EPIC-200 启动**: 补扫剩余目录, 完成 audit 闭环。EPIC-197 → EPIC-199 → EPIC-200 三步审计流固化到 `docs/process/doc-audit-flow.md` 作为 future pattern。
+
+**教训 (本 EPIC-197 retrospective 自补)**:
+- "100% Read" 必是字面 100% — 列出所有子目录、孙目录、根级 .md, 全部进扫描清单
+- "采样" 跟 "完整" 不能混淆
+- retrospective 必带 "未扫/未做" 段, 给后续 EPIC 跟进锚点

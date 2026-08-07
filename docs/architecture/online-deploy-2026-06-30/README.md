@@ -1,3 +1,7 @@
+> **DEPRECATED (2026-08-07, EPIC-200)**: v3.3.0 部署 guide, 已被 main ARCHITECTURE.md 取代
+> **现代替代**: `docs/ARCHITECTURE.md` §"deployment" + `docs/reference/installation-2026-08-03.md`
+> **保留原因**: 历史 reference (v3.3.0 实战记录), 0 删 (跟 EPIC-196 v2 1:1 archive-not-delete)
+>
 # KALLAX v3.3.0 实际部署 + eket 对齐 1:1 (跟"同类症状",配合 从根源修复, 跟"诚实修正评估",配合, 跟"独立" 拍 explicit 约束,配合)
 
 > **决策者 2026-06-30 explicit 拍 C,配合** (跟"诚实修正评估",配合, 跟"独立" 拍 explicit 约束,配合, 跟"反哺框架" 战略 一致)

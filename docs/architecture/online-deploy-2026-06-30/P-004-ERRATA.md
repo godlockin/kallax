@@ -1,3 +1,7 @@
+> **DEPRECATED (2026-08-07, EPIC-200)**: v3.5.0 hotfix ERRATA, P-004 修订记录
+> **现代替代**: `docs/ARCHITECTURE.md` §"deployment"
+> **保留原因**: 历史 reference, 0 删 (跟 EPIC-196 v2 1:1 archive-not-delete)
+>
 # v3.5.0 hotfix P-004 ERRATA (跟 B 组 Attack Review P-004 从根源修复,配合)
 
 > 跟 B 组 P-004 从根源修复,配合, 跟 V310-B P-009 cli-reference 重复 配合, 跟 Rule 5 DRY,配合:

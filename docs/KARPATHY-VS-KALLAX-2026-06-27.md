@@ -1,3 +1,7 @@
+> **DEPRECATED (2026-08-07, EPIC-200)**: v2.0.7 8 Gap 分析 (Karpathy 4 核心对比), Rule 数已从 23 升到 36+
+> **现代替代**: `docs/ARCHITECTURE.md` + `confluence/decisions/kallax-timeline-2026-08-07.md`
+> **保留原因**: 历史 reference, 0 删 (跟 EPIC-196 v2 1:1 archive-not-delete)
+>
 # Karpathy 4 大核心 vs KALLAX 23 Rule 对比 (跟"同类症状",配合, 跟"诚实修正评估",配合, 跟"独立" 拍 explicit 约束,配合, 跟"反哺框架" 战略 一致, 跟"翻篇&精进" 战略 一致, 跟"流程逻辑 > 扩充配置" 战略 一致)
 
 > 跟决策者 2026-06-27 拍板"对比 Karpathy 文档 vs KALLAX" explicit 授权,配合. 跟 17 release + 23 Rule + 5 default + 5 extended 累计,配合.

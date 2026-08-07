@@ -1,3 +1,7 @@
+> **DEPRECATED (2026-08-07, EPIC-200)**: v3.2.0 rtk + caveman 整合 plan, 已实施
+> **现代替代**: `docs/RTK-CAVEMAN-KALLAX-2026-06-29.md` (DEPRECATED, 历史保留) + `docs/cli-rule.md`
+> **保留原因**: 历史 reference, 0 删 (跟 EPIC-196 v2 1:1 archive-not-delete)
+>
 # KALLAX v3.2.0 — rtk + caveman 整合 KALLAX Plan (跟"同类症状",配合, 跟"诚实修正评估",配合, 跟"独立" 拍 explicit 约束,配合)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.

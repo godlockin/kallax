@@ -26,7 +26,7 @@
 
 ---
 
-This document covers the **slash commands** invoked from inside the AI tool (Claude Code / opencode / Codex / Gemini). For the **CLI commands** (`kallax task claim`, `kallax conductor heartbeat`, etc.) used from a terminal, see [cli-reference.md](cli-reference.md).
+This document covers the **slash commands** invoked from inside the AI tool (Claude Code / opencode / Codex / Gemini). For the **CLI commands** (`kallax task claim`, `kallax conductor heartbeat`, etc.) used from a terminal, see `cli-reference.md`.
 
 **Source paths**:
 - Claude Code: `.claude/commands/kallax-*.sh` (executable bash scripts)
@@ -34,7 +34,7 @@ This document covers the **slash commands** invoked from inside the AI tool (Cla
 - Codex: `~/.codex/prompts/kallax-*.md`
 - Gemini: `~/.gemini/commands/kallax-*.md`
 
-**Install**: `bash scripts/install.sh --target=auto` (see [INSTALL-MULTI-TOOL.md](../guides/INSTALL-MULTI-TOOL.md))
+**Install**: `bash scripts/install.sh --target=auto` (see `../guides/INSTALL-MULTI-TOOL.md`)
 
 **Built-in help**: Every command supports `--help` / `-h` flag for in-tool usage.
 
@@ -680,7 +680,7 @@ RELATED:
 | Codex | `~/.codex/prompts/` | `.md` | `/kallax-ask "..."` |
 | Gemini | `~/.gemini/commands/` | `.md` | `/kallax-ask "..."` |
 
-**Naming 同类症状**: opencode uses `command/` (singular!) — see [KALLAX-GLOSSARY.md §8.7](../KALLAX-GLOSSARY.md#87-skillscommands-paths4-工具-路径映射-skillscommands-path-mapping).
+**Naming 同类症状**: opencode uses `command/` (singular!) — see `../KALLAX-GLOSSARY.md#87-skillscommands-paths4-工具-路径映射-skillscommands-path-mapping`.
 
 **Auto-detect priority** (跟 `install.sh --target=auto`,配合): `claude` > `opencode` > `codex` > `gemini`.
 
@@ -688,11 +688,11 @@ RELATED:
 
 ## Appendix C: Related Documentation
 
-- [cli-reference.md](cli-reference.md) — 12 CLI commands (`kallax task claim`, `kallax conductor heartbeat`, etc.)
-- [INSTALL-MULTI-TOOL.md](../guides/INSTALL-MULTI-TOOL.md) — 4-tool install guide (v2.0.6+)
-- [KALLAX-GLOSSARY.md](../KALLAX-GLOSSARY.md) — 39 terms (8.6-8.10 multi-tool,配合)
+- `cli-reference.md` — 12 CLI commands (`kallax task claim`, `kallax conductor heartbeat`, etc.)
+- `../guides/INSTALL-MULTI-TOOL.md` — 4-tool install guide (v2.0.6+)
+- `../KALLAX-GLOSSARY.md` — 39 terms (8.6-8.10 multi-tool,配合)
 - [AGENTS.md](../../AGENTS.md) — Role definitions + hard rules
-- [PROCESS.md](../../PROCESS.md) — Master 不能自己升级红线 (跟"独立" 拍 explicit,配合)
+- `../../PROCESS.md` — Master 不能自己升级红线 (跟"独立" 拍 explicit,配合)
 
 ---
 

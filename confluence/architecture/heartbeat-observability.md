@@ -437,9 +437,9 @@ du -sh .kallax/queue/
 
 ## §9. Cross-References
 
-- [docs/architecture/FRAMEWORK.md](../docs/architecture/FRAMEWORK.md) — KALLAX 架构白皮书
-- [docs/architecture/DEGRADATION-STRATEGY.md](../docs/architecture/DEGRADATION-STRATEGY.md) — 3 层降级策略设计
+- `../docs/architecture/FRAMEWORK.md` — KALLAX 架构白皮书
+- `../docs/architecture/DEGRADATION-STRATEGY.md` — 3 层降级策略设计
 - [confluence/decisions/index.md](../decisions/index.md) — 决策文档总索引
-- [confluence/decisions/EXPERT-PRIORITY-SYNTHESIS-2026-06-07.md](../decisions/EXPERT-PRIORITY-SYNTHESIS-2026-06-07.md) — 8 专家优先级综合
+- `../decisions/EXPERT-PRIORITY-SYNTHESIS-2026-06-07.md` — 8 专家优先级综合
 - [scripts/check-skill-anatomy.sh](../../scripts/check-skill-anatomy.sh) — 7 文件 KALLAX 校验 (10 项)
 - [scripts/lib/expert-invocation-queue.sh](../../scripts/lib/expert-invocation-queue.sh) — Queue 库 (跨 EPIC 复用)

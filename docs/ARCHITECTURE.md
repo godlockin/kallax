@@ -251,7 +251,7 @@ bash scripts/conductor/dispatch.sh --sub-role=coder TICKET-001 accept
 
 ## 8. Q18 决策模型 (5 levels × 4 roles = 25 cells)
 
-> **详细 SOP**: [docs/process/q18-decision-model.md](process/q18-decision-model.md) (543 行)
+> **详细 SOP**: `process/q18-decision-model.md` (543 行)
 > **对照验证**: `bash scripts/permission/decision-matrix.sh --self-test` → 25/25 PASS
 
 ### 8.1 决策模式 三档
@@ -428,7 +428,7 @@ bash tests/integration/epic-4-piece-test.sh
 - [docs/CHEATSHEET.md](CHEATSHEET.md) — 1 页 cheatsheet (27 行)
 - [docs/5-levels.md](5-levels.md) — 5 levels 实做 (143 行)
 - [docs/4-roles.md](4-roles.md) — 4 roles (181 行)
-- [docs/process/q18-decision-model.md](process/q18-decision-model.md) — Q18 决策模型 (543 行)
+- `process/q18-decision-model.md` — Q18 决策模型 (543 行)
 
 ### 12.2 docs/architecture/ 子文档 (11 个, 见 `_index.md`)
 

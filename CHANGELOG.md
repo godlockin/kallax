@@ -1477,9 +1477,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **P-004** (commit `db0775d`): web Tab 状态 localStorage 保持 (activeTab + tasksCache filter 持久化).
 
 ### A+B Review Report (Rule 6/7 EPIC 4 件套, 1:1 验证)
-- A 组 Forward: [`confluence/decisions/V310-A-REVIEW-2026-06-29.md`](confluence/decisions/V310-A-REVIEW-2026-06-29.md) (535 行, 5/5 维度 PASS: AC 合规 + 代码质量 + 5 levels 独立 + audit trust chain + check-epic-4-piece)
-- B 组 Attack: [`confluence/decisions/V310-B-REVIEW-2026-06-29.md`](confluence/decisions/V310-B-REVIEW-2026-06-29.md) (548 行, 16 findings: 4 P0 + 12 P1, 全修)
-- 7 候选 增量价值: [`confluence/decisions/V310-P1-006-VALUE-MEASUREMENT.md`](confluence/decisions/V310-P1-006-VALUE-MEASUREMENT.md) (179 行, 跟 v2.7.6 baseline 1:1 对比)
+- A 组 Forward: `confluence/decisions/V310-A-REVIEW-2026-06-29.md` (535 行, 5/5 维度 PASS: AC 合规 + 代码质量 + 5 levels 独立 + audit trust chain + check-epic-4-piece)
+- B 组 Attack: `confluence/decisions/V310-B-REVIEW-2026-06-29.md` (548 行, 16 findings: 4 P0 + 12 P1, 全修)
+- 7 候选 增量价值: `confluence/decisions/V310-P1-006-VALUE-MEASUREMENT.md` (179 行, 跟 v2.7.6 baseline 1:1 对比)
 
 ### 量化指标 (raw stdout, 0 估数)
 - 16 hotfix commits (4 P0 + 12 P1) 100% 落地
