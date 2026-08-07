@@ -86,6 +86,29 @@ cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run \
 - Rule 13 (3 模式 decision-gate): Sprint 边界触发 ASK
 - Rule 34 (Bugfix 独立复现): Sprint 内修 bug 必带 reproduction
 
+## 3.2. Rule 36 — Sprint 结束必跑 4 北极星 metric (EPIC-194, v3.34.5)
+
+**起因**: 主公 2026-08-07 拍板 (跟 EPIC-023-C 北极星打通 + EPIC-157 binding 字段联合), Sprint 结束必跑 `scripts/metrics/sprint-metrics.sh` 4 指标.
+
+**Rule (强制)**:
+1. **expert_activation_rate ≥ 5** — 每个 EPIC 必触发 ≥ 5 distinct experts (避免单点依赖)
+2. **cross_epic_reuse_rate ≥ 60%** — file_scope.includes 中 ≥ 60% 已被其他 EPIC 覆盖 (复用而非新建)
+3. **ab_hit_rate < 15%** (反向) — A+B 2-Group review 推荐 跟 final outcome 一致率 ≥ 85%
+4. **mis_dispatch_rate < 10%** — Performer 派单错率 < 10% (ticket 跨 specialization)
+
+**0 静默跳过**:
+- Sprint 结束时必跑 `bash scripts/metrics/sprint-metrics.sh --epic EPIC-XXX` 输出 4 指标
+- 4 指标全 PASS 才算 Sprint 闭环 (跟 Rule 35 Sprint 时间盒 联合)
+- 0 数据 (NO_DATA exit=2) 触发 ASK, 不接受 silent PASS
+
+**跟现有 Rule 联合 (0 增)**:
+- Rule 5 (DRY): 跨 EPIC 复用 ≥ 60% (跟 EPIC-023-C 北极星 #2 一致)
+- Rule 9 (KPI X/Y): 4 指标必带 X/Y 数字 (e.g. expert_activation=5/5)
+- Rule 13 (3 模式 decision-gate): NO_DATA 触发 ASK
+- Rule 35 (Sprint 时间盒): Sprint 结束必跑 (本 Rule 闭环)
+- EPIC-023-C 北极星 (源头)
+- EPIC-157 ticket.json binding 字段 (指标 #4 数据源)
+
 ## 4. Branch Flow Governance (EPIC-074, 主公拍板 2026-07-09)
 
 **4-branch 强制流程** (v3.10.0+ 强制, 0 容忍):

@@ -1,3 +1,23 @@
+## [v3.34.5] - 2026-08-07
+
+### Auto-generated release entry (EPIC-183)
+
+**Scope**: TBD (auto-detected from commits)
+
+#### Closed EPICs
+
+| EPIC-194 | 557a9db0 | TBD | TBD |
+
+
+#### Test results
+
+TBD (auto-detected from integration tests)
+
+#### 4-PR flow
+
+TBD (auto-detected from PR merges)
+
+---
 # Changelog
 
 All notable changes to KALLAX will be documented in this file.
