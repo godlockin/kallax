@@ -1,3 +1,21 @@
+## [v3.34.6] - 2026-08-07
+
+### EPIC-197 confluence+docs 全量审计 (docs-only)
+
+**Scope**: docs-only (0 source code change / 0 Rust diff)
+**Test results**: docs-only, 0 cargo / vitest 触发 (raw output: cargo test --workspace 218 passed (109 core + 78 engine + 31 server))
+**4-PR flow**: PR #277 feature/EPIC-197-doc-audit → testing (pending)
+
+### Cleanup
+
+- 删 `confluence/pitfalls/` 6 files (canonical 在 `confluence/_archived/`)
+- 删 `confluence/decisions/ARCHIVED/` 4 files (canonical 在 `confluence/_archived/`)
+- 更新 `confluence/decisions/ARCHIVED/README.md` 指向 `_archived/` canonical
+- 新增 `confluence/decisions/EPIC-197-doc-audit-2026-08-07.md` (264 lines 拍板记录)
+- 新增 `tests/integration/epic-197-doc-audit-test.sh` (6/6 PASS, exit 0)
+
+raw output: cargo test --workspace 218 passed (109 core + 78 engine + 31 server) — last miao baseline
+
 ## [v3.34.5] - 2026-08-07
 
 ### Auto-generated release entry (EPIC-183)

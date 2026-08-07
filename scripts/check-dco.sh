@@ -99,13 +99,17 @@ fi
 
 # Resolve cutoff SHA if grace policy engaged. Unknown SHA disables the grace
 # (treat as if no cutoff was requested) rather than failing the whole check.
+# EPIC-198: 允许多个 cutoff SHA (逗号分隔), 跟 EPIC-142 branch-flow-history 1:1
 CUTOFF_RESOLVED=""
 if [ -n "$CUTOFF_SHA" ]; then
-  if git rev-parse --verify --quiet "${CUTOFF_SHA}^{commit}" >/dev/null; then
-    CUTOFF_RESOLVED=$(git rev-parse "${CUTOFF_SHA}^{commit}")
-  else
-    echo "check-dco: --allow-pre-cutoff SHA unknown ($CUTOFF_SHA), grace disabled" >&2
-  fi
+  IFS=',' read -ra CUTOFFS <<< "$CUTOFF_SHA"
+  for c in "${CUTOFFS[@]}"; do
+    if git rev-parse --verify --quiet "${c}^{commit}" >/dev/null; then
+      CUTOFF_RESOLVED="${CUTOFF_RESOLVED} $(git rev-parse "${c}^{commit}")"
+    else
+      echo "check-dco: --allow-pre-cutoff SHA unknown ($c), grace disabled" >&2
+    fi
+  done
 fi
 
 # Enumerate non-merge commits in range (oldest first for readable output)
@@ -126,10 +130,17 @@ if [ -n "$COMMITS" ]; then
   while IFS= read -r sha; do
     [ -n "$sha" ] || continue
 
-    # Pre-cutoff skip: commit is an ancestor of the cutoff SHA (inclusive).
+    # Pre-cutoff skip: commit is an ancestor of any cutoff SHA (inclusive).
     # Silent skip — commit not counted in TOTAL/PASS/FAIL.
     if [ -n "$CUTOFF_RESOLVED" ]; then
-      if git merge-base --is-ancestor "$sha" "$CUTOFF_RESOLVED" 2>/dev/null; then
+      SKIP=0
+      for cutoff in $CUTOFF_RESOLVED; do
+        if git merge-base --is-ancestor "$sha" "$cutoff" 2>/dev/null; then
+          SKIP=1
+          break
+        fi
+      done
+      if [ "$SKIP" -eq 1 ]; then
         continue
       fi
     fi
