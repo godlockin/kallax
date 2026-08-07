@@ -63,9 +63,12 @@ readonly STEP_LABELS=(
 )
 
 # 文件路径 (Step 5/6/7/9 验证)
-readonly GLOSSARY_FILE="docs/KALLAX-GLOSSARY.md"
-readonly PHASE_INDEX_FILE="docs/PHASE-INDEX.md"
-readonly ACCUMULATED_FILE="confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md"
+# 注 (EPIC-200, 2026-08-07): 下面 3 个 path 是 v3.0-v3.7 era 历史 ref,
+# 当前文件已不存在 (GLOSSARY 64→35 压缩, PHASE-INDEX 归 confluence/decisions/, ACCUMULATED 删).
+# 保留 var 跟 if [ -f ] 检查是为了 fail-soft: 文件不存在时 step 仍 graceful 跳过.
+readonly GLOSSARY_FILE="docs/KALLAX-GLOSSARY.md"  # DEPRECATED path, v3.8+ 不存在
+readonly PHASE_INDEX_FILE="docs/PHASE-INDEX.md"    # DEPRECATED path, v3.8+ 不存在
+readonly ACCUMULATED_FILE="confluence/decisions/ACCUMULATED-LESSONS-2026-06-17.md"  # DEPRECATED, v3.32 删
 readonly CLAUDE_MD_FILE="CLAUDE.md"
 
 # Default mode: dry-run
