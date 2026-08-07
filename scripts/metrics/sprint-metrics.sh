@@ -15,6 +15,7 @@
 #   0 = all 4 metrics PASS
 #   1 = at least 1 metric FAIL (or invalid args)
 #   2 = NO_DATA on all 4 metrics (环境异常, 数据源缺失)
+#   3 = DOCS_ONLY_SKIP (docs-only EPIC, 4 指标不适用, 跟 EPIC-198 + EPIC-204 1:1)
 
 set -euo pipefail
 
@@ -73,6 +74,10 @@ EXIT CODES:
   0  All 4 metrics PASS
   1  At least 1 metric FAIL or invalid args
   2  NO_DATA on all metrics (data sources missing)
+  3  DOCS_ONLY_SKIP (--docs-only, EPIC 是 docs-only, 4 指标不适用, 跟 EPIC-198 1:1)
+
+OPTIONS (EPIC-204 新增):
+  --docs-only              Skip 4 metric computation, exit 3 (docs-only EPIC, 跟 EPIC-198 CI exempt 一致)
 EOF
 }
 
@@ -81,6 +86,7 @@ EOF
 EPIC_ID=""
 FORMAT="json"
 OUTPUT=""
+DOCS_ONLY=0
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -106,6 +112,10 @@ while [ $# -gt 0 ]; do
       ;;
     --output=*)
       OUTPUT="${1#*=}"
+      shift
+      ;;
+    --docs-only)
+      DOCS_ONLY=1
       shift
       ;;
     -h|--help)
@@ -142,7 +152,45 @@ if ! validate_epic_id "$EPIC_ID"; then
   exit 1
 fi
 
-log_info "sprint-metrics" "epic=${EPIC_ID} format=${FORMAT} output=${OUTPUT:-stdout} worktree=${WORKTREE_ROOT}"
+log_info "sprint-metrics" "epic=${EPIC_ID} format=${FORMAT} output=${OUTPUT:-stdout} worktree=${WORKTREE_ROOT} docs_only=${DOCS_ONLY}"
+
+# ─── Docs-only short-circuit (EPIC-204, 跟 EPIC-198 docs-only CI exempt 1:1) ─
+
+if [ "$DOCS_ONLY" = "1" ]; then
+  DOCS_ONLY_OUT='{"epic":"'"${EPIC_ID}"'","status":"DOCS_ONLY_SKIP","reason":"docs-only EPIC, 4 北极星指标不适用 (跟 EPIC-198 docs-only CI exempt + EPIC-203 retrospective Item 2 1:1)","metrics":[]}'
+  if [ "$FORMAT" = "markdown" ] || [ "$FORMAT" = "both" ]; then
+    DOCS_ONLY_MD="## ${EPIC_ID} — DOCS_ONLY_SKIP
+
+**Reason**: docs-only EPIC, 4 北极星指标不适用 (跟 EPIC-198 docs-only CI exempt + EPIC-203 retrospective Item 2 1:1).
+
+**Exit code**: 3 (DOCS_ONLY_SKIP)
+
+**联动**:
+- EPIC-198: docs-only PR CI exempt
+- EPIC-203 retrospective: 26 项审计 Item 2 docs-only EPIC NO_DATA 是设计
+- Rule 36: Sprint 4 指标 (docs-only EPIC 跳过, 不触发 ASK)
+"
+  fi
+  if [ -n "$OUTPUT" ]; then
+    if [ "$FORMAT" = "json" ] || [ "$FORMAT" = "both" ]; then
+      printf '%s\n' "$DOCS_ONLY_OUT" > "${OUTPUT}.json"
+      log_info "output" "path=${OUTPUT}.json"
+    fi
+    if [ "$FORMAT" = "markdown" ] || [ "$FORMAT" = "both" ]; then
+      printf '%s\n' "$DOCS_ONLY_MD" > "${OUTPUT}.md"
+      log_info "output" "path=${OUTPUT}.md"
+    fi
+  else
+    if [ "$FORMAT" = "json" ] || [ "$FORMAT" = "both" ]; then
+      printf '%s\n' "$DOCS_ONLY_OUT"
+    fi
+    if [ "$FORMAT" = "markdown" ] || [ "$FORMAT" = "both" ]; then
+      printf '%s\n' "$DOCS_ONLY_MD"
+    fi
+  fi
+  log_info "sprint-metrics" "epic=${EPIC_ID} status=DOCS_ONLY_SKIP"
+  exit 3
+fi
 
 # ─── Compute + output ────────────────────────────────────────────────────────
 
