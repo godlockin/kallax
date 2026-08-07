@@ -64,6 +64,20 @@ jobs:
           EXEMPT_LINES=$(echo "$STATS" | jq -r --arg re "$EXEMPT_REGEX" '[.files[] | select(.path | test($re)) | .additions + .deletions] | add // 0')
           NET_CHANGE=$((RAW_NET_CHANGE - EXEMPT_LINES))
 
+          # docs-only PR exempt (EPIC-198, 跟 EPIC-197 联动, 主公 2026-08-07 拍板)
+          # 拍板记录 + 决策文档 + test script 天然 ≥ 264 行, docs-only PR 不可拆
+          # 检测: 0 source code file change (.ts/.rs/.js/.sh)
+          SOURCE_REGEX='\.ts$|\.rs$|\.js$|\.sh$'
+          # gh pr view 用 'path', gh api pulls/{N}/files 用 'filename'
+          SOURCE_FILES=$(echo "$STATS" | jq --arg re "$SOURCE_REGEX" '[.files[] | select(((.path // "") + " " + (.filename // "")) | test($re))] | length')
+          DOCS_ONLY="no"
+          if [ "$SOURCE_FILES" -eq 0 ] && [ "$CHANGED_FILES" -gt 0 ]; then
+            DOCS_ONLY="yes"
+            echo "⚠️ docs-only PR detected (0 source files, $CHANGED_FILES docs files)"
+            echo "  → EPIC-198 exempt Rule of 500 (跟 EPIC-197 联动)"
+            NET_CHANGE=100
+          fi
+
           echo "PR #$PR_NUM stats:"
           echo "  Additions:         $ADDITIONS"
           echo "  Deletions:         $DELETIONS"

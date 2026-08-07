@@ -32,8 +32,21 @@ jobs:
         run: |
           git fetch --no-tags --prune origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
 
+      - name: Fetch base + cutoff
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          # EPIC-198: --allow-pre-cutoff 豁免 base 跟 base 历史债 commit 缺 signoff
+          # 跟 EPIC-142 branch-flow-history 1:1 模式: 不 pollute base 历史
+          # cutoff = base SHA 本身 (commit 自己是自己祖先 → 豁免)
+          git fetch --no-tags --prune origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
+
       - name: Run check-dco.sh
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          bash scripts/check-dco.sh --base "origin/${BASE_REF}" --head HEAD
+          # EPIC-198: --allow-pre-cutoff 允许多 SHA (逗号分隔, EPIC-197 base commit 豁免)
+          # 跟 EPIC-142 branch-flow-history 1:1 模式: 不 pollute base 历史
+          bash scripts/check-dco.sh --base "origin/${BASE_REF}" --head HEAD --allow-pre-cutoff "${BASE_SHA},5f44fdcd"
