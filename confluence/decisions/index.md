@@ -1,8 +1,9 @@
 # Architecture Decision Records (ADRs) + Decision Documents Index
 
-> **决策文档统一索引**. 分 3 类: 框架 ADR / EPIC 实施 ADR / 战略 / 调研.
+> **决策文档统一索引**. 分类组织,所有引用经 EPIC-196 (2026-08-07) 治理验证全 EXIST。
 > **路径**: `confluence/decisions/`
-> **更新规则**: 任何新决策文档 (Phase 评审, 调研, 战略) 创建时, 同步加链接到这里.
+> **归档**: `confluence/decisions/ARCHIVED/` (永久只读,详见 ARCHIVED/README.md)
+> **更新规则**: 任何新决策文档创建时, 同步加链接到这里。
 
 ---
 
@@ -10,136 +11,107 @@
 
 > 长期生效的架构决策, 跨 EPIC 不变.
 
-- [ADR-001: Three-Tier Degradation (Redis → SQLite → Filesystem)](../docs/adr/ADR-001-degradation-strategy.md) — Accepted 2026-01
-- **ADR-002: Conductor-Performer over Master-Slaver** (配合 v2.0.0 一致, file:line docs/architecture/THREE_REPO_ARCHITECTURE.md) — Accepted 2026-01 (跟 ADR-001 同源, 共享 文档)
-- **ADR-003: Saga Compensation over Simple Rollback** (配合 v2.0.0 一致, file:line node/src/core/saga-executor.ts) — Accepted 2026-01 (跟 ADR-001 同源, 共享 文档)
+- [ADR-016-A: MCP Server Lazy Loading](./adr-016-a-mcp-lazy-loading-2026-06-06.md) — Accepted 2026-06-06
+- [ADR-016-B: Skill Metadata On-Demand Discovery](./adr-016-b-skill-metadata-discovery-2026-06-06.md) — Accepted 2026-06-06
 
 ---
 
-## 1. EPIC-016 ADR (Init Performance Optimization)
+## 1. 治理规则 (Branch + Commit + Release)
 
-> Layer A 平台级优化, 60-80% token 节省.
-
-- [ADR-016-A: MCP Server Lazy Loading](./ADR-016-A-mcp-lazy-loading.md) — Proposed 2026-06-06
-- [ADR-016-B: Skill Metadata On-Demand Discovery](./ADR-016-B-skill-metadata-discovery.md) — Proposed 2026-06-06
-
----
-
-## 2. EKET 调研 (Phase 002 启动依据)
-
-> 借鉴 EKET 专家体系 + 引导式初始化, KALLAX 决定从 0 起步建 7 expert.
-
-**调研链** (短 → 长 → 战略):
-- [EKET-BORROW-METHODOLOGY-2026-06-07.md](./EKET-BORROW-METHODOLOGY-2026-06-07.md) — 短报告 (145 行), 3 块可借鉴方法论
-- [EKET-EXPERT-SYSTEM-DEEP-DIVE-2026-06-07.md](./EKET-EXPERT-SYSTEM-DEEP-DIVE-2026-06-07.md) — 深度调研 (545 行), 4-Group 4 专家原始报告 + 共识冲突 + 12 借鉴建议
-- [EKET-SURPASS-STRATEGY-2026-06-07.md](./EKET-SURPASS-STRATEGY-2026-06-07.md) — **战略合成**, 5 维独有优势 + 12 共识超越点 + EPIC-021 草案
-
-**三角关系**:
-```
-BORROW-METHODOLOGY (短)
-    ↓ 触发
-DEEP-DIVE (长)
-    ↓ 5 专家 panel
-SURPASS-STRATEGY (战略)
-    ↓ 用户决策
-EPIC-021 ticket 结构 (jira/epics/EPIC-021/)
-```
-
----
-
-## 3. Permission Model 调研 (Phase 002 下一 EPIC 候选)
-
-> EPIC-022 Permission Model v1 调研, 5 专家 review + 12 P0 fixes.
-
-- [PERMISSION-MODEL.md](./PERMISSION-MODEL.md) — 设计文档 (来源, EKET-style)
-- [PERMISSION-PANEL-RAW-2026-06-07.md](./PERMISSION-PANEL-RAW-2026-06-07.md) — 5 专家原始报告 (Architect/Backend/Security/DevOps/Product)
-- [PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md](./PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md) — **战略合成** (367 行), 12 P0 fixes + EPIC-017 scope + 6 决策点
-
-**关系**:
-```
-PERMISSION-MODEL (设计)
-    ↓ 5 专家并行
-PERMISSION-PANEL-RAW (原始)
-    ↓ Master 仲裁
-PERMISSION-MODEL-EXPERT-REVIEW (战略)
-    ↓ 用户决策 (待)
-EPIC-022 ticket 结构 (待建)
-```
-
----
-
-## 4. Workflow 规则 (CLAUDE.md Rule 6+7 配套)
-
-> 经验沉淀强制化, EPIC 交付 + PHASE 完整完成 review 机制.
-
-- [WORKFLOW-RULES-2026-06-07.md](./WORKFLOW-RULES-2026-06-07.md) — 详细 workflow + 3 模板说明 + 触发节奏
-- [EPIC-LESSONS-LEARNED-TEMPLATE.md](../templates/EPIC-LESSONS-LEARNED-TEMPLATE.md) — EPIC 经验教训模板
-- [PHASE-REVIEW-TEMPLATE.md](../templates/PHASE-REVIEW-TEMPLATE.md) — PHASE 完整完成 review 模板
-- [AB-REVIEW-TEMPLATE.md](../templates/AB-REVIEW-TEMPLATE.md) — A+B 2-Group review 记录模板
-
-**CLAUDE.md 配套规则** (在 `/CLAUDE.md`):
-- Rule 6: EPIC 交付三件套 (A+B review + 文档更新 + 经验总结)
-- Rule 7: PHASE 完整完成 review (4-Group 升级, 项目负责人审批)
-
----
-
-## 5. 实施复盘 (Postmortem)
-
-> EPIC 完成后 24h 内的复盘, 配合 EPIC 实施 commit 同一 PR.
-
-- [EPIC-016-POSTMORTEM-2026-06-07.md](./EPIC-016-POSTMORTEM-2026-06-07.md) — Init 性能 19 ticket 复盘, 7 lessons learned
-- [REVIEW-016-postresult-hang.md](./REVIEW-016-postresult-hang.md) — Q ticket 深度调研 (post-result hang)
-- [HALLUCINATION-DEVIATION-LOG.md](./HALLUCINATION-DEVIATION-LOG.md) — J ticket 哈希验证偏差日志
-
----
-
-## 6. 扩展方案 (未来 EPIC 候选)
-
-> 未实施但已规划的扩展.
-
-- [EXPERT-EXTENSION-SCHEME-2026-06-07.md](./EXPERT-EXTENSION-SCHEME-2026-06-07.md) — Expert 体系扩展 (新增 expert 类型流程)
-- (待建) [PHASE-002-REVIEW-2026MMDD.md](./) — Phase 002 完整完成 review (3rd EPIC 后触发)
-
----
-
-## 7. 待办索引
-
-### 7.1 EPIC 经验教训 (jira/epics/EPIC-XXX/LESSONS-LEARNED.md)
-
-| EPIC | 状态 | 路径 |
+| 文档 | 日期 | 主题 |
 |---|---|---|
-| EPIC-016 | ✅ done (POSTMORTEM 形式, 补 Template Conformance) | [EPIC-016-POSTMORTEM-2026-06-07.md](./EPIC-016-POSTMORTEM-2026-06-07.md) |
-| EPIC-021 | ✅ done | [jira/epics/EPIC-021/LESSONS-LEARNED.md](../../jira/epics/EPIC-021/LESSONS-LEARNED.md) |
-| EPIC-022 | ⏳ 待建 (实施完) | — |
-| EPIC-018 | ⏳ 待建 (O 5 issue 修复) | — |
+| [Branch Flow Governance](./branch-flow-governance-2026-07-09.md) | 2026-07-09 | 4-PR flow (feature → testing → main → miao) |
+| [Branch Recovery](./branch-recovery-2026-07-20.md) | 2026-07-20 | main 远端被删重建 |
+| [Branch 4-way Sync EPIC-129](./branch-sync-2026-07-20.md) | 2026-07-20 | main/miao/testing 同步实操 |
+| [Commit Hygiene](./commit-hygiene-2026-08-05.md) | 2026-08-05 | commit history 备案 + 未来指南 (跟 EPIC-155 1:1) |
+| [Release Automation EPIC-128](./release-automation-2026-07-20.md) | 2026-07-20 | release archive + symlink UX |
 
-### 7.2 模板 (confluence/templates/)
+## 2. 借鉴 / 调研
 
-| 模板 | 状态 | 用途 |
+| 文档 | 日期 | 主题 |
 |---|---|---|
-| EPIC-LESSONS-LEARNED-TEMPLATE.md | ✅ v1 | EPIC 经验教训 (8 节) |
-| PHASE-REVIEW-TEMPLATE.md | ✅ v1 | PHASE 完整完成 review (4-Group) |
-| AB-REVIEW-TEMPLATE.md | ✅ v1 | A+B 2-Group review 记录 |
+| [EKET Borrow Progress](./eket-borrow-progress-2026-06-11.md) | 2026-08-07 refresh | EKET 26 项 P0/P1/P2 借鉴进度 |
+| [Borrow from cindy](./borrow-from-cindy-2026-07-26.md) | 2026-07-26 | makecindy/cindy 工程治理借鉴 |
 
-### 7.3 Phase 002 review 候选升级项 (待项目负责人审批)
+## 3. EPIC 实施复盘 / 教训
 
-来自 EPIC-021 LESSONS-LEARNED §8.3:
-- **UP-1**: Rule 8 "L4 脚本必须存在, 否则 ticket 不 close"
-- **UP-2**: Rule 9 "5-Level Fact-Forcing 强制机制 = task:complete 集成"
-- **UP-3**: Rule 6 修订 "EPIC 实施 commit 必带 LESSONS-LEARNED 草稿"
-- **UP-4**: 新增 architecture 文档 `confluence/architecture/heartbeat-observability.md`
+### 3.1 Sprint 复盘
+
+| 文档 | 日期 | 范围 |
+|---|---|---|
+| [Sprint 4-7 + EPIC-101](./retrospective-sprint-4-7-epic-101-2026-07-09.md) | 2026-07-09 | v3.8.1-v3.11.0 + EPIC-101 验证 (5-Level Verify 起源) |
+
+### 3.2 EPIC 实施教训
+
+| 文档 | 日期 | 范围 |
+|---|---|---|
+| [EPIC-113-A + EPIC-114](./EPIC-113-A-and-EPIC-114-lessons-2026-07-11.md) | 2026-07-11 | 4-PR flow 首次全程真跑 + CI 债务 |
+| [EPIC-114 Vitest Scan](./EPIC-114-vitest-scan-2026-07-12.md) | 2026-07-12 | node/tests 45 files 扫描结果 |
+| [EPIC-115 Lint Audit](./EPIC-115-lint-audit-2026-07-13.md) | 2026-07-13 | 633 lint errors / 108 files 切 6 ticket |
+| [EPIC-130→133 Journey](./epic-130-to-133-journey.md) | 2026-07-20 | 33 commits + 11 lessons |
+| [EPIC-131 TS Strict Lessons](./epic-131-ts-strict-lessons-2026-07-20.md) | 2026-07-20 | 33 strict errors 扫除 |
+| [EPIC-133 Worktree Fix](./epic-133-worktree-fix.md) | 2026-07-20 | callback/Promise mismatch 根因 |
+| [EPIC-135-A Guided Research](./epic-135-a-guided-research.md) | 2026-07-20 | /kallax-research 引导式 |
+| [EPIC-188 Retrospective](./epic-188-retrospective-2026-08-07.md) | 2026-08-07 | 8 EPIC 累计复盘 |
+
+### 3.3 Release Retrospectives (v3.22-3.27 系列)
+
+| 文档 | 版本 | 范围 |
+|---|---|---|
+| [Retrospective v3.22.0](./retrospective-v3.22.0-2026-07-14.md) | v3.22.0 | EPIC-115 lint debt + EPIC-116 jargon |
+| [Retrospective v3.23.0](./retrospective-v3.23.0-2026-07-14.md) | v3.23.0 | EPIC-117 简洁性反哺 |
+| [Retrospective v3.24.0](./retrospective-v3.24.0-2026-07-14.md) | v3.24.0 | EPIC-118 expertise-aware |
+| [Retrospective v3.26.0](./retrospective-v3.26.0-2026-07-14.md) | v3.26.0 | EPIC-120 pr-eval |
+| [Retrospective v3.27.0](./retrospective-v3.27.0-2026-07-15.md) | v3.27.0 | EPIC-121 sandbox eval |
+
+## 4. EPIC 拍板记录 (2026-08-05 Phase 5)
+
+| EPIC | 文档 | 主题 |
+|---|---|---|
+| EPIC-166 | [epic-166-daemon-runtime-verification-2026-08-05.md](./epic-166-daemon-runtime-verification-2026-08-05.md) | daemon 真跑抓 3 bug |
+| EPIC-168-BG | [epic-168-bg-2026-08-05.md](./epic-168-bg-2026-08-05.md) | 北极星 dashboard 闭环 |
+| EPIC-169 | [epic-169-public-path-2026-08-05.md](./epic-169-public-path-2026-08-05.md) | 公开化路径 |
+| EPIC-170 | [epic-170-complete-plugin-2026-08-05.md](./epic-170-complete-plugin-2026-08-05.md) | Expert plugin complete |
+| EPIC-171 | [epic-171-strategy-deposit-2026-08-05.md](./epic-171-strategy-deposit-2026-08-05.md) | 3 视角战略沉淀 |
+| EPIC-172 | [epic-172-public-coord-2026-08-05.md](./epic-172-public-coord-2026-08-05.md) | 公开化协同 |
+| EPIC-174 | [epic-174-smoke-retention-2026-08-05.md](./epic-174-smoke-retention-2026-08-05.md) | smoke retention policy |
+| EPIC-175-fix | [epic-175-fix-json-injection-2026-08-05.md](./epic-175-fix-json-injection-2026-08-05.md) | JSON injection 修复 |
+| EPIC-175 | [epic-175-security-extended-2026-08-05.md](./epic-175-security-extended-2026-08-05.md) | Security rules 强化 |
+| EPIC-177-G | [epic-177-g-northstar-emit-2026-08-05.md](./epic-177-g-northstar-emit-2026-08-05.md) | run-history emit integration |
+| EPIC-178 | [epic-178-q3-repromote-2026-08-05.md](./epic-178-q3-repromote-2026-08-05.md) | Q3 re-promote 备案 |
+| EPIC-196 | [EPIC-196-cleanup-2026-08-07.md](./EPIC-196-cleanup-2026-08-07.md) | cherry-pick 拍板记录 |
+
+## 5. 设计阶段 / 待实施 / 借鉴参考
+
+| 文档 | 状态 | 备注 |
+|---|---|---|
+| [EPIC-122-E: events.jsonl per EPIC](./EPIC-122-E-design-2026-07-18.md) | 设计未落地 | 替代路径见 EPIC-177-G (run-history emit) |
+| [EPIC-124: KALLAX MCP Bridge](./EPIC-124-design-2026-07-18.md) | 设计未落地 | 详见 confluence/research/mcp-bridge-backlog.md |
+| [EPIC-119: Tool Orchestration](./EPIC-119-tool-orchestration-2026-07-14.md) | ✅ Accepted | OpenAI 借鉴, 已实施 |
+
+## 6. 项目总结文档
+
+| 文档 | 日期 | 内容 |
+|---|---|---|
+| [KALLAX Lessons + Best Practices](./kallax-lessons-best-practices-2026-08-07.md) | 2026-08-07 | 12 最有价值教训 + 10 类 |
+| [KALLAX Timeline](./kallax-timeline-2026-08-07.md) | 2026-08-07 | 立项 → v3.34.5 完整时间轴 |
+| [TODO/FIXME Backlog](./TODO-backlog-2026-07-19.md) | 2026-08-07 refresh | 当前 grep 实质 TODO 清单 |
+
+## 7. 已归档 (永久只读)
+
+详见 [ARCHIVED/README.md](./ARCHIVED/README.md) — 已归档的重复内容/数据过期文档。
 
 ---
 
 ## 8. 维护规则
 
 - **新文档创建时**: 立刻加链接到对应分类
-- **新 EPIC 完成后**: 24h 内写 LESSONS-LEARNED.md + 加链接到 §7.1
-- **Phase 触发时**: 写 PHASE-REVIEW 文档 + 升级到 §7.3
-- **季度审计**: master 跑一次 cross-reference 完整性检查 (每季度)
+- **新 EPIC 完成后**: 24h 内写 LESSONS-LEARNED + 加链接
+- **过期文档**: 经 EPIC 决策后 git mv → ARCHIVED/, 同步更新 index + README
+- **季度审计**: master 跑一次 cross-reference 完整性检查
 
 ---
 
-**Reviewer(s)**: master_main (2026-06-07)
-**Last updated**: 2026-06-07
-**Status**: ✅ UNIFIED INDEX — 14 决策文档全部覆盖, 交叉引用一致
+**Reviewer(s)**: master_main
+**Last updated**: 2026-08-07 (EPIC-196 二次治理)
+**Status**: ✅ 治理完成,0 MISSING 引用,47 顶层 + 5 归档
