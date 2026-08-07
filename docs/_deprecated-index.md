@@ -1,8 +1,9 @@
-# DEPRECATED 文件索引 (EPIC-199 + EPIC-200 落地)
+# DEPRECATED 文件索引 (EPIC-199 + EPIC-200 + EPIC-202-C 落地)
 
 > **目的**: 给 reader 1 页入口 — 所有 DEPRECATED header 文件 + 现代替代, 避免看历史内容时不知道是否过时。
 > **维护**: EPIC-199/200 拍板, 每次新增 DEPRECATED header 时同步追加。
-> **扫描**: `grep -l "^> \*\*DEPRECATED" docs/ confluence/ -r --include="*.md"`
+> **扫描**: `grep -l "^> \*\*DEPRECATED (2026-08-07" docs/ confluence/ -r --include="*.md" | wc -l`
+> **EPIC-202-C 实测**: 23 (含 EPIC-199-cleanup-refresh-move 拍板记录自身被误中, 表格列 22 真实 DEPRECATED header 文件)
 
 ## DEPRECATED 文件清单 (22 个, 按目录分组)
 
