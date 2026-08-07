@@ -1,5 +1,9 @@
 # KALLAX v3.0.0 架构
 
+> ⚠️ **DEPRECATED** (EPIC-206, 2026-08-08): 本文档是 v3.0.0 时代 (2026-06 era) 467 行巨文件, 内容已部分迁移
+> **现代替代**: [`confluence/manifesto/01-top-design.md`](../confluence/manifesto/01-top-design.md) — 当前 v3.34.6 truth
+> **保留原因**: 历史决策 (6 武器 + 25 cells + eket 对比) 备案, 跟 EPIC-197/199 SoT 归并 pattern 1:1
+
 > **K**nowledge-**A**ugmented **L**everaged **L**earning **A**gent e**X**ecutor
 >
 > v3.6.0 (配合 v3.7.0 准备) | 生产级多智能体协作框架 | 6 武器 + 4 根本 价值 + 5 immutable scripts + 集成测试 25/25 PASS
