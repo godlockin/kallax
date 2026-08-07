@@ -118,15 +118,23 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
    工作                      UAT 验证    集成测试        稳定发布
 ```
 
-| 阶段 | 操作 | 验证站 | 目的 |
-|------|------|--------|------|
-| 1. feature/* | `git worktree add -b feature/...` | 5-Level Verify | worktree 隔离 |
-| 2. feature → testing | `gh pr create --base testing` | integration + cargo test + vitest env | 防止 v3.8.0 form-only PASS |
-| 3. testing → main | `gh pr create --base main` | full e2e + decision matrix 25 cells | 防止 v3.8.0 "25/25 假 PASS" |
-| 4. main → miao | `gh pr create --base miao` | master review + 4 sub-roles | 处理 v3.8.0 red-blue review 阻塞 |
+| 阶段 | 操作 | 验证站 | Master Review | 目的 |
+|------|------|--------|---------------|------|
+| 1. feature/* | `git worktree add -b feature/...` | 5-Level Verify | 0 (master 自开发) | worktree 隔离 |
+| 2. feature → testing | `gh pr create --base testing` | integration + cargo test + vitest env | **master + 4 sub-roles** (Architect/Backend/Frontend/Security) | 防止 v3.8.0 form-only PASS |
+| 3. testing → main | `gh pr create --base main` | full e2e + decision matrix 25 cells | **master + 4 sub-roles** | 防止 v3.8.0 "25/25 假 PASS" |
+| 4. main → miao | `gh pr create --base miao` | master review + 4 sub-roles + conflict check | **master 仲裁 + 主公拍板** | 处理 v3.8.0 red-blue review 阻塞 |
+
+**Master Review 强制 (EPIC-207, 2026-08-08 主公拍板)**:
+1. **0 容忍 auto-merge**: `gh pr merge --merge --auto` 禁用, 4-PR 任一必走 master + 4 sub-roles review
+2. **4 sub-roles 1:1**: Architect / Backend / Frontend / Security 各出 1 份 review (跟 EPIC-056-A 3 阶段 治理 1:1)
+3. **conflict check**: PR 必先 `git fetch origin <base>` + `git diff --check` 验 0 conflict
+4. **smoke retention**: PR 必跑 `bash scripts/check-smoke-retention.sh` (跟 EPIC-174 联合, smoke ≥ 500 行告警)
+5. **PR-2/PR-3 独立**: feature→testing / testing→main 是 2 个独立 PR, 0 force-push bypass
 
 **0 静默跳过** (配合 EPIC-069-D check-claim-evidence):
 - v3.10.0+ 必走 4-PR 全程
+- **0 force-push bypass** (除 EPIC-155/176 备案, 主公明确批准)
 - 紧急 bypass 仅 `git commit --no-verify` (主公明确批准时)
 - 同类假 PASS 症状再次出现 → pre-commit hook 拦截
 
@@ -134,7 +142,7 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 **4-branch bypass 历史债 备案 (EPIC-155 + EPIC-176, 主公 Phase 3/5 A 拍板)**:
 5 commits bypass (a8da33f / 1482ffa / 40e2b8e / 30e923a / 33ecc9b), 主公拍接受丢失 (Phase 3 + Phase 5 A 拍板). EPIC-155/176 计划 Q3 2026 retractively re-promote.
-Testing/Main 分支 sync: EPIC-142 (testing) + EPIC-146 (main) force-push pattern 1:1. 详细: `confluence/decisions/branch-flow-governance-2026-07-09.md` + `confluence/decisions/commit-hygiene-2026-08-05.md`
+**EPIC-207 升级 (2026-08-08)**: testing→main force-push pattern 升级为独立 PR + master review, 不再 auto-merge. 详细: `confluence/decisions/EPIC-207-4pr-governance-2026-08-08.md`.
 
 ## 5. 4 不可更改 法律 (immutable scripts) + smoke retention
 
