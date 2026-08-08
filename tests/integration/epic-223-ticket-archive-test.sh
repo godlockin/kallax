@@ -75,11 +75,24 @@ assert_exit "非法参数 → exit 1" 1 "$SCRIPT" bogus-arg
 echo ""
 echo "--- Group 3: CLAUDE.md 数字对齐 ---"
 assert_not_grep "§5 标题不再写 '4 不可更改'" '^## 5\. 4 不可更改' CLAUDE.md
-assert_grep "§5 标题写 '5 不可更改'" '^## 5\. 5 不可更改' CLAUDE.md
-assert_grep "SKILL.md 改为 '4 verify \+ 1 hook = 5'" '4 verify \+ 1 hook = 5' .claude/skills/kallax/SKILL.md
+# EPIC-224 起数字随接入脚本数变化 (5 -> 8), 断言"有明确数字"而非锁具体值
+assert_grep "§5 标题有明确 immutable 数字" '^## 5\. [0-9]+ 不可更改' CLAUDE.md
+assert_grep "SKILL.md #8 引用 CLAUDE.md §5 (数字单一真相)" 'immutable scripts.*跟 CLAUDE\.md §5 1:1' .claude/skills/kallax/SKILL.md
 assert_not_grep "SKILL.md 不再写 '5 verify + 1 hook = 6'" '5 verify \+ 1 hook = 6' .claude/skills/kallax/SKILL.md
-assert_grep "immutable-scripts.md 存在" 'archived_before|5 immutable' .claude/rules/immutable-scripts.md
+assert_grep "immutable-scripts.md 存在" 'archived_before|immutable' .claude/rules/immutable-scripts.md
 assert_grep "CLAUDE.md §7 引用 immutable-scripts.md" 'immutable-scripts\.md' CLAUDE.md
+
+# 数字一致性: CLAUDE.md §5 标题数字 跟 SKILL.md #8 数字 必须相同
+# 注意: '## 5. N 不可更改' 里 5 是章节号, N 才是 immutable 数 — 取第 2 个数字
+_claude_num="$(grep -oE '^## 5\. [0-9]+ 不可更改' CLAUDE.md | grep -oE '[0-9]+' | sed -n '2p')"
+_skill_num="$(grep -oE 'immutable scripts \([0-9]+' .claude/skills/kallax/SKILL.md | grep -oE '[0-9]+' | head -1)"
+if [ -n "$_claude_num" ] && [ "$_claude_num" = "$_skill_num" ]; then
+  echo "  PASS: CLAUDE.md ($_claude_num) 跟 SKILL.md ($_skill_num) immutable 数字一致"
+  PASS=$((PASS + 1))
+else
+  echo "  FAIL: 数字漂移 — CLAUDE.md=$_claude_num SKILL.md=$_skill_num"
+  FAIL=$((FAIL + 1))
+fi
 
 echo ""
 echo "--- Group 4: Rule 36 归档语义 ---"

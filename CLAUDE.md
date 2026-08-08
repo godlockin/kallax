@@ -148,19 +148,22 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 - **待 re-promote**: EPIC-208 4 commits (EPIC-203/204/205/206 testing→main, 主公 2026-08-08 拍板接受丢失)
 - **本次新增债** (EPIC-223 备案): EPIC-217 PR-2 用 `--delete-branch` 删 testing → EPIC-218~222 跳过 testing 阶段直接 feature→main
 
-## 5. 5 不可更改 法律 (immutable scripts) + 2 smoke 辅助
+## 5. 8 不可更改 法律 (immutable scripts) + 2 smoke 辅助
 
-> **数字对齐 (EPIC-223, 主公 2026-08-08 拍板)**: 本节曾出现 4/5/6/7 四个不一致数字, 已统一.
+> **数字对齐 (EPIC-223 + EPIC-224, 主公 2026-08-08 拍板)**: 曾出现 4/5/6/7 四个不一致数字, 已统一.
 > **完整清单 + 改数字强制流程**: 详见 `.claude/rules/immutable-scripts.md` (path-scoped lazy load).
 
-**5 immutable** (4 verify + 1 hook, fail-closed 0=PASS/1=FAIL, 改动需主公亲自):
-`check-decorative-claim.sh` / `check-narrative.sh` / `check-fail-closed.sh` / `check-self-heal.sh` (均在 `scripts/verify/`) + `check-claim-evidence.sh` (`scripts/hooks/`, EPIC-069-D, 仅扫 staged)
+**8 immutable** (fail-closed, 改动需主公亲自), 全部**已接入 hook** (EPIC-224 验证):
+- **原 5**: `check-decorative-claim.sh` / `check-narrative.sh` / `check-fail-closed.sh` / `check-self-heal.sh` (`scripts/verify/`) + `check-claim-evidence.sh` (`scripts/hooks/`, EPIC-069-D)
+- **EPIC-224 接入 3**: `check-disclaimer.sh` (EPIC-220, staged .md) + `snapshot-claude-md.sh` (EPIC-219, advisory) + `check-ticket-schema.sh` (EPIC-223, staged ticket.json)
 
 **2 辅助** (非 immutable, 可迭代): `check-smoke-retention.sh` (`scripts/`) + `smoke-size-report.sh` (`scripts/audit/`) — EPIC-174, smoke >=500 行告警
 
 **不算 immutable**: `scan-dead-code.sh` (三态 0/1/2=BLOCKED-env, 跟二态契约不同, P0-7 治理)
 
-**待接入不登记**: `snapshot-claude-md.sh` (EPIC-219) + `check-disclaimer.sh` (EPIC-220) + `check-ticket-schema.sh` (EPIC-223) 已 merge 但 `.githooks`/`.github` 0 引用, 接入后 5 → 8
+**hook 体系健康 (EPIC-224 强制)**: `bash scripts/hooks/install.sh --verify` exit 0 才算生效. CI `hook-health` job 每次 PR 验证. 起因: `core.hooksPath` 曾指向已删临时目录 → 所有 hook 静默失效.
+
+**commit-msg gate (EPIC-221 + EPIC-224)**: DCO `Signed-off-by` 强制 + Conventional Commits type + header ≤100 字符.
 
 ## 6. Recent EPICs
 

@@ -238,6 +238,70 @@ if [[ "$HOOK_BYPASS" -eq 0 ]]; then
   fi
 fi
 
+# ── EPIC-220: disclaimer audit (借鉴 prime-agent limit != success) ────────
+# 扫 staged .md 的 trusted/sandbox/secure/safe 关键词, 必带 raw_output 引用.
+if [[ "$HOOK_BYPASS" -eq 0 ]]; then
+  DISCLAIMER_CHECK="${KALLAX_ROOT}/scripts/verify/check-disclaimer.sh"
+  if [[ -x "$DISCLAIMER_CHECK" ]]; then
+    _staged_md="$(git diff --cached --name-only --diff-filter=ACM -- '*.md' 2>/dev/null || true)"
+    if [[ -n "$_staged_md" ]]; then
+      if ! bash "$DISCLAIMER_CHECK" scan >/dev/null 2>&1; then
+        echo "╔══════════════════════════════════════════════════════════════╗"
+        echo "║  BLOCKED: disclaimer 无 raw_output 引用 (EPIC-220)            ║"
+        echo "║  Run: bash scripts/verify/check-disclaimer.sh scan           ║"
+        echo "║  Bypass (主公 approval): KALLAX_HOOK_BYPASS=1 git commit ...  ║"
+        echo "╚══════════════════════════════════════════════════════════════╝"
+        exit 1
+      fi
+    fi
+  fi
+fi
+
+# ── EPIC-219: CLAUDE.md / .claude/rules snapshot 提醒 ────────────────────
+# 改治理文件前应打 snapshot tag, 便于 rollback. 仅提醒不阻塞 (advisory).
+_staged_gov="$(git diff --cached --name-only --diff-filter=ACM \
+  -- 'CLAUDE.md' '.claude/rules/*.md' 2>/dev/null || true)"
+if [[ -n "$_staged_gov" ]]; then
+  SNAPSHOT_SCRIPT="${KALLAX_ROOT}/scripts/verify/snapshot-claude-md.sh"
+  if [[ -x "$SNAPSHOT_SCRIPT" ]]; then
+    _recent_tag="$(git tag -l 'claude-md-pre-*' --sort=-creatordate | head -1)"
+    if [[ -z "$_recent_tag" ]]; then
+      echo "NOTE (EPIC-219): 正在改治理文件但无 snapshot tag."
+      echo "  建议: bash scripts/verify/snapshot-claude-md.sh snapshot '<改什么>'"
+      echo "  文件: $(echo "$_staged_gov" | tr '\n' ' ')"
+    fi
+  fi
+fi
+
+# ── EPIC-223: 新 ticket schema gate ─────────────────────────────────────
+# staged 的 ticket.json 若属 > archived_before 的 EPIC, 强制 required_fields.
+if [[ "$HOOK_BYPASS" -eq 0 ]]; then
+  TICKET_SCHEMA_CHECK="${KALLAX_ROOT}/scripts/verify/check-ticket-schema.sh"
+  if [[ -x "$TICKET_SCHEMA_CHECK" ]]; then
+    _staged_tickets="$(git diff --cached --name-only --diff-filter=ACM \
+      -- 'jira/tickets/*/ticket.json' 2>/dev/null || true)"
+    if [[ -n "$_staged_tickets" ]]; then
+      _ticket_failed=0
+      while IFS= read -r _tj; do
+        [[ -n "$_tj" ]] || continue
+        _epic="$(basename "$(dirname "$_tj")")"
+        bash "$TICKET_SCHEMA_CHECK" "$_epic" >/dev/null 2>&1
+        _rc=$?
+        # exit 3 = ARCHIVED_SKIP (历史 EPIC, 不回溯) → 放行
+        if [[ "$_rc" -eq 1 ]]; then
+          echo "BLOCKED: $_epic ticket.json schema 不合规 (EPIC-223)"
+          echo "  Run: bash scripts/verify/check-ticket-schema.sh $_epic"
+          _ticket_failed=1
+        fi
+      done <<< "$_staged_tickets"
+      if [[ "$_ticket_failed" -eq 1 ]]; then
+        echo "  Bypass (主公 approval): KALLAX_HOOK_BYPASS=1 git commit ..."
+        exit 1
+      fi
+    fi
+  fi
+fi
+
 # ── Only enforce miao-specific rules on miao branch ───────────────────
 if [ "$BRANCH" != "miao" ]; then
   exit 0

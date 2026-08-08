@@ -12,6 +12,68 @@ env:
 
 jobs:
   # ============================================================
+  # Hook Health (EPIC-224 — 防 core.hooksPath 再次失效)
+  # ============================================================
+  hook-health:
+    name: Hook Health
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Verify hook scripts are executable
+        run: |
+          set -e
+          for h in pre-commit pre-push commit-msg; do
+            if [ ! -f "scripts/hooks/$h" ]; then
+              echo "FAIL: scripts/hooks/$h missing"
+              exit 1
+            fi
+            if [ ! -x "scripts/hooks/$h" ]; then
+              echo "FAIL: scripts/hooks/$h not executable"
+              exit 1
+            fi
+            echo "OK: scripts/hooks/$h present + executable"
+          done
+
+      - name: Verify hook scripts pass shellcheck syntax
+        run: |
+          set -e
+          for h in pre-commit pre-push commit-msg install.sh; do
+            bash -n "scripts/hooks/$h"
+            echo "OK: scripts/hooks/$h syntax valid"
+          done
+
+      - name: Verify installer detects broken hooksPath
+        run: |
+          set -e
+          git config core.hooksPath /nonexistent/path/for/ci-test
+          if bash scripts/hooks/install.sh --verify; then
+            echo "FAIL: --verify should exit 1 on broken hooksPath"
+            git config --unset core.hooksPath || true
+            exit 1
+          fi
+          echo "OK: --verify correctly detected broken hooksPath"
+          git config --unset core.hooksPath || true
+
+      - name: Verify installer repairs and passes
+        run: |
+          set -e
+          bash scripts/hooks/install.sh
+          bash scripts/hooks/install.sh --verify
+          echo "OK: installer repaired + verify passes"
+
+      - name: Verify EPIC-219/220/223 gates wired into pre-commit
+        run: |
+          set -e
+          for gate in check-disclaimer snapshot-claude-md check-ticket-schema; do
+            if ! grep -q "$gate" scripts/hooks/pre-commit; then
+              echo "FAIL: $gate not wired into pre-commit"
+              exit 1
+            fi
+            echo "OK: $gate wired into pre-commit"
+          done
+
+  # ============================================================
   # Node.js Checks
   # ============================================================
   node-lint:
