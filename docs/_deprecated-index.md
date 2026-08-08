@@ -5,27 +5,27 @@
 > **扫描**: `grep -l "^> \*\*DEPRECATED (2026-08-07" docs/ confluence/ -r --include="*.md" | wc -l`
 > **EPIC-202-C 实测**: 23 (含 EPIC-199-cleanup-refresh-move 拍板记录自身被误中, 表格列 22 真实 DEPRECATED header 文件)
 
-## DEPRECATED 文件清单 (22 个, 按目录分组)
+## DEPRECATED 文件清单 (23 个, 按目录分组)
 
 ### docs/_archived/ (7, EPIC-199)
 
 | 文件 | 现代替代 |
 |------|---------|
-| `docs/_archived/KARPATHY-VS-KALLAX-2026-06-27.md` | `docs/ARCHITECTURE.md` + `confluence/decisions/kallax-timeline-2026-08-07.md` |
+| `docs/_archived/KARPATHY-VS-KALLAX-2026-06-27.md` | `confluence/manifesto/01-top-design.md` (v3.34.6) + `confluence/decisions/kallax-timeline-2026-08-07.md` |
 | `docs/_archived/phase-index.md` | `confluence/decisions/` (L1 SoT) + `confluence/memory/lessons/` (L2 lessons) |
 | `docs/_archived/phase-review.md` | `confluence/decisions/workflow-8step-2026-08-07.md` (8 步流程) + `docs/process/9-hard-rules.md` |
 | `docs/_archived/RELEASE-INDEX.md` | GitHub Releases (https://github.com/godlockin/kallax/releases) + `CHANGELOG.md` |
 | `docs/_archived/RTK-CAVEMAN-KALLAX-2026-06-29.md` | `docs/token-economy.md` + `docs/cli-rule.md` |
-| `docs/_archived/V350-ARCH-DELTA.md` | `docs/ARCHITECTURE.md` + `CHANGELOG.md` |
+| `docs/_archived/V350-ARCH-DELTA.md` | `confluence/manifesto/01-top-design.md` + `CHANGELOG.md` |
 | `docs/_archived/V350-RELEASE-2026-06-30.md` | GitHub Releases + `CHANGELOG.md` |
 
 ### docs/architecture/online-deploy-2026-06-30/ (3, EPIC-200)
 
 | 文件 | 现代替代 |
 |------|---------|
-| `docs/architecture/online-deploy-2026-06-30/P-004-DECISION.md` | `docs/ARCHITECTURE.md` §"deployment" |
-| `docs/architecture/online-deploy-2026-06-30/P-004-ERRATA.md` | `docs/ARCHITECTURE.md` §"deployment" |
-| `docs/architecture/online-deploy-2026-06-30/README.md` | `docs/ARCHITECTURE.md` §"deployment" + `docs/reference/installation-2026-08-03.md` |
+| `docs/architecture/online-deploy-2026-06-30/P-004-DECISION.md` | `confluence/manifesto/01-top-design.md` §"deployment" |
+| `docs/architecture/online-deploy-2026-06-30/P-004-ERRATA.md` | `confluence/manifesto/01-top-design.md` §"deployment" |
+| `docs/architecture/online-deploy-2026-06-30/README.md` | `confluence/manifesto/01-top-design.md` §"deployment" + `docs/reference/installation-2026-08-03.md` |
 
 ### docs/superpowers/_archived/ + plans/ + specs/ (6, EPIC-200)
 
@@ -33,19 +33,20 @@
 |------|---------|
 | `docs/superpowers/_archived/plans/2026-06-28-gap6-glossary-compress.md` | `confluence/memory/glossary/glossary.md` + `docs/CHEATSHEET.md` |
 | `docs/superpowers/_archived/specs/2026-06-28-gap6-glossary-compress-design.md` | `docs/CHEATSHEET.md` + `docs/5-levels.md` + `docs/4-roles.md` |
-| `docs/superpowers/plans/2026-06-27-8-gap-fix.md` | `docs/ARCHITECTURE.md` + `confluence/_archived/KARPATHY-VS-KALLAX-2026-06-27.md` |
+| `docs/superpowers/plans/2026-06-27-8-gap-fix.md` | `confluence/manifesto/01-top-design.md` + `confluence/_archived/KARPATHY-VS-KALLAX-2026-06-27.md` |
 | `docs/superpowers/plans/2026-06-29-rtk-caveman-kallax-integration.md` | `docs/RTK-CAVEMAN-KALLAX-2026-06-29.md` + `docs/cli-rule.md` |
 | `docs/superpowers/plans/2026-06-29-rtk-caveman-v320-kallax-integration.md` | `docs/RTK-CAVEMAN-KALLAX-2026-06-29.md` + `docs/cli-rule.md` |
-| `docs/superpowers/specs/2026-06-27-8-gap-fix-design.md` | `docs/ARCHITECTURE.md` + `confluence/_archived/KARPATHY-VS-KALLAX-2026-06-27.md` |
+| `docs/superpowers/specs/2026-06-27-8-gap-fix-design.md` | `confluence/manifesto/01-top-design.md` + `confluence/_archived/KARPATHY-VS-KALLAX-2026-06-27.md` |
 
-### 根级 docs/ (5, EPIC-200)
+### 根级 docs/ (5, EPIC-200 + EPIC-206)
 
 | 文件 | 现代替代 |
 |------|---------|
-| `docs/KARPATHY-VS-KALLAX-2026-06-27.md` | `docs/ARCHITECTURE.md` + `confluence/decisions/kallax-timeline-2026-08-07.md` |
+| `docs/ARCHITECTURE.md` | `confluence/manifesto/01-top-design.md` (v3.34.6, EPIC-206 SoT 归并, 467 行 → 94 行) |
+| `docs/KARPATHY-VS-KALLAX-2026-06-27.md` | `confluence/manifesto/01-top-design.md` + `confluence/decisions/kallax-timeline-2026-08-07.md` |
 | `docs/RELEASE-INDEX.md` | GitHub Releases + `CHANGELOG.md` |
 | `docs/RTK-CAVEMAN-KALLAX-2026-06-29.md` | `docs/token-economy.md` + `docs/cli-rule.md` |
-| `docs/V350-ARCH-DELTA.md` | `docs/ARCHITECTURE.md` (主架构) |
+| `docs/V350-ARCH-DELTA.md` | `confluence/manifesto/01-top-design.md` (主架构) |
 | `docs/V350-RELEASE-2026-06-30.md` | GitHub Releases + `CHANGELOG.md` |
 
 ### confluence/ (2, EPIC-200)
@@ -70,7 +71,7 @@
 
 ## 总计
 
-- **22 个文件 DEPRECATED**
+- **23 个文件 DEPRECATED** (EPIC-206 +1: `docs/ARCHITECTURE.md` 移 SoT 到 `confluence/manifesto/01-top-design.md`)
 - **0 删** (跟 EPIC-196 v2 1:1 archive-not-delete)
 - **0 隐** (每个文件头 4 行 header 含现代替代 + 保留原因)
 
@@ -79,7 +80,7 @@
 ```bash
 # 列出所有 DEPRECATED header 文件
 grep -l "^> \*\*DEPRECATED" docs/ confluence/ -r --include="*.md" | wc -l
-# 期望: 22
+# 期望: 23
 ```
 
 ---
