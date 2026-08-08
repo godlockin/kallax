@@ -33,6 +33,19 @@
 
 - Ticket:
 
+## 🐛 Bugfix 独立复现 (Rule 34, EPIC-152, v3.31.0)
+
+> **bugfix PR 必填 3 字段** (跟 CLAUDE.md Rule 34 1:1). 仅 fix 类型 PR 填, 其他类型勾"不涉及". 缺任一字段 = CI fail.
+
+| 字段 | 必填值 |
+|------|--------|
+| **reproduction_command** | `<paste 本地 or CI 复现命令, 例: cd rust && cargo test --workspace --release ticket_engine::bug_xxx>` |
+| **reproduction_exit_code** | `<实跑 exit code (0/1/2/...)>` |
+| **reproduction_raw_output** | `<paste 前 30 行 raw output, 跟## 自动验证 (raw output) 段链接>` |
+
+- [ ] ✅ 3 字段齐, raw output 已贴 (或链接到上方 ## 自动验证 (raw output))
+- [ ] 不涉及 (非 bugfix PR): <类型如 feat/docs/refactor>
+
 ---
 
 ## 🔒 KALLAX 7 类风险 checkbox

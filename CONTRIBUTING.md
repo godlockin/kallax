@@ -109,7 +109,21 @@ Closes #1
 - 关联 Ticket
 - 添加测试输出
 
-### 2. 代码审查
+### 2. Bugfix 独立复现 (Rule 34, EPIC-152, v3.31.0)
+
+> **强制** (跟 CLAUDE.md Rule 34 1:1). bugfix PR 必填 3 字段, 否则 CI fail (check-pr-template.sh).
+
+| 字段 | 含义 | 示例 |
+|------|------|------|
+| `verification.reproduction_command` | 本地 or CI 复现命令 | `cd rust && cargo test --workspace --release ticket_engine::bug_xxx` |
+| `verification.reproduction_exit_code` | 实跑 exit code (0/1/2/...) | `1` (FAIL, 跟期望一致) |
+| `verification.reproduction_raw_output` | 复现 raw output (前 30 行足够) | `<paste 上方## 自动验证 (raw output) 内容>` |
+
+**禁止**: 只贴 CI log text + 一句话 hypothesis 就开 PR. CI log 是 symptom, 不是 diagnosis. 跟 v3.30.0/30.1 canary 链 7 EPIC 教训 1:1.
+
+**0 source change 本身也是 valid conclusion**: 验证债已 cascading 修 / 误报 / 不存在 → PR 状态标 done + trace 记录.
+
+### 3. 代码审查
 
 - 等待 Conductor 审查
 - 响应审查意见
