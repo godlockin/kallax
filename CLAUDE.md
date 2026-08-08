@@ -170,6 +170,11 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 > **EPIC-209 trim**: 24 EPICs 详情 (v3.32.2 → v3.34.6, 19 + 5 EPIC-203-208) 移到 `.claude/rules/recent-epics.md` (path-scoped lazy load, 跟 EPIC-159 联合). 主 CLAUDE.md 维持 ≤ 200 行.
 
+## 6.4. Rule 37 — 小 effort auto-approve (EPIC-216, 2026-08-08)
+
+> **主公 2026-08-08 拍板**: "effort 比较小的直接 auto-approve". 跟 EPIC-207 §1 "0 容忍 auto-merge" 矛盾, 主公拍板 override.
+> **详细阈值 + 例外 + 跟 Rule 联合**: 详见 `.claude/rules/rule-37.md` (path-scoped lazy load).
+
 ## 7. 引用 (lazy load on-demand)
 
 **Anthropic Memory docs** (≤ 200 行硬阈值): https://code.claude.com/docs/en/memory
