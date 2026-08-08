@@ -139,9 +139,11 @@ while IFS= read -r line; do
   esac
 
   # Force push 检测 (覆盖主分支更危险)
-  if [ -n "$GIT_PUSH_OPTION_COUNT" ]; then
+  # EPIC-224: GIT_PUSH_OPTION_COUNT 只在 `git push --push-option=...` 时由 git 设置,
+  # 普通 push 下未定义 → set -u 会 abort. 必须用 ${VAR:-} 默认值.
+  if [ -n "${GIT_PUSH_OPTION_COUNT:-}" ]; then
     for i in $(seq 0 $((GIT_PUSH_OPTION_COUNT - 1))); do
-      opt=$(eval echo "\$GIT_PUSH_OPTION_$i")
+      opt=$(eval echo "\${GIT_PUSH_OPTION_$i:-}")
       if echo "$opt" | grep -qE "^--force(-with-lease)?$|^-f$"; then
         if [ "$target_branch" = "miao" ] || [ "$target_branch" = "main" ]; then
           echo "╔══════════════════════════════════════════════════════════════╗"
