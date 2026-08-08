@@ -49,6 +49,7 @@ CLAUDE.md §5 历史上出现过 **4 个互不一致的数字**:
 | 6 | `check-disclaimer.sh` | `scripts/verify/` | pre-commit (staged .md) | EPIC-220 → 224 |
 | 7 | `snapshot-claude-md.sh` | `scripts/verify/` | pre-commit (advisory, CLAUDE.md/rules) | EPIC-219 → 224 |
 | 8 | `check-ticket-schema.sh` | `scripts/verify/` | pre-commit (staged ticket.json) | EPIC-223 → 224 |
+| 9 | `check-jargon.sh` | `scripts/verify/` | pre-commit (staged .md/.sh/.ts/.rs, 黑名单扫) | EPIC-225 |
 
 **退出码契约**: 0=PASS, 1=FAIL. 禁止 print FAIL + exit 0 (fail-open).
 **例外**: `check-ticket-schema.sh` 有 exit 3 = ARCHIVED_SKIP (跟 EPIC-204 `DOCS_ONLY_SKIP` 同型, 表示"不适用"而非 PASS/FAIL). pre-commit 只拦 exit 1.
