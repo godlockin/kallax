@@ -1,7 +1,7 @@
 # EPIC-224 — 死文件激活: hook 体系整体失效修复
 
 > **来源**: prime-agent roadmap (`prime-agent-research-2026-08-08.md`) Sprint N+1 最高优先项
-> **raw test output**: `tests/integration/epic-224-hook-activation-test.sh` → 21 PASS / 0 FAIL, exit 0
+> **raw test output**: `tests/integration/epic-224-hook-activation-test.sh` → 24 PASS / 0 FAIL, exit 0
 > **附带**: `epic-223-ticket-archive-test.sh` → 21 PASS / 0 FAIL (数字断言从锁定值改为一致性检查)
 
 ---
@@ -93,7 +93,48 @@ CLAUDE.md 193 行 ≤ 200 ✅
 
 ---
 
-## 3. Dogfood 验证
+## 3. 激活后立刻暴露真 bug: pre-push unbound variable
+
+hook 激活后第一次 push 就失败:
+
+```
+$ git push origin feature/EPIC-224-activate
+/Users/.../.git/hooks/pre-push: line 142: GIT_PUSH_OPTION_COUNT: unbound variable
+error: failed to push some refs to 'https://github.com/godlockin/kallax.git'
+```
+
+**根因**: `GIT_PUSH_OPTION_COUNT` 只在 `git push --push-option=...` 时由 git 设置. 普通 push 下未定义. `pre-push` 有 `set -u`, 引用未定义变量直接 abort.
+
+**修复**:
+```bash
+# 改前
+if [ -n "$GIT_PUSH_OPTION_COUNT" ]; then
+  opt=$(eval echo "\$GIT_PUSH_OPTION_$i")
+
+# 改后
+if [ -n "${GIT_PUSH_OPTION_COUNT:-}" ]; then
+  opt=$(eval echo "\${GIT_PUSH_OPTION_$i:-}")
+```
+
+**诊断过程中的误判**: 前 2 次 push 报 `LibreSSL SSL_ERROR_SYSCALL`, 我判断为网络间歇故障并重试. 后 2 次 push 输出为空 + remote 无 branch — 那才是 hook 静默 abort. 直到前台跑 `git push` 才看到真错误. 教训: 后台任务 + 管道 `| tail` 会吞掉 hook 的 stderr.
+
+**Rule 34 独立复现**:
+| 字段 | 值 |
+|------|-----|
+| `reproduction_command` | `git push origin feature/EPIC-224-activate` |
+| `reproduction_exit_code` | 1 |
+| `reproduction_raw_output` | `pre-push: line 142: GIT_PUSH_OPTION_COUNT: unbound variable` |
+
+**这个 bug 藏了多久**: `pre-push` 从未运行过 (core.hooksPath 坏掉), 所以 bug 一直没暴露. EPIC-224 激活 hook 的第一个动作就把它翻出来了 — 印证 §1 的判断: 脚本存在 ≠ 脚本生效.
+
+**回归防护** (3 层):
+1. `tests/integration/epic-224-hook-activation-test.sh` Group 2b — 3 TC (grep `:-` / 真跑无 unbound / 扫所有 hook 的 `GIT_*` 引用)
+2. CI `hook-health` job 新增 step — grep + 真跑双验证
+3. `install.sh --verify` — hook STALE 检测保证本地 hook 跟源文件同步
+
+---
+
+## 4. Dogfood 验证
 
 改 CLAUDE.md 前先用 EPIC-219 脚本打了 snapshot:
 
@@ -105,21 +146,29 @@ rollback cmd: snapshot-claude-md.sh rollback claude-md-pre-20260808-110906
 
 EPIC-219 脚本从"死文件"变成实际用上了.
 
+commit 时 hook 真跑输出 (本轮第一次看到):
+```
+PASS: record_authz_event
+check-claim-evidence: scanning 7 staged file(s)...
+check-claim-evidence: PASS
+```
+
 ---
 
-## 4. 测试
+## 5. 测试
 
-### 4.1 EPIC-224 (21 TC / 6 组)
+### 5.1 EPIC-224 (24 TC / 7 组)
 
 ```
 $ bash tests/integration/epic-224-hook-activation-test.sh
-=== Result: 21 PASS / 0 FAIL (total 21) ===
+=== Result: 24 PASS / 0 FAIL (total 24) ===
 ```
 
 | Group | TC | 覆盖 |
 |-------|----|------|
 | 1 源文件 | 3 | 3 hook 存在 + 可执行 |
 | 2 语法 | 4 | `bash -n` × 4 脚本 |
+| 2b set -u 安全 | 3 | **真 bug 回归**: grep `:-` / 真跑无 unbound / 扫所有 `GIT_*` 引用 |
 | 3 hooksPath | 2 | 坏路径检出 exit 1 / 修复后 exit 0 |
 | 4 commit-msg | 6 | 合规 / 缺 DCO / 非法 type / Merge 豁免 / 超长 / bypass |
 | 5 pre-commit gate | 4 | 3 gate wire + exit 3 放行逻辑 |
@@ -140,7 +189,7 @@ $ bash tests/integration/epic-223-ticket-archive-test.sh
 
 ---
 
-## 5. 不做什么
+## 6. 不做什么
 
 | 项 | 为什么 |
 |---|-------|
@@ -151,7 +200,7 @@ $ bash tests/integration/epic-223-ticket-archive-test.sh
 
 ---
 
-## 6. 联动
+## 7. 联动
 
 | 联动项 | 关系 |
 |--------|------|
@@ -164,7 +213,7 @@ $ bash tests/integration/epic-223-ticket-archive-test.sh
 
 ---
 
-## 7. 遗留 (下一 Sprint)
+## 8. 遗留 (下一 Sprint)
 
 | # | 项 | 优先级 |
 |---|---|--------|

@@ -63,6 +63,39 @@ for h in pre-commit pre-push commit-msg install.sh; do
 done
 
 echo ""
+echo "--- Group 2b: set -u 安全 (EPIC-224 真 bug 回归) ---"
+# 真 bug: pre-push:142 引用未定义的 GIT_PUSH_OPTION_COUNT → set -u abort → push 静默失败
+# 复现: git push origin <branch> → exit 1 + "GIT_PUSH_OPTION_COUNT: unbound variable"
+if grep -qE 'GIT_PUSH_OPTION_COUNT:-' scripts/hooks/pre-push; then
+  ok "pre-push GIT_PUSH_OPTION_COUNT 有 :- 默认值"
+else
+  ko "pre-push GIT_PUSH_OPTION_COUNT 缺默认值 (set -u 会 abort)"
+fi
+
+# 在无 GIT_PUSH_OPTION_* 环境下真跑 pre-push, 不应因 unbound variable 失败
+_prepush_out="$(bash scripts/hooks/pre-push origin https://example.com/repo.git 2>&1 </dev/null || true)"
+if echo "$_prepush_out" | grep -q 'unbound variable'; then
+  ko "pre-push 在无 push-option 环境下报 unbound variable"
+else
+  ok "pre-push 在无 push-option 环境下无 unbound variable"
+fi
+
+# 所有 hook 引用的 git 环境变量都应有默认值 (git 只在特定场景设置它们)
+_unsafe=0
+for h in pre-commit pre-push commit-msg; do
+  # 匹配 "$GIT_XXX" 或 ${GIT_XXX} 但不带 :- 默认值的引用
+  if grep -oE '\$\{?GIT_[A-Z_0-9]+\}?' "scripts/hooks/$h" 2>/dev/null \
+     | grep -vE ':-' | grep -qE 'GIT_(PUSH_OPTION|AUTHOR|COMMITTER|INDEX|DIR)'; then
+    # 排除已在 ${VAR:-} 形式内的
+    if ! grep -qE 'GIT_[A-Z_0-9]+:-' "scripts/hooks/$h"; then
+      ko "scripts/hooks/$h 有无默认值的 GIT_* 引用"
+      _unsafe=1
+    fi
+  fi
+done
+[ "$_unsafe" -eq 0 ] && ok "3 hook 的 GIT_* 引用均有默认值保护"
+
+echo ""
 echo "--- Group 3: installer 检测坏 hooksPath ---"
 _orig_hookspath="$(git config --get core.hooksPath 2>/dev/null || true)"
 git config core.hooksPath "${TMPDIR_TEST}/nonexistent-hooks"

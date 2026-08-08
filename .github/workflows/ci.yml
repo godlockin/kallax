@@ -73,6 +73,24 @@ jobs:
             echo "OK: $gate wired into pre-commit"
           done
 
+      - name: Verify hooks are set -u safe (EPIC-224 真 bug 回归)
+        run: |
+          set -e
+          # 真 bug: pre-push 引用未定义的 GIT_PUSH_OPTION_COUNT → set -u abort → push 静默失败
+          if ! grep -q 'GIT_PUSH_OPTION_COUNT:-' scripts/hooks/pre-push; then
+            echo "FAIL: pre-push GIT_PUSH_OPTION_COUNT 缺 :- 默认值"
+            exit 1
+          fi
+          echo "OK: pre-push GIT_PUSH_OPTION_COUNT 有默认值"
+          # 真跑 pre-push (无 GIT_PUSH_OPTION_* 环境), 不应报 unbound variable
+          out="$(bash scripts/hooks/pre-push origin https://example.com/repo.git 2>&1 </dev/null || true)"
+          if echo "$out" | grep -q 'unbound variable'; then
+            echo "FAIL: pre-push 报 unbound variable"
+            echo "$out" | head -5
+            exit 1
+          fi
+          echo "OK: pre-push 无 unbound variable"
+
   # ============================================================
   # Node.js Checks
   # ============================================================
