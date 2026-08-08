@@ -94,7 +94,7 @@ GitHub 查询:
 | **Work** | `/kallax-claim` | Claim an available task (auto-creates worktree) | `[TASK_ID]` |
 | **Work** | `/kallax-submit-pr` | Complete task and submit PR for review | `[TASK_ID]` |
 | **Work** | `/kallax-merge` | Merge an approved PR | `[PR_NUMBER]` |
-| **Work** | `/kallax-tasks-watch` | **EPIC-218**: 跨 worktree 聚合状态 (heartbeat-conductor tick/watch) | `[--interval=N]` |
+| **Work** | `/kallax-tasks-status` | **EPIC-218**: 跨 worktree 聚合状态 (heartbeat-conductor tick/watch) | `[--interval=N]` |
 | **Work** | `/kallax-save` | Save current session state for later resumption | (no args) |
 | **Work** | `/kallax-resume` | Resume from a saved session | (no args) |
 | **Review** | `/kallax-verify-pr` | Verify PR output before merge (5 levels Fact-Forcing) | `[PR_NUMBER]` |
