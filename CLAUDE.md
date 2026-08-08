@@ -189,8 +189,14 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 | EPIC-185 | v3.33.7 | 8 subagent 并行派单实测 (frame-task + emit + ledger 跨 agent 查询) | `tests/integration/multi-agent-dispatch.test.sh` |
 | EPIC-186 | v3.33.8 | frame-llm.sh LLM v2 入口 + claude-haiku prompt 模板 (跟 heuristic 1:1 兼容) | `scripts/frame-llm.sh`, `tests/integration/frame-llm.test.sh` |
 | EPIC-187 | v3.33.9 | AUTO-PERMS 扩展 — git fetch/pull/log/diff 等 read-only 命令默认通过 | `.claude/skills/kallax/SKILL.md`, `.claude/skills/kallax/lib/frame-prompt.md`, `tests/integration/auto-perms-expand.test.sh` |
+| EPIC-203 | (审计) | 4-expert 26 项审计闭环 (11 FIXED + 4 FALSE POSITIVE + 11 NO-OP, 跟 EPIC-197/199/200/201 + EPIC-202-A/B/C 7 EPIC 联合) | `confluence/decisions/EPIC-203-audit-retrospective-2026-08-08.md` |
+| EPIC-204 | (sprint-metrics) | docs-only metrics 适配 (`--docs-only` flag + exit 3 DOCS_ONLY_SKIP, 跟 Rule 36 + EPIC-198 1:1) | `scripts/metrics/sprint-metrics.sh`, `tests/integration/epic-204-docs-only-metrics-test.sh` |
+| EPIC-205 | (retrospective) | retrospective-routine.sh 6 阶段季度 dry-run + KALLAX_ROOT worktree-safe fix (git rev-parse) | `scripts/retrospective-routine.sh`, `confluence/decisions/EPIC-205-retrospective-routine-2026-08-08.md` |
+| EPIC-206 | (manifesto) | 战略文档归一 5 文件 (TOP-DESIGN / SCOPE-MISSION-VISION / TIMELINE / LESSONS / BEST-PRACTICES) | `confluence/manifesto/`, `docs/ARCHITECTURE.md` (DEPRECATED redirect) |
+| EPIC-207 | (governance) | 4-PR master review 强制 + 0 force-push bypass (除 EPIC-155/176 备案), PR-2 v2 修正: FF push + comment 验证 | `CLAUDE.md §4`, `confluence/decisions/EPIC-207-4pr-governance-2026-08-08.md` |
+| EPIC-208 | (governance-debt) | 治理债闭环 — PR-2 v2 doc 落地 + force-push 备案债 4 commits 补录 (跟 EPIC-155/176 1:1) | `confluence/decisions/EPIC-207-4pr-governance-2026-08-08.md §5.1-5.2`, `CLAUDE.md §6` |
 
-**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 19 EPICs. Full docs + tests + scripts in each.
+**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 24 EPICs (19 v3.32.2-23 + 5 EPIC-203-208). Full docs + tests + scripts in each.
 
 ## 9. 引用 (lazy load on-demand)
 
