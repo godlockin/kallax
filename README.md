@@ -1,36 +1,49 @@
-# KALLAX v3.0.0
+# KALLAX v3.34.6
 
 > **K**nowledge-**A**ugmented **L**everaged **L**earning **A**gent e**X**ecutor
 
-**v3.6.0** (跟 v3.7.0 准备) | 借鉴 eket 极简哲学, 青出于蓝而胜于蓝 | 6 武器 + 4 根本 价值 + 5 immutable scripts + 集成测试 ALL DONE
+**生产级 Claude Code 治理框架** | 借鉴 [eket](https://github.com/godlockin/eket) 极简哲学 | 24 EPIC 累计 (v3.32.2 → v3.34.6) | 0 跳流程, 0 估数字, 0 装饰性宣称
 
----
+## Why KALLAX?
 
-## 概述
+Claude Code 解决 "AI 怎么写代码", **KALLAX 解决 "AI 写的代码怎么进 prod"**. 是 AI 工程界的 **"CI/CD for AI agents"**:
 
-KALLAX v3.0.0 是一个**多智能体协作框架 (持续演进中, v3.8.1 部分覆盖生产需求, 详见 §集成测试)**, 借鉴 [eket](https://github.com/godlockin/kallax) 极简哲学, 在其基础上补齐 **6 个空白处** (6 武器), 形成"青出于蓝而胜于蓝"的差异化定位。
+- **4-PR 工作流** (feature → testing → main → miao, 4 阶段 master review 强制)
+- **5-Level Verify** (L1 git / L2 stdout / L3 4-expert / L4 independent / L5 boundary, 防假 PASS)
+- **36 Rule + 5 immutable scripts** (fail-closed, 0 估数 0 装饰)
+- **4 北极星指标** (expert_activation / cross_epic_reuse / ab_hit / mis_dispatch)
+- **3 阶段专家治理** (Conductor + 4 default + 5 extended = 9 expert)
 
-### 核心特性
+## 快速入口
 
-- **三级降级架构 (实作中)**: Rust (~5ms, 仅观测) → Node.js → Shell
-- **1 binary 整合**: 8 Rust crates → 5 crates, 0 errors
-- **6 武器** (KALLAX 独有): Hash-Chain Audit / 5-Level Fact-Forcing / Sub-Role Dispatch / EPIC 4 件套 / Hook Server / Dashboard
-- **4 根本 价值** (跟 CLAUDE.md §4 1:1 联合): 审计 (W1) / 验证 (W2) / 治理 (W3+W4) / 可视化 (W5+W6)
-- **决策模型** (Q18): 5 levels × 4 roles = 25 cells (自主 12 + 推荐 8 + 主公拍 5)
-- **集成测试 25/25 cells PASS**: 6-weapons-e2e + decision-matrix
+- 📋 [CLAUDE.md](./CLAUDE.md) — cold start 入口 (3.3KB, 36 Rule 必读)
+- 🏛️ [Top Design](./confluence/manifesto/01-top-design.md) — 4 子系统 + 顶层架构
+- 🎯 [Scope / Mission / Vision / 价值观](./confluence/manifesto/02-scope-mission-vision.md)
+- ⏱️ [Timeline](./confluence/manifesto/03-timeline.md) — 8 release 累计
+- 📚 [Lessons](./confluence/manifesto/04-lessons.md) — 5 类经验教训
+- ✨ [Best Practices](./confluence/manifesto/05-best-practices.md) — 8 类最佳实践
 
----
+## 安装
 
-## 6 武器 速查 (跟 eket 对比)
+```bash
+bash install.sh  # 全栈 deploy 95 files (跟 EPIC-160 install.sh Omnibus 1:1)
+```
 
-| 武器 | 名称 | KALLAX v3.0.0 | eket | 治根 |
-|------|------|---------------|------|------|
-| **武器 1** | Hash-Chain Audit Log | SHA256 chain 实做 | 无 | SEC-002 (audit log 无 hash chain) |
-| **武器 2** | 5-Level Fact-Forcing | L1-L5 实做 (5 独立脚本) | 名字 only | 4-Level / 6 维度 重叠 |
-| **武器 3** | Sub-Role Dispatch | 4 sub-roles (coder/reviewer/tester/docs) | 无 (单 role) | Performer 产能 Gap 40% |
-| **武器 4** | EPIC 4 件套 | A+B review + readme + lessons + signoff | 无 (文档散落) | PROD-001 (EPIC 交付缺失) |
-| **武器 5** | Hook Server 回放 + Audit | 多 AI 工具集成 + replay endpoints | 无 | 多 AI 工具协同缺口 |
-| **武器 6** | Web Dashboard | 1 page ≤ 500 LOC | 无 | FE-001 XSS |
+## 文档结构 (跟 EPIC-197 SoT 归并 1:1)
+
+```
+confluence/
+  decisions/     # 66 EPIC 拍板记录
+  memory/        # L1 SoT 决策 + L2 lessons + L3 patterns + L4 research
+  research/      # 战略沉淀 (EPIC-171 + EPIC-172 positioning + growth loop)
+  manifesto/     # 5 文件顶层 (EPIC-206, 战略入口)
+docs/
+  process/       # 流程治理 (post-process / doc-audit / smoke-retention / projection-sink)
+  reference/     # 24 reference docs (lazy load)
+  evidence/      # 5-Level Verify raw output (跟 EPIC-069-D 1:1)
+  _archived/     # 22 DEPRECATED 文件 (跟 EPIC-197/199/200/201 1:1)
+scripts/         # 95 files deploy 入口 (跟 EPIC-160 1:1)
+```
 
 ---
 
@@ -69,37 +82,72 @@ KALLAX v3.0.0 是一个**多智能体协作框架 (持续演进中, v3.8.1 部�
 > **KALLAX = AI Engineering Governance Platform**
 > - **入口**: 解决假 PASS 痛点
 > - **差异化**: 治理层 vs runtime
-> - **技术 Moat**: 18 release 积累 + 0 假 PASS 文化 + 北极星 4 指标
+> - **技术 Moat**: 24 EPIC 累计 + 0 假 PASS 文化 + 4 北极星指标
 
-**完整定位文档**: [confluence/research/kallax-positioning-2026-08-05.md](confluence/research/kallax-positioning-2026-08-05.md)
+**完整定位文档**: [confluence/research/kallax-positioning-2026-08-05.md](confluence/research/kallax-positioning-2026-08-05.md) (EPIC-171)
+
+## 安装
+
+```bash
+bash install.sh  # 全栈 deploy 95 files (跟 EPIC-160 install.sh Omnibus 1:1)
+```
+
+## 文档结构 (跟 EPIC-197 SoT 归并 1:1)
+
+```
+confluence/
+  decisions/     # 66 EPIC 拍板记录
+  memory/        # L1 SoT 决策 + L2 lessons + L3 patterns + L4 research
+  research/      # 战略沉淀 (EPIC-171 + EPIC-172 positioning + growth loop)
+  manifesto/     # 5 文件顶层 (EPIC-206, 战略入口)
+docs/
+  process/       # 流程治理 (post-process / doc-audit / smoke-retention / projection-sink)
+  reference/     # 24 reference docs (lazy load)
+  evidence/      # 5-Level Verify raw output (跟 EPIC-069-D 1:1)
+  _archived/     # 22 DEPRECATED 文件 (跟 EPIC-197/199/200/201 1:1)
+scripts/         # 95 files deploy 入口 (跟 EPIC-160 1:1)
+```
 
 ---
 
-**6 武器 1:1 验证**:
-- 武器 1: `scripts/verify/hash-chain.sh` + `audit:verify` CLI 命令
-- 武器 2: `scripts/verify/level-{1..5}.sh` 5 独立脚本
-- 武器 3: `scripts/conductor/dispatch.sh --sub-role=coder|reviewer|tester|docs`
-- 武器 4: `scripts/verify/check-epic-4-piece.sh` + `epic:close` CLI
-- 武器 5: `node/src/hooks/hook-events-store.ts` + `/hooks/replay` + `/hooks/audit` endpoints
-- 武器 6: `node/src/web/dashboard.tsx` (≤ 500 LOC, textContent + escape)
+## Why KALLAX vs Claude Code?
 
----
+> **1 句话 Elevator Pitch**: KALLAX 是 AI 工程界的 "CI/CD for AI agents" — Claude Code 解决 "AI 怎么写代码", KALLAX 解决 "AI 写的代码怎么进 prod".
 
-## 跟 eket 互补 (Q11 实施)
+### 5 维度对比表
 
-> **独立项目, 互取所长**: KALLAX 实做 5 levels + 6 武器, eket 借 multi-agent 概念
+| 维度 | Claude Code | KALLAX | 关系 |
+|------|-------------|--------|------|
+| **职责** | AI Runtime (代码生成/补全) | Governance Layer (审计/验证/治理) | **正交叠加** |
+| **sub-agent** | 单 session | 多 worktree 隔离 | KALLAX 并行 |
+| **PR 流程** | 无 (单角色) | 4-PR Chain (feature→testing→main→miao) | KALLAX 强制 |
+| **失败追溯** | session 关闭即丢失 | Hash-Chain Audit + Memory L0-L4 | KALLAX 持久 |
+| **Verify** | 无 | 5-Level Fact-Forcing (L1-L5 独立) | KALLAX 防假 PASS |
 
-| 维度 | KALLAX v3.0.0 | eket | 关系 |
-|------|---------------|------|------|
-| **架构** | Rust + Node.js + Shell (3 层降级) | Node.js ≥20 (单层) | KALLAX 更深 |
-| **Multi-agent** | Conductor + Performer + Sub-roles (1+4) | Master + Slaver | 概念同源, 命名不同 |
-| **Fact-Forcing** | 5-Level (L1-L5 实做, 5 独立脚本) | 9 Hard Rules (规则 only) | KALLAX 实做, eket 名字 |
-| **决策模型** | Q18 (5×4=20 cells, 25/25 PASS) | decision-gate (block/danger 触发) | 互补 |
-| **Cargo workspace** | 2.7.6 (跟 npm 对齐, release bump) | 无 (Node.js only) | KALLAX 多语言 |
-| **极简** | CLAUDE.md 1.1KB + 4KB cold start (v3.6.0 极简) | CLAUDE.md 精简 | 一致 |
-| **术语** | 0 术语 (1 page cheatsheet + lazy load) | 0 术语 | 一致 |
-| **Audit** | Hash-Chain SHA256 | 无 | KALLAX 独有 |
-| **Dashboard** | 1 page ≤ 500 LOC (XSS 治根) | 无 | KALLAX 独有 |
+### 3 句使用判断
+
+| 场景 | 推荐 | 理由 |
+|------|------|------|
+| **单人开发, 简单脚本** | Claude Code | overhead > value, 直接够用 |
+| **team ≥ 3 人, 长期项目 (6+ 月)** | KALLAX | 5-Level Verify + 4-PR Chain 价值最大化 |
+| **Enterprise, 合规审计** | KALLAX 必须 | Audit trail + self-heal 满足合规 |
+
+### Trigger Signals (出现任一则推荐 KALLAX)
+
+- "上次 prod 假 PASS"
+- "team 多人在做, 分不清谁做了什么"
+- "PR 经常 skip review"
+- "bug 修过 3 次复发"
+- "Claude Code session 关了上下文丢"
+
+### 详细定位
+
+> **KALLAX = AI Engineering Governance Platform**
+> - **入口**: 解决假 PASS 痛点
+> - **差异化**: 治理层 vs runtime
+> - **技术 Moat**: 24 EPIC 累计 + 0 假 PASS 文化 + 4 北极星指标
+
+**完整定位文档**: [confluence/research/kallax-positioning-2026-08-05.md](confluence/research/kallax-positioning-2026-08-05.md) (EPIC-171)
 
 ---
 
