@@ -188,7 +188,11 @@ jobs:
       - name: Check for @ts-ignore
         run: |
           echo "Checking for @ts-ignore..."
-          if grep -rn "@ts-ignore" --include="*.ts" --include="*.tsx" node/ 2>/dev/null | grep -v "node_modules"; then
+          # EPIC-211: 排除注释行 (跟 EPIC-158 regex false-positive 1:1)
+          if grep -rn "@ts-ignore" --include="*.ts" --include="*.tsx" node/ 2>/dev/null \
+            | grep -v "node_modules" \
+            | grep -v -E '^[^:]+:[0-9]+:\s*\*' \
+            | grep -v -E '^[^:]+:[0-9]+:\s*//'; then
             echo "::error::Found @ts-ignore. Please fix the type error."
             exit 1
           fi
@@ -197,7 +201,11 @@ jobs:
       - name: Check for @ts-expect-error
         run: |
           echo "Checking for @ts-expect-error..."
-          if grep -rn "@ts-expect-error" --include="*.ts" --include="*.tsx" node/ 2>/dev/null | grep -v "node_modules"; then
+          # EPIC-211: 排除注释行 (跟 EPIC-158 1:1)
+          if grep -rn "@ts-expect-error" --include="*.ts" --include="*.tsx" node/ 2>/dev/null \
+            | grep -v "node_modules" \
+            | grep -v -E '^[^:]+:[0-9]+:\s*\*' \
+            | grep -v -E '^[^:]+:[0-9]+:\s*//'; then
             echo "::error::Found @ts-expect-error. Please fix the type error."
             exit 1
           fi
