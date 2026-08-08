@@ -1,4 +1,4 @@
-# KALLAX v3.32.4
+# KALLAX v3.34.6
 
 > **CLAUDE.md 治理 2.0 (EPIC-159)**: 主文件 ≤ 200 行 (Anthropic 硬阈值). 低频 / reference 内容移 `.claude/rules/*.md` path-scoped lazy load.
 
@@ -34,7 +34,7 @@
 | L5 boundary | CLAUDE.md Rule check | + **check-claim-evidence.sh** 扫 README/CHANGELOG 数字 |
 
 **禁止** (PRE-COMMIT hook 拦截):
-- ❌ README/CHANGELOG 出现 `X/Y PASS` 数字但无 `raw_output` 引用
+- ❌ README/CHANGELOG 出现 `X/Y PASS` 数字无 `raw_output` 引用
 - ❌ `5-Level Verify PASS` 字样但 L2 是 `cargo build`(必须 `cargo test`)
 - ❌ "生产级 / 25/25" 等装饰性断言无 raw output 佐证
 
@@ -68,7 +68,7 @@ cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run \
 
 **跟现有 Rule 联合 (0 增)**: 跟 Rule 5 DRY, Rule 9 KPI (X/Y 格式), Rule 33 decision-gate 1:1 一致, 不冲突.
 
-## 3.1. Rule 35 — Sprint 规划时间盒 (EPIC-190, v3.34.2)
+### 3.1. Rule 35 — Sprint 规划时间盒 (EPIC-190, v3.34.2)
 
 **起因**: 主公 2026-08-07 拍板 (EPIC-185 subagent-5 rule-add), 防止 Sprint 期间超大任务破坏节奏.
 
@@ -86,7 +86,7 @@ cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run \
 - Rule 13 (3 模式 decision-gate): Sprint 边界触发 ASK
 - Rule 34 (Bugfix 独立复现): Sprint 内修 bug 必带 reproduction
 
-## 3.2. Rule 36 — Sprint 结束必跑 4 北极星 metric (EPIC-194, v3.34.5)
+### 3.2. Rule 36 — Sprint 结束必跑 4 北极星 metric (EPIC-194, v3.34.5)
 
 **起因**: 主公 2026-08-07 拍板 (跟 EPIC-023-C 北极星打通 + EPIC-157 binding 字段联合), Sprint 结束必跑 `scripts/metrics/sprint-metrics.sh` 4 指标.
 
@@ -100,6 +100,7 @@ cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run \
 - Sprint 结束时必跑 `bash scripts/metrics/sprint-metrics.sh --epic EPIC-XXX` 输出 4 指标
 - 4 指标全 PASS 才算 Sprint 闭环 (跟 Rule 35 Sprint 时间盒 联合)
 - 0 数据 (NO_DATA exit=2) 触发 ASK, 不接受 silent PASS
+- docs-only EPIC 用 `--docs-only` flag 跳过 (exit 3 DOCS_ONLY_SKIP, 跟 EPIC-198 + EPIC-204 1:1)
 
 **跟现有 Rule 联合 (0 增)**:
 - Rule 5 (DRY): 跨 EPIC 复用 ≥ 60% (跟 EPIC-023-C 北极星 #2 一致)
@@ -108,6 +109,7 @@ cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run \
 - Rule 35 (Sprint 时间盒): Sprint 结束必跑 (本 Rule 闭环)
 - EPIC-023-C 北极星 (源头)
 - EPIC-157 ticket.json binding 字段 (指标 #4 数据源)
+- EPIC-204 docs-only metrics 适配 (跳过路径)
 
 ## 4. Branch Flow Governance (EPIC-074, 主公拍板 2026-07-09)
 
@@ -122,7 +124,7 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 |------|------|--------|---------------|------|
 | 1. feature/* | `git worktree add -b feature/...` | 5-Level Verify | 0 (master 自开发) | worktree 隔离 |
 | 2. feature → testing | `gh pr create --base testing` | integration + cargo test + vitest env | **master + 4 sub-roles** (Architect/Backend/Frontend/Security) | 防止 v3.8.0 form-only PASS |
-| 3. testing → main | `gh pr create --base main` | full e2e + decision matrix 25 cells | **master + 4 sub-roles** | 防止 v3.8.0 "25/25 假 PASS" |
+| 3. testing → main | `gh pr create --base main` (FF) | full e2e + decision matrix 25 cells | **master + 4 sub-roles + comment 验证** (跟 EPIC-207 v2 1:1) | 防止 v3.8.0 "25/25 假 PASS" |
 | 4. main → miao | `gh pr create --base miao` | master review + 4 sub-roles + conflict check | **master 仲裁 + 主公拍板** | 处理 v3.8.0 red-blue review 阻塞 |
 
 **Master Review 强制 (EPIC-207, 2026-08-08 主公拍板)**:
@@ -130,7 +132,7 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 2. **4 sub-roles 1:1**: Architect / Backend / Frontend / Security 各出 1 份 review (跟 EPIC-056-A 3 阶段 治理 1:1)
 3. **conflict check**: PR 必先 `git fetch origin <base>` + `git diff --check` 验 0 conflict
 4. **smoke retention**: PR 必跑 `bash scripts/check-smoke-retention.sh` (跟 EPIC-174 联合, smoke ≥ 500 行告警)
-5. **PR-2/PR-3 独立**: feature→testing / testing→main 是 2 个独立 PR, 0 force-push bypass
+5. **PR-2 v2 修正**: testing → main 在 FF 关系下独立 PR 不可行, 走 FF push + comment 验证 (跟 EPIC-207 §5.1 1:1)
 
 **0 静默跳过** (配合 EPIC-069-D check-claim-evidence):
 - v3.10.0+ 必走 4-PR 全程
@@ -140,9 +142,10 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 **if-then 详细规则** (4 阶段 × 5 验证站): 详见 `.claude/rules/branch-flow.md`
 
-**4-branch bypass 历史债 备案 (EPIC-155 + EPIC-176, 主公 Phase 3/5 A 拍板)**:
-5 commits bypass (a8da33f / 1482ffa / 40e2b8e / 30e923a / 33ecc9b), 主公拍接受丢失 (Phase 3 + Phase 5 A 拍板). EPIC-155/176 计划 Q3 2026 retractively re-promote.
-**EPIC-207 升级 (2026-08-08)**: testing→main force-push pattern 升级为独立 PR + master review, 不再 auto-merge. 详细: `confluence/decisions/EPIC-207-4pr-governance-2026-08-08.md`.
+**4-branch bypass 历史债 备案 (EPIC-155 + EPIC-176 + EPIC-208, 主公拍板)**:
+- 5 commits bypass (a8da33f / 1482ffa / 40e2b8e / 30e923a / 33ecc9b, 主公拍接受丢失 Phase 3 + Phase 5 A)
+- 4 commits bypass (EPIC-203/204/205/206 testing→main, 主公 2026-08-08 拍板接受丢失)
+- EPIC-155/176 + EPIC-208 计划 Q3 2026 retractively re-promote
 
 ## 5. 4 不可更改 法律 (immutable scripts) + smoke retention
 
@@ -163,42 +166,11 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 | `check-smoke-retention.sh` | `scripts/` | EPIC-174, smoke >=500 行检测 |
 | `smoke-size-report.sh` | `scripts/audit/` | EPIC-174, smoke 状态报告 |
 
-## 6. Recent EPICs (v3.32.2 → v3.32.23, 主公 2026-08-02/03/05 拍板)
+## 6. Recent EPICs
 
-| EPIC | Version | 关键 | 工具 / 文件 |
-|---|---|---|---|
-| EPIC-157 | v3.32.2 | ticket.json 4 expert binding 字段 + mis_dispatch_binding_rate 北极星打通 | `scripts/binding/binding-tracker.sh`, `sprint-metrics.sh` |
-| EPIC-158 | v3.32.3 | Forbidden Patterns regex false-positive + sqlite skipIf (CI debt) | `.github/workflows/ci.yml`, `skipIfNoSqlite` |
-| EPIC-159 | v3.32.4 | CLAUDE.md 307→160 行 + `.claude/rules/*.md` path-scoped lazy load | `.claude/rules/{state-json,testing,branch-flow,strict-tsconfig}.md` |
-| EPIC-160 | v3.32.5 | install.sh Omnibus — 全部件 deploy + `--inventory`/`--update`/3 skip flag | `scripts/install.sh`, 95 files |
-| EPIC-161 | v3.32.6 | retrospective-routine.sh 6 阶段 routine (复盘/整理/review/升级/归档/删除) | `scripts/retrospective-routine.sh`, `--json` |
-| EPIC-168-F | v3.32.13 | daemon 真跑验证 — 抓 3 真 bug (review 漏抓) | `tests/integration/heartbeat-daemon-runtime.test.sh` (10/16 → 抓 3 bug) |
-| EPIC-168-BG | v3.32.14 | 修 EPIC-166 4 真 bug + 建北极星 dashboard | `heartbeat-daemon.sh`, `scheduler-hint.sh`, `run-history.sh`, `dashboard-metrics.sh`, `dashboard-metrics.html` |
-| EPIC-169 | v3.32.15 | 公开化路径: README.en + frontstage + Lark/WeChat 群 | `README.en.md`, `web/showcase/`, `docs/community/`, `docs/sponsor/` |
-| EPIC-170 | v3.32.16 | Expert plugin complete — enabled_policy + activation gates (9 expert 1:1 loopx) | `scripts/skill/skill-manager.sh`, `scripts/skill/skill-policy.sh` |
-| EPIC-171 | v3.32.17 | 战略沉淀 — 3 视角 (PR+CTO+Marketing) 定位文档 + README "Why vs Claude Code?" | `confluence/research/kallax-positioning-2026-08-05.md`, `README.md` |
-| EPIC-172 | v3.32.18 | 公开化协同 — Lark/WeChat 群 + hosted frontstage + growth loop | `docs/community/`, `web/showcase/`, `confluence/research/kallax-growth-loop-2026-08-05.md` |
-| EPIC-175 | v3.32.21 | Security Rules 强化 — Release Capability Usage Gate + Contributor Attribution + Capability Placement 决策树 | `scripts/check-release-capability.sh`, `scripts/automation-monitor-todos.sh`, `scripts/check-benchmark-smoke.sh`, `docs/reference/capability-placement.md`, `docs/process/projection-sink-design.md` |
-| EPIC-176 | v3.32.23 | Commit Hygiene 备案 + 未来指南 (跟 EPIC-155 1:1 pattern) | `confluence/decisions/commit-hygiene-2026-08-05.md`, `docs/reference/commit-hygiene-pattern-2026-08-05.md` |
-| EPIC-177-G | v3.33.0 | run-history emit integration — 6 脚本 emit hook 闭环 4 北极星 | `binding-tracker.sh`, `heartbeat-daemon.sh`, `post-process.sh`, `branch-4pr.sh`, `install.sh`, `skill-manager.sh` |
-| EPIC-180-A | v3.33.2 | frame-task.sh — 4 档路由 (TRIVIAL/SIMPLE/MEDIUM/COMPLEX) + 9 类破坏性拦 + FRAME 表单 | `scripts/frame-task.sh`, `.claude/skills/kallax/lib/frame-prompt.md`, `tests/integration/frame-task.test.sh` |
-| EPIC-181 | v3.33.2 | 4-PR wrapper 硬化 R1-R5 — `--epic` 必填 + base 同步校验 + state 验证 + 默认删 branch + 退出码契约 0/1/2/3 | `scripts/branch-4pr.sh`, `tests/integration/branch-4pr-harden.test.sh` |
-| EPIC-182 | v3.33.4 | 4-PR 实战回归 28 用例 (wrapper R1-R5 + Check 2.7 + branch allowlist + 9 类 + frame preamble) | `tests/integration/4pr-regression.test.sh` |
-| EPIC-183 | v3.33.5 | release-entry.sh CHANGELOG 自动生成 + emit decision (跟 EPIC-177-G 联合) | `scripts/release-entry.sh`, `tests/integration/release-entry.test.sh` |
-| EPIC-184 | v3.33.6 | frame-task multi-turn clarify (partial/answer/complete) — COMPLEX 档多轮主公澄清 | `scripts/frame-task.sh`, `tests/integration/multi-turn-clarify.test.sh` |
-| EPIC-185 | v3.33.7 | 8 subagent 并行派单实测 (frame-task + emit + ledger 跨 agent 查询) | `tests/integration/multi-agent-dispatch.test.sh` |
-| EPIC-186 | v3.33.8 | frame-llm.sh LLM v2 入口 + claude-haiku prompt 模板 (跟 heuristic 1:1 兼容) | `scripts/frame-llm.sh`, `tests/integration/frame-llm.test.sh` |
-| EPIC-187 | v3.33.9 | AUTO-PERMS 扩展 — git fetch/pull/log/diff 等 read-only 命令默认通过 | `.claude/skills/kallax/SKILL.md`, `.claude/skills/kallax/lib/frame-prompt.md`, `tests/integration/auto-perms-expand.test.sh` |
-| EPIC-203 | (审计) | 4-expert 26 项审计闭环 (11 FIXED + 4 FALSE POSITIVE + 11 NO-OP, 跟 EPIC-197/199/200/201 + EPIC-202-A/B/C 7 EPIC 联合) | `confluence/decisions/EPIC-203-audit-retrospective-2026-08-08.md` |
-| EPIC-204 | (sprint-metrics) | docs-only metrics 适配 (`--docs-only` flag + exit 3 DOCS_ONLY_SKIP, 跟 Rule 36 + EPIC-198 1:1) | `scripts/metrics/sprint-metrics.sh`, `tests/integration/epic-204-docs-only-metrics-test.sh` |
-| EPIC-205 | (retrospective) | retrospective-routine.sh 6 阶段季度 dry-run + KALLAX_ROOT worktree-safe fix (git rev-parse) | `scripts/retrospective-routine.sh`, `confluence/decisions/EPIC-205-retrospective-routine-2026-08-08.md` |
-| EPIC-206 | (manifesto) | 战略文档归一 5 文件 (TOP-DESIGN / SCOPE-MISSION-VISION / TIMELINE / LESSONS / BEST-PRACTICES) | `confluence/manifesto/`, `docs/ARCHITECTURE.md` (DEPRECATED redirect) |
-| EPIC-207 | (governance) | 4-PR master review 强制 + 0 force-push bypass (除 EPIC-155/176 备案), PR-2 v2 修正: FF push + comment 验证 | `CLAUDE.md §4`, `confluence/decisions/EPIC-207-4pr-governance-2026-08-08.md` |
-| EPIC-208 | (governance-debt) | 治理债闭环 — PR-2 v2 doc 落地 + force-push 备案债 4 commits 补录 (跟 EPIC-155/176 1:1) | `confluence/decisions/EPIC-207-4pr-governance-2026-08-08.md §5.1-5.2`, `CLAUDE.md §6` |
+> **EPIC-209 trim**: 24 EPICs 详情 (v3.32.2 → v3.34.6, 19 + 5 EPIC-203-208) 移到 `.claude/rules/recent-epics.md` (path-scoped lazy load, 跟 EPIC-159 联合). 主 CLAUDE.md 维持 ≤ 200 行.
 
-**0 增 Rule, 0 增 immutable script, 0 改 source code** for all 24 EPICs (19 v3.32.2-23 + 5 EPIC-203-208). Full docs + tests + scripts in each.
-
-## 9. 引用 (lazy load on-demand)
+## 7. 引用 (lazy load on-demand)
 
 **Anthropic Memory docs** (≤ 200 行硬阈值): https://code.claude.com/docs/en/memory
 
@@ -207,6 +179,11 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 - `.claude/rules/testing.md` — EPIC-114 test 反模式 + live test skipIf
 - `.claude/rules/branch-flow.md` — 4-branch flow if-then 详细
 - `.claude/rules/strict-tsconfig.md` — EPIC-131/132 tsconfig strict + scan-dead-code gate-paint 防御
+- `.claude/rules/recent-epics.md` — EPIC-209 24 EPICs 详情 (v3.32.2 → v3.34.6)
+- `.claude/rules/retrospective.md` — EPIC-161 retrospective routine 6 阶段
 
-**Reference docs** (15 个, docs/reference/, manual load):
+**Reference docs** (24 个, docs/reference/, manual load):
 - `branch-flow-history.md` / `cli-reference-2026-06-19.md` / `slash-commands-2026-06-19.md` / `dco-and-licensing.md` / 等
+
+**Manifesto** (5 文件, confluence/manifesto/, EPIC-206):
+- `01-top-design.md` / `02-scope-mission-vision.md` / `03-timeline.md` / `04-lessons.md` / `05-best-practices.md`
