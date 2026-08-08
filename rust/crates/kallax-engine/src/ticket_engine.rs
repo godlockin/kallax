@@ -456,18 +456,35 @@ mod tests {
     #[test]
     fn performer_can_claim_only_one_ticket_and_is_released_on_completion() {
         let engine = create_engine();
-        let first_id = engine.create_ticket(Ticket::new("First", "Description")).unwrap();
-        let second_id = engine.create_ticket(Ticket::new("Second", "Description")).unwrap();
-        let performer_id = engine.register_performer(Performer::new("Agent-1")).unwrap();
+        let first_id = engine
+            .create_ticket(Ticket::new("First", "Description"))
+            .unwrap();
+        let second_id = engine
+            .create_ticket(Ticket::new("Second", "Description"))
+            .unwrap();
+        let performer_id = engine
+            .register_performer(Performer::new("Agent-1"))
+            .unwrap();
 
-        engine.claim_ticket(first_id.as_str(), &performer_id).unwrap();
+        engine
+            .claim_ticket(first_id.as_str(), &performer_id)
+            .unwrap();
         let performer = engine.get_performer(performer_id.as_str()).unwrap();
         assert_eq!(performer.status(), kallax_core::PerformerStatus::Busy);
-        assert_eq!(performer.current_task().map(TaskId::as_str), Some(first_id.as_str()));
+        assert_eq!(
+            performer.current_task().map(TaskId::as_str),
+            Some(first_id.as_str())
+        );
 
         let second_claim = engine.claim_ticket(second_id.as_str(), &performer_id);
-        assert!(matches!(second_claim, Err(KallaxError::InvalidState { .. })));
-        assert_eq!(engine.get_ticket(second_id.as_str()).unwrap().status(), TicketStatus::Ready);
+        assert!(matches!(
+            second_claim,
+            Err(KallaxError::InvalidState { .. })
+        ));
+        assert_eq!(
+            engine.get_ticket(second_id.as_str()).unwrap().status(),
+            TicketStatus::Ready
+        );
 
         engine.complete_ticket(first_id.as_str()).unwrap();
         let performer = engine.get_performer(performer_id.as_str()).unwrap();
