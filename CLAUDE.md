@@ -101,6 +101,7 @@ cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run \
 - 4 指标全 PASS 才算 Sprint 闭环 (跟 Rule 35 Sprint 时间盒 联合)
 - 0 数据 (NO_DATA exit=2) 触发 ASK, 不接受 silent PASS
 - docs-only EPIC 用 `--docs-only` flag 跳过 (exit 3 DOCS_ONLY_SKIP, 跟 EPIC-198 + EPIC-204 1:1)
+- **历史 EPIC 归档跳过** (EPIC-223): EPIC 编号 ≤ `jira/tickets/.archive-baseline.json` `archived_before` (当前 222) → 指标 #4 返回 `ARCHIVED_SKIP`, 不回溯. 新卡 (> 222) 强制 `check-ticket-schema.sh` required_fields 全填.
 
 **跟现有 Rule 联合 (0 增)**:
 - Rule 5 (DRY): 跨 EPIC 复用 ≥ 60% (跟 EPIC-023-C 北极星 #2 一致)
@@ -142,29 +143,24 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 **if-then 详细规则** (4 阶段 × 5 验证站): 详见 `.claude/rules/branch-flow.md`
 
-**4-branch bypass 历史债 备案 (EPIC-155 + EPIC-176 + EPIC-208, 主公拍板)**:
-- 5 commits bypass (a8da33f / 1482ffa / 40e2b8e / 30e923a / 33ecc9b, 主公拍接受丢失 Phase 3 + Phase 5 A)
-- 4 commits bypass (EPIC-203/204/205/206 testing→main, 主公 2026-08-08 拍板接受丢失)
-- EPIC-155/176 + EPIC-208 计划 Q3 2026 retractively re-promote
+**4-branch bypass 历史债 (EPIC-155 + EPIC-176 已闭环, EPIC-208 待办)**:
+- **已 re-promote** (EPIC-178, 2026-08-05): 5 commits 已 re-apply 带 `[Q3-repromote]` prefix + DCO — 详见 `confluence/decisions/epic-178-q3-repromote-2026-08-05.md`
+- **待 re-promote**: EPIC-208 4 commits (EPIC-203/204/205/206 testing→main, 主公 2026-08-08 拍板接受丢失)
+- **本次新增债** (EPIC-223 备案): EPIC-217 PR-2 用 `--delete-branch` 删 testing → EPIC-218~222 跳过 testing 阶段直接 feature→main
 
-## 5. 4 不可更改 法律 (immutable scripts) + smoke retention
+## 5. 5 不可更改 法律 (immutable scripts) + 2 smoke 辅助
 
-> **P0-7 路径澄清 (v3.32.1)**: 5 个 immutable scripts **不**全部在 `scripts/permission/`. 实际分布:
-> - 4 个在 `scripts/verify/` — `check-decorative-claim.sh`, `check-narrative.sh`, `check-fail-closed.sh`, `check-self-heal.sh`
-> - 1 个在 `scripts/hooks/` — `check-claim-evidence.sh` (pre-commit hook 上下文, 仅扫 staged files)
-> - 退出码契约: 0=PASS, 1=FAIL (fail-closed, 禁止 print FAIL + exit 0); `scan-dead-code.sh` 加 2=BLOCKED-env (P0-7 治理)
->
-> **smoke retention (v3.32.20)**: `docs/process/smoke-retention-policy.md` — 5 条规则治理 smoke 测试膨胀 (>=500 行告警)
+> **数字对齐 (EPIC-223, 主公 2026-08-08 拍板)**: 本节曾出现 4/5/6/7 四个不一致数字, 已统一.
+> **完整清单 + 改数字强制流程**: 详见 `.claude/rules/immutable-scripts.md` (path-scoped lazy load).
 
-| Script | Path | 职责 |
-|--------|------|------|
-| `check-decorative-claim.sh` | `scripts/verify/` | 0 装饰 引用 |
-| `check-narrative.sh` | `scripts/verify/` | 0 narrative 包装 |
-| `check-fail-closed.sh` | `scripts/verify/` | 0 fail-open |
-| `check-self-heal.sh` | `scripts/verify/` | self-heal pattern |
-| `check-claim-evidence.sh` | `scripts/hooks/` | EPIC-069-D, README/CHANGELOG 数字必带 raw test output, pre-commit |
-| `check-smoke-retention.sh` | `scripts/` | EPIC-174, smoke >=500 行检测 |
-| `smoke-size-report.sh` | `scripts/audit/` | EPIC-174, smoke 状态报告 |
+**5 immutable** (4 verify + 1 hook, fail-closed 0=PASS/1=FAIL, 改动需主公亲自):
+`check-decorative-claim.sh` / `check-narrative.sh` / `check-fail-closed.sh` / `check-self-heal.sh` (均在 `scripts/verify/`) + `check-claim-evidence.sh` (`scripts/hooks/`, EPIC-069-D, 仅扫 staged)
+
+**2 辅助** (非 immutable, 可迭代): `check-smoke-retention.sh` (`scripts/`) + `smoke-size-report.sh` (`scripts/audit/`) — EPIC-174, smoke >=500 行告警
+
+**不算 immutable**: `scan-dead-code.sh` (三态 0/1/2=BLOCKED-env, 跟二态契约不同, P0-7 治理)
+
+**待接入不登记**: `snapshot-claude-md.sh` (EPIC-219) + `check-disclaimer.sh` (EPIC-220) + `check-ticket-schema.sh` (EPIC-223) 已 merge 但 `.githooks`/`.github` 0 引用, 接入后 5 → 8
 
 ## 6. Recent EPICs
 
@@ -185,6 +181,7 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 - `.claude/rules/branch-flow.md` — 4-branch flow if-then 详细
 - `.claude/rules/strict-tsconfig.md` — EPIC-131/132 tsconfig strict + scan-dead-code gate-paint 防御
 - `.claude/rules/recent-epics.md` — EPIC-209 24 EPICs 详情 (v3.32.2 → v3.34.6)
+- `.claude/rules/immutable-scripts.md` — EPIC-223 immutable 数字对齐 (5 immutable + 2 辅助 + 3 待接入) + 改数字强制流程
 - `.claude/rules/retrospective.md` — EPIC-161 retrospective routine 6 阶段
 
 **Reference docs** (24 个, docs/reference/, manual load):
