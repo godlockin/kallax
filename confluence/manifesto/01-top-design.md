@@ -73,6 +73,32 @@ Sprint 闭环 (Rule 35)
 4 北极星指标 PASS / NO_DATA / DOCS_ONLY_SKIP
 ```
 
+## 5.1 技术栈现状 (2026-08-08 主公拍板, EPIC-215)
+
+| 语言 | 角色 | 落地 | 状态 |
+|------|------|------|------|
+| **Rust** | L1 Core (~5ms startup) | `rust/crates/` (5 crates 整合: core / engine / cli / server / ticket-engine) | ✅ Active |
+| **Node.js** | L2 Fallback (~400ms) | `node/` (Web Dashboard / Hook Events / 5-Level Scripts / Decision Matrix / Sub-Role Dispatcher / EPIC 4-Piece) | ✅ Active |
+| **Python** | 辅助工具 (非内核) | `scripts/expert-generate-l3.py` (主公 ~/.claude 全局通用) | ⚠️ 1 helper only |
+| **Shell** | 5 immutable scripts 载体 + install.sh Omnibus | `scripts/verify/*.sh` + `scripts/hooks/check-claim-evidence.sh` + `scripts/install.sh` (95 files deploy) | ✅ Active |
+| **TypeScript** | Node.js 配套 | `node/src/**/*.ts` (ESLint strict 跟 EPIC-131/132 联合) | ✅ Active |
+
+**3 层降级架构** (跟 README + EPIC-160 1:1 联合):
+
+```
+Rust Core (L1, ~5ms)
+   ↓ fallback (rust_binary_missing / startup_timeout 5s / crash × 3)
+Node.js Layer (L2, ~400ms)
+   ↓ fallback (node_not_found / npm_modules_missing / startup_timeout 10s / crash × 5)
+Shell Layer (L3, ~50ms)
+   ↓ heartbeat check / file queue / git commit+push / ticket 状态读取
+```
+
+**关键澄清** (跟 v3.0.0 era 区别):
+- v3.0.0 声称 "1 binary 整合 (kallax)" — 实际 Rust + Node 双 binary (跟 3 层降级 1:1)
+- Python 不是内核 (跟 README §目录结构 v3.0.0 era 误导区别)
+- Shell 是 6 immutable scripts 载体 (4 verify + 1 hook + 1 smoke retention, 跟 EPIC-069-D + EPIC-174 联合)
+
 ## 6. 跟 ARCHITECTURE.md 关系
 
 | 维度 | docs/ARCHITECTURE.md (v3.0.0) | confluence/manifesto/01-top-design.md |
