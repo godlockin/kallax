@@ -2,21 +2,36 @@
 
 > **K**nowledge-**A**ugmented **L**everaged **L**earning **A**gent e**X**ecutor
 
-**生产级 Claude Code 治理框架** | 借鉴 [eket](https://github.com/godlockin/eket) 极简哲学 | 30 EPIC 累计 (v3.32.2 → v3.34.6) | 0 跳流程, 0 估数字, 0 装饰性宣称
+**生产级 Claude Code 治理框架** — 让 AI 写的代码像 CI/CD 一样进 prod (EPIC-217, 30s elevator).
 
 ---
 
-## Why KALLAX?
+## What is KALLAX? (30 秒懂, EPIC-217)
 
-> Claude Code 解决 "AI 怎么写代码", **KALLAX 解决 "AI 写的代码怎么进 prod"**. 是 AI 工程界的 **"CI/CD for AI agents"**:
+> **Governance layer for Claude Code** — Claude Code 写代码, KALLAX 管代码怎么进 prod. 不替代 Claude Code, 不写代码, 只**审计 / 验证 / 治理**. **CI/CD for AI agents**.
 
-- **4-PR 工作流** (feature → testing → main → miao, 4 阶段 master review 强制, EPIC-074 + EPIC-207)
-- **5-Level Verify** (L1 git / L2 stdout / L3 4-expert / L4 independent / L5 boundary, EPIC-069-D 防假 PASS)
-- **36 Rule + 6 immutable scripts** (fail-closed, EPIC-069-D + EPIC-131/132 + EPIC-174)
-- **4 北极星指标** (expert_activation / cross_epic_reuse / ab_hit / mis_dispatch, EPIC-194 + EPIC-204 docs-only)
-- **9 专家 3 阶段治理** (Conductor + 4 default + 5 extended, EPIC-056-A)
+**不是**: 替代 Claude Code 的 runtime / 新的 agent 框架 / IDE 插件.
+**是**: Claude Code 的 4-PR chain + 5-Level Verify + 6 immutable scripts + 4 北极星指标 — **AI 写的代码进 prod 之前必经的治理 gate**.
 
-## Why KALLAX vs Claude Code?
+## When to use KALLAX? (场景维度, 替代规模维度, EPIC-217)
+
+| 场景 | 推荐 | 理由 |
+|------|------|------|
+| **governance-heavy multi-agent** (≥3 sub-agent 并行, 跨 worktree) | KALLAX 必须 | 4-PR + worktree 隔离 + 9 专家并行防 sub-agent 漂移 |
+| **regulated team** (金融 / 医疗 / 政企, 需 audit trail) | KALLAX 必须 | 5-Level Verify + Hash-Chain Audit + DCO + Apache 2.0 |
+| **Claude Code customization** (大量 skills / subagents / CLAUDE.md) | KALLAX 强烈推荐 | snapshot-claude-md (EPIC-219) + heartbeat-conductor (EPIC-218) + capability policy (EPIC-222 research) |
+| **单人开发, 简单脚本** | Claude Code 直用 | governance overhead > value, KALLAX 不适用 |
+
+**Trigger Signals** (任一命中, 立刻用 KALLAX):
+- "上次 prod 假 PASS" → 5-Level Verify + check-claim-evidence (EPIC-069-D, EPIC-220 扩展)
+- "team ≥3 sub-agent 并行, 分不清谁做了什么" → 4-PR + 9 专家并行 (EPIC-056-A)
+- "PR 经常 skip review" → 4-PR master review 强制 (EPIC-074 + EPIC-207)
+- "bug 修过 3 次复发" → Rule 34 独立复现 (EPIC-152)
+- "CLAUDE.md 改坏, 只能 git log 救" → snapshot-claude-md (EPIC-219)
+
+---
+
+## Why KALLAX? (深入, 30 分钟读)
 
 | 维度 | Claude Code | KALLAX | 关系 |
 |------|-------------|--------|------|
@@ -26,20 +41,12 @@
 | **失败追溯** | session 关闭即丢失 | run-history emit + Hash-Chain Audit | KALLAX 持久 |
 | **Verify** | 无 | 5-Level Fact-Forcing (L1-L5 独立) | KALLAX 防假 PASS |
 
-**3 句使用判断**:
-
-| 场景 | 推荐 | 理由 |
-|------|------|------|
-| **单人开发, 简单脚本** | Claude Code | overhead > value, 直接够用 |
-| **team ≥ 3 人, 长期项目** | KALLAX | 5-Level Verify + 4-PR Chain 价值最大化 |
-| **Enterprise, 合规审计** | KALLAX 必须 | Audit trail + self-heal 满足合规 |
-
-**Trigger Signals** (出现任一则推荐 KALLAX):
-- "上次 prod 假 PASS"
-- "team 多人在做, 分不清谁做了什么"
-- "PR 经常 skip review"
-- "bug 修过 3 次复发"
-- "Claude Code session 关了上下文丢"
+5 大核心机制 (跟 EPIC-074 / EPIC-207 / EPIC-069-D / EPIC-131-132 / EPIC-174 / EPIC-056-A / EPIC-194 / EPIC-204 1:1):
+- **4-PR 工作流** (feature → testing → main → miao, master review 强制)
+- **5-Level Verify** (L1 git / L2 stdout / L3 4-expert / L4 independent / L5 boundary)
+- **36 Rule + 6 immutable scripts** (fail-closed, 防 commit / session / PR 漂移)
+- **4 北极星指标** (expert_activation / cross_epic_reuse / ab_hit / mis_dispatch)
+- **9 专家 3 阶段治理** (Conductor + 4 default + 5 extended)
 
 完整定位: [confluence/research/kallax-positioning-2026-08-05.md](confluence/research/kallax-positioning-2026-08-05.md) (EPIC-171, 3 视角: PR + CTO + Marketing)
 
