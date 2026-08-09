@@ -418,6 +418,38 @@ compute_ab_hit_rate() {
 
 # ─── Metric 4: mis_dispatch_rate ─────────────────────────────────────────────
 
+# EPIC-223 归档基线 helper (DRY: compute_mis_dispatch_rate + _binding_rate 共用)
+# 返回 0 = 该 EPIC 已归档 (编号 <= archived_before), 1 = 非归档
+is_archived_epic() {
+  local epic_num="$1"
+  local baseline="${JIRA_TICKETS_DIR}/.archive-baseline.json"
+  [ -f "$baseline" ] || return 1
+
+  local archived_before num_only
+  archived_before="$(jq -r '.archive_baseline.archived_before // 0' "$baseline" 2>/dev/null || echo 0)"
+  num_only="$(echo "$epic_num" | sed -E 's/^0*([0-9]+).*/\1/')"
+
+  [ -n "$num_only" ] || return 1
+  [ "$num_only" -le "$archived_before" ] 2>/dev/null || return 1
+  return 0
+}
+
+# 输出 ARCHIVED_SKIP JSON (跟 EPIC-204 exit 3 DOCS_ONLY_SKIP 同型)
+emit_archived_skip() {
+  local metric="$1" epic_id="$2" target="$3"
+  local baseline="${JIRA_TICKETS_DIR}/.archive-baseline.json"
+  local archived_before
+  archived_before="$(jq -r '.archive_baseline.archived_before // 0' "$baseline" 2>/dev/null || echo 0)"
+
+  log_warn "$metric" "epic=${epic_id} reason=archived_skip archived_before=${archived_before}"
+  jq -n \
+    --arg metric "$metric" \
+    --arg epic "$epic_id" \
+    --argjson target "$target" \
+    --argjson ab "$archived_before" \
+    '{metric:$metric, epic:$epic, mis_pct:0, target:$target, status:"ARCHIVED_SKIP", total:0, mis_dispatched:0, archived_before:$ab, breakdown:{}}'
+}
+
 # Performer 错派率: ticket 实际被分配的 Performer 与 file_scope 推断的 specialization 不一致
 # (或 ticket 未被派单 / file_scope 跨 specialization 冲突)
 #
@@ -426,6 +458,8 @@ compute_ab_hit_rate() {
 #   2. file_scope.includes 路径同时命中 ≥2 个 specialization (scope 冲突 → 必然错派)
 #
 # 数据源: ticket.json `performer` (performer-<EPIC>-<TICKET> 格式) + file_scope.includes
+# 归档语义 (EPIC-223): EPIC 编号 <= .archive-baseline.json archived_before → ARCHIVED_SKIP,
+#   历史 EPIC 不回溯 (工作已完成合并, 仅缺 ticket 元数据), 跟 EPIC-204 exit 3 同型
 # 输出: JSON object {mis_pct, target, status, total, mis_dispatched, breakdown: {reason: count}}
 compute_mis_dispatch_rate() {
   local epic_id="$1"
@@ -436,6 +470,12 @@ compute_mis_dispatch_rate() {
   local mis=0
   local reason_unassigned=0
   local reason_scope_conflict=0
+
+  # EPIC-223: 归档基线检查 — 历史 EPIC 跳过, 不回溯
+  if is_archived_epic "$epic_num"; then
+    emit_archived_skip "mis_dispatch_rate" "$epic_id" "$MIS_DISPATCH_TARGET_PCT"
+    return 0
+  fi
 
   for ticket_dir in "${JIRA_TICKETS_DIR}/EPIC-${epic_num}-"*/; do
     [ -d "$ticket_dir" ] || continue
@@ -520,6 +560,12 @@ compute_mis_dispatch_binding_rate() {
   local mis=0
   local reason_binding_divergent=0
   local reason_binding_unset=0
+
+  # EPIC-223: 归档基线检查 — 历史 EPIC 跳过, 不回溯
+  if is_archived_epic "$epic_num"; then
+    emit_archived_skip "mis_dispatch_binding_rate" "$epic_id" "$MIS_DISPATCH_TARGET_PCT"
+    return 0
+  fi
 
   # 同时支持 EPIC-XXX/ticket.json (root) 跟 EPIC-XXX-A/ticket.json (sub-ticket)
   for ticket_dir in "${JIRA_TICKETS_DIR}/EPIC-${epic_num}" "${JIRA_TICKETS_DIR}/EPIC-${epic_num}-"*/; do

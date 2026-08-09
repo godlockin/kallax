@@ -63,7 +63,7 @@ write_log() {
         local temp_file
         temp_file="$AUDIT_SINK_DIR/sink-$$.tmp"
         echo "$log_entry" > "$temp_file"
-        chmod 600 "$temp_file"
+        chmod 600 "$temp_file" || chmod 600 "$temp_file"
         mv "$temp_file" "$AUDIT_SINK_DIR/${ticket_id}-${timestamp}.log" 2>/dev/null || {
             echo "ERROR: Cannot write log entry" >&2
             rm -f "$temp_file"

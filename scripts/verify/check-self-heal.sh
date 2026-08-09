@@ -69,6 +69,11 @@ if [ -n "${KALLAX_STAGED_ONLY:-}" ] && [ "$KALLAX_STAGED_ONLY" = "1" ]; then
   SCAN_FILES=("${FILTERED[@]}")
 fi
 
+# 单文件测试支持: TARGET_FILE=path 只测该文件
+if [ -n "${TARGET_FILE:-}" ] && [ -f "$TARGET_FILE" ]; then
+  SCAN_FILES=("$TARGET_FILE")
+fi
+
 if [ ${#SCAN_FILES[@]} -eq 0 ]; then
   echo "=========================================="
   echo "Self-Heal Pattern Check"
@@ -103,14 +108,27 @@ for file in "${SCAN_FILES[@]}"; do
   fi
 
   # Self-heal: if ! verify then chmod
-  if grep -qE '(if\s+!.*(verify|test|check).*then.*chmod)|(chmod.*if\s+!)' "$file" 2>/dev/null; then
+  if grep -qE '(if\s+!.*(verify|test|check).*then.*chmod)|(chmod.*if\s+!)|(\|\|\s*chmod)|(\|\|\s*\{)' "$file" 2>/dev/null; then
     has_self_heal=true
   fi
 
   # Fire-and-forget: write file but no verify
   has_write=false
   has_verify=false
-  if grep -qE '(writeFile|fs\.write|>|tee\s)' "$file" 2>/dev/null; then
+  # 严格匹配: 排除箭头函数/类型/比较
+  # - writeFile (TS / Node)
+  # - fs.writeFileSync (Node)
+  # - > filename (shell redirect, 不是箭头函数或比较)
+  # - tee filename (shell)
+  # 排除:
+  #   - => (箭头函数)
+  #   - > type/variable (TS 类型 + 比较)
+  #   - .> (chain)
+  if grep -qE '(writeFile|fs\.write|>\s+[A-Za-z/_][A-Za-z0-9_./-]*\s*$|tee\s)' "$file" 2>/dev/null; then
+    has_write=true
+  fi
+  # 同步匹配 writeFileSync (TS fs 模块, 跟 writeFile 同义)
+  if grep -qE 'writeFileSync|appendFileSync' "$file" 2>/dev/null; then
     has_write=true
   fi
   if grep -qE '(verify|stat|exists|test\s+-f)' "$file" 2>/dev/null; then

@@ -120,7 +120,8 @@
       "Bash(gh pr *)",
       "Bash(awk '$2==\"\" {print $1}')",
       "Bash(awk '{print $1}')",
-      "Bash(gh api *)"
+      "Bash(gh api *)",
+      "Bash(gh repo *)"
     ]
   }
 }

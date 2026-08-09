@@ -12,7 +12,7 @@
 # Usage: conductor-scope-check.sh --action <action> [--actor <name>]
 # Example: conductor-scope-check.sh --action miao.write --actor "Steven Chen"
 #
-# P0 修复项 (跟 PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §3 + §4 联合):
+# P0 修复项 (依据 PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §3 + §4):
 #   - set -euo pipefail (BE-23 / BE-25 / BE-26 fixes in place)
 #   - SIGTERM handler (防 session_start.sh 类卡死, EPIC-026-A)
 #   - fail-closed: 任何错误 exit 1 deny
@@ -21,14 +21,14 @@
 #   - FIFO 非阻塞写 (防 audit log 卡死, EPIC-026-A)
 #   - role name validation (allowlist 防 trailing space, typo)
 #
-# 联动:
-#   - 跟 EPIC-022-B Pre-commit Hook + Conductor Scope Check 联合
-#   - 跟 BE-23 branch-aware action mapping 联合
-#   - 跟 BE-25 check-scope-creep TICKET_ID detection 联合
-#   - 跟 BE-26 pre-commit hook governance 联合
-#   - 跟 EPIC-022-A 3 Role Definition 联合
-#   - 跟 EPIC-026-A Bash hot path 6 P0 fixes 联合
-#   - 跟"翻篇&精进" 战略 联合 0 简单 记录
+# 相关 EPIC (EPIC-225 起禁黑话, 本段 2026-08-09 重写):
+#   - EPIC-022-B  pre-commit hook 调用本脚本 (Check 0.5)
+#   - BE-23       branch-aware action mapping (pre-commit 里 branch → action)
+#   - BE-25       check-scope-creep 的 TICKET_ID 探测
+#   - BE-26       pre-commit hook 治理
+#   - EPIC-022-A  3 role 定义 (master / conductor / performer)
+#   - EPIC-026-A  bash hot path 6 个 P0 修复
+#   - EPIC-232    state.json 路径改走 scripts/permission/lib/state-path.sh
 
 set -euo pipefail
 
@@ -42,7 +42,19 @@ trap cleanup SIGTERM
 # ── Paths (realpath first, P0 fix) ─────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
+# EPIC-232: 走共享 lib 解析 state.json (worktree 里回退主仓库共享 state).
+# 原先直接拼 ${KALLAX_ROOT}/.kallax/state/state.json, 在 worktree 里指向
+# worktree 自己 — 那里从来没有 state.json, 于是本脚本 exit 1,
+# pre-commit 报 "Conductor scope check DENIED" 而真因是配置缺失.
+_STATE_LIB="${KALLAX_ROOT}/scripts/permission/lib/state-path.sh"
+if [[ -f "$_STATE_LIB" ]]; then
+  # shellcheck source=lib/state-path.sh
+  . "$_STATE_LIB"
+  STATE_FILE="$(kallax_resolve_state_file "$KALLAX_ROOT")"
+else
+  echo "ERROR: state-path.sh lib not found: $_STATE_LIB" >&2
+  exit 1
+fi
 AUDIT_DB_DIR="${KALLAX_ROOT}/.kallax/data"
 AUDIT_LOG="${AUDIT_DB_DIR}/conductor-scope-audit.log"
 AUDIT_LOCK="${AUDIT_LOG}.lock"
@@ -105,14 +117,10 @@ if [[ -z "$ACTOR" ]]; then
 fi
 
 # ── Read role from state.json (P0: no env fallback per PHASE-002 9c) ────
-if [[ ! -f "$STATE_FILE" ]]; then
-  echo "ERROR: state.json not found: $STATE_FILE" >&2
-  exit 1
-fi
-
-ROLE="$(jq -r '.role // ""' "$STATE_FILE" 2>/dev/null)"
-if [[ -z "$ROLE" ]]; then
-  echo "ERROR: No role in state.json ($STATE_FILE)" >&2
+# EPIC-232: 走共享 lib — jq 读不到文件时 set -e 会在赋值处中断,
+# 下面的 -z 分支永远跑不到. kallax_read_role 内部用 || true 兜住.
+ROLE=""
+if ! ROLE="$(kallax_read_role "$STATE_FILE")"; then
   exit 1
 fi
 
@@ -127,8 +135,8 @@ fi
 # ── Conductor scope action definitions ─────────────────────────────────
 # Conductor-scope: actions a conductor CAN perform
 # Source: PERMISSION-MODEL-EXPERT-REVIEW-2026-06-07.md §3
-# 跟 EPIC-022-A 3 Role Definition 联合
-# 跟 node/src/permissions/conductor-scope.ts 联合 (TS side already defines)
+# 依据 EPIC-022-A 的 3 role 定义
+# 对应 node/src/permissions/conductor-scope.ts (TS 侧已定义同一份表)
 CONDUCTOR_SCOPE_ACTIONS=(
   "task.assign"
   "testing.merge"
@@ -139,7 +147,7 @@ CONDUCTOR_SCOPE_ACTIONS=(
 )
 
 # Conductor-blocked: actions a conductor CANNOT perform
-# 跟 跟 conductor blocked miao 联合
+# conductor 被禁止 miao.write / miao.merge / release.tag
 CONDUCTOR_BLOCKED_ACTIONS=(
   "miao.write"
   "miao.merge"
@@ -207,7 +215,7 @@ check_conductor_scope() {
 }
 
 # ── Audit logging (P0: fail-closed for state-changing, FIFO non-blocking) ─
-# Mirrors authz/check.sh log_audit() pattern; 跟 EPIC-026-A 联合
+# Mirrors authz/check.sh log_audit(); FIFO 非阻塞写来自 EPIC-026-A
 log_audit() {
   local role="$1"
   local action="$2"

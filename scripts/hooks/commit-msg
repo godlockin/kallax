@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# KALLAX commit-msg hook — EPIC-224 (激活 EPIC-221 commitlint.config.js)
+#
+# EPIC-221 加了 commitlint.config.js 但没装 runner → config 是死文件.
+# 本 hook 用纯 bash 实现同等检查 (不依赖 npx commitlint, 免 node_modules 依赖).
+#
+# 检查项 (跟 commitlint.config.js rules 1:1):
+#   1. DCO Signed-off-by trailer 必填 (跟 .github/dco.yml 1:1)
+#   2. Conventional Commits type (跟 type-enum 1:1)
+#   3. header 长度 <= 100 (跟 header-max-length 1:1)
+#
+# Exit: 0 = PASS, 1 = FAIL (fail-closed)
+set -euo pipefail
+
+MSG_FILE="${1:-}"
+[ -n "$MSG_FILE" ] || exit 0
+[ -f "$MSG_FILE" ] || exit 0
+
+# Bypass (主公 approval)
+if [ "${KALLAX_HOOK_BYPASS:-0}" = "1" ]; then
+  exit 0
+fi
+
+SUBJECT="$(head -1 "$MSG_FILE")"
+
+# 跳过 merge / revert / fixup / squash commit
+case "$SUBJECT" in
+  Merge*|Revert*|fixup!*|squash!*) exit 0 ;;
+esac
+
+failed=0
+
+# ── Check 1: DCO Signed-off-by trailer ─────────────────────────────────
+if ! grep -qE '^Signed-off-by:[[:space:]].+[[:space:]]<.+@.+>$' "$MSG_FILE"; then
+  echo "BLOCKED: commit 缺 Signed-off-by trailer (DCO)"
+  echo "  Fix: git commit -s   (或手动加 'Signed-off-by: Name <email>')"
+  failed=1
+fi
+
+# ── Check 2: Conventional Commits type ─────────────────────────────────
+if ! echo "$SUBJECT" | grep -qE '^(feat|fix|docs|refactor|test|chore|ci|release|style|perf)(\(.+\))?!?:[[:space:]]'; then
+  echo "BLOCKED: commit subject 不符合 Conventional Commits"
+  echo "  got:      $SUBJECT"
+  echo "  expected: <type>(<scope>): <subject>"
+  echo "  types:    feat|fix|docs|refactor|test|chore|ci|release|style|perf"
+  failed=1
+fi
+
+# ── Check 3: header 长度 <= 100 ────────────────────────────────────────
+SUBJECT_LEN="${#SUBJECT}"
+if [ "$SUBJECT_LEN" -gt 100 ]; then
+  echo "BLOCKED: commit subject $SUBJECT_LEN 字符 > 100 上限 (Rule 8 联合)"
+  failed=1
+fi
+
+if [ "$failed" -eq 1 ]; then
+  echo ""
+  echo "  Bypass (主公 approval): KALLAX_HOOK_BYPASS=1 git commit ..."
+  exit 1
+fi
+
+exit 0

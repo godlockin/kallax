@@ -28,6 +28,17 @@ INBOX_DIR="${KALLAX_ROOT}/queue/inbox"
 LOG_DIR="${KALLAX_ROOT}/logs"
 SCRIPTS_DIR="${SCRIPTS_DIR:-$(cd "$(dirname "${KALLAX_ROOT}/..")/scripts" && pwd)}"
 
+# EPIC-232: KALLAX_ROOT 在本仓库有 2 种互斥语义, 不能混用:
+#   语义 B (本文件, 上面 3 行): KALLAX_ROOT = .kallax 目录本身 → 拼 $KALLAX_ROOT/instances
+#   语义 A (9 authz 脚本):      KALLAX_ROOT = 仓库根          → 拼 $KALLAX_ROOT/.kallax/state
+# EPIC-068-A 加 state.json 双写时按语义 A 拼了 ${KALLAX_ROOT}/.kallax/state,
+# 但本文件的 KALLAX_ROOT 是语义 B, 结果写到 .kallax/.kallax/state/state.json (多一层).
+# 后果: 9 authz 脚本读不到 → jq exit 2 → set -e 中断 → pre-commit 报"授权拒绝"
+#       (错误信息指向错误方向, 真因是配置文件缺失).
+# 修法: 不改 KALLAX_ROOT 定义 (会崩上面 3 行), 改用显式命名的 STATE_DIR.
+KALLAX_REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+KALLAX_STATE_DIR="${KALLAX_REPO_ROOT}/.kallax/state"
+
 HOSTNAME="${HOSTNAME:-$(hostname 2>/dev/null || echo 'unknown')}"
 PID="${$}"
 
@@ -192,8 +203,9 @@ fi
 # Create directories
 # ============================================================
 # EPIC-068-A: 9 authz scripts read .kallax/state/state.json (统一入口)
+# EPIC-232: 用 KALLAX_STATE_DIR (语义明确), 不用 ${KALLAX_ROOT}/.kallax (双层 bug)
 # Old INSTANCES_DIR path kept for historical/audit compat (双写)
-mkdir -p "${KALLAX_ROOT}/.kallax/state"
+mkdir -p "${KALLAX_STATE_DIR}"
 mkdir -p "${INSTANCES_DIR}/${INSTANCE_ID}"
 mkdir -p "${INBOX_DIR}/${INSTANCE_ID}"
 mkdir -p "${KALLAX_ROOT}/queue/outbox/${INSTANCE_ID}"
@@ -263,7 +275,7 @@ STATE
 
 # EPIC-068-A: Also write authz-readable path (.kallax/state/state.json)
 # Atomic via tmp + mv (防 partial read). 9 authz scripts read this path.
-_STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
+_STATE_FILE="${KALLAX_STATE_DIR}/state.json"  # EPIC-232
 _STATE_TMP="${_STATE_FILE}.tmp.$$"
 cp "${INSTANCES_DIR}/${INSTANCE_ID}/state.json" "${_STATE_TMP}" 2>/dev/null \
   || cat > "${_STATE_TMP}" << STATE_PRIMARY
@@ -298,7 +310,12 @@ unset _STATE_FILE _STATE_TMP
 # File is still authoritative (EPIC-068-A); DB is additive for
 # runtime queries. sqlite3 CLI missing / DB uninitialized → skip.
 # ============================================================
-_KDB="${KALLAX_ROOT}/.kallax/kallax.db"
+# EPIC-232: 原为 "${KALLAX_ROOT}/.kallax/kallax.db" — 2 个错:
+#   1. 双层 .kallax (同 state.json bug)
+#   2. 缺 data/ 子目录 — 实际位置是 .kallax/data/kallax.db
+# 因为是 fail-open ([ -f ] 不存在则 skip), 这个 triple-write 从 EPIC-113-A 起
+# 一直静默不生效, 无任何报错. 实测: find . -name kallax.db → .kallax/data/kallax.db
+_KDB="${KALLAX_REPO_ROOT}/.kallax/data/kallax.db"
 if command -v sqlite3 >/dev/null 2>&1 && [ -f "${_KDB}" ]; then
   # role → instances.role: master maps to conductor (schema CHECK constraint)
   _DB_ROLE="conductor"
@@ -514,7 +531,7 @@ fi
 # Reads existing mode from state.json; if absent, prompts interactive menu.
 # Idempotent: already-set mode skips menu.
 # ============================================================
-_STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
+_STATE_FILE="${KALLAX_STATE_DIR}/state.json"  # EPIC-232
 MODE=$(jq -r '.mode // "null"' "$_STATE_FILE" 2>/dev/null || echo "null")
 if [[ -z "$MODE" ]] || [[ "$MODE" == "null" ]]; then
   echo ""
