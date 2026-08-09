@@ -3,7 +3,7 @@
   "epic": "EPIC-160",
   "phase": "PHASE-018",
   "title": "install.sh Omnibus — 框架全部件部署 + 升级 update (commands/rules/experts/skills/hooks)",
-  "status": "in_progress",
+  "status": "done",
   "priority": "P1",
   "type": "feature",
   "created_at": "2026-08-03",
@@ -65,5 +65,8 @@
     "docs/reference/installation-2026-08-03.md (新 ref doc)"
   ],
   "estimated_hours": 3,
-  "created_by": "master (主公 2026-08-03 拍板: framework 全部件 (command/rules/experts/skills/hooks) 在新环境 onboarding + update 时一并部署)"
+  "created_by": "master (主公 2026-08-03 拍板: framework 全部件 (command/rules/experts/skills/hooks) 在新环境 onboarding + update 时一并部署)",
+  "_archived_at": "2026-08-09",
+  "_archive_reason": "EPIC-228 + EPIC-223 1:1 历史划线: install.sh Omnibus — 95 files deploy, EPIC-224 升级版",
+  "_archive_method": "EPIC-228 batch (跟 EPIC-223 ticket 归档同型)"
 }

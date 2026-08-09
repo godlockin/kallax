@@ -87,5 +87,8 @@
     "confluence/decisions/epic-168-bg-2026-08-05.md (新)"
   ],
   "estimated_hours": 12,
-  "created_by": "master (主公 2026-08-05 Phase 5 G 闭环 EPIC-023-C)"
+  "created_by": "master (主公 2026-08-05 Phase 5 G 闭环 EPIC-023-C)",
+  "_pending_master_review": true,
+  "_pending_master_review_at": "2026-08-09",
+  "_pending_master_review_reason": "EPIC-228 audit: 复杂票 (security / expert plugin / daemon 真跑) 待公亲自审, 不在本 batch 划线"
 }

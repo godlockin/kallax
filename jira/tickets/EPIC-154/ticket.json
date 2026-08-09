@@ -3,7 +3,7 @@
   "epic": "EPIC-154",
   "phase": "PHASE-018",
   "title": "scripts/install.sh 半途 abort + 漏 copy kallax/ subdir — 2 处 跟 EPIC-134-A fix 联根",
-  "status": "open",
+  "status": "done",
   "priority": "P0",
   "type": "bugfix",
   "created_at": "2026-07-28",
@@ -22,7 +22,12 @@
     "0 新基础设施 (跟 Rule 5 DRY 联合, 0 增 immutable script)",
     "0 行为变化 (除修复外的 install 路径必须保持兼容)"
   ],
-  "labels": ["real-bug", "install-sh", "epic-134-a-followup", "env-blocker-doc"],
+  "labels": [
+    "real-bug",
+    "install-sh",
+    "epic-134-a-followup",
+    "env-blocker-doc"
+  ],
   "derived_from": "本地 main 用户实测 7-day staleness 链 (跟 EPIC-133/134/135 canary 联合)",
   "verification": {
     "date": "2026-07-28",
@@ -93,5 +98,8 @@
     "files_modified_by_this_ticket": "scripts/install.sh (1 file, +10/-1 lines)",
     "error_count_before": "2 (md_count unbound abort + subdir 静默 skip)",
     "error_count_after": "0"
-  }
+  },
+  "_archived_at": "2026-08-09",
+  "_archive_reason": "EPIC-228 + EPIC-223 1:1 历史划线: install.sh 半途 abort — EPIC-177-G emit 闭环已修",
+  "_archive_method": "EPIC-228 batch (跟 EPIC-223 ticket 归档同型)"
 }

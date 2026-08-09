@@ -63,5 +63,8 @@
     "confluence/decisions/epic-166-daemon-runtime-verification-2026-08-05.md (新, 含 raw output)"
   ],
   "estimated_hours": 3,
-  "created_by": "master (主公 2026-08-05 拍板 Phase 5 F: EPIC-166 daemon 真跑验证)"
+  "created_by": "master (主公 2026-08-05 拍板 Phase 5 F: EPIC-166 daemon 真跑验证)",
+  "_pending_master_review": true,
+  "_pending_master_review_at": "2026-08-09",
+  "_pending_master_review_reason": "EPIC-228 audit: 复杂票 (security / expert plugin / daemon 真跑) 待公亲自审, 不在本 batch 划线"
 }

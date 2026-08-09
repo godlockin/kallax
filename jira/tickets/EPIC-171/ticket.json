@@ -3,7 +3,7 @@
   "epic": "EPIC-171",
   "phase": "PHASE-021",
   "title": "战略沉淀 — 3 视角 (PR+CTO+Marketing) 报告落 confluence/research + README.en 加 Why KALLAX vs Claude Code? 段",
-  "status": "in_progress",
+  "status": "done",
   "priority": "P1",
   "type": "feature",
   "created_at": "2026-08-05",
@@ -71,5 +71,8 @@
     "tests/integration/strategy-deposit-assets.test.sh (新, ≥5 case)"
   ],
   "estimated_hours": 6,
-  "created_by": "master (主公 2026-08-05 拍板: 战略沉淀到 confluence/research + README.en)"
+  "created_by": "master (主公 2026-08-05 拍板: 战略沉淀到 confluence/research + README.en)",
+  "_archived_at": "2026-08-09",
+  "_archive_reason": "EPIC-228 + EPIC-223 1:1 历史划线: 战略沉淀 3 视角 — confluence/research/kallax-positioning-2026-08-05.md",
+  "_archive_method": "EPIC-228 batch (跟 EPIC-223 ticket 归档同型)"
 }

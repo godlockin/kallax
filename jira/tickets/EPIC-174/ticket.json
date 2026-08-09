@@ -3,7 +3,7 @@
   "epic": "EPIC-174",
   "phase": "PHASE-022",
   "title": "Smoke Retention Policy — 5 条规则治理测试膨胀",
-  "status": "in_progress",
+  "status": "done",
   "priority": "P2",
   "type": "feature",
   "created_at": "2026-08-05",
@@ -73,5 +73,8 @@
     "confluence/decisions/epic-174-smoke-retention-2026-08-05.md (新)"
   ],
   "estimated_hours": 6,
-  "created_by": "master (主公 2026-08-05 Phase 5 D 拍板: loopx Smoke Retention Policy 借鉴)"
+  "created_by": "master (主公 2026-08-05 Phase 5 D 拍板: loopx Smoke Retention Policy 借鉴)",
+  "_archived_at": "2026-08-09",
+  "_archive_reason": "EPIC-228 + EPIC-223 1:1 历史划线: Smoke Retention Policy — scripts/check-smoke-retention.sh 500 行告警",
+  "_archive_method": "EPIC-228 batch (跟 EPIC-223 ticket 归档同型)"
 }

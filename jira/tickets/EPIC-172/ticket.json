@@ -3,7 +3,7 @@
   "epic": "EPIC-172",
   "phase": "PHASE-021",
   "title": "公开化协同 — 借鉴 loopx 1.5k stars 路径, 落地 Lark 群 + hosted frontstage",
-  "status": "in_progress",
+  "status": "done",
   "priority": "P1",
   "type": "feature",
   "created_at": "2026-08-05",
@@ -88,5 +88,8 @@
     "confluence/decisions/epic-172-public-coord-2026-08-05.md (新, 含 90/180 天 KPI)"
   ],
   "estimated_hours": 12,
-  "created_by": "master (主公 2026-08-05 拍板: 借鉴 loopx 1.5k stars 路径, 落地 Lark 群 + hosted frontstage)"
+  "created_by": "master (主公 2026-08-05 拍板: 借鉴 loopx 1.5k stars 路径, 落地 Lark 群 + hosted frontstage)",
+  "_archived_at": "2026-08-09",
+  "_archive_reason": "EPIC-228 + EPIC-223 1:1 历史划线: 公开化协同 — web/showcase/ + docs/community/ + EPIC-213 elevator",
+  "_archive_method": "EPIC-228 batch (跟 EPIC-223 ticket 归档同型)"
 }

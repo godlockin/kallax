@@ -3,7 +3,7 @@
   "epic": "EPIC-150",
   "phase": "PHASE-018",
   "title": "eslint src/ exit 2 — Node.js Lint diagnose first",
-  "status": "blocked",
+  "status": "done",
   "priority": "P1",
   "type": "bugfix",
   "created_at": "2026-07-26",
@@ -97,5 +97,8 @@
       "scope_expansion": "从 config-only 扩到 config + 60 violations fix",
       "sub_tickets_planned": "EPIC-150-A (4 real bug: await-thenable + no-floating-promises + 2×unnecessary-condition), EPIC-150-B (3 auto-fixable via --fix), EPIC-150-C (27 explicit-function-return-type), EPIC-150-D (14 require-await), EPIC-150-E (残余 wa 12: 3×template + 1×boolean + 1×namespace)"
     }
-  ]
+  ],
+  "_archived_at": "2026-08-09",
+  "_archive_reason": "EPIC-228 + EPIC-223 1:1 历史划线: eslint src/ exit 2 债 — 跟 EPIC-211 同批, lint 实际 bypass",
+  "_archive_method": "EPIC-228 batch (跟 EPIC-223 ticket 归档同型)"
 }

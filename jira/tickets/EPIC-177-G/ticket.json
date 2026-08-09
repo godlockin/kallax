@@ -1,9 +1,12 @@
 {
   "ticket_id": "EPIC-177-G",
-  "status": "todo",
+  "status": "done",
   "expert_binding": {
     "suggested_expert": "backend",
     "actual_expert": "backend",
     "expert_binding_at": "2026-08-05T14:23:44Z"
-  }
+  },
+  "_archived_at": "2026-08-09",
+  "_archive_reason": "EPIC-228 + EPIC-223 1:1 历史划线: run-history emit 闭环 — v3.33.0 已 merge 6 脚本",
+  "_archive_method": "EPIC-228 batch (跟 EPIC-223 ticket 归档同型)"
 }

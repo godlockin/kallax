@@ -71,5 +71,8 @@
     "confluence/decisions/epic-170-complete-plugin-2026-08-05.md (新)"
   ],
   "estimated_hours": 4,
-  "created_by": "master (Phase 5C 拍板: EPIC-162 完整 plugin 化)"
+  "created_by": "master (Phase 5C 拍板: EPIC-162 完整 plugin 化)",
+  "_pending_master_review": true,
+  "_pending_master_review_at": "2026-08-09",
+  "_pending_master_review_reason": "EPIC-228 audit: 复杂票 (security / expert plugin / daemon 真跑) 待公亲自审, 不在本 batch 划线"
 }

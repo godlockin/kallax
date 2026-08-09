@@ -78,5 +78,8 @@
     "confluence/decisions/epic-175-security-extended-2026-08-05.md (新)"
   ],
   "estimated_hours": 10,
-  "created_by": "master (主公 2026-08-05 Phase 5 D 拍板: loopx Security Rules 强化借鉴)"
+  "created_by": "master (主公 2026-08-05 Phase 5 D 拍板: loopx Security Rules 强化借鉴)",
+  "_pending_master_review": true,
+  "_pending_master_review_at": "2026-08-09",
+  "_pending_master_review_reason": "EPIC-228 audit: 复杂票 (security / expert plugin / daemon 真跑) 待公亲自审, 不在本 batch 划线"
 }
