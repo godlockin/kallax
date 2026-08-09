@@ -1,0 +1,58 @@
+{
+  "_comment": "KALLAX ticket 归档基线 — EPIC-223 (主公 2026-08-08 拍板)",
+  "_why": "EPIC-178~222 共 45 EPIC 工作已完成并合并 miao, 但只写 confluence/decisions/*.md 未建 ticket.json. 追溯填表 0 价值 (工作已完成, 反向填表不产生新信息), 且现存 ticket 的 performer 字段本身就是 null — 指标 #4 在历史 ticket 上算不出来. 主公拍板: 归档历史, check 不回溯, 新卡强制标准.",
+  "_how_to_apply": "scripts/metrics/lib/metrics.sh + scripts/verify/check-ticket-schema.sh 读本文件, EPIC 编号 <= archived_before 则跳过检查 (status ARCHIVED_SKIP), > archived_before 则强制 required_fields 全填.",
+
+  "archive_baseline": {
+    "archived_before": 222,
+    "cutoff_date": "2026-08-08",
+    "cutoff_commit": "27d739d9",
+    "decision_doc": "confluence/decisions/EPIC-223-ticket-archive-2026-08-08.md",
+    "rationale": "EPIC-178~222 已完成合并, 仅缺 ticket.json 元数据. 历史不回溯, 新卡强制标准."
+  },
+
+  "archived_range": {
+    "from": 178,
+    "to": 222,
+    "count": 45,
+    "evidence": {
+      "ticket_dirs_end_at": "EPIC-177-G",
+      "decisions_docs_exist": true,
+      "merged_to_miao": true,
+      "changelog_recorded": 12,
+      "changelog_missing": 33
+    }
+  },
+
+  "new_ticket_required_fields": [
+    "id",
+    "status",
+    "title",
+    "performer",
+    "file_scope.includes",
+    "verification.reproduction_command",
+    "verification.reproduction_exit_code",
+    "verification.reproduction_raw_output"
+  ],
+
+  "field_exemptions": {
+    "docs_only": {
+      "exempt": ["verification.reproduction_command", "verification.reproduction_exit_code", "verification.reproduction_raw_output"],
+      "condition": "type == docs && 0 source code change",
+      "linkage": "EPIC-198 + EPIC-204 docs-only exempt 1:1"
+    },
+    "non_bugfix": {
+      "exempt": ["verification.reproduction_command", "verification.reproduction_exit_code", "verification.reproduction_raw_output"],
+      "condition": "type != bugfix",
+      "linkage": "Rule 34 仅约束 bugfix 1:1"
+    }
+  },
+
+  "linkage": [
+    "Rule 34 (bugfix 独立复现 3 字段) — EPIC-152",
+    "Rule 36 (4 北极星指标 #4 mis_dispatch 数据源) — EPIC-194",
+    "EPIC-157 (ticket.json expert_binding 字段)",
+    "EPIC-198 + EPIC-204 (docs-only exempt)",
+    "EPIC-221 (PR template Rule 34 3 字段门控)"
+  ]
+}

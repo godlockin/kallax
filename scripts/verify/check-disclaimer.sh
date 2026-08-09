@@ -21,6 +21,10 @@ REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 DISCLAIMER_KEYWORDS='(trusted|sandbox|secure|safe|guaranteed|always-works)'
 RAW_OUTPUT_PATTERN='raw[_ ]?output|raw_output|## 自动验证'
 
+# EPIC-229: baseline 划线 (跟 EPIC-225 jargon baseline 同原则)
+# 历史 .md (baseline commit 之前引入) 不追溯, 新增内容强制
+BASELINE_COMMIT="06e082b8"  # EPIC-226 合并点 (EPIC-229 引入 baseline 时的 main HEAD)
+
 cmd="${1:-scan}"
 shift || true
 
@@ -28,18 +32,57 @@ scan_disclaimers() {
   local path="${1:-.}"
   local violations=0
 
-  # grep 找含 disclaimer keyword 的行, 但未跟随 raw_output 引用
-  if grep -rEn "$DISCLAIMER_KEYWORDS" "$path" --include="*.md" 2>/dev/null | \
-     grep -v -E "(CHECKLIST|$0)" | \
-     grep -v -E "(${RAW_OUTPUT_PATTERN})" > /tmp/check-disclaimer-violations.txt; then
-    if [ -s /tmp/check-disclaimer-violations.txt ]; then
-      violations=$(wc -l < /tmp/check-disclaimer-violations.txt | tr -d ' ')
-      echo "FAIL: $violations disclaimer violations found (无 raw_output 引用):"
-      cat /tmp/check-disclaimer-violations.txt
-      echo ""
-      echo "Fix: 在 disclaimer 邻近 5 行内加 raw_output 引用 (跟 EPIC-069-D 1:1)"
-      exit 1
+  # EPIC-229 修 3 bug:
+  #   1. 排除 node_modules / rust/target / _archived (第三方 + 归档, 非本项目内容)
+  #   2. staged-only 模式 (pre-commit 用, 只扫本次改动)
+  #   3. baseline: 历史文件划线 (跟 EPIC-225 jargon baseline 同原则)
+  local scan_list="${TMPDIR:-/tmp}/check-disclaimer-files.txt"
+  if [ -n "${KALLAX_STAGED_ONLY:-}" ]; then
+    # pre-commit 模式: 只扫 staged .md
+    git diff --cached --name-only --diff-filter=ACM 2>/dev/null \
+      | grep -E '\.md$' > "$scan_list" || true
+  else
+    # 全仓模式: git ls-files 排除第三方 (比 grep -r 可靠)
+    # + baseline 划线: 只扫 baseline commit 之后新增/修改的 .md
+    if git rev-parse "$BASELINE_COMMIT" >/dev/null 2>&1; then
+      git diff --name-only "$BASELINE_COMMIT"..HEAD -- '*.md' 2>/dev/null \
+        | grep -vE '^(node_modules/|rust/target/|.*_archived/|docs/reference/)' > "$scan_list" || true
+      # 加上 untracked 新文件
+      git ls-files --others --exclude-standard '*.md' 2>/dev/null \
+        | grep -vE '^(node_modules/|rust/target/|.*_archived/|docs/reference/)' >> "$scan_list" || true
+    else
+      git ls-files '*.md' 2>/dev/null \
+        | grep -vE '^(node_modules/|rust/target/|.*_archived/|docs/reference/)' > "$scan_list" || true
     fi
+  fi
+
+  if [ ! -s "$scan_list" ]; then
+    echo "OK: no .md files to scan"
+    exit 0
+  fi
+
+  local hits="${TMPDIR:-/tmp}/check-disclaimer-violations.txt"
+  : > "$hits"
+  while IFS= read -r f; do
+    [ -z "$f" ] && continue
+    [ -f "$f" ] || continue
+    # 跳过本脚本自身 + CHECKLIST
+    case "$f" in
+      *check-disclaimer.sh|*CHECKLIST*) continue ;;
+    esac
+    grep -nE "$DISCLAIMER_KEYWORDS" "$f" 2>/dev/null \
+      | grep -vE "(${RAW_OUTPUT_PATTERN})" \
+      | sed "s|^|$f:|" >> "$hits" || true
+  done < "$scan_list"
+
+  if [ -s "$hits" ]; then
+    violations=$(wc -l < "$hits" | tr -d ' ')
+    echo "FAIL: $violations disclaimer violations found (无 raw_output 引用):"
+    head -20 "$hits"
+    [ "$violations" -gt 20 ] && echo "  ... (还有 $((violations - 20)) 个)"
+    echo ""
+    echo "Fix: 在 disclaimer 邻近 5 行内加 raw_output 引用 (跟 EPIC-069-D 配合)"
+    exit 1
   fi
   echo "OK: no disclaimer violations (含 raw_output 引用 OR 无 disclaimer keyword)"
   exit 0

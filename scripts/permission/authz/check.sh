@@ -26,7 +26,19 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 AUDIT_DB="${KALLAX_ROOT}/.kallax/data/authz.db"
 AUDIT_MW="${KALLAX_ROOT}/scripts/audit/audit-middleware.sh"
-STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
+
+# EPIC-232: state.json 路径解析抽到共享 lib (12 个脚本同样的 bug, Rule 5 DRY).
+# 详见 scripts/permission/lib/state-path.sh 头部注释.
+_STATE_LIB="${KALLAX_ROOT}/scripts/permission/lib/state-path.sh"
+if [[ -f "$_STATE_LIB" ]]; then
+  # shellcheck source=../lib/state-path.sh
+  . "$_STATE_LIB"
+  STATE_FILE="$(kallax_resolve_state_file "$KALLAX_ROOT")"
+else
+  # lib 缺失 = fail-closed, 不静默降级到可能错的路径
+  echo "ERROR: state-path.sh lib not found: $_STATE_LIB" >&2
+  exit 1
+fi
 
 # Default values
 ACTION=""
@@ -83,9 +95,9 @@ fi
 
 # Get current role: prefer KALLAX_CURRENT_ROLE env (test seam) > state.json
 # (--role CLI removed per PHASE-002 9c + security review)
-ROLE="$(jq -r '.role // ""' "$STATE_FILE" 2>/dev/null)"
-if [[ -z "$ROLE" ]]; then
-  echo "ERROR: No role in state.json ($STATE_FILE)" >&2
+# EPIC-232: 走共享 lib, 区分"配置缺失"跟"role 为空" (原先都塌成 exit 2)
+ROLE=""
+if ! ROLE="$(kallax_read_role "$STATE_FILE")"; then
   exit 1
 fi
 
@@ -208,7 +220,7 @@ log_audit() {
   fi
 }
 
-# EPIC-030-G / BE-19 联合: 同时写 audit.db (新 SQLite) 跟 audit_log table, 治理路径可追溯
+# EPIC-030-G / BE-19: 同时写 audit.db (SQLite) 和 audit_log table, 便于追溯
 # 失败不阻塞主流程 (audit.db 是 secondary audit; 主流程仍走 authz.db.log)
 write_audit_db_secondary() {
   local role="$1"

@@ -232,7 +232,7 @@ conflict_detect_report() {
 
   # 写入冲突报告
   echo "$report" > "$conflict_file"
-  chmod 600 "$conflict_file"
+  chmod 600 "$conflict_file" || chmod 600 "$conflict_file"
 
   echo "OK: Conflict report generated: $conflict_file"
   cat "$conflict_file"

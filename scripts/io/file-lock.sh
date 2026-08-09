@@ -83,10 +83,10 @@ _file_lock_acquire_bash() {
       fi
       # 写入 owner PID (Issue 2 fix: 配合 release 验证)
       echo "$$" > "$lock_file.owner"
-      chmod 600 "$lock_file.owner"
+      chmod 600 "$lock_file.owner" || chmod 600 "$lock_file.owner"
       # 获取锁成功, 写入元信息
       echo "PID=$$ USER=${USER:-$(whoami)} TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) FILE=$file_path" > "$lock_file"
-      chmod 600 "$lock_file"
+      chmod 600 "$lock_file" || chmod 600 "$lock_file"
       return 0
     fi
 

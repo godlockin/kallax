@@ -1,0 +1,33 @@
+{
+  "_comment": "Jargon 黑名单 baseline — EPIC-225 词表引入时刻的快照. EPIC-225 起所有新增 .md/.sh/.ts/.rs 不允许命中黑名单, 历史 commit (≤ 14eb7c4f) 跳过 (跟 EPIC-223 1:1).",
+  "_why": "4056 历史违规无法短期清理 (跟 EPIC-223 ticket 归档同型). 基线机制 = 仅约束新增, 跟 EPIC-224 hook 修复 + EPIC-223 归档同治根模式.",
+  "_enforcement": "scripts/verify/check-jargon.sh --staged 默认遵守此基线 (≤ baseline_commit 全豁免); --all 显示全部 4056 备案.",
+
+  "baseline_commit": "14eb7c4f011d7b8b7db14c561ecc2b6196c0b96c",
+  "baseline_commit_short": "14eb7c4f",
+  "baseline_date": "2026-08-08",
+  "epic": "EPIC-225",
+  "decision_doc": "confluence/decisions/EPIC-225-jargon-blacklist-2026-08-08.md",
+
+  "total_violations_at_baseline": 4056,
+  "violation_distribution": {
+    "_note": "主公指示 C 方案 (历史划线, 代码真修). CHANGELOG.md 历史叙述 + 19 处 self-heal 节点代码. 4056 命中绝大多数在 CHANGELOG.md (跟装饰性宣称 183 同源).",
+    "CHANGELOG.md_count": "~3900 (估算, 历史叙述)",
+    "node_src_count": "~50 (代码注释)",
+    "confluence_decisions_count": "~100",
+    "scripts_count": "~6"
+  },
+
+  "history_judgment": {
+    "what_skip": "所有 ≤ 14eb7c4f 的 commit 内容",
+    "why_skip": "跟 EPIC-223 ticket 归档 + EPIC-224 hook 失效债 1:1 — hook 失效期间累积, 不追溯",
+    "what_does_apply": "新增 commit 内容 (.md/.sh/.ts/.rs) — 0 黑话, fail-closed"
+  },
+
+  "linkage": [
+    "EPIC-223 archived_before=222 (ticket 归档)",
+    "EPIC-224 hook 修复 (gate 真生效前提)",
+    "EPIC-225 jargon blacklist (本文件)",
+    "CLAUDE.md '0 装饰性宣称' 价值观"
+  ]
+}
