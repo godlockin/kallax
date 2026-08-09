@@ -91,6 +91,25 @@ jobs:
           fi
           echo "OK: pre-push 无 unbound variable"
 
+      - name: Verify 4-branch flow 完整 (EPIC-229 防 testing 误删)
+        run: |
+          set -e
+          # 起因 (EPIC-217 事故): gh pr merge --delete-branch 删掉 testing,
+          # 导致 EPIC-218~222 跳过 testing 阶段直接 feature→main
+          if [ ! -x scripts/verify/check-branch-flow.sh ]; then
+            echo "FAIL: scripts/verify/check-branch-flow.sh missing or not executable"
+            exit 1
+          fi
+          bash -n scripts/verify/check-branch-flow.sh
+          echo "OK: check-branch-flow.sh syntax valid"
+          # CI 环境有 origin remote, 实跑验证
+          if bash scripts/verify/check-branch-flow.sh --verify; then
+            echo "OK: 4-branch flow 完整"
+          else
+            echo "FAIL: 4-branch flow 缺失 branch"
+            exit 1
+          fi
+
   # ============================================================
   # Node.js Checks
   # ============================================================
