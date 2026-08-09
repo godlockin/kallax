@@ -2,10 +2,10 @@
 # scripts/permission/role-transition.sh — Role transition CLI with audit log
 #
 # EPIC-022-D: master / conductor / performer / readonly / auditor transitions
-# 跟 EPIC-022-A 联合 (RBAC foundation) + 跟 BE-19 KALLAX authz bypass 联合
-# 跟"翻篇&精进" 战略 联合 (comprehensive audit, 0 简单 记录)
+# 跟 EPIC-022-A (RBAC foundation) + 跟 BE-19 KALLAX authz bypass
+# 翻篇+精进 (comprehensive audit, 0 简单记录) (comprehensive audit, 0 简单 记录)
 #
-# P0 修复项 (BE-19 + BE-23 + BE-25 + BE-26 联合):
+# P0 修复项 (BE-19 + BE-23 + BE-25 + BE-26):
 # - set -euo pipefail
 # - SIGTERM handler (防 session_start.sh 类卡死)
 # - fail-closed: 任何错误 exit 1 deny
@@ -26,7 +26,7 @@
 
 set -euo pipefail
 
-# SIGTERM handler (跟 session_start.sh 类卡死 防御模式 一致, EPIC-026-B)
+# SIGTERM handler (跟 session_start.sh 类卡死 防御模式, 跟 EPIC-026-B 相同)
 cleanup() {
   echo "DEBUG: role-transition.sh received SIGTERM, cleaning up..." >&2
   exit 130
@@ -35,11 +35,20 @@ trap cleanup SIGTERM
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
+
+# EPIC-236: state.json 路径走共享 lib (worktree fallback, fail-closed)
+_STATE_LIB="${KALLAX_ROOT}/scripts/permission/lib/state-path.sh"
+if [[ -f "$_STATE_LIB" ]]; then
+  . "$_STATE_LIB"
+  STATE_FILE="$(kallax_resolve_state_file "$KALLAX_ROOT")"
+else
+  echo "ERROR: state-path.sh lib not found: $_STATE_LIB" >&2
+  exit 1
+fi
 TRANSITION_LOG="${KALLAX_ROOT}/.kallax/data/role-transitions.jsonl"
 AUDIT_DB="${KALLAX_ROOT}/.kallax/data/authz.db"
 
-# 常量 (跟 CLAUDE.md Rule 4 联合: 0 magic numbers)
+# 常量 (依据 CLAUDE.md Rule 4 (0 magic numbers))
 ROLE_ALLOWLIST="master conductor performer readonly auditor super-admin emergency-responder"
 BREAK_GLASS_MAX_TTL_MS=3600000  # 1 hour in milliseconds
 TRANSITION_LOG_DIR="$(dirname "$TRANSITION_LOG")"
@@ -69,7 +78,7 @@ EOF
   exit 1
 }
 
-# Parse arguments (--from removed per BE-19 KALLAX authz bypass 联合)
+# Parse arguments (--from 移除依据 BE-19 KALLAX authz bypass)
 while [[ $# -gt 0 ]]; do
   case $1 in
     --to)
@@ -106,7 +115,7 @@ if [[ -z "$ACTOR" ]]; then
   ACTOR="UNKNOWN"
 fi
 
-# BE-19 联合: KALLAX_CURRENT_ROLE env bypass blocked
+# 依据 BE-19: KALLAX_CURRENT_ROLE env bypass blocked
 # 强制 role 必从 state.json 读, 禁止 env 兜底
 if [[ -n "${KALLAX_CURRENT_ROLE:-}" ]]; then
   echo "ERROR: KALLAX_CURRENT_ROLE env is set; ignored per BE-19 (state.json only)" >&2
@@ -118,13 +127,13 @@ if [[ ! -f "$STATE_FILE" ]]; then
   exit 1
 fi
 
-FROM_ROLE="$(jq -r '.role // ""' "$STATE_FILE" 2>/dev/null)"
-if [[ -z "$FROM_ROLE" ]]; then
+FROM_ROLE=""
+if ! FROM_ROLE="$(kallax_read_role "$STATE_FILE")"; then
   echo "ERROR: role not found in $STATE_FILE" >&2
   exit 1
 fi
 
-# BE-19 联合: state.json poison guard (unknown role fail-closed)
+# 依据 BE-19: state.json poison guard (unknown role fail-closed)
 if [[ " $ROLE_ALLOWLIST " != *" $FROM_ROLE "* ]]; then
   echo "ERROR: actor role '$FROM_ROLE' is not in allowlist" >&2
   exit 1
@@ -179,7 +188,7 @@ log_transition() {
       >> "$TRANSITION_LOG"
   fi
 
-  # Secondary audit trail (跟 EPIC-030-G audit.db 联合, 0 阻塞)
+  # Secondary audit trail (依据 EPIC-030-G audit.db (0 阻塞))
   if [[ -d "$(dirname "$AUDIT_DB")" ]]; then
     printf '[%s] role_transition from=%s to=%s actor=%s result=%s is_break_glass=%s\n' \
       "$timestamp" "$from" "$to" "$actor" "$result" "$is_bg" >> "${AUDIT_DB}.log" 2>/dev/null || true
@@ -191,7 +200,7 @@ is_valid_transition() {
   local from="$1"
   local to="$2"
 
-  # No-op guard (same role rejected, 跟 case branch dedup 联合)
+  # No-op guard (same role rejected, 依据 case branch dedup)
   [[ "$from" == "$to" ]] && return 1
 
   case "$from" in

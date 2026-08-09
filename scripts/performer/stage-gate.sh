@@ -3,7 +3,16 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
+
+# EPIC-236: state.json 路径走共享 lib (worktree fallback, fail-closed)
+_STATE_LIB="${KALLAX_ROOT}/scripts/permission/lib/state-path.sh"
+if [[ -f "$_STATE_LIB" ]]; then
+  . "$_STATE_LIB"
+  STATE_FILE="$(kallax_resolve_state_file "$KALLAX_ROOT")"
+else
+  echo "ERROR: state-path.sh lib not found: $_STATE_LIB" >&2
+  exit 1
+fi
 
 usage() {
   cat <<EOF
@@ -37,7 +46,7 @@ esac
 
 # Simple stages (claim/in_progress): AI handles autonomously in ALL 3 modes
 # (manual mode "ask every stage" is enforced at orchestration layer via decision-gate.sh,
-#  not at this stage-gate layer — 跟 AC L2 一致)
+#  not at this stage-gate layer — 跟 AC L2 相同)
 if [[ "$STAGE_COMPLEXITY" == "simple" ]]; then
   case "$MODE" in
     ai-auto|ai-copilot|manual)

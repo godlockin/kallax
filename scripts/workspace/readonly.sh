@@ -24,8 +24,17 @@ trap cleanup SIGTERM
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# EPIC-236: state.json 路径走共享 lib (worktree fallback, fail-closed)
+_STATE_LIB="${KALLAX_ROOT}/scripts/permission/lib/state-path.sh"
+if [[ -f "$_STATE_LIB" ]]; then
+  . "$_STATE_LIB"
+  STATE_FILE="$(kallax_resolve_state_file "$KALLAX_ROOT")"
+else
+  echo "ERROR: state-path.sh lib not found: $_STATE_LIB" >&2
+  exit 1
+fi
 AUDIT_DB="${KALLAX_ROOT}/.kallax/data/authz.db"
-STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
 
 TARGET_PATH=""
 ACTOR=""
@@ -101,9 +110,9 @@ fi
 
 # Role MUST come from state.json (--role CLI removed for security)
 # Unconditionally read state.json; missing/empty role fails the allowlist check below
-ROLE="$(jq -r '.role // ""' "$STATE_FILE")"
-if [[ -z "$ROLE" ]]; then
-  echo "ERROR: No role in state.json ($STATE_FILE)" >&2
+# EPIC-236: 走共享 lib
+ROLE=""
+if ! ROLE="$(kallax_read_role "$STATE_FILE")"; then
   exit 1
 fi
 
