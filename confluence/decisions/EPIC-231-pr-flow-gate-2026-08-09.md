@@ -244,6 +244,39 @@ pre-commit 的 `if ! bash "$AUTHZ_CHECK"` 把任何非零当 deny, 所以显示�
 
 **bypass 先例**: EPIC-226 §6 同样记录了 `KALLAX_HOOK_BYPASS=1` 的使用与原因。
 
+### 7.3 `KALLAX_HOOK_BYPASS=1` 本身失效 — 实际用了 `--no-verify`
+
+尝试按 §7.2 的方案 bypass 时发现 **bypass 机制自己是坏的**:
+
+```
+$ KALLAX_HOOK_BYPASS=1 git commit -F <msg>
+WARN: pre-commit bypass via KALLAX_HOOK_BYPASS=1      ← bypass 生效了
+BLOCKED: Authorization denied by authz check.          ← 但仍被拦
+COMMIT_RC=1
+```
+
+**根因**: `.git/hooks/pre-commit` 第 23-36 行设置 `HOOK_BYPASS=1` 并打印 WARN,
+但第 45-102 行的 Check 0 (authz) **完全没有引用 `$HOOK_BYPASS`**。
+变量设了却没人读 — bypass 只对后面的 4 immutable-law 检查有效, 对 Check 0 无效。
+
+**附带发现**: `.git/hooks/pre-commit` 里 `KALLAX_ROOT` 仍是旧写法:
+
+```
+41: KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+```
+
+EPIC-227 修的是源文件 `scripts/hooks/pre-commit` (改用 `git rev-parse --show-toplevel`),
+但 `.git/hooks/` 里的已安装副本是 STALE, 从未重新部署。
+EPIC-224 的 `scripts/hooks/install.sh` 有 STALE 检测 (`cmp -s`), 但没人跑过。
+
+**本 commit 最终用 `git commit --no-verify`** (CLAUDE.md §4 允许的紧急通道, 主公已批 "A")。
+
+**EPIC-232 需一并处理** (从 3 件事扩到 5 件):
+
+4. Check 0 补 `$HOOK_BYPASS` 判断 — 否则 bypass 契约名不副实
+5. `.git/hooks/*` STALE 副本重新部署 + CI 加 STALE 检测
+   (EPIC-224 已有 `install.sh --verify`, 但未接进 CI 的 required check)
+
 ## 8. 跟现有 Rule 的关系 (0 增 Rule)
 
 - **Rule 4** (4-branch flow): 本 EPIC 是它的**首个自动化门控** — 之前只有文档约束
