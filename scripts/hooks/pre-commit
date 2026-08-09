@@ -38,7 +38,11 @@ fi
 BRANCH="$(git branch --show-current)"
 ROLE_FILE=".kallax/state/instance_config.yml"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+# EPIC-227 修复: 用 git rev-parse --show-toplevel 取代 ../..
+# 原因: BASH_SOURCE[0] 解析的是 hook 装的位置, 在 worktree 里装到主 repo .git/hooks/ (git-common-dir),
+# 导致 KALLAX_ROOT 永远指主 repo, worktree 内的改动无法被 hook 检测.
+# --show-toplevel 返回当前 git 工作目录的根, worktree-aware.
+KALLAX_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || cd "$SCRIPT_DIR/../.." && pwd)"
 AUTHZ_CHECK="${KALLAX_ROOT}/scripts/permission/authz/check.sh"
 CONDUCTOR_SCOPE_CHECK="${KALLAX_ROOT}/scripts/permission/conductor-scope-check.sh"
 
