@@ -6,7 +6,16 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
+
+# EPIC-236: state.json 路径走共享 lib (worktree fallback, fail-closed)
+_STATE_LIB="${KALLAX_ROOT}/scripts/permission/lib/state-path.sh"
+if [[ -f "$_STATE_LIB" ]]; then
+  . "$_STATE_LIB"
+  STATE_FILE="$(kallax_resolve_state_file "$KALLAX_ROOT")"
+else
+  echo "ERROR: state-path.sh lib not found: $_STATE_LIB" >&2
+  exit 1
+fi
 AUDIT_DIR="${KALLAX_ROOT}/.kallax/audit"
 
 # Issue 2附加: redaction函数 — 剥离 Authorization/Bearer/password/token/Token/X-Auth-Token

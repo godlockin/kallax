@@ -1,9 +1,9 @@
 #!/bin/bash
 # scripts/permission/readonly-path.sh — Mark/check path as read-only for current role
 #
-# 跟 EPIC-022-C 联合 (Workspace Switch + Read-Only Path)
-# 跟 BE-19 KALLAX authz bypass 联合 (role MUST come from state.json)
-# 跟 BE-23/BE-25/BE-26 pre-commit 联合 0 --no-verify
+# 依据 EPIC-022-C (Workspace Switch + Read-Only Path)
+# 依据 BE-19 KALLAX authz bypass (role MUST come from state.json)
+# # 0 --no-verify
 #
 # P0 fixes (跟 templates/scripts/workspace/readonly.sh 升级, 0 简单 记录):
 #   - set -euo pipefail
@@ -35,7 +35,16 @@ trap cleanup SIGTERM
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KALLAX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-STATE_FILE="${KALLAX_ROOT}/.kallax/state/state.json"
+
+# EPIC-236: state.json 路径走共享 lib (worktree fallback, fail-closed)
+_STATE_LIB="${KALLAX_ROOT}/scripts/permission/lib/state-path.sh"
+if [[ -f "$_STATE_LIB" ]]; then
+  . "$_STATE_LIB"
+  STATE_FILE="$(kallax_resolve_state_file "$KALLAX_ROOT")"
+else
+  echo "ERROR: state-path.sh lib not found: $_STATE_LIB" >&2
+  exit 1
+fi
 AUDIT_DB="${KALLAX_ROOT}/.kallax/data/authz.db"
 
 TARGET_PATH=""
@@ -180,9 +189,9 @@ if [[ ! -f "$REAL_STATE_FILE" ]]; then
 fi
 
 # P0 fix: role comes only from authoritative state.json.
-ROLE="$(jq -r '.role // ""' "$REAL_STATE_FILE" 2>/dev/null)"
-if [[ -z "$ROLE" ]]; then
-  echo "ERROR: No role in state.json ($REAL_STATE_FILE)" >&2
+# EPIC-236: 走共享 lib
+ROLE=""
+if ! ROLE="$(kallax_read_role "$REAL_STATE_FILE")"; then
   exit 1
 fi
 
