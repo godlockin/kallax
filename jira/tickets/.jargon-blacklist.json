@@ -1,0 +1,88 @@
+{
+  "_comment": "KALLAX 黑话 (decorative jargon) 词表 — EPIC-225 (主公 2026-08-08 拍板). 跟 check-decorative-claim.sh 1:1 联合 (历史表述, EPIC-225 后该表述也禁).",
+  "_why": "主公 2026-08-08 拍板 '以后都要禁止使用黑话'. 黑话是装饰性宣称, 不携带可验证信息, 跟 CLAUDE.md '0 装饰性宣称' + '0 估数字' 价值观冲突.",
+  "_scope": "新增内容 (.md / .sh / .ts / .rs / commit message / PR description / confluence/decisions/*). 历史内容不追溯 (备案, 跟 EPIC-223 归档基线 1:1).",
+
+  "blacklist": {
+    "decorative_connector": {
+      "description": "装饰性连接词, 把多个概念粘合但 0 新信息",
+      "patterns": [
+        {"phrase": "1:1", "regex": "\\b1:\\s?1\\b", "replace": "删, 或写具体 '参考 §X'"},
+        {"phrase": "联合", "regex": "联合", "replace": "用 '且' 或 '逗号', 或拆句"},
+        {"phrase": "闭环", "regex": "闭环", "replace": "用 '完成' / '已落地' / '跑通'"},
+        {"phrase": "治根", "regex": "治根", "replace": "写具体修了什么 (e.g. '加 retry + idempotent key')"},
+        {"phrase": "1:1 联合", "regex": "1:\\s?1\\s?联合", "replace": "拆成 2 句, 第一句说参考, 第二句说跟随"}
+      ]
+    },
+    "strategy_filler": {
+      "description": "战略级 filler, 没具体动作",
+      "patterns": [
+        {"phrase": "战略", "regex": "\\b战略\\b", "replace": "删, 或写具体目标"},
+        {"phrase": "一致", "regex": "一致", "replace": "删, 上下文已说明 '跟什么' 时直接说 '同'"}
+      ]
+    },
+    "decorative_adjective": {
+      "description": "装饰性形容词, 不携带可测量信息",
+      "patterns": [
+        {"phrase": "生产级", "regex": "生产级", "replace": "删 / 写 'CI 全绿 + immutable scripts 生效' 等可验证"},
+        {"phrase": "彻底", "regex": "彻底", "replace": "删"},
+        {"phrase": "完全", "regex": "完全", "replace": "删"},
+        {"phrase": "100%", "regex": "100%", "replace": "写具体: 'X 个全跑' / 'exit 0'"},
+        {"phrase": "零缺陷", "regex": "零缺陷", "replace": "删"}
+      ]
+    },
+    "metric_falsification": {
+      "description": "没有 raw output 锚定的数字宣称",
+      "patterns": [
+        {"phrase": "X/Y PASS 无命令引用", "regex": "[0-9]+/[0-9]+\\s+(PASS|passed)", "replace": "附 '`bash <cmd>`' 或 'exit=0'"}
+      ]
+    }
+  },
+
+  "white_list_exemptions": [
+    {
+      "pattern": "rule-37.md|immutable-scripts.md|EPIC-225|jargon",
+      "reason": "讨论 jargon 本身的元文档必须使用术语"
+    },
+    {
+      "pattern": "## 黑话|Jargon|黑名单|blacklist",
+      "reason": "本文件 §blacklist 的字面引用"
+    }
+  ],
+
+  "enforcement": {
+    "gate_script": "scripts/verify/check-jargon.sh",
+    "pre_commit_gate": "已接入 pre-commit (EPIC-225 修改)",
+    "ci_step": ".github/workflows/ci.yml hook-health 含 jargon 检查",
+    "exit_codes": {
+      "0": "PASS (无黑话)",
+      "1": "FAIL (找到黑话, fail-closed)"
+    }
+  },
+
+  "linkage": [
+    "CLAUDE.md '0 装饰性宣称 + 0 估数字' 价值观",
+    "Rule 5 DRY (黑话是冗余)",
+    "Rule 9 KPI X/Y (数字必有 raw_output)",
+    "EPIC-069-D check-claim-evidence (数字必有 raw output)",
+    "EPIC-223 归档基线 (历史不追溯, 新内容强制)"
+  ],
+
+  "baseline": {
+    "blacklist_introduated": "2026-08-08",
+    "decision_doc": "confluence/decisions/EPIC-225-jargon-blacklist-2026-08-08.md",
+    "epic": "EPIC-225",
+    "commit_main": "14eb7c4f (EPIC-224 合并)",
+    "total_violations_at_baseline": 4056,
+    "history_skip_rationale": "跟 EPIC-223 ticket 归档 1:1 — 历史内容不追溯, 新增内容强制. 4056 命中绝大多数是 CHANGELOG.md 历史累积 (跟装饰性宣称同源). "
+  },
+
+  "history_audit": {
+    "window": "2026-07-20 → 2026-08-08 (EPIC-131 → EPIC-224)",
+    "commits": 272,
+    "decorative_claim_violations_now": 183,
+    "evidence_fake_now": 5,
+    "self_heal_now": 19,
+    "judgment": "历史内容不追溯, 跟 EPIC-223 1:1. EPIC-225 仅约束新增内容."
+  }
+}

@@ -273,6 +273,31 @@ if [[ -n "$_staged_gov" ]]; then
   fi
 fi
 
+# ── EPIC-225: jargon black list (主公 2026-08-08 拍板 "以后都要禁止使用黑话") ─
+# 扫 staged .md/.sh/.ts/.rs, 命中黑名单 fail-closed.
+# 跟装饰性宣称区别: 装饰性宣称是宽松模式 (措辞扫描), jargon 是严格黑名单 (0 黑话).
+# Baseline (跟 EPIC-223 1:1): 历史违规 (≤ 14eb7c4f) 划线, 新增强制.
+if [[ "$HOOK_BYPASS" -eq 0 ]]; then
+  JARGON_CHECK="${KALLAX_ROOT}/scripts/verify/check-jargon.sh"
+  if [[ -x "$JARGON_CHECK" ]]; then
+    _staged_jargon="$(git diff --cached --name-only --diff-filter=ACM \
+      -- '*.md' '*.sh' '*.ts' '*.rs' 2>/dev/null || true)"
+    if [[ -n "$_staged_jargon" ]]; then
+      if ! bash "$JARGON_CHECK" --staged >/dev/null 2>&1; then
+        echo "╔══════════════════════════════════════════════════════════════╗"
+        echo "║  BLOCKED: jargon violation (EPIC-225)                     ║"
+        echo "║  Run: bash scripts/verify/check-jargon.sh --staged        ║"
+        echo "║  List: jira/tickets/.jargon-blacklist.json                 ║"
+        echo "║  Bypass (主公 approval): KALLAX_HOOK_BYPASS=1 git commit ... ║"
+        echo "╚══════════════════════════════════════════════════════════════╝"
+        # 输出具体违规位置
+        bash "$JARGON_CHECK" --staged 2>&1 | head -30 || true
+        exit 1
+      fi
+    fi
+  fi
+fi
+
 # ── EPIC-223: 新 ticket schema gate ─────────────────────────────────────
 # staged 的 ticket.json 若属 > archived_before 的 EPIC, 强制 required_fields.
 if [[ "$HOOK_BYPASS" -eq 0 ]]; then

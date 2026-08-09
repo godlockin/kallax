@@ -148,14 +148,15 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 - **待 re-promote**: EPIC-208 4 commits (EPIC-203/204/205/206 testing→main, 主公 2026-08-08 拍板接受丢失)
 - **本次新增债** (EPIC-223 备案): EPIC-217 PR-2 用 `--delete-branch` 删 testing → EPIC-218~222 跳过 testing 阶段直接 feature→main
 
-## 5. 8 不可更改 法律 (immutable scripts) + 2 smoke 辅助
+## 5. 9 不可更改 法律 (immutable scripts) + 2 smoke 辅助
 
-> **数字对齐 (EPIC-223 + EPIC-224, 主公 2026-08-08 拍板)**: 曾出现 4/5/6/7 四个不一致数字, 已统一.
+> **数字对齐 (EPIC-223 + EPIC-224 + EPIC-225, 主公 2026-08-08 拍板)**: 曾出现 4/5/6/7 四个不一致数字, 已统一.
 > **完整清单 + 改数字强制流程**: 详见 `.claude/rules/immutable-scripts.md` (path-scoped lazy load).
 
-**8 immutable** (fail-closed, 改动需主公亲自), 全部**已接入 hook** (EPIC-224 验证):
+**9 immutable** (fail-closed, 改动需主公亲自), 全部**已接入 hook** (EPIC-224 验证):
 - **原 5**: `check-decorative-claim.sh` / `check-narrative.sh` / `check-fail-closed.sh` / `check-self-heal.sh` (`scripts/verify/`) + `check-claim-evidence.sh` (`scripts/hooks/`, EPIC-069-D)
 - **EPIC-224 接入 3**: `check-disclaimer.sh` (EPIC-220, staged .md) + `snapshot-claude-md.sh` (EPIC-219, advisory) + `check-ticket-schema.sh` (EPIC-223, staged ticket.json)
+- **EPIC-225 新增 1**: `check-jargon.sh` (黑名单扫 staged, 主公 2026-08-08 拍板 "以后都要禁止使用黑话")
 
 **2 辅助** (非 immutable, 可迭代): `check-smoke-retention.sh` (`scripts/`) + `smoke-size-report.sh` (`scripts/audit/`) — EPIC-174, smoke >=500 行告警
 
