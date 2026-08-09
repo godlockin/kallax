@@ -140,8 +140,12 @@ esac
 
 violations=$(wc -l < "$HITS_FILE" 2>/dev/null | tr -d ' ' || echo 0)
 # 每个 finding 占 3 行 (file:line — pat /  > content + 空行)
-# 用 grep -c 直接数违规数 (每行的第一行 = finding 数)
-real_hits=$(grep -cE '^  [^ ].*:.*—' "$HITS_FILE" 2>/dev/null || echo 0)
+# EPIC-229 修 2 bug: grep -c 多行输出 + grep 无匹配时 exit 1 触发 set -e
+real_hits=0
+if [ -s "$HITS_FILE" ]; then
+  real_hits=$(grep -cE '^  [^ ].*:.*—' "$HITS_FILE" 2>/dev/null | head -1 | tr -d ' \n' || true)
+  real_hits="${real_hits:-0}"
+fi
 violations=$((real_hits + 0))
 
 # 输出命中 (限 20 行, 否则太长)
