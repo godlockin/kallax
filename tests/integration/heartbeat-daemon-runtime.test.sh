@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # tests/integration/heartbeat-daemon-runtime.test.sh — EPIC-168-F
 # 验证 EPIC-166 (Heartbeat Daemon + Quota + Run History) 真跑有效
-# 跟 EPIC-069-D 5-Level Verify 1:1 防止假 PASS
+# 跟 EPIC-069-D 5-Level Verify 同样模式, 防止假 PASS
 
 set -uo pipefail
 
@@ -102,9 +102,11 @@ else
 fi
 
 # TC6: state 持久化
+# 注: heartbeat-daemon.log 仅在 daemon 长跑时生成, 测试不实跑 daemon.
+# quota-db.json 和 run-history.jsonl 来自 TC2-5 直接调用, 必存在.
 echo ""
-echo "TC6: state persistence"
-for f in heartbeat-daemon.log quota-db.json run-history.jsonl; do
+echo "TC6: state persistence (daemon log excluded — test doesn't run daemon long)"
+for f in quota-db.json run-history.jsonl; do
     if [ -f "$STATE_DIR/$f" ]; then
         size=$(wc -c < "$STATE_DIR/$f" | tr -d ' ')
         pass "$f exists ($size bytes)"
@@ -132,11 +134,14 @@ echo ""
 echo "TC8: 5-Level Verify L1-L5"
 L1=$(git status --short --branch 2>&1 | head -1)
 L2=$(for s in "$DAEMON_SCRIPT" "$QUOTA_SCRIPT" "$SCHEDULER_SCRIPT" "$RUN_HISTORY_SCRIPT"; do bash -n "$s" 2>&1; done; echo "")
-L4=$(bash "${SCRIPT_DIR}/../../scripts/scan-dead-code.sh" > /dev/null 2>&1; echo $?)
-if [ -n "$L1" ] && [ -z "$L2" ] && [ "$L4" = "2" ]; then
-    pass "L1 git + L2 build + L4 BLOCKED-env"
+# EPIC-245: L4 不写死 "=2". scan-dead-code 退出码 0=PASS / 1=FAIL / 2=BLOCKED-env.
+# 期望 0 或 2 (环境差异), 1 才是真违规.
+L4_cwd=$(bash "${SCRIPT_DIR}/../../scripts/scan-dead-code.sh" > /dev/null 2>&1; echo $?)
+L4_repo=$(cd "${SCRIPT_DIR}/../.." && bash "scripts/scan-dead-code.sh" > /dev/null 2>&1; echo $?)
+if [ -n "$L1" ] && [ -z "$L2" ] && [ "$L4_cwd" != "1" ] && [ "$L4_repo" != "1" ]; then
+    pass "L1 git + L2 build + L4 (0=PASS 或 2=BLOCKED-env, 实际 L4_cwd=$L4_cwd L4_repo=$L4_repo)"
 else
-    fail "5-Level" "L1='$L1' L4=$L4 (expected 2)"
+    fail "5-Level" "L1='$L1' L2='$L2' L4_cwd=$L4_cwd L4_repo=$L4_repo (期望 L4 为 0 或 2)"
 fi
 
 # Summary
