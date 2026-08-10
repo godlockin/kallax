@@ -370,8 +370,13 @@ if [[ "$HOOK_BYPASS" -eq 0 ]]; then
       while IFS= read -r _tj; do
         [[ -n "$_tj" ]] || continue
         _epic="$(basename "$(dirname "$_tj")")"
-        bash "$TICKET_SCHEMA_CHECK" "$_epic" >/dev/null 2>&1
-        _rc=$?
+        # EPIC-245: set -e 下 `cmd; _rc=$?` 在 cmd 非零时会先中断,
+        # `_rc=$?` 永远执行不到 → exit 3 (ARCHIVED_SKIP) 被当成 fail,
+        # hook 静默 abort (无任何 fail 原因输出).
+        # 跟 EPIC-232 bug 3 同型 (jq exit 2 在 set -e 下中断).
+        # 修法: `|| _rc=$?` 兜住非零, 让下面的分支判断能跑到.
+        _rc=0
+        bash "$TICKET_SCHEMA_CHECK" "$_epic" >/dev/null 2>&1 || _rc=$?
         # exit 3 = ARCHIVED_SKIP (历史 EPIC, 不回溯) → 放行
         if [[ "$_rc" -eq 1 ]]; then
           echo "BLOCKED: $_epic ticket.json schema 不合规 (EPIC-223)"
