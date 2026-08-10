@@ -3,7 +3,7 @@
   "epic": "EPIC-168-F",
   "phase": "PHASE-020",
   "title": "EPIC-166 daemon 真跑验证 — 防止假 PASS",
-  "status": "in_progress",
+  "status": "done",
   "priority": "P0",
   "type": "verification",
   "created_at": "2026-08-05",
@@ -63,5 +63,8 @@
     "confluence/decisions/epic-166-daemon-runtime-verification-2026-08-05.md (新, 含 raw output)"
   ],
   "estimated_hours": 3,
-  "created_by": "master (主公 2026-08-05 拍板 Phase 5 F: EPIC-166 daemon 真跑验证)"
+  "created_by": "master (主公 2026-08-05 拍板 Phase 5 F: EPIC-166 daemon 真跑验证)",
+  "_archive_reason": "EPIC-244 独立复现验证: 证据充分 (见 confluence/decisions/EPIC-244-ticket-archive-2026-08-10.md)",
+  "_archive_method": "grep + wc + 真跑测试 (Rule 34 独立复现)",
+  "_archived_at": "2026-08-10T03:40:00Z"
 }
