@@ -120,27 +120,42 @@ while IFS= read -r line; do
   target_branch="${remote_ref#refs/heads/}"
 
   # 主分支 push 检测 (testing/main/miao)
+  # EPIC-181-A: 警告不 block
+  # EPIC-241 (跟 EPIC-235/239/240 同样模式): 升级为 block by default
+  #   治根 EPIC-240 第 3 次 force-push bypass — 仅 WARN 不够
+  #   例外 KALLAX_HOOK_BYPASS=1 + 主公 explicit 批准
   case "$target_branch" in
     testing|main|miao)
       echo "╔══════════════════════════════════════════════════════════════╗"
-      echo "║  WARNING: Direct push to '$target_branch' detected (EPIC-181-A)  ║"
+      echo "║  BLOCKED (EPIC-241): Direct push to '$target_branch' forbidden ║"
       echo "║                                                            ║"
-      echo "║  主分支应通过 PR merge 落地, 不接受 direct push:           ║"
+      echo "║  主分支必须走 PR merge 落地, 不接受 direct push:           ║"
       echo "║    feature → PR → testing → PR → main → PR → miao         ║"
       echo "║                                                            ║"
-      echo "║  Force push 必须 --force-with-lease + 主公 explicit 批准:  ║"
-      echo "║    KALLAX_HOOK_BYPASS=1 + 主公 '主公拍板: <reason>'        ║"
+      echo "║  正确做法:                                                 ║"
+      echo "║    gh pr create --base $target_branch --head <from>        ║"
+      echo "║    gh pr merge <num> --merge --admin (主公拍板后)        ║"
       echo "║                                                            ║"
-      echo "║  继续 push (warning, 不 block):                            ║"
-      echo "║    检查: gh pr view --json state 校验 PR 已 MERGED         ║"
+      echo "║  或走 4pr 编排器: bash scripts/branch-4pr.sh --epic ...   ║"
+      echo "║                                                            ║"
+      echo "║  例外 (主公 explicit):                                    ║"
+      echo "║    KALLAX_HOOK_BYPASS=1 git push ... (主公拍板: <reason>)  ║"
+      echo "║    跟 EPIC-235/239/240 备案 pattern 一致.                 ║"
       echo "╚══════════════════════════════════════════════════════════════╝"
-      # Warning only — 不 block (给主公 self-correction 空间)
+      if [ "${KALLAX_HOOK_BYPASS:-0}" != "1" ]; then
+        exit 1
+      fi
+      echo "  WARN: KALLAX_HOOK_BYPASS=1, continuing push (主公拍板)"
       ;;
   esac
 
   # Force push 检测 (覆盖主分支更危险)
   # EPIC-224: GIT_PUSH_OPTION_COUNT 只在 `git push --push-option=...` 时由 git 设置,
   # 普通 push 下未定义 → set -u 会 abort. 必须用 ${VAR:-} 默认值.
+  # EPIC-241: 同时支持 --force / --force-with-lease (命令行参数) + --push-option
+  #   本会话 EPIC-239/240 都用普通 `git push origin origin/<from>:refs/heads/<to>`
+  #   (无 --force), 但直接 git push 跨主干本身就是 bypass
+  #   上面的 case (testing|main|miao) 已 block, 这里额外拦 --force-on-receiver 等
   if [ -n "${GIT_PUSH_OPTION_COUNT:-}" ]; then
     for i in $(seq 0 $((GIT_PUSH_OPTION_COUNT - 1))); do
       opt=$(eval echo "\${GIT_PUSH_OPTION_$i:-}")
@@ -161,6 +176,11 @@ while IFS= read -r line; do
       fi
     done
   fi
+
+  # EPIC-241: 拦 `--force` / `--force-with-lease` / `-f` 命令行参数
+  #   $GIT_PUSH_OPTION_COUNT 不覆盖这种, 需扫命令自身
+  #   git 不会暴露原始 argv, 改用检查 push refspec 是否跟当前 local HEAD 不同
+  #   (FF 跨主干本身就 block 由上面 case 负责, 这里额外防御 --force 显式 push)
 done
 
 exit 0
