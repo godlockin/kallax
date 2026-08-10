@@ -50,4 +50,27 @@ if PR base = miao:
 - 紧急 bypass 仅 `git commit --no-verify` (主公明确批准时)
 - 同类假 PASS 症状再次出现 → pre-commit hook 拦截
 
+## 未来分工 (EPIC-242 拍板, 2026-08-10)
+
+| 阶段 | 实际拍板 | 备注 |
+|------|----------|------|
+| feature/* → testing | **master** (=主公, 单人环境) | 0 sub-roles 模拟 (本环境限制) |
+| testing → main | **master** (=主公, 单人环境) | 0 sub-roles 模拟 (本环境限制) |
+| **main → miao** | **主公亲自** (不再 master 自合) | **本 EPIC 起严格**, 跟 EPIC-242 §3 同步 |
+
+**反例 (本会话已发生 3 次, EPIC-235/239/240 备案)**:
+- `git push origin origin/<from>:refs/heads/<to>` 跳过 PR (PR-2/PR-3)
+- `git commit --amend --no-edit` + `git push --force-with-lease` (amend 历史污染)
+- `gh pr close --delete-branch` 删远程 branch 后立即重建 (绕过 4pr review)
+
+**预防 (EPIC-241)**:
+- `scripts/hooks/pre-push` 跨主干 push block by default
+- 例外 `KALLAX_HOOK_BYPASS=1` + 主公 explicit 批准
+
+## 0 增 Rule (本 EPIC)
+
+本规则**不增 Rule, 不改 CLAUDE.md** (CLAUDE.md §1-7 含历史债 25 处黑话词, EPIC-225 当时不扫既有文件; 跟 README EPIC-217 同样处理 — 历史债不追溯).
+
+仅在 `.claude/rules/branch-flow.md` (path-scoped, 0 黑话) 新增 1 段.
+
 详细: `confluence/decisions/branch-flow-governance-2026-07-09.md`
