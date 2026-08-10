@@ -74,5 +74,8 @@
   "created_by": "master (Phase 5C 拍板: EPIC-162 完整 plugin 化)",
   "_pending_master_review": true,
   "_pending_master_review_at": "2026-08-09",
-  "_pending_master_review_reason": "EPIC-228 audit: 复杂票 (security / expert plugin / daemon 真跑) 待公亲自审, 不在本 batch 划线"
+  "_pending_master_review_reason": "真缺口, 需补实现后才能判 done",
+  "_audit_result": "12/24 PASS 真缺口: skill-policy.sh 中 enabled_policy 跟 activation grep = 0, 未实现",
+  "_audit_method": "bash tests/integration/skill-plugin-complete.test.sh + grep -cE enabled_policy 或 activation",
+  "_audited_at": "2026-08-10T03:40:00Z"
 }
