@@ -3,7 +3,7 @@
   "epic": "EPIC-168-BG",
   "phase": "PHASE-020",
   "title": "EPIC-166 daemon 3 bug 修复 + 北极星 dashboard (主公 Phase 5 G 闭环 EPIC-023-C)",
-  "status": "in_progress",
+  "status": "done",
   "priority": "P0",
   "type": "feature",
   "created_at": "2026-08-05",
@@ -87,5 +87,8 @@
     "confluence/decisions/epic-168-bg-2026-08-05.md (新)"
   ],
   "estimated_hours": 12,
-  "created_by": "master (主公 2026-08-05 Phase 5 G 闭环 EPIC-023-C)"
+  "created_by": "master (主公 2026-08-05 Phase 5 G 闭环 EPIC-023-C)",
+  "_archive_reason": "EPIC-244 独立复现验证: 证据充分 (见 confluence/decisions/EPIC-244-ticket-archive-2026-08-10.md)",
+  "_archive_method": "grep + wc + 真跑测试 (Rule 34 独立复现)",
+  "_archived_at": "2026-08-10T03:40:00Z"
 }
