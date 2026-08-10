@@ -203,7 +203,23 @@ workspace_exec_backend() {
 
   case "$backend" in
     local)
-      workspace_exec "$cmd" "$timeout"
+      # EPIC-247: 原来这里写 `workspace_exec "$cmd" "$timeout"`, 而
+      # workspace_exec 又 delegate 回 workspace_exec_backend → 无限递归 → SIGSEGV.
+      # 修法: local 分支内联本地执行 (恢复 a166d500~1 里 workspace_exec 的实现).
+      if [[ -z "$WORKSPACE_CWD" ]]; then
+        echo "ERROR: workspace not initialized. Call workspace_init() first." >&2
+        return 1
+      fi
+      cd "$WORKSPACE_CWD" || return 1
+      if command -v timeout &>/dev/null; then
+        timeout "$timeout" bash -c "$cmd" 2>&1 || {
+          local rc=$?
+          [[ $rc -eq 124 ]] && echo "ERROR: command timed out after ${timeout}s: $cmd" >&2
+          return $rc
+        }
+      else
+        bash -c "$cmd" 2>&1
+      fi
       ;;
     ssh)
       if [[ -z "$WORKSPACE_SSH_HOST" ]]; then
