@@ -179,6 +179,7 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 **EPIC-170 skill plugin complete (v3.32.16+)** — 9 expert skill 包 (7 default + 5 extended -3 = 9) `enabled_policy` frontmatter 4 态 (default/enabled/disabled/owner-gated), `scripts/skill/skill-policy.sh` 持久化到 `state/skill-policy.json` (enable/disable/list/check/reset), `scripts/skill/skill-manager.sh validate` 5 步 gate (resolve_project/architecture_check/owner_gated/policy_check/...). 跨 package 互引用 INDEX.md 验证, policy 失效回退 default (frontmatter). 0 改 source code, 跟 EPIC-162 拆包基础联合.
 
+**EPIC-160 install.sh Omnibus (v3.32.5+)** — `scripts/install.sh` 全部件 deploy + `--inventory`/`--update`/3 skip flag, 95 files 覆盖 (commands/rules/experts/skills/hooks). `--inventory` 列 source→target 映射 (EPIC-069-D 透明可验证), `--update` 走 symlink mode 不破 user-customized files. 部署 `~/.claude/{commands,skills,rules,hooks,experts,settings.json}` 完整, re-run idempotent (13/13 test PASS). Lazy-load ref: `.claude/rules/installation.md` (paths: `scripts/install.sh`).
 ## 7. 引用 (lazy load on-demand)
 
 **Anthropic Memory docs** (≤ 200 行硬阈值): https://code.claude.com/docs/en/memory
