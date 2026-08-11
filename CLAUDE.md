@@ -181,6 +181,7 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 **EPIC-160 install.sh Omnibus (v3.32.5+)** — `scripts/install.sh` 全部件 deploy + `--inventory`/`--update`/3 skip flag, 95 files 覆盖 (commands/rules/experts/skills/hooks). `--inventory` 列 source→target 映射 (EPIC-069-D 透明可验证), `--update` 走 symlink mode 不破 user-customized files. 部署 `~/.claude/{commands,skills,rules,hooks,experts,settings.json}` 完整, re-run idempotent (13/13 test PASS). Lazy-load ref: `.claude/rules/installation.md` (paths: `scripts/install.sh`).
 
+>>>>>>> origin/testing
 ## 7. 引用 (lazy load on-demand)
 
 **Anthropic Memory docs** (≤ 200 行硬阈值): https://code.claude.com/docs/en/memory
