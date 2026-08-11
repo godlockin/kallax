@@ -175,6 +175,8 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 > **主公 2026-08-08 拍板**: "effort 比较小的直接 auto-approve". 跟 EPIC-207 §1 "0 容忍 auto-merge" 矛盾, 主公拍板 override.
 > **详细阈值 + 例外 + 跟 Rule 联合**: 详见 `.claude/rules/rule-37.md` (path-scoped lazy load).
 
+**EPIC-157 binding tracking (v3.32.2+)** — Rule 36 北极星 #4 数据源: ticket.json `expert_binding.{suggested_expert,actual_expert,expert_binding_at,binding_change_reason}` 4 字段, Master 拆卡建议 → Performer claim 实际 → 偏离必填 reason. Schema: `node/src/core/schema-validator.ts:ExpertBindingSchema`. Metric: `scripts/metrics/lib/metrics.sh:compute_mis_dispatch_binding_rate`. 自动化: `node/src/jira/ticket-binding.ts` (claim/complete hook), `scripts/binding/binding-tracker.sh` (CLI). 历史 ticket 无 binding 跳过, 不计入分母.
+
 ## 7. 引用 (lazy load on-demand)
 
 **Anthropic Memory docs** (≤ 200 行硬阈值): https://code.claude.com/docs/en/memory
