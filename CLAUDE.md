@@ -177,6 +177,8 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 **EPIC-157 binding tracking (v3.32.2+)** — Rule 36 北极星 #4 数据源: ticket.json `expert_binding.{suggested_expert,actual_expert,expert_binding_at,binding_change_reason}` 4 字段, Master 拆卡建议 → Performer claim 实际 → 偏离必填 reason. Schema: `node/src/core/schema-validator.ts:ExpertBindingSchema`. Metric: `scripts/metrics/lib/metrics.sh:compute_mis_dispatch_binding_rate`. 自动化: `node/src/jira/ticket-binding.ts` (claim/complete hook), `scripts/binding/binding-tracker.sh` (CLI). 历史 ticket 无 binding 跳过, 不计入分母.
 
+**EPIC-170 skill plugin complete (v3.32.16+)** — 9 expert skill 包 (7 default + 5 extended -3 = 9) `enabled_policy` frontmatter 4 态 (default/enabled/disabled/owner-gated), `scripts/skill/skill-policy.sh` 持久化到 `state/skill-policy.json` (enable/disable/list/check/reset), `scripts/skill/skill-manager.sh validate` 5 步 gate (resolve_project/architecture_check/owner_gated/policy_check/...). 跨 package 互引用 INDEX.md 验证, policy 失效回退 default (frontmatter). 0 改 source code, 跟 EPIC-162 拆包基础联合.
+
 ## 7. 引用 (lazy load on-demand)
 
 **Anthropic Memory docs** (≤ 200 行硬阈值): https://code.claude.com/docs/en/memory
