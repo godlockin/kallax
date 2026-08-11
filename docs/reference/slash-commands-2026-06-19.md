@@ -24,6 +24,8 @@
 
 > 路由命中但不熟用法 → 仍然 fallback 跑 `/kallax-<subcmd> --help` 看详细说明。
 
+**CLAUDE.md 治理 (EPIC-159, v3.32.4+)**: 主 CLAUDE.md ≤ 200 行 (Anthropic 硬阈值), 低频 / reference 内容移 `.claude/rules/*.md` path-scoped lazy load. 当前 9 个 rules 文件: state-json / testing / branch-flow / strict-tsconfig / recent-epics / immutable-scripts / rule-37 / retrospective / installation. 任何 26 命令用法变更优先查本 reference, 减少主 CLAUDE.md always-load.
+
 ---
 
 This document covers the **slash commands** invoked from inside the AI tool (Claude Code / opencode / Codex / Gemini). For the **CLI commands** (`kallax task claim`, `kallax conductor heartbeat`, etc.) used from a terminal, see `cli-reference.md`.
