@@ -14,6 +14,7 @@ import type { InstanceRegistry } from '../core/instance-registry.js';
 import type { TaskAssigner } from '../core/task-assigner.js';
 import type { GitService } from '../core/git-service.js';
 import { createSagaExecutor, type TaskCompletionState } from '../core/saga-executor.js';
+import { validateBindingForComplete } from '../jira/ticket-binding.js';
 
 export interface CompleteCommandOptions {
   readonly taskId: string;
@@ -89,6 +90,31 @@ export async function executeCompleteCommand(
     }));
   }
   const worktree = worktreeResult.value;
+
+  // EPIC-157 AC4: submit-pr gate — 校验 jira ticket.json expert_binding.
+  // 实际 expert 必填; 偏离 suggested 时 reason 必填.
+  const bindingCheck = validateBindingForComplete(task.ticketId, process.cwd());
+  if (bindingCheck.isErr()) {
+    if (bindingCheck.error.kind === 'VALIDATION_FAILED') {
+      return err(
+        new KallaxError(
+          KallaxErrorCode.PERMISSION_DENIED,
+          `expert_binding validation failed for ${task.ticketId}: ${bindingCheck.error.errors.join('; ')}`,
+          { metadata: { ticketId: task.ticketId, errors: bindingCheck.error.errors } }
+        )
+      );
+    }
+    // NOT_FOUND / PARSE_FAILED 等非校验错: 记录警告, 不阻塞 (向后兼容历史 ticket)
+    logger.warn(
+      { ticketId: task.ticketId, error: bindingCheck.error },
+      'binding pre-check skipped (jira ticket.json not available)'
+    );
+  } else {
+    logger.info(
+      { ticketId: task.ticketId, binding: bindingCheck.value.binding },
+      'EPIC-157 binding pre-check passed'
+    );
+  }
 
   const initialState: TaskCompletionState = {
     taskId,
