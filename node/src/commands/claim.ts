@@ -11,17 +11,22 @@ import type { SQLiteManager } from '../core/sqlite/index.js';
 import type { WorktreeManager } from '../core/worktree-manager.js';
 import type { InstanceRegistry } from '../core/instance-registry.js';
 import type { TaskAssigner } from '../core/task-assigner.js';
+import { writeBinding, readJiraTicket } from '../jira/ticket-binding.js';
 
 export interface ClaimCommandOptions {
   readonly taskId?: string;
   readonly ticketId?: string;
   readonly capabilities?: string[];
+  /** EPIC-157: Performer 实际 expert name (写 jira ticket.json binding) */
+  readonly actualExpert?: string;
 }
 
 export interface ClaimResult {
   readonly task: Task;
   readonly ticket: Ticket;
   readonly worktreePath: string;
+  /** EPIC-157: 是否写了 binding */
+  readonly bindingWritten: boolean;
 }
 
 export async function executeClaimCommand(
@@ -163,6 +168,44 @@ export async function executeClaimCommand(
   // Update task with worktree path
   db.updateTask(task.id, { status: TaskStatus.RUNNING });
 
+  // EPIC-157 AC3: 写 expert_binding 到 jira ticket.json
+  // 读 suggested_expert (Master 拆卡建议), 写 actual_expert (Performer binding)
+  let bindingWritten = false;
+  if (options.actualExpert !== undefined && options.actualExpert.trim() !== '') {
+    const jiraRead = readJiraTicket(ticket.id, process.cwd());
+    if (jiraRead.isErr()) {
+      logger.warn({ ticketId: ticket.id, error: jiraRead.error }, 'jira ticket.json not found, skip binding write');
+    } else {
+      const existing = jiraRead.value.ticket.expert_binding;
+      const suggested = existing?.suggested_expert ?? null;
+      const writeResult = writeBinding(
+        ticket.id,
+        {
+          suggested_expert: suggested,
+          actual_expert: options.actualExpert,
+          expert_binding_at: new Date().toISOString(),
+          binding_change_reason:
+            suggested !== null && suggested !== options.actualExpert
+              ? 'auto-set by claim (suggested vs actual diverge, run `kallax binding update --reason` to document)'
+              : null,
+        },
+        process.cwd()
+      );
+      if (writeResult.isErr()) {
+        logger.warn(
+          { ticketId: ticket.id, error: writeResult.error },
+          'failed to write expert_binding to jira ticket.json'
+        );
+      } else {
+        bindingWritten = true;
+        logger.info(
+          { ticketId: ticket.id, actual: options.actualExpert, suggested },
+          'EPIC-157 binding written'
+        );
+      }
+    }
+  }
+
   logger.info(
     {
       taskId: task.id,
@@ -177,5 +220,6 @@ export async function executeClaimCommand(
     task,
     ticket,
     worktreePath: worktreeResult.value.path,
+    bindingWritten,
   });
 }
