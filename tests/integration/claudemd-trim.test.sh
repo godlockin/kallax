@@ -74,7 +74,7 @@ assert_grep "Rule 34" "## 3\. Rule 34" "$CLAUDE_MD"
 assert_grep "4-branch flow" "## 4\. Branch Flow Governance" "$CLAUDE_MD"
 assert_grep "CLI 执行规范" "## 1\. CLI 执行规范" "$CLAUDE_MD"
 assert_grep "state.json reference" "state-json" "$CLAUDE_MD"
-assert_grep "4 immutable scripts" "4 不可更改 法律" "$CLAUDE_MD"
+assert_grep "9 immutable scripts" "9 不可更改 法律" "$CLAUDE_MD"
 
 # Case 3: .claude/rules/*.md 4 文件存在
 echo ""
@@ -115,11 +115,24 @@ for f in state-json.md testing.md branch-flow.md strict-tsconfig.md; do
   fi
 done
 
-# Case 6: EPIC-157 + EPIC-158 引用
+# Case 6: EPIC-157 + EPIC-158 引用 (lazy load to .claude/rules/recent-epics.md, 主文件或 rules 文件至少一处)
 echo ""
-echo "Case 6: EPIC-157 + EPIC-158 references preserved"
-assert_grep "EPIC-157" "## 6\. EPIC-157" "$CLAUDE_MD"
-assert_grep "EPIC-158" "## 7\. EPIC-158" "$CLAUDE_MD"
+echo "Case 6: EPIC-157 + EPIC-158 references preserved (lazy load or inline)"
+RECENT_EPICS="${RULES_DIR}/recent-epics.md"
+if grep -q "EPIC-157" "$CLAUDE_MD" || grep -q "EPIC-157" "$RECENT_EPICS" 2>/dev/null; then
+  echo "  PASS: EPIC-157"
+  PASS=$((PASS + 1))
+else
+  echo "  FAIL: EPIC-157 not referenced"
+  FAIL=$((FAIL + 1))
+fi
+if grep -q "EPIC-158" "$CLAUDE_MD" || grep -q "EPIC-158" "$RECENT_EPICS" 2>/dev/null; then
+  echo "  PASS: EPIC-158"
+  PASS=$((PASS + 1))
+else
+  echo "  FAIL: EPIC-158 not referenced"
+  FAIL=$((FAIL + 1))
+fi
 
 # Case 7: 4 不可更改法律 paths 描述正确
 echo ""
