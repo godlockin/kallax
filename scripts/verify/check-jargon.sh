@@ -86,8 +86,12 @@ scan_file() {
   local rel="${f#$REPO_ROOT/}"
   is_meta_file "$rel" && return 0
 
-  # 全仓模式跳过 baseline 豁免; staged 模式也严格 (新内容 0 黑话)
-  # 注: baseline 豁免是给审计/报告用的, 不是给 hook 的 (hook 强制 0 黑话)
+  # 历史文件豁免 (跟 .jargon-blacklist.json `_scope` "历史内容不追溯" 1:1).
+  # baseline = EPIC-224 合并 commit. first_commit <= baseline 视为历史备案, 不 fail-closed.
+  # 主公 2026-08-11 拍板 (EPIC-225 hook 修复): 文档说"不追溯" ≠ hook 实现豁免, 补 baseline 豁免对齐.
+  if is_historical_file "$rel"; then
+    return 0
+  fi
 
   while IFS= read -r hit_line; do
     [ -z "$hit_line" ] && continue
