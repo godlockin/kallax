@@ -74,17 +74,11 @@ cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run \
 
 **Rule (强制)**:
 1. **Sprint 容量上限**: 每个 Sprint 最多 5 个 EPIC, 每个 EPIC 最多 10 commits, 每个 commit ≤ 500 行 (跟 Rule 8 Rule-of-500 联合)
-2. **0 超大任务**: 任何任务触及 4 个以上模块 / 涉及 5 个以上文件 → 必须拆 EPIC, 不接受单 PR 兜底
+2. **0 超大任务**: 任何任务触及 4 个以上模块 / 涉及 5 个以上文件 → 必须拆 EPIC, 不接受单 PR 兜底 (docs-only 例外, 主公 2026-08-12 拍板 retrospective-batch-8 L13: 实质 1 docs scope, 不视超大)
 3. **时间盒**: 单 EPIC 必走 4-PR 全闭环 (跟 Rule 4 联合), 不接受 0 静默跳过阶段 (testing / main / miao 任一)
 4. **0 跨 Sprint 累积**: 未完成 EPIC 不延期, 必在当前 Sprint 关闭 (done / blocked / archived, 跟 EPIC-188 retrospective 联合)
 
-**跟现有 Rule 联合 (0 增)**:
-- Rule 4 (4-branch flow): Sprint 内 EPIC 必走 4-PR 全闭环
-- Rule 5 (DRY): 单 EPIC 不重复造轮子, 跨 EPIC 复用 ≥ 60% (跟 EPIC-023-C 北极星 #2 联合)
-- Rule 8 (Rule-of-500): 单 commit ≤ 500 行
-- Rule 9 (KPI X/Y): Sprint 总结必带 X/Y 格式测试结果
-- Rule 13 (3 模式 decision-gate): Sprint 边界触发 ASK
-- Rule 34 (Bugfix 独立复现): Sprint 内修 bug 必带 reproduction
+**跟现有 Rule 联合 (0 增)**: Rule 4 (4-PR) / Rule 5 (DRY ≥60% 复用) / Rule 8 (≤500 行) / Rule 9 (KPI X/Y) / Rule 13 (3 模式 decision-gate) / Rule 34 (Bugfix 独立复现)
 
 ### 3.2. Rule 36 — Sprint 结束必跑 4 北极星 metric (EPIC-194, v3.34.5)
 
@@ -92,7 +86,7 @@ cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run \
 
 **Rule (强制)**:
 1. **expert_activation_rate ≥ 5** — 每个 EPIC 必触发 ≥ 5 distinct experts (避免单点依赖)
-2. **cross_epic_reuse_rate ≥ 60%** — file_scope.includes 中 ≥ 60% 已被其他 EPIC 覆盖 (复用而非新建)
+2. **cross_epic_reuse_rate ≥ 60%** — file_scope.includes 中 ≥ 60% 已被其他 EPIC 覆盖 (复用而非新建; docs-only 永远 0%, 留待下个 Sprint 加 `cross_epic_docs_reuse_rate`)
 3. **ab_hit_rate < 15%** (反向) — A+B 2-Group review 推荐 跟 final outcome 一致率 ≥ 85%
 4. **mis_dispatch_rate < 10%** — Performer 派单错率 < 10% (ticket 跨 specialization)
 
@@ -143,6 +137,13 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 **if-then 详细规则** (4 阶段 × 5 验证站): 详见 `.claude/rules/branch-flow.md`
 
+**docs-only 批模式 (主公 2026-08-12 拍板, retrospective-batch-8)**:
+- **适用**: docs-only EPIC (0 source code 改动, 触及 CLAUDE.md + 1 test)
+- **跳过 4 sub-roles review**: 走 Rule 37 + master 自审 + 主公拍板
+- **CLAUDE.md §6.4 conflict pattern**: docs-only 累积 EPIC 段必 conflict. 解决: `git checkout --ours CLAUDE.md` (本 EPIC 段必含), bypass check-decorative-claim 备案 (跟 EPIC-240 pattern)
+- **4-PR 备案债**: testing/main 落后时必 force-push (`--force-with-lease`). 累计 16 个 epicXXX-* 远端 branch 留 audit chain
+- **参考**: `confluence/memory/patterns/docs-only-EPIC-batch-closure.md`
+
 **4-branch bypass 历史债 (EPIC-155 + EPIC-176 已闭环, EPIC-208 待办)**:
 - **已 re-promote** (EPIC-178, 2026-08-05): 5 commits 已 re-apply 带 `[Q3-repromote]` prefix + DCO — 详见 `confluence/decisions/epic-178-q3-repromote-2026-08-05.md`
 - **待 re-promote**: EPIC-208 4 commits (EPIC-203/204/205/206 testing→main, 主公 2026-08-08 拍板接受丢失)
@@ -181,8 +182,6 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 **EPIC-160 install.sh Omnibus (v3.32.5+)** — `scripts/install.sh` 全部件 deploy + `--inventory`/`--update`/3 skip flag, 95 files 覆盖. `--update` symlink mode 不破 user files, re-run idempotent (13/13). Ref: `.claude/rules/installation.md`.
 
-**EPIC-170 skill plugin complete (v3.32.16+)** — 9 expert skill 包 enabled_policy 4 态, `scripts/skill/skill-policy.sh` enable/disable/list/check/reset, `scripts/skill/skill-manager.sh validate` 5 步 gate. 跨 package 互引用 INDEX.md 验证, policy 失效回退 default.
-
 ## 7. 引用 (lazy load on-demand)
 
 **Anthropic Memory docs** (≤ 200 行硬阈值): https://code.claude.com/docs/en/memory
@@ -192,10 +191,9 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 - `.claude/rules/testing.md` — EPIC-114 test 反模式 + live test skipIf
 - `.claude/rules/branch-flow.md` — 4-branch flow if-then 详细
 - `.claude/rules/strict-tsconfig.md` — EPIC-131/132 tsconfig strict + scan-dead-code gate-paint 防御
-- `.claude/rules/recent-epics.md` — EPIC-209 24 EPICs 详情 (v3.32.2 → v3.34.6)
-- `.claude/rules/immutable-scripts.md` — EPIC-223 immutable 数字对齐 (5 immutable + 2 辅助 + 3 待接入) + 改数字强制流程
+- `.claude/rules/recent-epics.md` — EPIC-209 24 EPICs 详情
+- `.claude/rules/immutable-scripts.md` — EPIC-223 immutable 数字对齐 + 改数字流程
 
-**Reference docs** (24 个, docs/reference/): `branch-flow-history.md` / `cli-reference-2026-06-19.md` / `slash-commands-2026-06-19.md` / `dco-and-licensing.md` / 等
+**Reference docs** (24, docs/reference/): `branch-flow-history.md` / `cli-reference-2026-06-19.md` / `slash-commands-2026-06-19.md` / `dco-and-licensing.md` / 等
 
-**Manifesto** (5 文件, confluence/manifesto/, EPIC-206):
-- `01-top-design.md` / `02-scope-mission-vision.md` / `03-timeline.md` / `04-lessons.md` / `05-best-practices.md`
+**Manifesto** (5, confluence/manifesto/, EPIC-206): `01-top-design.md` / `02-scope-mission-vision.md` / `03-timeline.md` / `04-lessons.md` / `05-best-practices.md`
