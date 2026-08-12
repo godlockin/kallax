@@ -175,13 +175,14 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 > **主公 2026-08-08 拍板**: "effort 比较小的直接 auto-approve". 跟 EPIC-207 §1 "0 容忍 auto-merge" 矛盾, 主公拍板 override.
 > **详细阈值 + 例外 + 跟 Rule 联合**: 详见 `.claude/rules/rule-37.md` (path-scoped lazy load).
 
-**EPIC-157 binding tracking (v3.32.2+)** — Rule 36 北极星 #4 数据源: ticket.json `expert_binding.{suggested_expert,actual_expert,expert_binding_at,binding_change_reason}` 4 字段, Master 拆卡建议 → Performer claim 实际 → 偏离必填 reason. Schema: `node/src/core/schema-validator.ts:ExpertBindingSchema`. Metric: `scripts/metrics/lib/metrics.sh:compute_mis_dispatch_binding_rate`. 自动化: `node/src/jira/ticket-binding.ts` (claim/complete hook), `scripts/binding/binding-tracker.sh` (CLI). 历史 ticket 无 binding 跳过, 不计入分母.
+**EPIC-157 binding tracking (v3.32.2+)** — Rule 36 北极星 #4 数据源: ticket.json `expert_binding.{suggested_expert,actual_expert,expert_binding_at,binding_change_reason}` 4 字段, Master 拆卡建议 → Performer claim 实际 → 偏离必填 reason. Metric: `scripts/metrics/lib/metrics.sh:compute_mis_dispatch_binding_rate`. 历史 ticket 无 binding 跳过, 不计入分母.
 
-**EPIC-170 skill plugin complete (v3.32.16+)** — 9 expert skill 包 (7 default + 5 extended -3 = 9) `enabled_policy` frontmatter 4 态 (default/enabled/disabled/owner-gated), `scripts/skill/skill-policy.sh` 持久化到 `state/skill-policy.json` (enable/disable/list/check/reset), `scripts/skill/skill-manager.sh validate` 5 步 gate (resolve_project/architecture_check/owner_gated/policy_check/...). 跨 package 互引用 INDEX.md 验证, policy 失效回退 default (frontmatter). 0 改 source code, 跟 EPIC-162 拆包基础联合.
+**EPIC-160 install.sh Omnibus (v3.32.5+)** — `scripts/install.sh` 全部件 deploy + `--inventory`/`--update`/3 skip flag, 95 files 覆盖. `--update` symlink mode 不破 user files, re-run idempotent (13/13). Ref: `.claude/rules/installation.md`.
 
-**EPIC-160 install.sh Omnibus (v3.32.5+)** — `scripts/install.sh` 全部件 deploy + `--inventory`/`--update`/3 skip flag, 95 files 覆盖 (commands/rules/experts/skills/hooks). `--inventory` 列 source→target 映射 (EPIC-069-D 透明可验证), `--update` 走 symlink mode 不破 user-customized files. 部署 `~/.claude/{commands,skills,rules,hooks,experts,settings.json}` 完整, re-run idempotent (13/13 test PASS). Lazy-load ref: `.claude/rules/installation.md` (paths: `scripts/install.sh`).
+**EPIC-170 skill plugin complete (v3.32.16+)** — 9 expert skill 包 enabled_policy 4 态 (default/enabled/disabled/owner-gated), `scripts/skill/skill-policy.sh` enable/disable/list/check/reset, `scripts/skill/skill-manager.sh validate` 5 步 gate. 跨 package 互引用 INDEX.md 验证, policy 失效回退 default.
 
->>>>>>> origin/testing
+**EPIC-171 strategy deposit (v3.32.17+)** — 公开化定位文档: `confluence/research/kallax-positioning-2026-08-05.md` (338 行, 3 视角 PR+CTO+Marketing). README 加 "Why KALLAX vs Claude Code?" 段.
+
 ## 7. 引用 (lazy load on-demand)
 
 **Anthropic Memory docs** (≤ 200 行硬阈值): https://code.claude.com/docs/en/memory
@@ -193,10 +194,8 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 - `.claude/rules/strict-tsconfig.md` — EPIC-131/132 tsconfig strict + scan-dead-code gate-paint 防御
 - `.claude/rules/recent-epics.md` — EPIC-209 24 EPICs 详情 (v3.32.2 → v3.34.6)
 - `.claude/rules/immutable-scripts.md` — EPIC-223 immutable 数字对齐 (5 immutable + 2 辅助 + 3 待接入) + 改数字强制流程
-- `.claude/rules/retrospective.md` — EPIC-161 retrospective routine 6 阶段
 
-**Reference docs** (24 个, docs/reference/, manual load):
-- `branch-flow-history.md` / `cli-reference-2026-06-19.md` / `slash-commands-2026-06-19.md` / `dco-and-licensing.md` / 等
+**Reference docs** (24 个, docs/reference/): `branch-flow-history.md` / `cli-reference-2026-06-19.md` / `slash-commands-2026-06-19.md` / `dco-and-licensing.md` / 等
 
 **Manifesto** (5 文件, confluence/manifesto/, EPIC-206):
 - `01-top-design.md` / `02-scope-mission-vision.md` / `03-timeline.md` / `04-lessons.md` / `05-best-practices.md`

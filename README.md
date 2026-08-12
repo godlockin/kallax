@@ -68,6 +68,11 @@
 - "bug 修过 3 次复发"
 - "Claude Code session 关了上下文丢"
 
+**3 视角 raw_output 引用** (per EPIC-069-D check-claim-evidence):
+- **PR 视角**: 4-PR 链 + master + 4 sub-roles review (参考 EPIC-074, 跟随 EPIC-207)
+- **CTO 视角**: 5-Level Verify + Audit Chain + self-heal (参考 EPIC-069-D, 跟随 EPIC-110)
+- **Marketing 视角**: positioning doc 公开化 + 公开化协同 (参考 EPIC-169, 跟随 EPIC-172)
+
 完整定位: [confluence/research/kallax-positioning-2026-08-05.md](confluence/research/kallax-positioning-2026-08-05.md) (EPIC-171, 3 视角: PR + CTO + Marketing)
 
 ## 快速入口
