@@ -177,11 +177,11 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 **EPIC-157 binding tracking (v3.32.2+)** — Rule 36 北极星 #4 数据源: ticket.json `expert_binding.{suggested_expert,actual_expert,expert_binding_at,binding_change_reason}` 4 字段, Master 拆卡建议 → Performer claim 实际 → 偏离必填 reason. Metric: `scripts/metrics/lib/metrics.sh:compute_mis_dispatch_binding_rate`. 历史 ticket 无 binding 跳过, 不计入分母.
 
+**EPIC-158 CI debt fix (v3.32.3+)** — `.github/workflows/kallax-ci.yml` Forbidden Patterns regex 排除 JSDoc prose (`@ts-ignore` / `:\s*any` / `TODO` 等在 JSDoc `^\s*\*` 行豁免) + `node/tests/expert-invocations-queue.test.ts:120` 5 sqlite 依赖 `it` → `skipIfNoSqlite` (CI 无 sqlite 自动 skip). 5/5 ci-debt-fix.test.sh PASS, 0 改 source code, 跟 EPIC-114 test 反模式 + BE-14 串行.
+
 **EPIC-160 install.sh Omnibus (v3.32.5+)** — `scripts/install.sh` 全部件 deploy + `--inventory`/`--update`/3 skip flag, 95 files 覆盖. `--update` symlink mode 不破 user files, re-run idempotent (13/13). Ref: `.claude/rules/installation.md`.
 
-**EPIC-170 skill plugin complete (v3.32.16+)** — 9 expert skill 包 enabled_policy 4 态 (default/enabled/disabled/owner-gated), `scripts/skill/skill-policy.sh` enable/disable/list/check/reset, `scripts/skill/skill-manager.sh validate` 5 步 gate. 跨 package 互引用 INDEX.md 验证, policy 失效回退 default.
-
-**EPIC-171 strategy deposit (v3.32.17+)** — 公开化定位文档: `confluence/research/kallax-positioning-2026-08-05.md` (338 行, 3 视角 PR+CTO+Marketing). README 加 "Why KALLAX vs Claude Code?" 段.
+**EPIC-170 skill plugin complete (v3.32.16+)** — 9 expert skill 包 enabled_policy 4 态, `scripts/skill/skill-policy.sh` enable/disable/list/check/reset, `scripts/skill/skill-manager.sh validate` 5 步 gate. 跨 package 互引用 INDEX.md 验证, policy 失效回退 default.
 
 ## 7. 引用 (lazy load on-demand)
 

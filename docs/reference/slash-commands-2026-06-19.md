@@ -598,6 +598,10 @@ See [§2.4](#kallax-resume--resume-from-a-saved-session) for full reference.
 
 ### Expert Binding Tracker (EPIC-157, v3.32.2+)
 
+**EPIC-158 (v3.32.3+)**: Pre-existing CI debt fix — `.github/workflows/kallax-ci.yml` Forbidden Patterns regex 排除 JSDoc prose + `node/tests/expert-invocations-queue.test.ts` 5 sqlite 依赖 `it.skipIfNoSqlite` (CI 无 sqlite 自动 skip, 不报错). 0 改 source code. Reference: `tests/integration/ci-debt-fix.test.sh` (5/5 PASS).
+
+### Expert Binding Tracker (EPIC-157, v3.32.2+)
+
 ```
 scripts/binding/binding-tracker.sh <subcommand> [args]
 
