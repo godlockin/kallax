@@ -1,0 +1,69 @@
+{
+  "id": "EPIC-252",
+  "ticket_id": "EPIC-252",
+  "epic": "EPIC-252",
+  "phase": "PHASE-023",
+  "title": "纠正 retrospective-batch-8 L4/L11 误诊 — immutable STAGED_ONLY 已实现, 0 改 immutable",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "bugfix",
+  "created_at": "2026-08-12",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 1,
+  "labels": ["bugfix", "misdiagnosis-correction", "immutable-verify", "phase-023"],
+  "description": "EPIC-252 — 纠正 retrospective-batch-8 L4/L11 误诊 (主公 2026-08-12 拍板 Sprint 规划 #2, 原计划改 2 个 immutable, 实测不需要).\n\n**原假设 (错)**: check-decorative-claim.sh (immutable #1) + check-narrative.sh (#2) 缺 baseline 豁免, 每次 merge commit 扫全仓 198 处历史 jargon 被拦, 需仿 check-jargon.sh 加 is_historical_file().\n\n**实测 (对)**:\n1. check-decorative-claim.sh line 88-100 已有 KALLAX_STAGED_ONLY 模式, 只扫 git diff --cached 新增行, 历史行已 grandfathered\n2. scripts/hooks/pre-commit:270 已传 KALLAX_STAGED_ONLY=1\n3. 真因: 8 EPIC session 中 6 次 merge commit 的 staged diff 含我新写的 CLAUDE.md 段, 段里自带 '1:1 联合' / '跟 X 闭环', 触发 fail-closed 正确行为\n\n**结论**: hook 行为正确, 0 需改 immutable. 该改的是写段习惯 (避开黑名单词).\n\n**核心改动**:\n1. CLAUDE.md §4 docs-only 批模式段: 删 'bypass check-decorative-claim 备案' 误导表述, 改 '写段禁 jargon' 正确指引\n2. 新 tests/integration/immutable-staged-only.test.sh (10 case) 锚定 STAGED_ONLY 行为, 防未来再误判\n3. confluence/memory/lessons/batch-8-EPIC-closure-2026-08-12.md L3 修正\n\n**scope**: 0 改 immutable script (scripts/verify/check-decorative-claim.sh + check-narrative.sh 完全不动).",
+  "acceptance": [
+    "AC1: 0 改 immutable script (check-decorative-claim.sh + check-narrative.sh git diff 为空)",
+    "AC2: tests/integration/immutable-staged-only.test.sh 新建, ≥8 case PASS",
+    "AC3: test Case 7 实证 staged 新增行含 jargon → exit 1 (fail-closed 仍生效)",
+    "AC4: test Case 8 实证历史行不在 staged diff → exit 0 (grandfathered)",
+    "AC5: test Case 4 实证 pre-commit hook 传 KALLAX_STAGED_ONLY=1",
+    "AC6: CLAUDE.md §4 docs-only 批模式段删误导 bypass 表述, 加写段禁 jargon 指引",
+    "AC7: lessons/batch-8-EPIC-closure-2026-08-12.md L3 修正为纠正后结论",
+    "AC8: CLAUDE.md ≤ 200 行 (raw: wc -l CLAUDE.md)",
+    "AC9: 本 PR commit 不用 KALLAX_HOOK_BYPASS (验证纠正后写法能过 hook)",
+    "AC10: 4-branch flow 走完 (feature → testing → main → miao)"
+  ],
+  "deliverables": [
+    "tests/integration/immutable-staged-only.test.sh (新, 10 case)",
+    "CLAUDE.md 改 (§4 docs-only 批模式段纠正)",
+    "confluence/memory/lessons/batch-8-EPIC-closure-2026-08-12.md 改 (L3 纠正)",
+    "jira/tickets/EPIC-252/{ticket.json,ticket.md} (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      "tests/integration/immutable-staged-only.test.sh",
+      "CLAUDE.md",
+      "confluence/memory/lessons/batch-8-EPIC-closure-2026-08-12.md",
+      "jira/tickets/EPIC-252/"
+    ],
+    "excludes": [
+      "scripts/verify/check-decorative-claim.sh",
+      "scripts/verify/check-narrative.sh"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "KALLAX_STAGED_ONLY=1 bash scripts/verify/check-decorative-claim.sh",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "KALLAX_STAGED_ONLY=1: no staged files, skip\nexit=0\n\n(对比: 无 STAGED_ONLY 全仓扫 → FAIL: 198 decorative claim patterns detected, exit 1. 证明 STAGED_ONLY 模式已正确实现, 历史文件已豁免.)"
+  },
+  "expert_binding": {
+    "suggested_expert": "auditor-independent-witness",
+    "actual_expert": "auditor-independent-witness",
+    "expert_binding_at": "2026-08-12T15:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "Rule 34 (bugfix 独立复现 — 本 ticket 3 字段全填, 复现证明假设错)",
+    "EPIC-225 (jargon 黑名单源头)",
+    "EPIC-110-C (KALLAX_STAGED_ONLY 模式引入方)",
+    "EPIC-114 (historical lines grandfathered 设计)",
+    "EPIC-232 (pre-commit 必传 KALLAX_STAGED_ONLY=1)",
+    "retrospective-batch-8 L4/L11 (被纠正的误诊)",
+    "CLAUDE.md §5 (immutable scripts — 本 ticket 0 改动, 无需主公亲自)"
+  ]
+}
