@@ -1,0 +1,70 @@
+{
+  "id": "EPIC-253",
+  "ticket_id": "EPIC-253",
+  "epic": "EPIC-253",
+  "phase": "PHASE-023",
+  "title": "加 cross_epic_docs_reuse_rate metric + 修 collect_filescope root ticket bug",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "bugfix",
+  "created_at": "2026-08-13",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 3,
+  "labels": ["bugfix", "metrics", "north-star", "rule-36", "phase-023"],
+  "description": "EPIC-253 — 补 Rule 36 指标 #2 的 docs-only 盲点, 且修 collect_filescope root ticket 漏扫 bug (主公 2026-08-13 拍板 Sprint 规划 #3).\n\n**起因**: retrospective-batch-8 L14 记录 cross_epic_reuse_rate 对 docs-only EPIC 常年 0% / NO_DATA. 调查发现 2 个问题:\n\n**Bug A (真 bug, 意外发现)**: collect_filescope_for_epic 只扫 JIRA_TICKETS_DIR/EPIC-XXX-*/ (sub-ticket glob), 漏 root ticket EPIC-XXX/. 所有 root-ticket 形态的 EPIC (EPIC-251/159/174 等) file_scope 都收集不到 → total_files=0 → NO_DATA. collect_filescope_all_except 的排除判断同样只匹配 sub 形态, 导致目标 EPIC 自己的文件泄漏进 others 集合.\n\n**Gap B (设计缺口)**: 即便修好 bug A, docs-only EPIC 的 file_scope 多为一次性路径 (jira/tickets/EPIC-XXX/), 复用率天然低, 60% 阈值不适用.\n\n**核心改动**:\n1. 修 bug A: collect_filescope_for_epic + collect_filescope_all_except 加 root ticket 路径 (同 compute_mis_dispatch_binding_rate:571 已有的 root+sub 双路径写法)\n2. 加 compute_cross_epic_docs_reuse_rate: 用 DOCS_PATH_PATTERN 过滤 docs 类路径, 阈值 40%\n3. 集成到 format_json_metrics (m2b) + format_markdown_metrics (docs 行)\n4. CLAUDE.md 3.2 Rule 36 加指标 2b\n\n**scope**: 0 改 immutable script, 0 增 Rule (指标 2b 是 Rule 36 副指标, 非新 Rule).",
+  "acceptance": [
+    "AC1: collect_filescope_for_epic 扫到 root ticket (raw: test Case 2 root ticket EPIC-901 file_scope collected = 3)",
+    "AC2: sub-ticket 形态无 regression (raw: test Case 3 = 3)",
+    "AC3: collect_filescope_all_except 排除 root + sub 两种形态 (raw: test Case 4)",
+    "AC4: compute_cross_epic_docs_reuse_rate 只算 docs 路径, 排除 .ts (raw: test Case 5 docs count = 2, 不含 foo.ts)",
+    "AC5: docs metric 阈值判定正确 (raw: test Case 6 full overlap >= 40 target → PASS)",
+    "AC6: 无 docs 的 EPIC → NO_DATA (raw: test Case 7)",
+    "AC7: metric 集成 JSON + Markdown formatter (raw: test Case 8)",
+    "AC8: tests/integration/docs-reuse-metric.test.sh ≥8 case PASS",
+    "AC9: 实测区分度 — EPIC-174 总复用 33% FAIL 但 docs 复用 42% PASS (raw: sprint-metrics.sh --epic EPIC-174)",
+    "AC10: CLAUDE.md ≤ 200 行 + §3.2 Rule 36 加指标 2b",
+    "AC11: 0 改 immutable script, 0 增 Rule",
+    "AC12: 4-branch flow 走完 (feature → testing → main → miao)"
+  ],
+  "deliverables": [
+    "scripts/metrics/lib/metrics.sh 改 (修 2 函数 bug + 加 compute_cross_epic_docs_reuse_rate + 2 formatter 集成)",
+    "tests/integration/docs-reuse-metric.test.sh (新, 15 case)",
+    "CLAUDE.md 改 (§3.2 Rule 36 指标 2b)",
+    "jira/tickets/EPIC-253/{ticket.json,ticket.md} (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      "scripts/metrics/lib/metrics.sh",
+      "tests/integration/docs-reuse-metric.test.sh",
+      "CLAUDE.md",
+      "jira/tickets/EPIC-253/"
+    ],
+    "excludes": [
+      "scripts/verify/check-decorative-claim.sh",
+      "scripts/verify/check-narrative.sh"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "bash scripts/metrics/sprint-metrics.sh --epic EPIC-251 --format json | grep -A5 cross_epic_reuse_rate",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "修复前:\n      \"metric\": \"cross_epic_reuse_rate\",\n      \"epic\": \"EPIC-251\",\n      \"reuse_pct\": 0,\n      \"target\": 60,\n      \"status\": \"NO_DATA\",\n      \"overlap_count\": 0,\n\n(EPIC-251/ticket.json 明确有 file_scope.includes 2 项, 但 metric 报 NO_DATA — 证明 root ticket 漏扫)\n\n修复后:\n| cross_epic_reuse_rate | 0% (0/2 files) | >= 60% | FAIL |\n| cross_epic_docs_reuse_rate | 0% (0/1 docs) | >= 40% | FAIL |\n\n(status 从 NO_DATA 变 FAIL, total_files 从 0 变 2 — 数据已收集)"
+  },
+  "expert_binding": {
+    "suggested_expert": "data-analyst",
+    "actual_expert": "data-analyst",
+    "expert_binding_at": "2026-08-13T09:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "Rule 34 (bugfix 独立复现 — 3 字段全填)",
+    "Rule 36 (Sprint 4 北极星 — 本 ticket 补指标 #2 副指标)",
+    "EPIC-023-C (北极星源头)",
+    "EPIC-157 (compute_mis_dispatch_binding_rate 的 root+sub 双路径写法参考)",
+    "retrospective-batch-8 L14 (docs 复用盲点记录)",
+    "EPIC-252 (同 Sprint 前序 ticket)"
+  ]
+}

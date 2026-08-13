@@ -32,6 +32,7 @@ export JIRA_TICKETS_DIR_DEFAULT="jira/tickets"
 # 4 北极星指标 阈值 (目标值)
 export EXPERT_ACTIVATION_TARGET_DISTINCT=5      # ≥5 distinct experts / EPIC
 export CROSS_EPIC_REUSE_TARGET_PCT=60          # ≥60% 跨 EPIC 复用率
+export CROSS_EPIC_DOCS_REUSE_TARGET_PCT=40     # ≥40% 跨 EPIC docs 复用率 (EPIC-253, docs 天然比 code 分散)
 export AB_HIT_RATE_TARGET_MISMATCH_PCT=15      # <15% 错配 (推荐 vs 实际)
 export MIS_DISPATCH_TARGET_PCT=10              # <10% 错派率
 export ABANDONMENT_THRESHOLD_HOURS=48         # assigned >48h 无 PR = abandoned
@@ -280,16 +281,96 @@ compute_cross_epic_reuse_rate() {
   return 0
 }
 
+# ─── Metric 2b: cross_epic_docs_reuse_rate (EPIC-253) ───────────────────────
+
+# docs 文件模式 (CLAUDE.md / .claude/rules / confluence / docs / *.md / tests/integration/*.sh)
+# 顺序敏感: 先匹配先归类
+export DOCS_PATH_PATTERN='^(CLAUDE\.md|README|CHANGELOG\.md|\.claude/rules/|confluence/|docs/|jira/tickets/|tests/integration/.*\.sh$)|\.md$'
+
+# 跨 EPIC docs 复用率 (EPIC-253): 只看 docs 类文件.
+# 起因: metric 2 (cross_epic_reuse_rate) 对 docs-only EPIC 常年 0% / NO_DATA,
+#       因 docs-only EPIC 的 file_scope 多为一次性路径 (jira/tickets/EPIC-XXX/).
+#       本 metric 单独统计 docs 路径, 目标放宽到 40% (docs 天然比 code 分散).
+# 数据源: jira/tickets/EPIC-*/ticket.json file_scope.includes, 过滤 DOCS_PATH_PATTERN.
+# 输出: JSON object {docs_reuse_pct, target, status, overlap_count, total_docs_files}
+compute_cross_epic_docs_reuse_rate() {
+  local epic_id="$1"
+  validate_epic_id "$epic_id" || return 1
+
+  if [ ! -d "$JIRA_TICKETS_DIR" ]; then
+    log_warn "cross_epic_docs_reuse_rate" "epic=${epic_id} reason=tickets_dir_missing"
+    jq -n \
+      --arg epic "$epic_id" \
+      --argjson target "$CROSS_EPIC_DOCS_REUSE_TARGET_PCT" \
+      '{metric:"cross_epic_docs_reuse_rate", epic:$epic, docs_reuse_pct:0, target:$target, status:"NO_DATA", overlap_count:0, total_docs_files:0, note:"jira/tickets directory not found"}'
+    return 0
+  fi
+
+  local epic_num="${epic_id#EPIC-}"
+
+  # 目标 EPIC 的 docs 文件 (过滤 DOCS_PATH_PATTERN)
+  local target_docs_json
+  target_docs_json="$(collect_filescope_for_epic "$epic_num" \
+    | jq --arg pat "$DOCS_PATH_PATTERN" '[.[] | select(test($pat))]')"
+
+  local total_docs
+  total_docs="$(printf '%s' "$target_docs_json" | jq 'length')"
+
+  if [ "$total_docs" -eq 0 ]; then
+    log_warn "cross_epic_docs_reuse_rate" "epic=${epic_id} reason=no_docs_in_scope"
+    jq -n \
+      --arg epic "$epic_id" \
+      --argjson target "$CROSS_EPIC_DOCS_REUSE_TARGET_PCT" \
+      '{metric:"cross_epic_docs_reuse_rate", epic:$epic, docs_reuse_pct:0, target:$target, status:"NO_DATA", overlap_count:0, total_docs_files:0}'
+    return 0
+  fi
+
+  # 其他 EPIC 的 docs 文件
+  local other_docs_json
+  other_docs_json="$(collect_filescope_all_except "$epic_num" \
+    | jq --arg pat "$DOCS_PATH_PATTERN" '[.[] | select(test($pat))]')"
+
+  # overlap: strict equality (同 metric 2 判定口径)
+  local overlap_count
+  overlap_count="$(jq -n \
+    --argjson target "$target_docs_json" \
+    --argjson other "$other_docs_json" \
+    '($other | unique) as $u | $target | map(select(. as $t | any($u[]; . == $t))) | length')"
+
+  local docs_reuse_pct=0
+  if [ "$total_docs" -gt 0 ]; then
+    docs_reuse_pct=$(( (overlap_count * 100) / total_docs ))
+  fi
+
+  local status="FAIL"
+  if [ "$docs_reuse_pct" -ge "$CROSS_EPIC_DOCS_REUSE_TARGET_PCT" ]; then
+    status="PASS"
+  fi
+
+  jq -n \
+    --arg epic "$epic_id" \
+    --argjson reuse "$docs_reuse_pct" \
+    --argjson target "$CROSS_EPIC_DOCS_REUSE_TARGET_PCT" \
+    --argjson overlap "$overlap_count" \
+    --argjson total "$total_docs" \
+    --arg status "$status" \
+    '{metric:"cross_epic_docs_reuse_rate", epic:$epic, docs_reuse_pct:$reuse, target:$target, status:$status, overlap_count:$overlap, total_docs_files:$total}'
+
+  return 0
+}
+
 # collect_filescope_for_epic <epic_num>: 输出 JSON array of file paths
+# EPIC-253 修 bug: 原实现只扫 EPIC-XXX-*/ (sub-ticket), 漏 root ticket EPIC-XXX/.
+# 同 compute_mis_dispatch_binding_rate 的 root+sub 双路径模式.
 collect_filescope_for_epic() {
   local epic_num="$1"
   local tmp
   tmp="$(mktemp -t filescope.XXXXXX)"
   trap "rm -f '$tmp'" RETURN
 
-  for ticket_dir in "${JIRA_TICKETS_DIR}/EPIC-${epic_num}-"*/; do
+  for ticket_dir in "${JIRA_TICKETS_DIR}/EPIC-${epic_num}" "${JIRA_TICKETS_DIR}/EPIC-${epic_num}-"*/; do
     [ -d "$ticket_dir" ] || continue
-    local tj="${ticket_dir}ticket.json"
+    local tj="${ticket_dir%/}/ticket.json"
     [ -f "$tj" ] || continue
     jq -r '.file_scope.includes[]? // empty' "$tj" 2>/dev/null >> "$tmp" || true
   done
@@ -303,6 +384,7 @@ collect_filescope_for_epic() {
 }
 
 # collect_filescope_all_except <epic_num>: 所有其他 EPIC 的 file_scope paths
+# EPIC-253 修 bug: 排除判断加 root ticket 形态 (EPIC-XXX 精确匹配).
 collect_filescope_all_except() {
   local epic_num="$1"
   local tmp
@@ -311,11 +393,11 @@ collect_filescope_all_except() {
 
   for ticket_dir in "${JIRA_TICKETS_DIR}/EPIC-"*/; do
     [ -d "$ticket_dir" ] || continue
-    # 提取 basename 用于 EPIC 排除判断 (target EPIC ticket 目录形如 EPIC-XXX-A)
+    # 提取 basename 用于 EPIC 排除判断 (root: EPIC-XXX, sub: EPIC-XXX-A)
     local base
     base="$(basename "$ticket_dir")"
     case "$base" in
-      "EPIC-${epic_num}-"*) continue ;;
+      "EPIC-${epic_num}"|"EPIC-${epic_num}-"*) continue ;;
     esac
     local tj="${ticket_dir}ticket.json"
     [ -f "$tj" ] || continue
@@ -770,7 +852,7 @@ infer_specialization() {
 # 合并 4 个 metric 为单一 JSON (machine-readable)
 format_json_metrics() {
   local epic_id="$1"
-  local m1 m2 m3 m4 m5 m4b
+  local m1 m2 m2b m3 m4 m5 m4b
   m1="$(compute_expert_activation_rate "$epic_id")"
   m2="$(compute_cross_epic_reuse_rate "$epic_id")"
   m3="$(compute_ab_hit_rate "$epic_id")"
@@ -778,12 +860,15 @@ format_json_metrics() {
   m5="$(compute_abandonment_rate "$epic_id")"
   # EPIC-157 — 新增 mis_dispatch_binding_rate 副指标 (binding tracking 数据源)
   m4b="$(compute_mis_dispatch_binding_rate "$epic_id")"
+  # EPIC-253 — 新增 cross_epic_docs_reuse_rate 副指标 (docs-only EPIC 复用率)
+  m2b="$(compute_cross_epic_docs_reuse_rate "$epic_id")"
 
   jq -n \
     --arg epic "$epic_id" \
     --argjson generated_at "$(date +%s)" \
     --argjson m1 "$m1" \
     --argjson m2 "$m2" \
+    --argjson m2b "$m2b" \
     --argjson m3 "$m3" \
     --argjson m4 "$m4" \
     --argjson m5 "$m5" \
@@ -794,6 +879,7 @@ format_json_metrics() {
       metrics: [
         $m1,
         $m2,
+        $m2b,
         $m3,
         $m4,
         $m4b,
@@ -805,9 +891,10 @@ format_json_metrics() {
 # 合并 5 个 metric 为 Markdown table (human-readable, master + conductor 可读)
 format_markdown_metrics() {
   local epic_id="$1"
-  local m1 m2 m3 m4 m5
+  local m1 m2 m2b m3 m4 m5
   m1="$(compute_expert_activation_rate "$epic_id")"
   m2="$(compute_cross_epic_reuse_rate "$epic_id")"
+  m2b="$(compute_cross_epic_docs_reuse_rate "$epic_id")"
   m3="$(compute_ab_hit_rate "$epic_id")"
   m4="$(compute_mis_dispatch_rate "$epic_id")"
   m5="$(compute_abandonment_rate "$epic_id")"
@@ -825,6 +912,14 @@ format_markdown_metrics() {
   m2_status="$(printf '%s' "$m2" | jq -r '.status')"
   m2_overlap="$(printf '%s' "$m2" | jq -r '.overlap_count')"
   m2_total="$(printf '%s' "$m2" | jq -r '.total_files')"
+
+  # EPIC-253 — docs 复用率副指标
+  local m2b_pct m2b_target m2b_status m2b_overlap m2b_total
+  m2b_pct="$(printf '%s' "$m2b" | jq -r '.docs_reuse_pct')"
+  m2b_target="$(printf '%s' "$m2b" | jq -r '.target')"
+  m2b_status="$(printf '%s' "$m2b" | jq -r '.status')"
+  m2b_overlap="$(printf '%s' "$m2b" | jq -r '.overlap_count')"
+  m2b_total="$(printf '%s' "$m2b" | jq -r '.total_docs_files')"
 
   local m3_pct m3_target m3_status m3_total m3_mm
   m3_pct="$(printf '%s' "$m3" | jq -r '.mismatch_pct')"
@@ -862,6 +957,7 @@ format_markdown_metrics() {
 |--------|-------|--------|--------|
 | expert_activation_rate | ${m1_distinct} distinct experts | ≥ ${m1_target} | **${m1_status}** |
 | cross_epic_reuse_rate | ${m2_pct}% (${m2_overlap}/${m2_total} files) | ≥ ${m2_target}% | **${m2_status}** |
+| cross_epic_docs_reuse_rate | ${m2b_pct}% (${m2b_overlap}/${m2b_total} docs) | ≥ ${m2b_target}% | **${m2b_status}** |
 | ab_hit_rate (mismatch) | ${m3_pct}% (${m3_mm}/${m3_total} reviews) | < ${m3_target}% | **${m3_status}** |
 | mis_dispatch_rate | ${m4_pct}% (${m4_mm}/${m4_total} tickets) | < ${m4_target}% | **${m4_status}** |
 | abandonment_rate | ${m5_pct}% (${m5_abandoned}/${m5_total} tickets) | < ${m5_target}% | **${m5_status}** |

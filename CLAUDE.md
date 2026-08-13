@@ -86,7 +86,8 @@ cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run \
 
 **Rule (强制)**:
 1. **expert_activation_rate ≥ 5** — 每个 EPIC 必触发 ≥ 5 distinct experts (避免单点依赖)
-2. **cross_epic_reuse_rate ≥ 60%** — file_scope.includes 中 ≥ 60% 已被其他 EPIC 覆盖 (复用而非新建; docs-only 永远 0%, 留待下个 Sprint 加 `cross_epic_docs_reuse_rate`)
+2. **cross_epic_reuse_rate ≥ 60%** — file_scope.includes 中 ≥ 60% 已被其他 EPIC 覆盖 (复用而非新建)
+2b. **cross_epic_docs_reuse_rate ≥ 40%** (EPIC-253 副指标) — 只算 docs 类路径 (CLAUDE.md / .claude/rules / confluence / docs / *.md / tests/integration/*.sh), 给 docs-only EPIC 区分度. 阈值放宽因 docs 天然比 code 分散
 3. **ab_hit_rate < 15%** (反向) — A+B 2-Group review 推荐 跟 final outcome 一致率 ≥ 85%
 4. **mis_dispatch_rate < 10%** — Performer 派单错率 < 10% (ticket 跨 specialization)
 
@@ -137,7 +138,6 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 **if-then 详细规则** (4 阶段 × 5 验证站): 详见 `.claude/rules/branch-flow.md`
 
-<<<<<<< HEAD
 **docs-only 批模式 (主公 2026-08-12 拍板, retrospective-batch-8)**:
 - **适用**: docs-only EPIC (0 source code 改动, 触及 CLAUDE.md + 1 test)
 - **跳过 4 sub-roles review**: 走 Rule 37 + master 自审 + 主公拍板
@@ -146,16 +146,6 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 - **4-PR 备案债**: testing/main 落后时必 force-push (`--force-with-lease`). 累计 16 个 epicXXX-* 远端 branch 留 audit chain
 - **参考**: `confluence/memory/patterns/docs-only-EPIC-batch-closure.md`
 
-||||||| merged common ancestors
-=======
-**docs-only 批模式 (主公 2026-08-12 拍板, retrospective-batch-8)**:
-- **适用**: docs-only EPIC (0 source code 改动, 触及 CLAUDE.md + 1 test)
-- **跳过 4 sub-roles review**: 走 Rule 37 + master 自审 + 主公拍板
-- **CLAUDE.md §6.4 conflict pattern**: docs-only 累积 EPIC 段必 conflict. 解决: `git checkout --ours CLAUDE.md` (本 EPIC 段必含), bypass check-decorative-claim 备案 (跟 EPIC-240 pattern)
-- **4-PR 备案债**: testing/main 落后时必 force-push (`--force-with-lease`). 累计 16 个 epicXXX-* 远端 branch 留 audit chain
-- **参考**: `confluence/memory/patterns/docs-only-EPIC-batch-closure.md`
-
->>>>>>> origin/main
 **4-branch bypass 历史债 (EPIC-155 + EPIC-176 已闭环, EPIC-208 待办)**:
 - **已 re-promote** (EPIC-178, 2026-08-05): 5 commits 已 re-apply 带 `[Q3-repromote]` prefix + DCO — 详见 `confluence/decisions/epic-178-q3-repromote-2026-08-05.md`
 - **待 re-promote**: EPIC-208 4 commits (EPIC-203/204/205/206 testing→main, 主公 2026-08-08 拍板接受丢失)
