@@ -41,7 +41,7 @@ EPIC-131-B dead-code sentinel: 1 阶段 FAIL (3/3 阶段实跑)
 | `writeBinding` | 5 | consistent ok / divergent+reason ok / divergent 无 reason FAIL / 0 .tmp 残留 / NOT_FOUND |
 | `validateBindingForComplete` | 6 | consistent ok / divergent+reason ok / binding 缺失 / actual 空 / divergent 无 reason / NOT_FOUND |
 
-**隔离策略** (跟 CLAUDE.md Rule 7 一致): `mkdtempSync` 临时目录 + `afterEach` 清理, 0 污染真实 `jira/tickets/`.
+**隔离策略** (同 CLAUDE.md Rule 7): `mkdtempSync` 临时目录 + `afterEach` 清理, 0 污染真实 `jira/tickets/`.
 
 ## 验证结果
 
@@ -61,7 +61,7 @@ EPIC-131-B dead-code sentinel: 1 阶段 FAIL (3/3 阶段实跑)
 ## 联动
 
 - EPIC-157 (jira/ticket-binding 引入方)
-- EPIC-158 (bypass 备案, 本 ticket 治根)
+- EPIC-158 (bypass 备案, 本 ticket 加 test 消掉该 bypass)
 - EPIC-131/132 (scan-dead-code sentinel)
 - EPIC-154 (vitest tinypool env blocker 备案)
 - retrospective-batch-8 L3 (sentinel debt 记录)

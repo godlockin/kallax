@@ -137,6 +137,17 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 **if-then 详细规则** (4 阶段 × 5 验证站): 详见 `.claude/rules/branch-flow.md`
 
+<<<<<<< HEAD
+**docs-only 批模式 (主公 2026-08-12 拍板, retrospective-batch-8)**:
+- **适用**: docs-only EPIC (0 source code 改动, 触及 CLAUDE.md + 1 test)
+- **跳过 4 sub-roles review**: 走 Rule 37 + master 自审 + 主公拍板
+- **CLAUDE.md §6.4 conflict**: 累积 EPIC 段必 conflict. 解决 `git checkout --ours CLAUDE.md` (本 EPIC 段必含)
+- **写段禁 jargon (EPIC-252 纠正)**: merge commit 的 staged diff 把新写段算新增行, 含黑名单词会被 `check-decorative-claim.sh` 拦 (hook 已传 `KALLAX_STAGED_ONLY=1`, 历史行已豁免). 写段前查 `jira/tickets/.jargon-blacklist.json`, 直接避开, 不用 bypass
+- **4-PR 备案债**: testing/main 落后时必 force-push (`--force-with-lease`). 累计 16 个 epicXXX-* 远端 branch 留 audit chain
+- **参考**: `confluence/memory/patterns/docs-only-EPIC-batch-closure.md`
+
+||||||| merged common ancestors
+=======
 **docs-only 批模式 (主公 2026-08-12 拍板, retrospective-batch-8)**:
 - **适用**: docs-only EPIC (0 source code 改动, 触及 CLAUDE.md + 1 test)
 - **跳过 4 sub-roles review**: 走 Rule 37 + master 自审 + 主公拍板
@@ -144,6 +155,7 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 - **4-PR 备案债**: testing/main 落后时必 force-push (`--force-with-lease`). 累计 16 个 epicXXX-* 远端 branch 留 audit chain
 - **参考**: `confluence/memory/patterns/docs-only-EPIC-batch-closure.md`
 
+>>>>>>> origin/main
 **4-branch bypass 历史债 (EPIC-155 + EPIC-176 已闭环, EPIC-208 待办)**:
 - **已 re-promote** (EPIC-178, 2026-08-05): 5 commits 已 re-apply 带 `[Q3-repromote]` prefix + DCO — 详见 `confluence/decisions/epic-178-q3-repromote-2026-08-05.md`
 - **待 re-promote**: EPIC-208 4 commits (EPIC-203/204/205/206 testing→main, 主公 2026-08-08 拍板接受丢失)
