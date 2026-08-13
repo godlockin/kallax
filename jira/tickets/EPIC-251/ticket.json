@@ -1,0 +1,65 @@
+{
+  "id": "EPIC-251",
+  "ticket_id": "EPIC-251",
+  "epic": "EPIC-251",
+  "phase": "PHASE-023",
+  "title": "修 EPIC-157 sentinel debt — node/tests/jira/ticket-binding.test.ts",
+  "status": "done",
+  "priority": "P0",
+  "type": "bugfix",
+  "created_at": "2026-08-12",
+  "created_by": "master",
+  "performer": "master",
+  "completed_at": "2026-08-12",
+  "pr_chain": ["#399", "#400", "#401"],
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 2,
+  "labels": ["bugfix", "sentinel-debt", "epic-157-followup", "phase-023"],
+  "description": "EPIC-251 — 修 EPIC-157 引入的 scan-dead-code Stage 3 sentinel debt (主公 2026-08-12 拍板 Sprint 规划 #1).\n\n**Context**: EPIC-157 (PR #372-374, 2026-08-11) 新增 node/src/jira/ticket-binding.ts (201 行, 4 exported 函数) 但缺配套 test, 触发 scan-dead-code Stage 3 sentinel FAIL ('1 模块未被 tests 引用'). retrospective-batch-8 L3 记录, EPIC-158 PR #390 用 KALLAX_HOOK_BYPASS=1 备案跳过.\n\n**Rule 34 独立复现** (强制):\n- reproduction_command: bash scripts/scan-dead-code.sh (先 npm install --prefix node)\n- reproduction_exit_code: 1\n- reproduction_raw_output: 'Stage 3: Sentinel coverage ... 1 模块未被 tests 引用 (sentinel fail, EPIC-131-B 治 不被调用就死 的真问题)\\n\\n  jira/ticket-binding\\n\\nEPIC-131-B dead-code sentinel: 1 阶段 FAIL (3/3 阶段实跑)'\n\n**核心改动**: 新建 node/tests/jira/ticket-binding.test.ts 覆盖 4 exported 函数 (findJiraTicketPath / readJiraTicket / writeBinding / validateBindingForComplete).\n\n**scope**: 只加 test 文件, 0 改 source code (ticket-binding.ts 不动).",
+  "acceptance": [
+    "AC1: node/tests/jira/ticket-binding.test.ts 新建, ≥8 case 覆盖 4 exported 函数",
+    "AC2: findJiraTicketPath 覆盖 exact match / sub-ticket prefix match / not found 3 路径",
+    "AC3: readJiraTicket 覆盖 NOT_FOUND / PARSE_FAILED / ok 3 路径",
+    "AC4: writeBinding 覆盖 VALIDATION_FAILED (divergent 无 reason) / ok (atomic tmp+rename) 2 路径",
+    "AC5: validateBindingForComplete 覆盖 missing binding / actual 空 / divergent 无 reason / ok 4 路径",
+    "AC6: scan-dead-code Stage 3 exit 0 (raw: bash scripts/scan-dead-code.sh → FAIL_COUNT=0, 0 模块未被引用)",
+    "AC7: vitest ticket-binding.test.ts PASS (或 BLOCKED-env if vitest 1.6.1 tinypool bug, 跟 EPIC-154 备案)",
+    "AC8: npm run build 0 errors",
+    "AC9: 0 改 source code (node/src/jira/ticket-binding.ts 不动)",
+    "AC10: 4-branch flow 走完 (feature → testing → main → miao)"
+  ],
+  "deliverables": [
+    "node/tests/jira/ticket-binding.test.ts (新, ≥8 case)",
+    "jira/tickets/EPIC-251/{ticket.json,ticket.md} (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      "node/tests/jira/ticket-binding.test.ts",
+      "jira/tickets/EPIC-251/"
+    ],
+    "excludes": [
+      "node/src/jira/ticket-binding.ts"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "npm install --prefix node && bash scripts/scan-dead-code.sh",
+    "reproduction_exit_code": 1,
+    "reproduction_raw_output": "Stage 3: Sentinel coverage (each exported module must be imported by tests)\n  scanned: 152 modules\n1 模块未被 tests 引用 (sentinel fail, EPIC-131-B 治 '不被调用就死' 的真问题)\n\n  jira/ticket-binding\n\nEPIC-131-B dead-code sentinel: 1 阶段 FAIL (3/3 阶段实跑)"
+  },
+  "expert_binding": {
+    "suggested_expert": "backend",
+    "actual_expert": "backend",
+    "expert_binding_at": "2026-08-12T14:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "Rule 34 (bugfix 独立复现 — 本 ticket 已含 3 字段)",
+    "EPIC-131/132 (scan-dead-code sentinel — 修复对象)",
+    "EPIC-157 (jira/ticket-binding 引入方)",
+    "EPIC-158 (bypass 备案, 本 ticket 治根)",
+    "retrospective-batch-8 L3 (sentinel debt 记录)",
+    "EPIC-054-A (worktree 隔离 — 不破)"
+  ]
+}
