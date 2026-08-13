@@ -104,6 +104,48 @@ status 从 NO_DATA 变 FAIL, total_files 从 0 变 2.
 
 docs metric 给了 docs-only EPIC 区分度 — 之前全是 NO_DATA / 0%.
 
+## Bug C (immutable script delete-only diff bug, 主公 2026-08-13 亲自批准修)
+
+收口 PR-3 时 commit 被 `check-decorative-claim` + `check-evidence-fake` 拦, 但手动跑显示 0 violation.
+
+### 根因
+
+两个 script 的 STAGED_ONLY 分支:
+
+```bash
+ADDED=$(git diff --cached -U0 -- "$file" | grep '^+' | grep -v '^+++' | sed 's/^+//')
+```
+
+纯删除的 staged diff (0 新增行) 时 `grep '^+'` 无匹配返回 1, 在 `set -euo pipefail` 下让整个 script 静默退出 exit 1 → hook 误判为 violation.
+
+### 复现
+
+```
+git add <只删行的文件>
+KALLAX_STAGED_ONLY=1 bash scripts/verify/check-decorative-claim.sh >/dev/null 2>&1
+echo $?   # → 1 (应为 0)
+```
+
+输出在 "Scan files: ..." 后中断, 无 FAIL 信息 — 静默退出特征.
+
+### 修法
+
+加 `|| true`, 让空结果走已有的 `[ -z "$ADDED" ] && continue` 分支:
+
+```bash
+ADDED=$(git diff --cached -U0 -- "$file" 2>/dev/null | grep '^+' | grep -v '^+++' | sed 's/^+//' || true)
+```
+
+**不放宽检查语义** — test Case 10 证新增 jargon 仍 exit 1.
+
+### 影响范围
+
+`grep -ln "grep '^+'" scripts/verify/*.sh` → 只 `check-decorative-claim.sh` (immutable #1) + `check-evidence-fake.sh` (immutable #5) 2 个.
+
+### 锚定 test
+
+`tests/integration/immutable-staged-only.test.sh` 加 Case 9 (delete-only → exit 0) + Case 10 (added jargon → 仍 exit 1), 共 14 case.
+
 ## 联动
 
 - Rule 36 (本 ticket 补指标 #2 副指标)
