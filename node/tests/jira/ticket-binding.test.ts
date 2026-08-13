@@ -10,7 +10,7 @@
  *   writeBinding              - VALIDATION_FAILED / ok (atomic tmp+rename)
  *   validateBindingForComplete - missing binding / actual 空 / divergent 无 reason / ok
  *
- * 隔离策略 (跟 CLAUDE.md Rule 7 一致): mkdtemp 临时目录 + afterEach 清理, 0 污染真实 jira/tickets/.
+ * 隔离策略 (同 CLAUDE.md Rule 7): mkdtemp 临时目录 + afterEach 清理, 0 污染真实 jira/tickets/.
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
