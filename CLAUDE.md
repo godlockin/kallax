@@ -86,7 +86,8 @@ cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run \
 
 **Rule (强制)**:
 1. **expert_activation_rate ≥ 5** — 每个 EPIC 必触发 ≥ 5 distinct experts (避免单点依赖)
-2. **cross_epic_reuse_rate ≥ 60%** — file_scope.includes 中 ≥ 60% 已被其他 EPIC 覆盖 (复用而非新建; docs-only 永远 0%, 留待下个 Sprint 加 `cross_epic_docs_reuse_rate`)
+2. **cross_epic_reuse_rate ≥ 60%** — file_scope.includes 中 ≥ 60% 已被其他 EPIC 覆盖 (复用而非新建)
+2b. **cross_epic_docs_reuse_rate ≥ 40%** (EPIC-253 副指标) — 只算 docs 类路径 (CLAUDE.md / .claude/rules / confluence / docs / *.md / tests/integration/*.sh), 给 docs-only EPIC 区分度. 阈值放宽因 docs 天然比 code 分散
 3. **ab_hit_rate < 15%** (反向) — A+B 2-Group review 推荐 跟 final outcome 一致率 ≥ 85%
 4. **mis_dispatch_rate < 10%** — Performer 派单错率 < 10% (ticket 跨 specialization)
 
