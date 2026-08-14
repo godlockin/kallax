@@ -138,9 +138,47 @@ EXIT_C8=$?
 set -e
 assert_exit "historical jargon not re-flagged" "0" "$EXIT_C8"
 
+# ── Case 9: 纯删除 diff 不误判 (EPIC-253 修 bug) ────────────────────────────
+echo ""
+echo "Case 9: delete-only staged diff → exit 0 (EPIC-253 bug fix)"
+cp "$KALLAX_ROOT/scripts/verify/check-evidence-fake.sh" "$TMPREPO/scripts/verify/" 2>/dev/null || true
+# 建含多行的 CHANGELOG 并 commit, 再删几行 (0 新增行)
+printf '# Changelog\n\nline A\nline B\nline C\n' > "$TMPREPO/CHANGELOG.md"
+git -C "$TMPREPO" add CHANGELOG.md 2>/dev/null
+git -C "$TMPREPO" commit -qm "changelog with 3 lines" --no-verify 2>/dev/null
+printf '# Changelog\n\nline A\n' > "$TMPREPO/CHANGELOG.md"
+git -C "$TMPREPO" add CHANGELOG.md 2>/dev/null
+# 确认 staged diff 确实 0 新增行
+ADDED_COUNT="$(git -C "$TMPREPO" diff --cached -U0 -- CHANGELOG.md | grep -c '^+[^+]' || true)"
+assert_exit "staged diff has 0 added lines" "0" "$ADDED_COUNT"
+set +e
+( cd "$TMPREPO" && KALLAX_STAGED_ONLY=1 bash scripts/verify/check-decorative-claim.sh >/dev/null 2>&1 )
+EXIT_C9=$?
+set -e
+assert_exit "delete-only diff → decorative exit 0" "0" "$EXIT_C9"
+if [ -f "$TMPREPO/scripts/verify/check-evidence-fake.sh" ]; then
+  set +e
+  ( cd "$TMPREPO" && KALLAX_STAGED_ONLY=1 bash scripts/verify/check-evidence-fake.sh >/dev/null 2>&1 )
+  EXIT_C9B=$?
+  set -e
+  assert_exit "delete-only diff → evidence-fake exit 0" "0" "$EXIT_C9B"
+fi
+
+# ── Case 10: 修复未放宽检查语义 (新增 jargon 仍拦) ──────────────────────────
+echo ""
+echo "Case 10: fix did not loosen detection (added jargon still blocked)"
+git -C "$TMPREPO" commit -qm "delete lines" --no-verify 2>/dev/null
+printf '# Changelog\n\nline A\n- %s\n' "$JARGON_FIXTURE" > "$TMPREPO/CHANGELOG.md"
+git -C "$TMPREPO" add CHANGELOG.md 2>/dev/null
+set +e
+( cd "$TMPREPO" && KALLAX_STAGED_ONLY=1 bash scripts/verify/check-decorative-claim.sh >/dev/null 2>&1 )
+EXIT_C10=$?
+set -e
+assert_exit "added jargon after fix → still exit 1" "1" "$EXIT_C10"
+
 echo ""
 echo "================================================"
-echo "EPIC-252 Immutable STAGED_ONLY Tests: $PASS passed, $FAIL failed"
+echo "EPIC-252/253 Immutable STAGED_ONLY Tests: $PASS passed, $FAIL failed"
 echo "================================================"
 if [ $FAIL -gt 0 ]; then
   exit 1

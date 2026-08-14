@@ -27,25 +27,27 @@
     "AC8: tests/integration/docs-reuse-metric.test.sh ≥8 case PASS",
     "AC9: 实测区分度 — EPIC-174 总复用 33% FAIL 但 docs 复用 42% PASS (raw: sprint-metrics.sh --epic EPIC-174)",
     "AC10: CLAUDE.md ≤ 200 行 + §3.2 Rule 36 加指标 2b",
-    "AC11: 0 改 immutable script, 0 增 Rule",
+    "AC11: 修 2 immutable script 的 delete-only diff bug (主公 2026-08-13 亲自批准, CLAUDE.md §5): grep '^+' 无匹配返回 1 在 set -euo pipefail 下静默 exit 1 → 误判 violation. 修法加 || true, 不放宽检查语义 (test Case 10 证新增 jargon 仍拦)",
     "AC12: 4-branch flow 走完 (feature → testing → main → miao)"
   ],
   "deliverables": [
     "scripts/metrics/lib/metrics.sh 改 (修 2 函数 bug + 加 compute_cross_epic_docs_reuse_rate + 2 formatter 集成)",
+    "scripts/verify/check-decorative-claim.sh 改 (immutable #1, 主公亲自批准, delete-only diff bug)",
+    "scripts/verify/check-evidence-fake.sh 改 (immutable #5, 主公亲自批准, 同 bug)",
     "tests/integration/docs-reuse-metric.test.sh (新, 15 case)",
+    "tests/integration/immutable-staged-only.test.sh 改 (加 Case 9/10 锚定 delete-only bug fix)",
     "CLAUDE.md 改 (§3.2 Rule 36 指标 2b)",
     "jira/tickets/EPIC-253/{ticket.json,ticket.md} (新)"
   ],
   "file_scope": {
     "includes": [
       "scripts/metrics/lib/metrics.sh",
+      "scripts/verify/check-decorative-claim.sh",
+      "scripts/verify/check-evidence-fake.sh",
       "tests/integration/docs-reuse-metric.test.sh",
+      "tests/integration/immutable-staged-only.test.sh",
       "CLAUDE.md",
       "jira/tickets/EPIC-253/"
-    ],
-    "excludes": [
-      "scripts/verify/check-decorative-claim.sh",
-      "scripts/verify/check-narrative.sh"
     ]
   },
   "verification": {
