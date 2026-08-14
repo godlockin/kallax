@@ -106,7 +106,9 @@ if [ -n "${KALLAX_STAGED_ONLY:-}" ] && [ "$KALLAX_STAGED_ONLY" = "1" ]; then
   # EPIC-114: only scan newly-added lines; historical entries grandfathered
   for file in "${SCAN_FILES[@]}"; do
     [ -f "$file" ] || continue
-    ADDED=$(git diff --cached -U0 -- "$file" 2>/dev/null | grep '^+' | grep -v '^+++' | sed 's/^+//')
+    # EPIC-253 修 bug: 纯删除的 staged diff (0 新增行) 时 grep '^+' 返回 1,
+    # 在 set -euo pipefail 下让整个 script 静默退出 exit 1 → 误判为 violation.
+    ADDED=$(git diff --cached -U0 -- "$file" 2>/dev/null | grep '^+' | grep -v '^+++' | sed 's/^+//' || true)
     [ -z "$ADDED" ] && continue
     for pat in "${FAKE_THEATRE_PATTERNS[@]}"; do
       if matches=$(echo "$ADDED" | grep -nE "$pat" 2>/dev/null); then
