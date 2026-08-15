@@ -78,6 +78,37 @@ is_historical_file() {
 # 把所有 regex 用 | 串成 egrep pattern
 COMBINED_PATTERN="$(tr '\n' '|' < "$PATTERNS_FILE" | sed 's/|$//')"
 
+# EPIC-250: 兑现 blacklist "replace" 字段里承诺的例外条件.
+#
+# 起因: blacklist 里 "X/Y PASS 无命令引用" 的 replace 写着
+#   "附 '`bash <cmd>`' 或 'exit=0'"
+# 暗示"附了命令引用就可以写 X/Y PASS". 但脚本从来没实现这个判断,
+# 命中就 fail. 结果决策文档贴 raw test output (CLAUDE.md §2 要求)
+# 跟 jargon gate 直接冲突 — 贴了过不了 gate, 不贴违反 §2.
+#
+# 本函数实现: X/Y PASS 命中时, 看它附近 ±10 行有没有命令引用证据.
+#   有 → 豁免 (这是 raw output 引用, 不是装饰性宣称)
+#   无 → 仍 fail (裸数字没证据, 正是 v3.8.0 "25/25 假 PASS" 的问题)
+#
+# 窗口取 ±10 行: ±5 太窄, 表格场景 (命令写在表头上方 + 表格本身 5-6 行)
+# 很容易超出; ±10 能覆盖常见的 "命令 + 空行 + 表格" 排版, 又不至于把
+# 隔了一整段的无关命令算进来.
+#
+# 只对 "X/Y PASS" 这一条生效. 其他词 (协同类连接词 / 收尾隐喻 等) 无例外.
+XY_PASS_PATTERN='[0-9]+/[0-9]+\s+(PASS|passed)'
+XY_EVIDENCE_WINDOW=10
+
+has_command_evidence() {
+  local file="$1"
+  local lineno="$2"
+  local from=$(( lineno > XY_EVIDENCE_WINDOW ? lineno - XY_EVIDENCE_WINDOW : 1 ))
+  local to=$(( lineno + XY_EVIDENCE_WINDOW ))
+  # 证据形式 (跟 blacklist replace 字段一致):
+  #   `bash xxx` / `npx xxx` / $ cmd / exit=N / RC=N / rc=N
+  sed -n "${from},${to}p" "$file" 2>/dev/null \
+    | grep -qE '(`(bash|npx|cargo|npm|git|python3) |^\s*\$ |exit=[0-9]|RC=[0-9]|rc=[0-9])'
+}
+
 scan_file() {
   local f="${1:-}"
   [ -z "$f" ] && return 0
@@ -107,6 +138,14 @@ scan_file() {
       fi
     done < "$PATTERNS_FILE"
     set -e
+
+    # EPIC-250: X/Y PASS 例外 — 附近有命令引用则豁免 (raw output, 非装饰性宣称)
+    if [ "$first_pat" = "$XY_PASS_PATTERN" ]; then
+      if has_command_evidence "$f" "$lineno"; then
+        continue
+      fi
+    fi
+
     printf "  %s:%s — %s\n  > %s\n" "$rel" "$lineno" "$first_pat" "$content" >> "$HITS_FILE"
   done < <(grep -nE "$COMBINED_PATTERN" "$f" 2>/dev/null || true)
 }
