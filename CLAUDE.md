@@ -23,7 +23,7 @@
 
 ## 2. 5-Level Verify 新规 (EPIC-069-D 防止假 PASS 复发)
 
-> **起源**: v3.8.0 README 声称 "25/25 PASS / 生产级 / 治根", reviewer 红蓝对抗 实测 `cargo test` 11 errors + Node 8/19 fail。
+> **起源**: v3.8.0 README 用 3 个装饰性词组声称测试全过, reviewer 红蓝对抗 实测 `cargo test` 11 errors + Node 8/19 fail。
 
 | Level | 之前 | 之后 (v3.8.1+) |
 |-------|------|---------------|
@@ -36,7 +36,7 @@
 **禁止** (PRE-COMMIT hook 拦截):
 - ❌ README/CHANGELOG 出现 `X/Y PASS` 数字无 `raw_output` 引用
 - ❌ `5-Level Verify PASS` 字样但 L2 是 `cargo build`(必须 `cargo test`)
-- ❌ "生产级 / 25/25" 等装饰性断言无 raw output 佐证
+- ❌ "全过 / 全绿" 等裸数字宣称无 raw output 佐证
 
 **新 EPIC 必跑 sentinel**:
 ```bash
@@ -61,48 +61,48 @@ cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run \
    - `verification.reproduction_raw_output` — 复现 raw output (前 30 行足够)
    - **不能**只贴 CI log text + 一句话 hypothesis 就建卡. CI log 是 symptom, 不是 diagnosis.
 2. **Performer 收到 ticket 必做独立复现 first**:
-   - 跑 reproduction_command 验实诊断一致 — 一致 → 修
-   - 不一致 → **STOP**, ticket status → `blocked`, 上报 Master 报告 diagnosis mismatch
+   - 跑 reproduction_command 验证诊断是否吻合 — 吻合 → 修
+   - 不吻合 → **STOP**, ticket status → `blocked`, 上报 Master 报告 diagnosis mismatch
    - **0 source change 本身也是 valid conclusion** (案例 6 — EPIC-153)
 3. **0 source change 不视失败**: 验证债已 cascading 修 / 误报 / 不存在 → ticket done + trace 记录.
 
-**跟现有 Rule 联合 (0 增)**: 跟 Rule 5 DRY, Rule 9 KPI (X/Y 格式), Rule 33 decision-gate 1:1 一致, 不冲突.
+**跟现有 Rule 复用 (0 增)**: Rule 5 DRY, Rule 9 KPI (X/Y 格式), Rule 33 decision-gate 对应, 不冲突.
 
 ### 3.1. Rule 35 — Sprint 规划时间盒 (EPIC-190, v3.34.2)
 
 **起因**: 主公 2026-08-07 拍板 (EPIC-185 subagent-5 rule-add), 防止 Sprint 期间超大任务破坏节奏.
 
 **Rule (强制)**:
-1. **Sprint 容量上限**: 每个 Sprint 最多 5 个 EPIC, 每个 EPIC 最多 10 commits, 每个 commit ≤ 500 行 (跟 Rule 8 Rule-of-500 联合)
+1. **Sprint 容量上限**: 每个 Sprint 最多 5 个 EPIC, 每个 EPIC 最多 10 commits, 每个 commit ≤ 500 行 (沿用 Rule 8 Rule-of-500)
 2. **0 超大任务**: 任何任务触及 4 个以上模块 / 涉及 5 个以上文件 → 必须拆 EPIC, 不接受单 PR 兜底 (docs-only 例外, 主公 2026-08-12 拍板 retrospective-batch-8 L13: 实质 1 docs scope, 不视超大)
-3. **时间盒**: 单 EPIC 必走 4-PR 全闭环 (跟 Rule 4 联合), 不接受 0 静默跳过阶段 (testing / main / miao 任一)
-4. **0 跨 Sprint 累积**: 未完成 EPIC 不延期, 必在当前 Sprint 关闭 (done / blocked / archived, 跟 EPIC-188 retrospective 联合)
+3. **时间盒**: 单 EPIC 必走 4-PR 全程 (沿用 Rule 4), 不接受 0 静默跳过阶段 (testing / main / miao 任一)
+4. **0 跨 Sprint 累积**: 未完成 EPIC 不延期, 必在当前 Sprint 关闭 (done / blocked / archived, 沿用 EPIC-188 retrospective)
 
-**跟现有 Rule 联合 (0 增)**: Rule 4 (4-PR) / Rule 5 (DRY ≥60% 复用) / Rule 8 (≤500 行) / Rule 9 (KPI X/Y) / Rule 13 (3 模式 decision-gate) / Rule 34 (Bugfix 独立复现)
+**跟现有 Rule 复用 (0 增)**: Rule 4 (4-PR) / Rule 5 (DRY ≥60% 复用) / Rule 8 (≤500 行) / Rule 9 (KPI X/Y) / Rule 13 (3 模式 decision-gate) / Rule 34 (Bugfix 独立复现)
 
 ### 3.2. Rule 36 — Sprint 结束必跑 4 北极星 metric (EPIC-194, v3.34.5)
 
-**起因**: 主公 2026-08-07 拍板 (跟 EPIC-023-C 北极星打通 + EPIC-157 binding 字段联合), Sprint 结束必跑 `scripts/metrics/sprint-metrics.sh` 4 指标.
+**起因**: 主公 2026-08-07 拍板 (数据源: EPIC-023-C 北极星 + EPIC-157 binding 字段), Sprint 结束必跑 `scripts/metrics/sprint-metrics.sh` 4 指标.
 
 **Rule (强制)**:
 1. **expert_activation_rate ≥ 5** — 每个 EPIC 必触发 ≥ 5 distinct experts (避免单点依赖)
 2. **cross_epic_reuse_rate ≥ 60%** — file_scope.includes 中 ≥ 60% 已被其他 EPIC 覆盖 (复用而非新建)
 2b. **cross_epic_docs_reuse_rate ≥ 40%** (EPIC-253 副指标) — 只算 docs 类路径 (CLAUDE.md / .claude/rules / confluence / docs / *.md / tests/integration/*.sh), 给 docs-only EPIC 区分度. 阈值放宽因 docs 天然比 code 分散
-3. **ab_hit_rate < 15%** (反向) — A+B 2-Group review 推荐 跟 final outcome 一致率 ≥ 85%
+3. **ab_hit_rate < 15%** (反向) — A+B 2-Group review 推荐 跟 final outcome 吻合率 ≥ 85%
 4. **mis_dispatch_rate < 10%** — Performer 派单错率 < 10% (ticket 跨 specialization)
 
 **0 静默跳过**:
 - Sprint 结束时必跑 `bash scripts/metrics/sprint-metrics.sh --epic EPIC-XXX` 输出 4 指标
-- 4 指标全 PASS 才算 Sprint 闭环 (跟 Rule 35 Sprint 时间盒 联合)
+- 4 指标全 PASS 才算 Sprint 收尾 (沿用 Rule 35 Sprint 时间盒)
 - 0 数据 (NO_DATA exit=2) 触发 ASK, 不接受 silent PASS
-- docs-only EPIC 用 `--docs-only` flag 跳过 (exit 3 DOCS_ONLY_SKIP, 跟 EPIC-198 + EPIC-204 1:1)
+- docs-only EPIC 用 `--docs-only` flag 跳过 (exit 3 DOCS_ONLY_SKIP, 沿用 EPIC-198 + EPIC-204)
 - **历史 EPIC 归档跳过** (EPIC-223): EPIC 编号 ≤ `jira/tickets/.archive-baseline.json` `archived_before` (当前 222) → 指标 #4 返回 `ARCHIVED_SKIP`, 不回溯. 新卡 (> 222) 强制 `check-ticket-schema.sh` required_fields 全填.
 
-**跟现有 Rule 联合 (0 增)**:
-- Rule 5 (DRY): 跨 EPIC 复用 ≥ 60% (跟 EPIC-023-C 北极星 #2 一致)
+**跟现有 Rule 复用 (0 增)**:
+- Rule 5 (DRY): 跨 EPIC 复用 ≥ 60% (数字取自 EPIC-023-C 北极星 #2)
 - Rule 9 (KPI X/Y): 4 指标必带 X/Y 数字 (e.g. expert_activation=5/5)
 - Rule 13 (3 模式 decision-gate): NO_DATA 触发 ASK
-- Rule 35 (Sprint 时间盒): Sprint 结束必跑 (本 Rule 闭环)
+- Rule 35 (Sprint 时间盒): Sprint 结束必跑 (本 Rule 收尾)
 - EPIC-023-C 北极星 (源头)
 - EPIC-157 ticket.json binding 字段 (指标 #4 数据源)
 - EPIC-204 docs-only metrics 适配 (跳过路径)
@@ -120,15 +120,15 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 |------|------|--------|---------------|------|
 | 1. feature/* | `git worktree add -b feature/...` | 5-Level Verify | 0 (master 自开发) | worktree 隔离 |
 | 2. feature → testing | `gh pr create --base testing` | integration + cargo test + vitest env | **master + 4 sub-roles** (Architect/Backend/Frontend/Security) | 防止 v3.8.0 form-only PASS |
-| 3. testing → main | `gh pr create --base main` (FF) | full e2e + decision matrix 25 cells | **master + 4 sub-roles + comment 验证** (跟 EPIC-207 v2 1:1) | 防止 v3.8.0 "25/25 假 PASS" |
+| 3. testing → main | `gh pr create --base main` (FF) | full e2e + decision matrix 25 cells | **master + 4 sub-roles + comment 验证** (沿用 EPIC-207 v2) | 防止 v3.8.0 25 测试全过的假 PASS |
 | 4. main → miao | `gh pr create --base miao` | master review + 4 sub-roles + conflict check | **master 仲裁 + 主公拍板** | 处理 v3.8.0 red-blue review 阻塞 |
 
 **Master Review 强制 (EPIC-207, 2026-08-08 主公拍板)**:
 1. **0 容忍 auto-merge**: `gh pr merge --merge --auto` 禁用, 4-PR 任一必走 master + 4 sub-roles review
-2. **4 sub-roles 1:1**: Architect / Backend / Frontend / Security 各出 1 份 review (跟 EPIC-056-A 3 阶段 治理 1:1)
+2. **4 sub-roles 各 1 份**: Architect / Backend / Frontend / Security 各出 1 份 review (沿用 EPIC-056-A 3 阶段治理)
 3. **conflict check**: PR 必先 `git fetch origin <base>` + `git diff --check` 验 0 conflict
-4. **smoke retention**: PR 必跑 `bash scripts/check-smoke-retention.sh` (跟 EPIC-174 联合, smoke ≥ 500 行告警)
-5. **PR-2 v2 修正**: testing → main 在 FF 关系下独立 PR 不可行, 走 FF push + comment 验证 (跟 EPIC-207 §5.1 1:1)
+4. **smoke retention**: PR 必跑 `bash scripts/check-smoke-retention.sh` (阈值来自 EPIC-174, smoke ≥ 500 行告警)
+5. **PR-2 v2 修正**: testing → main 在 FF 关系下独立 PR 不可行, 走 FF push + comment 验证 (沿用 EPIC-207 §5.1)
 
 **0 静默跳过** (配合 EPIC-069-D check-claim-evidence):
 - v3.10.0+ 必走 4-PR 全程
@@ -146,14 +146,14 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 - **4-PR 备案债**: testing/main 落后时必 force-push (`--force-with-lease`). 累计 16 个 epicXXX-* 远端 branch 留 audit chain
 - **参考**: `confluence/memory/patterns/docs-only-EPIC-batch-closure.md`
 
-**4-branch bypass 历史债 (EPIC-155 + EPIC-176 已闭环, EPIC-208 待办)**:
+**4-branch bypass 历史债 (EPIC-155 + EPIC-176 已完成, EPIC-208 待办)**:
 - **已 re-promote** (EPIC-178, 2026-08-05): 5 commits 已 re-apply 带 `[Q3-repromote]` prefix + DCO — 详见 `confluence/decisions/epic-178-q3-repromote-2026-08-05.md`
 - **待 re-promote**: EPIC-208 4 commits (EPIC-203/204/205/206 testing→main, 主公 2026-08-08 拍板接受丢失)
 - **本次新增债** (EPIC-223 备案): EPIC-217 PR-2 用 `--delete-branch` 删 testing → EPIC-218~222 跳过 testing 阶段直接 feature→main
 
 ## 5. 9 不可更改 法律 (immutable scripts) + 2 smoke 辅助
 
-> **数字对齐 (EPIC-223 + EPIC-224 + EPIC-225, 主公 2026-08-08 拍板)**: 曾出现 4/5/6/7 四个不一致数字, 已统一.
+> **数字对齐 (EPIC-223 + EPIC-224 + EPIC-225, 主公 2026-08-08 拍板)**: 曾出现 4/5/6/7 四个不同数字, 已统一.
 > **完整清单 + 改数字强制流程**: 详见 `.claude/rules/immutable-scripts.md` (path-scoped lazy load).
 
 **9 immutable** (fail-closed, 改动需主公亲自), 全部**已接入 hook** (EPIC-224 验证):
@@ -171,12 +171,12 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 ## 6. Recent EPICs
 
-> **EPIC-209 trim**: 24 EPICs 详情 (v3.32.2 → v3.34.6, 19 + 5 EPIC-203-208) 移到 `.claude/rules/recent-epics.md` (path-scoped lazy load, 跟 EPIC-159 联合). 主 CLAUDE.md 维持 ≤ 200 行.
+> **EPIC-209 trim**: 24 EPICs 详情 (v3.32.2 → v3.34.6, 19 + 5 EPIC-203-208) 移到 `.claude/rules/recent-epics.md` (path-scoped lazy load, 沿用 EPIC-159). 主 CLAUDE.md 维持 ≤ 200 行.
 
 ## 6.4. Rule 37 — 小 effort auto-approve (EPIC-216, 2026-08-08)
 
 > **主公 2026-08-08 拍板**: "effort 比较小的直接 auto-approve". 跟 EPIC-207 §1 "0 容忍 auto-merge" 矛盾, 主公拍板 override.
-> **详细阈值 + 例外 + 跟 Rule 联合**: 详见 `.claude/rules/rule-37.md` (path-scoped lazy load).
+> **详细阈值 + 例外 + 跟 Rule 复用**: 详见 `.claude/rules/rule-37.md` (path-scoped lazy load).
 
 **EPIC-157 binding tracking (v3.32.2+)** — Rule 36 北极星 #4 数据源: ticket.json `expert_binding.{suggested_expert,actual_expert,expert_binding_at,binding_change_reason}` 4 字段, Master 拆卡建议 → Performer claim 实际 → 偏离必填 reason. Metric: `scripts/metrics/lib/metrics.sh:compute_mis_dispatch_binding_rate`. 历史 ticket 无 binding 跳过, 不计入分母.
 

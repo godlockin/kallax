@@ -21,16 +21,25 @@ PASS_COUNT=0
 FAIL_COUNT=0
 TOTAL_COUNT=0
 
+# EPIC-248 修 2 个 bug:
+#
+# bug 1 (双计): 原来各 TC 自己 TOTAL_COUNT+=1, log_pass 里又 ((TOTAL_COUNT++)),
+#   导致 12 个 TC 全过却打印 "12/24 PASS" (TOTAL 算成 2 倍).
+#   EPIC-228/244 据此误判 EPIC-170 有 "12/24 真缺口", 实际是计数 bug.
+#   修: 去掉 log_pass/log_fail 里的 TOTAL_COUNT++, 各 TC 自己加.
+#
+# bug 2 (set -e + ((x++))): ((PASS_COUNT++)) 后缀形式返回**旧值**,
+#   PASS_COUNT=0 时 rc=1. 若它是函数最后一条命令, 函数返回 1,
+#   set -euo pipefail 下调用方中断 → 测试跑 1 个 TC 就退出.
+#   修: 用 X=$((X + 1)) 赋值形式 (总返回 0).
 log_pass() {
     echo -e "${GREEN}[PASS]${NC} $1"
-    ((PASS_COUNT++))
-    ((TOTAL_COUNT++))
+    PASS_COUNT=$((PASS_COUNT + 1))
 }
 
 log_fail() {
     echo -e "${RED}[FAIL]${NC} $1"
-    ((FAIL_COUNT++))
-    ((TOTAL_COUNT++))
+    FAIL_COUNT=$((FAIL_COUNT + 1))
 }
 
 log_info() {

@@ -1,0 +1,52 @@
+{
+  "id": "EPIC-250",
+  "ticket_id": "EPIC-250",
+  "epic": "EPIC-250",
+  "phase": "PHASE-024",
+  "title": "CLAUDE.md 黑话 26→0 + check-jargon.sh X/Y PASS 例外",
+  "status": "done",
+  "priority": "P1",
+  "type": "bugfix",
+  "created_at": "2026-08-10",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 4,
+  "labels": ["bugfix", "jargon-cleanup", "immutable-script", "rule-conflict-resolved", "phase-024"],
+  "description": "EPIC-250 CLAUDE.md 黑话 26→0 + check-jargon.sh 加 X/Y PASS 例外 (主公 2026-08-10 拍板 A 改 immutable #9). 例外: 命中 X/Y PASS 时看 ±5 行有无命令引用证据 (bash/npx/RC=N/exit=N 等), 有则豁免 (raw output 引用). 仅对这一条生效, 其他黑名单词无例外.",
+  "acceptance": [
+    "AC1: CLAUDE.md 0 jargon violations (raw: bash scripts/verify/check-jargon.sh CLAUDE.md → OK: 0 jargon violations)",
+    "AC2: CLAUDE.md ≤ 200 行 (raw: wc -l CLAUDE.md → 200)",
+    "AC3: check-jargon.sh 加 has_command_evidence 函数 + X/Y 例外分支 (raw: git show -- scripts/verify/check-jargon.sh)",
+    "AC4: tests/integration/epic-250-jargon-xy-exception-test.sh 10 case 全 PASS (raw: bash tests/integration/epic-250-jargon-xy-exception-test.sh → 11 pass, 0 fail)",
+    "AC5: 例外负向 — 裸 X/Y PASS 无命令仍 fail (raw: TC2 PASS)",
+    "AC6: 例外负向 — 命令距离 >10 行仍 fail (raw: TC3 PASS)",
+    "AC7: 其他黑名单词 (联合/闭环类) 有命令也不豁免 (raw: TC7 PASS)",
+    "AC8: 修改 immutable #9, 主公亲自拍板 A (raw: confluence/decisions/EPIC-248-249-250-triple-2026-08-10.md §6)",
+    "AC9: .claude/rules/immutable-scripts.md §2 补 '#9 的 X/Y PASS 例外' 小节 (raw: git show -- .claude/rules/immutable-scripts.md)"
+  ],
+  "file_scope": {
+    "includes": ["CLAUDE.md", "scripts/verify/check-jargon.sh", ".claude/rules/immutable-scripts.md", "tests/integration/epic-250-jargon-xy-exception-test.sh"]
+  },
+  "verification": {
+    "reproduction_command": "bash scripts/verify/check-jargon.sh CLAUDE.md",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "OK: 0 jargon violations\n\n(修复前: FAIL: 26 jargon violations)\n\nraw: wc -l < CLAUDE.md → 200 (≤ 200 硬阈值)"
+  },
+  "expert_binding": {
+    "suggested_expert": "auditor-independent-witness",
+    "actual_expert": "auditor-independent-witness",
+    "expert_binding_at": "2026-08-10T00:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "EPIC-225 (jargon 黑名单源头)",
+    "EPIC-159 (CLAUDE.md 治理 2.0 trim)",
+    "EPIC-243 (CLAUDE.md 黑话不追溯 — 本 EPIC 推翻该决定)",
+    "CLAUDE.md §2 (raw test output 要求) — 本 EPIC 解决 2 规则冲突",
+    "Rule 34 (独立复现)",
+    "CLAUDE.md §5 (immutable #9 改需主公亲自)"
+  ]
+}
