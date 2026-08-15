@@ -189,6 +189,73 @@ stage_sentinel() {
 }
 
 # ============================================================================
+# Stage 4 — Shell dead-function 报告 (EPIC-249)
+# ============================================================================
+# 起因: EPIC-247 在 scripts/lib/workspace.sh 找到无限递归 bug, 存活很久没被发现,
+#   因为 Stage 1-3 只扫 node/src/** 的 TS, 不扫 scripts/**/*.sh.
+#
+# 为什么只报告不 fail:
+#   实测 scripts/lib/*.sh 有 31/60 函数 0 外部引用. 但这里面混了几类:
+#     - 真 dead code (如 workspace_* 全家, EPIC-247 已确认 0 调用方)
+#     - 仅内部互调的 helper (grep 不出来但不是死的)
+#     - 给 source 用的 public API (调用方在别的仓库 / 未来才用)
+#   区分需要人判断, 强制 fail 会有大量误报 → 只报告, 让人看.
+stage_shell_report() {
+  info ""
+  info "Stage 4: Shell dead-function 报告 (EPIC-249, 不 fail)"
+
+  local total=0
+  local dead=0
+  local report=""
+
+  local f
+  for f in scripts/lib/*.sh; do
+    [ -f "$f" ] || continue
+    local funcs fn n
+    funcs=$(grep -oE '^[a-z_][a-z0-9_]*\(\)' "$f" 2>/dev/null | tr -d '()' || true)
+    [ -n "$funcs" ] || continue
+    local file_dead=0
+    local file_total=0
+    local file_list=""
+    for fn in $funcs; do
+      file_total=$((file_total + 1))
+      total=$((total + 1))
+      # 找 fn 的所有出现 (file:line:content), 排除定义行本身 (^fn())
+      # 注 1: 用 \b 边界; 字符类 [^a-zA-Z0-9_(] 会漏掉行尾/定义行
+      # 注 2: 不能写 `... | wc -l | tr -d ' ' || echo 0` —
+      #       grep 无匹配时返回 1, `||` 触发 echo 0, 而 wc 已经输出了 "0",
+      #       结果 n="0\n0" 多行, [ "$n" -eq 0 ] 判断失败 → 误报"有引用".
+      #       用 `|| true` 只吞退出码, 不追加输出.
+      n=$(grep -rnE "\\b${fn}\\b" --include='*.sh' --include='*.ts' . 2>/dev/null \
+          | grep -v 'node_modules' \
+          | grep -vE "^[^:]+:[0-9]+:${fn}\\(\\)" \
+          | wc -l | tr -d ' ' || true)
+      n=${n:-0}
+      if [ "$n" -eq 0 ] 2>/dev/null; then
+        file_dead=$((file_dead + 1))
+        dead=$((dead + 1))
+        file_list="${file_list} ${fn}"
+      fi
+    done
+    if [ "$file_dead" -gt 0 ] 2>/dev/null; then
+      report="${report}
+  $(basename "$f"): ${file_dead}/${file_total} 无外部引用 →${file_list}"
+    fi
+  done
+
+  info "  scanned: $total shell functions in scripts/lib/"
+  if [ "$dead" -gt 0 ]; then
+    warn "$dead/$total shell 函数无外部引用 (报告, 不 fail — 需人判断是否真 dead)"
+    echo -e "$report"
+    echo ""
+    echo "  判断方法: 逐个 grep 确认是否仅内部互调 / 是否 public API"
+    echo "  真 dead 的处理: 删除 或 加 test 覆盖 (跟 Stage 3 TS sentinel 同原则)"
+  else
+    ok "所有 $total shell 函数都有外部引用"
+  fi
+}
+
+# ============================================================================
 # Main
 # ============================================================================
 
@@ -197,6 +264,7 @@ case "$MODE" in
     stage_static
     stage_tsc
     stage_sentinel
+    stage_shell_report
     echo ""
     # P0-7 治理: 区分 FAIL (exit 1) vs BLOCKED-env (exit 2) vs PASS (exit 0)
     # 不再谎报 '3/3 PASS' 当实际只跑了 1/3 阶段
