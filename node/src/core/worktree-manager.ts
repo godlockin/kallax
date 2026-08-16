@@ -48,7 +48,7 @@ async function gitCommand(
     // EPIC-133: stdout may be string (default utf8) or Buffer (when encoding unset) — accept both
     const stdout = typeof result.stdout === 'string' ? result.stdout : Buffer.isBuffer(result.stdout) ? result.stdout.toString('utf8') : '';
     return ok(stdout.trim());
-  } catch (error) {
+  } catch (error: unknown) {
     return err(
       new KallaxError(KallaxErrorCode.INTERNAL_ERROR, `Git command failed: ${error instanceof Error ? error.message : String(error)}`, {
         cause: error,
