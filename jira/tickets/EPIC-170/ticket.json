@@ -3,7 +3,7 @@
   "epic": "EPIC-170",
   "phase": "PHASE-022",
   "title": "EPIC-162 Expert Plugin Complete — 1 Expert 1 Skill Package + Activation Gates",
-  "status": "in_progress",
+  "status": "done",
   "priority": "P1",
   "type": "feature",
   "created_at": "2026-08-05",
@@ -76,5 +76,11 @@
   "_audit_method": "bash tests/integration/skill-plugin-complete.test.sh + grep -cE enabled_policy 或 activation",
   "_audited_at": "2026-08-10T03:40:00Z",
   "_pending_master_review": true,
-  "_pending_master_review_reason": "真缺口, 需补实现后才能判 done"
+  "_pending_master_review_reason": "真缺口, 需补实现后才能判 done",
+  "completed_at": "2026-08-11",
+  "pr_chain": [
+    "#375",
+    "#376",
+    "#377"
+  ]
 }
