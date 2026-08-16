@@ -112,8 +112,10 @@ if isinstance(tests, list):
         exit 1
     fi
     # Use printf to avoid empty-string wc -l issue with set -e
-    TEST_COUNT=$(printf '%s' "$TESTS_JSON" | grep -c '^.' 2>/dev/null || echo 0)
-    TEST_COUNT=$(printf '%s' "$TEST_COUNT" | tr -d '[:space:]')
+    # EPIC-254: `|| echo 0` 污染 → "0\n0", 后面 tr 拼成 "00" (偶然仍判 false).
+    # 用 `|| true` 从源头避免多行.
+    TEST_COUNT=$(printf '%s' "$TESTS_JSON" | grep -c '^.' 2>/dev/null || true)
+    TEST_COUNT=$(printf '%s' "${TEST_COUNT:-0}" | tr -d '[:space:]')
 
     if [ "${TEST_COUNT:-0}" -gt 0 ]; then
         pass "$TEST_COUNT test command(s) defined"

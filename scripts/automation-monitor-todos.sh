@@ -164,7 +164,8 @@ cmd_report() {
     # Output JSON summary
     local total_events automation_events
     total_events=$(wc -l < "$LEDGER")
-    automation_events=$(grep -c '"automation-monitor"' "$LEDGER" 2>/dev/null || echo "0")
+    automation_events=$(grep -c '"automation-monitor"' "$LEDGER" 2>/dev/null || true)
+    automation_events=${automation_events:-0}
 
     printf '{"total_events":%s,"automation_monitor_events":%s}\n' \
       "$total_events" "$automation_events"
@@ -172,7 +173,8 @@ cmd_report() {
     # Plain text summary
     echo "=== Automation Monitor Report ==="
     echo "Total events: $(wc -l < "$LEDGER")"
-    echo "Automation monitor events: $(grep -c 'automation-monitor' "$LEDGER" 2>/dev/null || echo 0)"
+    # EPIC-254: `|| echo 0` 污染 → 无匹配时输出 "0\n0" 显示成 2 行. 用 `|| true`.
+    echo "Automation monitor events: $(grep -c 'automation-monitor' "$LEDGER" 2>/dev/null || true)"
     echo ""
     echo "Recent automation events:"
     grep 'automation-monitor' "$LEDGER" 2>/dev/null | tail -5 || echo "(none)"

@@ -34,7 +34,8 @@ else
 fi
 
 # 验证 M1 test cases 包含 UX 场景 (跟 EPIC-034-A M1 100 test cases 联合)
-UX_TEST_CASES=$(grep -c '"ux"\|"frontend"' scripts/verify/expert-match-m1-v3.sh 2>/dev/null | head -1 || echo "0")
+UX_TEST_CASES=$(grep -c '"ux"\|"frontend"' scripts/verify/expert-match-m1-v3.sh 2>/dev/null | head -1 || true)
+UX_TEST_CASES=${UX_TEST_CASES:-0}
 if [[ "$UX_TEST_CASES" -gt 0 ]]; then
   pass "UX test cases in M1: $UX_TEST_CASES"
 else
