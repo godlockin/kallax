@@ -3,7 +3,7 @@
   "epic": "EPIC-157",
   "phase": "PHASE-018",
   "title": "Expert Binding Tracking — Master 建议 + Performer 实际 + Review 复盘",
-  "status": "in_progress",
+  "status": "done",
   "priority": "P1",
   "type": "feature",
   "created_at": "2026-08-02",
@@ -78,5 +78,11 @@
     "CLAUDE.md 改 (加 EPIC-157 引用段)"
   ],
   "estimated_hours": 5,
-  "created_by": "master (主公 2026-08-02 review 拍板: suggested/actual/reason/change_reason 4 字段 + mis_dispatch_rate 阈值 <10%)"
+  "created_by": "master (主公 2026-08-02 review 拍板: suggested/actual/reason/change_reason 4 字段 + mis_dispatch_rate 阈值 <10%)",
+  "completed_at": "2026-08-11",
+  "pr_chain": [
+    "#372",
+    "#373",
+    "#374"
+  ]
 }
