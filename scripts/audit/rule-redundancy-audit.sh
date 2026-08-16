@@ -43,11 +43,14 @@ if [ ! -f "$CLAUDE_MD" ]; then
 fi
 
 # Count total Rules (跟 EPIC-055-B 实测 一致: 23)
-RULE_COUNT=$(grep -cE '^### [0-9]+\.' "$CLAUDE_MD" || echo "0")
+RULE_COUNT=$(grep -cE '^### [0-9]+\.' "$CLAUDE_MD" || true)
+RULE_COUNT=${RULE_COUNT:-0}
 
 # Count upgraded Rules (实测 10 = R-NEW 14-18 = 5 + v1.2.4 扩展 29-33 = 5)
-RNEW_COUNT=$(grep -cE '^### 1[4-8]\.' "$CLAUDE_MD" || echo "0")
-EXTENSION_COUNT=$(grep -cE '^### (29|30|31|32|33)\.' "$CLAUDE_MD" || echo "0")
+RNEW_COUNT=$(grep -cE '^### 1[4-8]\.' "$CLAUDE_MD" || true)
+RNEW_COUNT=${RNEW_COUNT:-0}
+EXTENSION_COUNT=$(grep -cE '^### (29|30|31|32|33)\.' "$CLAUDE_MD" || true)
+EXTENSION_COUNT=${EXTENSION_COUNT:-0}
 UPGRADED_COUNT=$((RNEW_COUNT + EXTENSION_COUNT))
 
 echo "Section 1: Current State (跟 EPIC-055-B 实测 联合)"

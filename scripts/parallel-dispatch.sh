@@ -37,7 +37,9 @@ echo ""
 echo "── Step 1/3: Analyze tickets ──"
 
 TICKETS=$(jq -r '.tickets[]? | select(.status == "backlog" or .status == "ready") | "\(.id)"' "${EPIC_FILE}" 2>/dev/null)
-TICKET_COUNT=$(echo "${TICKETS}" | grep -c . 2>/dev/null || echo 0)
+# EPIC-254: `|| echo 0` 污染 → "0\n0" 让 line 42 的 -eq 判断报错. 用 `|| true`.
+TICKET_COUNT=$(echo "${TICKETS}" | grep -c . 2>/dev/null || true)
+TICKET_COUNT=${TICKET_COUNT:-0}
 
 if [ "${TICKET_COUNT}" -eq 0 ] || [ -z "${TICKETS}" ]; then
   echo "  No backlog tickets found."

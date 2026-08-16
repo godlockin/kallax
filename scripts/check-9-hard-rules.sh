@@ -70,7 +70,8 @@ check_claude_md_group_index() {
   # 计算 CLAUDE.md 中 实际 Rule 数 (跟 "Rule N." 格式 联合)
   # Pattern ^### [0-9]+\. 自然 排除 strikethrough (### ~~31.) 因为 ~~ 不在 数字前
   local active_count
-  active_count=$(grep -cE "^### [0-9]+\. " "$CLAUDE_MD" 2>/dev/null || echo "0")
+  active_count=$(grep -cE "^### [0-9]+\. " "$CLAUDE_MD" 2>/dev/null || true)
+  active_count=${active_count:-0}
 
   echo "kallax_rules_count=${active_count}"
 
@@ -114,12 +115,14 @@ check_doc_completeness() {
 
   # 反例数 (跟 "❌ 反例" / "### 反例" 联合)
   local anti_count
-  anti_count=$(grep -cE "^### 反例" "$DOC" 2>/dev/null || echo "0")
+  anti_count=$(grep -cE "^### 反例" "$DOC" 2>/dev/null || true)
+  anti_count=${anti_count:-0}
   echo "anti_patterns_total=${anti_count}"
 
   # 正例数 (跟 "✅ 正例" / "### 正例" 联合)
   local pos_count
-  pos_count=$(grep -cE "^### 正例" "$DOC" 2>/dev/null || echo "0")
+  pos_count=$(grep -cE "^### 正例" "$DOC" 2>/dev/null || true)
+  pos_count=${pos_count:-0}
   echo "positive_examples_total=${pos_count}"
 
   # 撤销方法 段
@@ -184,7 +187,8 @@ check_glossary_loop() {
 check_zero_rule_inflation() {
   # 验证 CLAUDE.md 实际 Rule 数 (跟 v2.4.1 revert 一致, active 已排除 strikethrough)
   local active_count
-  active_count=$(grep -cE "^### [0-9]+\. " "$CLAUDE_MD" 2>/dev/null || echo "0")
+  active_count=$(grep -cE "^### [0-9]+\. " "$CLAUDE_MD" 2>/dev/null || true)
+  active_count=${active_count:-0}
 
   echo "rules_landed=${active_count}"
   echo "rules_added=0"

@@ -119,7 +119,11 @@ stage_tsc() {
   local tsc_out
   tsc_out=$(cd node && npx tsc --noEmit 2>&1 || true)
   local tsc_errors
-  tsc_errors=$(echo "$tsc_out" | grep -cE "error TS" || echo 0)
+  # EPIC-254: grep -c 无匹配时已输出 "0" 且返回 1, `|| echo 0` 会再追加一个 "0"
+  # → tsc_errors="0\n0" 多行 → [ -gt ] 报 integer expression expected.
+  # 用 `|| true` 只吞退出码, 不追加输出.
+  tsc_errors=$(echo "$tsc_out" | grep -cE "error TS" || true)
+  tsc_errors=${tsc_errors:-0}
   if [ "$tsc_errors" -gt 0 ]; then
     err "tsc strict 报告 $tsc_errors errors"
     echo "$tsc_out" | grep -E "error TS" | head -10

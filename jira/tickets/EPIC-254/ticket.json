@@ -1,0 +1,90 @@
+{
+  "id": "EPIC-254",
+  "ticket_id": "EPIC-254",
+  "epic": "EPIC-254",
+  "phase": "PHASE-024",
+  "title": "全仓清 grep -c 后接 || echo N 的输出污染 (32 处 / 15 文件) + Rule 3 catch :unknown",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "bugfix",
+  "created_at": "2026-08-16",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 2,
+  "labels": ["bugfix", "bash-exitcode", "fail-open", "rule-3", "phase-024"],
+  "description": "EPIC-254 — 全仓清除 `grep -c ... || echo N` 输出污染模式.\n\n**根因**: `grep -c` 无匹配时**已输出 \"0\"** 且返回 1, `|| echo N` 会再追加一个值 → 变量成 \"0\\n0\" 多行 → 数值比较报 `integer expression expected`.\n\n**发现路径**: 规划下阶段时跑 `bash scripts/scan-dead-code.sh`, 看到 `line 123: [: 0\\n0: integer expression expected`. 顺着扫全仓发现 32 处同类.\n\n**两轮扫描**: 首轮正则只匹配 `|| echo 0` (无引号) 找到 12 处; test 的全仓检查报 23 处残留, 才发现漏了 `|| echo \"0\"` (带引号) 这个更常见写法, 二轮补 20 处.\n\n**危害分级**:\n- `merge-validator.sh` (4 处): FAILED 被污染时 `[ -gt 0 ]` 判断失效, **CI 失败可能不被拦** (fail-open, 最高危)\n- `dashboard-metrics.sh` (4 处): \"0\\n0\" 传给 `bc` 算术报错\n- `scan-dead-code.sh` (1 处): 每次跑打一行错误, 噪声掩盖真问题\n- `level-2.sh` (1 处): 5-Level Verify L2 test 计数\n- 其余 22 处: 读 CLAUDE.md 数 Rule 条目 (CLAUDE.md 必有 `### N.` 所以实际不触发, 属潜在坑)\n\n**修法**: `|| echo N` → `|| true` (只吞退出码不追加输出) + `${VAR:-0}` 兜底.\n\n**同类坑第 6 次**: EPIC-232 (jq exit 2) / EPIC-245 (hook exit 3) / EPIC-248 (`((x++))` 返回旧值) / EPIC-249 (`|| echo 0` 追加输出, 首次发现) / EPIC-254 (本次全仓清) / 写本 EPIC 的 test 时 `set -e` 未关导致脚本静默终止.\n\n**附带**: `node/src/core/worktree-manager.ts:51` catch 补 `:unknown` 标注 (CLAUDE.md Rule 3, scan Stage 1 长期 WARN).",
+  "acceptance": [
+    "AC1: 全仓 scripts/ 代码行 0 处 `grep -c ... || echo N` (raw: tests Case 3 → 0 occurrences, 排除说明注释)",
+    "AC2: 15 个改动文件 bash -n 全过 (raw: tests Case 5 → 0 syntax errors)",
+    "AC3: merge-validator.sh FAILED 用 || true + ${VAR:-0} 兜底 (raw: tests Case 6 双 PASS)",
+    "AC4: scan-dead-code.sh 不再打 integer expression 错误 (raw: bash scripts/scan-dead-code.sh → 3/3 阶段 PASS, 无 line 123 报错)",
+    "AC5: worktree-manager.ts catch (error: unknown) (raw: tests Case 8 双 PASS)",
+    "AC6: tests/integration/grep-count-pollution.test.sh ≥8 case PASS (raw: 12 passed, 0 failed)",
+    "AC7: test Case 1/2 锚定根因 — 复现 \"0\\n0\" 多行 + [ -gt ] rc=2 报错行为",
+    "AC8: 0 改 immutable script (scripts/verify/level-2.sh 不在 9 immutable 清单, 清单是 check-*.sh)",
+    "AC9: 4-branch flow 走完 (feature → testing → main → miao)"
+  ],
+  "deliverables": [
+    "scripts/merge-validator.sh (4 处, 最高危 fail-open)",
+    "scripts/dashboard/dashboard-metrics.sh (4 处)",
+    "scripts/audit/approval-tiering.sh (6 处)",
+    "scripts/check-9-hard-rules.sh (4 处)",
+    "scripts/audit/rule-redundancy-audit.sh (3 处)",
+    "scripts/post-process.sh (2 处)",
+    "scripts/audit/kpi-snapshot.sh (2 处)",
+    "scripts/scan-dead-code.sh (1 处)",
+    "scripts/verify/level-2.sh (1 处)",
+    "scripts/dependency-check.sh (1 处)",
+    "scripts/parallel-dispatch.sh (1 处)",
+    "scripts/automation-monitor-todos.sh (2 处)",
+    "scripts/check-doc-hygiene.sh (1 处)",
+    "scripts/verify/ux-flow.sh (1 处)",
+    "node/src/core/worktree-manager.ts (Rule 3 catch :unknown)",
+    "tests/integration/grep-count-pollution.test.sh (新, 12 case)",
+    "jira/tickets/EPIC-254/{ticket.json,ticket.md} (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      "scripts/merge-validator.sh",
+      "scripts/dashboard/dashboard-metrics.sh",
+      "scripts/audit/approval-tiering.sh",
+      "scripts/check-9-hard-rules.sh",
+      "scripts/audit/rule-redundancy-audit.sh",
+      "scripts/post-process.sh",
+      "scripts/audit/kpi-snapshot.sh",
+      "scripts/scan-dead-code.sh",
+      "scripts/verify/level-2.sh",
+      "scripts/dependency-check.sh",
+      "scripts/parallel-dispatch.sh",
+      "scripts/automation-monitor-todos.sh",
+      "scripts/check-doc-hygiene.sh",
+      "scripts/verify/ux-flow.sh",
+      "node/src/core/worktree-manager.ts",
+      "tests/integration/grep-count-pollution.test.sh",
+      "jira/tickets/EPIC-254/"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "bash scripts/scan-dead-code.sh 2>&1 | grep -E 'integer expression'",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "修复前:\nscripts/scan-dead-code.sh: line 123: [: 0\n0: integer expression expected\n\n修复后: (无输出, grep 无匹配)\nStage 2: npx tsc strict mode (zero-error gate)\ntsc strict: 0 errors\nEPIC-131-B dead-code sentinel: 3/3 阶段 PASS\n\n根因复现 (tests Case 1):\nBAD=$(echo 'no match' | grep -c 'xyz' 2>/dev/null || echo 0)  → len=3 (即 '0\\n0')\nGOOD=$(echo 'no match' | grep -c 'xyz' 2>/dev/null || true)   → len=1"
+  },
+  "expert_binding": {
+    "suggested_expert": "auditor-independent-witness",
+    "actual_expert": "auditor-independent-witness",
+    "expert_binding_at": "2026-08-16T21:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "Rule 34 (bugfix 独立复现 — 3 字段全填)",
+    "CLAUDE.md Rule 3 (catch e: unknown — worktree-manager.ts 修复项)",
+    "EPIC-249 (首次发现 || echo 0 追加输出, 本 EPIC 全仓清)",
+    "EPIC-248 (((x++)) 返回旧值 — 同类退出码坑)",
+    "EPIC-232 (jq exit 2 — 同类)",
+    "EPIC-245 (hook exit 3 — 同类)",
+    "EPIC-131/132 (scan-dead-code sentinel)"
+  ]
+}

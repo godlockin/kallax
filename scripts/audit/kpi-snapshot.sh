@@ -52,7 +52,8 @@ glossary_term_count() {
   for f in docs/CHEATSHEET.md docs/5-levels.md docs/4-roles.md; do
     if [[ -f "$f" ]]; then
       local c
-      c=$(grep -cE "^## " "$f" 2>/dev/null || echo 0)
+      c=$(grep -cE "^## " "$f" 2>/dev/null || true)
+      c=${c:-0}
       total=$((total + c))
     fi
   done
@@ -68,7 +69,7 @@ workspace_file_count() {
 rust_crate_count() {
   if [[ -f rust/Cargo.toml ]]; then
     sed -n '/^\[workspace\]/,/^]/p' rust/Cargo.toml \
-      | grep -cE '^[[:space:]]+"crates/' 2>/dev/null || echo 0
+      | grep -cE '^[[:space:]]+"crates/' 2>/dev/null || true
   else
     echo 0
   fi

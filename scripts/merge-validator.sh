@@ -46,7 +46,10 @@ fi
 info "Checking review status..."
 
 REVIEWS=$(gh pr view "$PR_NUMBER" --json reviews --jq '.reviews' 2>/dev/null || echo "[]")
-APPROVALS=$(echo "$REVIEWS" | grep -c '"state":"APPROVED"' 2>/dev/null || echo 0)
+# EPIC-254: grep -c 无匹配时已输出 "0" 且返回 1, `|| echo 0` 会再追加 "0" → "0\n0" 多行,
+# 数值比较报 integer expression expected. 用 `|| true` 只吞退出码.
+APPROVALS=$(echo "$REVIEWS" | grep -c '"state":"APPROVED"' 2>/dev/null || true)
+APPROVALS=${APPROVALS:-0}
 
 if [ "$APPROVALS" -ge 1 ]; then
   pass "Approved by ${APPROVALS} reviewer(s)"
@@ -59,9 +62,14 @@ fi
 info "Checking CI status..."
 
 CHECKS=$(gh pr view "$PR_NUMBER" --json statusCheckRollup --jq '.statusCheckRollup' 2>/dev/null || echo "[]")
-TOTAL=$(echo "$CHECKS" | grep -c '"conclusion"' 2>/dev/null || echo 0)
-FAILED=$(echo "$CHECKS" | grep -c '"conclusion":"FAILURE"' 2>/dev/null || echo 0)
-PENDING=$(echo "$CHECKS" | grep -c '"conclusion":"null"' 2>/dev/null || echo 0)
+# EPIC-254: 同上 — `|| echo 0` 污染. FAILED 变 "0\n0" 时 line 67 的 -gt 判断失效,
+# CI 失败可能不被拦 (fail-open). 修为 `|| true`.
+TOTAL=$(echo "$CHECKS" | grep -c '"conclusion"' 2>/dev/null || true)
+TOTAL=${TOTAL:-0}
+FAILED=$(echo "$CHECKS" | grep -c '"conclusion":"FAILURE"' 2>/dev/null || true)
+FAILED=${FAILED:-0}
+PENDING=$(echo "$CHECKS" | grep -c '"conclusion":"null"' 2>/dev/null || true)
+PENDING=${PENDING:-0}
 
 [ "$TOTAL" -eq 0 ] && warn "No CI checks found (may still be queued)"
 [ "$FAILED" -gt 0 ] && fail "${FAILED} CI check(s) failed"

@@ -289,7 +289,8 @@ check_rule_currency() {
     *)
       # 真实 模式: 跟 check-9-hard-rules.sh 同模式
       if [ -f "$CLAUDE_MD" ]; then
-        active_count=$(grep -cE "^### [0-9]+\. " "$CLAUDE_MD" 2>/dev/null || echo "0")
+        active_count=$(grep -cE "^### [0-9]+\. " "$CLAUDE_MD" 2>/dev/null || true)
+        active_count=${active_count:-0}
       fi
       # 一致性: 22 期望
       if [ "$active_count" -eq 22 ]; then

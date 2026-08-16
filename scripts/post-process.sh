@@ -448,7 +448,8 @@ echo ""
 # ----------------------------------------
 echo "[Step 6/${TOTAL_STEPS}] PHASE-INDEX 更新"
 if [ -f "$PHASE_INDEX_FILE" ]; then
-    PHASE_COUNT=$(grep -cE "PHASE-0[0-9]+-REVIEW|PHASE-0[0-9]+-REFLECTION|PHASE-0[0-9]+-EKET" "$PHASE_INDEX_FILE" 2>/dev/null || echo "0")
+    PHASE_COUNT=$(grep -cE "PHASE-0[0-9]+-REVIEW|PHASE-0[0-9]+-REFLECTION|PHASE-0[0-9]+-EKET" "$PHASE_INDEX_FILE" 2>/dev/null || true)
+    PHASE_COUNT=${PHASE_COUNT:-0}
     echo "  → ${PHASE_INDEX_FILE} 含 ${PHASE_COUNT} 个 PHASE review 入口"
     check_step 6 "PASS"
     PASS_COUNT=$((PASS_COUNT + 1))
@@ -499,7 +500,8 @@ echo ""
 echo "[Step 9/${TOTAL_STEPS}] CLAUDE.md Rule 更新 (如需)"
 if [ -f "$CLAUDE_MD_FILE" ]; then
     CLAUDE_LINES=$(wc -l < "$CLAUDE_MD_FILE" | tr -d ' ')
-    RULE_COUNT=$(grep -cE "^## [0-9]+\.|^- \*\*Rule [0-9]+\*\*" "$CLAUDE_MD_FILE" 2>/dev/null || echo "0")
+    RULE_COUNT=$(grep -cE "^## [0-9]+\.|^- \*\*Rule [0-9]+\*\*" "$CLAUDE_MD_FILE" 2>/dev/null || true)
+    RULE_COUNT=${RULE_COUNT:-0}
     echo "  → ${CLAUDE_MD_FILE} 存在 (${CLAUDE_LINES} 行, ${RULE_COUNT} Rule)"
     echo "  → 跟 Rule 32 "0 增命令" 联合, 默认 不 改 Rule"
     check_step 9 "PASS"
