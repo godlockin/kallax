@@ -14,7 +14,13 @@
   "performer_sub_role": "coder",
   "handoff_depth": "L1",
   "estimated_hours": 4,
-  "labels": ["bugfix", "jargon-cleanup", "immutable-script", "rule-conflict-resolved", "phase-024"],
+  "labels": [
+    "bugfix",
+    "jargon-cleanup",
+    "immutable-script",
+    "rule-conflict-resolved",
+    "phase-024"
+  ],
   "description": "EPIC-250 CLAUDE.md 黑话 26→0 + check-jargon.sh 加 X/Y PASS 例外 (主公 2026-08-10 拍板 A 改 immutable #9). 例外: 命中 X/Y PASS 时看 ±5 行有无命令引用证据 (bash/npx/RC=N/exit=N 等), 有则豁免 (raw output 引用). 仅对这一条生效, 其他黑名单词无例外.",
   "acceptance": [
     "AC1: CLAUDE.md 0 jargon violations (raw: bash scripts/verify/check-jargon.sh CLAUDE.md → OK: 0 jargon violations)",
@@ -28,7 +34,12 @@
     "AC9: .claude/rules/immutable-scripts.md §2 补 '#9 的 X/Y PASS 例外' 小节 (raw: git show -- .claude/rules/immutable-scripts.md)"
   ],
   "file_scope": {
-    "includes": ["CLAUDE.md", "scripts/verify/check-jargon.sh", ".claude/rules/immutable-scripts.md", "tests/integration/epic-250-jargon-xy-exception-test.sh"]
+    "includes": [
+      "CLAUDE.md",
+      "scripts/verify/check-jargon.sh",
+      ".claude/rules/immutable-scripts.md",
+      "tests/integration/epic-250-jargon-xy-exception-test.sh"
+    ]
   },
   "verification": {
     "reproduction_command": "bash scripts/verify/check-jargon.sh CLAUDE.md",
@@ -48,5 +59,11 @@
     "CLAUDE.md §2 (raw test output 要求) — 本 EPIC 解决 2 规则冲突",
     "Rule 34 (独立复现)",
     "CLAUDE.md §5 (immutable #9 改需主公亲自)"
+  ],
+  "completed_at": "2026-08-15",
+  "pr_chain": [
+    "#410",
+    "#411",
+    "#412"
   ]
 }
