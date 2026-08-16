@@ -71,7 +71,9 @@ if [ -f "${RUST_DIR}/Cargo.toml" ]; then
     if [ -z "$OUTDATED_CARGO" ] || echo "$OUTDATED_CARGO" | grep -q "No updates"; then
       pass "All cargo dependencies up to date"
     else
-      OUTDATED_RUST_COUNT=$(echo "$OUTDATED_CARGO" | grep -c "^ " 2>/dev/null || echo 0)
+      # EPIC-254: `|| echo 0` 污染 → "0\n0" 显示成 2 行. 用 `|| true`.
+      OUTDATED_RUST_COUNT=$(echo "$OUTDATED_CARGO" | grep -c "^ " 2>/dev/null || true)
+      OUTDATED_RUST_COUNT=${OUTDATED_RUST_COUNT:-0}
       warn "${OUTDATED_RUST_COUNT} cargo crate(s) outdated:"
       echo "$OUTDATED_CARGO" | head -30 | while read -r line; do
         echo "    ${line}"

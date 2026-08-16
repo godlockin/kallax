@@ -65,7 +65,9 @@ count_events_by_type() {
         echo 0
         return
     fi
-    grep -c "\"event_type\":\"${event_type}\"" "$LEDGER" 2>/dev/null || echo 0
+    # EPIC-254: grep -c 无匹配时已输出 "0" 且返回 1, `|| echo 0` 会再追加 "0",
+    # 函数输出变 "0\n0" 传给调用方. 用 `|| true` 只吞退出码.
+    grep -c "\"event_type\":\"${event_type}\"" "$LEDGER" 2>/dev/null || true
 }
 
 get_total_events() {
@@ -87,7 +89,9 @@ calc_expert_activation() {
         return
     fi
     # Count events with expert_id field (simplified heuristic)
-    expert_annotated=$(grep -c '"expert_id"' "$LEDGER" 2>/dev/null || echo 0)
+    # EPIC-254: `|| echo 0` 污染 → "0\n0" 传给 bc 会算术报错. 用 `|| true`.
+    expert_annotated=$(grep -c '"expert_id"' "$LEDGER" 2>/dev/null || true)
+    expert_annotated=${expert_annotated:-0}
     echo "scale=2; ($expert_annotated * 100) / $work_events" | bc 2>/dev/null || echo "0.0"
 }
 
@@ -117,8 +121,10 @@ calc_ab_hit_rate() {
         echo "0.0"
         return
     fi
+    # EPIC-254: `|| echo 0` 污染 → "0\n0" 传给 bc 会算术报错. 用 `|| true`.
     with_evidence=$(grep '"event_type":"decision"' "$LEDGER" 2>/dev/null | \
-        grep -c '"evidence_ref"' || echo 0)
+        grep -c '"evidence_ref"' || true)
+    with_evidence=${with_evidence:-0}
     echo "scale=2; ($with_evidence * 100) / $decision_count" | bc 2>/dev/null || echo "0.0"
 }
 
@@ -131,8 +137,10 @@ calc_mis_dispatch_binding_rate() {
         return
     fi
     # Count work events without ticket_id or with "heartbeat-daemon" as ticket
+    # EPIC-254: `|| echo 0` 污染 → "0\n0" 传给 bc 会算术报错. 用 `|| true`.
     unbound=$(grep '"event_type":"work"' "$LEDGER" 2>/dev/null | \
-        grep -cE '"ticket_id":"(heartbeat-daemon|default-ticket-id|)"' || echo 0)
+        grep -cE '"ticket_id":"(heartbeat-daemon|default-ticket-id|)"' || true)
+    unbound=${unbound:-0}
     echo "scale=2; ($unbound * 100) / $work_count" | bc 2>/dev/null || echo "0.0"
 }
 
