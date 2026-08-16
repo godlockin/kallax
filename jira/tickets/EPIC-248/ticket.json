@@ -14,7 +14,12 @@
   "performer_sub_role": "coder",
   "handoff_depth": "L1",
   "estimated_hours": 2,
-  "labels": ["bugfix", "test-count-bug", "epic-170-revised", "phase-024"],
+  "labels": [
+    "bugfix",
+    "test-count-bug",
+    "epic-170-revised",
+    "phase-024"
+  ],
   "description": "EPIC-248 推翻 EPIC-228/EPIC-244 两次对 EPIC-170 的 '12/24 真缺口' 判定. 实测是测试自身 bug (TOTAL_COUNT 双计 + ((x++)) 后缀返回旧值). 修后 12/12 全过.",
   "acceptance": [
     "AC1: tests/integration/skill-plugin-complete.test.sh TOTAL_COUNT 不再双计 (raw: 12 个 TC, log_pass 1 次 +1, TC 内 1 次 +1 → 总 12)",
@@ -23,7 +28,9 @@
     "AC4: EPIC-170 ticket status in_progress → done + audit_history 记录 3 版本判定 (v1/v2 误判 / v3 推翻)"
   ],
   "file_scope": {
-    "includes": ["tests/integration/skill-plugin-complete.test.sh"]
+    "includes": [
+      "tests/integration/skill-plugin-complete.test.sh"
+    ]
   },
   "verification": {
     "reproduction_command": "bash tests/integration/skill-plugin-complete.test.sh; echo exit=$?",
@@ -41,5 +48,11 @@
     "EPIC-228 (v1 误判)",
     "EPIC-244 (v2 沿用误判)",
     "EPIC-170 (被推翻的判定对象)"
+  ],
+  "completed_at": "2026-08-15",
+  "pr_chain": [
+    "#410",
+    "#411",
+    "#412"
   ]
 }

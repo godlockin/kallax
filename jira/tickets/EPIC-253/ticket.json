@@ -4,7 +4,7 @@
   "epic": "EPIC-253",
   "phase": "PHASE-023",
   "title": "加 cross_epic_docs_reuse_rate metric + 修 collect_filescope root ticket bug",
-  "status": "in_progress",
+  "status": "done",
   "priority": "P1",
   "type": "bugfix",
   "created_at": "2026-08-13",
@@ -14,7 +14,13 @@
   "performer_sub_role": "coder",
   "handoff_depth": "L1",
   "estimated_hours": 3,
-  "labels": ["bugfix", "metrics", "north-star", "rule-36", "phase-023"],
+  "labels": [
+    "bugfix",
+    "metrics",
+    "north-star",
+    "rule-36",
+    "phase-023"
+  ],
   "description": "EPIC-253 — 补 Rule 36 指标 #2 的 docs-only 盲点, 且修 collect_filescope root ticket 漏扫 bug (主公 2026-08-13 拍板 Sprint 规划 #3).\n\n**起因**: retrospective-batch-8 L14 记录 cross_epic_reuse_rate 对 docs-only EPIC 常年 0% / NO_DATA. 调查发现 2 个问题:\n\n**Bug A (真 bug, 意外发现)**: collect_filescope_for_epic 只扫 JIRA_TICKETS_DIR/EPIC-XXX-*/ (sub-ticket glob), 漏 root ticket EPIC-XXX/. 所有 root-ticket 形态的 EPIC (EPIC-251/159/174 等) file_scope 都收集不到 → total_files=0 → NO_DATA. collect_filescope_all_except 的排除判断同样只匹配 sub 形态, 导致目标 EPIC 自己的文件泄漏进 others 集合.\n\n**Gap B (设计缺口)**: 即便修好 bug A, docs-only EPIC 的 file_scope 多为一次性路径 (jira/tickets/EPIC-XXX/), 复用率天然低, 60% 阈值不适用.\n\n**核心改动**:\n1. 修 bug A: collect_filescope_for_epic + collect_filescope_all_except 加 root ticket 路径 (同 compute_mis_dispatch_binding_rate:571 已有的 root+sub 双路径写法)\n2. 加 compute_cross_epic_docs_reuse_rate: 用 DOCS_PATH_PATTERN 过滤 docs 类路径, 阈值 40%\n3. 集成到 format_json_metrics (m2b) + format_markdown_metrics (docs 行)\n4. CLAUDE.md 3.2 Rule 36 加指标 2b\n\n**scope**: 0 改 immutable script, 0 增 Rule (指标 2b 是 Rule 36 副指标, 非新 Rule).",
   "acceptance": [
     "AC1: collect_filescope_for_epic 扫到 root ticket (raw: test Case 2 root ticket EPIC-901 file_scope collected = 3)",
@@ -68,5 +74,13 @@
     "EPIC-157 (compute_mis_dispatch_binding_rate 的 root+sub 双路径写法参考)",
     "retrospective-batch-8 L14 (docs 复用盲点记录)",
     "EPIC-252 (同 Sprint 前序 ticket)"
+  ],
+  "completed_at": "2026-08-14",
+  "pr_chain": [
+    "#405",
+    "#406",
+    "#408",
+    "#409",
+    "#407"
   ]
 }
