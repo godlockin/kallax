@@ -1,0 +1,57 @@
+{
+  "ticket_id": "EPIC-246",
+  "id": "EPIC-246",
+  "status": "todo",
+  "type": "testing",
+  "title": "keyless snapshot harness — /kallax-list + /kallax-help 输出冻结基线 (借鉴 DSH test:snapshot)",
+  "performer": "backend",
+  "epic_parent": null,
+  "expert_binding": {
+    "suggested_expert": "backend",
+    "actual_expert": "backend",
+    "expert_binding_at": "2026-08-17T00:00:00Z"
+  },
+  "file_scope": {
+    "includes": [
+      "docs/snapshot-contract.md",
+      "node/tests/snapshots/kallax-list/expected.json",
+      "node/tests/snapshots/kallax-help/expected.json",
+      "node/tests/snapshot.test.ts",
+      "scripts/verify/check-snapshots.sh"
+    ],
+    "excludes": [
+      "node/tests/e2e"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "cd node && npx vitest run tests/snapshot.test.ts",
+    "reproduction_exit_code": null,
+    "reproduction_raw_output": null,
+    "note": "type=testing, 非 bugfix → Rule 34 3 字段豁免. 但本卡自身产出即 reproduction 能力 — 实现后回填 exit code + raw vitest output."
+  },
+  "review": {
+    "group_a": null,
+    "group_b": null,
+    "final_outcome": null
+  },
+  "acceptance_criteria": [
+    "先冻结输出契约 (docs/snapshot-contract.md) 再录基线 — 顺序不可颠倒 (风险缓解)",
+    "2/2 命令有 expected.json, vitest run 0 fail",
+    "KALLAX_HOOK_API_KEY 未设时仍 PASS (证明 keyless, 不依赖外部 API)",
+    "故意改 1 行输出 → 测试转红 (证明非 gate-paint, 跟 scan-dead-code 防御同型)",
+    "守恒: 跟 Rule 34 打通 — snapshot 命令即 reproduction_command",
+    "raw vitest output 贴 PR 描述"
+  ],
+  "linkage": [
+    "EPIC-069-D (5-Level Verify L2 强制 raw output)",
+    "Rule 34 (bugfix 独立复现 — snapshot 提供可重放能力)",
+    "EPIC-220 (check-disclaimer — 本卡补其后一步: raw output 本身可重放)",
+    "v3.8.0 25/25 假 PASS 事故 (本卡加 snapshot 重放能力应对)",
+    "DSH test:snapshot + acp-snapshot (借鉴来源)"
+  ],
+  "sprint": "2026-08-17",
+  "effort_estimate": "2-3d",
+  "branch": "feature/v3.35.0-EPIC-246-snapshot",
+  "worktree": "kallax-wt-EPIC-246",
+  "depends_on": []
+}

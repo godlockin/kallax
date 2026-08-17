@@ -1,0 +1,58 @@
+{
+  "ticket_id": "EPIC-260",
+  "id": "EPIC-260",
+  "status": "blocked",
+  "type": "process",
+  "title": "migrate-decisions.sh — 101 个平面 decisions 迁移到 ADR 三态目录 (dry-run 优先)",
+  "performer": "auditor",
+  "epic_parent": null,
+  "expert_binding": {
+    "suggested_expert": "auditor",
+    "actual_expert": "auditor",
+    "expert_binding_at": "2026-08-17T00:00:00Z"
+  },
+  "file_scope": {
+    "includes": [
+      "scripts/migrate-decisions.sh",
+      "confluence/decisions/",
+      "docs/decisions-migration-map.md"
+    ],
+    "excludes": []
+  },
+  "verification": {
+    "reproduction_command": "bash scripts/migrate-decisions.sh --dry-run",
+    "reproduction_exit_code": null,
+    "reproduction_raw_output": null,
+    "note": "type=process, 非 bugfix → Rule 34 3 字段豁免. dry-run 输出即验证证据。"
+  },
+  "review": {
+    "group_a": null,
+    "group_b": null,
+    "final_outcome": null
+  },
+  "blocked_reason": "depends_on EPIC-247 (规范未立, 迁移无目标格式). 且 --apply 属 9 类破坏性 #1 (改路径), 必主公二次拍板。",
+  "acceptance_criteria": [
+    "脚本默认 dry-run, --apply 才实际迁移",
+    "dry-run 输出 98 条 from→to 完整映射表 (docs/decisions-migration-map.md)",
+    "git mv 前必 mkdir -p 目标目录 (已知反模式: dry-run 成功但实际失败)",
+    "git mv 保留 history — git log --follow 可追溯",
+    "全仓引用扫描 0 断链: grep -rn 'confluence/decisions/' --include='*.md' --include='*.json'",
+    "EPIC-247 verify-agent-note-format.sh 对迁移后文件全 PASS 或明确列豁免清单",
+    "守恒: --apply 前必主公二次拍板 (9 类破坏性 #1)",
+    "raw output 贴 PR 描述"
+  ],
+  "linkage": [
+    "EPIC-247 (依赖 — 规范先立)",
+    "git-mv-directory-not-exist 反模式 (~/.claude/knowledge/core/anti-patterns/)",
+    "Rule 13 (3 模式 decision-gate — 破坏性操作触发 ASK)",
+    "EPIC-224 (snapshot-claude-md rollback 模式参考)"
+  ],
+  "sprint": "2026-08-17",
+  "effort_estimate": "1-2d",
+  "branch": "feature/v3.35.0-EPIC-248-migrate",
+  "worktree": "kallax-wt-EPIC-248",
+  "depends_on": [
+    "EPIC-247"
+  ],
+  "epic": "EPIC-260"
+}

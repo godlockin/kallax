@@ -1,0 +1,57 @@
+{
+  "ticket_id": "EPIC-245",
+  "id": "EPIC-245",
+  "status": "todo",
+  "type": "feature",
+  "title": "check-doc-budgets.sh + budgets.manifest.json — 自动文档预算 gate (借鉴 DSH verify-doc-budgets)",
+  "performer": "process-engineering",
+  "epic_parent": null,
+  "expert_binding": {
+    "suggested_expert": "process-engineering",
+    "actual_expert": "process-engineering",
+    "expert_binding_at": "2026-08-17T00:00:00Z"
+  },
+  "file_scope": {
+    "includes": [
+      "docs/budgets.manifest.json",
+      "scripts/verify/check-doc-budgets.sh",
+      "scripts/hooks/pre-commit",
+      ".claude/rules/immutable-scripts.md",
+      "confluence/decisions/EPIC-245-dsh-borrow-2026-08-17.md"
+    ],
+    "excludes": [
+      "CLAUDE.md"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "bash scripts/verify/check-doc-budgets.sh --all",
+    "reproduction_exit_code": null,
+    "reproduction_raw_output": null,
+    "note": "type=feature, 非 bugfix → Rule 34 reproduction 3 字段豁免 (见 .archive-baseline.json field_exemptions.non_bugfix). 字段保留供实现后回填 raw output."
+  },
+  "review": {
+    "group_a": null,
+    "group_b": null,
+    "final_outcome": null
+  },
+  "acceptance_criteria": [
+    "docs/budgets.manifest.json 覆盖 9 个 .claude/rules/*.md word ceiling (实测基线 +20% headroom)",
+    "check-doc-budgets.sh exit 0 PASS / exit 1 FAIL 二态契约",
+    "当前 0/10 文件超限 (实测验证, 非声称)",
+    "pre-commit 接入 staged .md only (跟 check-jargon 同型)",
+    "bash scripts/hooks/install.sh --verify exit 0",
+    "守恒: immutable 数字仍 9 (本脚本归辅助类, 跟 check-smoke-retention 同级)",
+    "raw output 贴 PR 描述 (L1 要求)"
+  ],
+  "linkage": [
+    "EPIC-225 (check-jargon staged-md 扫描模式复用)",
+    "EPIC-159 (CLAUDE.md 200 行治理)",
+    "Rule 9 (KPI X/Y 格式)",
+    "Rule 35 (Sprint 时间盒)",
+    "DSH verify-doc-budgets (借鉴来源)"
+  ],
+  "sprint": "2026-08-17",
+  "effort_estimate": "4h",
+  "branch": "feature/v3.35.0-EPIC-245-dsh-borrow",
+  "worktree": "kallax-wt-EPIC-245"
+}

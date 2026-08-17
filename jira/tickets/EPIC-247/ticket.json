@@ -1,0 +1,59 @@
+{
+  "ticket_id": "EPIC-247",
+  "id": "EPIC-247",
+  "status": "todo",
+  "type": "process",
+  "title": "verify-agent-note-format.sh + ADR 三态 lifecycle 目录规范 (借鉴 DSH Agent Note 双轴)",
+  "performer": "compliance",
+  "epic_parent": null,
+  "expert_binding": {
+    "suggested_expert": "compliance",
+    "actual_expert": "compliance",
+    "expert_binding_at": "2026-08-17T00:00:00Z"
+  },
+  "file_scope": {
+    "includes": [
+      "confluence/decisions/proposed/.gitkeep",
+      "confluence/decisions/implemented/.gitkeep",
+      "confluence/decisions/rejected/.gitkeep",
+      "scripts/verify/verify-agent-note-format.sh",
+      "docs/agent-note-spec.md",
+      ".claude/rules/immutable-scripts.md"
+    ],
+    "excludes": [
+      "confluence/decisions/*.md"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "bash scripts/verify/verify-agent-note-format.sh --all",
+    "reproduction_exit_code": null,
+    "reproduction_raw_output": null,
+    "note": "type=process, 非 bugfix → Rule 34 3 字段豁免. excludes 平面 *.md 因迁移在 EPIC-248 执行, 本卡只立规范。"
+  },  "review": {
+    "group_a": null,
+    "group_b": null,
+    "final_outcome": null
+  },
+  "acceptance_criteria": [
+    "3 lifecycle 态 × 6 class = 18 组合目录建齐 (.gitkeep 占位)",
+    "class 闭集 6 个: feature/bug-fix/architecture/process/testing/simplification",
+    "header 契约: 行1 '# Agent Note: <title>', 行2 'Status: <state>'",
+    "4 段必填: ## Problem / ## Decision / ## Alternatives / ## Consequences",
+    "status 值须匹配所在 lifecycle 目录名 (不匹配 exit 1)",
+    "对平面遗留 98 文件 exit 3 SKIP (沿用 EPIC-223 archive-baseline 语义)",
+    "self-hosting: 本卡产出的 spec doc 自身即首个合规样本",
+    "守恒: 归辅助类不进 immutable (数字仍 9); 若主公要求进 immutable → 走改数字强制流程",
+    "raw output 贴 PR 描述"
+  ],
+  "linkage": [
+    "EPIC-223 (archive-baseline exit 3 SKIP 语义复用)",
+    "Rule 5 (DRY — ADR 单一真相来源)",
+    "EPIC-206 (借方法论 不借代码)",
+    "DSH .agents/notes lifecycle+class 双轴 + verify-agent-note-format (借鉴来源)"
+  ],
+  "sprint": "2026-08-17",
+  "effort_estimate": "3-5d",
+  "branch": "feature/v3.35.0-EPIC-247-agent-note",
+  "worktree": "kallax-wt-EPIC-247",
+  "depends_on": []
+}
