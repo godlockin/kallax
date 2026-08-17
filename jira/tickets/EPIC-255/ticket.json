@@ -1,0 +1,71 @@
+{
+  "id": "EPIC-255",
+  "ticket_id": "EPIC-255",
+  "epic": "EPIC-255",
+  "phase": "PHASE-024",
+  "title": "删冗余 node/package-lock.json — vitest 版本分叉根因 (1.6.1 vs 4.1.10)",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "bugfix",
+  "created_at": "2026-08-17",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 3,
+  "labels": ["bugfix", "lockfile", "workspace-hoisting", "vitest", "ci-config", "phase-024"],
+  "description": "EPIC-255 — 删冗余的 node/package-lock.json, 消除 vitest 版本分叉.\n\n**表面现象**: worktree 内跑 vitest 报 `No handler function exported from vitest/dist/worker.js`, 51 errors. 之前多个 EPIC 把这记成 'vitest 1.6.1 tinypool env blocker' 并标 AC BLOCKED-env.\n\n**4 层挖掘, 前 3 层假设都错**:\n1. 'vitest 1.6.1 tinypool 是已知 bug' — 不是 bug\n2. '装依赖位置错 (--prefix <wt>/node vs --prefix <wt>)' — 方向对但非根因\n3. 'lockfile 被装坏了' — 用干净 lockfile 的新 worktree 同样复现\n4. **'两份 lockfile 锁不同 vitest 版本' — 真根因**\n\n**真根因**: 三处版本对不上\n- node/package.json 声明 ^4.1.10\n- 根 package-lock.json 锁 4.1.10 (正确)\n- node/package-lock.json 锁 1.6.1 (过期)\n\nvitest 1.6.1 依赖 tinypool, 4.1.10 不依赖. 装 1.6.1 时它按 workspace hoisting 去根 node_modules 找 tinypool, 那里是 4.1.10 的树 (无 tinypool) → 报错.\n\n**node/package-lock.json 来历**: 只 1 次提交 (080eb414 EPIC-211 npm audit fix), 那次操作意外产生. workspace 项目只该有根 lockfile, 根 lockfile 已完整覆盖 node/ 的 15 个 devDependencies.\n\n**CI 同步改动**: 删 lockfile 会让 3 个 workflow 失败 (dual-engine cache path + install / kallax-ci working-directory / release cd node), 已全部改成在仓库根装.\n\n**历史 AC 不回填**: EPIC-157/159/160/251 的 vitest AC 标 BLOCKED-env 记录的是当时真实状态, 不改写. 改了会掩盖'连续 4 个 EPIC 误判成 vitest bug'这个事实.",
+  "acceptance": [
+    "AC1: node/package-lock.json 已删 (raw: tests Case 2 → node/package-lock.json absent)",
+    "AC2: 根 lockfile 覆盖 node/ 全部 devDependencies (raw: tests Case 3 → records all 15)",
+    "AC3: vitest 声明版本跟锁定版本 major 一致 (raw: tests Case 4 → declared ^4.1.10, locked 4.1.10)",
+    "AC4: tinypool 不在根 lockfile (vitest v4 不依赖) (raw: tests Case 6 → not in root lockfile)",
+    "AC5: vitest 4.1.10 下全 test 通过 (raw: cd node && npx vitest run → 984 passed | 49 files | 0 fail)",
+    "AC6: 3 个 CI workflow 改成仓库根装依赖 (dual-engine / kallax-ci / release)",
+    "AC7: 3 个改动 workflow YAML 语法有效 (raw: python3 yaml.safe_load 全过)",
+    "AC8: 无残留 node/package-lock.json 引用 (除说明注释)",
+    "AC9: .claude/rules/testing.md 记录正确装法 + 4 层误判链 + 受影响 ticket 清单 (raw: tests Case 5 → 4 项 PASS)",
+    "AC10: tests/integration/lockfile-single-source.test.sh ≥8 case PASS (raw: 10 passed, 0 failed)",
+    "AC11: 历史 ticket 的 BLOCKED-env AC 不回填改写",
+    "AC12: 4-branch flow 走完 (feature → testing → main → miao)"
+  ],
+  "deliverables": [
+    "node/package-lock.json (删除 — 冗余且锁过期版本)",
+    ".github/workflows/dual-engine.yml (cache path + install 位置)",
+    ".github/workflows/kallax-ci.yml (install 位置)",
+    ".github/workflows/release.yml (install 位置)",
+    ".claude/rules/testing.md (正确装法 + 误判链 + 受影响清单)",
+    "tests/integration/lockfile-single-source.test.sh (新, 10 case)",
+    "jira/tickets/EPIC-255/{ticket.json,ticket.md} (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      "node/package-lock.json",
+      ".github/workflows/dual-engine.yml",
+      ".github/workflows/kallax-ci.yml",
+      ".github/workflows/release.yml",
+      ".claude/rules/testing.md",
+      "tests/integration/lockfile-single-source.test.sh",
+      "jira/tickets/EPIC-255/"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "cd node && npx vitest run 2>&1 | tail -5",
+    "reproduction_exit_code": 1,
+    "reproduction_raw_output": "修复前 (worktree 里按 node/package-lock.json 装 vitest 1.6.1):\nVitest caught 51 unhandled errors during the test run.\nError: No handler function exported from .../node_modules/vitest/dist/worker.js\n ❯ ../../../../node_modules/tinypool/dist/esm/entry/worker.js:70:15\n Test Files  no tests\n      Tests  no tests\n     Errors  51 errors\n\n修复后 (删 node/package-lock.json, 按根 lockfile 装 vitest 4.1.10):\n Test Files  49 passed | 2 skipped (51)\n      Tests  984 passed | 9 skipped (993)\n\n版本分叉证据:\n  node/package.json 声明:      ^4.1.10\n  根 package-lock.json 锁定:    4.1.10\n  node/package-lock.json 锁定:  1.6.1  ← 过期"
+  },
+  "expert_binding": {
+    "suggested_expert": "devops",
+    "actual_expert": "devops",
+    "expert_binding_at": "2026-08-17T11:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "Rule 34 (bugfix 独立复现 — 3 字段全填)",
+    "EPIC-211 (080eb414 npm audit fix 意外产生 node/package-lock.json)",
+    "EPIC-223 (历史不追溯原则 — 本 EPIC 不回填 BLOCKED-env AC)",
+    "EPIC-157/159/160/251 (受影响的历史判断, 保持原样)",
+    "EPIC-114 (.claude/rules/testing.md 所属 rule)"
+  ]
+}
