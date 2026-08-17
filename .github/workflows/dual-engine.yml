@@ -13,9 +13,11 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with: { node-version: '20', cache: 'npm', cache-dependency-path: node/package-lock.json }
+        # EPIC-255: workspace 只有根 package-lock.json (node/ 的已删, 曾锁 vitest 1.6.1 跟根的 4.1.10 分叉)
+        with: { node-version: '20', cache: 'npm', cache-dependency-path: package-lock.json }
       - name: Install
-        run: cd node && npm ci
+        # EPIC-255: 在仓库根装 (workspaces 声明 node/, 依赖 hoist 到根 node_modules)
+        run: npm ci
       - name: Node typecheck
         run: cd node && npx tsc --noEmit
       - name: Node test
