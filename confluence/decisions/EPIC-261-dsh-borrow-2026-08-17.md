@@ -1,4 +1,4 @@
-# EPIC-245~248 — DeepSeek-Harness 借鉴落地 (保留优势 + 补齐短板)
+# EPIC-261~248 — DeepSeek-Harness 借鉴落地 (保留优势 + 补齐短板)
 
 **日期**: 2026-08-17
 **主公拍板**: 2026-08-17 "同意，组织团队推进，最终的目标是保留优势 + 补齐短板"
@@ -9,7 +9,7 @@
 
 ## 0. EPIC 编号纠正 (诚实修正)
 
-初版计划写 EPIC-256~259。实测 repo 最大真实编号 = **EPIC-244** (`grep -rhoE 'EPIC-[0-9]{3}'` 排除 EPIC-351/999 占位)。新卡从 **EPIC-245** 起, 无编号断层。
+初版计划写 EPIC-256~259。实测 repo 最大真实编号 = **EPIC-244** (`grep -rhoE 'EPIC-[0-9]{3}'` 排除 EPIC-351/999 占位)。新卡从 **EPIC-261** 起, 无编号断层。
 
 | 侦查项 | 实测值 | 命令 |
 |--------|--------|------|
@@ -52,9 +52,9 @@
 
 | EPIC | 补的 Gap | 报告 # | 路径 | effort | 类型 |
 |------|---------|--------|------|--------|------|
-| **EPIC-245** | 缺 tier-taxonomy 文档分层 + word budget | #7 | Path C | 4h | 新脚本 (辅助类) |
+| **EPIC-261** | 缺 tier-taxonomy 文档分层 + word budget | #7 | Path C | 4h | 新脚本 (辅助类) |
 | **EPIC-246** | 缺 keyless snapshot 接受测试 | #4 | Path B | 2-3d | 新 test lane |
-| **EPIC-247** | 缺 Agent Note ADR 三态 lifecycle | #3 | Path A | 3-5d | 新脚本 (辅助类) |
+| **EPIC-262** | 缺 Agent Note ADR 三态 lifecycle | #3 | Path A | 3-5d | 新脚本 (辅助类) |
 | **EPIC-260** | 同上 — 101 文件迁移执行 | #3 | Path A | 1-2d | 迁移工具 |
 
 Sprint 容量: 4 EPIC ≤ 5 上限 (Rule 35 时间盒) ✅
@@ -63,7 +63,7 @@ Sprint 容量: 4 EPIC ≤ 5 上限 (Rule 35 时间盒) ✅
 
 ## 3. 四卡 DoD (含守恒验证)
 
-### EPIC-245 — check-doc-budgets.sh + budgets.manifest.json
+### EPIC-261 — check-doc-budgets.sh + budgets.manifest.json
 
 **补短板**: DSH `verify-doc-budgets` 自动拒绝超长文档, KALLAX 靠主公手动"减码"。
 
@@ -117,7 +117,7 @@ Sprint 容量: 4 EPIC ≤ 5 上限 (Rule 35 时间盒) ✅
 
 ---
 
-### EPIC-247 — verify-agent-note-format.sh + 目录规范
+### EPIC-262 — verify-agent-note-format.sh + 目录规范
 
 **补短板**: DSH `.agents/notes/{proposed,implemented,rejected}/{class}/` 双轴 + archived 永久冻结。KALLAX 101 个 decisions 平面无 lifecycle。
 
@@ -139,7 +139,7 @@ Sprint 容量: 4 EPIC ≤ 5 上限 (Rule 35 时间盒) ✅
 
 ### EPIC-260 — 101 文件迁移 (migrate-decisions.sh)
 
-**补短板**: EPIC-247 只立规范, 本卡执行迁移。
+**补短板**: EPIC-262 只立规范, 本卡执行迁移。
 
 **Scope**:
 - `scripts/migrate-decisions.sh` — 默认 **dry-run**, `--apply` 才动
@@ -151,7 +151,7 @@ Sprint 容量: 4 EPIC ≤ 5 上限 (Rule 35 时间盒) ✅
 - [ ] dry-run 输出 98 条 from→to 映射表, 主公 review 后才 `--apply`
 - [ ] `git mv` 保留 history (`git log --follow` 可追)
 - [ ] 全仓引用扫描 0 断链 (X/X 格式, 预期 N/N)
-- [ ] EPIC-247 脚本对迁移后 101 文件全 PASS, 或明确列出豁免清单
+- [ ] EPIC-262 脚本对迁移后 101 文件全 PASS, 或明确列出豁免清单
 - [ ] **守恒**: 迁移属 9 类破坏性 #1 (改路径) → 必主公二次拍板才 `--apply`
 - [ ] raw output 贴 PR 描述
 
@@ -161,25 +161,25 @@ Sprint 容量: 4 EPIC ≤ 5 上限 (Rule 35 时间盒) ✅
 
 ```
 Sprint 当期 (4 EPIC ≤ 5 上限)
-├─ EPIC-245 (doc budgets)   ─┐ 独立, 可并行起
+├─ EPIC-261 (doc budgets)   ─┐ 独立, 可并行起
 ├─ EPIC-246 (snapshot)      ─┘
-├─ EPIC-247 (note format)   ─┐ 强依赖: 247 → 248
+├─ EPIC-262 (note format)   ─┐ 强依赖: 247 → 248
 └─ EPIC-260 (migration)     ─┘ 260 等 247 合并后起
 
 每卡 4-PR:
   feature/v3.35.0-EPIC-XXX → testing → main (FF+comment) → miao
                               ↑ master + Arch/BE/FE/Sec 4 sub-roles
 
-Sprint 结束: bash scripts/metrics/sprint-metrics.sh --epic EPIC-245 (×4)
+Sprint 结束: bash scripts/metrics/sprint-metrics.sh --epic EPIC-261 (×4)
 ```
 
 **派单** (遵循派遣 Checklist §9 "1 ticket 1 subagent 串行"):
 
 | EPIC | Performer 专精 | worktree |
 |------|---------------|----------|
-| EPIC-245 | process-engineering (文档治理 gate) | `kallax-wt-EPIC-245` |
+| EPIC-261 | process-engineering (文档治理 gate) | `kallax-wt-EPIC-261` |
 | EPIC-246 | backend (vitest + JSON 契约) | `kallax-wt-EPIC-246` |
-| EPIC-247 | compliance (ADR lifecycle 规范) | `kallax-wt-EPIC-247` |
+| EPIC-262 | compliance (ADR lifecycle 规范) | `kallax-wt-EPIC-262` |
 | EPIC-260 | auditor (迁移 + 断链审计) | `kallax-wt-EPIC-260` |
 
 ---
@@ -206,8 +206,8 @@ Sprint 结束: bash scripts/metrics/sprint-metrics.sh --epic EPIC-245 (×4)
 | 关系 | 说明 |
 |------|------|
 | **不冲突** | prime-agent 6 卡 (217-222) 已合并或归档 (archive baseline 222)。本 4 卡 245-248 编号错开 |
-| **复用** | EPIC-245 doc budgets 复用 EPIC-225 check-jargon 的 staged-md 扫描做法 |
-| **复用** | EPIC-247 note format 沿用 EPIC-223 archive-baseline 的 exit 3 SKIP 语义 |
+| **复用** | EPIC-261 doc budgets 复用 EPIC-225 check-jargon 的 staged-md 扫描做法 |
+| **复用** | EPIC-262 note format 沿用 EPIC-223 archive-baseline 的 exit 3 SKIP 语义 |
 | **互补** | EPIC-246 snapshot 补 EPIC-220 check-disclaimer 之后一步: raw output 本身可重放 |
 
 ---
@@ -217,7 +217,7 @@ Sprint 结束: bash scripts/metrics/sprint-metrics.sh --epic EPIC-245 (×4)
 | KPI | 目标 | 当前 | 证据 |
 |-----|------|------|------|
 | 决策 doc | 1/1 | ✅ | 本文件 |
-| 新 EPIC ticket.json | 4/4 | ✅ | `bash scripts/verify/check-ticket-schema.sh EPIC-245` exit=0 (×4) |
+| 新 EPIC ticket.json | 4/4 | ✅ | `bash scripts/verify/check-ticket-schema.sh EPIC-261` exit=0 (×4) |
 | 优势守恒清单 | 8/8 项 | ✅ | §1 |
 | 短板补齐 | 4/10 gaps (6 归档含理由) | ✅ | §2 + §5 |
 | 4-PR 全程 | 0/4 | 待跑 | — |

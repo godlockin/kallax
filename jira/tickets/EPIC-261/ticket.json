@@ -1,6 +1,6 @@
 {
-  "ticket_id": "EPIC-245",
-  "id": "EPIC-245",
+  "ticket_id": "EPIC-261",
+  "id": "EPIC-261",
   "status": "todo",
   "type": "feature",
   "title": "check-doc-budgets.sh + budgets.manifest.json — 自动文档预算 gate (借鉴 DSH verify-doc-budgets)",
@@ -17,7 +17,7 @@
       "scripts/verify/check-doc-budgets.sh",
       "scripts/hooks/pre-commit",
       ".claude/rules/immutable-scripts.md",
-      "confluence/decisions/EPIC-245-dsh-borrow-2026-08-17.md"
+      "confluence/decisions/EPIC-261-dsh-borrow-2026-08-17.md"
     ],
     "excludes": [
       "CLAUDE.md"
@@ -52,6 +52,7 @@
   ],
   "sprint": "2026-08-17",
   "effort_estimate": "4h",
-  "branch": "feature/v3.35.0-EPIC-245-dsh-borrow",
-  "worktree": "kallax-wt-EPIC-245"
+  "branch": "feature/v3.35.0-EPIC-261-dsh-borrow",
+  "worktree": "kallax-wt-EPIC-261",
+  "epic": "EPIC-261"
 }

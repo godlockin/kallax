@@ -30,29 +30,29 @@
     "group_b": null,
     "final_outcome": null
   },
-  "blocked_reason": "depends_on EPIC-247 (规范未立, 迁移无目标格式). 且 --apply 属 9 类破坏性 #1 (改路径), 必主公二次拍板。",
+  "blocked_reason": "depends_on EPIC-262 (规范未立, 迁移无目标格式). 且 --apply 属 9 类破坏性 #1 (改路径), 必主公二次拍板。",
   "acceptance_criteria": [
     "脚本默认 dry-run, --apply 才实际迁移",
     "dry-run 输出 98 条 from→to 完整映射表 (docs/decisions-migration-map.md)",
     "git mv 前必 mkdir -p 目标目录 (已知反模式: dry-run 成功但实际失败)",
     "git mv 保留 history — git log --follow 可追溯",
     "全仓引用扫描 0 断链: grep -rn 'confluence/decisions/' --include='*.md' --include='*.json'",
-    "EPIC-247 verify-agent-note-format.sh 对迁移后文件全 PASS 或明确列豁免清单",
+    "EPIC-262 verify-agent-note-format.sh 对迁移后文件全 PASS 或明确列豁免清单",
     "守恒: --apply 前必主公二次拍板 (9 类破坏性 #1)",
     "raw output 贴 PR 描述"
   ],
   "linkage": [
-    "EPIC-247 (依赖 — 规范先立)",
+    "EPIC-262 (依赖 — 规范先立)",
     "git-mv-directory-not-exist 反模式 (~/.claude/knowledge/core/anti-patterns/)",
     "Rule 13 (3 模式 decision-gate — 破坏性操作触发 ASK)",
     "EPIC-224 (snapshot-claude-md rollback 模式参考)"
   ],
   "sprint": "2026-08-17",
   "effort_estimate": "1-2d",
-  "branch": "feature/v3.35.0-EPIC-248-migrate",
-  "worktree": "kallax-wt-EPIC-248",
+  "branch": "feature/v3.35.0-EPIC-260-migrate",
+  "worktree": "kallax-wt-EPIC-260",
   "depends_on": [
-    "EPIC-247"
+    "EPIC-262"
   ],
   "epic": "EPIC-260"
 }
