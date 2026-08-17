@@ -31,9 +31,11 @@ jobs:
         with:
           node-version: '20'
       - name: Node install build
+        # EPIC-255: npm ci 在仓库根跑 (workspaces 声明 node/, 依赖 hoist 到根 node_modules).
+        # build 仍在 node/ 里 (dist/ 产物路径不变).
         run: |
-          cd node
           npm ci
+          cd node
           npm run build
           ls -la dist/
 
