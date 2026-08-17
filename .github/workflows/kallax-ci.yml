@@ -53,7 +53,8 @@ jobs:
           cache: npm
 
       - name: Install npm dependencies
-        working-directory: node
+        # EPIC-255: 在仓库根装 (workspaces 声明 node/, 依赖 hoist 到根 node_modules).
+        # 之前用 working-directory: node 会按已删的 node/package-lock.json 装出版本分叉.
         run: npm install --no-audit --prefer-offline
 
       - name: vitest run (with KALLAX_HOOK_API_KEY)
