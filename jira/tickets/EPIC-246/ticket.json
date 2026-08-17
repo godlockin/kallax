@@ -53,5 +53,6 @@
   "effort_estimate": "2-3d",
   "branch": "feature/v3.35.0-EPIC-246-snapshot",
   "worktree": "kallax-wt-EPIC-246",
-  "depends_on": []
+  "depends_on": [],
+  "epic": "EPIC-246"
 }

@@ -1,6 +1,6 @@
 {
-  "ticket_id": "EPIC-247",
-  "id": "EPIC-247",
+  "ticket_id": "EPIC-262",
+  "id": "EPIC-262",
   "status": "todo",
   "type": "process",
   "title": "verify-agent-note-format.sh + ADR 三态 lifecycle 目录规范 (借鉴 DSH Agent Note 双轴)",
@@ -28,8 +28,9 @@
     "reproduction_command": "bash scripts/verify/verify-agent-note-format.sh --all",
     "reproduction_exit_code": null,
     "reproduction_raw_output": null,
-    "note": "type=process, 非 bugfix → Rule 34 3 字段豁免. excludes 平面 *.md 因迁移在 EPIC-248 执行, 本卡只立规范。"
-  },  "review": {
+    "note": "type=process, 非 bugfix → Rule 34 3 字段豁免. excludes 平面 *.md 因迁移在 EPIC-260 执行, 本卡只立规范。"
+  },
+  "review": {
     "group_a": null,
     "group_b": null,
     "final_outcome": null
@@ -53,7 +54,8 @@
   ],
   "sprint": "2026-08-17",
   "effort_estimate": "3-5d",
-  "branch": "feature/v3.35.0-EPIC-247-agent-note",
-  "worktree": "kallax-wt-EPIC-247",
-  "depends_on": []
+  "branch": "feature/v3.35.0-EPIC-262-agent-note",
+  "worktree": "kallax-wt-EPIC-262",
+  "depends_on": [],
+  "epic": "EPIC-262"
 }
