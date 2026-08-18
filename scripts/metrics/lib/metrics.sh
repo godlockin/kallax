@@ -90,8 +90,8 @@ resolve_paths() {
   fi
   WORKTREE_ROOT="$script_root"
   JIRA_TICKETS_DIR="${script_root}/${JIRA_TICKETS_DIR_DEFAULT}"
-  INVOCATION_FILE="${INVOCATION_FILE_DEFAULT}"
-  INVOCATION_DB="${INVOCATION_DB_DEFAULT}"
+  INVOCATION_FILE="${INVOCATION_FILE:-${INVOCATION_FILE_DEFAULT}}"
+  INVOCATION_DB="${INVOCATION_DB:-${INVOCATION_DB_DEFAULT}}"
 }
 
 # ─── 校验 ────────────────────────────────────────────────────────────────────
