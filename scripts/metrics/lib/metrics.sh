@@ -120,9 +120,13 @@ load_invocations_for_epic() {
   validate_epic_id "$epic_id" || return 1
 
   local epic_num="${epic_id#EPIC-}"
-  # Pattern: EPIC-NUM-<UPPER> (test data 可能加后缀, e.g. EPIC-021-F-test1)
-  # 用 startswith 思路: ^EPIC-${epic_num}-[A-Z] 确保是 EPIC-NUM-<uppercase>, 排除 EPIC-merge 这种 lowercase
-  local ticket_pattern="^EPIC-${epic_num}-[A-Z]"
+  # Pattern: EPIC-NUM 本身, 或 EPIC-NUM-<UPPER> 带后缀 (test data 可能加, e.g. EPIC-021-F-test1)
+  #
+  # EPIC-268 修 bug: 原 pattern 是 ^EPIC-${epic_num}-[A-Z], 只认带大写后缀的 ID.
+  #   实测新卡 (251+) 一律无后缀 (EPIC-259 / EPIC-262 ...), 52 个全部匹配不上 →
+  #   expert_activation_rate 恒 NO_DATA. 历史卡带后缀 (EPIC-015-D, 151 个) 才匹配.
+  #   加 (-[A-Z]|$) 兼容两种. 仍排除 EPIC-merge 这种 lowercase 后缀.
+  local ticket_pattern="^EPIC-${epic_num}(-[A-Z]|$)"
   local total=0
   local matched=0
 
@@ -148,6 +152,7 @@ load_invocations_for_epic() {
   if [ -f "$INVOCATION_FILE" ]; then
     while IFS= read -r row; do
       [ -z "$row" ] && continue
+      total=$((total + 1))   # EPIC-268: 原先只在 SQLite 分支累加, src_state 判断会误报 source_empty
       # 去重: SQLite 已记录的跳过 (避免重复)
       local tid ts backend
       tid="$(printf '%s' "$row" | jq -r '.ticket_id // empty' 2>/dev/null || true)"
@@ -164,7 +169,24 @@ load_invocations_for_epic() {
     done < "$INVOCATION_FILE"
   fi
 
-  log_info "load_invocations_for_epic" "epic=${epic_id} matched=${matched}"
+  # EPIC-268: 区分 3 种 0 结果, 让 NO_DATA 的真实原因可见.
+  #   原先只 log matched=0, 看不出是"数据源不存在" / "数据源空" / "有数据但不匹配".
+  #   实测本仓 ~/.kallax/state/expert_invocations.db 只有 8 行 test fixture
+  #   (ticket_id=EPIC-021-F-test1 之类), 最后写入 2026-06-07 — expert 调用路径
+  #   从没埋点. 接数据源在 EPIC-269.
+  local src_state="unknown"
+  if [ ! -f "$INVOCATION_DB" ] && [ ! -f "$INVOCATION_FILE" ]; then
+    src_state="no_source"
+  elif [ "$total" -eq 0 ]; then
+    src_state="source_empty"
+  elif [ "$matched" -eq 0 ]; then
+    src_state="no_match_for_epic"
+  else
+    src_state="ok"
+  fi
+
+  log_info "load_invocations_for_epic" \
+    "epic=${epic_id} matched=${matched} scanned=${total} src_state=${src_state} db=${INVOCATION_DB} jsonl=${INVOCATION_FILE}"
   return 0
 }
 
