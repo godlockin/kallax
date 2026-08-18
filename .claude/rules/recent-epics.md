@@ -41,7 +41,7 @@ paths:
 |------|---------|------|-----------|
 | EPIC-203 | (审计) | 4-expert 26 项审计完成 (11 FIXED + 4 FALSE POSITIVE + 11 NO-OP) | `confluence/decisions/EPIC-203-audit-retrospective-2026-08-08.md` |
 | EPIC-204 | (sprint-metrics) | docs-only metrics 适配 (`--docs-only` flag + exit 3 DOCS_ONLY_SKIP) | `scripts/metrics/sprint-metrics.sh`, `tests/integration/epic-204-docs-only-metrics-test.sh` |
-| EPIC-205 | (retrospective) | retrospective-routine.sh 6 阶段季度 dry-run + KALLAX_ROOT worktree-safe fix | `scripts/retrospective-routine.sh`, `confluence/decisions/EPIC-205-retrospective-routine-2026-08-08.md` |
+| EPIC-205 | (retrospective) | retrospective-routine.sh 6 阶段季度 dry-run + KALLAX_ROOT worktree-isolation fix | `scripts/retrospective-routine.sh`, `confluence/decisions/EPIC-205-retrospective-routine-2026-08-08.md` |
 | EPIC-206 | (manifesto) | 战略文档归一 5 文件 (TOP-DESIGN / SCOPE-MISSION-VISION / TIMELINE / LESSONS / BEST-PRACTICES) | `confluence/manifesto/`, `docs/ARCHITECTURE.md` (DEPRECATED redirect) |
 | EPIC-207 | (governance) | 4-PR master review 强制 + 0 force-push bypass (除 EPIC-155/176 备案), PR-2 v2 修正: FF push + comment 验证 | `CLAUDE.md §4`, `confluence/decisions/EPIC-207-4pr-governance-2026-08-08.md` |
 | EPIC-208 | (governance-debt) | 治理债收口 — PR-2 v2 doc 落地 + force-push 备案债 4 commits 补录 (同 EPIC-155/176 处理) | `confluence/decisions/EPIC-207-4pr-governance-2026-08-08.md §5.1-5.2` |
@@ -126,3 +126,12 @@ paths:
 - [CHANGELOG.md](../../CHANGELOG.md) — raw release 节点
 - [.claude/rules/immutable-scripts.md](immutable-scripts.md) — 9 immutable 清单 + 改数字流程
 - [confluence/decisions/prime-agent-research-2026-08-08.md](../../confluence/decisions/prime-agent-research-2026-08-08.md) — 外部调研源
+
+## EPIC-157 / 158 / 160 (从 CLAUDE.md §6.4 移出, EPIC-270)
+
+> 起因: CLAUDE.md 加 EPIC-270 review 分级后超 200 行硬阈值.
+> 这 3 段是 EPIC-209 trim 时漏掉的历史 EPIC 详情, 本该在这个文件.
+
+**EPIC-157 binding tracking (v3.32.2+)** — Rule 36 北极星 #4 数据源: ticket.json `expert_binding.{suggested_expert,actual_expert,expert_binding_at,binding_change_reason}` 4 字段, Master 拆卡建议 → Performer claim 实际 → 偏离必填 reason. Metric: `scripts/metrics/lib/metrics.sh:compute_mis_dispatch_binding_rate`. 历史 ticket 无 binding 跳过, 不计入分母.
+**EPIC-158 CI debt fix (v3.32.3+)** — `.github/workflows/kallax-ci.yml` Forbidden Patterns regex 排除 JSDoc prose (`@ts-ignore` / `:\s*any` / `TODO` 等在 JSDoc `^\s*\*` 行豁免) + `node/tests/expert-invocations-queue.test.ts:120` 5 sqlite 依赖 `it` → `skipIfNoSqlite` (CI 无 sqlite 自动 skip). 5/5 ci-debt-fix.test.sh PASS, 0 改 source code, 跟 EPIC-114 test 反模式 + BE-14 串行.
+**EPIC-160 install.sh Omnibus (v3.32.5+)** — `scripts/install.sh` 全部件 deploy + `--inventory`/`--update`/3 skip flag, 95 files 覆盖. `--update` symlink mode 不破 user files, re-run idempotent (13/13). Ref: `.claude/rules/installation.md`.
