@@ -1,0 +1,83 @@
+{
+  "id": "EPIC-270",
+  "ticket_id": "EPIC-270",
+  "epic": "EPIC-270",
+  "phase": "PHASE-026",
+  "title": "review 分级落地 — T1/T2/T3 从口头约定变可查证据",
+  "status": "todo",
+  "priority": "P1",
+  "type": "process",
+  "created_at": "2026-08-18",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 3,
+  "labels": [
+    "process",
+    "review",
+    "gate",
+    "phase-026"
+  ],
+  "description": "EPIC-270 — 把 review 分级从口头约定变成可查证据.\n\n**背景**: 流程组复盘实测 53 个 PR **全部 reviews=0 comments=0**. CLAUDE.md §4 写 '0 容忍 auto-merge, 4-PR 任一必走 master + 4 sub-roles review', EPIC-207 立这条就是为了防 v3.8.0 假 PASS. 现在规则本身成了同类问题: 声明存在, 证据不存在.\n\n**主公 2026-08-18 拍板的分级方案** (取代原 A/B 二选一):\n  T1 自评      — 0 源码 + ≤100 行 + 单 commit (Rule 37 现有阈值)\n  T2 单 subagent — 有源码改动 或 >100 行\n  T3 多 subagent — 触及 ≥5 文件 或 >500 行 或 改 immutable/Rule/CI\n\n**为什么分级比 4 sub-roles review 强**: 我扮演 4 个角色写 review 时, 4 份意见共享同一条推理路径. subagent 是独立 context, 看不到我的推理, 只能自己跑命令. 本 sprint 实证: 3 组复盘推翻了我 3 处结论, 2 轮 T2 核实推翻了我 8 处声明 — 这是自评永远拿不到的.\n\n**问题**: 本 sprint 6 个 PR 我全标了 'T1 自评', 但那只是 PR body 里的一行文字, 没有任何机器可查的证据. 跟 §4 写的 'master + 4 sub-roles' 一样脱钩.\n\n**要做的**:\n1. PR body 加结构化字段: review_tier (T1/T2/T3) + evidence (T2/T3 必填 subagent 报告路径)\n2. 写 gate 扫 PR body: tier 声明跟 diff 规模相符 (T1 但改了 500 行 → 拒), T2/T3 必须有 evidence 路径\n3. 改 CLAUDE.md §4: 用分级取代 '4 sub-roles', 说清为什么 (自评拿不到独立性)\n4. 现有 53 个 PR 不回溯 (历史债备案)\n\n**跟 Rule 37 的关系**: Rule 37 的 4 项阈值正好是 T1 判据, 不新造. 分级是把 Rule 37 从'要不要等主公'扩展到'谁来 review'.",
+  "acceptance": [
+    "AC1: PR template 加 review_tier 字段 (T1/T2/T3) + evidence 字段 (raw: .github/PULL_REQUEST_TEMPLATE.md diff)",
+    "AC2: scripts/ci/check-review-tier.sh 新建, 校验 tier 声明跟 diff 规模相符 (raw: 实测 T1 但 500 行 diff → 拒)",
+    "AC3: T2/T3 必须有 evidence 路径, 且路径指向的文件存在 (raw: 实测缺 evidence → 拒)",
+    "AC4: 接进 CI (pr-body-check.yml 或新 workflow) (raw: 实测 PR 上看到 check 结果)",
+    "AC5: CLAUDE.md §4 改成分级, 说清为什么自评拿不到独立性 (raw: diff)",
+    "AC6: 现有 53 个 PR 不回溯, 历史债备案写进 decision doc (raw: doc 路径)",
+    "AC7: 复用 Rule 37 的 4 项阈值作 T1 判据, 不新造阈值 (raw: 代码引用 rule-37.md)",
+    "AC8: tests/integration/review-tier-gate.test.sh ≥8 case PASS",
+    "AC9: 0 改 9 immutable scripts",
+    "AC10: 4-branch flow 走完"
+  ],
+  "deliverables": [
+    ".github/PULL_REQUEST_TEMPLATE.md (改, 加 review_tier + evidence)",
+    "scripts/ci/check-review-tier.sh (新, tier 校验 gate)",
+    ".github/workflows/pr-body-check.yml (改, 接 tier gate)",
+    "CLAUDE.md (改 §4, 分级取代 4 sub-roles)",
+    ".claude/rules/review-tier.md (新, 分级详细规则 path-scoped)",
+    "tests/integration/review-tier-gate.test.sh (新, ≥8 case)",
+    "confluence/decisions/review-tier-2026-08-XX.md (新, 含 53 PR 历史债备案)",
+    "jira/tickets/EPIC-270/{ticket.json,ticket.md} (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      ".github/PULL_REQUEST_TEMPLATE.md",
+      "scripts/ci/check-review-tier.sh",
+      ".github/workflows/pr-body-check.yml",
+      "CLAUDE.md",
+      ".claude/rules/review-tier.md",
+      "tests/integration/review-tier-gate.test.sh",
+      "confluence/decisions/",
+      "jira/tickets/EPIC-270/"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "gh pr list --state merged --limit 53 --json number,reviews -q '[.[] | select((.reviews|length) == 0)] | length'",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "流程组实测 (本 sprint 复盘报告 retrospective-v3.34.X-2026-08-12-process.md V6):\n  对 #369-#421 全部 53 个 PR 逐个跑\n  gh pr view <n> --json reviews,comments\n  结果: 全部 reviews=0 comments=0, 无一例外\n\nCLAUDE.md §4 写: '0 容忍 auto-merge; 4-PR 任一必走 master + 4 sub-roles review\n(Architect / Backend / Frontend / Security 各 1 份)'\n\n实测 gh pr review --approve 对自己的 PR:\n  failed to create review: GraphQL: Review Can not approve your own pull request\n→ 单人项目下 4 条 APPROVE 物理上做不到, 只能 COMMENTED (不 block merge)\n\n本 sprint 6 个 PR 全标 'T1 自评', 但那是 PR body 一行文字, 无机器可查证据.",
+    "not_verified": [
+      "未定 T3 的 subagent 数量 (3 个? 还是按维度定?)",
+      "未评估 gate 的误报率 (diff 规模判据可能有边界 case)",
+      "未处理 docs-only PR 的 tier 归属 (EPIC-198 exempt 跟分级怎么配)",
+      "未考虑 subagent 报告的保存位置 (现在都在 /tmp, 会丢)",
+      "未验证 evidence 路径检查在 CI runner 上可行 (/tmp 报告在 runner 上不存在)"
+    ]
+  },
+  "expert_binding": {
+    "suggested_expert": "process-engineering",
+    "actual_expert": "process-engineering",
+    "expert_binding_at": "2026-08-18T00:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "Rule 37 (小 effort auto-approve — 4 项阈值复用作 T1 判据)",
+    "EPIC-207 (4-PR governance + master review 源头)",
+    "EPIC-242 (未来分工: main → miao 主公亲自)",
+    "EPIC-198 (docs-only exempt)",
+    "EPIC-069-D (5-Level Verify — review 是 L3)"
+  ]
+}
