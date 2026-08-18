@@ -15,19 +15,33 @@ set -uo pipefail
 # 配置 (env 覆盖, fail-soft: 不存在不报错)
 KALLAX_ROOT="${KALLAX_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 DEFAULT_AGENTS_DIR="${KALLAX_AGENTS_DIR:-$KALLAX_ROOT/.claude/agents}"
-PLUGIN_EXPERTS_DIR="${KALLAX_EXPERTS_DIR:-$HOME/.claude/skills/kallax-experts}"
+PLUGIN_ROOT="${KALLAX_EXPERTS_DIR:-$HOME/.claude/skills/kallax-experts}"
+# 远程 kallax-experts 仓库把定义放在 experts/ 子目录 (嵌套 <division>/[<domain>/]*.md).
+# 若该子目录存在就用它, 否则回退到 root (兼容直接把 md 摊在根的布局).
+if [ -d "$PLUGIN_ROOT/experts" ]; then
+  PLUGIN_EXPERTS_DIR="$PLUGIN_ROOT/experts"
+else
+  PLUGIN_EXPERTS_DIR="$PLUGIN_ROOT"
+fi
 
 MODE="${1:-list}"
 shift || true
 
 # 解析剩余参数
+# 位置参数按 MODE 归属: find 用 QUERY, path 用 ROLE_ID (原来无条件先填 QUERY,
+# 导致 `path <role_id>` 的参数进了 QUERY, ROLE_ID 空 → 报 "需要 role_id 参数")
 SOURCE_FILTER=""
 QUERY=""
 ROLE_ID=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --source=*) SOURCE_FILTER="${1#--source=}" ;;
-    *) [ -z "$QUERY" ] && QUERY="$1" || ROLE_ID="$1" ;;
+    *)
+      case "$MODE" in
+        path) [ -z "$ROLE_ID" ] && ROLE_ID="$1" ;;
+        *)    [ -z "$QUERY" ] && QUERY="$1" ;;
+      esac
+      ;;
   esac
   shift
 done
@@ -46,6 +60,17 @@ parse_md() {
     in_fm && /^vibe:[[:space:]]*/ { gsub(/^vibe:[[:space:]]*/, ""); print "vibe|" $0; next }
     in_fm && /^priority:[[:space:]]*/ { gsub(/^priority:[[:space:]]*/, ""); print "priority|" $0; next }
     in_fm && /^tools:[[:space:]]*/ { gsub(/^tools:[[:space:]]*/, ""); print "tools|" $0; next }
+    # triggers 是嵌套块: "triggers:" 后跟缩进的 "zh: [...]" / "en: [...]"
+    # 远程 kallax-experts 的关键词主要在这里 (use_when_* 是场景描述, triggers 是关键词)
+    in_fm && /^triggers:[[:space:]]*$/ { in_triggers = 1; next }
+    in_triggers && /^[[:space:]]+(zh|en):[[:space:]]*\[/ {
+      line = $0
+      sub(/^[[:space:]]+(zh|en):[[:space:]]*/, "", line)
+      gsub(/^\[|\][[:space:]]*$/, "", line)
+      print "triggers|" line
+      next
+    }
+    in_triggers && /^[a-z]/ { in_triggers = 0 }
     in_fm && /^use_when_zh:[[:space:]]*/ { in_use_when_zh = 1; next }
     in_fm && /^use_when_en:[[:space:]]*/ { in_use_when_en = 1; next }
     in_fm && /^[a-z]/ && !/^use_when/ { in_use_when_zh = 0; in_use_when_en = 0 }
@@ -56,11 +81,13 @@ parse_md() {
 }
 
 # 解析目录, 输出 role_id 唯一最新
+# default 池是扁平 (.claude/agents/*.md), 外挂池是嵌套 (experts/<division>/[<domain>/]*.md)
+# 用 find 统一处理两种层级
 scan_dir() {
   local dir="$1"
   local source="$2"
   [ -d "$dir" ] || return 0
-  for f in "$dir"/*.md; do
+  while IFS= read -r f; do
     [ -f "$f" ] || continue
     local parsed
     parsed="$(parse_md "$f" "$source")"
@@ -71,11 +98,12 @@ scan_dir() {
     tools="$(echo "$parsed" | grep '^tools|' | head -1 | cut -d'|' -f2-)"
     priority="$(echo "$parsed" | grep '^priority|' | head -1 | cut -d'|' -f2-)"
     [ -z "$role_id" ] && continue
-    local use_when_zh use_when_en
+    local use_when_zh use_when_en triggers
     use_when_zh="$(echo "$parsed" | grep '^use_when_zh|' | head -10 | cut -d'|' -f2- | paste -sd ';' -)"
     use_when_en="$(echo "$parsed" | grep '^use_when_en|' | head -10 | cut -d'|' -f2- | paste -sd ';' -)"
-    echo "${role_id}|${name}|${source}|${f}|${vibe}|${tools}|${priority}|${use_when_zh}|${use_when_en}"
-  done
+    triggers="$(echo "$parsed" | grep '^triggers|' | head -4 | cut -d'|' -f2- | paste -sd ',' -)"
+    echo "${role_id}|${name}|${source}|${f}|${vibe}|${tools}|${priority}|${use_when_zh}|${use_when_en}|${triggers}"
+  done < <(find "$dir" -type f -name '*.md' 2>/dev/null | sort)
 }
 
 # 列模式
@@ -111,10 +139,10 @@ cmd_find() {
   local tmp
   tmp="$(mktemp)"
   cmd_list > "$tmp"
-  # 匹配 name/role_id/vibe/use_when 任何字段含 query (大小写不敏感)
+  # 匹配 name/role_id/vibe/use_when/triggers 任何字段含 query (大小写不敏感)
   awk -F'|' -v q="$(echo "$query" | tr '[:upper:]' '[:lower:]')" '
     {
-      hay = tolower($1 " " $2 " " $5 " " $8 " " $9)
+      hay = tolower($1 " " $2 " " $5 " " $8 " " $9 " " $10)
       if (index(hay, q) > 0) print
     }
   ' "$tmp" | sort -t'|' -k1,1
