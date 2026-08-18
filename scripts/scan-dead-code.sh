@@ -204,6 +204,12 @@ stage_sentinel() {
 #     - 仅内部互调的 helper (grep 不出来但不是死的)
 #     - 给 source 用的 public API (调用方在别的仓库 / 未来才用)
 #   区分需要人判断, 强制 fail 会有大量误报 → 只报告, 让人看.
+#
+# EPIC-257 扩覆盖: 原只扫 scripts/lib/ (60 函数), 现扫 lib + verify + hooks
+#   (188 函数). scripts/verify/ 有 127 函数 — 这是最容易堆废脚本的目录
+#   (历史 EPIC 各加一个). scripts/hooks/ 只 1 函数.
+#   不扫 scripts/audit/ (88 函数): 那些是 audit 工具内部用, 天然无外部引用,
+#   扫了会一次涌出大量报告没人愿意读 (跟 EPIC-256 教训相同).
 stage_shell_report() {
   info ""
   info "Stage 4: Shell dead-function 报告 (EPIC-249, 不 fail)"
@@ -212,8 +218,13 @@ stage_shell_report() {
   local dead=0
   local report=""
 
+  # EPIC-257: 扩覆盖到 scripts/verify/ + scripts/hooks/
+  # 原只扫 scripts/lib/ (60 函数), 现扫 lib + verify + hooks (188 函数).
+  # 为什么不扫 scripts/audit/: 88 函数, 大多是给 audit 脚本自身 source 的,
+  #   跟 Stage 4 "找真死函数" 目的不同 (audit 是一次性检查工具, 函数天然内部用).
+  #   要扫 audit 需先定"哪些是 public API", 超本卡范围 (留 backlog).
   local f
-  for f in scripts/lib/*.sh; do
+  for f in scripts/lib/*.sh scripts/verify/*.sh scripts/hooks/*.sh; do
     [ -f "$f" ] || continue
     local funcs fn n
     funcs=$(grep -oE '^[a-z_][a-z0-9_]*\(\)' "$f" 2>/dev/null | tr -d '()' || true)
@@ -247,7 +258,7 @@ stage_shell_report() {
     fi
   done
 
-  info "  scanned: $total shell functions in scripts/lib/"
+  info "  scanned: $total shell functions in scripts/lib/ + scripts/verify/ + scripts/hooks/"
   if [ "$dead" -gt 0 ]; then
     warn "$dead/$total shell 函数无外部引用 (报告, 不 fail — 需人判断是否真 dead)"
     echo -e "$report"

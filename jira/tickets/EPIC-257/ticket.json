@@ -1,0 +1,63 @@
+{
+  "id": "EPIC-257",
+  "ticket_id": "EPIC-257",
+  "epic": "EPIC-257",
+  "phase": "PHASE-025",
+  "title": "扩 scan-dead-code Stage 4 覆盖到 scripts/verify/ + scripts/hooks/",
+  "status": "todo",
+  "priority": "P2",
+  "type": "chore",
+  "created_at": "2026-08-18",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 1,
+  "labels": [
+    "chore",
+    "dead-code",
+    "scan-coverage",
+    "phase-025",
+    "P2"
+  ],
+  "description": "EPIC-257 — 扩 scan-dead-code.sh Stage 4 覆盖面. 原只扫 scripts/lib/ (60 函数), 现扫 lib + verify + hooks (190 函数, +217%).\n\n**为什么扩**: scripts/verify/ 有 127 函数, 是最容易堆废脚本的目录 (历史 EPIC 各加一个). 原 Stage 4 根本不扫这里.\n\n**立即收益**: 扩后发现 1 个新死函数 — release-gate.sh 的 run_gate (0 调用, 被 check_gate 取代). 已删.\n\n**为什么不扫 scripts/audit/ (88 函数)**: 那些是 audit 工具内部用, 天然无外部引用. 扫了会一次涌出大量报告没人愿意读 (跟 EPIC-256 教训相同 — '报告可信度衰减'). 要扫需先定'哪些是 public API', 超本卡范围 (留 backlog).\n\n**Stage 4 仍不 fail** (只报告), 跟 EPIC-249 原设计相同.",
+  "acceptance": [
+    "AC1: scan-dead-code.sh Stage 4 扫 lib + verify + hooks 三目录 (raw: 实测 190 函数, 原 60)",
+    "AC2: 报告文本更新, 说清覆盖范围 (raw: 'scanned: 190 shell functions in scripts/lib/ + scripts/verify/ + scripts/hooks/')",
+    "AC3: 注释块记录为什么不扫 audit (88 函数, 报告可信度衰减)",
+    "AC4: 扩后新发现的死函数已处理 — release-gate.sh run_gate 删 (raw: grep 0 命中, bash -n 0 错)",
+    "AC5: scan-dead-code.sh bash -n 0 错误 (raw: 实测)",
+    "AC6: 0 改 9 immutable scripts (scan-dead-code.sh 显式不算 immutable, CLAUDE.md:163)",
+    "AC7: 0 改 CLAUDE.md Rule",
+    "AC8: Stage 4 仍不 fail (只报告), 跟 EPIC-249 原设计相同"
+  ],
+  "deliverables": [
+    "scripts/scan-dead-code.sh (改, Stage 4 扩 3 目录)",
+    "scripts/verify/release-gate.sh (改, 删 run_gate 死函数)",
+    "jira/tickets/EPIC-257/{ticket.json,ticket.md} (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      "scripts/scan-dead-code.sh",
+      "scripts/verify/release-gate.sh",
+      "jira/tickets/EPIC-257/"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "bash scripts/scan-dead-code.sh 2>&1 | grep 'scanned:'",
+    "reproduction_exit_code": 2,
+    "reproduction_raw_output": "扩前: scanned: 51 shell functions in scripts/lib/\n扩后: scanned: 190 shell functions in scripts/lib/ + scripts/verify/ + scripts/hooks/\n\n扩后立即发现: release-gate.sh: 1/2 无外部引用 → run_gate\n删 run_gate 后: verify 目录 0 dead\n\n注: exit 2 是 BLOCKED-env (node/node_modules 缺失, Stage 2+3 跳过), 非本卡引入"
+  },
+  "expert_binding": {
+    "suggested_expert": "process-engineering",
+    "actual_expert": "process-engineering",
+    "expert_binding_at": "2026-08-18T00:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "EPIC-249 (Stage 4 原设计: 只报告不 fail)",
+    "EPIC-256 (清 9 死函数, 本卡扩面后再发现 1 个)",
+    "EPIC-131/132 (scan-dead-code.sh 框架)"
+  ]
+}
