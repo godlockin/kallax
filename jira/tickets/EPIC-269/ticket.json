@@ -1,0 +1,74 @@
+{
+  "id": "EPIC-269",
+  "ticket_id": "EPIC-269",
+  "epic": "EPIC-269",
+  "phase": "PHASE-026",
+  "title": "接 invocation 数据源 — expert_activation_rate 从没有数据到有数据",
+  "status": "todo",
+  "priority": "P1",
+  "type": "feature",
+  "created_at": "2026-08-18",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 4,
+  "labels": [
+    "feature",
+    "metrics",
+    "rule-36",
+    "instrumentation",
+    "phase-026"
+  ],
+  "description": "EPIC-269 — 修 Rule 36 四北极星恒 NO_DATA 的主因 (层 1). EPIC-268 修了 pattern (层 2) 和输出可见性 (层 3), 但数据源本身是空的.\n\n**实测现状**:\n  ~/.kallax/state/expert_invocations.db     8 行, 最后写入 2026-06-07\n  ~/.kallax/queue/expert_invocations.jsonl  1 行, 同期\n  内容全是 test fixture: ticket_id=EPIC-021-F-test1 / EPIC-021-F-test2 / EPIC-merge-test\n\n**这意味着**: expert 调用路径从没埋点. Rule 36 写 '4 指标都过才算 Sprint 收尾', 但 expert_activation_rate (target=5 distinct experts) 从立规则那天起就没真正生效过.\n\n**要做的**:\n1. 找到 expert 调用的实际入口 (可能是 Agent tool / subagent 派单 / .claude/agents/ 定义)\n2. 在那里埋点写 invocation 记录 (expert_id + ticket_id + ts + backend)\n3. 确认 ticket_id 能拿到 (当前 EPIC 上下文)\n4. 验证埋点后 expert_activation_rate 能算出真实数字\n\n**难点**: expert 概念在 KALLAX 里有两种含义 — (a) .claude/agents/ 里定义的 subagent 类型 (b) 5 sub-roles (Architect/Backend/Frontend/Security/Auditor). Rule 36 target=5 暗示是 (b). 要先定清楚哪个才算 'expert 激活', 否则埋错点.\n\n**跟本 sprint 实践的落差**: 本 sprint 我用了 subagent 做复盘 (3 组) + T2 核实 (3 次), 那些如果算 expert 激活, 数据应该不少. 但一条都没记录 — 说明埋点位置要覆盖 Agent tool 调用路径.",
+  "acceptance": [
+    "AC1: 定清 'expert 激活' 的判据 — .claude/agents/ subagent 类型 还是 5 sub-roles (写进 decision doc, 需主公确认)",
+    "AC2: 找到 expert 调用入口并埋点 (raw: 代码路径 + 埋点前后 db 行数对比)",
+    "AC3: invocation 记录含 expert_id + ticket_id + ts + backend 四字段 (raw: sqlite SELECT 样本)",
+    "AC4: ticket_id 能正确取到当前 EPIC 上下文 (raw: 实测一次真实调用, 看记录里 ticket_id 对不对)",
+    "AC5: 埋点后 expert_activation_rate 算出非 NO_DATA 结果 (raw: sprint-metrics.sh 输出 distinct_count > 0)",
+    "AC6: 不破坏现有 expert 调用行为 (raw: 埋点是旁路, 失败不阻塞调用)",
+    "AC7: 埋点失败 fail-open (写 invocation 记录出错不该让 expert 调用挂掉)",
+    "AC8: tests/integration/invocation-instrumentation.test.sh ≥6 case PASS",
+    "AC9: 0 改 9 immutable scripts",
+    "AC10: 4-branch flow 走完"
+  ],
+  "deliverables": [
+    "(待定: expert 调用入口的埋点代码, 位置取决于 AC1 的判据)",
+    "tests/integration/invocation-instrumentation.test.sh (新)",
+    "confluence/decisions/expert-activation-definition-2026-08-XX.md (新, AC1 判据)",
+    "jira/tickets/EPIC-269/{ticket.json,ticket.md} (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      "tests/integration/invocation-instrumentation.test.sh",
+      "confluence/decisions/",
+      "jira/tickets/EPIC-269/"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "sqlite3 ~/.kallax/state/expert_invocations.db 'SELECT COUNT(*), MAX(json_extract(payload, \"$.ts\")) FROM invocations'",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "现状 (埋点前):\n$ sqlite3 ~/.kallax/state/expert_invocations.db 'SELECT COUNT(*) FROM invocations'\n8\n\n$ sqlite3 ~/.kallax/state/expert_invocations.db 'SELECT payload FROM invocations LIMIT 3'\n{\"expert_id\":\"kallax.backend.001\",\"ticket_id\":\"EPIC-021-F-test1\",\"ts\":1780830870,\"backend\":\"redis\"}\n{\"expert_id\":\"kallax.backend.001\",\"ticket_id\":\"EPIC-021-F-test1\",\"ts\":1780830881,\"backend\":\"redis\"}\n{\"expert_id\":\"kallax.architect.001\",\"ticket_id\":\"EPIC-021-F-test2\",\"ts\":1780830881,\"backend\":\"sqlite\"}\n\n$ ls -la ~/.kallax/queue/expert_invocations.jsonl\n-rw-r--r-- 1 chenchen staff 100 Jun 7 21:44\n\n全是 test fixture, 2 个多月没写入.\n\n埋点后期望: 每次 expert 调用产生 1 条记录, ticket_id 是当前 EPIC.",
+    "not_verified": [
+      "未定 expert 激活判据 (AC1 是本卡第一步, 需主公确认)",
+      "未找到 expert 调用入口 (要先查 Agent tool / subagent 派单路径)",
+      "未验证 target=5 distinct experts 是否现实 (可能要调 Rule 36 目标值)",
+      "未处理历史数据 (8 行 test fixture 要不要清)",
+      "未考虑跨 worktree 的 invocation 归属 (同一 EPIC 多个 worktree 并行时)"
+    ]
+  },
+  "expert_binding": {
+    "suggested_expert": "backend",
+    "actual_expert": "backend",
+    "expert_binding_at": "2026-08-18T00:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "Rule 36 (4 北极星 — 本卡修它的主因)",
+    "EPIC-268 (修 pattern + 输出可见性, 层 2/3)",
+    "EPIC-023-C (北极星源头)",
+    "EPIC-157 (ticket.json binding 字段)"
+  ]
+}
