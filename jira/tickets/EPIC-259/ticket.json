@@ -1,0 +1,89 @@
+{
+  "id": "EPIC-259",
+  "ticket_id": "EPIC-259",
+  "epic": "EPIC-259",
+  "phase": "PHASE-025",
+  "title": "next-epic-id.sh 编号注册器 + ticket-status-sync.sh stub exit 0 → 2",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "bugfix",
+  "created_at": "2026-08-17",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 4,
+  "labels": [
+    "bugfix",
+    "numbering",
+    "stub-exit-code",
+    "mutation-tested",
+    "phase-025"
+  ],
+  "description": "EPIC-259 — 修两个已发生的事故: EPIC 编号双重占用 + stub 假报成功.\n\n**事故 1: 编号双重占用 (已发生, 非预防)**\n\nEPIC-245 的计划文档在落后 21 commits 的本地 base 上数 jira/tickets/ 目录, 算出'最大编号 244', 于是把一张卡编成 EPIC-248. 但 origin/miao 上 EPIC-248 早已是另一张卡并且 done.\n\n本会话共撞'本地落后'这个坑 3 次: (1) EPIC-245 计划文档算错编号 (2) PR #422 基于 origin/miao 建 branch 但 base 是 testing, GitHub 报 CONFLICTING (3) 验证 stub 时用 EPIC-254 报 not found, 因为主仓没有那个目录.\n\n**事故 2: ticket-status-sync.sh 假报成功**\n\nscripts/conductor/ticket-status-sync.sh 原先 print 'PASS: stub-ok' 然后 exit 0 — 对任何存在的 ticket 都返回成功. 它是唯一本该防 ticket status 漂移的脚本, 而漂移已发生 2 次.\n\n**严重度修正**: 复盘小组标 P0 'gate 该拦没拦'. 实查两个调用方 (scripts/auditor/auditor.sh:284 + scripts/verify/auditor-checkpoint.sh:85) 都只做 [[ -f ]] 文件存在检查, 不执行该脚本. 是潜在风险而非已发生的危害, 低于 P0.\n\n**第 1 版被独立核实者打回 (报告 /tmp/verify-epic-259.md)**\n\n核实者做变异测试 — 删掉功能只留注释, 看 test 是否变红. 第 1 版 5 个变异体**一个没被杀掉**, 每次都 18 passed. 4 条声明不成立:\n\n1. collect_used 漏 confluence/decisions/ — .archive-baseline.json 写明 EPIC-178~222 这 45 个编号只有决策文档没有 ticket.json. 实测 9 个已用编号报 FREE. 更糟: 13 个编号靠碰巧还没删的 branch 名才报 OCCUPIED, branch 一 prune 就失效.\n2. --check 两套匹配逻辑对不上 — grep -qx 比裸数字而 USED 是零填充串, 导致所有 <100 编号恒报 FREE (--check 15 报 FREE 而远端有 EPIC-015-D..I); --check 015 打印 EPIC-013 (八进制); --check 0248 打印 EPIC-000 且 exit 0.\n3. fetch_remote() 里没有 git fetch — 读的是可能陈旧的 remote-tracking ref. 文件头注释写'必须查远端', 实现读本地缓存. 事故根因未消除.\n4. AC5 的 exit 3 防线在 'ref 存在但无 jira/tickets' 时静默退化 — 实测输出 EPIC-778 exit 0.\n\n**第 2 版改动**\n\n- 加 confluence/decisions/ 作第 4 来源, 且 regex 兼容小写 epic- (实仓有 epic-188-retrospective-*.md)\n- to_decimal() 统一归一化: 先去前导零再 10# 强制十进制\n- 加 --fetch / KALLAX_NUMBERING_FETCH; 不 fetch 时 stderr 打印 ref 提交时间, 让'本地落后'可见\n- 远端来源单独为 0 就 exit 3, 不等三处全空\n- 加 check_overflow(): 出现 4 位编号时告警 (3 位假设失效)\n- test 从 grep 源码改成行为断言, 在临时 git repo 里构造场景\n\n**第 2 版自查的 2 个新 bug (第 1 轮改动引入)**\n\n- SRC_COUNT_* 在 collect_used() 里赋值但那函数用 $() 调用 — 命令替换开子 shell, 赋值传不出来, 导致远端来源恒报 0 项. 改成各来源独立函数 + 主体赋值.\n- regex 放宽成 {3,} 后把日期串吃进来: retrospective-batch-8-EPIC-2026-08-12.md 被解析成 EPIC-2026, next 给出 EPIC-2027. 改回严格 3 位.\n\n**已知取舍 (不是遗漏)**: EPIC-246 仍报 FREE — 它只在 EPIC-247 决策文档的正文里被提及, 文件名里没有. 扫正文会把'交叉引用别的卡'误判成占用 (决策文档大量互引), 代价更大. 代码注释里写明了.\n\n**不改的**: scripts/verify/test-fact-forcing-preflight.sh. 复盘小组标为'同型 stub'(错), 我第一次说它'真跑全链后如实 FAIL'(也错). 核实者查出真相: :22 把一个 .md 路径当 TICKET_ID 传给 wrapper, 导致 L1/L3 恒 FAIL, 换任何输入输出都是 3 PASS, 2 FAIL — 它的 exit 0 分支**不可达**. 定性是'恒红无信号': FAIL 不携带信息, 任何真实回归都不改变它的输出. 危害仍低 (0 调用方, 不进 CI), 不改.",
+  "acceptance": [
+    "AC1: scripts/next-epic-id.sh 新建, 4 模式 (默认 / --check N / --list-tail / --fetch) (raw: tests 组 A 4 项全 PASS)",
+    "AC2: 编号来源 4 处 — 远端 ticket + 远端 decisions + 本地 ticket + branch 名, 每处单独隔离验 (raw: tests 组 B 8 项全 PASS, 每个 case 只在一个来源放编号)",
+    "AC3: decisions-only 编号被认出 — 核实者报的 9 个里 8 个转 OCCUPIED (raw: EPIC-188/197/198/199/200/201/240/242 全 OCCUPIED; EPIC-246 仍 FREE 属已知取舍)",
+    "AC4: 编号归一化 — <100 编号 / 前导 0 / 八进制全对 (raw: tests 组 C 6 项全 PASS; --check 15 → OCCUPIED EPIC-015, --check 015 → EPIC-015 非 EPIC-013, --check 0248 → EPIC-248)",
+    "AC5: 日期串不被当编号 (raw: tests 组 D 2 项 PASS, next 给 EPIC-260 而非 EPIC-2027)",
+    "AC6: 小写 epic- 文件名也认 (raw: tests 组 E PASS, decisions 来源计数从 62 涨到 80)",
+    "AC7: 远端来源为 0 时 exit 3 不退化用本地 (raw: tests 组 F 3 项 PASS, 输出 0 个编号建议)",
+    "AC8: 退出码分层 0 空闲 / 1 已占 / 2 用法错 / 3 无法确定 (raw: tests 组 G + 组 H 共 7 项 PASS)",
+    "AC9: 陈旧 ref 可见 — 不 fetch 时 stderr 打 ref 提交时间; --fetch 真的 fetch (raw: tests 组 I 3 项 PASS)",
+    "AC10: repo root 用 --show-toplevel, 脚本置于深层子目录仍能定位 (raw: tests 组 J 2 项 PASS, J2 造 scripts/dashboard/ 场景)",
+    "AC11: 4 位编号出现时告警 (raw: tests 组 K PASS)",
+    "AC12: ticket-status-sync.sh 对存在的 ticket 由 exit 0 改 exit 2 (raw: 新旧对比见 verification)",
+    "AC13: 两个调用方不受影响 (raw: auditor-checkpoint.sh 仍输出 '[PASS] ticket-status-sync.sh integration available', 9 PASS exit 0)",
+    "AC14: test 用行为断言而非 grep 源码 — 变异测试 11 个变异体杀掉 10 个 (raw: 见 verification.mutation_testing)",
+    "AC15: test 不用 set -e (本会话同类坑第 6 次)",
+    "AC16: 4-branch flow 走完 (feature → testing → main → miao)"
+  ],
+  "deliverables": [
+    "scripts/next-epic-id.sh (新, 编号注册器)",
+    "scripts/conductor/ticket-status-sync.sh (stub exit 0 → 2)",
+    "tests/integration/next-epic-id.test.sh (新, 37 条断言, 11 组)",
+    "jira/tickets/EPIC-259/ticket.json (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      "scripts/next-epic-id.sh",
+      "scripts/conductor/ticket-status-sync.sh",
+      "tests/integration/next-epic-id.test.sh",
+      "jira/tickets/EPIC-259/"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "bash scripts/conductor/ticket-status-sync.sh EPIC-174; echo exit=$?",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "事故 2 修复前 (exit 0 = 假报同步成功):\n$ bash scripts/conductor/ticket-status-sync.sh EPIC-174\n[STUB] ticket-status-sync.sh EPIC-174\n[STUB] Iter 5 will implement: status field sync + ...\nPASS: stub-ok (Iter 5 will replace)\norig-exit=0   <<< 问题\n\n修复后:\nNOT_IMPLEMENTED: ticket-status-sync.sh EPIC-174\nnew-exit=2\n\n事故 1 复现 (编号撞号):\n$ bash scripts/next-epic-id.sh --check 248\nOCCUPIED: EPIC-248 已占用\n  远端 ticket: jira/tickets/EPIC-248\n  远端 decision: confluence/decisions/EPIC-248-249-250-triple-2026-08-10.md\n  本地 ticket: EPIC-248\n  branch: origin/feature/EPIC-248-250-redo\nexit=1\n\n核实者报的 9 个 decisions-only 编号 (修复后):\n  188: OCCUPIED  197: OCCUPIED  198: OCCUPIED  199: OCCUPIED\n  200: OCCUPIED  201: OCCUPIED  240: OCCUPIED  242: OCCUPIED\n  246: FREE (已知取舍 — 只在正文被提及)\n\n归一化修复后:\n  --check 15    : OCCUPIED: EPIC-015 已占用\n  --check 015   : OCCUPIED: EPIC-015 已占用   (原打印 EPIC-013)\n  --check 21    : OCCUPIED: EPIC-021 已占用\n  --check 0248  : OCCUPIED: EPIC-248 已占用   (原 FREE: EPIC-000 exit 0)\n  --check 999   : FREE: EPIC-999 空闲\n\n来源计数:\n已占编号 (来源: 远端 ticket 194 + 远端 decisions 80 + 本地 ticket 195 + branch 269)\n(decisions 从 62 涨到 80 是因为 regex 加了小写 epic- 兼容)",
+    "mutation_testing": "11 个变异体, 杀掉 10 个:\n  M1 删远端 decisions 来源     → 31 passed, 5 failed  (杀掉)\n  M2 删远端 ticket 来源        → 34 passed, 2 failed  (杀掉)\n  M3 删本地 ticket 来源        → 34 passed, 2 failed  (杀掉)\n  M4 删 branch 来源            → 34 passed, 2 failed  (杀掉)\n  M5 to_decimal 去掉 10#       → 37 passed, 0 failed  (存活, 见下)\n  M6 --show-toplevel 降级      → 36 passed, 1 failed  (加 J2 后杀掉)\n  M7 删远端 0 来源防线         → 33 passed, 3 failed  (杀掉)\n  M8 regex 放宽回 {3,}         → 10 passed, 26 failed (杀掉)\n  M9 小写 epic- 不认           → 35 passed, 1 failed  (杀掉)\n  M10 删陈旧 ref 提示          → 12 passed, 24 failed (杀掉)\n  M11 删 4 位编号告警          → 35 passed, 1 failed  (杀掉)\n\nM5 存活原因 (实测): to_decimal 先做 stripped 去前导零, 之后 $((15)) 跟\n$((10#15)) 结果相同 — 八进制只在不去前导零时才出问题. 这是**等价变异体**,\n不产生行为差异, 杀不掉是正确的. 保留 10# 作双重保险, 但不声称 test 覆盖它.",
+    "not_verified": [
+      "未跑 cargo test / vitest — 0 改 .ts/.rs",
+      "未验证 KALLAX_NUMBERING_REF 指向非 origin remote 的场景",
+      "未做编号预留 lock — 两个 worktree 同时跑 next-epic-id.sh 会拿到同一个编号",
+      "只读单个 ref (默认 origin/miao) — 只存在于 origin/testing 的编号查不到 (核实者 sandbox4 验证). 当前三主干编号相同故无现场危害, 但本卡 base 就是 testing",
+      "EPIC-246 类编号 (只在决策文档正文被提及, 文件名无编号) 查不到 — 有意取舍",
+      "这个 test 不进 CI: kallax-ci.yml:105 只对 scripts/verify/check-*.sh 做 bash -n, 新脚本在 scripts/ 根; tests/integration/*.sh 无 CI 收集器. 只能手工跑",
+      "scan-dead-code.sh 当前 exit 2 BLOCKED-env (node/node_modules 缺失, Stage 2+3 跳过). CLAUDE.md 要求新 EPIC 跑到 exit 0, 这条不满足 — 既有环境债非本卡引入",
+      "check-decorative-claim.sh exit 1, 命中全是 CHANGELOG.md / EPIC-213 决策文档历史行, origin/testing 上已存在, 与本卡无关",
+      "ticket-status-sync.sh 的 exit 2 语义重载: 用法错也是 2, 未实现也是 2, 调用方无法区分. 而 next-epic-id.sh 用 2 表示用法错 — 两脚本约定冲突, 未统一",
+      "未补 scripts/verify/next-epic-id-checkpoint.sh (现有 5 个 *-checkpoint.sh 是 Rule 8 L4 惯例)"
+    ]
+  },
+  "expert_binding": {
+    "suggested_expert": "process-engineering",
+    "actual_expert": "process-engineering",
+    "expert_binding_at": "2026-08-17T19:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "Rule 34 (bugfix 独立复现 — 3 字段全填 + 新旧对比)",
+    "EPIC-227 (--show-toplevel 而非 BASH_SOURCE)",
+    "EPIC-254 (test 不用 set -e; grep -c 用 || true 不用 || echo 0)",
+    "EPIC-245 (撞号事故的来源卡)",
+    "EPIC-258 (ticket status 漂移第 2 次, 本卡修它的防线)",
+    "EPIC-223 (.archive-baseline.json — decisions-only 编号的依据)"
+  ]
+}

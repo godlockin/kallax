@@ -40,26 +40,6 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Gate runner: name, script, args
-run_gate() {
-    local name="$1"
-    local script="$2"
-    shift 2
-    local args=("$@")
-
-    if [[ ! -x "$script" ]] && [[ ! -f "$script" ]]; then
-        echo "SKIP|$name|script not found: $script"
-        return 3
-    fi
-
-    local out
-    out=$(bash "$script" "${args[@]}" 2>&1)
-    local rc=$?
-    echo "GATE_RC=$rc"
-    echo "$out" | tail -3
-    return $rc
-}
-
 # Collect results
 RESULTS=()
 FAIL_COUNT=0

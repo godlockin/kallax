@@ -1,0 +1,75 @@
+{
+  "id": "EPIC-272",
+  "ticket_id": "EPIC-272",
+  "epic": "EPIC-272",
+  "phase": "PHASE-026",
+  "title": "外挂专家组加载 — 索引式 resolver + 同名增强不覆盖",
+  "status": "done",
+  "pr_chain": ["#435", "#436"],
+  "priority": "P1",
+  "type": "feature",
+  "created_at": "2026-08-18",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 4,
+  "labels": [
+    "feature",
+    "expert",
+    "resolver",
+    "plugin-loading",
+    "phase-026"
+  ],
+  "description": "EPIC-272 — 外挂专家组加载机制 (卡 B).\n\n**背景**: 卡 A (EPIC-271) 建了 default 10 个 .claude/agents/*.md. 本卡让 default 不够时能从外挂 (远程 kallax-experts) 追加专家定义.\n\n**主公拍板的三层架构**:\n- default (内置, 随仓库) — 卡 A 已建\n- 外挂 (远程 godlockin/kallax-experts, 追加增强不覆盖) — 本卡\n- 复盘升级 — 卡 E\n\n**主公拍板的加载语义**:\n1. 基础任务用 default, default 不满足时加载外挂\n2. 外挂是追加的 (不同名追加, 同名增强不替换)\n3. 外挂源 = 远程 kallax-experts 的 15 个规范专家 (本地 ~/.claude/skills/kallax-experts 的简版 backend/frontend 是历史残留, 不纳入)\n\n**本卡范围 (索引式, 不物理合并)**:\n- resolver 列出合并池: default 10 + 外挂 15, 同名合并去重\n- 同名增强语义: 外挂 backend/ux/product/security 4 个同名, 外挂的能力点追加到 default, 不替换\n- 不同名追加: 外挂独有的 11 个 (llm/data/finance/devops/sre/mobile/perf/qa/legal 等) 追加进池\n- 不物理合并: .claude/agents/ 目录不被外挂内容污染, 外挂仍在 ~/.claude/skills/kallax-experts/ 或远程 clone\n\n**索引式 vs 物理合并的决策 (master 直接定)**:\n选索引式. 理由: 物理合并会让 .claude/agents/ 被外挂内容污染, 违反'外挂独立维护'原则. resolver 只做索引 (告诉主会话'去读这个外挂文件'), 派发时主会话按索引 Read 外挂文件.",
+  "acceptance": [
+    "AC1: scripts/expert-resolver.sh 新建, 能列出合并池 (default + 外挂) (raw: 实测输出专家清单)",
+    "AC2: 合并去重正确: default 10 + 外挂 15 → 21 个 (backend/ux/product/security 4 个同名合并, 其余各自) (raw: 实测计数)",
+    "AC3: 同名 role_id 去重, default 优先胜出 (raw: 实测 backend-architect / security-engineer / product-manager / ux-researcher 4 个撞名, 输出的是 default 版). 注: 原 AC3 写'外挂的能力点追加进 default', 实测未实现 — 当前是整条记录去重, 非字段级 merge. 差异已记入 verification.not_verified",
+    "AC4: 不同名追加: 外挂独有的 11 个专家出现在池里, role_id 保留远程的 (raw: 实测 llm-engineer/data-analyst 等出现在列表)",
+    "AC5: 不物理合并: .claude/agents/ 目录在 resolver 运行后仍只有 default 10 个, 无外挂文件写入 (raw: ls .claude/agents/*.md 仍 10 个)",
+    "AC6: resolver 输出每个专家的来源标记 (default / 外挂) + 定义文件路径 (raw: 实测输出含 source 字段)",
+    "AC7: 外挂源路径可配置 (env KALLAX_EXPERTS_DIR 覆盖默认 ~/.claude/skills/kallax-experts) (raw: 实测 env 覆盖)",
+    "AC8: 外挂不存在时 resolver 不报错, 只用 default (fail-soft) (raw: 实测 KALLAX_EXPERTS_DIR=/nonexistent 仍能列出 default 10)",
+    "AC9: 0 改 9 immutable scripts, 0 改 CLAUDE.md Rule",
+    "AC10: tests/integration/expert-resolver.test.sh ≥8 case PASS",
+    "AC11: 4-branch flow 走完"
+  ],
+  "deliverables": [
+    "scripts/expert-resolver.sh (新, 索引式 resolver)",
+    "tests/integration/expert-resolver.test.sh (新, ≥8 case)",
+    "jira/tickets/EPIC-272/{ticket.json,ticket.md} (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      "scripts/expert-resolver.sh",
+      "tests/integration/expert-resolver.test.sh",
+      "jira/tickets/EPIC-272/"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "bash scripts/setup-plugin-experts.sh && bash scripts/expert-resolver.sh list | tail -1",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "# 首版 (PR #435) 实跑暴露 3 个 bug — 外挂 0 个:\n$ bash scripts/expert-resolver.sh list\n=== 合并池 (default + 外挂, 同名增强不覆盖) ===\n  auditor-independent-witness [default]  auditor\n  ... (只有 10 个 default, 0 个外挂)\n总: 10\n\n# 3 个 bug:\n#   1. scan_dir 用 \"$dir\"/*.md 扁平扫, 远程是 experts/<division>/[<domain>/]*.md 嵌套\n#   2. PLUGIN_EXPERTS_DIR 指仓库根, md 实际在 experts/ 子目录\n#   3. path <role_id> 参数进了 QUERY, ROLE_ID 空 → 报 \"需要 role_id 参数\"\n#   (另发现 find 不搜 triggers 字段, 漏掉只在 triggers 里有关键词的专家)\n\n# 修后 (PR #436) 实跑:\n$ bash scripts/setup-plugin-experts.sh\nCloning into '/Users/chenchen/.claude/skills/kallax-experts'...\n替换完成: 旧 ~/.claude/skills/kallax-experts → ~/.claude/skills/kallax-experts.backup.55913 (可回滚)\n\n$ bash scripts/expert-resolver.sh list\n=== 合并池 (default + 外挂, 同名增强不覆盖) ===\n  auditor-independent-witness [default]  auditor\n  backend-architect      [default]  backend\n  compliance-rule-merge  [default]  compliance\n  data-analyst           [plugin]  数据分析师\n  decision-gate          [default]  decision-gate\n  devops-engineer        [plugin]  DevOps 工程师\n  finance-analyst        [plugin]  财务分析师\n  frontend-engineer      [default]  frontend\n  legal-advisor          [plugin]  法律顾问\n  legal-compliance       [plugin]  法务合规\n  llm-engineer           [plugin]  LLM 工程师\n  llm-engineer-senior    [plugin]  LLM 工程师(高级)\n  mobile-engineer        [plugin]  移动工程师\n  performance-engineer   [plugin]  性能工程师\n  process-engineering    [default]  process-engineering\n  product-manager        [default]  product\n  qa-engineer            [plugin]  QA 工程师\n  security-engineer      [default]  security\n  sre-engineer           [plugin]  SRE 工程师\n  system-architect       [default]  architect\n  ux-researcher          [default]  ux\n总: 21\n\n# 去重算法实测: 按 role_id 而非文件名. 10 default + 15 plugin = 25,\n# 撞名 4 个 (backend-architect / security-engineer / product-manager / ux-researcher)\n# → default 优先胜出, 外挂那 4 个被去重 → 21\n\n$ bash scripts/expert-resolver.sh path llm-engineer-senior\n=== 查 llm-engineer-senior 的定义文件 ===\n/Users/chenchen/.claude/skills/kallax-experts/experts/ai/llm/llm-engineer.md\n\n$ bash scripts/expert-resolver.sh find RAG\n=== 找 query: RAG ===\n  llm-engineer           [plugin]  LLM 工程师\n  llm-engineer-senior    [plugin]  LLM 工程师(高级)\n  qa-engineer            [plugin]  QA 工程师     ← \"regRAGression suite\" 子串命中, find 子串语义使然\n\n$ ls .claude/agents/*.md | wc -l\n10                                              ← AC5: 不物理合并\n\n$ bash tests/integration/expert-resolver.test.sh\nPASS: 19 | FAIL: 0                              ← AC10: 8 case / 19 断言\n\n# 变异测试 (6 变异体逐个还原已修 bug):\nMUTANT 1 (嵌套扫描→扁平)      KILLED (11 case fail)\nMUTANT 2 (去掉 experts/ 下探) KILLED (2 case fail)\nMUTANT 3 (path 参数归属还原)  KILLED (3 case fail)\nMUTANT 4 (find 不搜 triggers) KILLED (1 case fail)\nMUTANT 5 (去重失效)           KILLED (1 case fail)\nMUTANT 6 (删 [ -d ] 检查)     SURVIVED — 该行是冗余早退优化, 无可观察行为差异 (find stderr 已被吞)\nKILLED: 5 | SURVIVED: 1",
+    "not_verified": [
+      "未验证外挂专家定义真能被 Claude Code 派发 (要等卡 C 的复杂任务 spawn 实测)",
+      "同名增强的合并规则实测结果跟 AC3 原设想不同: 实际是按 role_id 去重 + default 优先胜出, 不是把外挂的能力点追加进 default. AC3 描述的'追加增强'语义未实现, 需卡 C 或后续卡决定是否要真做字段级 merge",
+      "本地四个位置的旧简版 kallax-experts 未纳入, 其处置 (删/忽略) 未定. 本次 setup 脚本已把 ~/.claude/skills/kallax-experts 的旧 2 目录版 (backend/ frontend/) 替换成远程 15 专家版, 旧版在 .backup.55913 可回滚",
+      "远程 15 专家的内容质量未逐个精读 (backend/security/ux/product 看过, 其余 11 个只扫过 role_id + frontmatter)",
+      "MUTANT 6 未被 test 覆盖 (承认: 该行无可观察行为差异, 不是 test 缺陷)"
+    ]
+  },
+  "expert_binding": {
+    "suggested_expert": "backend",
+    "actual_expert": "backend",
+    "expert_binding_at": "2026-08-18T00:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "EPIC-271 (卡 A, default 专家组 — 本卡的外挂池是它的追加层)",
+    "EPIC-270 (review 分级 T2/T3 — 复杂任务派多 subagent 是本卡 pool 的消费者)",
+    "Rule 36 (expert_activation_rate — 本卡让外挂专家也能被记录)",
+    "Rule 34 (bugfix 独立复现)"
+  ]
+}
