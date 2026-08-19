@@ -153,6 +153,39 @@ $ bash scripts/scan-dead-code.sh
 
 ---
 
+## Review 分级 (EPIC-270, 主公 2026-08-18 拍板)
+
+> **必填**. 取代原 "4-expert review" —— 单人项目下 4 条 APPROVE 物理上做不到
+> (`gh pr review --approve` 对自己的 PR 报 "Can not approve your own pull request"),
+> 且我扮演 4 个角色写的 review 共享同一条推理路径, 买不到独立性.
+> subagent 是独立 context, 看不到我的推理, 只能自己跑命令 —— 这才是真独立。
+>
+> 判据 (复用 Rule 37 阈值, 不新造):
+> - **T1 自评**: 0 源码改动 + ≤100 行 + 单 commit
+> - **T2 单 subagent**: 有源码改动 或 >100 行 → 必附 review_summary
+> - **T3 多 subagent**: ≥5 文件 或 >500 行 或 改 immutable/Rule/CI → 必附 review_summary
+>
+> review_summary 是 PR body 内联文字 (不是文件路径) —— 核实报告是过程描述,
+> 不落库. 有决策价值的结论走 confluence/decisions/ 文档. 写清:
+> 核实了什么 / 发现什么 / 怎么处理.
+
+```
+review_tier: T1
+review_summary:
+```
+
+<!--
+T2/T3 示例:
+review_tier: T2
+review_summary: |
+  独立核实者复现 pattern 边界, 发现 AC2 描述错 (matched 修前就是 8).
+  已修 ticket AC2 + 补 env var 覆盖 bug.
+-->
+
+Gate: `scripts/ci/check-review-tier.sh` 校验 tier 声明跟 diff 规模相符 + T2/T3 review_summary 非空.
+
+---
+
 ## 提交前 checklist
 
 - [ ] DCO 签核 (`Signed-off-by:` 在 commit message)
@@ -160,4 +193,4 @@ $ bash scripts/scan-dead-code.sh
 - [ ] 文档同步 (README / CHANGELOG / CLAUDE.md 数字必带 raw output 引用)
 - [ ] 测试全绿 (cargo test --workspace --release + vitest 均 pass)
 - [ ] Branch flow 已走 (`feature/*` → `testing` → `main` → `miao`, 0 直推 miao)
-- [ ] Master 已审阅 (4-expert review APPROVE, 至少 1 expert 提供 raw output)
+- [ ] Review 分级已填 (T1 自评 / T2 单 subagent / T3 多 subagent, T2+ 附落仓 evidence)

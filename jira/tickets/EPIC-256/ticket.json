@@ -1,0 +1,61 @@
+{
+  "id": "EPIC-256",
+  "ticket_id": "EPIC-256",
+  "epic": "EPIC-256",
+  "phase": "PHASE-025",
+  "title": "清 9 个 shell 死函数",
+  "status": "todo",
+  "priority": "P2",
+  "type": "chore",
+  "created_at": "2026-08-18",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 1,
+  "labels": [
+    "chore",
+    "dead-code",
+    "shell",
+    "phase-025",
+    "P2"
+  ],
+  "description": "EPIC-256 — 清 9 个 shell 死函数. 来源: scan-dead-code.sh Stage 4 报告 + 上轮 sprint 调研组细化.\n\n**9 函数全仓 0 外部调用** (grep -rE 验证):\n- invocation-core.sh: set_last_error / cancel_invocations (2)\n- workspace.sh: workspace_fs_list / workspace_fs_stat / workspace_vcs_log / workspace_vcs_diff / workspace_checkpoint_list / workspace_checkpoint_load / workspace_health (7)\n\n**修法**: 直接删 9 函数块, 0 改任何调用. 验证: bash -n 过, 9 函数 grep 0 命中, 2 文件总 -106 行.",
+  "acceptance": [
+    "AC1: scripts/lib/invocation-core.sh 删 set_last_error + cancel_invocations (raw: grep 0 命中)",
+    "AC2: scripts/lib/workspace.sh 删 workspace_fs_list + workspace_fs_stat + workspace_vcs_log + workspace_vcs_diff + workspace_checkpoint_list + workspace_checkpoint_load + workspace_health (raw: grep 0 命中)",
+    "AC3: 2 文件 bash -n 0 错误 (raw: 实测)",
+    "AC4: 全仓 0 外部调用残留 (raw: grep -rE 9 函数名 0 匹配)",
+    "AC5: 0 改 9 immutable scripts (CLAUDE.md §5)",
+    "AC6: 0 改 CLAUDE.md Rule",
+    "AC7: scan-dead-code.sh 跑通, Stage 1-3 仍 PASS (raw: 实测)"
+  ],
+  "deliverables": [
+    "scripts/lib/invocation-core.sh (改, 删 2 函数)",
+    "scripts/lib/workspace.sh (改, 删 7 函数)",
+    "jira/tickets/EPIC-256/{ticket.json,ticket.md} (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      "scripts/lib/invocation-core.sh",
+      "scripts/lib/workspace.sh",
+      "jira/tickets/EPIC-256/"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "grep -rE 'set_last_error|cancel_invocations|workspace_fs_list|workspace_fs_stat|workspace_vcs_log|workspace_vcs_diff|workspace_checkpoint_list|workspace_checkpoint_load|workspace_health' scripts/ 2>&1 | grep -vE 'function|\\(\\)' | wc -l",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "9 函数 grep 0 命中: 0 残留\nbash -n 2 文件 0 错误"
+  },
+  "expert_binding": {
+    "suggested_expert": "process-engineering",
+    "actual_expert": "process-engineering",
+    "expert_binding_at": "2026-08-18T00:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "EPIC-131/132 (scan-dead-code.sh 框架, 本卡是 Stage 4 落地)",
+    "EPIC-228 (ticket 字段 schema)"
+  ]
+}

@@ -85,24 +85,6 @@ workspace_fs_exists() {
   [[ -f "$full_path" ]]
 }
 
-workspace_fs_list() {
-  local pattern="${1:-*}"
-  local full_path
-  full_path="$(workspace_resolve_path "$pattern")" || { echo "ERROR: path outside workspace: $pattern" >&2; return 1; }
-  ls "$full_path" 2>/dev/null || true
-}
-
-workspace_fs_stat() {
-  local path="$1"
-  local full_path
-  full_path="$(workspace_resolve_path "$path")" || { echo "ERROR: path outside workspace: $path" >&2; return 1; }
-  if [[ ! -e "$full_path" ]]; then
-    echo "ERROR: path not found: $full_path" >&2
-    return 1
-  fi
-  stat -f "%N %z %m" "$full_path" 2>/dev/null || stat --format="%n %s %Y" "$full_path" 2>/dev/null
-}
-
 # === VCS (Git) Operations ===
 
 workspace_vcs_status() {
@@ -128,26 +110,6 @@ workspace_vcs_status() {
     --argjson unstaged "$unstaged" \
     --argjson untracked "$untracked" \
     '{branch: $branch, staged: $staged, unstaged: $unstaged, untracked: $untracked}'
-}
-
-workspace_vcs_log() {
-  local limit="${1:-10}"
-  if ! command -v git &>/dev/null; then
-    echo "ERROR: git not found" >&2
-    return 1
-  fi
-  cd "$WORKSPACE_CWD"
-  git log --oneline -"$limit" 2>/dev/null || echo "ERROR: git log failed" >&2
-}
-
-workspace_vcs_diff() {
-  local ref="${1:-HEAD}"
-  if ! command -v git &>/dev/null; then
-    echo "ERROR: git not found" >&2
-    return 1
-  fi
-  cd "$WORKSPACE_CWD"
-  git diff "$ref" 2>/dev/null || echo "ERROR: git diff failed" >&2
 }
 
 # === Command Execution (TerminalBackend trait) ===
@@ -347,44 +309,5 @@ workspace_checkpoint_save() {
   echo "{\"checkpoint\":\"$name\",\"path\":\"$checkpoint_file\"}"
 }
 
-workspace_checkpoint_list() {
-  if [[ -z "$CHECKPOINT_DIR" || ! -d "$CHECKPOINT_DIR" ]]; then
-    echo "[]"
-    return
-  fi
-  local list="[]"
-  for f in "${CHECKPOINT_DIR}"/*.json; do
-    [[ -f "$f" ]] || continue
-    local name
-    name=$(basename "$f" .json)
-    local ts
-    ts=$(jq -r '.created_at // empty' "$f" 2>/dev/null || echo "")
-    list=$(echo "$list" | jq ". + [{\"name\":\"$name\",\"file\":\"$f\",\"created_at\":\"$ts\"}]")
-  done
-  echo "$list"
-}
-
-workspace_checkpoint_load() {
-  local name="$1"
-  if [[ -z "$CHECKPOINT_DIR" ]]; then
-    echo "ERROR: workspace not initialized" >&2
-    return 1
-  fi
-  local checkpoint_file="${CHECKPOINT_DIR}/${name}.json"
-  if [[ ! -f "$checkpoint_file" ]]; then
-    echo "ERROR: checkpoint not found: $name" >&2
-    return 1
-  fi
-  cat "$checkpoint_file"
-}
-
 # === Health ===
 
-workspace_health() {
-  jq -n \
-    --arg cwd "$WORKSPACE_CWD" \
-    --arg home "$WORKSPACE_HOME" \
-    --arg checkpoint_dir "$CHECKPOINT_DIR" \
-    --arg has_git "$([ -d "${WORKSPACE_CWD}/.git" ] && echo "true" || echo "false")" \
-    '{cwd: $cwd, home: $home, checkpoint_dir: $checkpoint_dir, is_git_repo: $has_git}'
-}

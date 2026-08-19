@@ -1,0 +1,97 @@
+{
+  "id": "EPIC-270",
+  "ticket_id": "EPIC-270",
+  "epic": "EPIC-270",
+  "phase": "PHASE-026",
+  "title": "review 分级落地 — T1/T2/T3 从口头约定变可查证据",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "process",
+  "created_at": "2026-08-18",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 3,
+  "labels": [
+    "process",
+    "review",
+    "gate",
+    "agent-report",
+    "phase-026"
+  ],
+  "description": "EPIC-270 — 把 review 分级从口头约定变成 gate 可查的结构化证据.\n\n**起因 (实测证据)**: 流程组复盘对 PR #369-#421 全部 53 个 PR 逐个跑 gh pr view --json reviews,comments, 结果全部 reviews=0 comments=0, 无一例外. CLAUDE.md §4 写 '4-PR 任一必走 master + 4 sub-roles review', EPIC-207 立这条就是为了防 v3.8.0 假 PASS — 现在规则本身成了同一类问题: 声明存在, 证据不存在.\n\n**为什么 4 sub-roles 做不到**:\n1. 物理限制: gh pr review --approve 对自己的 PR 报 'Can not approve your own pull request'. 单人项目所有 PR 同一账号, 4 条 APPROVE 做不到, 只能 COMMENTED (不 block merge, 0 拦截力).\n2. 更根本: 我扮演 4 个角色写 review 时 4 份意见共享同一条推理路径. subagent 是独立 context, 看不到我的推理, 只能自己跑命令. 本 sprint 实证 — 3 组复盘推翻我 3 处结论, 2 轮 T2 核实推翻我 8 处声明.\n\n**分级 (复用 Rule 37 阈值, 0 新造)**:\n  T1 自评      0 源码 + ≤100 行 + 单 commit\n  T2 单 subagent 有源码 或 >100 行  → 必附内联 review_summary\n  T3 多 subagent ≥5 文件 或 >500 行 或 改 immutable/Rule/CI → 必附内联 review_summary\n\n**evidence 必须落仓 (主公 2026-08-18 拍板)**: /tmp 是 subagent 输出临时缓存, 任务结束即丢, CI runner 上也不存在. 路径约定 PR body 内联 review_summary<date>/<agent>__<topic>.md, 工具 review_summary 字段.\n\n**subagent prompt 的关键设计**: 任务是'核实'不是'评审'. 写 '请 review 这个 PR' 会让 subagent 读我的 PR 描述然后说'看起来合理' — 因为描述是我写的, 里面已埋了我的结论. 正确写法: '这是我声称的 X, 你独立复现, 不吻合就报 mismatch'. 这正是 Rule 34 对 Performer 的要求, 只是把对象从 bugfix ticket 换成我自己的 review 结论.",
+  "acceptance": [
+    "AC1: PR body 内联 review_summary 目录 + README 约定 (raw: 路径 PR body 内联 review_summaryREADME.md)",
+    "AC2: review_summary 字段 内联字段, stdin + file 两模式 (raw: 两模式实测各产出 1 个文件, 输出绝对路径)",
+    "AC3: review_summary 写清核实什么/发现什么/怎么处理 (date/agent/topic/source) + 权限 600 (raw: 实测 header 4 字段齐, ls -la 显示 -rw-------)",
+    "AC4: scripts/ci/check-review-tier.sh gate, 5 项校验 (raw: tests 10 case 全 PASS)",
+    "AC5: gate 拒的条件 — 缺 review_tier / T1 但 >100 行 / T2-T3 缺 review_summary / review_summary 空 / review_summary 空 block / T3 但 <5 文件且 ≤500 行 (raw: tests case 1/3/4/5/7/10)",
+    "AC6: gate 过的条件 — T1 ≤100 行 / T2 review_summary 非空 / T3 ≥5 文件或 >500 行 (raw: tests case 2/6/8)",
+    "AC7: PR template 加 review_tier + evidence 字段 + 为什么换的说明 (raw: .github/PULL_REQUEST_TEMPLATE.md diff)",
+    "AC8: 接进 CI — pr-body-check.yml 加 check-review-tier job (raw: workflow diff, base..head diff stat 传给 gate)",
+    "AC9: CI workflow 所有 github.event.* 插值走 env: 不直接进 run: (防 workflow injection, raw: workflow diff 里 BASE_SHA/HEAD_SHA/PR_NUMBER/REPO 全走 env)",
+    "AC10: CLAUDE.md §4 改成分级 + 保持 ≤200 行硬阈值 (raw: awk END NR = 199 行)",
+    "AC11: .claude/rules/review-tier.md 新建, 10 节详细规则 + 4 条已知限制 (raw: 文件路径)",
+    "AC12: 本 sprint 2 份 T2 核实报告已落仓作示例 (raw: PR body 内联 review_summary2026-08-18/verify-epic-259__round1-4-claims-failed.md + __round2-2-must-fix.md)",
+    "AC13: 53 个历史 PR 不回溯 (GitHub review 记录无法补录到过去时间点), 备案写进 rule 文档 §7",
+    "AC14: 0 改 9 immutable scripts",
+    "AC15: 4-branch flow 走完"
+  ],
+  "deliverables": [
+    "PR body 内联 review_summaryREADME.md (新, 落仓约定)",
+    "review_summary 字段 (新, 内联字段)",
+    "scripts/ci/check-review-tier.sh (新, tier gate)",
+    "tests/integration/review-tier-gate.test.sh (新, 10 case)",
+    ".claude/rules/review-tier.md (新, 10 节详细规则)",
+    ".github/PULL_REQUEST_TEMPLATE.md (改, 加 review_tier + evidence)",
+    ".github/workflows/pr-body-check.yml (改, 加 check-review-tier job)",
+    "CLAUDE.md (改 §4 + §7, 分级取代 4 sub-roles)",
+    ".claude/rules/recent-epics.md (改, 接收从 CLAUDE.md 移出的 EPIC-157/158/160 三段)",
+    "PR body 内联 review_summary2026-08-18/verify-epic-259__*.md (2 份示例)",
+    "jira/tickets/EPIC-270/ticket.json (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      "PR body 内联 review_summary",
+      "review_summary 字段",
+      "scripts/ci/check-review-tier.sh",
+      "tests/integration/review-tier-gate.test.sh",
+      ".claude/rules/review-tier.md",
+      ".claude/rules/recent-epics.md",
+      ".github/PULL_REQUEST_TEMPLATE.md",
+      ".github/workflows/pr-body-check.yml",
+      "CLAUDE.md",
+      "jira/tickets/EPIC-270/"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "bash tests/integration/review-tier-gate.test.sh",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "起因复现 (流程组复盘实测):\n$ 对 PR #369-#421 全部 53 个 PR 跑 gh pr view <n> --json reviews,comments\n结果: 全部 reviews=0 comments=0, 无一例外\n\n$ gh pr review 423 --approve\nfailed to create review: GraphQL: Review Can not approve your own pull request (addPullRequestReview)\nexit=1\n\n$ gh pr review 423 --comment --body '[Architect] ...'\nexit=0  (reviews 0 -> 1, state=COMMENTED, 不 block merge)\n\ngate test 实测:\n$ bash tests/integration/review-tier-gate.test.sh\n=== EPIC-270 review tier gate tests ===\n--- 1. 缺 review_tier 字段 ---\n  [PASS] REJECT: 缺 review_tier\n--- 2. T1 自评, 0 行 ---\n  [PASS] T1 通过 (0 行)\n--- 3. T1 但 200 行 → 拒 ---\n  [PASS] REJECT: T1 > 100 行\n--- 4. T2 缺 evidence → 拒 ---\n  [PASS] REJECT: T2 缺 evidence\n--- 5. T2 evidence 不存在 ---\n  [PASS] REJECT: evidence 不存在\n--- 6. T2 evidence 存在 ---\n  [PASS] T2 通过 (evidence 存在)\n--- 7. T3 1 文件 → 拒 ---\n  [PASS] REJECT: T3 < 5 文件\n--- 8. T3 6 文件 600 行 ---\n  [PASS] T3 通过 (6 文件, 600 行)\n--- 9. T2 但 ≤100 行 (warning) ---\n  [PASS] T2 80 行放行 (claim 自负责)\n--- 10. review_summary 空 block ---\n  [PASS] REJECT: review_summary 空 block\n=== Summary: 10 passed, 0 failed ===\n\nhelper 实测 (两模式):\n$ echo '内容' | bash review_summary 字段 test-agent 落仓验证\n.../PR body 内联 review_summary2026-08-18/test-agent__落仓验证.md\n\n元数据 header:\n<!-- agent-report\ndate: 2026-08-18T16:43:27+08:00\nagent: test-agent\ntopic: 落仓验证\nsource: stdin\n-->\n\n权限: -rw------- (600)\n\nCLAUDE.md 行数 (硬阈值 200):\n改前 194 → 加 review 分级 207 (超 7) → 压缩两轮 205 → 移 EPIC-157/158/160 三段到 recent-epics.md → 199 (在阈值内)",
+    "not_verified": [
+      "未在真 PR 上跑过 CI job (本 PR 是第一个, 跑了才知道 workflow 对不对)",
+      "未验证 T1/T2 边界自动选档 (gate 放行 80 行的 T2 claim, 设计选择: claim 自负责)",
+      "未处理 docs-only PR 的 tier 归属 (通常落 T1 因为 0 源码, 但没显式规则)",
+      "未验证 evidence 路径的 repo-relative vs 绝对路径 (gate 用 [ -f ] 检查, CI runner 上 cwd 是 repo root, 应该 OK 但没实测)",
+      "未做变异测试 (gate 脚本本身的 5 项校验没做变异体验证)",
+      "53 个历史 PR 不回溯 — GitHub review 记录无法补录到过去时间点"
+    ]
+  },
+  "expert_binding": {
+    "suggested_expert": "process-engineering",
+    "actual_expert": "process-engineering",
+    "expert_binding_at": "2026-08-18T00:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "Rule 37 (小 effort auto-approve — 4 项阈值复用作 T1 判据)",
+    "EPIC-207 (4-PR governance + master review 源头, 本卡 override 它的 4 sub-roles)",
+    "EPIC-242 (未来分工: main → miao 主公亲自 — 不受本卡影响)",
+    "EPIC-198 (docs-only exempt — docs-only 通常落 T1)",
+    "EPIC-069-D (5-Level Verify — review 是 L3, 本卡定 L3 怎么做)",
+    "Rule 34 (bugfix 独立复现 — subagent prompt 设计沿用它的独立复现要求)",
+    "EPIC-209 (CLAUDE.md trim — 本卡移 EPIC-157/158/160 三段是补它的遗漏)"
+  ]
+}

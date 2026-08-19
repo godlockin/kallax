@@ -1,0 +1,70 @@
+{
+  "id": "EPIC-266",
+  "ticket_id": "EPIC-266",
+  "epic": "EPIC-266",
+  "phase": "PHASE-025",
+  "title": "file reservation fallback — 离线最后一道",
+  "status": "todo",
+  "priority": "P2",
+  "type": "feature",
+  "created_at": "2026-08-18",
+  "created_by": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 2,
+  "labels": [
+    "feature",
+    "file-fallback",
+    "numbering",
+    "phase-025",
+    "P2"
+  ],
+  "description": "EPIC-266 — SQLite 不可用 / 拒绝写 / 权限错的场景, 退化到本地 file. 这是阶梯末极, 只能本机用.\n\n**File 锁**: flock 系统调用级别. 跨进程靠 OS 锁. 写文件靠 mkdir atomic 模拟 (tmp + mv).\n\n**不防撞号** (层 3 已经明说): 跨设备 / 跨进程同时配 lock 能拦本机并发, 跨设备不在范围. 真正防撞号靠合流时主动 detect (EPIC-264 pre-commit).\n\n**仅服务极极场景**: 主机上 sqlite3 安装丢 / 权限有问题 / 2 个手同时人工跑. 不常见, 但作为 commit hook 闸是 basement layer.",
+  "acceptance": [
+    "AC1: scripts/reserve-epic-id.sh 增 file fallback 路径, SQLite error/lock 5 重试后 转 file (raw: 实测)",
+    "AC2: 文件路径: .kallax/state/numbering-reservations/<N>.json, 写原子 (tmp + mv) (raw: 实测)",
+    "AC3: 0 lock 启动: 上一份 .kallax/state/numbering-reservations.lock, flock 跨 进程 (raw: 实测 2 进程, 1 成功 1 等锁)",
+    "AC4: 0 改 路径检测: 同一 .kallax/ 状态目录, 跨 worktree 共享 (raw: 实测 2 个 worktree hit 同一 lock)",
+    "AC5: 0 改 immutable script",
+    "AC6: 0 改 CLAUDE.md Rule",
+    "AC7: tests/integration/file-reservation.test.sh ≥5 case PASS (raw: 实测)",
+    "AC8: 4-branch flow 走完 (feature → testing → main → miao)"
+  ],
+  "deliverables": [
+    "scripts/reserve-epic-id.sh (改, 增 file fallback)",
+    "scripts/next-epic-id.sh (改, 增第 7 来源 = 本地 file)",
+    "tests/integration/file-reservation.test.sh (新, ≥5 case)",
+    "jira/tickets/EPIC-266/{ticket.json,ticket.md} (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      "scripts/reserve-epic-id.sh",
+      "scripts/next-epic-id.sh",
+      "tests/integration/file-reservation.test.sh",
+      "jira/tickets/EPIC-266/"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "bash scripts/reserve-epic-id.sh 320; echo exit=$?",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "走 file layer 条件: sqlite3 不可用\n  Output: file reservation 320 入 .kallax/state/numbering-reservations/320.json\n  flock lock: 完成, 释放\n  跨 2 进程: A 成功, B 失败 (锁忙, 5s 后退到 file layer also, B 拿 321)\n\nsqlite 启动后: file 层零能跨手读取, next-epic-id.sh --check 320 显示本地 file reservation: reserved-by=... ts=...",
+    "not_verified": [
+      "未实测 跨主机 file 共 (预期走个备份/同步层, 不在范围)",
+      "未做 SQLite 与 file 相同性补偿 (同机器同时写两边, 预期锁护, 但理论上可能指裂)",
+      "未做 reservation 与 ticket.json 跨原子绑定 (留 EPIC-264 pre-commit 兜底)"
+    ]
+  },
+  "expert_binding": {
+    "suggested_expert": "process-engineering",
+    "actual_expert": "process-engineering",
+    "expert_binding_at": "2026-08-18T00:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "EPIC-262 (CAS 主路径)",
+    "EPIC-263 (SQLite 路径)",
+    "EPIC-156 (Redis→SQLite→file 降级链, 本卡接 file 节点)"
+  ],
+  "performer": "master"
+}

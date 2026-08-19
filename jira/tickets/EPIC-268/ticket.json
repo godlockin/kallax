@@ -1,0 +1,72 @@
+{
+  "id": "EPIC-268",
+  "ticket_id": "EPIC-268",
+  "epic": "EPIC-268",
+  "phase": "PHASE-025",
+  "title": "修 metric ticket_pattern 漏无后缀 ID + NO_DATA 原因可见",
+  "status": "todo",
+  "priority": "P1",
+  "type": "bugfix",
+  "created_at": "2026-08-18",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 2,
+  "labels": [
+    "bugfix",
+    "metrics",
+    "rule-36",
+    "no-data",
+    "phase-025"
+  ],
+  "description": "EPIC-268 — 修 Rule 36 四北极星恒 NO_DATA 的其中一层根因.\n\n**背景**: 本 sprint 复盘跑 11 张 EPIC × 6 metric, 一律 NO_DATA. 我最初诊断'执行层缺失, 没人跑 metric'. 实测发现跑了也是 NO_DATA — 诊断错了一半.\n\n**3 层根因** (实测):\n\n层 1 (主因, 留 EPIC-269): invocation 数据源从没接过. ~/.kallax/state/expert_invocations.db 只有 8 行 test fixture (ticket_id=EPIC-021-F-test1 之类), ~/.kallax/queue/expert_invocations.jsonl 1 行, 最后写入 2026-06-07. expert 调用路径无埋点.\n\n层 2 (本卡修): ticket_pattern 只认带大写后缀的 ID.\n  原: ^EPIC-${epic_num}-[A-Z]\n  实测: EPIC-259 (新卡格式) NO MATCH, EPIC-259-A MATCH\n  新卡 (251+) 无后缀共 52 个, 历史卡带后缀 151 个 → 新卡一个都匹配不上\n  修: ^EPIC-${epic_num}(-[A-Z]|$) 兼容两种\n\n层 3 (本卡修): NO_DATA 原因不可见. 原先只 log matched=0, 分不清'数据源不存在' / '数据源空' / '有数据但不匹配 EPIC'. 加 src_state 4 态输出.\n\n**顺带修**: JSONL 分支没累加 total, 导致 src_state 判断会误报 source_empty.\n\n**为什么这条重要**: Rule 36 写'4 指标都过 才算 Sprint 全程', 但 expert_activation_rate 从立规则那天起就没真正生效过. 流程组早前查的'上 sprint 8 of 8 全绿'是 collect_filescope bug 产物 (EPIC-253 修了 bug 后反而暴露真相).",
+  "acceptance": [
+    "AC1: ticket_pattern 改 ^EPIC-NUM(-[A-Z]|$), 兼容无后缀 + 带后缀 (raw: EPIC-259 MATCH / EPIC-259-A MATCH / EPIC-2599 NO MATCH / EPIC-259-test NO MATCH / EPIC-merge NO MATCH)",
+    "AC2: src_state=ok 是新增字段, 输出 4 态 (raw: 修前 metrics.sh 无此字段, log 只能看 matched=0; 修后跑 EPIC-021 报 src_state=ok + db/jsonl 路径, 让 NO_DATA 真实原因可见. 注: EPIC-021 修前/修后 matched 都=8 (现有 8 行都带 -F 后缀, 旧 pattern 也匹配 — 本卡 AC2 原描述'从 0 变 8'是错的, 核实者指正, 已修)",
+    "AC3: EPIC-259 报 src_state=no_match_for_epic 而非含糊的 no_invocations (raw: 实测)",
+    "AC4: src_state 4 态各自可触发 (raw: 4 态实测输出 — no_source: INVOCATION_DB=/nonexistent + INVOCATION_FILE=/nonexistent → 'src_state=no_source'; source_empty: 0 行空文件 → 'src_state=source_empty'; no_match_for_epic: EPIC-259 跑 → 'src_state=no_match_for_epic, scanned=9' (有 9 行但都不匹配); ok: EPIC-021 → 'src_state=ok, matched=8 scanned=9')",
+    "AC5: log 输出带 db + jsonl 完整路径 + 4 态 + matched + scanned (raw: 'event=load_invocations_for_epic epic=EPIC-021 matched=8 scanned=9 src_state=ok db=/Users/chenchen/.kallax/state/expert_invocations.db jsonl=/Users/chenchen/.kallax/queue/expert_invocations.jsonl')",
+    "AC6: JSONL 分支补 total 累加 (raw: EPIC-021 scanned=9 = sqlite 8 + jsonl 1)",
+    "AC7: metrics.sh bash -n 0 错误 (raw: 实测)",
+    "AC8: 0 改 9 immutable scripts",
+    "AC9: 0 改 CLAUDE.md Rule (Rule 36 文本不动, 只修实现)",
+    "AC10: 4-branch flow 走完 (feature → testing → main → miao)"
+  ],
+  "deliverables": [
+    "scripts/metrics/lib/metrics.sh (改: pattern + src_state + total 累加)",
+    "jira/tickets/EPIC-268/{ticket.json,ticket.md} (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      "scripts/metrics/lib/metrics.sh",
+      "jira/tickets/EPIC-268/"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "bash scripts/metrics/sprint-metrics.sh --epic EPIC-259 2>&1 | grep load_invocations",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "修复前 (origin/testing):\n[INFO] event=load_invocations_for_epic epic=EPIC-259 matched=0\n[WARN] event=expert_activation_rate epic=EPIC-259 reason=no_invocations\n(看不出为什么 0 — 是没数据源? 数据源空? 还是不匹配?)\n\n修复后 (本 PR):\n[INFO] event=load_invocations_for_epic epic=EPIC-259 matched=0 scanned=9 src_state=no_match_for_epic db=.../expert_invocations.db jsonl=.../expert_invocations.jsonl\n(明确: 有 9 条数据, 但没一条属于 EPIC-259)\n\nEPIC-021 (有 test fixture):\n修复前: matched=8 (旧 pattern 匹配 8 行带 -F 后缀的 fixture)\n修复后: matched=8 scanned=9 src_state=ok (旧同样匹配, 新加 scanned + src_state 字段)\n(核实者实测原版就 matched=8, 我 AC2 描述'从 0 变 8'是错的, 已修)\n\npattern 边界验证 (修后):\n  EPIC-259: MATCH\n  EPIC-259-A: MATCH\n  EPIC-259-test: NO MATCH  (小写后缀, 排除)\n  EPIC-2599: NO MATCH      (4 位, 排除)\n  EPIC-merge: NO MATCH     (非数字, 排除)\n\nsrc_state 4 态各自验证 (修后):\n  no_source:         数据源都不存在 (实测需环境变量覆盖)\n  source_empty:      文件存在但 0 行\n  no_match_for_epic: 有数据但不匹配 (EPIC-259 现状)\n  ok:                有匹配 (EPIC-021 现状)\n\n4 态实测 (修后, 接管核实者做):\n  no_source: matched=0 scanned=0 src_state=no_source db=/nonexistent\n  source_empty: matched=0 scanned=0 src_state=source_empty (空文件)\n  no_match_for_epic (EPIC-259): matched=0 scanned=9 src_state=no_match_for_epic\n  ok (EPIC-021): matched=8 scanned=9 src_state=ok\n\n附: 修 env override bug 顺带在 line 93-94 (INVOCATION_FILE/DB 改 ${VAR:-${VAR_DEFAULT}} 模式, env var 优先, 默认 fallback)\n原版 line 93-94 是 ${VAR_DEFAULT} 直接赋值, env var 失效 → 4 态测全部报 ok. 修后 4 态各对",
+    "not_verified": [
+      "未接 invocation 数据源 — 那是层 1 主因, 留 EPIC-269 (要改 expert 调用路径埋点)",
+      "未验证接了数据源之后 expert_activation_rate 能否达标 (target=5 distinct experts)",
+      "未验证其他 5 个 metric 的数据源 (cross_epic_reuse_rate 读 ticket file_scope, ab_hit_rate 读 review 数据 — 各自可能有同类问题)",
+      "未跑 4-branch flow (本 PR 是 feature → testing 第 1 步)",
+      "Rule 37 例外清单写 '任何 sprint-metrics 改动 → 主公亲自', 本卡已获主公 2026-08-18 批准"
+    ]
+  },
+  "expert_binding": {
+    "suggested_expert": "process-engineering",
+    "actual_expert": "process-engineering",
+    "expert_binding_at": "2026-08-18T00:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "Rule 34 (bugfix 独立复现 — 3 字段全填 + 新旧对比)",
+    "Rule 36 (4 北极星 — 本卡修它的实现 bug)",
+    "Rule 37 例外清单 (sprint-metrics 改动需主公亲自, 已获批准)",
+    "EPIC-253 (修 collect_filescope bug, 反而暴露 NO_DATA 真相)",
+    "EPIC-269 (接 invocation 数据源 — 层 1 主因)"
+  ]
+}

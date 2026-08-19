@@ -15,10 +15,6 @@ LRU_MAX=1000
 LAST_ERROR="${LAST_ERROR:-}"
 
 # LAST_ERROR setter (accessible from subshell)
-set_last_error() {
-  LAST_ERROR="$1"
-}
-
 # EPIC-122-E: Extract EPIC from ticket_id
 extract_epic() {
   local ticket_id="$1"
@@ -280,31 +276,6 @@ get_queue_size() {
     file) wc -l < "$INVOCATION_FILE" 2>/dev/null || echo 0 ;;
     *) echo 0 ;;
   esac
-}
-
-cancel_invocations() {
-  local ids="$1"
-  local results="[]"
-
-  for id in $ids; do
-    local backend
-    backend=$(get_backend)
-    case "$backend" in
-      file)
-        if [ -f "$INVOCATION_FILE" ]; then
-          echo "{\"id\":\"$id\",\"cancelled\":true,\"ts\":$(date +%s),\"backend\":\"$backend\"}" >> "${INVOCATION_FILE}.cancelled"
-        fi
-        ;;
-      sqlite)
-        sqlite3 "$SQLITE_DB" "UPDATE invocations SET payload = payload || ', \"cancelled\": true' WHERE id = '$id'" 2>/dev/null || true
-        ;;
-      redis)
-        echo "{\"id\":\"$id\",\"cancelled\":true,\"ts\":$(date +%s)}" >> "${INVOCATION_FILE}.cancelled"
-        ;;
-    esac
-    results=$(echo "$results" | jq ". + [{\"id\":\"$id\",\"cancelled\":true}]")
-  done
-  echo "$results"
 }
 
 query_invocations() {
