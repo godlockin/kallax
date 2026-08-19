@@ -116,12 +116,14 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
    工作                      UAT 验证    集成测试        稳定发布
 ```
 
-| 阶段 | 操作 | 验证站 | Review 分级 | 目的 |
+| 阶段 | 操作 | 验证站 | Review 分级 | 合并权 (EPIC-275) |
 |------|------|--------|---------------|------|
-| 1. feature/* | `git worktree add -b feature/...` | 5-Level Verify | 0 (master 自开发) | worktree 隔离 |
-| 2. feature → testing | `gh pr create --base testing` | integration + cargo test + vitest env | **T1/T2/T3 分级** (EPIC-270) | 防止 v3.8.0 form-only PASS |
-| 3. testing → main | `gh pr create --base main` (merge commit) | full e2e + decision matrix 25 cells | **T1/T2/T3 分级 + comment 验证** | 防止 v3.8.0 25 测试全过的假 PASS |
-| 4. main → miao | `gh pr create --base miao` | conflict check | **主公亲自** (EPIC-242 §3) | 处理 v3.8.0 red-blue review 阻塞 |
+| 1. feature/* | `git worktree add -b feature/...` | 5-Level Verify | 0 (master 自开发) | — |
+| 2. feature → testing | `gh pr create --base testing` | integration + cargo test + vitest env | **T1/T2/T3 分级** (EPIC-270) | **master 自审自合** |
+| 3. testing → main | `gh pr create --base main` | full e2e + decision matrix 25 cells | **T1/T2/T3 分级 + comment 验证** | **master review 后自合** |
+| 4. main → miao | `gh pr create --base miao` | conflict check | T1/T2/T3 分级 | **主公亲自** (EPIC-242 §3) |
+
+**合并权 (EPIC-275, 2026-08-19 主公拍板)**: 前两段 master 自主合, `main → miao` 仍主公亲自. 起因: 2026-08-19 清 26 EPIC 积压走 6 个 PR 每段停等拍板. 自主指**合并动作**不需点头, review 责任不变 (T2/T3 仍必附 review_summary).
 
 **Review 分级强制 (EPIC-270, 2026-08-18 主公拍板 — 取代 EPIC-207 的 4 sub-roles)**:
 1. **T1** 0 源码 + ≤100 行 + 单 commit (Rule 37 阈值) | **T2** 有源码 或 >100 行 | **T3** ≥5 文件 或 >500 行 或 改 immutable/Rule/CI
@@ -130,23 +132,17 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 4. **Gate**: `scripts/ci/check-review-tier.sh` 校验 tier 跟 diff 规模相符 + review_summary 非空
 5. **conflict check**: `git fetch origin <base>` + `git merge-tree --write-tree <base> <head>`. ⚠️ 老式两参数 `git merge-tree <a> <b>` 是 trivial-merge 输出, 不做三方合并, 冲突标记恒为 0 (EPIC-273 实测报 0 而 GitHub 实为 4 文件冲突)
 6. **smoke retention**: PR 必跑 `bash scripts/check-smoke-retention.sh` (阈值来自 EPIC-174)
-7. **PR-2 v2 修正**: testing → main 走 merge commit + comment 验证 (三主干自 `de9aa316` 起已分叉, FF 不可行)
+7. **跨主干必 merge commit, 禁 squash/rebase** (EPIC-273): 仓库设置已禁用 (`allow_squash_merge=false`). squash 让父节点不指向源分支 → 拓扑失真 + FF 失效 + DCO email-mismatch. 实测禁用后三主干反向 commit 从 22/21 降到 0/0, 冲突从 4 降到 0
 
 **详细规则**: 详见 `.claude/rules/review-tier.md` (path-scoped lazy load)
 
-**0 静默跳过** (配合 EPIC-069-D check-claim-evidence):
-- v3.10.0+ 必走 4-PR 全程
-- **0 force-push bypass** (除 EPIC-155/176 备案, 主公明确批准)
-- 紧急 bypass 仅 `git commit --no-verify` (主公明确批准时)
-- 同类假 PASS 症状再次出现 → pre-commit hook 拦截
-
-**if-then 详细规则** (4 阶段 × 5 验证站): 详见 `.claude/rules/branch-flow.md`
+**0 静默跳过 + if-then 详细规则** (4 阶段 × 5 验证站 + 合并权边界): 详见 `.claude/rules/branch-flow.md`
 
 **docs-only 批模式 (主公 2026-08-12 拍板, retrospective-batch-8)**:
 - **适用**: docs-only EPIC (0 source code 改动, 触及 CLAUDE.md + 1 test) → 落 T1 自评 (EPIC-270 分级)
 - **CLAUDE.md §6.4 conflict**: 累积 EPIC 段必 conflict. 解决 `git checkout --ours CLAUDE.md` (本 EPIC 段必含)
-- **写段禁 jargon (EPIC-252 纠正)**: merge commit 的 staged diff 把新写段算新增行, 含黑名单词会被 `check-decorative-claim.sh` 拦 (hook 已传 `KALLAX_STAGED_ONLY=1`, 历史行已豁免). 写段前查 `jira/tickets/.jargon-blacklist.json` 直接避开, 不用 bypass
-- **4-PR 备案债**: testing/main 落后时必 force-push (`--force-with-lease`). 累计 16 个 epicXXX-* 远端 branch 留 audit chain
+- **写段禁 jargon (EPIC-252 纠正)**: merge commit 的 staged diff 把新写段算新增行, 含黑名单词会被 `check-decorative-claim.sh` 拦 (hook 已传 `KALLAX_STAGED_ONLY=1`). 写段前查 `jira/tickets/.jargon-blacklist.json` 直接避开. 同类误报 `check-disclaimer.sh` 已由 EPIC-274 修 (MERGE_HEAD 检测). **force-push 备案债 EPIC-275 废止** — 分叉已消除, 无需 force-push
+
 - **参考**: `confluence/memory/patterns/docs-only-EPIC-batch-closure.md`
 
 **4-branch bypass 历史债 (EPIC-155 + EPIC-176 已完成, EPIC-208 待办)**:
