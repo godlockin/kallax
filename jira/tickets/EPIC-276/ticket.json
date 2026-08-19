@@ -3,7 +3,7 @@
   "epic": "EPIC-276",
   "phase": "PHASE-026",
   "title": "2026-08-19 Sprint 复盘 + 关 3 张已合 ticket",
-  "status": "in_progress",
+  "status": "done",
   "priority": "P2",
   "type": "docs",
   "created_at": "2026-08-19",
@@ -11,7 +11,12 @@
   "performer": "master",
   "worktree_role": "performer",
   "performer_sub_role": "docs",
-  "labels": ["docs", "retrospective", "ticket-hygiene", "phase-026"],
+  "labels": [
+    "docs",
+    "retrospective",
+    "ticket-hygiene",
+    "phase-026"
+  ],
   "expert_binding": {
     "suggested_expert": "process-engineering",
     "actual_expert": "process-engineering"
@@ -51,11 +56,25 @@
       "未系统清点历史复盘结论的落地率 — 只发现「建卡前比对 origin」这条今天复发了, 其他条目未逐一核对",
       "9 个 PR 的 review_summary 全是我自己写自己审 — EPIC-270 换 T1/T2/T3 分级的理由就是「我扮 4 角色共享同一推理路径」, 今天仍是单一视角. 当天 5 个错里 4 个是工具抓的不是我 review 抓的",
       "本卡改的 3 张 ticket 的 status 只验证了 JSON 字段值, 未验证下游消费方 (metrics 脚本 / auditor) 是否正确读到新状态",
-      "复盘提的 3 条改进只是提议, 未实现"
+      "复盘提的 3 条改进只是提议, 未实现",
+      "EPIC-273/274 无 ticket 这件事本卡只记录未补建 — 追溯建卡会让 ticket 的 created_at 失真 (实际工作已完成). 防复发靠复盘提议 #1 (建卡门 WARN→BLOCK), 待主公拍板"
     ]
   },
   "related": {
-    "epics": ["EPIC-272", "EPIC-273", "EPIC-274", "EPIC-275", "EPIC-161", "EPIC-036"],
+    "epics": [
+      "EPIC-272",
+      "EPIC-273",
+      "EPIC-274",
+      "EPIC-275",
+      "EPIC-161",
+      "EPIC-036"
+    ],
     "notes": "EPIC-161 定 retrospective routine 6 阶段 (本卡只跑了 retrospect 阶段). Rule 36 四北极星数据源是 EPIC-023-C 北极星 + EPIC-157 binding 字段. 复盘提议 7.2 跟卡 C (派单链接线) 同源 — expert-resolver 有输出无消费方导致 expert_activation_rate 无数据."
-  }
+  },
+  "completed_at": "2026-08-19",
+  "pr_chain": [
+    "#446",
+    "#447",
+    "#448"
+  ]
 }
