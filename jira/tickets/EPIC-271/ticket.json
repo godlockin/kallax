@@ -1,0 +1,75 @@
+{
+  "id": "EPIC-271",
+  "ticket_id": "EPIC-271",
+  "epic": "EPIC-271",
+  "phase": "PHASE-026",
+  "title": "default 专家组重建 — 暂存污染 + 远程为源 + 映射合并",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "feature",
+  "created_at": "2026-08-18",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 6,
+  "labels": [
+    "feature",
+    "expert",
+    "agents",
+    "subagent",
+    "phase-026"
+  ],
+  "description": "EPIC-271 — 重建 KALLAX 的 default 专家组 (分角色 subagent 定义), 为后续'调度用 expert 初始化 subagent 承接卡'打地基.\n\n**背景 (三份侦察 + 远程实读)**:\n1. 分角色 subagent 现状为零: .claude/agents/ 从未存在, 全仓无 Agent-tool 派发代码 (侦察 2).\n2. 本地两套专家设定都被污染: 第一套 skills/kallax/{default,extended} (11 行关键词存根 + 坏 filePath 占位符 + 全 jargon 违规), 第二套 commands/kallax/experts (2/5 带 jargon, 无 frontmatter, 名字对不齐) (实测 pollution-check).\n3. 远程 godlockin/kallax-experts 有规范 schema (schema/frontmatter.yml) + 15 专家, 但 KALLAX default 组需要的 10 个只有 4 个直接对应 (backend/ux/product/security), 缺 frontend + 独立 architect, extended 的 process-engineering/auditor/decision-gate 是 KALLAX 框架特有视角远程没有.\n\n**主公拍板的架构 (三层)**:\n- default 专家组 (内置, 随仓库) — 本卡建\n- 外挂强化版 (全局 ~/.claude/skills/kallax-experts, 远端 kallax-experts, 追加增强不覆盖) — 后续卡 B\n- 复盘自动升级 (记经验教训 + 升级设定) — 后续卡 E\n\n**本卡范围**: 暂存污染两组 + 以远程 schema 为基准建 default 组 (5 核心 + 5 extended).\n\n映射 (详见 confluence/decisions/expert-group-mapping-2026-08-18.md):\n- 升级 4: backend-architect / ux-researcher / product-manager / security-engineer (从远程引入)\n- 新建 2: frontend / 独立 architect (远程缺)\n- 保留 KALLAX 特有 3 + 修改 1: process-engineering / auditor / decision-gate (去污染重写), compliance (从 legal-compliance 改造成 Rule 合并合规视角)\n- 不引入 11: llm/data/finance/legal/devops/sre/mobile/perf/qa 等, 留外挂层",
+  "acceptance": [
+    "AC1: 本地两组污染设定暂存到 .claude/skills/kallax/_deprecated/ (不删, 历史参照) (raw: git mv 后 default/ extended/ commands/kallax/experts/ 原位置清空)",
+    "AC2: .claude/agents/ 目录建立, 10 个 agent 定义 (5 核心 + 5 extended) (raw: ls .claude/agents/*.md 10 个)",
+    "AC3: 每个 agent frontmatter 含 name/description/tools (Claude Code 必需), description 是任务描述式不是触发关键词式 (raw: 抽查 2 个文件 frontmatter)",
+    "AC4: 4 个升级专家 (backend/ux/product/security) 从远程 schema 引入, 修远程 frontmatter 空行 bug (raw: 无空行 + role_id 保留)",
+    "AC5: 2 个新建专家 (frontend / architect) 用远程 schema 格式, source 标 custom (raw: frontmatter source=custom)",
+    "AC6: 4 个 KALLAX 特有 extended 去污染重写, 0 jargon 违规 + 0 坏 filePath (raw: check-jargon.sh 全 0)",
+    "AC7: 10 个 agent 定义全过 jargon + disclaimer gate (raw: 实测)",
+    "AC8: 0 改 9 immutable scripts, 0 改 CLAUDE.md Rule (本卡只加 agent 定义 + 暂存)",
+    "AC9: 映射决策文档入库 confluence/decisions/expert-group-mapping-2026-08-18.md (raw: 文件存在)",
+    "AC10: 4-branch flow 走完"
+  ],
+  "deliverables": [
+    "confluence/decisions/expert-group-mapping-2026-08-18.md (新, 映射决策)",
+    ".claude/skills/kallax/_deprecated/ (暂存: default + extended + commands/kallax/experts 移入)",
+    ".claude/agents/*.md (新, 10 个 agent 定义)",
+    "jira/tickets/EPIC-271/{ticket.json,ticket.md} (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      ".claude/agents/",
+      ".claude/skills/kallax/_deprecated/",
+      "confluence/decisions/expert-group-mapping-2026-08-18.md",
+      "jira/tickets/EPIC-271/"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "bash scripts/verify/check-jargon.sh .claude/agents/*.md",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "现状 (污染证据, pollution-check 实测):\n  第一套 skills/kallax/default/*.md: 11 行存根, 全 jargon 违规\n  第一套 skills/kallax/extended/*.md: 63-69 行治理简报, filePath 全是 /path/to/kallax/ 坏占位符\n  第二套 commands/kallax/experts/*.md: 2/5 带 jargon, 无 frontmatter\n\n远程 schema (schema/frontmatter.yml) 必填字段:\n  name / role_id / emoji / divisions / triggers\n选填: name_en/color/vibe/source/source_id/domains/tools/related/priority/tokens/updated\n\n远程 15 专家 → KALLAX default 10 的映射 (见 decision doc):\n  升级 4 (backend/ux/product/security), 新建 2 (frontend/architect),\n  保留 3 + 修改 1 (extended 治理), 不引入 11 (留外挂)",
+    "not_verified": [
+      "未实际派发 subagent 验证 agent 定义能否被 Claude Code 识别 (要等 Agent tool 真的按 .claude/agents/*.md 起进程才算验证)",
+      "未验证 tools 白名单是否跟 KALLAX 实际可用工具对齐 (Read/Grep/Glob/Bash 是远程默认, KALLAX 可能还有别的)",
+      "未定 model 字段 (默认继承主会话 model, 还是每个 expert 指定? 需主公定)",
+      "暂存的污染组后续怎么处置 (删 / 归档 / 保留作反例) 未定",
+      "远程仓库本身 status=初始化中, 它的 15 个专家质量未全部人工审过 (本卡只引入 4 个, 逐个看)"
+    ]
+  },
+  "expert_binding": {
+    "suggested_expert": "architect",
+    "actual_expert": "architect",
+    "expert_binding_at": "2026-08-18T00:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "EPIC-270 (review 分级 — 本卡建的 agent 定义就是 review 分级 T2/T3 要派的 subagent)",
+    "Rule 36 (expert_activation_rate — 本卡让'expert 激活'有真实载体, 后续埋点 D 才能喂饱)",
+    "EPIC-056-A (3 阶段治理 — 原'9 专家并行'是文档设计, 本卡补上真实 subagent 定义)",
+    "EPIC-225 (jargon 黑名单 — 本卡去污染重写 extended)"
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "id": "EPIC-264",
+  "ticket_id": "EPIC-264",
+  "epic": "EPIC-264",
+  "phase": "PHASE-025",
+  "title": "pre-commit 强制 gate — 编号占用 + ticket status 语义",
+  "status": "todo",
+  "priority": "P0",
+  "type": "feature",
+  "created_at": "2026-08-18",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 3,
+  "labels": [
+    "feature",
+    "pre-commit",
+    "numbering",
+    "ticket-status",
+    "hook",
+    "phase-025"
+  ],
+  "description": "EPIC-264 — EPIC-259 给了查询工具, EPIC-262/263 给了分配机制, 但二轮核实者直接指出: 光有工具不强制使用, 第 4 次撞号照样发生. 必须在 commit 阶段就拦截.\n\n**两条强 gate**:\n\n1. 编号占用 gate: pre-commit 扫 staged 新增 jira/tickets/EPIC-NNN/ 目录 + confluence/decisions/EPIC-NNN-*.md + markdown 正文里新出现的 EPIC-NNN, 校验是否已被占 (调用 next-epic-id.sh --check N). 关键要扫 markdown 正文, 因为 EPIC-248 事故里编号是在计划文档里诞生的, 只扫目录名的门整体拦不到那条路径 (核实者报告 /tmp/verify-epic-259-round2.md 提到).\n\n2. ticket status 语义 gate: pre-commit 校验 staged jira/tickets/EPIC-NNN/ticket.json 修改时, 若 N > 222 (新卡阈值) 必须 status 字段存在且非空, pr_chain 字段必填 (跟合并状态相符). 解决: 1) check-ticket-schema.sh 现有 required_fields 校验只是字段存在, 不查值语义; 2) 反向查不出 EPIC-247 缺卡; 3) pr_chain 不在 required_fields.\n\n**跟现有 hook 集成**: scripts/hooks/install.sh 已经装 14+ hook, 走预 commit 阶段. 走 --verify 验安装. 不强行合并到现有 hook 里 (独立可读).\n\n**降级**: pre-commit 不该 hard-block 一切合法工作. --no-verify 是官方逃逸. 但失败的撞号必须 stderr 醒目 + commit 拒绝, 让人不能 miss.",
+  "acceptance": [
+    "AC1: scripts/hooks/pre-commit-number-check.sh 新建, 扫 staged 新增 ticket 目录 + decisions 文件 + markdown 正文引用, 校验编号占用 (raw: 实测, staged 新增 EPIC-999 但已被占 → 拒绝)",
+    "AC2: scripts/hooks/pre-commit-ticket-status.sh 新建, 校验 staged ticket.json 字段语义 (status 存在 + pr_chain 不为空 + 与合并状态相符) (raw: 实测, staged 一个 in_progress 但 PR 已合 → 拒绝)",
+    "AC3: 跟 install.sh 集成: clash_gain 两个 hook, install.sh --verify exit 0 (raw: 实测)",
+    "AC4: 0 改既有 9 immutable scripts (9 个不动, 新增 2 个 hooks)",
+    "AC5: 0 改 CLAUDE.md Rule",
+    "AC6: pre-commit 失败时 stderr 明确给出 staged EPIC-NNN 已被以下来源占用: Y 让人不可能 miss (raw: 实测)",
+    "AC7: 失败 exit code = 1, commit 拒绝 (跟 CLAUDE.md hook 规范)",
+    "AC8: --no-verify 仍是逃逸 (官方约定的, 不破坏)",
+    "AC9: tests/integration/pre-commit-hooks.test.sh ≥6 case PASS (raw: 实测)",
+    "AC10: 4-branch flow 走完 (feature → testing → main → miao)"
+  ],
+  "deliverables": [
+    "scripts/hooks/pre-commit-number-check.sh (新, 编号占用 gate)",
+    "scripts/hooks/pre-commit-ticket-status.sh (新, status 语义 gate)",
+    "scripts/hooks/install.sh (改, 集成新 hook)",
+    "tests/integration/pre-commit-hooks.test.sh (新, ≥6 case)",
+    "jira/tickets/EPIC-264/{ticket.json,ticket.md} (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      "scripts/hooks/pre-commit-number-check.sh",
+      "scripts/hooks/pre-commit-ticket-status.sh",
+      "scripts/hooks/install.sh",
+      "tests/integration/pre-commit-hooks.test.sh",
+      "jira/tickets/EPIC-264/"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "bash -c 'cd /tmp/sandbox-264 && git config user.email t@t.local && git config user.name t && mkdir -p jira/tickets/EPIC-999 && echo \\\"{}\\\" > jira/tickets/EPIC-999/ticket.json && git add -A && git commit -m test 2>&1 | tail -5; echo exit=$?'",
+    "reproduction_exit_code": 1,
+    "reproduction_raw_output": "冲突场景: stub all EPIC-999 占用\n  1. 创建 jira/tickets/EPIC-999/ (受 264 hook 拦截) → stderr EPIC-999 已被 origin/miao 占用 + exit 1\n  2. 撞号修复: ticket status in_progress 但 PR #420 已合 (受 264 hook 拦截) → stderr staged ticket.json 状态与合并状态不符 + exit 1\n  3. 合法: 创建 jira/tickets/EPIC-263/ + ticket.json status=todo + pr_chain=[] → 263 hook 放行, commit 成功",
+    "not_verified": [
+      "未在 CI workflow 侧验证 hook 调用 (靠手装 hook 本身在手装环境下验证)",
+      "未验证 hook 跨多个 git worktree 同步 (靠 hook 位置是 .git/hooks, 装在主仓而非 worktree)",
+      "未做 hook 性能测试 (高频率 commit 是否会变慢) — 预留性能检查 (5s 以内)",
+      "未做 hook 阈值可配置 (现在 N > 222 硬编码, 跟 .archive-baseline 同步)",
+      "未做跟 CLAUDE.md pre-commit hook 列表的官方同步 (独立 hook 独立职责)"
+    ]
+  },
+  "expert_binding": {
+    "suggested_expert": "process-engineering",
+    "actual_expert": "process-engineering",
+    "expert_binding_at": "2026-08-18T00:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "EPIC-259 (查询层, 提供 next-epic-id.sh --check 给这个 hook)",
+    "EPIC-262 (CAS 预留, 跟查询做减法得未被占的号)",
+    "EPIC-263 (SQLite fallback, 离线时 check 仍有效)",
+    "EPIC-156 (Redis→SQLite→file 降级链同架构)",
+    "EPIC-225 (jargon 黑名单同机制 staged-md 扫描模式复用)"
+  ]
+}

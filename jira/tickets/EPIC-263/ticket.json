@@ -1,0 +1,79 @@
+{
+  "id": "EPIC-263",
+  "ticket_id": "EPIC-263",
+  "epic": "EPIC-263",
+  "phase": "PHASE-025",
+  "title": "SQLite reservation 表 — 离线降级第二层",
+  "status": "todo",
+  "priority": "P1",
+  "type": "feature",
+  "created_at": "2026-08-18",
+  "created_by": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 3,
+  "labels": [
+    "feature",
+    "sqlite",
+    "numbering",
+    "offline-fallback",
+    "phase-025"
+  ],
+  "description": "EPIC-263 — git ref CAS (EPIC-262) 在离线时不可用. 退化到 SQLite 写锁做本机并发保护. KALLAX 已有 SQLite 基础设施 (node/src/core/sqlite/schema.ts), 原始设计 'DB-first / file-fallback'. 不重新发明, 接现有.\n\n**Schema (新增表)**:\nCREATE TABLE IF NOT EXISTS epic_number_reservations (\n  number INTEGER PRIMARY KEY,\n  reserved_by TEXT NOT NULL,  -- 'user@host' 形式\n  reserved_at INTEGER NOT NULL,  -- unix epoch\n  worktree TEXT,\n  purpose TEXT,\n  ticket_id TEXT  -- 关联的 ticket.json 文件名 (nullable, 阶段 2 才填)\n);\n\n并发: SQLite 写锁是文件级, 同一进程内 next() + insert 原子, 跨进程有 BUSY/LOCKED 错误需等. 适配: 加 busy_timeout, 用 IMMEDIATE 事务.\n\n**共享 DB**: 同一个项目多个 worktree 共享同一个 .kallax/state/kallax.db, 用 exclusive lock. 各 worktree 进程访问前尝试 BEGIN IMMEDIATE, 失败等 5s 重试. 锁争用高峰期 (≥3 个同时建卡) 退到 file fallback (EPIC-266).\n\n**优先级**: P1 (EPIC-262 之后). EPIC-262 解决 80% 撞号, EPIC-263 只解决离线场景. 但 git fetch 仍是 db 同步的前置 — 离线时 db 同步不上, 退化到 file.",
+  "acceptance": [
+    "AC1: node/src/core/sqlite/schema.ts 加 epic_number_reservations 表 (raw: 实测 sqlite3 .schema)",
+    "AC2: node/src/core/sqlite/ 新增 number-reservation.ts 模块, 4 个函数: reserve(number, meta) / release(number) / is_reserved(number) / list_active()",
+    "AC3: IMMEDIATE 事务 + busy_timeout 5000 (raw: 实测 2 进程同时 reserve 同号, 一成功一 BUSY → 5s 重试 → alt number)",
+    "AC4: scripts/reserve-epic-id.sh 接入 git ref 失败时自动 degrade to SQLite (raw: 模拟 git push 失败, 看到 'DB layer' 提示)",
+    "AC5: scripts/next-epic-id.sh 增第 6 来源: 本地 db reservations (raw: --check 300 显示 'reserved-by' 归属)",
+    "AC6: 共享 db: 同一项目 2 个 worktree 共享 .kallax/state/kallax.db, 跨进程锁有效 (raw: 2 进程 race-condition 测, exit code 仅一成功)",
+    "AC7: 0 改 core/data-adapter/* 现有 (新增独立模块, 不动已有 DB-first 逻辑)",
+    "AC8: 0 改 CLAUDE.md Rule (跟 EPIC-259 同档)",
+    "AC9: tests/integration/sqlite-reservation.test.sh ≥8 case PASS (raw: 实测)",
+    "AC10: 4-branch flow 走完 (feature → testing → main → miao)"
+  ],
+  "deliverables": [
+    "node/src/core/sqlite/schema.ts (改, 加 epic_number_reservations 表)",
+    "node/src/core/sqlite/number-reservation.ts (新, 4 函数)",
+    "scripts/reserve-epic-id.sh (改, git ref 失败 degrade to SQLite)",
+    "scripts/next-epic-id.sh (改, 增第 6 来源 = 本地 db)",
+    "tests/integration/sqlite-reservation.test.sh (新, ≥8 case)",
+    "jira/tickets/EPIC-263/{ticket.json,ticket.md} (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      "node/src/core/sqlite/schema.ts",
+      "node/src/core/sqlite/number-reservation.ts",
+      "scripts/reserve-epic-id.sh",
+      "scripts/next-epic-id.sh",
+      "tests/integration/sqlite-reservation.test.sh",
+      "jira/tickets/EPIC-263/"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "bash -c 'node -e \"require(\\\"better-sqlite3\\\")\"; cd node && KALLAX_SQLITE_PATH=.kallax/state/kallax.db node -e \"const {numberReservation}=require(\\\"./src/core/sqlite/number-reservation\\\"); numberReservation.reserve(300, {by:\\\"test\\\", purpose:\\\"EPIC-263\\\"})\"' ; echo exit=$?",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "reserve(n, meta) 成功: <number> row 入 db\n  next-char: numberReservation.is_reserved(300) -> true\n  省省: numberReservation.list_active() -> [{300, by=test, purpose=EPIC-263, ts=...}]\n\n并发测试 (2 进程):\n  A reserve(300) exit 0\n  B reserve(300) exit 1 (SQLITE_BUSY, 5s 后 exit 1 因为 timeout)\n  B reserve(301) exit 0\n\nnext-epic-id.sh 验证 (--check 300):\n  OCCUPIED: EPIC-300 已占用\n    远端 ticket: ... (若有)\n    本地 db reservation: reserved-by=test, purpose=EPIC-263",
+    "not_verified": [
+      "未实测跨进程 SQLite 锁 (本机 db 路径下 busy_timeout 行为, 靠 sandbox 验)",
+      "未做 SQLite unavailable 时的 layer 3 fallback (留 EPIC-266)",
+      "未做 reservation 与 ticket.json 创建的 atomic 绑定 (两者跨进程会脱钩 — 留 EPIC-264 pre-commit 兜底)",
+      "未做 reservation auto-expire (基于 ts, 7 天未推进自动释放), 留 stale cleanup (EPIC-265)",
+      "未做 reservation 跨 worktree 自动冲突检测 (靠 bus lock, 不是主动 notify)",
+      "未做离线场景下 db 同步 (git bundle/patch 同步机制超本卡范围)"
+    ]
+  },
+  "expert_binding": {
+    "suggested_expert": "process-engineering",
+    "actual_expert": "process-engineering",
+    "expert_binding_at": "2026-08-18T00:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "EPIC-262 (上一层: git ref CAS, 离线时退化)",
+    "EPIC-156 (Redis→SQLite→file 降级链, 本卡接 SQLite 节点)",
+    "EPIC-259 (查询层, 增 1 个来源)"
+  ],
+  "performer": "master"
+}
