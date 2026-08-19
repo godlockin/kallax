@@ -3,7 +3,7 @@
   "epic": "EPIC-275",
   "phase": "PHASE-026",
   "title": "合并权规则落文档 — 前两段 master 自主合 + 清 3 处过时表述",
-  "status": "in_progress",
+  "status": "done",
   "priority": "P2",
   "type": "docs",
   "created_at": "2026-08-19",
@@ -11,7 +11,12 @@
   "performer": "master",
   "worktree_role": "performer",
   "performer_sub_role": "docs",
-  "labels": ["docs", "branch-flow", "rule", "phase-026"],
+  "labels": [
+    "docs",
+    "branch-flow",
+    "rule",
+    "phase-026"
+  ],
   "expert_binding": {
     "suggested_expert": "process-engineering",
     "actual_expert": "process-engineering"
@@ -53,7 +58,18 @@
     ]
   },
   "related": {
-    "epics": ["EPIC-242", "EPIC-270", "EPIC-273", "EPIC-274"],
+    "epics": [
+      "EPIC-242",
+      "EPIC-270",
+      "EPIC-273",
+      "EPIC-274"
+    ],
     "notes": "EPIC-242 §3 定 main→miao 主公亲自 (本卡不改这条). EPIC-270 定 T1/T2/T3 分级 (本卡不改). EPIC-273 查清 squash 根因 + 禁用 squash (本卡清的过时表述由它推翻). EPIC-274 治根修 check-disclaimer (本卡在 jargon 段补了它的引用)."
-  }
+  },
+  "completed_at": "2026-08-19",
+  "pr_chain": [
+    "#444",
+    "#445",
+    "#443"
+  ]
 }
