@@ -39,8 +39,41 @@ scan_disclaimers() {
   local scan_list="${TMPDIR:-/tmp}/check-disclaimer-files.txt"
   if [ -n "${KALLAX_STAGED_ONLY:-}" ]; then
     # pre-commit 模式: 只扫 staged .md
-    git diff --cached --name-only --diff-filter=ACM 2>/dev/null \
-      | grep -E '\.md$' > "$scan_list" || true
+    #
+    # EPIC-274: merge commit 特例 (跟 EPIC-252 给 check-decorative-claim 加
+    #   KALLAX_STAGED_ONLY 同源, 但那次没覆盖 merge 场景).
+    #
+    # 问题: merge 时 `git diff --cached --diff-filter=ACM` 会把「从对侧分支带
+    #   过来但本次一个字没改」的文件全列为 A(新增). 实测 main→miao 的 merge
+    #   列出 20 个 .md, 其中 retrospective-v3.34.X-2026-08-12-next-plan.md 是
+    #   265 行纯新增 / 0 删除 — 在 origin/main 上逐字存在, 本次没碰过.
+    #   2026-08-19 同一天因此误报 2 次, 都只能靠 KALLAX_HOOK_BYPASS 绕过,
+    #   而 bypass 会连带跳过 authz + conductor-scope 两个真检查.
+    #
+    # 修法: merge 中只扫「相对两个父节点都不同」的文件 — 那才是人工写的
+    #   冲突解法. 纯粹从一侧带过来的文件相对该侧父节点无差异, 自动排除.
+    local git_dir merge_head
+    git_dir="$(git rev-parse --git-dir 2>/dev/null || echo .git)"
+    merge_head=""
+    [ -f "$git_dir/MERGE_HEAD" ] && merge_head="$(cat "$git_dir/MERGE_HEAD")"
+
+    if [ -n "$merge_head" ]; then
+      local head_sha
+      head_sha="$(git rev-parse HEAD 2>/dev/null || echo '')"
+      if [ -n "$head_sha" ]; then
+        comm -12 \
+          <(git diff --cached --name-only "$head_sha" 2>/dev/null | sort) \
+          <(git diff --cached --name-only "$merge_head" 2>/dev/null | sort) \
+          | grep -E '\.md$' > "$scan_list" || true
+      else
+        # 拿不到 HEAD (孤儿分支等) → 退回全 staged, 宁可多扫不可漏扫
+        git diff --cached --name-only --diff-filter=ACM 2>/dev/null \
+          | grep -E '\.md$' > "$scan_list" || true
+      fi
+    else
+      git diff --cached --name-only --diff-filter=ACM 2>/dev/null \
+        | grep -E '\.md$' > "$scan_list" || true
+    fi
   else
     # 全仓模式: git ls-files 排除第三方 (比 grep -r 可靠)
     # + baseline 划线: 只扫 baseline commit 之后新增/修改的 .md
