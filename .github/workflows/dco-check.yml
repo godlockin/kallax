@@ -42,6 +42,18 @@ jobs:
           # cutoff = base SHA 本身 (commit 自己是自己祖先 → 豁免)
           git fetch --no-tags --prune origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
 
+      - name: Fetch 其他主干 (跨主干 merge commit 的 DCO 豁免)
+        run: |
+          # EPIC-273: 跨主干 merge commit (如 main 合回 testing) 会把对侧主干的
+          # 历史 commit 带进 base..head 范围. 那些 commit 不是本 PR 作者写的,
+          # 且历史上经 squash merge 后 committer 被 GitHub 改写成
+          # noreply@github.com, 跟 message 里的 Signed-off-by 邮箱不符 →
+          # check-dco 报 email-mismatch. 豁免对侧主干 HEAD 即可 (commit 是
+          # 自己祖先 → 整条历史链豁免), 跟 BASE_SHA 豁免同机制.
+          for b in testing main miao; do
+            git fetch --no-tags --prune origin "+refs/heads/${b}:refs/remotes/origin/${b}" 2>/dev/null || true
+          done
+
       - name: Run check-dco.sh
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
@@ -49,4 +61,13 @@ jobs:
         run: |
           # EPIC-198: --allow-pre-cutoff 允许多 SHA (逗号分隔, EPIC-197 base commit 豁免)
           # 跟 EPIC-142 branch-flow-history 1:1 模式: 不 pollute base 历史
-          bash scripts/check-dco.sh --base "origin/${BASE_REF}" --head HEAD --allow-pre-cutoff "${BASE_SHA},5f44fdcd"
+          # EPIC-273: 追加 3 主干 HEAD — 跨主干 merge commit 会带进对侧历史,
+          #   那些 commit 非本 PR 作者所写 (见上一步注释).
+          CUTOFFS="${BASE_SHA},5f44fdcd"
+          for b in testing main miao; do
+            sha="$(git rev-parse --verify "origin/${b}" 2>/dev/null || true)"
+            [ -n "$sha" ] && CUTOFFS="${CUTOFFS},${sha}"
+          done
+          echo "cutoffs: $CUTOFFS"
+          bash scripts/check-dco.sh --base "origin/${BASE_REF}" --head HEAD --allow-pre-cutoff "$CUTOFFS"
+
