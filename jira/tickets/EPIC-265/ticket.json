@@ -1,0 +1,67 @@
+{
+  "id": "EPIC-265",
+  "ticket_id": "EPIC-265",
+  "epic": "EPIC-265",
+  "phase": "PHASE-025",
+  "title": "cleanup-stale-reservations.sh — ref CAS 兜底维护",
+  "status": "todo",
+  "priority": "P2",
+  "type": "feature",
+  "created_at": "2026-08-18",
+  "created_by": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L1",
+  "estimated_hours": 2,
+  "labels": [
+    "feature",
+    "maintenance",
+    "numbering",
+    "phase-025",
+    "P2"
+  ],
+  "description": "EPIC-265 — EPIC-262 推出的 git ref CAS 预留会留许多悬空 ref (占用但未推进). 维护脚本定期清理.\n\n**触发场景**:\n- Worktree 推 300 占号, 但开发者 dead-end, 300 永远 hold 住\n- 撞号打错: 改思路后另起 301, 300 悬空\n- 临时分支: 推 350 占号, 验证完删 branch, 350 悬空\n\n**方案 F 漏洞已知**: 预留后放弃 → 编号永久空洞. \n\n**策略**:\n- 默认 14 天 (KALLAX_RESERVATION_STALE_DAYS 可配) 之前的预留, 且远端 jira/tickets 与 confluence/decisions 都没有对应目录/文件, 视为悬空\n- **不直接删**: 列出 ref → 给人 confirm (--force 才删)\n- 删前再调 cat-file -p <sha> 打印 reserved-by / ts / purpose, 方便人工判断\n\n**额外副作用**: 大量悬空 ref 会拖慢 for-each-ref, 定期清理收益不只是编号, 还有 git ref 性能.",
+  "acceptance": [
+    "AC1: scripts/cleanup-stale-reservations.sh 新建, 默认 --dry-run (列出但不删) (raw: 实测)",
+    "AC2: --days N 参数可配 (默认 14) (raw: 实测 --days 7 仅考虑 7 天前预留)",
+    "AC3: 判定悬空: ref 戳对象 ts > N 天前, 且 origin/miao jira/tickets/ 没有对应目录, 且 origin/miao confluence/decisions/ 没有对应文件 (raw: 实测)",
+    "AC4: --force 才真删, --dry-run + --verbose 打印完整 sha + reserved_by + ts + purpose (raw: 实测)",
+    "AC5: 0 改既有 script (新独立 script)",
+    "AC6: 0 改 CLAUDE.md Rule",
+    "AC7: tests/integration/cleanup-stale.test.sh ≥6 case PASS (raw: 实测)",
+    "AC8: 4-branch flow 走完 (feature → testing → main → miao)"
+  ],
+  "deliverables": [
+    "scripts/cleanup-stale-reservations.sh (新, 清悬空 ref)",
+    "tests/integration/cleanup-stale.test.sh (新, ≥6 case)",
+    "jira/tickets/EPIC-265/{ticket.json,ticket.md} (新)"
+  ],
+  "file_scope": {
+    "includes": [
+      "scripts/cleanup-stale-reservations.sh",
+      "tests/integration/cleanup-stale.test.sh",
+      "jira/tickets/EPIC-265/"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "bash scripts/cleanup-stale-reservations.sh --dry-run --verbose --days 14",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "Sandbox 场景: 推 2 个预留 ref (fresh + 15 天前)\n  fresh: 隐, 14 天内\n  15 天前: sha abc123.. repo: reserved-by=master@zhao-laptop ts=2026-08-03T... purpose=deleted-worktree\n  [DRY-RUN] 会删: abc123.. (预留 15 天前, 远端无对应 ticket)\n  [DRY-RUN] 保留: def456.. (预留 7 天前, 在阈值内)\n\n关键验证: 跨项目隔离 (项目 A 预留不应被项目 B 清理) — sandbox 模拟",
+    "not_verified": [
+      "未做 auto-delete (高风险, 留 human-in-loop)",
+      "未做 cron 集成 (留手工跑, 不自动)",
+      "未做 cross-project 隔离 (本卡假设一个项目一个 .kallax, github url 唯一)",
+      "未做 reservation 与 ticket.json 双向验证 (只有输一边 — 预留有, ticket 没了就清)"
+    ]
+  },
+  "expert_binding": {
+    "suggested_expert": "process-engineering",
+    "actual_expert": "process-engineering",
+    "expert_binding_at": "2026-08-18T00:00:00Z",
+    "binding_change_reason": null
+  },
+  "rule_references": [
+    "EPIC-262 (ref CAS 主路径, 本卡是后补)"
+  ],
+  "performer": "master"
+}

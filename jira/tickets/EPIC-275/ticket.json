@@ -1,0 +1,59 @@
+{
+  "id": "EPIC-275",
+  "epic": "EPIC-275",
+  "phase": "PHASE-026",
+  "title": "合并权规则落文档 — 前两段 master 自主合 + 清 3 处过时表述",
+  "status": "in_progress",
+  "priority": "P2",
+  "type": "docs",
+  "created_at": "2026-08-19",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "docs",
+  "labels": ["docs", "branch-flow", "rule", "phase-026"],
+  "expert_binding": {
+    "suggested_expert": "process-engineering",
+    "actual_expert": "process-engineering"
+  },
+  "file_scope": {
+    "includes": [
+      "CLAUDE.md",
+      ".claude/rules/branch-flow.md",
+      "jira/tickets/EPIC-275/"
+    ]
+  },
+  "context": {
+    "why": "主公 2026-08-19 拍板: feature→testing 跟 testing→main 两段 master 自主合, main→miao 仍主公亲自. 起因是当天清 26 EPIC 积压 (EPIC-157~274) 走了 6 个 PR (#437~#443), 每段都停等拍板. 规则不落文档会丢 — 下次会话不知道有这条.",
+    "scope": "只改文档. 0 改脚本 / CI / 源码. 顺带清 3 处被当天事实推翻的过时表述."
+  },
+  "acceptance": [
+    "AC1: CLAUDE.md §4 表格加「合并权」列, 3 段各写清谁合 (raw: grep 'master 自审自合' / 'master review 后自合' / '主公亲自' 各命中)",
+    "AC2: 边界写明 — 自主指合并动作不需点头, 不是免 review (T2/T3 仍必附 review_summary + gate 仍强制)",
+    "AC3: .claude/rules/branch-flow.md 加「合并权」段 (详细边界 4 条)",
+    "AC4: CLAUDE.md ≤ 200 行硬阈值 (raw: 196 行)",
+    "AC5: 移出主文件的 7 条内容逐条确认在 rules 里 (raw: 7/7 各命中 1 处, 0 信息丢失)",
+    "AC6: 清过时表述 1 — 「testing→main FF 不可行」改「跨主干必 merge commit, 禁 squash/rebase」(当天实测反向 commit 已降到 0, FF 恢复可行)",
+    "AC7: 清过时表述 2 — 「4-PR 备案债: testing/main 落后必 force-push」废止 (分叉已消除, 且跟同章「0 force-push bypass」矛盾)",
+    "AC8: 清过时表述 3 — 表格「(merge commit)」标注去掉 (现已是快进)",
+    "AC9: jargon gate 两文件均 0 违规",
+    "AC10: 4-branch flow 走完 (feature → testing → main → miao)"
+  ],
+  "verification": {
+    "reproduction_command": "grep -c '' CLAUDE.md; grep -c '合并权' CLAUDE.md",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "本卡非 bugfix, 是主公拍板的规则新增. 但按 schema 填 3 字段.\n\n改动前 (origin/main a3ae1598):\n$ grep -c '' CLAUDE.md\n200                        <<< 正好卡 ≤200 硬阈值, 加内容必须等量删\n$ grep -c '合并权' CLAUDE.md\n0                          <<< 规则不存在\n$ grep -c 'FF 不可行' CLAUDE.md\n1                          <<< 过时: 当天实测 FF 已恢复可行\n\n改动后:\n$ grep -c '' CLAUDE.md\n196                        <<< 在阈值内\n$ grep -c '合并权 (EPIC-275' CLAUDE.md\n2\n$ grep -c 'master 自审自合' CLAUDE.md\n1\n$ grep -c 'master review 后自合' CLAUDE.md\n1\n$ grep -c '主公亲自' CLAUDE.md\n3\n$ grep -c 'FF 不可行' CLAUDE.md\n0                          <<< 已清\n$ grep -c '禁 squash/rebase' CLAUDE.md\n1                          <<< 新表述\n\n移出主文件的 7 条内容逐条确认在 .claude/rules/branch-flow.md:\n  [1] v3.10.0+ 必走 4-PR 全程\n  [1] 0 force-push bypass\n  [1] git commit --no-verify\n  [1] 同类假 PASS 症状再次出现\n  [1] form-only PASS\n  [1] 25/25 假 PASS\n  [1] red-blue review 阻塞\n7/7 命中, 0 信息丢失.\n\njargon gate:\n$ bash scripts/verify/check-jargon.sh CLAUDE.md\nOK: 0 jargon violations\nEXIT=0\n$ bash scripts/verify/check-jargon.sh .claude/rules/branch-flow.md\nOK: 0 jargon violations\nEXIT=0\n\nnarrative gate:\nPASS: 0 narrative / KPI falsification patterns in scanned files",
+    "not_verified": [
+      "未跑 cargo test / vitest — 0 改 .ts/.rs, 纯文档卡",
+      "未跑 scan-dead-code — 0 新增 module; 且 worktree 无 node/node_modules 会 BLOCKED-env (既有环境债)",
+      "check-decorative-claim.sh 全仓模式 exit 1, 命中 confluence/decisions/EPIC-213-elevator-pitch-2026-08-08.md:27 — 已验在 origin/main 上逐字存在, 属既有状态非本卡引入. pre-commit hook 走 KALLAX_STAGED_ONLY=1 只扫 staged, 不会命中",
+      "未验证「合并权」规则实际执行效果 — 本卡只是把规则写下来, 它是否真的加快节奏要下个 Sprint 才知道",
+      "移出主文件的 7 条内容只验证了「在 rules 里存在」, 未验证 rules 文件本身会在正确时机被 lazy load (path-scoped 机制未测)",
+      "未清点是否还有别的过时表述 — 只清了当天事实明确推翻的 3 处"
+    ]
+  },
+  "related": {
+    "epics": ["EPIC-242", "EPIC-270", "EPIC-273", "EPIC-274"],
+    "notes": "EPIC-242 §3 定 main→miao 主公亲自 (本卡不改这条). EPIC-270 定 T1/T2/T3 分级 (本卡不改). EPIC-273 查清 squash 根因 + 禁用 squash (本卡清的过时表述由它推翻). EPIC-274 治根修 check-disclaimer (本卡在 jargon 段补了它的引用)."
+  }
+}

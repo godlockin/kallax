@@ -1,11 +1,15 @@
 name: PR Body Check
 # EPIC-138-B: enforce KALLAX 7-class risk checkbox schema + raw output block
+# EPIC-270: + review tier gate (T1/T2/T3 + review_summary 内联校验)
 # Source of truth: .github/PULL_REQUEST_TEMPLATE.md (EPIC-138-A)
-# Validator: scripts/ci/check-pr-body.sh
+# Validator: scripts/ci/check-pr-body.sh + scripts/ci/check-review-tier.sh
 #
 # Replaces the pre-138-B version which only checked (test|PASS|pass|coverage),
 # (TASK|TICKET)-N, and body length >= 50 — all subsumed by the 7-class schema
 # (`## 关联 ticket` content + `## 自动验证 (raw output)` code block + risk boxes).
+#
+# 安全: 所有 github.event.* 插值走 env: 不直接进 run:, 防 workflow injection.
+#   base.sha / head.sha 是 GitHub 生成的 40 位 hex (非用户可控), 但按规范统一走 env.
 
 on:
   pull_request:
@@ -29,8 +33,42 @@ jobs:
       - name: Fetch PR body via gh api
         env:
           GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
         run: |
-          gh api "/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" --jq .body > /tmp/pr-body.md
+          gh api "/repos/${REPO}/pulls/${PR_NUMBER}" --jq .body > /tmp/pr-body.md
           echo "PR body bytes: $(wc -c < /tmp/pr-body.md)"
       - name: Validate PR body against 7-class risk schema
         run: bash scripts/ci/check-pr-body.sh /tmp/pr-body.md
+
+  check-review-tier:
+    # EPIC-270: review 分级 gate — T1/T2/T3 声明跟 diff 规模相符, T2/T3 必附内联 review_summary
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 — pinned by EPIC-136-A
+        with:
+          fetch-depth: 0   # review tier gate 需要 base..head diff stat
+      - name: Fetch PR body via gh api
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh api "/repos/${REPO}/pulls/${PR_NUMBER}" --jq .body > /tmp/pr-body.md
+      - name: Compute diff stat (base..head)
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          # --shortstat 输出形如: " 2 files changed, 6 insertions(+), 2 deletions(-)"
+          # 空 diff 时 --shortstat 无输出, 用 || true 兜底 (跟 EPIC-254 grep -c 教训同源)
+          STAT="$(git diff --shortstat "$BASE_SHA" "$HEAD_SHA" 2>/dev/null || true)"
+          if [ -z "$STAT" ]; then
+            STAT="0 files changed, 0 insertions(+), 0 deletions(-)"
+          fi
+          echo "DIFF_STAT=$STAT" >> "$GITHUB_ENV"
+          echo "diff stat: $STAT"
+      - name: Validate review tier + summary
+        run: bash scripts/ci/check-review-tier.sh /tmp/pr-body.md "$DIFF_STAT"
