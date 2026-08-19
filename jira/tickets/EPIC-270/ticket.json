@@ -4,7 +4,7 @@
   "epic": "EPIC-270",
   "phase": "PHASE-026",
   "title": "review 分级落地 — T1/T2/T3 从口头约定变可查证据",
-  "status": "in_progress",
+  "status": "done",
   "priority": "P1",
   "type": "process",
   "created_at": "2026-08-18",
@@ -93,5 +93,9 @@
     "EPIC-069-D (5-Level Verify — review 是 L3, 本卡定 L3 怎么做)",
     "Rule 34 (bugfix 独立复现 — subagent prompt 设计沿用它的独立复现要求)",
     "EPIC-209 (CLAUDE.md trim — 本卡移 EPIC-157/158/160 三段是补它的遗漏)"
+  ],
+  "completed_at": "2026-08-18",
+  "pr_chain": [
+    "#433"
   ]
 }
