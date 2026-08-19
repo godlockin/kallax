@@ -4,7 +4,7 @@
   "epic": "EPIC-271",
   "phase": "PHASE-026",
   "title": "default 专家组重建 — 暂存污染 + 远程为源 + 映射合并",
-  "status": "in_progress",
+  "status": "done",
   "priority": "P1",
   "type": "feature",
   "created_at": "2026-08-18",
@@ -71,5 +71,9 @@
     "Rule 36 (expert_activation_rate — 本卡让'expert 激活'有真实载体, 后续埋点 D 才能喂饱)",
     "EPIC-056-A (3 阶段治理 — 原'9 专家并行'是文档设计, 本卡补上真实 subagent 定义)",
     "EPIC-225 (jargon 黑名单 — 本卡去污染重写 extended)"
+  ],
+  "completed_at": "2026-08-18",
+  "pr_chain": [
+    "#434"
   ]
 }
