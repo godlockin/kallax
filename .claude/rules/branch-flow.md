@@ -47,8 +47,25 @@ if PR base = miao:
 ## 0 静默跳过
 
 - v3.10.0+ 必走 4-PR 全程
+- **0 force-push bypass** (除 EPIC-155/176 备案, 主公明确批准)
 - 紧急 bypass 仅 `git commit --no-verify` (主公明确批准时)
 - 同类假 PASS 症状再次出现 → pre-commit hook 拦截
+
+## 合并权 (EPIC-275, 2026-08-19 主公拍板)
+
+| 阶段 | 合并权 |
+|------|--------|
+| feature → testing | master 自审自合 |
+| testing → main | master review 后自合 |
+| main → miao | **主公亲自** (EPIC-242 §3 不变) |
+
+起因: 2026-08-19 清 26 EPIC 积压 (EPIC-157~274) 走 6 个 PR, 每段都停等拍板.
+
+边界: 自主指的是**合并动作**不需主公点头, 不是免 review —
+- T2/T3 仍必附内联 `review_summary` (EPIC-270 分级不变)
+- `scripts/ci/check-review-tier.sh` gate 仍强制校验
+- 7 类风险 checkbox + raw output 仍必填
+- 改 immutable script / CLAUDE.md Rule 仍需主公明确批准 (跟合并权无关)
 
 ## 未来分工 (EPIC-242 拍板, 2026-08-10)
 
