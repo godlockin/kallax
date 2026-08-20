@@ -27,7 +27,8 @@ fi
 MODE="${1:-list}"
 shift || true
 
-# 解析剩余参数
+# EPIC-277 AC1: --json flag. 在 while 循环里认, 任何位置都行
+JSON_MODE="0"
 # 位置参数按 MODE 归属: find 用 QUERY, path 用 ROLE_ID (原来无条件先填 QUERY,
 # 导致 `path <role_id>` 的参数进了 QUERY, ROLE_ID 空 → 报 "需要 role_id 参数")
 SOURCE_FILTER=""
@@ -36,6 +37,7 @@ ROLE_ID=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --source=*) SOURCE_FILTER="${1#--source=}" ;;
+    --json) JSON_MODE="1" ;;
     *)
       case "$MODE" in
         path) [ -z "$ROLE_ID" ] && ROLE_ID="$1" ;;
@@ -168,37 +170,66 @@ format_row() {
 }
 
 # 入口
+# --json flag: 机器可读 JSON 输出 (EPIC-277 AC1/AC2)
+# JSON_MODE 已在 MODE 解析前吃掉, 内部 scan_dir 仍输出 pipe 分隔 10 列,
+# JSON 模式只在 case 入口做格式转换
+
+# pipe 分隔 10 字段行 → JSON 数组 (jq -s)
+row_to_json() {
+  awk -F'|' '{
+    gsub(/\\/, "\\\\", $0)
+    printf "{\"role_id\":\"%s\",\"name\":\"%s\",\"source\":\"%s\",\"path\":\"%s\",\"vibe\":\"%s\",\"tools\":\"%s\",\"priority\":\"%s\",\"use_when_zh\":\"%s\",\"use_when_en\":\"%s\",\"triggers\":\"%s\"}\n", $1,$2,$3,$4,$5,$6,$7,$8,$9,$10
+  }' | jq -s '.' 2>/dev/null
+}
+
 case "$MODE" in
   list)
-    echo "=== 合并池 (default + 外挂, 同名增强不覆盖) ==="
-    if [ -n "$SOURCE_FILTER" ]; then
-      cmd_list | apply_source_filter "$SOURCE_FILTER" | while IFS= read -r row; do
-        [ -n "$row" ] && format_row "$row"
-      done
-      echo ""
-      echo "总: $(cmd_list | apply_source_filter "$SOURCE_FILTER" | wc -l | tr -d ' ')"
+    if [ "$JSON_MODE" = "1" ]; then
+      if [ -n "$SOURCE_FILTER" ]; then
+        cmd_list | apply_source_filter "$SOURCE_FILTER" | row_to_json
+      else
+        cmd_list | row_to_json
+      fi
     else
-      cmd_list | while IFS= read -r row; do
-        [ -n "$row" ] && format_row "$row"
-      done
-      echo ""
-      echo "总: $(cmd_list | wc -l | tr -d ' ')"
+      echo "=== 合并池 (default + 外挂, 同名增强不覆盖) ==="
+      if [ -n "$SOURCE_FILTER" ]; then
+        cmd_list | apply_source_filter "$SOURCE_FILTER" | while IFS= read -r row; do
+          [ -n "$row" ] && format_row "$row"
+        done
+        echo ""
+        echo "总: $(cmd_list | apply_source_filter "$SOURCE_FILTER" | wc -l | tr -d ' ')"
+      else
+        cmd_list | while IFS= read -r row; do
+          [ -n "$row" ] && format_row "$row"
+        done
+        echo ""
+        echo "总: $(cmd_list | wc -l | tr -d ' ')"
+      fi
     fi
     ;;
   find)
     [ -z "$QUERY" ] && { echo "ERROR: 需要 query 参数" >&2; exit 1; }
-    echo "=== 找 query: $QUERY ==="
-    cmd_find "$QUERY" | while IFS= read -r row; do
-      [ -n "$row" ] && format_row "$row"
-    done
+    if [ "$JSON_MODE" = "1" ]; then
+      cmd_find "$QUERY" | row_to_json
+    else
+      echo "=== 找 query: $QUERY ==="
+      cmd_find "$QUERY" | while IFS= read -r row; do
+        [ -n "$row" ] && format_row "$row"
+      done
+    fi
     ;;
   path)
     [ -z "$ROLE_ID" ] && { echo "ERROR: 需要 role_id 参数" >&2; exit 1; }
-    echo "=== 查 $ROLE_ID 的定义文件 ==="
-    cmd_path "$ROLE_ID"
+    # AC2: 不管 JSON 与否都不该有中文标题, 纯路径输出
+    if [ "$JSON_MODE" = "1" ]; then
+      # path 输出是裸路径, 一行一个; role_id 由调用方已知, 这里只包 {path}
+      cmd_path "$ROLE_ID" | jq -R '{path: .}'
+    else
+      cmd_path "$ROLE_ID"
+    fi
     ;;
   *)
-    echo "Usage: $0 {list|find|path} [args...]" >&2
+    echo "Usage: $0 [--json] {list|find|path} [args...]" >&2
     exit 1
     ;;
 esac

@@ -31,7 +31,7 @@ if (process.argv[1] !== undefined && (process.argv[1] === __filename || process.
   const isolationChecker = getIsolationChecker();
   const instanceRegistry = createInstanceRegistry(db);
   const sseBus = createSSEBus();
-  const taskAssigner = createTaskAssigner(db, isolationChecker, instanceRegistry);
+  const taskAssigner = createTaskAssigner(db, isolationChecker, instanceRegistry, undefined);
   const outputVerifier = createOutputVerifier({ projectRoot: process.cwd(), testCommand: 'echo ok', lintCommand: 'echo ok' });
   const mockWorktreeManager: WorktreeManager = {
     create: () => Promise.resolve(ok({ path: '/tmp/wt', branch: 'kallax/t', commit: 'abc', taskId: 't' })),
