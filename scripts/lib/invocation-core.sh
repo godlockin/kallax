@@ -198,7 +198,7 @@ _emit_locked_body() {
     if [ "$backend" = "file" ]; then
       file_emit "$payload"
       write_state_invocations "$__emit_expert_id" "$__emit_ticket_id" "$__emit_ts" "$backend"
-      epic_jsonl_emit "$__emit_expert_id" "__emit_ticket_id" "$__emit_ts" "$backend"
+      epic_jsonl_emit "$__emit_expert_id" "$__emit_ticket_id" "$__emit_ts" "$backend"
     fi
 }
 

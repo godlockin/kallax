@@ -232,18 +232,30 @@ export function createTaskAssigner(
         }
       }
 
+      const existingMetadata = taskResult.value.metadata ?? {};
       db.updateTask(taskId, {
-        metadata: { checkpointInterval, masteryLevel: mastery, suggestedExpert, resolvedExpertPath },
+        metadata: {
+          ...existingMetadata,
+          checkpointInterval,
+          masteryLevel: mastery,
+          suggestedExpert,
+          resolvedExpertPath,
+        },
       });
 
       logger.info(
         { taskId, performerId, mastery, checkpointInterval, suggestedExpert, resolvedExpertPath },
         'task assigned with expertise-aware checkpoints'
       );
-      const existingMetadata = taskResult.value.metadata ?? {};
       return ok({
         ...taskResult.value,
-        metadata: { ...existingMetadata, checkpointInterval, masteryLevel: mastery, suggestedExpert, resolvedExpertPath },
+        metadata: {
+          ...existingMetadata,
+          checkpointInterval,
+          masteryLevel: mastery,
+          suggestedExpert,
+          resolvedExpertPath,
+        },
       });
     },
 

@@ -96,12 +96,15 @@ export class ExpertResolverBridge {
 
   /** 派单用: 先 path 精确查, 失败才用 find 兜底. 仍失败返回 null. */
   async resolve(roleIdOrQuery: string): Promise<{ roleId: string; path: string } | null> {
-    const hit = await this.path(roleIdOrQuery);
+    const query = roleIdOrQuery.startsWith('custom:')
+      ? roleIdOrQuery.slice('custom:'.length)
+      : roleIdOrQuery;
+    const hit = await this.path(query);
     if (hit !== null) {
-      return { roleId: roleIdOrQuery, path: hit.path };
+      return { roleId: query, path: hit.path };
     }
     // fallback: find
-    const candidates = await this.find(roleIdOrQuery);
+    const candidates = await this.find(query);
     const candidate = candidates[0];
     if (candidate !== undefined && candidates.length === 1) {
       // 唯一命中, 直接采信

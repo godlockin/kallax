@@ -58,7 +58,11 @@ const fakeInstanceRegistry = {
   cleanup: vi.fn(),
 };
 
-function makeFakeTask(taskId: string, ticketId = 'EPIC-999') {
+function makeFakeTask(
+  taskId: string,
+  ticketId = 'EPIC-999',
+  metadata: Record<string, unknown> = {},
+) {
   return {
     id: taskId,
     ticketId,
@@ -68,7 +72,7 @@ function makeFakeTask(taskId: string, ticketId = 'EPIC-999') {
     createdAt: 0,
     updatedAt: 0,
     progress: 0,
-    metadata: {} as Record<string, unknown>,
+    metadata,
   };
 }
 function makeFakeInstance(id = 'p1') {
@@ -162,6 +166,30 @@ describe('EPIC-277: assignTask with expertResolver', () => {
 
     expect(result.isOk()).toBe(true);
     expect(result.value.metadata).toMatchObject({ suggestedExpert: 'backend', resolvedExpertPath: null });
+  });
+
+  it('AC6: preserves existing metadata when assigning', async () => {
+    mockGetTask.mockReturnValue({
+      isErr: () => false,
+      isOk: () => true,
+      value: makeFakeTask('t1', 'EPIC-999', { retained: 'value' }),
+    });
+    mockReadFileSync.mockReturnValue(JSON.stringify({
+      id: 'EPIC-999', epicId: 'EPIC-999', phaseId: 'phase1', title: 'Test',
+      type: 'development', priority: 'P2', status: 'todo',
+      created_by: 'master', created_at: '2026-01-01T00:00:00Z',
+      expert_binding: { suggested_expert: 'backend' },
+    }));
+    mockResolve.mockResolvedValue({ roleId: 'backend', path: '/repo/scripts/experts/backend.ts' });
+
+    const assigner = createTaskAssigner(fakeDb as never, isolationChecker, fakeInstanceRegistry as never, getBridge());
+    const result = await assigner.assignTask('t1', 'p1');
+
+    expect(result.isOk()).toBe(true);
+    expect(result.value.metadata).toMatchObject({ retained: 'value', suggestedExpert: 'backend' });
+    expect(mockUpdateTask).toHaveBeenCalledWith('t1', expect.objectContaining({
+      metadata: expect.objectContaining({ retained: 'value', suggestedExpert: 'backend' }),
+    }));
   });
 
   // --- AC3 (DiskTicketSchema) ---
