@@ -192,11 +192,9 @@ impl TicketEngine {
             .ok_or_else(|| KallaxError::not_found("ticket", ticket_id))?;
 
         ticket.complete()?;
-        if let Err(error) = performer.release_task() {
-            // Ticket completion cannot be rolled back through the public Ticket API.
-            // Return an error instead of reporting success, making inconsistency visible.
-            return Err(error);
-        }
+        // Ticket completion cannot be rolled back through the public Ticket API.
+        // Propagate release failure instead of reporting success.
+        performer.release_task()?;
 
         let event = Event::new(
             EventType::TicketCompleted,

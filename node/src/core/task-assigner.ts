@@ -114,7 +114,8 @@ export function createTaskAssigner(
   db: SQLiteManager,
   isolationChecker: IsolationChecker,
   instanceRegistry: InstanceRegistry,
-  expertResolver?: ExpertResolverBridge
+  expertResolver?: ExpertResolverBridge,
+  repoRoot = process.cwd(),
 ): TaskAssigner {
   return {
     createTask(ticket, type = TaskType.DEVELOPMENT): KallaxResult<Task> {
@@ -220,9 +221,9 @@ export function createTaskAssigner(
       let suggestedExpert: string | null = null;
       let resolvedExpertPath: string | null = null;
       if (expertResolver) {
-        const ticketPath = findJiraTicketPath(taskResult.value.ticketId, process.cwd());
+        const ticketPath = findJiraTicketPath(taskResult.value.ticketId, repoRoot);
         if (ticketPath !== null) {
-          const ticket = readJiraTicketRaw(taskResult.value.ticketId, process.cwd());
+          const ticket = readJiraTicketRaw(taskResult.value.ticketId, repoRoot);
           const suggested = ticket?.expert_binding?.suggested_expert;
           if (suggested !== null && suggested !== undefined && suggested !== '') {
             suggestedExpert = suggested;

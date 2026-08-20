@@ -8,6 +8,7 @@ import { createSQLiteManager } from '../../core/sqlite/index.js';
 import { createTaskAssigner } from '../../core/task-assigner.js';
 import { createInstanceRegistry } from '../../core/instance-registry.js';
 import { createOutputVerifier } from '../../core/output-verifier.js';
+import { ExpertResolverBridge } from '../../core/expert-resolver-bridge.js';
 import { getIsolationChecker } from '../../core/isolation-checker.js';
 import { createSSEBus } from '../../core/sse-bus.js';
 import type { WorktreeManager } from '../../core/worktree-manager.js';
@@ -31,8 +32,17 @@ if (process.argv[1] !== undefined && (process.argv[1] === __filename || process.
   const isolationChecker = getIsolationChecker();
   const instanceRegistry = createInstanceRegistry(db);
   const sseBus = createSSEBus();
-  const taskAssigner = createTaskAssigner(db, isolationChecker, instanceRegistry, undefined);
-  const outputVerifier = createOutputVerifier({ projectRoot: process.cwd(), testCommand: 'echo ok', lintCommand: 'echo ok' });
+  const projectRoot = process.env['KALLAX_PROJECT_ROOT']
+    ?? path.resolve(path.dirname(__filename), '../../../..');
+  const expertResolver = new ExpertResolverBridge({ repoRoot: projectRoot });
+  const taskAssigner = createTaskAssigner(
+    db,
+    isolationChecker,
+    instanceRegistry,
+    expertResolver,
+    projectRoot,
+  );
+  const outputVerifier = createOutputVerifier({ projectRoot, testCommand: 'echo ok', lintCommand: 'echo ok' });
   const mockWorktreeManager: WorktreeManager = {
     create: () => Promise.resolve(ok({ path: '/tmp/wt', branch: 'kallax/t', commit: 'abc', taskId: 't' })),
     remove: () => Promise.resolve(ok(undefined)),
