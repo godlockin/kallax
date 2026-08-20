@@ -10,12 +10,16 @@
  */
 
 import { err, ok } from 'neverthrow';
+import * as fs from 'node:fs';
 import type { KallaxResult, Task, Ticket, IsolationScope } from '../types/index.js';
 import { KallaxError, KallaxErrorCode, TaskStatus, TaskType } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import type { SQLiteManager } from './sqlite/index.js';
 import type { IsolationChecker } from './isolation-checker.js';
 import type { InstanceRegistry } from './instance-registry.js';
+import type { ExpertResolverBridge } from './expert-resolver-bridge.js';
+import { TicketSchema as DiskTicketSchema } from './schema-validator.js';
+import { findJiraTicketPath } from '../jira/ticket-binding.js';
 
 export type MasteryLevel = 'L1' | 'L2' | 'L3';
 export type CheckpointInterval = 'subtask' | 'milestone' | 'final';
@@ -36,6 +40,26 @@ function checkpointIntervalFromMastery(level: MasteryLevel): CheckpointInterval 
     case 'L1': return 'subtask';
     case 'L2': return 'milestone';
     case 'L3': return 'final';
+  }
+}
+
+/**
+ * Read jira ticket.json and validate via DiskTicketSchema (Jira disk format).
+ * Returns parsed ticket or null on failure (fail-soft, never throws).
+ * Do NOT use readJiraTicket from ticket-binding.ts — it hard-casts without full schema validation.
+ */
+function readJiraTicketRaw(
+  ticketId: string,
+  worktreeRoot: string
+): { expert_binding?: { suggested_expert?: string | null } } | null {
+  const ticketPath = findJiraTicketPath(ticketId, worktreeRoot);
+  if (ticketPath === null) return null;
+  try {
+    const raw = fs.readFileSync(ticketPath, 'utf-8');
+    const parsed = DiskTicketSchema.parse(JSON.parse(raw));
+    return parsed;
+  } catch {
+    return null;
   }
 }
 
@@ -89,7 +113,8 @@ function generateTaskId(): string {
 export function createTaskAssigner(
   db: SQLiteManager,
   isolationChecker: IsolationChecker,
-  instanceRegistry: InstanceRegistry
+  instanceRegistry: InstanceRegistry,
+  expertResolver?: ExpertResolverBridge
 ): TaskAssigner {
   return {
     createTask(ticket, type = TaskType.DEVELOPMENT): KallaxResult<Task> {
@@ -190,11 +215,36 @@ export function createTaskAssigner(
       // EPIC-118-C: expertise-aware checkpoints
       const mastery = await computePerformerMastery(db, performerId);
       const checkpointInterval = checkpointIntervalFromMastery(mastery);
-      db.updateTask(taskId, { metadata: { checkpointInterval, masteryLevel: mastery } });
 
-      logger.info({ taskId, performerId, mastery, checkpointInterval }, 'task assigned with expertise-aware checkpoints');
+      // EPIC-277: resolve expert_binding.suggested_expert → expert file path
+      let suggestedExpert: string | null = null;
+      let resolvedExpertPath: string | null = null;
+      if (expertResolver) {
+        const ticketPath = findJiraTicketPath(taskResult.value.ticketId, process.cwd());
+        if (ticketPath !== null) {
+          const ticket = readJiraTicketRaw(taskResult.value.ticketId, process.cwd());
+          const suggested = ticket?.expert_binding?.suggested_expert;
+          if (suggested !== null && suggested !== undefined && suggested !== '') {
+            suggestedExpert = suggested;
+            const resolved = await expertResolver.resolve(suggestedExpert);
+            if (resolved) resolvedExpertPath = resolved.path;
+          }
+        }
+      }
+
+      db.updateTask(taskId, {
+        metadata: { checkpointInterval, masteryLevel: mastery, suggestedExpert, resolvedExpertPath },
+      });
+
+      logger.info(
+        { taskId, performerId, mastery, checkpointInterval, suggestedExpert, resolvedExpertPath },
+        'task assigned with expertise-aware checkpoints'
+      );
       const existingMetadata = taskResult.value.metadata ?? {};
-      return ok({ ...taskResult.value, metadata: { ...existingMetadata, checkpointInterval, masteryLevel: mastery } });
+      return ok({
+        ...taskResult.value,
+        metadata: { ...existingMetadata, checkpointInterval, masteryLevel: mastery, suggestedExpert, resolvedExpertPath },
+      });
     },
 
     async claimNextTask(performerId, _capabilities = []): Promise<KallaxResult<Task | null>> {

@@ -62,7 +62,7 @@ function bootstrap(): Promise<AppContext> {
     const outputVerifier = createOutputVerifier({ projectRoot });
     const isolationChecker = getIsolationChecker();
     const instanceRegistry = createInstanceRegistry(db);
-    const taskAssigner = createTaskAssigner(db, isolationChecker, instanceRegistry);
+    const taskAssigner = createTaskAssigner(db, isolationChecker, instanceRegistry, undefined);
     const gitService = getGitService();
     return { db, worktreeManager, outputVerifier, isolationChecker, instanceRegistry, taskAssigner, gitService };
   })();
