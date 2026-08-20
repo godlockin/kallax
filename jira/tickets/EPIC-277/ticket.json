@@ -1,0 +1,67 @@
+{
+  "id": "EPIC-277",
+  "epic": "EPIC-277",
+  "phase": "PHASE-027",
+  "title": "派单链接线 — Node 读 expert-resolver.sh + 修 CLI binding 死路径",
+  "status": "in_progress",
+  "priority": "P1",
+  "type": "feature",
+  "created_at": "2026-08-20",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "labels": ["feature", "dispatch", "expert", "phase-027"],
+  "expert_binding": {
+    "suggested_expert": "backend-architect",
+    "actual_expert": "backend-architect"
+  },
+  "file_scope": {
+    "includes": [
+      "scripts/expert-resolver.sh",
+      "scripts/lib/invocation-core.sh",
+      "node/src/core/task-assigner.ts",
+      "node/src/commands/task-cmd.ts",
+      "node/src/jira/ticket-binding.ts",
+      "tests/integration/expert-resolver-json.test.sh",
+      "tests/integration/invocation-core-emit.test.sh",
+      "tests/integration/dispatch-wiring.test.sh",
+      "jira/tickets/EPIC-277/"
+    ]
+  },
+  "context": {
+    "why": "Rule 36 的 expert_activation_rate / ab_hit_rate 全 NO_DATA — 数据源从未被生产代码写入. 卡 C 是 master 修 2026-08-19 复盘里提的 3 条改进之一 (提议 #2: NO_DATA 指标接数据源). 本卡专修 Node 侧接线, 数据源修复 (#271 部分 / #272 子 shell bug) 等数据源真实恢复写入后再解 NO_DATA. 主公 2026-08-19 拍板: 提议 #1/#2 合进卡 C 一起做.",
+    "scope": "5 处文件 + 3 个 test. 0 改 schema. 不动 agent-farm.ts / expert-matcher.ts 死代码 (单独 EPIC 删)."
+  },
+  "acceptance": [
+    "AC1: scripts/expert-resolver.sh 加 --json flag, 3 个子命令 (list/find/path) 都有机器可读 JSON 输出, 内部 scan_dir 不动 (raw: jq 解析各子命令输出, 字段完整 10 列)",
+    "AC2: scripts/expert-resolver.sh --json 输出不带 ANSI 颜色 / 标题干扰, path 子命令去掉 '=== 查 X 的定义文件 ===' 中文标题 (raw: 输出能被 jq -e 接受)",
+    "AC3: 派单优先用 `path <role_id>` 精确查, `find` 仅做 fallback (raw: resolver-bridge 调用顺序 path → find, path 失败才 find, find 失败返回 null)",
+    "AC4: 修 scripts/lib/invocation-core.sh 的子 shell 不可见父函数 bug (export -f 或换不依赖 subshell 的实现). 实测 emit() 之后 SQLite 出现新行 (raw: 跑测试 emit → sqlite3 ... 'SELECT COUNT(*)' 数 +1)",
+    "AC5: node/src/commands/task-cmd.ts 的 `task claim` 加 `--expert <name>` option, 透传给 executeClaimCommand 的 options.actualExpert (raw: claim.ts:174 的 binding 写块可达)",
+    "AC6: node/src/core/task-assigner.ts:190 (EPIC-118-C mastery 计算处) 插入 expert_resolver 调用: 读 ticket.expert_binding.suggested_expert → path 查 resolver → 结果入 metadata. 不动 ticket.json schema (raw: task-assigner 测试可见 metadata 含 suggestedExpert + resolvedExpertPath 字段)",
+    "AC7: 读 ticket 用 disk-side TicketSchema (schema-validator.ts:216 含 expert_binding), 不是 types/index.ts:150 那套. import 显式命名避免混淆 (raw: grep 'import.*TicketSchema' 唯一命中预期)",
+    "AC8: 7 case / 14 断言守卫 test 覆盖: 3 个 resolver JSON 输出 + path 优先 + find 误报不被采信 + 子 shell 修复后 emit 真写入 + CLI --expert option 透传 + assignTask 接入",
+    "AC9: 变异测试杀掉退化: 删 MERGE_HEAD 检测 (EPIC-274 范式) / 删 export -f / 删 --json 分支 / 删 path 优先 fallback (raw: 至少 4 个变异体各 KILLED)",
+    "AC10: 4-branch flow 走完 (feature → testing → main → miao)"
+  ],
+  "verification": {
+    "reproduction_command": "bash -c 'sqlite3 ~/.kallax/state/expert_invocations.db \"SELECT COUNT(*) FROM invocations\"'",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "修复前:\n$ sqlite3 ~/.kallax/state/expert_invocations.db \"SELECT COUNT(*) FROM invocations\"\n8\n$ sqlite3 ~/.kallax/state/expert_invocations.db \"SELECT MAX(ts), datetime(MAX(ts),'unixepoch') FROM invocations\"\n1780833002|2026-06-07 11:50:02\n\n修复后 (AC4 期望):\n- SQLite 表存在, 行数 >8 (有新的 emit 写入)\n- 至少包含 EPIC-277 (本卡) 或更早 EPIC 的新记录\n\n更精确的复现 (端到端):\n$ bash scripts/lib/invocation-core.sh emit 'test.expert' 'EPIC-277-test'\n$ sqlite3 ~/.kallax/state/expert_invocations.db \"SELECT payload FROM invocations WHERE ticket_id='EPIC-277-test'\"\n应该出现该记录 (修复前: exit 0 但表无新行 — agent 已实测此行为, root cause 是 invocation-core.sh:122 的 sh -c 子 shell 看不到未 export -f 的父函数)",
+    "not_verified": [
+      "AC4 的 SQLite 新行实测依赖用户运行 emit 触发 — 我会在 worktree 里实际跑测试, 但生产数据路径 (heartbeat-daemon → emit) 在本机从未启动 (agent 实测 ~/.kallax/instances/ 无目录), 故生产链无法端到端验证",
+      "AC9 变异测试只覆盖关键回归点, 不是穷举 — 跟 EPIC-272 / EPIC-274 的变异测试同标准",
+      "本卡只接 Node 侧派单. **数据源修复另议** (sub-shell 不可见是 invocation-core.sh, NOT EPIC-272 修法): emit 真写入后, metric 仍需 '被调起才能产生数据'. expert_activation_rate 的 NO_DATA 解还需 (a) 修 invocation-core.sh 的子 shell bug [本卡 AC4 处理] (b) 让 heartbeat-daemon 真在生产启动 (out of scope). **ab_hit_rate 的 NO_DATA 解**还需让所有 ticket 的 review.group_a/group_b/final_outcome 结构化, 而 archive-baseline.json 的 required_fields 不含 review — 这意味着 270+ 历史 ticket 都不会自动有 review 数据, 必须走批量回填或 schema 升级路径 (out of scope)",
+      "agent 报的两条 dead 死代码 (agent-farm.ts 423 行 + expert-matcher.ts 108 行) 本卡不动 — 单独 EPIC 删",
+      "path 优先 fallback 的边界: 如果 suggested_expert 在 resolver 里不存在 (例如专家池里没有 'backend-architect' 角色), bridge 返回 null, assignTask 不报错只不写 metadata. 未验证主公期望 (fail-open 还是 fail-closed)",
+      "未跑 cargo test — 0 改 Rust 代码",
+      "未验证 4 个 variant 的 KILL 全发生在 CI 而非只在本地",
+      "未尽测 export -f 修复对 heartbeat-daemon 主循环的影响 (daemon 在本机未跑, 测集成覆盖不到)"
+    ]
+  },
+  "related": {
+    "epics": ["EPIC-157", "EPIC-177-G", "EPIC-272", "EPIC-274", "EPIC-276"],
+    "notes": "EPIC-157 写了 binding 4 字段 + 派单时写 binding 的逻辑 (claim.ts:174), 但 task-cmd.ts 至今没传 actualExpert → 该逻辑在 CLI 路径永不执行. 本卡修这条路径. EPIC-177-G 引入 emit() 设计, 但 invocation-core.sh:122 的 sh -c 子 shell 不可见未 export -f 的父函数 → emit 静默失败 (实测: SQLite 2 个多月 0 新行). 本卡 AC4 修这条. EPIC-272 写 expert-resolver.sh 时 `find` 用无边界 index() 匹配 (已在 ticket 记录), 本卡 AC3 用 `path` 优先回避. EPIC-274 是 merge commit 误报治理, 本卡 PR 提交时也会撞, 已用 MERGE_HEAD 修复. EPIC-276 复盘里提的 3 条改进之一 (#2 NO_DATA 指标接数据源) 是本卡动机. 两条死代码 (agent-farm/expert-matcher) out of scope."
+  }
+}
