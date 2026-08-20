@@ -13,8 +13,8 @@
   "performer_sub_role": "coder",
   "labels": ["feature", "dispatch", "expert", "phase-027"],
   "expert_binding": {
-    "suggested_expert": "backend-architect",
-    "actual_expert": "backend-architect"
+    "suggested_expert": "custom:backend-architect",
+    "actual_expert": "custom:backend-architect"
   },
   "file_scope": {
     "includes": [
