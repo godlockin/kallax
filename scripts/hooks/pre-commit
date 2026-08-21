@@ -358,6 +358,29 @@ if [[ "$HOOK_BYPASS" -eq 0 ]]; then
   fi
 fi
 
+# ── EPIC-279: doc word budgets (DSH Path C 借鉴, 跟 check-jargon 同模式) ─
+# 扫 staged .md, 超 budgets.manifest.json ceiling 必拒 (fail-closed exit 1).
+# 跟 check-jargon 区别: jargon 扫黑名单词表, doc-budgets 扫 word count.
+# 历史 (≤ EPIC-279 baseline) 豁免: exemptions 字段在 manifest 列 (CHANGELOG/AGENTS.md).
+if [[ "$HOOK_BYPASS" -eq 0 ]]; then
+  DOC_BUDGET_CHECK="${KALLAX_ROOT}/scripts/check-doc-budgets.sh"
+  if [[ -x "$DOC_BUDGET_CHECK" ]]; then
+    _staged_doc_budget="$(git diff --cached --name-only --diff-filter=ACM -- '*.md' 2>/dev/null || true)"
+    if [[ -n "$_staged_doc_budget" ]]; then
+      if ! bash "$DOC_BUDGET_CHECK" --staged >/dev/null 2>&1; then
+        echo "╔══════════════════════════════════════════════════════════════╗"
+        echo "║  BLOCKED: doc word budget violation (EPIC-279)            ║"
+        echo "║  Run: bash scripts/check-doc-budgets.sh --staged         ║"
+        echo "║  Manifest: budgets.manifest.json                          ║"
+        echo "║  Bypass (主公 approval): KALLAX_HOOK_BYPASS=1 git commit ... ║"
+        echo "╚══════════════════════════════════════════════════════════════╝"
+        bash "$DOC_BUDGET_CHECK" --staged 2>&1 | head -30 || true
+        exit 1
+      fi
+    fi
+  fi
+fi
+
 # ── EPIC-223: 新 ticket schema gate ─────────────────────────────────────
 # staged 的 ticket.json 若属 > archived_before 的 EPIC, 强制 required_fields.
 if [[ "$HOOK_BYPASS" -eq 0 ]]; then

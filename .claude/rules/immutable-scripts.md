@@ -67,6 +67,7 @@ CLAUDE.md §5 历史上出现过 **4 个互不一致的数字**:
 | Script | 为什么不算 |
 |--------|-----------|
 | `scan-dead-code.sh` | 退出码三态 (0/1/2=BLOCKED-env), 跟 immutable 二态契约不同 (P0-7 治理) |
+| `check-doc-budgets.sh` | EPIC-279 (DSH Path C 借鉴), 跟 `check-smoke-retention.sh` 同级辅助, 改动只需 PR review 不需主公亲自 |
 
 ### commit-msg gate (EPIC-221 config → EPIC-224 激活)
 
