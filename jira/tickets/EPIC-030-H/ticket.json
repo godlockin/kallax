@@ -31,5 +31,20 @@
   "estimated_days": 1.0,
   "blocked_by": null,
   "borrowed_from": "EPIC-021 §3.1 KALLAX 专属 persona 字段 (5 字段)",
-  "must_keep": "主公 2026-06-11 拍: 先改 7 default, 90 extended 留 P2 用到时再完善"
+  "must_keep": "主公 2026-06-11 拍: 先改 7 default, 90 extended 留 P2 用到时再完善",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:28Z"
+    }
+  }
 }

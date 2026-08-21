@@ -20,5 +20,20 @@
     "明确:init 流程不主动调 claude-mem(只在用户显式要求历史时调)",
     "预期:claude-mem 调用次数从 ~5 降到 0(默认),最多 1 次(用户请求历史时)"
   ],
-  "estimated_hours": 0.3
+  "estimated_hours": 0.3,
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:49Z"
+    }
+  }
 }

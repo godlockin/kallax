@@ -24,7 +24,11 @@
     "EPIC-150-E 留下的 3 errors 必须为 0",
     "修法跟 IIFE intent 对 (async fn return Promise vs sync return)"
   ],
-  "labels": ["real-bug", "canary-finding", "pre-existing"],
+  "labels": [
+    "real-bug",
+    "canary-finding",
+    "pre-existing"
+  ],
   "derived_from": "EPIC-150-E Performer 报告 (外部 linter 改动副作用)",
   "verification": {
     "date": "2026-07-27",
@@ -68,5 +72,20 @@
     "vitest_fail_before": 0,
     "vitest_fail_after": 0,
     "root_cause_trace": "Per EPIC-150-E (ticket.json line 69), the 3 errors were pre-existing at the time EPIC-150-E ran. By the time EPIC-153 started (next day, same branch), the branch worktree had already received either a clean-up commit or uncommitted edits that fixed the IIFEs via two complementary moves: (a) re-annotate async IIFEs with explicit `: Promise<void>` return type for endpoints that still need await; (b) drop `async` for endpoints whose `await` was already dead code. `git status` confirms tasks.ts and workflow.ts are still in the modified-but-uncommitted state when EPIC-153 opened."
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:35Z"
+    }
   }
 }

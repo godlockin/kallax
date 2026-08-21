@@ -23,5 +23,20 @@
   ],
   "estimated_hours": 2,
   "notes": "8 专家共识 3/3 validate_first, 强 consensus Sprint A 是 decision gate, 不是建设",
-  "status": "done"
+  "status": "done",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:08Z"
+    }
+  }
 }

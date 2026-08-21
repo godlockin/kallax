@@ -21,5 +21,20 @@
     "用户跑 /kallax 验证无 PermissionRequest 弹窗"
   ],
   "estimated_hours": 0.1,
-  "notes": "my_projects/settings.local.json 已加,等用户跑一次验证"
+  "notes": "my_projects/settings.local.json 已加,等用户跑一次验证",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:53Z"
+    }
+  }
 }

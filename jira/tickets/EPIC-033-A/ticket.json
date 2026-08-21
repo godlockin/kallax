@@ -45,5 +45,20 @@
     "dispatch_ratio_upgrade": "60% AI → 80% AI (主公 D2 决策)",
     "test_coverage": "34 E2E PASS (28 + 6 new)",
     "env_flexibility": "KALLAX_AI_DELEGATION_RATIO 支持 60/80/90 可调"
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:30Z"
+    }
   }
 }

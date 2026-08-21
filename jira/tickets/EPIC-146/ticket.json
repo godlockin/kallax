@@ -21,7 +21,11 @@
     "CLAUDE.md branch-flow-governance 段加 main sync record + v3.30.0 追溯 row",
     "无内容丢失 (main 独有 3 merge commit 都是 testing subset, 已 confirm)"
   ],
-  "labels": ["governance", "branch-flow", "canary-finding"],
+  "labels": [
+    "governance",
+    "branch-flow",
+    "canary-finding"
+  ],
   "derived_from": "PR #150 canary — main 分支 diverged from testing 4-branch governance 补齐",
   "verification": {
     "main_sha_before": "b99fadad2578f134bf1b05f624fa980a5a5d0e17",
@@ -46,6 +50,21 @@
       "files_changed": 1,
       "insertions": 7,
       "deletions": 0
+    }
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:27Z"
     }
   }
 }

@@ -14,11 +14,28 @@
     ],
     "excludes": []
   },
-  "dependencies": ["EPIC-016-C"],
+  "dependencies": [
+    "EPIC-016-C"
+  ],
   "acceptance_criteria": [
     "kallax-init.md 提供「single-shot probe」示例:`ls .kallax/ 2>/dev/null; cat .kallax/state/instance_config.yml 2>/dev/null; hostname; pwd`",
     "推荐 Claude 用 `&&` 或 `;` 链式合并多查询为 1 次 Bash 调用",
     "预期 bash_calls 从 ≤2 降到 1"
   ],
-  "estimated_hours": 0.2
+  "estimated_hours": 0.2,
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:48Z"
+    }
+  }
 }

@@ -24,5 +24,20 @@
   "estimated_days": 2.0,
   "blocked_by": null,
   "borrowed_from": "Conductor §5.1 best_matching_slaver() + compute_trust()",
-  "must_keep": "TrustScore 算法骨架 + '算法建议 + 人工拍板' 出口 (主公 2026-06-11 拍)"
+  "must_keep": "TrustScore 算法骨架 + '算法建议 + 人工拍板' 出口 (主公 2026-06-11 拍)",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:23Z"
+    }
+  }
 }

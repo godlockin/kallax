@@ -41,5 +41,20 @@
   ],
   "estimated_hours": 4,
   "l1_tactic_required": "调查卡不写代码, 只写报告 (跟 Rule 11 联动)",
-  "master_强验证_6_维度_required": "L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实"
+  "master_强验证_6_维度_required": "L1 git log / L2 git show / L3 跑测试 / L4 preflight / L5 边界 / L6 诚实",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:45Z"
+    }
+  }
 }

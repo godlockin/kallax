@@ -85,5 +85,20 @@
     "EPIC-245 (撞号事故的来源卡)",
     "EPIC-258 (ticket status 漂移第 2 次, 本卡修它的防线)",
     "EPIC-223 (.archive-baseline.json — decisions-only 编号的依据)"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "git_ancestor:81095e15",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:51Z"
+    }
+  }
 }

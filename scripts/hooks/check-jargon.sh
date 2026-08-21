@@ -15,10 +15,15 @@
 # Exit: 0 = PASS, 1 = FAIL (fail-closed)
 set -euo pipefail
 
-# EPIC-277-E: REPO_ROOT 用 BASH_SOURCE 解析 (跟其他 3 hooks 1:1).
-REPO_ROOT="$(git -C "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" rev-parse --show-toplevel 2>/dev/null)"
+# EPIC-277-E: REPO_ROOT 用 BASH_SOURCE 解析 (跟其他 3 hooks 同口径).
+# EPIC-277-F 补: git hook 环境设了 GIT_DIR 时, `git -C <dir> rev-parse
+# --show-toplevel` 返回 -C 的那个 dir (scripts/hooks) 而不是 repo root →
+# BLACKLIST 路径拼成 scripts/hooks/jira/tickets/.jargon-blacklist.json →
+# 文件不存在 → fail-closed 把整个 commit 拦死 (实测 pre-commit 100% 拦).
+# 修法: 先 unset GIT_DIR / GIT_WORK_TREE 再解析.
+REPO_ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git -C "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" rev-parse --show-toplevel 2>/dev/null)"
 if [ -z "$REPO_ROOT" ]; then
-  REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+  REPO_ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git rev-parse --show-toplevel 2>/dev/null || pwd)"
 fi
 BLACKLIST="${REPO_ROOT}/jira/tickets/.jargon-blacklist.json"
 BASELINE_JSON="${REPO_ROOT}/jira/tickets/.jargon-baseline.json"

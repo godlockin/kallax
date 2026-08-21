@@ -26,5 +26,20 @@
     "EPIC-029-A"
   ],
   "borrowed_from_eket": "P1-3 interactive:start 多模式 CLI 入口",
-  "related_design": "docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md §7 + §8"
+  "related_design": "docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md §7 + §8",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:19Z"
+    }
+  }
 }

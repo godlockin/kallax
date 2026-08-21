@@ -75,5 +75,20 @@
     "EPIC-156 (Redis→SQLite→file 降级链, 本卡接 SQLite 节点)",
     "EPIC-259 (查询层, 增 1 个来源)"
   ],
-  "performer": "master"
+  "performer": "master",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "git_ancestor:75a074a4",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:53Z"
+    }
+  }
 }

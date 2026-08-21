@@ -22,7 +22,11 @@
     "cd node && vitest run 无 regression",
     "git diff 每处证实是安全语法变换"
   ],
-  "labels": ["auto-fix", "lint-strict", "canary-finding"],
+  "labels": [
+    "auto-fix",
+    "lint-strict",
+    "canary-finding"
+  ],
   "derived_from": "EPIC-150 Option A STRICT",
   "verification": {
     "auto_fix_rule_count": {
@@ -55,6 +59,21 @@
       "duration_s": 5.33,
       "raw_summary": "Test Files  47 passed | 2 skipped (49) / Tests  960 passed | 4 skipped (964) / Duration  5.33s",
       "log_path": "/tmp/claude-tasks/epic150b-vitest-summary.txt"
+    }
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:31Z"
     }
   }
 }

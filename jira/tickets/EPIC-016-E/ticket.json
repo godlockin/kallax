@@ -22,5 +22,20 @@
     "session_start.sh cold 目标 < 300ms(实测 224ms ✓);warm avg 目标 < 400ms(实测 262ms ✓)",
     "bash -n 通过,bench-init.sh 5 次连续执行 max < 350ms"
   ],
-  "estimated_hours": 1
+  "estimated_hours": 1,
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:48Z"
+    }
+  }
 }

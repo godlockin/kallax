@@ -3,9 +3,14 @@
 # Governance layer: periodic heartbeat tick, independent of LLM.
 # Pure bash + jq, no Python/Node dependency.
 #
-# Usage: heartbeat-daemon.sh <instance_id> [instances_dir] [interval_seconds] [--headless|--stdio]
+# Usage: heartbeat-daemon.sh <instance_id> [instances_dir] [interval_seconds] [--headless|--stdio] [--bootstrap]
 #   --headless: CI/scripting mode, JSON-only output, no TTY
 #   --stdio:     piping mode, JSON in/out over stdin/stdout
+#   --bootstrap: EPIC-277-F — 实例目录 / state.json 不存在时自己建 (opt-in).
+#                不加该 flag 时行为不变 (state.json 缺失仍 exit 1 fail-closed).
+#                起因: 原脚本要求实例已被别人注册, 而实际没有任何注册方 →
+#                .kallax/instances/ 长期为空, expert_invocations 0 行,
+#                Rule 36 指标 #1 恒 NO_DATA. 参见 scripts/heartbeat-daemon.js.
 #
 # Schema for state.json heartbeat fields:
 #   heartbeat.last_beat            -- ISO 8601 timestamp of last heartbeat tick
@@ -14,17 +19,20 @@
 set -euo pipefail
 
 # EPIC-122-C: Parse optional mode flags
+# EPIC-277-F: 加 --bootstrap (自建实例目录, opt-in)
 MODE="interactive"
+BOOTSTRAP=0
 _remaining_args=()
 for arg in "$@"; do
   case "$arg" in
     --headless|--stdio) MODE="${arg#--}"; shift ;;
+    --bootstrap) BOOTSTRAP=1; shift ;;
     *) _remaining_args+=("$arg"); shift ;;
   esac
 done
 set -- "${_remaining_args[@]}"
 
-INSTANCE_ID="${1:?Usage: heartbeat-daemon.sh <instance_id> [instances_dir] [interval_seconds] [--headless|--stdio]}"
+INSTANCE_ID="${1:?Usage: heartbeat-daemon.sh <instance_id> [instances_dir] [interval_seconds] [--headless|--stdio] [--bootstrap]}"
 INSTANCES_DIR="${2:-.kallax/instances}"
 INTERVAL="${3:-60}"
 STATE_FILE="${INSTANCES_DIR}/${INSTANCE_ID}/state.json"
@@ -34,8 +42,25 @@ if [[ "$MODE" == "headless" ]]; then
   exec 1>/dev/null 2>/dev/null
 fi
 
+# EPIC-277-F: --bootstrap 时自建实例目录 + 最小 state.json.
+# 不加 flag 保持原 fail-closed 语义 (缺 state.json → exit 1).
+if [ ! -f "${STATE_FILE}" ] && [ "$BOOTSTRAP" -eq 1 ]; then
+  mkdir -p "${INSTANCES_DIR}/${INSTANCE_ID}"
+  chmod 0700 "${INSTANCES_DIR}/${INSTANCE_ID}" 2>/dev/null || true
+  if ! jq -n \
+      --arg id "$INSTANCE_ID" \
+      --argjson pid "$$" \
+      '{instance_id:$id, status:"ACTIVE", heartbeat:{last_beat:null, missed_count:0, heartbeat_daemon_pid:$pid}, expert_invocations:[]}' \
+      > "${STATE_FILE}"; then
+    echo "ERROR: bootstrap failed to write ${STATE_FILE}" >&2
+    exit 1
+  fi
+  echo "[heartbeat] bootstrapped instance ${INSTANCE_ID} at ${STATE_FILE}"
+fi
+
 if [ ! -f "${STATE_FILE}" ]; then
   echo "ERROR: state.json not found at ${STATE_FILE}" >&2
+  echo "Hint: 加 --bootstrap 让 daemon 自建实例目录 (EPIC-277-F)" >&2
   exit 1
 fi
 

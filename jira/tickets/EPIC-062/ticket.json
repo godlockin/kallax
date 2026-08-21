@@ -17,5 +17,20 @@
     "跟 baseline 联合 0 NEW",
     "跟'翻篇&精进' 战略 联合 0 简单 记录",
     "跟'诚实修正' 战略 联合 0 隐藏"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:09Z"
+    }
+  }
 }

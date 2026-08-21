@@ -8,19 +8,19 @@
 #   snapshot-claude-md.sh rollback <tag>  # 一键 git revert 到 tag 状态
 #   snapshot-claude-md.sh list            # 列所有 snapshot tag
 #
-# 借鉴 (跟 confluence/decisions/prime-agent-research-2026-08-08.md 1:1):
+# 借鉴来源: confluence/decisions/prime-agent-research-2026-08-08.md
 # - prime-agent "immutable base system prompt + recorded snapshots support rollback"
 # - KALLAX 5 immutable scripts (check-claim-evidence 等) 防 commit 漂移
 # - 缺 CLAUDE.md modify snapshot 兜底 → EPIC-219 补
 #
-# Exit codes (跟 5 immutable scripts 1:1):
+# Exit codes (沿用 immutable scripts 的退出码契约):
 #   0 = OK, 1 = FAIL (fail-closed)
 set -euo pipefail
 
-# EPIC-277-E: REPO_ROOT 用 BASH_SOURCE 解析 (跟其他 3 hooks 1:1).
-REPO_ROOT="$(git -C "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" rev-parse --show-toplevel 2>/dev/null)"
+# EPIC-277-E: REPO_ROOT 用 BASH_SOURCE 解析 (同其他 3 个 hooks 做法).
+REPO_ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git -C "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" rev-parse --show-toplevel 2>/dev/null)"
 if [ -z "$REPO_ROOT" ]; then
-  REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+  REPO_ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git rev-parse --show-toplevel 2>/dev/null || pwd)"
 fi
 WATCHED_PATHS=("CLAUDE.md" ".claude/rules/")
 

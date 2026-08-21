@@ -33,5 +33,20 @@
   ],
   "estimated_hours": 1.8,
   "performer": "performer-EPIC-021-A",
-  "notes": "借 EKET 7 节 anatomy + KALLAX 5 维独有 (worktree_role/review_group/tickets_served/version/last_reviewed). 不要照搬 EKET 7 位 (architect/backend/frontend/ux/product/tester/fullstack), KALLAX 7 位: architect/backend/frontend/ux/product/security/pm. 7 节 full anatomy 模板见 EKET-EXPERT-SYSTEM-DEEP-DIVE-2026-06-07.md §6."
+  "notes": "借 EKET 7 节 anatomy + KALLAX 5 维独有 (worktree_role/review_group/tickets_served/version/last_reviewed). 不要照搬 EKET 7 位 (architect/backend/frontend/ux/product/tester/fullstack), KALLAX 7 位: architect/backend/frontend/ux/product/security/pm. 7 节 full anatomy 模板见 EKET-EXPERT-SYSTEM-DEEP-DIVE-2026-06-07.md §6.",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:58Z"
+    }
+  }
 }

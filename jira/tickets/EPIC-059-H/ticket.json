@@ -38,5 +38,20 @@
     "Rule 9 KPI 精确 X/Y 格式 — memory-promote.sh 1/1 + GLOSSARY §12.2 1/1 + SKILL.md 段 1/1 + test 5/5 PASS = 100.0%"
   ],
   "estimated_hours": 4,
-  "status_set_by": "master_main (主公 explicit 派单 '需要都建卡并行处理', 跟 v2.6.0 经验教训 整理 release 联合)"
+  "status_set_by": "master_main (主公 explicit 派单 '需要都建卡并行处理', 跟 v2.6.0 经验教训 整理 release 联合)",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:07Z"
+    }
+  }
 }

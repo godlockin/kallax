@@ -10,13 +10,24 @@
   "created_at": "2026-08-17",
   "created_by": "master",
   "completed_at": "2026-08-17",
-  "pr_chain": ["#419", "#420", "#421"],
+  "pr_chain": [
+    "#419",
+    "#420",
+    "#421"
+  ],
   "performer": "master",
   "worktree_role": "performer",
   "performer_sub_role": "coder",
   "handoff_depth": "L1",
   "estimated_hours": 3,
-  "labels": ["bugfix", "lockfile", "workspace-hoisting", "vitest", "ci-config", "phase-024"],
+  "labels": [
+    "bugfix",
+    "lockfile",
+    "workspace-hoisting",
+    "vitest",
+    "ci-config",
+    "phase-024"
+  ],
   "description": "EPIC-255 — 删冗余的 node/package-lock.json, 消除 vitest 版本分叉.\n\n**表面现象**: worktree 内跑 vitest 报 `No handler function exported from vitest/dist/worker.js`, 51 errors. 之前多个 EPIC 把这记成 'vitest 1.6.1 tinypool env blocker' 并标 AC BLOCKED-env.\n\n**4 层挖掘, 前 3 层假设都错**:\n1. 'vitest 1.6.1 tinypool 是已知 bug' — 不是 bug\n2. '装依赖位置错 (--prefix <wt>/node vs --prefix <wt>)' — 方向对但非根因\n3. 'lockfile 被装坏了' — 用干净 lockfile 的新 worktree 同样复现\n4. **'两份 lockfile 锁不同 vitest 版本' — 真根因**\n\n**真根因**: 三处版本对不上\n- node/package.json 声明 ^4.1.10\n- 根 package-lock.json 锁 4.1.10 (正确)\n- node/package-lock.json 锁 1.6.1 (过期)\n\nvitest 1.6.1 依赖 tinypool, 4.1.10 不依赖. 装 1.6.1 时它按 workspace hoisting 去根 node_modules 找 tinypool, 那里是 4.1.10 的树 (无 tinypool) → 报错.\n\n**node/package-lock.json 来历**: 只 1 次提交 (080eb414 EPIC-211 npm audit fix), 那次操作意外产生. workspace 项目只该有根 lockfile, 根 lockfile 已完整覆盖 node/ 的 15 个 devDependencies.\n\n**CI 同步改动**: 删 lockfile 会让 3 个 workflow 失败 (dual-engine cache path + install / kallax-ci working-directory / release cd node), 已全部改成在仓库根装.\n\n**历史 AC 不回填**: EPIC-157/159/160/251 的 vitest AC 标 BLOCKED-env 记录的是当时真实状态, 不改写. 改了会掩盖'连续 4 个 EPIC 误判成 vitest bug'这个事实.",
   "acceptance": [
     "AC1: node/package-lock.json 已删 (raw: tests Case 2 → node/package-lock.json absent)",
@@ -69,5 +80,20 @@
     "EPIC-223 (历史不追溯原则 — 本 EPIC 不回填 BLOCKED-env AC)",
     "EPIC-157/159/160/251 (受影响的历史判断, 保持原样)",
     "EPIC-114 (.claude/rules/testing.md 所属 rule)"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:49Z"
+    }
+  }
 }
