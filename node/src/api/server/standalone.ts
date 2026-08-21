@@ -8,8 +8,11 @@ import { createSQLiteManager } from '../../core/sqlite/index.js';
 import { createTaskAssigner } from '../../core/task-assigner.js';
 import { createInstanceRegistry } from '../../core/instance-registry.js';
 import { createOutputVerifier } from '../../core/output-verifier.js';
+import { ExpertResolverBridge } from '../../core/expert-resolver-bridge.js';
 import { getIsolationChecker } from '../../core/isolation-checker.js';
 import { createSSEBus } from '../../core/sse-bus.js';
+import { createExpertInvocationsQueue } from '../../core/expert-invocations-queue/index.js';
+import { createTraceLog } from '../../core/span-tracer.js';
 import type { WorktreeManager } from '../../core/worktree-manager.js';
 import { createApiServer, registerApiServerCleanup } from '../server.js';
 
@@ -31,8 +34,17 @@ if (process.argv[1] !== undefined && (process.argv[1] === __filename || process.
   const isolationChecker = getIsolationChecker();
   const instanceRegistry = createInstanceRegistry(db);
   const sseBus = createSSEBus();
-  const taskAssigner = createTaskAssigner(db, isolationChecker, instanceRegistry);
-  const outputVerifier = createOutputVerifier({ projectRoot: process.cwd(), testCommand: 'echo ok', lintCommand: 'echo ok' });
+  const projectRoot = process.env['KALLAX_PROJECT_ROOT']
+    ?? path.resolve(path.dirname(__filename), '../../../..');
+  const expertResolver = new ExpertResolverBridge({ repoRoot: projectRoot });
+  const taskAssigner = createTaskAssigner(
+    db,
+    isolationChecker,
+    instanceRegistry,
+    expertResolver,
+    projectRoot,
+  );
+  const outputVerifier = createOutputVerifier({ projectRoot, testCommand: 'echo ok', lintCommand: 'echo ok' });
   const mockWorktreeManager: WorktreeManager = {
     create: () => Promise.resolve(ok({ path: '/tmp/wt', branch: 'kallax/t', commit: 'abc', taskId: 't' })),
     remove: () => Promise.resolve(ok(undefined)),
@@ -41,7 +53,16 @@ if (process.argv[1] !== undefined && (process.argv[1] === __filename || process.
     validateIsolation: () => Promise.resolve(ok(true)),
     getPath: () => '/tmp/wt',
   };
-  const server = createApiServer({ port: serverPort, host: serverHost, apiKey }, { db, taskAssigner, instanceRegistry, worktreeManager: mockWorktreeManager, outputVerifier, isolationChecker, sseBus });
+  const expertInvocationsQueue = createExpertInvocationsQueue();
+  const traceLog = createTraceLog(db.traceOps);
+  const server = createApiServer(
+    { port: serverPort, host: serverHost, apiKey },
+    {
+      db, taskAssigner, instanceRegistry, worktreeManager: mockWorktreeManager,
+      outputVerifier, isolationChecker, sseBus,
+      expertResolver, expertInvocationsQueue, traceLog,
+    },
+  );
   setupProcessCleanup();
   registerApiServerCleanup(server);
   server.start().catch((err: unknown) => { logger.fatal({ error: err instanceof Error ? err.message : String(err) }, 'failed to start API server'); process.exit(1); });

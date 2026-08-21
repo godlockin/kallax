@@ -22,12 +22,17 @@ export function registerTaskCommands(program: Command, ctx: AppContext): void {
   task
     .command('claim [taskId]')
     .description('Claim a task — auto-creates isolated worktree')
+    .option('-e, --expert <name>', 'Bind to expert for this claim')
     .option('-t, --ticket <ticketId>', 'Claim task for specific ticket')
-    .action(async (taskId?: string, opts?: { ticket?: string }) => {
+    .action(async (taskId?: string, opts?: { ticket?: string; expert?: string }) => {
       try {
         const result = await executeClaimCommand(
           ctx.db, ctx.worktreeManager, ctx.instanceRegistry, ctx.taskAssigner,
-          { taskId, ticketId: opts?.['ticket'] },
+          {
+            taskId, ticketId: opts?.['ticket'], actualExpert: opts?.['expert'],
+            expertInvocationsQueue: ctx.expertInvocationsQueue,
+            traceLog: ctx.traceLog,
+          },
         );
         if (result.isErr()) {
           process.stderr.write(`Claim failed: ${result.error.message}\n`);

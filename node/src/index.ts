@@ -10,6 +10,9 @@ import { createOutputVerifier } from './core/output-verifier.js';
 import { getIsolationChecker } from './core/isolation-checker.js';
 import { createInstanceRegistry } from './core/instance-registry.js';
 import { createTaskAssigner } from './core/task-assigner.js';
+import { ExpertResolverBridge } from './core/expert-resolver-bridge.js';
+import { createExpertInvocationsQueue } from './core/expert-invocations-queue/index.js';
+import { createTraceLog } from './core/span-tracer.js';
 import { getGitService } from './core/git-service.js';
 import { validateStartup } from './utils/startup-validator.js';
 import { KallaxError, KallaxErrorCode } from './types/index.js';
@@ -62,9 +65,29 @@ function bootstrap(): Promise<AppContext> {
     const outputVerifier = createOutputVerifier({ projectRoot });
     const isolationChecker = getIsolationChecker();
     const instanceRegistry = createInstanceRegistry(db);
-    const taskAssigner = createTaskAssigner(db, isolationChecker, instanceRegistry);
+    const expertResolver = new ExpertResolverBridge({ repoRoot: projectRoot });
+    const taskAssigner = createTaskAssigner(
+      db,
+      isolationChecker,
+      instanceRegistry,
+      expertResolver,
+      projectRoot,
+    );
     const gitService = getGitService();
-    return { db, worktreeManager, outputVerifier, isolationChecker, instanceRegistry, taskAssigner, gitService };
+    const expertInvocationsQueue = createExpertInvocationsQueue();
+    const traceLog = createTraceLog(db.traceOps);
+    return {
+      db,
+      worktreeManager,
+      outputVerifier,
+      isolationChecker,
+      instanceRegistry,
+      taskAssigner,
+      gitService,
+      expertResolver,
+      expertInvocationsQueue,
+      traceLog,
+    };
   })();
 }
 
