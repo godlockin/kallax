@@ -6,11 +6,9 @@
  * console.log is un-queryable in production — use structured spans instead.
  */
 
-import type Database from 'better-sqlite3';
 import { logger } from '../utils/logger.js';
 import type { SQLiteManager } from './sqlite/index.js';
-import { createTraceOps } from './sqlite/trace-ops.js';
-import type { TraceLogRow } from './sqlite/trace-ops.js';
+import type { TraceOperations, TraceLogRow } from './sqlite/trace-ops.js';
 
 export interface SpanContext {
   readonly traceId: string;
@@ -239,8 +237,7 @@ function rowToTraceEntry(row: TraceLogRow): TraceEntry {
   };
 }
 
-export function createTraceLog(db: Database.Database): TraceLog {
-  const ops = createTraceOps(db);
+export function createTraceLog(ops: TraceOperations): TraceLog {
 
   return {
     record(entry: Omit<TraceEntry, 'traceId' | 'timestamp'>): string {

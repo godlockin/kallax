@@ -33,6 +33,9 @@ import {
   handleHealth, handleLiveness, handleReadiness, handleVersion,
   handleStats, handleSSE, notFoundHandler, createErrorHandler, VERSION,
 } from './server/handlers.js';
+import type { ExpertResolverBridge } from '../core/expert-resolver-bridge.js';
+import type { ExpertInvocationsQueue } from '../core/expert-invocations-queue/types.js';
+import type { TraceLog } from '../core/span-tracer.js';
 
 export interface ApiServerDependencies {
   readonly db: SQLiteManager;
@@ -44,6 +47,10 @@ export interface ApiServerDependencies {
   readonly sseBus: SSEBus;
   readonly heartbeatMonitor?: HeartbeatMonitor;
   readonly claimQueue?: ClaimQueue;
+  /** EPIC-277: DI hooks for expert activation and trace persistence. */
+  readonly expertResolver?: ExpertResolverBridge;
+  readonly expertInvocationsQueue?: ExpertInvocationsQueue;
+  readonly traceLog?: TraceLog;
 }
 
 export interface ApiServer {
