@@ -138,6 +138,8 @@ echo "    - 5 immutable (decorative/narrative/fail-closed/self-heal/claim-eviden
 echo "    - EPIC-220 disclaimer audit (staged .md)"
 echo "    - EPIC-219 snapshot 提醒 (CLAUDE.md / .claude/rules, advisory)"
 echo "    - EPIC-223 ticket schema (staged ticket.json, >archived_before 强制)"
+echo "    - EPIC-225 jargon 黑名单 (staged .md/.sh/.ts/.rs)"
+echo "    - EPIC-279 doc word budgets (staged .md, fail-closed)"
 echo "    - miao 分支保护"
 echo "  commit-msg:"
 echo "    - DCO Signed-off-by 强制 (EPIC-221 config 激活)"
