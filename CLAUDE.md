@@ -152,19 +152,35 @@ feature/v3.X.Y-EPIC-ZZZ  →  testing  →  main (UAT)  →  miao (stable/prod)
 
 ## 5. 9 不可更改 法律 (immutable scripts) + 2 smoke 辅助
 
-> **数字对齐 (EPIC-223 + EPIC-224 + EPIC-225, 主公 2026-08-08 拍板)**: 曾出现 4/5/6/7 四个不同数字, 已统一.
+## 5. 9 不可更改 法律 (immutable scripts) + 2 smoke 辅助
+
+> **数字对齐 (EPIC-223 + EPIC-224 + EPIC-225 + EPIC-277-E, 主公 2026-08-08 拍板)**: 曾出现 4/5/6/7 四个不一致数字, 已统一.
+> **EPIC-277-E (2026-08-21)**: scripts/hooks/ 接入 4 新 (check-disclaimer / snapshot-claude-md / check-ticket-schema / check-jargon), install --verify 9/9 PASS 实测.
 > **完整清单 + 改数字强制流程**: 详见 `.claude/rules/immutable-scripts.md` (path-scoped lazy load).
 
-**9 immutable** (fail-closed, 改动需主公亲自), 全部**已接入 hook** (EPIC-224 验证):
-- **原 5**: `check-decorative-claim.sh` / `check-narrative.sh` / `check-fail-closed.sh` / `check-self-heal.sh` (`scripts/verify/`) + `check-claim-evidence.sh` (`scripts/hooks/`, EPIC-069-D)
-- **EPIC-224 接入 3**: `check-disclaimer.sh` (EPIC-220, staged .md) + `snapshot-claude-md.sh` (EPIC-219, advisory) + `check-ticket-schema.sh` (EPIC-223, staged ticket.json)
-- **EPIC-225 新增 1**: `check-jargon.sh` (黑名单扫 staged, 主公 2026-08-08 拍板 "以后都要禁止使用黑话")
+**9 immutable** (fail-closed, 改动需主公亲自), 全部**已接入 hook** (EPIC-224 + EPIC-277-E 验证):
+- **原 5**: `scripts/hooks/check-decorative-claim.sh` / `check-narrative.sh` / `check-fail-closed.sh` / `check-self-heal.sh` (pre-commit 4-law loop) + `scripts/hooks/check-claim-evidence.sh` (EPIC-069-D)
+- **EPIC-224 接入 3** (AC2/AC3/AC1): `scripts/hooks/check-disclaimer.sh` (EPIC-220, staged .md) + `scripts/hooks/snapshot-claude-md.sh` (EPIC-219, advisory) + `scripts/hooks/check-ticket-schema.sh` (EPIC-223, staged ticket.json)
+- **EPIC-225 新增 1** (AC4): `scripts/hooks/check-jargon.sh` (黑名单扫 staged, 主公 2026-08-08 拍板 "以后都要禁止使用黑话")
 
-**2 辅助** (非 immutable, 可迭代): `check-smoke-retention.sh` (`scripts/`) + `smoke-size-report.sh` (`scripts/audit/`) — EPIC-174, smoke >=500 行告警
+**Canonical 路径清单** (跟 install --verify 9/9 PASS 1:1, 改数字强制流程见 immutable-scripts.md):
+```
+scripts/hooks/check-claim-evidence.sh
+scripts/hooks/check-decorative-claim.sh
+scripts/hooks/check-disclaimer.sh
+scripts/hooks/check-fail-closed.sh
+scripts/hooks/check-jargon.sh
+scripts/hooks/check-narrative.sh
+scripts/hooks/check-self-heal.sh
+scripts/hooks/check-ticket-schema.sh
+scripts/hooks/snapshot-claude-md.sh
+```
+
+**2 辅助** (非 immutable, 可迭代): `scripts/check-smoke-retention.sh` + `scripts/audit/smoke-size-report.sh` — EPIC-174, smoke >=500 行告警
 
 **不算 immutable**: `scan-dead-code.sh` (三态 0/1/2=BLOCKED-env, 跟二态契约不同, P0-7 治理)
 
-**hook 体系健康 (EPIC-224 强制)**: `bash scripts/hooks/install.sh --verify` exit 0 才算生效. CI `hook-health` job 每次 PR 验证. 起因: `core.hooksPath` 曾指向已删临时目录 → 所有 hook 静默失效.
+**hook 体系健康 (EPIC-224 + EPIC-277-E 强制)**: `bash scripts/hooks/install.sh --verify` exit 0 才算生效 (9/9 PASS). CI `hook-health` job 每次 PR 验证. 起因: `core.hooksPath` 曾指向已删临时目录 → 所有 hook 静默失效.
 
 **commit-msg gate (EPIC-221 + EPIC-224)**: DCO `Signed-off-by` 强制 + Conventional Commits type + header ≤100 字符.
 

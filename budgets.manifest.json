@@ -1,0 +1,61 @@
+{
+  "$schema_version": "1.0",
+  "$description": "KALLAX doc word budgets (DSH Path C借鉴, EPIC-279). 借鉴 DeepSeek-Harness verify-doc-budgets + AGENTS.md ≤1600 词硬顶. Fail-closed 超 ceiling 必拒.",
+  "$generated_by": "EPIC-279 (Path C doc budgets)",
+  "$generated_at": "2026-08-21",
+  "tiers": {
+    "root": {
+      "path": "CLAUDE.md",
+      "ceiling_words": 4000,
+      "hard_lines": 200,
+      "rationale": "Anthropic 硬阈值 ≤200 行 ≈ 4000 词 (CLAUDE.md §治理 2.0 EPIC-159). 现 1625 词, 远低于 ceiling.",
+      "owner": "master"
+    },
+    "rules": {
+      "path_pattern": ".claude/rules/*.md",
+      "ceiling_words": 1500,
+      "rationale": "Path-scoped lazy load, 每文件独立主题. 现 8 文件最大 1332 (recent-epics.md), 最小 93 (state-json.md).",
+      "owner": "per sub-rule author"
+    },
+    "decisions": {
+      "path_pattern": "confluence/decisions/*.md",
+      "ceiling_words": 5000,
+      "rationale": "历史 EPIC 决策记录, 单 EPIC 全生命周期 1 篇足够. 现最大 2963 (retrospective-v3.34.X-next-plan).",
+      "owner": "EPIC author"
+    },
+    "reference": {
+      "path_pattern": "docs/reference/*.md",
+      "ceiling_words": 8000,
+      "rationale": "Tutorial/reference 文档, 含代码 + 表. 现 24 文件最大 4075 (slash-commands), 其余 < 1000.",
+      "owner": "domain author"
+    },
+    "manifesto": {
+      "path_pattern": "confluence/manifesto/*.md",
+      "ceiling_words": 10000,
+      "rationale": "Manifesto 长篇 5 文件 (EPIC-206), 顶层设计/愿景/教训 性质. 现最大 1014 (best-practices).",
+      "owner": "master"
+    }
+  },
+  "exemptions": [
+    {
+      "path": "CHANGELOG.md",
+      "reason": "历史积累, 按 entry 增长, 不可拒 (跟 EPIC-223 baseline 同模式).",
+      "owner": "auto-generated"
+    },
+    {
+      "path": "AGENTS.md",
+      "reason": "DSH AGENTS.md 顶层 ≤1600 词, KALLAX AGENTS.md 现有超出, 留作 docs-only EPIC 后续处理 (见 EPIC-279 §后 续).",
+      "owner": "master"
+    }
+  ],
+  "enforcement": {
+    "check_script": "scripts/check-doc-budgets.sh",
+    "exit_codes": {
+      "0": "PASS — 全部文件 ≤ ceiling",
+      "1": "FAIL — 有文件超 ceiling",
+      "2": "CONFIG_ERROR — budgets.manifest.json 缺失或不可读"
+    },
+    "hook_integration": "pre-commit (跟 EPIC-225 check-jargon.sh 同模式, 只扫 staged .md)",
+    "ci_integration": "可选, 后续 EPIC 接入 hook-health job"
+  }
+}
