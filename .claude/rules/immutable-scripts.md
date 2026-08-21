@@ -35,37 +35,30 @@ CLAUDE.md §5 历史上出现过 **4 个互不一致的数字**:
 
 **根因**: 表格把 immutable (fail-closed, 改动需主公亲自) 跟辅助脚本 (可迭代) 混在一起, 导致 "数几行" 得出的数字跟 "真正 immutable 数" 不一致.
 
-## 2. 统一口径 (EPIC-224 后: 8 immutable)
+## 2. 统一口径 (EPIC-277-E 后: 9 immutable 全部在 scripts/hooks/)
 
-### 8 immutable (fail-closed, 改动需主公亲自批准, 全部已接入 hook)
+### 9 immutable (fail-closed, 改动需主公亲自批准, 全部已接入 hook)
 
-| # | Script | Path | hook 接入点 | EPIC |
+| # | Script | Canonical Path (EPIC-277-E) | hook 接入点 | EPIC |
 |---|--------|------|------------|------|
-| 1 | `check-decorative-claim.sh` | `scripts/verify/` | pre-commit (4-law loop) | EPIC-110 |
-| 2 | `check-narrative.sh` | `scripts/verify/` | pre-commit (4-law loop) | EPIC-110 |
-| 3 | `check-fail-closed.sh` | `scripts/verify/` | pre-commit (4-law loop) | EPIC-110 |
-| 4 | `check-self-heal.sh` | `scripts/verify/` | pre-commit (4-law loop) | EPIC-110 |
-| 5 | `check-claim-evidence.sh` | `scripts/hooks/` | pre-commit (staged only) | EPIC-069-D |
-| 6 | `check-disclaimer.sh` | `scripts/verify/` | pre-commit (staged .md) | EPIC-220 → 224 |
-| 7 | `snapshot-claude-md.sh` | `scripts/verify/` | pre-commit (advisory, CLAUDE.md/rules) | EPIC-219 → 224 |
-| 8 | `check-ticket-schema.sh` | `scripts/verify/` | pre-commit (staged ticket.json) | EPIC-223 → 224 |
-| 9 | `check-jargon.sh` | `scripts/verify/` | pre-commit (staged .md/.sh/.ts/.rs, 黑名单扫) | EPIC-225 |
+| 1 | `check-decorative-claim.sh` | `scripts/hooks/check-decorative-claim.sh` | pre-commit (4-law loop) | EPIC-110 |
+| 2 | `check-narrative.sh` | `scripts/hooks/check-narrative.sh` | pre-commit (4-law loop) | EPIC-110 |
+| 3 | `check-fail-closed.sh` | `scripts/hooks/check-fail-closed.sh` | pre-commit (4-law loop) | EPIC-110 |
+| 4 | `check-self-heal.sh` | `scripts/hooks/check-self-heal.sh` | pre-commit (4-law loop) | EPIC-110 |
+| 5 | `check-claim-evidence.sh` | `scripts/hooks/check-claim-evidence.sh` | pre-commit (staged only) | EPIC-069-D |
+| 6 | `check-disclaimer.sh` | `scripts/hooks/check-disclaimer.sh` | pre-commit (staged .md) | EPIC-220 → 224 |
+| 7 | `snapshot-claude-md.sh` | `scripts/hooks/snapshot-claude-md.sh` | pre-commit (advisory, CLAUDE.md/rules) | EPIC-219 → 224 |
+| 8 | `check-ticket-schema.sh` | `scripts/hooks/check-ticket-schema.sh` | pre-commit (staged ticket.json) | EPIC-223 → 224 |
+| 9 | `check-jargon.sh` | `scripts/hooks/check-jargon.sh` | pre-commit (staged .md/.sh/.ts/.rs, 黑名单扫) | EPIC-225 |
 
 **退出码契约**: 0=PASS, 1=FAIL. 禁止 print FAIL + exit 0 (fail-open).
 **例外**: `check-ticket-schema.sh` 有 exit 3 = ARCHIVED_SKIP (跟 EPIC-204 `DOCS_ONLY_SKIP` 同型, 表示"不适用"而非 PASS/FAIL). pre-commit 只拦 exit 1.
 **#7 是 advisory**: `snapshot-claude-md.sh` 在 pre-commit 只提醒不阻塞 (改治理文件时提示打 snapshot), 不阻断 commit.
 
-**#9 的 X/Y PASS 例外 (EPIC-250, 主公 2026-08-10 拍板)**:
-
-blacklist 里 `X/Y PASS 无命令引用` 的 `replace` 字段写着 "附 `` `bash <cmd>` `` 或 `exit=0`", 暗示附了命令引用就可以写. 但脚本原先没实现这个判断, 命中就 fail — 导致决策文档贴 raw test output (CLAUDE.md §2 硬要求) 跟本 gate 直接冲突.
-
-EPIC-250 实现例外判断:
-- 命中 `X/Y PASS` 时, 看该行 **±5 行**内有无命令引用证据
-- 证据形式: `` `bash|npx|cargo|npm|git|python3 `` / 行首 `$ ` / `exit=N` / `RC=N` / `rc=N`
-- 有证据 → 豁免 (这是 raw output 引用); 无证据 → 仍 fail (裸数字正是 v3.8.0 假 PASS 的问题)
-- **只对这一条生效**, 其他黑名单词无例外
-
-回归保护: `tests/integration/epic-250-jargon-xy-exception-test.sh` (10 TC, 含负向 — 裸数字 / 远距离命令仍 fail).
+**EPIC-277-E 路径迁移**: 4 个原 verify/ 脚本 (check-decorative-claim / check-narrative / check-fail-closed / check-self-heal) 已 copy 到 scripts/hooks/ 作 canonical location.
+- pre-commit 4-law loop 优先读 scripts/hooks/, fall back 到 scripts/verify/ (向后兼容).
+- scripts/verify/ 副本保留 (audit 链完整 + backward-compat).
+- install --verify 9/9 PASS (跟 CLAUDE.md §5 数字对齐).
 
 ### 2 辅助 (非 immutable, 可迭代)
 
