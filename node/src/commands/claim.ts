@@ -16,6 +16,14 @@ import { writeBinding, readJiraTicket } from '../jira/ticket-binding.js';
 import { loadExpertPrompt, type ExpertPromptContext } from '../core/expert-prompt.js';
 import type { ExpertInvocationsQueue } from '../core/expert-invocations-queue/types.js';
 import type { TraceLog } from '../core/span-tracer.js';
+import type { ExpertResolverBridge } from '../core/expert-resolver-bridge.js';
+
+/** EPIC-277-D: tri-state exit code mapping. */
+export type ClaimExitCode = 0 | 2 | 3;
+/** EPIC-277-D: outcome of writing expert_binding to jira ticket.json. */
+export type BindingStatus = 'written' | 'skipped' | 'failed';
+/** EPIC-277-D: outcome of loading expert profile (resolvedExpertPath). */
+export type ProfileStatus = 'loaded' | 'none' | 'failed';
 
 export interface ClaimCommandOptions {
   readonly taskId?: string;
@@ -26,6 +34,8 @@ export interface ClaimCommandOptions {
   /** EPIC-277: DI hooks for expert activation and trace persistence. */
   readonly expertInvocationsQueue?: ExpertInvocationsQueue;
   readonly traceLog?: TraceLog;
+  /** EPIC-277-D: optional ExpertResolverBridge used to resolve actualExpert → resolvedExpertPath. */
+  readonly expertResolver?: ExpertResolverBridge;
   readonly projectRoot?: string;
   readonly resolvedExpertPath?: string;
 }
@@ -34,10 +44,18 @@ export interface ClaimResult {
   readonly task: Task;
   readonly ticket: Ticket;
   readonly worktreePath: string;
-  /** EPIC-157: 是否写了 binding */
+  /** EPIC-157: 是否写了 binding (legacy single-bool, true ≡ bindingStatus==='written'). */
   readonly bindingWritten: boolean;
-  /** EPIC-277: prompt context passed to performer, when profile is configured. */
+  /** EPIC-157 + EPIC-277-D: tri-state binding outcome. */
+  readonly bindingStatus: BindingStatus;
+  /** EPIC-277-D: profile load outcome for AC7 exit-code mapping. */
+  readonly profileStatus: ProfileStatus;
+  /** EPIC-277-D: prompt context passed to performer, when profile is configured. */
   readonly promptContext?: ExpertPromptContext;
+  /** EPIC-277-D: process exit code recommended for the CLI wrapper (0 / 2 / 3). */
+  readonly exitCode: ClaimExitCode;
+  /** EPIC-277-D AC5: pre-formatted stdout affordance (3 lines). */
+  readonly affordance: string;
 }
 
 function metadataString(task: Task, key: string): string | undefined {
@@ -167,19 +185,35 @@ export async function executeClaimCommand(
 
   const ticket = ticketResult.value;
 
+  // EPIC-277-D AC3: path-first resolution of actualExpert via expertResolver.
+  // Falls back to (a) caller-supplied resolvedExpertPath, (b) task metadata,
+  // (c) currentInstance.id — preserving prior behavior when no resolver is wired.
   let promptContext: ExpertPromptContext | undefined;
-  const resolvedExpertPath = options.resolvedExpertPath ?? metadataString(task, 'resolvedExpertPath');
-  if (resolvedExpertPath !== undefined) {
-    const promptResult = await loadExpertPrompt({
-      projectRoot: options.projectRoot ?? process.cwd(),
-      resolvedExpertPath,
-      task,
-      ticket,
-    });
-    if (promptResult.isErr()) {
-      return err(promptResult.error);
+  let profileStatus: ProfileStatus = 'none';
+  let resolvedExpertPath = options.resolvedExpertPath ?? metadataString(task, 'resolvedExpertPath');
+  if (resolvedExpertPath === undefined && options.expertResolver !== undefined && options.actualExpert !== undefined && options.actualExpert.trim() !== '') {
+    try {
+      const hit = await options.expertResolver.path(options.actualExpert);
+      if (hit !== null) {
+        resolvedExpertPath = hit.path;
+      }
+    } catch (resolveErr: unknown) {
+      logger.warn({ taskId: task.id, error: resolveErr instanceof Error ? resolveErr.message : String(resolveErr) }, 'expertResolver.path failed, falling back');
     }
+  }
+  resolvedExpertPath ??= currentInstance.id;
+  const promptResult = await loadExpertPrompt({
+    projectRoot: options.projectRoot ?? process.cwd(),
+    resolvedExpertPath,
+    task,
+    ticket,
+  });
+  if (promptResult.isErr()) {
+    profileStatus = 'failed';
+    logger.warn({ taskId: task.id, error: promptResult.error }, 'expert profile load failed');
+  } else {
     promptContext = promptResult.value;
+    profileStatus = 'loaded';
   }
 
   // Create worktree for isolation
@@ -201,11 +235,15 @@ export async function executeClaimCommand(
 
   // EPIC-157 AC3: 写 expert_binding 到 jira ticket.json
   // 读 suggested_expert (Master 拆卡建议), 写 actual_expert (Performer binding)
-  let bindingWritten = false;
+  let bindingStatus: BindingStatus = 'skipped';
   if (options.actualExpert !== undefined && options.actualExpert.trim() !== '') {
     const jiraRead = readJiraTicket(ticket.id, process.cwd());
     if (jiraRead.isErr()) {
-      logger.warn({ ticketId: ticket.id, error: jiraRead.error }, 'jira ticket.json not found, skip binding write');
+      // Ticket.json unreadable (NOT_FOUND, PARSE_FAILED, WRITE_FAILED, VALIDATION_FAILED)
+      // counts as a binding write failure for AC7 — caller asked us to bind, the
+      // binding didn't take, distinguish from the "no actualExpert given" path.
+      bindingStatus = 'failed';
+      logger.warn({ ticketId: ticket.id, error: jiraRead.error }, 'jira ticket.json unreadable, binding write failed');
     } else {
       const existing = jiraRead.value.ticket.expert_binding;
       const suggested = existing?.suggested_expert ?? null;
@@ -223,12 +261,13 @@ export async function executeClaimCommand(
         process.cwd()
       );
       if (writeResult.isErr()) {
+        bindingStatus = 'failed';
         logger.warn(
           { ticketId: ticket.id, error: writeResult.error },
           'failed to write expert_binding to jira ticket.json'
         );
       } else {
-        bindingWritten = true;
+        bindingStatus = 'written';
         logger.info(
           { ticketId: ticket.id, actual: options.actualExpert, suggested },
           'EPIC-157 binding written'
@@ -236,6 +275,7 @@ export async function executeClaimCommand(
       }
     }
   }
+  const bindingWritten = bindingStatus === 'written';
 
   if (options.expertInvocationsQueue !== undefined) {
     const expertId = options.actualExpert ?? metadataString(task, 'expertId') ?? currentInstance.id;
@@ -272,15 +312,42 @@ export async function executeClaimCommand(
       ticketId: ticket.id,
       worktreePath: worktreeResult.value.path,
       performerId: currentInstance.id,
+      bindingStatus,
+      profileStatus,
     },
     'task claimed successfully'
   );
+
+  // EPIC-277-D AC7: tri-state exit code.
+  // 0 = binding written + profile loaded
+  // 2 = profile OK but binding write failed (or skipped under expert specified)
+  // 3 = profile load failed (binding state independent; bindingStatus decides 0/2 axis)
+  let exitCode: ClaimExitCode = 0;
+  if (profileStatus === 'failed') exitCode = 3;
+  else if (bindingStatus === 'failed') exitCode = 2;
+
+  // EPIC-277-D AC5: stdout affordance — three lines after success.
+  // Caller (task-cmd.ts) writes the headline; we expose the per-binding detail.
+  // Format: "     Expert bound: <X> (written|skipped|failed)" / Profile: <path|none> / SHA256: <sha[:12]|->.
+  const expertLabel = options.actualExpert ?? currentInstance.id;
+  const profileLabel = promptContext?.profilePath ?? 'none';
+  const shaHex = promptContext === undefined
+    ? '-'
+    : createHash('sha256').update(promptContext.profile).digest('hex').slice(0, 12);
+  const affordance =
+    `     Expert bound: ${expertLabel} (${bindingStatus})\n`
+    + `     Profile: ${profileLabel}\n`
+    + `     SHA256: ${shaHex}\n`;
 
   return ok({
     task,
     ticket,
     worktreePath: worktreeResult.value.path,
     bindingWritten,
+    bindingStatus,
+    profileStatus,
     promptContext,
+    exitCode,
+    affordance,
   });
 }

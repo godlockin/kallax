@@ -1,7 +1,6 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { ok } from 'neverthrow';
 import { logger } from '../../utils/logger.js';
 import { setupProcessCleanup } from '../../utils/process-cleanup.js';
 import { createSQLiteManager } from '../../core/sqlite/index.js';
@@ -13,7 +12,7 @@ import { getIsolationChecker } from '../../core/isolation-checker.js';
 import { createSSEBus } from '../../core/sse-bus.js';
 import { createExpertInvocationsQueue } from '../../core/expert-invocations-queue/index.js';
 import { createTraceLog } from '../../core/span-tracer.js';
-import type { WorktreeManager } from '../../core/worktree-manager.js';
+import { createWorktreeManager } from '../../core/worktree-manager.js';
 import { createApiServer, registerApiServerCleanup } from '../server.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -45,20 +44,22 @@ if (process.argv[1] !== undefined && (process.argv[1] === __filename || process.
     projectRoot,
   );
   const outputVerifier = createOutputVerifier({ projectRoot, testCommand: 'echo ok', lintCommand: 'echo ok' });
-  const mockWorktreeManager: WorktreeManager = {
-    create: () => Promise.resolve(ok({ path: '/tmp/wt', branch: 'kallax/t', commit: 'abc', taskId: 't' })),
-    remove: () => Promise.resolve(ok(undefined)),
-    list: () => Promise.resolve(ok([])),
-    getByTaskId: () => Promise.resolve(ok(null)),
-    validateIsolation: () => Promise.resolve(ok(true)),
-    getPath: () => '/tmp/wt',
-  };
+  // EPIC-277-D AC4: replace mockWorktreeManager with real WorktreeManager.
+  // KALLAX_WORKTREE_BASE_PATH env override lets tests pin a sandbox base;
+  // default keeps previous .kallax/worktrees layout for prod.
+  const worktreeBasePath = process.env['KALLAX_WORKTREE_BASE_PATH'] ?? '.kallax/worktrees';
+  const wmResult = createWorktreeManager({ projectRoot, worktreeBasePath });
+  if (wmResult.isErr()) {
+    logger.fatal({ error: wmResult.error.message }, 'failed to initialize worktree manager');
+    process.exit(1);
+  }
+  const worktreeManager = wmResult.value;
   const expertInvocationsQueue = createExpertInvocationsQueue();
   const traceLog = createTraceLog(db.traceOps);
   const server = createApiServer(
     { port: serverPort, host: serverHost, apiKey },
     {
-      db, taskAssigner, instanceRegistry, worktreeManager: mockWorktreeManager,
+      db, taskAssigner, instanceRegistry, worktreeManager,
       outputVerifier, isolationChecker, sseBus,
       expertResolver, expertInvocationsQueue, traceLog,
     },
