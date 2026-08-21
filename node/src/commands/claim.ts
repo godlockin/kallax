@@ -3,6 +3,7 @@
  * Atomically claim a task and create worktree isolation
  */
 
+import { createHash } from 'node:crypto';
 import { err, ok } from 'neverthrow';
 import type { KallaxResult, Task, Ticket } from '../types/index.js';
 import { KallaxError, KallaxErrorCode, TaskStatus } from '../types/index.js';
@@ -12,6 +13,9 @@ import type { WorktreeManager } from '../core/worktree-manager.js';
 import type { InstanceRegistry } from '../core/instance-registry.js';
 import type { TaskAssigner } from '../core/task-assigner.js';
 import { writeBinding, readJiraTicket } from '../jira/ticket-binding.js';
+import { loadExpertPrompt, type ExpertPromptContext } from '../core/expert-prompt.js';
+import type { ExpertInvocationsQueue } from '../core/expert-invocations-queue/types.js';
+import type { TraceLog } from '../core/span-tracer.js';
 
 export interface ClaimCommandOptions {
   readonly taskId?: string;
@@ -19,6 +23,11 @@ export interface ClaimCommandOptions {
   readonly capabilities?: string[];
   /** EPIC-157: Performer 实际 expert name (写 jira ticket.json binding) */
   readonly actualExpert?: string;
+  /** EPIC-277: DI hooks for expert activation and trace persistence. */
+  readonly expertInvocationsQueue?: ExpertInvocationsQueue;
+  readonly traceLog?: TraceLog;
+  readonly projectRoot?: string;
+  readonly resolvedExpertPath?: string;
 }
 
 export interface ClaimResult {
@@ -27,6 +36,13 @@ export interface ClaimResult {
   readonly worktreePath: string;
   /** EPIC-157: 是否写了 binding */
   readonly bindingWritten: boolean;
+  /** EPIC-277: prompt context passed to performer, when profile is configured. */
+  readonly promptContext?: ExpertPromptContext;
+}
+
+function metadataString(task: Task, key: string): string | undefined {
+  const value = task.metadata?.[key];
+  return typeof value === 'string' && value.trim() !== '' ? value : undefined;
 }
 
 export async function executeClaimCommand(
@@ -151,6 +167,21 @@ export async function executeClaimCommand(
 
   const ticket = ticketResult.value;
 
+  let promptContext: ExpertPromptContext | undefined;
+  const resolvedExpertPath = options.resolvedExpertPath ?? metadataString(task, 'resolvedExpertPath');
+  if (resolvedExpertPath !== undefined) {
+    const promptResult = await loadExpertPrompt({
+      projectRoot: options.projectRoot ?? process.cwd(),
+      resolvedExpertPath,
+      task,
+      ticket,
+    });
+    if (promptResult.isErr()) {
+      return err(promptResult.error);
+    }
+    promptContext = promptResult.value;
+  }
+
   // Create worktree for isolation
   const worktreeResult = await worktreeManager.create(task.id);
   if (worktreeResult.isErr()) {
@@ -206,6 +237,35 @@ export async function executeClaimCommand(
     }
   }
 
+  if (options.expertInvocationsQueue !== undefined) {
+    const expertId = options.actualExpert ?? metadataString(task, 'expertId') ?? currentInstance.id;
+    const queueResult = await options.expertInvocationsQueue.emit({
+      expertId,
+      ticketId: ticket.id,
+      timestamp: Date.now(),
+    });
+    if (queueResult.isErr()) {
+      logger.warn({ taskId: task.id, ticketId: ticket.id, error: queueResult.error }, 'expert activation enqueue failed');
+    }
+  }
+  if (options.traceLog !== undefined) {
+    options.traceLog.record({
+      actor: currentInstance.id,
+      action: 'expert_activation',
+      target: task.id,
+      detail: {
+        ticketId: ticket.id,
+        expertId: options.actualExpert ?? metadataString(task, 'expertId') ?? currentInstance.id,
+        profilePath: promptContext?.profilePath,
+        profileSha256: promptContext === undefined
+          ? undefined
+          : createHash('sha256').update(promptContext.profile).digest('hex'),
+        promptInjected: promptContext !== undefined,
+      },
+      result: 'success',
+    });
+  }
+
   logger.info(
     {
       taskId: task.id,
@@ -221,5 +281,6 @@ export async function executeClaimCommand(
     ticket,
     worktreePath: worktreeResult.value.path,
     bindingWritten,
+    promptContext,
   });
 }
