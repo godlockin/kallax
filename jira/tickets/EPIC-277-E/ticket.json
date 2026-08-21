@@ -1,0 +1,63 @@
+{
+  "id": "EPIC-277-E",
+  "epic": "EPIC-277",
+  "phase": "PHASE-027",
+  "title": "hook 体系治根 — 6 个 check-* 脚本实际接入 install.sh",
+  "status": "backlog",
+  "priority": "P0",
+  "type": "chore",
+  "created_at": "2026-08-21",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "labels": ["chore", "hooks", "immutable", "EPIC-223", "EPIC-224", "EPIC-225", "phase-027"],
+  "expert_binding": {
+    "suggested_expert": "custom:process-engineering-self-verify",
+    "actual_expert": "custom:process-engineering-self-verify"
+  },
+  "file_scope": {
+    "includes": [
+      "scripts/hooks/check-ticket-schema.sh",
+      "scripts/hooks/check-disclaimer.sh",
+      "scripts/hooks/snapshot-claude-md.sh",
+      "scripts/hooks/check-jargon.sh",
+      "scripts/hooks/install.sh",
+      "scripts/verify/check-narrative.sh",
+      "scripts/verify/check-decorative-claim.sh",
+      "scripts/verify/check-fail-closed.sh",
+      "scripts/verify/check-self-heal.sh",
+      "CLAUDE.md",
+      "jira/tickets/.archive-baseline.json",
+      "tests/integration/hook-system-health.test.sh",
+      "jira/tickets/EPIC-277-E/"
+    ]
+  },
+  "context": {
+    "why": "EPIC-277 卡 C 仲裁 (confluence/decisions/EPIC-277-arbitration-2026-08-21.md §6 P0 #2). Auditor 实测 scripts/hooks/ 只含 5 个 (check-claim-evidence.sh / commit-msg / install.sh / instance-ttl.sh / pre-commit / pre-push). 缺 4 个 check-* 脚本 (check-ticket-schema / check-disclaimer / snapshot-claude-md / check-jargon) + 2 个 verify 脚本未走 install.sh 验证. CLAUDE.md §5 '9 immutable 全部已接入 hook EPIC-224 验证' 失实, 跟 EPIC-225 主公 2026-08-08 拍板数字对齐治根失败. 实测 .claude/hooks/install.sh --verify 退出 1, hook 体系静默失效风险 (跟 core.hooksPath 已删临时目录历史教训联合).",
+    "scope": "6+ 个 hook 脚本 (含 install.sh 修复), 1 test class (hook-system-health.test.sh), CLAUDE.md §5 数字对齐."
+  },
+  "acceptance": [
+    "AC1: scripts/hooks/check-ticket-schema.sh 实际存在 + 含 ticket.json required_fields 9 项 (id/epic/phase/title/priority/type/created_at/file_scope.includes/acceptance). 修 cwd 解析 bug (跟 compliance 实测一致: ticket-schema check 默认从 main repo 跑找不到 worktree EPIC-277 路径, 改用 git -C <ticket.json path> 显式 cwd). raw: `bash scripts/hooks/check-ticket-schema.sh jira/tickets/EPIC-277-D/ticket.json` exit 0",
+    "AC2: scripts/hooks/check-disclaimer.sh 接入 install.sh (pre-commit + commit-msg), 含 staged .md disclaimer 检测 + MERGE_HEAD 排除 (跟 EPIC-274 联合). raw: 实测 commit 含 disclaimer 触发 exit 1",
+    "AC3: scripts/hooks/snapshot-claude-md.sh 接入 (advisory mode, 跟 EPIC-219 联合). raw: `bash scripts/hooks/snapshot-claude-md.sh` exit 0 + 输出 CLAUDE.md SHA256",
+    "AC4: scripts/hooks/check-jargon.sh 接入 (跟 EPIC-225 联合, 已部分接入 — 需 verify KALLAX_STAGED_ONLY=1 透传). raw: 实测 staging 含黑名单词触发 exit 1",
+    "AC5: scripts/verify/check-narrative.sh / check-decorative-claim.sh / check-fail-closed.sh / check-self-heal.sh 接入 pre-commit hook chain (跟 EPIC-224 hook 健康强制一致). raw: 实跑 4 个脚本各 exit 0 在干净 repo",
+    "AC6: `bash scripts/hooks/install.sh --verify` exit 0 — 9 immutable hook 全部可执行 + 全部注册 (raw: 实测 install --verify 输出 9/9 PASS)",
+    "AC7: CLAUDE.md §5 数字 (9 immutable + 2 辅助) 跟 scripts/hooks/ 实际内容一致 (advisory 备案, 不强改文档), .claude/rules/immutable-scripts.md 同步更新. raw: `grep -c '^scripts/hooks/' CLAUDE.md` = 9",
+    "AC8: tests/integration/hook-system-health.test.sh 6 case (每个 hook 1 case + install --verify + CLAUDE.md §5 数字对账). raw: 跑 `bash tests/integration/hook-system-health.test.sh` 6/6 PASS"
+  ],
+  "verification": {
+    "reproduction_command": "bash -c 'bash scripts/hooks/install.sh --verify && bash tests/integration/hook-system-health.test.sh'",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "期望: install --verify 9/9 PASS + hook-system-health 6/6 PASS",
+    "not_verified": [
+      "CLAUDE.md §5 改字触发 EPIC-159 trim 阈值 (≤200 行), 数字对齐需 §6 联合 review",
+      "install.sh hook 健康修复 + git 仓库状态需跟 EPIC-155/176/208 bypass 历史债联合治理"
+    ]
+  },
+  "related": {
+    "epics": ["EPIC-223", "EPIC-224", "EPIC-225", "EPIC-155", "EPIC-176", "EPIC-208"],
+    "notes": "P0 战略红线 (跟审计师 P0 BLOCK 一致). 数字 9/2 是装饰性宣称, 必须治根."
+  }
+}
