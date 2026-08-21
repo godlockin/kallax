@@ -96,6 +96,7 @@ describe('EPIC-277: assignTask with expertResolver', () => {
     bridgeInstance = undefined;
     mockResolve.mockReset();
     mockFindJiraTicketPath.mockReset();
+    mockUpdateTask.mockReset();
     mockExistsSync.mockReturnValue(true);
     mockFindJiraTicketPath.mockReturnValue('/repo/jira/tickets/EPIC-999/ticket.json');
     const ok = <T>(v: T) => ({ isErr: () => false, isOk: () => true, value: v });
@@ -189,6 +190,22 @@ describe('EPIC-277: assignTask with expertResolver', () => {
     expect(result.value.metadata).toMatchObject({ retained: 'value', suggestedExpert: 'backend' });
     expect(mockUpdateTask).toHaveBeenCalledWith('t1', expect.objectContaining({
       metadata: expect.objectContaining({ retained: 'value', suggestedExpert: 'backend' }),
+    }));
+  });
+
+  it('releases the claim when metadata persistence fails', async () => {
+    const updateError = new Error('metadata write failed');
+    mockUpdateTask
+      .mockReturnValueOnce({ isErr: () => true, error: updateError })
+      .mockReturnValueOnce({ isErr: () => false, isOk: () => true, value: undefined });
+
+    const assigner = createTaskAssigner(fakeDb as never, isolationChecker, fakeInstanceRegistry as never, getBridge());
+    const result = await assigner.assignTask('t1', 'p1');
+
+    expect(result.isErr()).toBe(true);
+    expect(mockUpdateTask).toHaveBeenNthCalledWith(2, 't1', expect.objectContaining({
+      status: 'pending',
+      performerId: null,
     }));
   });
 

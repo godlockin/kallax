@@ -234,15 +234,28 @@ export function createTaskAssigner(
       }
 
       const existingMetadata = taskResult.value.metadata ?? {};
-      db.updateTask(taskId, {
-        metadata: {
-          ...existingMetadata,
-          checkpointInterval,
-          masteryLevel: mastery,
-          suggestedExpert,
-          resolvedExpertPath,
-        },
-      });
+      const metadata = {
+        ...existingMetadata,
+        checkpointInterval,
+        masteryLevel: mastery,
+        suggestedExpert,
+        resolvedExpertPath,
+      };
+      const metadataResult = db.updateTask(taskId, { metadata });
+      if (metadataResult.isErr()) {
+        const releaseResult = db.updateTask(taskId, {
+          status: TaskStatus.PENDING,
+          performerId: null,
+          startedAt: undefined,
+        });
+        if (releaseResult.isErr()) {
+          logger.error(
+            { taskId, metadataError: metadataResult.error.message, releaseError: releaseResult.error.message },
+            'task metadata update and rollback failed',
+          );
+        }
+        return err(metadataResult.error);
+      }
 
       logger.info(
         { taskId, performerId, mastery, checkpointInterval, suggestedExpert, resolvedExpertPath },
