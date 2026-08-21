@@ -17,6 +17,7 @@ import { initializeSchema } from './schema.js';
 import { createTicketOperations } from './ticket-ops.js';
 import { createTaskOperations } from './task-ops.js';
 import { createInstanceOperations, createMessageOperations, createCommonOperations } from './instance-message-ops.js';
+import { createTraceOps } from './trace-ops.js';
 
 // Module-level raw database reference for getSqliteManager() compatibility
 let rawDb: Database.Database | null = null;
@@ -73,6 +74,7 @@ export function createSQLiteManager(config: SQLiteConfig): KallaxResult<SQLiteMa
   const instanceOps = createInstanceOperations(db);
   const messageOps = createMessageOperations(db);
   const commonOps = createCommonOperations(db);
+  const traceOps = createTraceOps(db);
 
   const manager: SQLiteManager = {
     ...ticketOps,
@@ -81,6 +83,7 @@ export function createSQLiteManager(config: SQLiteConfig): KallaxResult<SQLiteMa
     ...messageOps,
     ...commonOps,
     async: createAsyncWrapper(db, config.path),
+    traceOps,
   };
 
   return ok(manager);

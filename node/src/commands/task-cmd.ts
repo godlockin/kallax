@@ -28,7 +28,11 @@ export function registerTaskCommands(program: Command, ctx: AppContext): void {
       try {
         const result = await executeClaimCommand(
           ctx.db, ctx.worktreeManager, ctx.instanceRegistry, ctx.taskAssigner,
-          { taskId, ticketId: opts?.['ticket'], actualExpert: opts?.['expert'] },
+          {
+            taskId, ticketId: opts?.['ticket'], actualExpert: opts?.['expert'],
+            expertInvocationsQueue: ctx.expertInvocationsQueue,
+            traceLog: ctx.traceLog,
+          },
         );
         if (result.isErr()) {
           process.stderr.write(`Claim failed: ${result.error.message}\n`);
