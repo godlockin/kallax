@@ -105,6 +105,10 @@ export function createTaskOperations(db: Database.Database): TaskOperations {
           setClauses.push('error = ?');
           values.push(updates.error);
         }
+        if (updates.metadata !== undefined) {
+          setClauses.push('metadata = ?');
+          values.push(JSON.stringify(updates.metadata));
+        }
 
         setClauses.push('updated_at = ?');
         values.push(Date.now());
