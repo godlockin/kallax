@@ -11,6 +11,8 @@ import { createOutputVerifier } from '../../core/output-verifier.js';
 import { ExpertResolverBridge } from '../../core/expert-resolver-bridge.js';
 import { getIsolationChecker } from '../../core/isolation-checker.js';
 import { createSSEBus } from '../../core/sse-bus.js';
+import { createExpertInvocationsQueue } from '../../core/expert-invocations-queue/index.js';
+import { createTraceLog } from '../../core/span-tracer.js';
 import type { WorktreeManager } from '../../core/worktree-manager.js';
 import { createApiServer, registerApiServerCleanup } from '../server.js';
 
@@ -51,7 +53,16 @@ if (process.argv[1] !== undefined && (process.argv[1] === __filename || process.
     validateIsolation: () => Promise.resolve(ok(true)),
     getPath: () => '/tmp/wt',
   };
-  const server = createApiServer({ port: serverPort, host: serverHost, apiKey }, { db, taskAssigner, instanceRegistry, worktreeManager: mockWorktreeManager, outputVerifier, isolationChecker, sseBus });
+  const expertInvocationsQueue = createExpertInvocationsQueue();
+  const traceLog = createTraceLog(db.traceOps);
+  const server = createApiServer(
+    { port: serverPort, host: serverHost, apiKey },
+    {
+      db, taskAssigner, instanceRegistry, worktreeManager: mockWorktreeManager,
+      outputVerifier, isolationChecker, sseBus,
+      expertResolver, expertInvocationsQueue, traceLog,
+    },
+  );
   setupProcessCleanup();
   registerApiServerCleanup(server);
   server.start().catch((err: unknown) => { logger.fatal({ error: err instanceof Error ? err.message : String(err) }, 'failed to start API server'); process.exit(1); });

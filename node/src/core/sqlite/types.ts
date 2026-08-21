@@ -4,6 +4,7 @@
  */
 
 import type { KallaxResult, Task, Ticket, Instance, Message } from '../../types/index.js';
+import type { TraceOperations } from './trace-ops.js';
 
 // ── Config ──────────────────────────────────────────────────────────────────
 
@@ -48,6 +49,8 @@ export interface SQLiteManager {
   // Lifecycle
   close: () => void;
   getStats: () => DatabaseStats;
+  /** EPIC-277-D: trace_log 表的窄接口 (替代 getRawDatabase, 防 raw handle 暴露 9/10). */
+  traceOps: TraceOperations;
 }
 
 export interface SQLiteManagerAsync {
