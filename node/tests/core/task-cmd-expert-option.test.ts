@@ -21,6 +21,11 @@ describe('EPIC-277 AC5: task claim --expert', () => {
         task: { id: 'task-1' },
         worktreePath: '/tmp/task-1',
         ticket: { title: 'Test ticket' },
+        bindingWritten: true,
+        bindingStatus: 'written',
+        profileStatus: 'none',
+        exitCode: 0,
+        affordance: '     Expert bound: Backend (written)\n     Profile: none\n     SHA256: -\n',
       },
     });
 

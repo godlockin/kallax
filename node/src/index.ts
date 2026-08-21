@@ -41,6 +41,7 @@ import { registerInstallCommands } from './commands/install-cmd.js';
 import { registerRouteCommands } from './commands/route-cmd.js';
 import { registerRoleCommands } from './commands/role-cmd.js';
 import { registerLoadCommands } from './commands/load-cmd.js';
+import { registerTraceCommands } from './commands/trace-cmd.js';
 import type { AppContext } from './cli-context.js';
 function findProjectRoot(): string {
   let dir = process.cwd();
@@ -114,6 +115,7 @@ void (async (): Promise<void> => {
   registerInstallCommands(program);
   registerLoadCommands(program, ctx);
   registerRoleCommands(program, ctx);
+  registerTraceCommands(program, ctx);
 
   program.parseAsync(process.argv).catch((error: unknown) => {
     logger.kallaxError(KallaxError.fromUnknown(error, KallaxErrorCode.INTERNAL_ERROR));
