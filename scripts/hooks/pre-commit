@@ -260,21 +260,28 @@ if [[ "$ANTIFAB_FAILED" -eq 1 ]]; then
   exit 1
 fi
 
-# ── EPIC-110: 4 immutable-law checks (decorative/narrative/fail-closed/self-heal) ──
-# CLAUDE.md "4 不可更改 法律" — v3.6.0 起 script 存在, EPIC-110 接进 pre-commit hook
+# ── EPIC-110 + EPIC-277-E: 4 immutable-law checks (decorative/narrative/fail-closed/self-heal) ──
+# CLAUDE.md "4 不可更改 法律" — v3.6.0 起 script 存在, EPIC-110 接进 pre-commit hook.
+# EPIC-277-E (2026-08-21): canonical path 改 scripts/hooks/ (跟 install --verify 9/9 1:1).
+# 历史 scripts/verify/ 保留作 deprecated alias (不动 pre-commit fail 行为).
 if [[ "$HOOK_BYPASS" -eq 0 ]]; then
   LAW_FAILED=0
   for _law in check-decorative-claim check-narrative check-fail-closed check-self-heal check-live-test-guard check-evidence-fake; do
-    _law_path="${KALLAX_ROOT}/scripts/verify/${_law}.sh"
-    if [[ -x "$_law_path" ]]; then
-      if ! KALLAX_STAGED_ONLY=1 bash "$_law_path" >/dev/null 2>&1; then
-        echo "╔══════════════════════════════════════════════════════════════╗"
-        echo "║  BLOCKED: $_law violation                    ║"
-        echo "║  Run: bash scripts/verify/${_law}.sh          ║"
-        echo "║  Bypass (主公 approval): KALLAX_HOOK_BYPASS=1 git commit ...  ║"
-        echo "╚══════════════════════════════════════════════════════════════╝"
-        LAW_FAILED=1
-      fi
+    # EPIC-277-E: 优先读 scripts/hooks/ (canonical), fall back 到 scripts/verify/ (历史路径).
+    if [[ -x "${KALLAX_ROOT}/scripts/hooks/${_law}.sh" ]]; then
+      _law_path="${KALLAX_ROOT}/scripts/hooks/${_law}.sh"
+    elif [[ -x "${KALLAX_ROOT}/scripts/verify/${_law}.sh" ]]; then
+      _law_path="${KALLAX_ROOT}/scripts/verify/${_law}.sh"
+    else
+      continue
+    fi
+    if ! KALLAX_STAGED_ONLY=1 bash "$_law_path" >/dev/null 2>&1; then
+      echo "╔══════════════════════════════════════════════════════════════╗"
+      echo "║  BLOCKED: $_law violation                    ║"
+      echo "║  Run: bash scripts/hooks/${_law}.sh          ║"
+      echo "║  Bypass (主公 approval): KALLAX_HOOK_BYPASS=1 git commit ...  ║"
+      echo "╚══════════════════════════════════════════════════════════════╝"
+      LAW_FAILED=1
     fi
   done
   if [[ "$LAW_FAILED" -eq 1 ]]; then
@@ -295,7 +302,7 @@ fi
 # ── EPIC-220: disclaimer audit (借鉴 prime-agent limit != success) ────────
 # 扫 staged .md 的 trusted/sandbox/secure/safe 关键词, 必带 raw_output 引用.
 if [[ "$HOOK_BYPASS" -eq 0 ]]; then
-  DISCLAIMER_CHECK="${KALLAX_ROOT}/scripts/verify/check-disclaimer.sh"
+  DISCLAIMER_CHECK="${KALLAX_ROOT}/scripts/hooks/check-disclaimer.sh"
   if [[ -x "$DISCLAIMER_CHECK" ]]; then
     _staged_md="$(git diff --cached --name-only --diff-filter=ACM -- '*.md' 2>/dev/null || true)"
     if [[ -n "$_staged_md" ]]; then
@@ -308,7 +315,7 @@ if [[ "$HOOK_BYPASS" -eq 0 ]]; then
       if ! KALLAX_STAGED_ONLY=1 bash "$DISCLAIMER_CHECK" >/dev/null 2>&1; then
         echo "╔══════════════════════════════════════════════════════════════╗"
         echo "║  BLOCKED: disclaimer 无 raw_output 引用 (EPIC-220)            ║"
-        echo "║  Run: KALLAX_STAGED_ONLY=1 bash scripts/verify/check-disclaimer.sh ║"
+        echo "║  Run: KALLAX_STAGED_ONLY=1 bash scripts/hooks/check-disclaimer.sh ║"
         echo "║  Bypass (主公 approval): KALLAX_HOOK_BYPASS=1 git commit ...  ║"
         echo "╚══════════════════════════════════════════════════════════════╝"
         exit 1
@@ -322,12 +329,12 @@ fi
 _staged_gov="$(git diff --cached --name-only --diff-filter=ACM \
   -- 'CLAUDE.md' '.claude/rules/*.md' 2>/dev/null || true)"
 if [[ -n "$_staged_gov" ]]; then
-  SNAPSHOT_SCRIPT="${KALLAX_ROOT}/scripts/verify/snapshot-claude-md.sh"
+  SNAPSHOT_SCRIPT="${KALLAX_ROOT}/scripts/hooks/snapshot-claude-md.sh"
   if [[ -x "$SNAPSHOT_SCRIPT" ]]; then
     _recent_tag="$(git tag -l 'claude-md-pre-*' --sort=-creatordate | head -1)"
     if [[ -z "$_recent_tag" ]]; then
       echo "NOTE (EPIC-219): 正在改治理文件但无 snapshot tag."
-      echo "  建议: bash scripts/verify/snapshot-claude-md.sh snapshot '<改什么>'"
+      echo "  建议: bash scripts/hooks/snapshot-claude-md.sh snapshot '<改什么>'"
       echo "  文件: $(echo "$_staged_gov" | tr '\n' ' ')"
     fi
   fi
@@ -338,7 +345,7 @@ fi
 # 跟装饰性宣称区别: 装饰性宣称是宽松模式 (措辞扫描), jargon 是严格黑名单 (0 黑话).
 # Baseline (同 EPIC-223 的 baseline 做法): 历史违规 (≤ 14eb7c4f) 划线, 新增强制.
 if [[ "$HOOK_BYPASS" -eq 0 ]]; then
-  JARGON_CHECK="${KALLAX_ROOT}/scripts/verify/check-jargon.sh"
+  JARGON_CHECK="${KALLAX_ROOT}/scripts/hooks/check-jargon.sh"
   if [[ -x "$JARGON_CHECK" ]]; then
     _staged_jargon="$(git diff --cached --name-only --diff-filter=ACM \
       -- '*.md' '*.sh' '*.ts' '*.rs' 2>/dev/null || true)"
@@ -346,7 +353,7 @@ if [[ "$HOOK_BYPASS" -eq 0 ]]; then
       if ! bash "$JARGON_CHECK" --staged >/dev/null 2>&1; then
         echo "╔══════════════════════════════════════════════════════════════╗"
         echo "║  BLOCKED: jargon violation (EPIC-225)                     ║"
-        echo "║  Run: bash scripts/verify/check-jargon.sh --staged        ║"
+        echo "║  Run: bash scripts/hooks/check-jargon.sh --staged        ║"
         echo "║  List: jira/tickets/.jargon-blacklist.json                 ║"
         echo "║  Bypass (主公 approval): KALLAX_HOOK_BYPASS=1 git commit ... ║"
         echo "╚══════════════════════════════════════════════════════════════╝"
@@ -358,10 +365,33 @@ if [[ "$HOOK_BYPASS" -eq 0 ]]; then
   fi
 fi
 
+# ── EPIC-279: doc word budgets (DSH Path C 借鉴, 跟 check-jargon 同模式) ─
+# 扫 staged .md, 超 budgets.manifest.json ceiling 必拒 (fail-closed exit 1).
+# 跟 check-jargon 区别: jargon 扫黑名单词表, doc-budgets 扫 word count.
+# 历史 (≤ EPIC-279 baseline) 豁免: exemptions 字段在 manifest 列 (CHANGELOG/AGENTS.md).
+if [[ "$HOOK_BYPASS" -eq 0 ]]; then
+  DOC_BUDGET_CHECK="${KALLAX_ROOT}/scripts/check-doc-budgets.sh"
+  if [[ -x "$DOC_BUDGET_CHECK" ]]; then
+    _staged_doc_budget="$(git diff --cached --name-only --diff-filter=ACM -- '*.md' 2>/dev/null || true)"
+    if [[ -n "$_staged_doc_budget" ]]; then
+      if ! bash "$DOC_BUDGET_CHECK" --staged >/dev/null 2>&1; then
+        echo "╔══════════════════════════════════════════════════════════════╗"
+        echo "║  BLOCKED: doc word budget violation (EPIC-279)            ║"
+        echo "║  Run: bash scripts/check-doc-budgets.sh --staged         ║"
+        echo "║  Manifest: budgets.manifest.json                          ║"
+        echo "║  Bypass (主公 approval): KALLAX_HOOK_BYPASS=1 git commit ... ║"
+        echo "╚══════════════════════════════════════════════════════════════╝"
+        bash "$DOC_BUDGET_CHECK" --staged 2>&1 | head -30 || true
+        exit 1
+      fi
+    fi
+  fi
+fi
+
 # ── EPIC-223: 新 ticket schema gate ─────────────────────────────────────
 # staged 的 ticket.json 若属 > archived_before 的 EPIC, 强制 required_fields.
 if [[ "$HOOK_BYPASS" -eq 0 ]]; then
-  TICKET_SCHEMA_CHECK="${KALLAX_ROOT}/scripts/verify/check-ticket-schema.sh"
+  TICKET_SCHEMA_CHECK="${KALLAX_ROOT}/scripts/hooks/check-ticket-schema.sh"
   if [[ -x "$TICKET_SCHEMA_CHECK" ]]; then
     _staged_tickets="$(git diff --cached --name-only --diff-filter=ACM \
       -- 'jira/tickets/*/ticket.json' 2>/dev/null || true)"
@@ -375,12 +405,13 @@ if [[ "$HOOK_BYPASS" -eq 0 ]]; then
         # hook 静默 abort (无任何 fail 原因输出).
         # 跟 EPIC-232 bug 3 同型 (jq exit 2 在 set -e 下中断).
         # 修法: `|| _rc=$?` 兜住非零, 让下面的分支判断能跑到.
+        # EPIC-277-E: 路径从 scripts/hooks/ 读 (canonical location, 跟 install --verify 1:1)
         _rc=0
         bash "$TICKET_SCHEMA_CHECK" "$_epic" >/dev/null 2>&1 || _rc=$?
         # exit 3 = ARCHIVED_SKIP (历史 EPIC, 不回溯) → 放行
         if [[ "$_rc" -eq 1 ]]; then
           echo "BLOCKED: $_epic ticket.json schema 不合规 (EPIC-223)"
-          echo "  Run: bash scripts/verify/check-ticket-schema.sh $_epic"
+          echo "  Run: bash scripts/hooks/check-ticket-schema.sh $_epic"
           _ticket_failed=1
         fi
       done <<< "$_staged_tickets"

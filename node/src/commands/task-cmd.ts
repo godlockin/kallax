@@ -32,15 +32,22 @@ export function registerTaskCommands(program: Command, ctx: AppContext): void {
             taskId, ticketId: opts?.['ticket'], actualExpert: opts?.['expert'],
             expertInvocationsQueue: ctx.expertInvocationsQueue,
             traceLog: ctx.traceLog,
+            expertResolver: ctx.expertResolver,
           },
         );
         if (result.isErr()) {
           process.stderr.write(`Claim failed: ${result.error.message}\n`);
           process.exit(1);
         }
+        // EPIC-277-D AC5: stdout affordance (3 lines: Expert bound / Profile / SHA256)
         process.stdout.write(`[OK] Task ${result.value.task.id} claimed\n`);
         process.stdout.write(`     Worktree: ${result.value.worktreePath}\n`);
         process.stdout.write(`     Ticket: ${result.value.ticket.title}\n`);
+        process.stdout.write(result.value.affordance);
+        // EPIC-277-D AC7: tri-state exit code (0 OK, 2 binding failed, 3 profile failed)
+        if (result.value.exitCode !== 0) {
+          process.exit(result.value.exitCode);
+        }
       } catch (error: unknown) {
         logger.kallaxError(KallaxError.fromUnknown(error));
         process.exit(1);
