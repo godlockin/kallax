@@ -18,7 +18,7 @@ if [ -z "$REPO_ROOT" ]; then
   REPO_ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git rev-parse --show-toplevel 2>/dev/null || pwd)"
 fi
 HOOKS_SRC="${REPO_ROOT}/scripts/hooks"
-GIT_DIR="$(git -C "$REPO_ROOT" rev-parse --git-common-dir)"
+GIT_DIR="$(env -u GIT_DIR -u GIT_WORK_TREE git -C "$REPO_ROOT" rev-parse --git-common-dir)"
 # worktree 场景下 --git-common-dir 可能是相对路径
 case "$GIT_DIR" in
   /*) ;;

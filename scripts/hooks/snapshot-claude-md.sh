@@ -43,7 +43,7 @@ case "$cmd" in
   verify)
     tag="${1:?Usage: snapshot-claude-md.sh verify <tag>}"
     # 仅校验 tag 存在, 不做 diff 内容 (post-edit diff 是 user 责任)
-    if git -C "$REPO_ROOT" rev-parse "$tag" >/dev/null 2>&1; then
+    if env -u GIT_DIR -u GIT_WORK_TREE git -C "$REPO_ROOT" rev-parse "$tag" >/dev/null 2>&1; then
       echo "OK tag exists: $tag"
       exit 0
     else
@@ -53,7 +53,7 @@ case "$cmd" in
     ;;
   rollback)
     tag="${1:?Usage: snapshot-claude-md.sh rollback <tag>}"
-    if ! git -C "$REPO_ROOT" rev-parse "$tag" >/dev/null 2>&1; then
+    if ! env -u GIT_DIR -u GIT_WORK_TREE git -C "$REPO_ROOT" rev-parse "$tag" >/dev/null 2>&1; then
       echo "FAIL tag not found: $tag" >&2
       exit 1
     fi
