@@ -11,6 +11,7 @@ import type { ExpertResolverBridge } from './core/expert-resolver-bridge.js';
 import type { ExpertInvocationsQueue } from './core/expert-invocations-queue/types.js';
 import type { TraceLog } from './core/span-tracer.js';
 import type { GitService } from './core/git-service.js';
+import type { SessionEventEmitter } from './core/event-log/index.js';
 
 export interface AppContext {
   readonly db: SQLiteManager;
@@ -24,4 +25,6 @@ export interface AppContext {
   readonly expertResolver?: ExpertResolverBridge;
   readonly expertInvocationsQueue?: ExpertInvocationsQueue;
   readonly traceLog?: TraceLog;
+  /** EPIC-282 (DSH Gap #2): card-d SessionEvent 埋点. 可选, 不注入则跳过 emit. */
+  readonly sessionEventEmitter?: SessionEventEmitter;
 }

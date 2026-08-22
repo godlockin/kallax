@@ -1,0 +1,65 @@
+{
+  "id": "EPIC-281",
+  "epic": "EPIC-281",
+  "phase": "PHASE-029",
+  "title": "Dashboard Phase 1 — 静态站 MVP (0 借, 0 schema change, 0 DB)",
+  "status": "in_progress",
+  "priority": "P2",
+  "type": "feature",
+  "created_at": "2026-08-22",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "labels": ["feature", "dashboard", "phase-029", "EPIC-277-F", "static-site", "no-borrow"],
+  "expert_binding": {
+    "suggested_expert": "frontend",
+    "actual_expert": "frontend"
+  },
+  "file_scope": {
+    "includes": [
+      "scripts/dashboard-p1/emit.sh",
+      "scripts/dashboard-p1/serve.sh",
+      "scripts/dashboard-p1/verify.sh",
+      ".claude/commands/kallax-dashboard.md",
+      "docs/reference/dashboard-p1.md",
+      "dist/dashboard/",
+      "jira/tickets/EPIC-281/"
+    ],
+    "_why_no_borrow": "0 借 (避免 AGPL/Fair-code/DB 漂移). 跟 EPIC-013 borrowing-from-external 联合, 借方法论不借代码.",
+    "_why_zero_schema": "0 schema change (跟 check-ticket-schema.sh 1:1). 数据源是 jira/tickets/*.json (跟 EPIC-277-F PR #467 1:1).",
+    "_why_zero_db": "0 DB. jira/tickets/*.json 是单真相源 (跟 EPIC-223 归档基线 1:1)."
+  },
+  "context": {
+    "why": "队伍 E 接 EPIC-281 任务 (Master 2026-08-22 拍板). 自研静态站 dashboard Phase 1 MVP, 跟 EPIC-277-F 数据源 PR #467 联动. 0 借 / 0 schema change / 0 DB 三条硬约束.",
+    "scope": "3 个新脚本 (emit/serve/verify, ~250 LOC) + 1 docs + 1 slash command + ticket.json. 0 改 src/, 0 改 hooks/ immutable, 0 改 src."
+  },
+  "acceptance": [
+    "AC1: scripts/dashboard-p1/emit.sh 跑通 exit 0, 生成 dist/dashboard/data.json + index.html (非空, ticket 数 > 0)",
+    "AC2: scripts/dashboard-p1/serve.sh python http.server 锁 127.0.0.1:8765, 拒绝 DASHBOARD_HOST != 127.0.0.1",
+    "AC3: scripts/dashboard-p1/verify.sh 跑通 exit 0, 跑 check-ticket-schema.sh + check-claim-evidence.sh + emit 自检 (3/3 PASS)",
+    "AC4: docs/reference/dashboard-p1.md 含用法/架构/4-branch swimlane/NO_DATA 灰态/R5 缓解/Phase 2 边界",
+    "AC5: .claude/commands/kallax-dashboard.md 新 slash command, 调 emit.sh",
+    "AC6: NO_DATA 灰态 vs 真 0 区分 — sprint-metrics exit=2/3 时显式标 NO_DATA / DOCS_ONLY_SKIP, 不混 PASS",
+    "AC7: Rule 34 gate badge — bugfix ticket 缺 reproduction 任一字段 → 红牌列表 (data.json.rule34_violations + index.html 表格)",
+    "AC8: 4-branch flow 走完 (feature → testing → main → miao)"
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "IN_PROGRESS"
+  },
+  "verification": {
+    "reproduction_command": "bash -c 'bash scripts/dashboard-p1/emit.sh && bash scripts/dashboard-p1/verify.sh'",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "本卡非 bugfix, 是 dashboard MVP feature. emit.sh + verify.sh 双跑 exit 0. data.json 含 216 tickets, 152 done, 9 bugfix, 14 docs, 139 archived. Rule 34 violations=[] (无 bugfix ticket 缺 reproduction). sprint-metrics --epic EPIC-277-F exit=1 → metrics_status=FAIL (跟 EPIC-276 验证 1:1, 13/16 FAIL 是已知债)."
+  },
+  "related": {
+    "epics": ["EPIC-277-F", "EPIC-223", "EPIC-069-D", "EPIC-013", "EPIC-174"],
+    "notes": "P2 (dashboard 是辅助, 不阻塞主线). 数据源 = EPIC-277-F PR #467. 0 借 / 0 schema change / 0 DB 三条硬约束."
+  }
+}

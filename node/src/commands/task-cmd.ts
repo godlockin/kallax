@@ -33,6 +33,7 @@ export function registerTaskCommands(program: Command, ctx: AppContext): void {
             expertInvocationsQueue: ctx.expertInvocationsQueue,
             traceLog: ctx.traceLog,
             expertResolver: ctx.expertResolver,
+            sessionEventEmitter: ctx.sessionEventEmitter,
           },
         );
         if (result.isErr()) {
