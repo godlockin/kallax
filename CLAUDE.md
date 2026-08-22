@@ -82,14 +82,16 @@ cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run \
 
 ### 3.2. Rule 36 — Sprint 结束必跑 4 北极星 metric (EPIC-194, v3.34.5)
 
+> **EPIC-277-H 主公 2026-08-22 拍板**: cross_epic_reuse_rate 阈值 60% → **40%** (基础设施型 EPIC 复用率天然低). mis_dispatch_rate 加 `multi_spec_intentional: true` 豁免 (跨多 specialization 是设计, 非错派). 见 `confluence/decisions/EPIC-277-cross-sprint-followup-2026-08-22.md` §3.
+
 **起因**: 主公 2026-08-07 拍板 (数据源: EPIC-023-C 北极星 + EPIC-157 binding 字段), Sprint 结束必跑 `scripts/metrics/sprint-metrics.sh` 4 指标.
 
 **Rule (强制)**:
 1. **expert_activation_rate ≥ 5** — 每个 EPIC 必触发 ≥ 5 distinct experts (避免单点依赖)
-2. **cross_epic_reuse_rate ≥ 60%** — file_scope.includes 中 ≥ 60% 已被其他 EPIC 覆盖 (复用而非新建)
+2. **cross_epic_reuse_rate ≥ 40%** — file_scope.includes 中 ≥ 40% 已被其他 EPIC 覆盖 (复用而非新建). EPIC-277-H 主公拍板从 60% 放宽到 40% (基础设施型 EPIC 复用率天然低, 60% 阈值过严)
 2b. **cross_epic_docs_reuse_rate ≥ 40%** (EPIC-253 副指标) — 只算 docs 类路径 (CLAUDE.md / .claude/rules / confluence / docs / *.md / tests/integration/*.sh), 给 docs-only EPIC 区分度. 阈值放宽因 docs 天然比 code 分散
 3. **ab_hit_rate < 15%** (反向) — A+B 2-Group review 推荐 跟 final outcome 吻合率 ≥ 85%
-4. **mis_dispatch_rate < 10%** — Performer 派单错率 < 10% (ticket 跨 specialization)
+4. **mis_dispatch_rate < 10%** — Performer 派单错率 < 10% (ticket 跨 specialization). EPIC-277-H 加豁免: `ticket.json.multi_spec_intentional: true` → scope_conflict 强制 0 (跨多 spec 是设计)
 
 **0 静默跳过**:
 - Sprint 结束时必跑 `bash scripts/metrics/sprint-metrics.sh --epic EPIC-XXX` 输出 4 指标
@@ -99,7 +101,7 @@ cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run \
 - **历史 EPIC 归档跳过** (EPIC-223): EPIC 编号 ≤ `jira/tickets/.archive-baseline.json` `archived_before` (当前 222) → 指标 #4 返回 `ARCHIVED_SKIP`, 不回溯. 新卡 (> 222) 强制 `check-ticket-schema.sh` required_fields 全填.
 
 **跟现有 Rule 复用 (0 增)**:
-- Rule 5 (DRY): 跨 EPIC 复用 ≥ 60% (数字取自 EPIC-023-C 北极星 #2)
+- Rule 5 (DRY): 跨 EPIC 复用 ≥ 40% (数字取自 EPIC-023-C 北极星 #2, EPIC-277-H 主公拍板 60→40)
 - Rule 9 (KPI X/Y): 4 指标必带 X/Y 数字 (e.g. expert_activation=5/5)
 - Rule 13 (3 模式 decision-gate): NO_DATA 触发 ASK
 - Rule 35 (Sprint 时间盒): Sprint 结束必跑 (本 Rule 收尾)
