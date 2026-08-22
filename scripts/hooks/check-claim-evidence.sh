@@ -12,7 +12,7 @@
 #   1 = FAIL (decorative claim 无 evidence)
 set -euo pipefail
 
-ROOT="$(git rev-parse --show-toplevel)"
+ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git rev-parse --show-toplevel)"
 HOOK_NAME="check-claim-evidence"
 FAIL=0
 
