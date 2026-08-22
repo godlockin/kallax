@@ -15,9 +15,7 @@
       "node/tests/integration/snapshot/kallax-help.test.ts",
       "node/tests/integration/snapshot/expected/kallax-list.json",
       "node/tests/integration/snapshot/expected/kallax-help.json",
-      "scripts/hooks/check-claim-evidence.sh",
-      "scripts/verify/check-snapshot-exemption.sh",
-      "scripts/verify/.snapshot-exemption-list.txt"
+      "scripts/hooks/check-claim-evidence.sh"
     ],
     "excludes": [
       ".claude/commands/kallax-list.sh",
