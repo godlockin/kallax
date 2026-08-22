@@ -35,9 +35,9 @@ CLAUDE.md §5 历史上出现过 **4 个互不一致的数字**:
 
 **根因**: 表格把 immutable (fail-closed, 改动需主公亲自) 跟辅助脚本 (可迭代) 混在一起, 导致 "数几行" 得出的数字跟 "真正 immutable 数" 不一致.
 
-## 2. 统一口径 (EPIC-277-E 后: 9 immutable 全部在 scripts/hooks/)
+## 2. 统一口径 (EPIC-280 后: 10 immutable)
 
-### 9 immutable (fail-closed, 改动需主公亲自批准, 全部已接入 hook)
+### 10 immutable (fail-closed, 改动需主公亲自批准, 全部已接入 hook)
 
 | # | Script | Canonical Path (EPIC-277-E) | hook 接入点 | EPIC |
 |---|--------|------|------------|------|
@@ -50,6 +50,9 @@ CLAUDE.md §5 历史上出现过 **4 个互不一致的数字**:
 | 7 | `snapshot-claude-md.sh` | `scripts/hooks/snapshot-claude-md.sh` | pre-commit (advisory, CLAUDE.md/rules) | EPIC-219 → 224 |
 | 8 | `check-ticket-schema.sh` | `scripts/hooks/check-ticket-schema.sh` | pre-commit (staged ticket.json) | EPIC-223 → 224 |
 | 9 | `check-jargon.sh` | `scripts/hooks/check-jargon.sh` | pre-commit (staged .md/.sh/.ts/.rs, 黑名单扫) | EPIC-225 |
+| 10 | `verify-agent-note-format.sh` | `scripts/hooks/verify-agent-note-format.sh` | pre-commit (staged .md, Agent Note schema) | EPIC-280 |
+
+**EPIC-280 admission (主公 2026-08-21 拍板 DSH Path A)**: 从 9 → 10. 验 staged .md 满足 Agent Note schema (path 闭集 / header 三行 / Status 闭集 / class 6 闭集 / ## Problem 段). 脚本最初放 `scripts/verify/` (沿用 check-jargon 命名), canonical path 走 EPIC-277-E 迁移到 `scripts/hooks/` (待 EPIC-280-PR 落地后做迁移, 跟 EPIC-225 同型).
 
 **退出码契约**: 0=PASS, 1=FAIL. 禁止 print FAIL + exit 0 (fail-open).
 **例外**: `check-ticket-schema.sh` 有 exit 3 = ARCHIVED_SKIP (跟 EPIC-204 `DOCS_ONLY_SKIP` 同型, 表示"不适用"而非 PASS/FAIL). pre-commit 只拦 exit 1.

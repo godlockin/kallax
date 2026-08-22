@@ -388,6 +388,33 @@ if [[ "$HOOK_BYPASS" -eq 0 ]]; then
   fi
 fi
 
+# ── EPIC-280: agent note format gate (DSH Path A admission, 主公 2026-08-21 拍板) ──
+# 验 staged .md 满足 Agent Note schema (path 闭集 / header 三行 / Status 闭集 / class 6 闭集 / ## Problem 段).
+# 跟 EPIC-225 check-jargon + EPIC-279 check-doc-budgets 同模式接入.
+# Canonical path: scripts/hooks/ (跟 EPIC-277-E 迁移 1:1); verify/ 副本保留向后兼容.
+if [[ "$HOOK_BYPASS" -eq 0 ]]; then
+  _agent_note_check=""
+  if [[ -x "${KALLAX_ROOT}/scripts/hooks/verify-agent-note-format.sh" ]]; then
+    _agent_note_check="${KALLAX_ROOT}/scripts/hooks/verify-agent-note-format.sh"
+  elif [[ -x "${KALLAX_ROOT}/scripts/verify/verify-agent-note-format.sh" ]]; then
+    _agent_note_check="${KALLAX_ROOT}/scripts/verify/verify-agent-note-format.sh"
+  fi
+  if [[ -n "$_agent_note_check" ]]; then
+    _staged_notes="$(git diff --cached --name-only --diff-filter=ACM -- '*.md' 2>/dev/null || true)"
+    if [[ -n "$_staged_notes" ]]; then
+      if ! bash "$_agent_note_check" --staged >/dev/null 2>&1; then
+        echo "╔══════════════════════════════════════════════════════════════╗"
+        echo "║  BLOCKED: agent-note format violation (EPIC-280)              ║"
+        echo "║  Run: bash scripts/hooks/verify-agent-note-format.sh --staged ║"
+        echo "║  Bypass (主公 approval): KALLAX_HOOK_BYPASS=1 git commit ...    ║"
+        echo "╚══════════════════════════════════════════════════════════════╝"
+        bash "$_agent_note_check" --staged 2>&1 | head -30 || true
+        exit 1
+      fi
+    fi
+  fi
+fi
+
 # ── EPIC-223: 新 ticket schema gate ─────────────────────────────────────
 # staged 的 ticket.json 若属 > archived_before 的 EPIC, 强制 required_fields.
 if [[ "$HOOK_BYPASS" -eq 0 ]]; then
