@@ -17,6 +17,7 @@ import { loadExpertPrompt, type ExpertPromptContext } from '../core/expert-promp
 import type { ExpertInvocationsQueue } from '../core/expert-invocations-queue/types.js';
 import type { TraceLog } from '../core/span-tracer.js';
 import type { ExpertResolverBridge } from '../core/expert-resolver-bridge.js';
+import type { SessionEventEmitter } from '../core/event-log/index.js';
 
 /** EPIC-277-D: tri-state exit code mapping. */
 export type ClaimExitCode = 0 | 2 | 3;
@@ -38,6 +39,8 @@ export interface ClaimCommandOptions {
   readonly expertResolver?: ExpertResolverBridge;
   readonly projectRoot?: string;
   readonly resolvedExpertPath?: string;
+  /** EPIC-282 (DSH Gap #2): optional SessionEventEmitter for card-d/...埋点. */
+  readonly sessionEventEmitter?: SessionEventEmitter;
 }
 
 export interface ClaimResult {
@@ -70,6 +73,8 @@ export async function executeClaimCommand(
   taskAssigner: TaskAssigner,
   options: ClaimCommandOptions
 ): Promise<KallaxResult<ClaimResult>> {
+  // EPIC-282: monotonic anchor for SessionEvent duration_ms (DSH Gap #2 卡 D).
+  const startedAtForDsh = Date.now();
   let currentInstance = instanceRegistry.getCurrentInstance();
 
   // Auto-register performer if CLI invoked standalone (new process each time)
@@ -286,6 +291,24 @@ export async function executeClaimCommand(
     });
     if (queueResult.isErr()) {
       logger.warn({ taskId: task.id, ticketId: ticket.id, error: queueResult.error }, 'expert activation enqueue failed');
+    }
+    // EPIC-282 (DSH Gap #2 卡 D): SessionEvent 跟 expertInvocationsQueue 并行 emit.
+    // 不替代 expertInvocationsQueue (跟 trace_log 同型, 派生数据源给 Rule 36 #1 expert_activation_rate).
+    if (options.sessionEventEmitter !== undefined) {
+      const sessionId = `${ticket.id}:${currentInstance.id}`;
+      try {
+        options.sessionEventEmitter.emit(sessionId, {
+          type: 'card-d/expert-activation',
+          expertId,
+        });
+        options.sessionEventEmitter.emit(sessionId, {
+          type: 'card-d/trace-complete',
+          duration_ms: Date.now() - startedAtForDsh,
+          expertId,
+        });
+      } catch (emitErr: unknown) {
+        logger.warn({ taskId: task.id, error: emitErr instanceof Error ? emitErr.message : String(emitErr) }, 'session event emit failed (non-fatal)');
+      }
     }
   }
   if (options.traceLog !== undefined) {
