@@ -55,14 +55,14 @@ export function createEventStore(db: Database.Database): EventStore {
     if (event.seq <= last) {
       throw new Error(
         `event seq must monotonically increase: sessionId=${event.sessionId} ` +
-          `got seq=${event.seq}, lastSeq=${last}`,
+          `got seq=${String(event.seq)}, lastSeq=${String(last)}`,
       );
     }
     // DSH §2.3: sourceEventSeqs 必指过去 (DAG 拓扑约束).
     if (event.sourceEventSeqs.some((s) => s > event.seq)) {
       throw new Error(
         `sourceEventSeqs 必须指过去: sessionId=${event.sessionId} ` +
-          `seq=${event.seq}, sourceEventSeqs=[${[...event.sourceEventSeqs].join(',')}]`,
+          `seq=${String(event.seq)}, sourceEventSeqs=[${[...event.sourceEventSeqs].join(',')}]`,
       );
     }
     const row: SessionEventRow = sessionEventToRow(event);
