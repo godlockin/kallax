@@ -19,5 +19,20 @@
   ],
   "estimated_hours": 2,
   "notes": "Sprint A 第 1 步, 收集 baseline. 5 专家共识 8/8: validate_first, PM hard data: 17 tickets 零调用",
-  "status": "done"
+  "status": "done",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:08Z"
+    }
+  }
 }

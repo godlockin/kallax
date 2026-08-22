@@ -25,5 +25,20 @@
   ],
   "estimated_hours": 5,
   "notes": "Product 共识 P0 (北极星指标缺失), 复用 F ticket 基础设施, 4 指标覆盖 3 维度",
-  "status": "done"
+  "status": "done",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:07Z"
+    }
+  }
 }

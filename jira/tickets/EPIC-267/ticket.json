@@ -75,5 +75,20 @@
     "EPIC-156 (Redis→SQLite→file 降级链同架构)",
     "EPIC-225 (jargon 黑名单同机制 staged-md 扫描模式复用)",
     "EPIC-254 (grep -c 污染 + 32 处排查教训, 本卡抽要式集成)"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "git_ancestor:6df5cc71",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:56Z"
+    }
+  }
 }

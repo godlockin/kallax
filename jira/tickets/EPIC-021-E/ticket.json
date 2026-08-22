@@ -29,5 +29,20 @@
   ],
   "estimated_hours": 0.6,
   "performer": "performer-EPIC-021-E",
-  "notes": "借 EKET check-skill-anatomy.sh 思路 (只校验 7 节存在性), KALLAX 多 7 项语义校验. 跑通: bash scripts/check-skill-anatomy.sh .kallax/experts/default/*.md"
+  "notes": "借 EKET check-skill-anatomy.sh 思路 (只校验 7 节存在性), KALLAX 多 7 项语义校验. 跑通: bash scripts/check-skill-anatomy.sh .kallax/experts/default/*.md",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:01Z"
+    }
+  }
 }

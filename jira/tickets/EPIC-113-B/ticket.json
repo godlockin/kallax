@@ -16,5 +16,20 @@
     "kallax db:migrate-from-json --dry-run 输出计划",
     "kallax db:migrate-from-json --apply 幂等 (2 次执行结果一致)",
     "smoke test 覆盖空库 + 已有数据 2 场景"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:15Z"
+    }
+  }
 }

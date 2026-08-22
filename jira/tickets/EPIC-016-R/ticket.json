@@ -78,6 +78,19 @@
     "reviewed_at": "2026-06-07T14:25:00Z",
     "decision": "APPROVE",
     "merge_commit": "b7db764",
-    "note": "performer misrouted to main, master recovered by re-isolating to worktree"
+    "note": "performer misrouted to main, master recovered by re-isolating to worktree",
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:57Z"
+    }
   }
 }

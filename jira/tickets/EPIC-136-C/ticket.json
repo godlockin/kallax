@@ -39,5 +39,20 @@
     "doc_path": "docs/reference/supply-chain-cargo.md",
     "cargo_audit_local_run": "skipped — cargo-audit not installed locally; CI installs via `cargo install cargo-audit --locked`",
     "third_party_action_pin_status": "actions/checkout@v4 tagged with `# TODO: 136-A pin` for retro SHA-pinning"
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:18Z"
+    }
   }
 }

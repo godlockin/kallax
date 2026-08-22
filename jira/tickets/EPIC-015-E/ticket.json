@@ -23,5 +23,20 @@
     "自动创建 confluence/ 子目录",
     "检测已有项目 → 增量初始化，不覆盖",
     "输出初始化报告 (创建了哪些目录/文件)"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:42Z"
+    }
+  }
 }

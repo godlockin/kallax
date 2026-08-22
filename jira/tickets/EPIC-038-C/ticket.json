@@ -36,5 +36,20 @@
   ],
   "estimated_hours": 8,
   "l1_tactic_required": "拆 commit 为单 prompt (防 hang)",
-  "q5_closure": "经验教训迁移机制 (Q5 75%→90%, 跟跨项目 import 脚本闭环)"
+  "q5_closure": "经验教训迁移机制 (Q5 75%→90%, 跟跨项目 import 脚本闭环)",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:38Z"
+    }
+  }
 }

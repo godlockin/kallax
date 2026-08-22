@@ -34,5 +34,20 @@
   "claimed_at": "2026-06-12T16:00:00Z",
   "last_modified_by": "master_77704 (Rule 11 v2.1 强验证, ticket 状态同步)",
   "last_modified_at": "2026-06-12T16:29:55Z",
-  "last_modified_reason": "Master Rule 11 v2.1 强验证同步: subagent 报告 (commit 3f2c594) → ticket 状态从 pending → done"
+  "last_modified_reason": "Master Rule 11 v2.1 强验证同步: subagent 报告 (commit 3f2c594) → ticket 状态从 pending → done",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:32Z"
+    }
+  }
 }

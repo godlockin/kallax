@@ -24,7 +24,11 @@
     "cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run 无 regression",
     "每处 diff 附 rationale"
   ],
-  "labels": ["real-bug", "lint-strict", "canary-finding"],
+  "labels": [
+    "real-bug",
+    "lint-strict",
+    "canary-finding"
+  ],
   "derived_from": "EPIC-150 Option A STRICT master decision",
   "verification": {
     "completed_at": "2026-07-26",
@@ -81,5 +85,20 @@
     "fact_forcing_observations": [
       "EPIC-133 comment 'execFile already returns Promise in Node 24+' was misinformation — Node's `child_process.execFile` never returns a Promise; only `util.promisify(execFile)` does. The eslint `await-thenable` catch surfaced a real runtime bug where git commands silently returned empty stdout. This is a strong case of eslint strict rules catching latent bugs invisible to typecheck (because the ChildProcess return has `.stdout` which is-Buffer-or-string via typing, and `await`ing a non-Promise is legal in TS but yields the value as-is)."
     ]
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:30Z"
+    }
   }
 }

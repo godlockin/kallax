@@ -32,10 +32,29 @@
     "security_md_bytes": 2622,
     "todo_placeholder_count": 1,
     "supported_versions_table_rows": 3,
-    "recent_tags_used": ["v3.28.0", "v3.27.x", "v3.27"],
+    "recent_tags_used": [
+      "v3.28.0",
+      "v3.27.x",
+      "v3.27"
+    ],
     "existing_file_before": false,
     "github_pvr_enabled": false,
     "gh_api_response": "{\"enabled\":false}",
     "note": "SECURITY.md 首选渠道仍写 GitHub Private Vulnerability Reporting; PVR 需主公去 Settings→Security→Advisories 手动启用."
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:23Z"
+    }
   }
 }

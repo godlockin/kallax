@@ -52,5 +52,20 @@
   "notes": "Master corrective integration after 2 Performer attempts (6563362 falsified 30/30=100%, 33cfc48 build fail). Rust binary + L1a logic + 7 trigger 扩词 + 3 anti-fab tools. 4 KPI 全 PASS.",
   "status": "closed",
   "closed_at": "historical (commit c7854b6)",
-  "closed_reason": "delivered via commit c7854b6 + 6b2cc2e, retro-close"
+  "closed_reason": "delivered via commit c7854b6 + 6b2cc2e, retro-close",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:closed",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:15Z"
+    }
+  }
 }

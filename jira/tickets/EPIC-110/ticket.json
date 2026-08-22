@@ -25,5 +25,20 @@
     "110-E: 3-level exemption (KALLAX_HOOK_BYPASS / CI / WIP)"
   ],
   "closed_at": "2026-07-10T13:42:51Z",
-  "closed_reason": "merged to miao (PR #109 → #111 → #110)"
+  "closed_reason": "merged to miao (PR #109 → #111 → #110)",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:closed",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:12Z"
+    }
+  }
 }

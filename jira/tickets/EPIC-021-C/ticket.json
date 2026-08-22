@@ -34,5 +34,20 @@
   ],
   "estimated_hours": 0.4,
   "performer": "performer-EPIC-021-C",
-  "notes": "借 EKET output_format 锁结构思路 (但 EKET 7 位 default 中 architect 5 节 / backend 3 节 / frontend 缺省不一致, KALLAX 强制统一 4 节). 改 frontmatter 内字段, 不改 body section."
+  "notes": "借 EKET output_format 锁结构思路 (但 EKET 7 位 default 中 architect 5 节 / backend 3 节 / frontend 缺省不一致, KALLAX 强制统一 4 节). 改 frontmatter 内字段, 不改 body section.",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:00Z"
+    }
+  }
 }

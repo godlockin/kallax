@@ -17,5 +17,20 @@
     "INSERT/UPDATE 覆盖 instances / trace_spans / dag_runs / dag_node_states 4 表",
     "cargo test --workspace 0 errors",
     "session_start 双写 (file + DB) 通过 smoke test"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:14Z"
+    }
+  }
 }

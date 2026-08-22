@@ -55,5 +55,20 @@
       "cargo-audit.yml was in .github/workflows/ scope (14th workflow); its pre-existing '# TODO: 136-A pin' marker was removed after applying the SHA.",
       "pr-reviewer-check.yml contains no third-party action uses."
     ]
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:17Z"
+    }
   }
 }

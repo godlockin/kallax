@@ -56,5 +56,20 @@
       "vitest": "cd node && KALLAX_HOOK_API_KEY=test-... npx vitest run (all pass)",
       "grep_final": "grep -rn \": any\" --include=*.ts --include=*.tsx node/ | grep -v node_modules | grep -v .d.ts | wc -l = 0"
     }
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:33Z"
+    }
   }
 }

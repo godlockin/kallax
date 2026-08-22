@@ -24,5 +24,20 @@
     "landed (b047560 + d021e5f + 77825c1)"
   ],
   "estimated_hours": 4,
-  "kpi": "1 doc + 1 test (3/3 PASS) + 5 web files (Dockerfile + start.sh + verify-deploy.sh) + 0 真实 域名 necessary landed (b047560 + d021e5f + 77825c1), 跟主公 2026-06-17 B 跳过 explicit 覆盖 联合"
+  "kpi": "1 doc + 1 test (3/3 PASS) + 5 web files (Dockerfile + start.sh + verify-deploy.sh) + 0 真实 域名 necessary landed (b047560 + d021e5f + 77825c1), 跟主公 2026-06-17 B 跳过 explicit 覆盖 联合",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:00Z"
+    }
+  }
 }

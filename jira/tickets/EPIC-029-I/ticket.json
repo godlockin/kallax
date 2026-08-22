@@ -25,5 +25,20 @@
     "EPIC-029-H"
   ],
   "borrowed_from_eket": "Rule 6 EPIC 交付四件套 + Rule 11 Master 写代码禁令 升级模式",
-  "related_design": "docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md §10"
+  "related_design": "docs/superpowers/specs/2026-06-09-kallax-3-modes-design.md §10",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:21Z"
+    }
+  }
 }

@@ -37,5 +37,20 @@
   "l1_tactic_required": "拆 commit 为单 prompt",
   "last_modified_at": "2026-06-13T03:00:48Z",
   "last_modified_by": "master_77704 (Rule 11 v2.1 强验证 6 维度, 跟 Performer-EPIC-039-D BLOCKED 闭环 + Performer-EPIC-039-B 触发)",
-  "last_modified_reason": "Master Rule 11 v2.1 强验证: commit 865b251 真 + 3 文件 (14401 bytes) + 6/6 PASS + 8/8 L4 verify. scope-creep false positive (worktree 隔离 OK, main 撞 EPIC-039-A/D). 真 PASS 接受 (跟 Performer-EPIC-041-C 同模式)."
+  "last_modified_reason": "Master Rule 11 v2.1 强验证: commit 865b251 真 + 3 文件 (14401 bytes) + 6/6 PASS + 8/8 L4 verify. scope-creep false positive (worktree 隔离 OK, main 撞 EPIC-039-A/D). 真 PASS 接受 (跟 Performer-EPIC-041-C 同模式).",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:40Z"
+    }
+  }
 }

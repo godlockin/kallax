@@ -34,5 +34,20 @@
   "claimed_at": "2026-06-26T12:30:00Z",
   "last_modified_by": "performer-EPIC-034-serial14 (1 ticket 1 subagent 串行, audit + 3 verify scripts in place)",
   "last_modified_at": "2026-06-26T12:30:00Z",
-  "last_modified_reason": "Performer: 1 ticket 1 subagent 串行完成 expert-quality-audit.py chmod +x + 3 new L4 verify scripts (priority/ux-flow/tickets-completed) + M1 threshold fix 40→80, status failed → ready (5/5 verify scripts PASS, preflight 9/9 PASS)"
+  "last_modified_reason": "Performer: 1 ticket 1 subagent 串行完成 expert-quality-audit.py chmod +x + 3 new L4 verify scripts (priority/ux-flow/tickets-completed) + M1 threshold fix 40→80, status failed → ready (5/5 verify scripts PASS, preflight 9/9 PASS)",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:31Z"
+    }
+  }
 }

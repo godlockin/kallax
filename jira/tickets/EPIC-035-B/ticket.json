@@ -26,5 +26,20 @@
     "tests/integration/worktree-role-isolation-test.sh PASS (跨 worktree 派单 mismatch → reject)",
     "Rule 9 + Rule 12 PASS"
   ],
-  "estimated_hours": 4
+  "estimated_hours": 4,
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:34Z"
+    }
+  }
 }

@@ -16,5 +16,20 @@
     "db:backup 生成合法 SQLite 文件, PRAGMA integrity_check 通过",
     "db:restore 校验 schema_version, 拒绝低版本",
     "端到端 backup → restore → SELECT count(*) 一致"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:15Z"
+    }
+  }
 }

@@ -76,5 +76,20 @@
     "EPIC-259 (查询层, 本卡是分配层)",
     "EPIC-156 (Redis→SQLite→file 降级链已有架构, 本卡在 SQLite 节点扩展)",
     "EPIC-227 (--show-toplevel 模式, 跨 worktree 路径解析)"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "git_ancestor:75a074a4",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:52Z"
+    }
+  }
 }

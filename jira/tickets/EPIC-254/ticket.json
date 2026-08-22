@@ -10,13 +10,23 @@
   "created_at": "2026-08-16",
   "created_by": "master",
   "completed_at": "2026-08-17",
-  "pr_chain": ["#416", "#417", "#418"],
+  "pr_chain": [
+    "#416",
+    "#417",
+    "#418"
+  ],
   "performer": "master",
   "worktree_role": "performer",
   "performer_sub_role": "coder",
   "handoff_depth": "L1",
   "estimated_hours": 2,
-  "labels": ["bugfix", "bash-exitcode", "fail-open", "rule-3", "phase-024"],
+  "labels": [
+    "bugfix",
+    "bash-exitcode",
+    "fail-open",
+    "rule-3",
+    "phase-024"
+  ],
   "description": "EPIC-254 — 全仓清除 `grep -c ... || echo N` 输出污染模式.\n\n**根因**: `grep -c` 无匹配时**已输出 \"0\"** 且返回 1, `|| echo N` 会再追加一个值 → 变量成 \"0\\n0\" 多行 → 数值比较报 `integer expression expected`.\n\n**发现路径**: 规划下阶段时跑 `bash scripts/scan-dead-code.sh`, 看到 `line 123: [: 0\\n0: integer expression expected`. 顺着扫全仓发现 32 处同类.\n\n**两轮扫描**: 首轮正则只匹配 `|| echo 0` (无引号) 找到 12 处; test 的全仓检查报 23 处残留, 才发现漏了 `|| echo \"0\"` (带引号) 这个更常见写法, 二轮补 20 处.\n\n**危害分级**:\n- `merge-validator.sh` (4 处): FAILED 被污染时 `[ -gt 0 ]` 判断失效, **CI 失败可能不被拦** (fail-open, 最高危)\n- `dashboard-metrics.sh` (4 处): \"0\\n0\" 传给 `bc` 算术报错\n- `scan-dead-code.sh` (1 处): 每次跑打一行错误, 噪声掩盖真问题\n- `level-2.sh` (1 处): 5-Level Verify L2 test 计数\n- 其余 22 处: 读 CLAUDE.md 数 Rule 条目 (CLAUDE.md 必有 `### N.` 所以实际不触发, 属潜在坑)\n\n**修法**: `|| echo N` → `|| true` (只吞退出码不追加输出) + `${VAR:-0}` 兜底.\n\n**同类坑第 6 次**: EPIC-232 (jq exit 2) / EPIC-245 (hook exit 3) / EPIC-248 (`((x++))` 返回旧值) / EPIC-249 (`|| echo 0` 追加输出, 首次发现) / EPIC-254 (本次全仓清) / 写本 EPIC 的 test 时 `set -e` 未关导致脚本静默终止.\n\n**附带**: `node/src/core/worktree-manager.ts:51` catch 补 `:unknown` 标注 (CLAUDE.md Rule 3, scan Stage 1 长期 WARN).",
   "acceptance": [
     "AC1: 全仓 scripts/ 代码行 0 处 `grep -c ... || echo N` (raw: tests Case 3 → 0 occurrences, 排除说明注释)",
@@ -88,5 +98,20 @@
     "EPIC-232 (jq exit 2 — 同类)",
     "EPIC-245 (hook exit 3 — 同类)",
     "EPIC-131/132 (scan-dead-code sentinel)"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:49Z"
+    }
+  }
 }

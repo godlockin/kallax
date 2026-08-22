@@ -68,5 +68,20 @@
     "Rule 37 例外清单 (sprint-metrics 改动需主公亲自, 已获批准)",
     "EPIC-253 (修 collect_filescope bug, 反而暴露 NO_DATA 真相)",
     "EPIC-269 (接 invocation 数据源 — 层 1 主因)"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "git_ancestor:976af183",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:56Z"
+    }
+  }
 }
