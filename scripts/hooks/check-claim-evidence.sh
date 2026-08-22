@@ -16,19 +16,6 @@ ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git rev-parse --show-toplevel)"
 HOOK_NAME="check-claim-evidence"
 FAIL=0
 
-# EPIC-283 (DSH Path B): 读 snapshot 豁免清单 (snapshot harness expected/*.json)
-# 不在豁免清单内的 snapshot 文件, X/Y PASS 数字检查照常触发. 豁免是防御性
-# 防止 expected JSON 内数字 (e.g. "Core Experts (5)") 误报. 加进豁免清单的
-# 路径若被改动, snapshot 跟 expected 不匹配, vitest test 会 FAIL (本 hook 互补).
-SNAPSHOT_EXEMPTIONS=()
-EXEMPTION_LIST="${ROOT}/scripts/verify/.snapshot-exemption-list.txt"
-if [[ -f "$EXEMPTION_LIST" ]]; then
-  while IFS= read -r line || [[ -n "$line" ]]; do
-    [[ -z "$line" || "$line" == \#* ]] && continue
-    SNAPSHOT_EXEMPTIONS+=("$line")
-  done < "$EXEMPTION_LIST"
-fi
-
 # 收集 staged 的 markdown / shell 文件 (macOS bash 3.2 兼容)
 # EPIC-117-A: 显式扫 confluence/decisions/** (之前 glob 依赖 shell 展开, 深层目录 miss)
 STAGED=()
@@ -66,23 +53,12 @@ for file in "${STAGED[@]}"; do
     confluence/decisions/*.md|confluence/memory/*.md) IS_DECISION=1 ;;
   esac
 
-  # EPIC-283: snapshot expected.json 走 exemption list (豁免 X/Y PASS 数字检查)
-  # 防御性: 避免预期 JSON 内的数字格式 ("Core Experts (5)" 之类) 误报 FAIL
-  IS_SNAPSHOT_EXEMPT=0
-  for exempt in "${SNAPSHOT_EXEMPTIONS[@]}"; do
-    if [[ "$file" == "$exempt" ]]; then
-      IS_SNAPSHOT_EXEMPT=1
-      break
-    fi
-  done
-
   # 只看 diff 部分 (避免历史行 false positive)
   diff_content="$(git diff --cached "$file" 2>/dev/null || true)"
   [[ -z "$diff_content" ]] && continue
 
   # 检查 1: X/Y PASS 数字必须带 raw output 引用
-  # EPIC-283: snapshot expected.json 跳过此检查 (走 exemption list)
-  if [[ $IS_SNAPSHOT_EXEMPT -eq 0 ]] && echo "$diff_content" | grep -E "$PATTERN_NUMERIC" >/dev/null 2>&1; then
+  if echo "$diff_content" | grep -E "$PATTERN_NUMERIC" >/dev/null 2>&1; then
     if ! echo "$diff_content" | grep -E -i '(raw_output|raw test output|test_output|vitest run|cargo test|npm test|jest run|实测|raw_output:|/tmp/.*\.log)' >/dev/null 2>&1; then
       if [[ $IS_DECISION -eq 1 ]]; then
         echo "❌ $file: X/Y PASS 数字无 raw_output 引用 (decisions/memory 文档同 README 标准, EPIC-117-A)"
