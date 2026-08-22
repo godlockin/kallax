@@ -126,18 +126,19 @@ else
 fi
 echo ""
 
-# ── Check 4: 9 immutable scripts 全部存在 + 可执行 (EPIC-277-E 接入) ───
+# ── Check 4: 10 immutable scripts 全部存在 + 可执行 (EPIC-280 接入) ───
 # 起源: auditor 实测 scripts/hooks/ 缺 4 check-* + install.sh --verify 不验脚本存在
 #        → CLAUDE.md §5 "9 immutable 全部已接入 hook EPIC-224 验证" 失实 (P0 BLOCK).
-# 修法: install --verify 9 脚本 1-by-1 验 (存在 + 可执行).
+# 修法: install --verify 10 脚本 1-by-1 验 (存在 + 可执行).
 # 退出契约: 0=PASS, 1=FAIL (任一 missing/not-exec → problems=1).
 #
-# 9 immutable 清单 (来源: .claude/rules/immutable-scripts.md §2 表格):
-#   1-4 verify/check-*.sh (原 4-law, EPIC-110) → 仍住 scripts/verify/
+# 10 immutable 清单 (来源: .claude/rules/immutable-scripts.md §2 表格):
+#   1-4 scripts/hooks/check-*.sh (4-law, EPIC-110)
 #   5   scripts/hooks/check-claim-evidence.sh  (EPIC-069-D)
 #   6-9 scripts/hooks/check-{disclaimer,snapshot-claude-md,ticket-schema,jargon}.sh
-#       (EPIC-220/219/223/225 → EPIC-277-E 接入)
-echo "--- 9 immutable scripts 检查 (EPIC-223 + EPIC-224 + EPIC-277-E) ---"
+#       (EPIC-220/219/223/225)
+#   10  scripts/hooks/verify-agent-note-format.sh (EPIC-280, DSH Path A admission)
+echo "--- 10 immutable scripts 检查 (EPIC-223 + EPIC-224 + EPIC-225 + EPIC-277-E + EPIC-280) ---"
 echo "    全部脚本需存在 + 可执行 (清单见 CLAUDE.md §5 + .claude/rules/immutable-scripts.md §2)"
 IMMUTABLE_PASSED=0
 IMMUTABLE_FAILED=0
@@ -164,21 +165,22 @@ check_immutable_script "6:check-disclaimer" "${REPO_ROOT}/scripts/hooks/check-di
 check_immutable_script "7:snapshot-claude-md" "${REPO_ROOT}/scripts/hooks/snapshot-claude-md.sh"
 check_immutable_script "8:check-ticket-schema" "${REPO_ROOT}/scripts/hooks/check-ticket-schema.sh"
 check_immutable_script "9:check-jargon" "${REPO_ROOT}/scripts/hooks/check-jargon.sh"
+check_immutable_script "10:verify-agent-note-format" "${REPO_ROOT}/scripts/hooks/verify-agent-note-format.sh"
 
 if [ "$IMMUTABLE_FAILED" -gt 0 ]; then
   echo ""
-  echo "  FAIL: ${IMMUTABLE_PASSED}/9 PASS, ${IMMUTABLE_FAILED} missing/not-exec"
+  echo "  FAIL: ${IMMUTABLE_PASSED}/10 PASS, ${IMMUTABLE_FAILED} missing/not-exec"
   problems=1
 else
   echo ""
-  echo "  PASS: ${IMMUTABLE_PASSED}/9 immutable scripts 全部存在 + 可执行"
+  echo "  PASS: ${IMMUTABLE_PASSED}/10 immutable scripts 全部存在 + 可执行"
 fi
 echo ""
 
 # ── Summary ────────────────────────────────────────────────────────────
 if [ "$VERIFY_ONLY" -eq 1 ]; then
   if [ "$problems" -eq 0 ]; then
-    echo "OK: hook 体系健康 (hooksPath + pre-commit + pre-push + commit-msg + 9 immutable ${IMMUTABLE_PASSED}/9 PASS)"
+    echo "OK: hook 体系健康 (hooksPath + pre-commit + pre-push + commit-msg + 10 immutable ${IMMUTABLE_PASSED}/10 PASS)"
     exit 0
   fi
   echo "FAIL: hook 体系有问题, 跑 'bash scripts/hooks/install.sh' 修复"
@@ -194,6 +196,7 @@ echo "    - EPIC-219 snapshot 提醒 (CLAUDE.md / .claude/rules, advisory)"
 echo "    - EPIC-223 ticket schema (staged ticket.json, >archived_before 强制)"
 echo "    - EPIC-225 jargon black list (staged .md/.sh/.ts/.rs)"
 echo "    - EPIC-279 doc word budgets (staged .md, fail-closed)"
+echo "    - EPIC-280 agent-note format (staged .md, DSH Path A admission)"
 echo "    - miao 分支保护"
 echo "  commit-msg:"
 echo "    - DCO Signed-off-by 强制 (EPIC-221 config 激活)"
