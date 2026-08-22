@@ -69,7 +69,10 @@ jobs:
           # 检测: 0 source code file change (.ts/.rs/.js/.sh)
           SOURCE_REGEX='\.ts$|\.rs$|\.js$|\.sh$'
           # gh pr view 用 'path', gh api pulls/{N}/files 用 'filename'
-          SOURCE_FILES=$(echo "$STATS" | jq --arg re "$SOURCE_REGEX" '[.files[] | select(((.path // "") + " " + (.filename // "")) | test($re))] | length')
+          # EPIC-284 治 bug: 旧版拼接 (.path + " " + .filename) 产生尾随空格,
+          # 使 $ 锚点永不匹配 → 所有 .sh/.ts/.rs-only PR 被误判 docs-only → size gate 静默失效.
+          # 改用 // fallback 取单一非空值, 不拼接.
+          SOURCE_FILES=$(echo "$STATS" | jq --arg re "$SOURCE_REGEX" '[.files[] | select((.path // .filename // "") | test($re))] | length')
           DOCS_ONLY="no"
           if [ "$SOURCE_FILES" -eq 0 ] && [ "$CHANGED_FILES" -gt 0 ]; then
             DOCS_ONLY="yes"
