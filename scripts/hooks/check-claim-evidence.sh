@@ -20,12 +20,27 @@ FAIL=0
 # 不在豁免清单内的 snapshot 文件, X/Y PASS 数字检查照常触发. 豁免是防御性
 # 防止 expected JSON 内数字 (e.g. "Core Experts (5)") 误报. 加进豁免清单的
 # 路径若被改动, snapshot 跟 expected 不匹配, vitest test 会 FAIL (本 hook 互补).
+#
+# EPIC-283-scope (2026-08-22): 豁免范围 STRICTLY LIMITED 到 snapshot expected
+# JSON (L5 boundary 防线自毁防御, EPIC-069-D). 若豁免清单含其他路径
+# (README / CHANGELOG / confluence/decisions/* 等) → REJECT 退出 (本 hook
+# 互补防御, check-snapshot-exemption.sh 是主闸). 详见
+# confluence/decisions/epic-283-snapshot-exemption-scope-2026-08-22.md
 SNAPSHOT_EXEMPTIONS=()
 EXEMPTION_LIST="${ROOT}/scripts/verify/.snapshot-exemption-list.txt"
 if [[ -f "$EXEMPTION_LIST" ]]; then
   while IFS= read -r line || [[ -n "$line" ]]; do
     [[ -z "$line" || "$line" == \#* ]] && continue
-    SNAPSHOT_EXEMPTIONS+=("$line")
+    # Defense-in-depth: refuse any non-snapshot scope at load time.
+    # check-snapshot-exemption.sh is the canonical enforcement gate;
+    # this is a fail-closed belt-and-suspenders at the consumer side.
+    if [[ "$line" =~ ^node/tests/integration/snapshot/expected/[^[:space:]]+\.json$ ]]; then
+      SNAPSHOT_EXEMPTIONS+=("$line")
+    else
+      echo "❌ $HOOK_NAME: REJECT exemption path out of strict scope (L5 boundary 自毁防御): $line" >&2
+      echo "    required: ^node/tests/integration/snapshot/expected/.*\.json$" >&2
+      exit 1
+    fi
   done < "$EXEMPTION_LIST"
 fi
 

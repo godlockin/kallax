@@ -4,10 +4,18 @@
 # Format: one path per line, relative to repo root. Comments (#) and blank
 # lines ignored. Verify with: bash scripts/verify/check-snapshot-exemption.sh
 #
-# Why: snapshot expected.json files record real slash command output
-# (e.g., "Core Experts (5)", "Skills (16)"). The check-claim-evidence regex
-# for "X/Y PASS" doesn't match these, but adding exemption prevents future
-# false-positive FAIL if regex evolves.
+# Why: snapshot harness expected/*.json files record real slash command
+# output which may contain numbers like "Core Experts (5)" or "Skills (16)".
+# The check-claim-evidence regex for "X/Y PASS" doesn't match these, but
+# adding exemption prevents future false-positive FAIL if regex evolves.
+#
+# EPIC-283-scope (L5 boundary defense, 2026-08-22):
+# This list is STRICTLY LIMITED to snapshot expected JSON files. check-claim-
+# evidence.sh rejects any exemption path that does not match `^node/tests/
+# integration/snapshot/expected/.*\.json$`. Cannot be extended to README /
+# CHANGELOG / confluence/decisions — that would bypass the L5 boundary
+# (v3.8.0 fake-PASS defense, EPIC-069-D). See confluence/decisions/
+# epic-283-snapshot-exemption-scope-2026-08-22.md for the locked rationale.
 
 node/tests/integration/snapshot/expected/kallax-list.json
 node/tests/integration/snapshot/expected/kallax-help.json
