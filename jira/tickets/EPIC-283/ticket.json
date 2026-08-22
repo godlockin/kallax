@@ -1,0 +1,53 @@
+{
+  "id": "EPIC-283",
+  "type": "feat",
+  "status": "in_progress",
+  "title": "DSH Path B Snapshot harness — /kallax-list + /kallax-help regression protection",
+  "performer": "team-h",
+  "priority": "P1",
+  "created_at": "2026-08-22",
+  "updated_at": "2026-08-22",
+  "file_scope": {
+    "includes": [
+      "node/tests/integration/snapshot/runner.ts",
+      "node/tests/integration/snapshot/record.ts",
+      "node/tests/integration/snapshot/kallax-list.test.ts",
+      "node/tests/integration/snapshot/kallax-help.test.ts",
+      "node/tests/integration/snapshot/expected/kallax-list.json",
+      "node/tests/integration/snapshot/expected/kallax-help.json",
+      "scripts/hooks/check-claim-evidence.sh",
+      "scripts/verify/check-snapshot-exemption.sh",
+      "scripts/verify/.snapshot-exemption-list.txt"
+    ],
+    "excludes": [
+      ".claude/commands/kallax-list.sh",
+      ".claude/commands/kallax-help.sh",
+      "scripts/kallax-*.sh"
+    ]
+  },
+  "review": {
+    "tier": "T2",
+    "summary": "Snapshot harness protects against slash command regression. 4 vitest tests, 0/0 expected diff. DSH Path B recommendation 2."
+  },
+  "verification": {
+    "reproduction_command": "KALLAX_HOOK_API_KEY=test-key npx vitest run node/tests/integration/snapshot/kallax-list.test.ts node/tests/integration/snapshot/kallax-help.test.ts",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "Test Files  2 passed (2) | Tests  4 passed (4)"
+  },
+  "rule_alignment": {
+    "rule_8_size_limit": "single commit ≤500 LOC (260 LOC)",
+    "rule_34_reproduction": "vitest 2/2 PASS + raw_output captured",
+    "rule_35_sprint_box": "≤2 commits + 2 PR",
+    "rule_270_review_tier": "T2 (has source code, >100 lines total)"
+  },
+  "deliverables": {
+    "pr_1": "feat(EPIC-283): Snapshot harness for /kallax-list + /kallax-help (DSH Path B)",
+    "pr_2": "chore(EPIC-283): check-claim-evidence snapshot exemption (跟 DSH Path B 联合)"
+  },
+  "binding": {
+    "epic_id": "EPIC-283",
+    "branch_base": "testing",
+    "merge_strategy": "merge-commit"
+  },
+  "notes": "DSH Path B recommendation 2: snapshot harness protects /kallax-list and /kallax-help output against silent regression. Recorded via record.ts (maintainer only), replayed via vitest (CI gate). Zero API key dependency."
+}
