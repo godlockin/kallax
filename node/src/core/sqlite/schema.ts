@@ -4,6 +4,9 @@
  */
 
 import Database from 'better-sqlite3';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 export function initializeSchema(db: Database.Database): void {
   db.exec(`
@@ -106,6 +109,20 @@ export function initializeSchema(db: Database.Database): void {
 
     CREATE INDEX IF NOT EXISTS idx_performer_sessions_updated ON performer_sessions(updated_at);
   `);
+
+  // EPIC-282: DSH Gap #2 — event_seq 表 (SessionEvent 持久化)
+  applyMigration(db, '2026-08-22-event-seq.sql');
+}
+
+/**
+ * Apply a single migration file from ./migrations/*.sql. Idempotent.
+ * Used for additive schema changes (event_seq table) without rewriting
+ * the legacy CREATE TABLE block.
+ */
+function applyMigration(db: Database.Database, filename: string): void {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const sql = readFileSync(join(here, 'migrations', filename), 'utf-8');
+  db.exec(sql);
 }
 
 /**
