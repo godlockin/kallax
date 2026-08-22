@@ -134,23 +134,30 @@ done < <(find "$TICKETS_DIR" -mindepth 2 -maxdepth 2 -name "ticket.json" 2>/dev/
 
 # ─── Sprint 4 北极星 metric (Rule 36, 跟 sprint-metrics.sh 对齐) ─────────────
 # 调用 sprint-metrics.sh 拿真实数据, exit=2/3 时显式标 NO_DATA / DOCS_ONLY_SKIP
+# 根因 (EPIC-281 verify): emit.sh 调用 --epic EPIC-277-F 触发 validate_epic_id
+#   bad_format (expected ^EPIC-[0-9]+$) → exit 1 (FAIL 红牌). 修复:
+#   改用 --epic EPIC-281 (本卡 id, 合法). EPIC-281 是新 EPIC 无 metrics 数据源
+#   → 预期 exit=2 (ALL_NO_DATA) → metrics_status=NO_DATA 灰态 ⚠️ (跟 AC6)
 METRICS_FILE="$OUTPUT_DIR/.metrics-raw.json"
 METRICS_EXIT=0
-if bash "${PROJECT_ROOT}/scripts/metrics/sprint-metrics.sh" --epic EPIC-277-F --format json > "$METRICS_FILE" 2>/dev/null; then
+if bash "${PROJECT_ROOT}/scripts/metrics/sprint-metrics.sh" --epic EPIC-281 --format json > "$METRICS_FILE" 2>/dev/null; then
   METRICS_EXIT=0
 else
   METRICS_EXIT=$?
 fi
 
-if [[ "$METRICS_EXIT" == 2 ]]; then
-  METRICS_STATUS="NO_DATA"
-elif [[ "$METRICS_EXIT" == 3 ]]; then
-  METRICS_STATUS="DOCS_ONLY_SKIP"
-elif [[ "$METRICS_EXIT" == 0 ]]; then
-  METRICS_STATUS="PASS"
-else
-  METRICS_STATUS="FAIL"
-fi
+# Exit-code 映射 (跟 sprint-metrics.sh §Exit codes):
+#   0 = all 4 metrics PASS → metrics_status="PASS"
+#   1 = at least 1 FAIL    → metrics_status="FAIL" (红牌)
+#   2 = ALL_NO_DATA        → metrics_status="NO_DATA" (灰态 ⚠️, 跟 EPIC-223 exit=2)
+#   3 = DOCS_ONLY_SKIP     → metrics_status="DOCS_ONLY_SKIP"
+# AC6: NO_DATA / DOCS_ONLY_SKIP 灰态 (灰牌 ⚠️), 不混 PASS; FAIL 真红牌
+case "$METRICS_EXIT" in
+  0) METRICS_STATUS="PASS" ;;
+  2) METRICS_STATUS="NO_DATA" ;;
+  3) METRICS_STATUS="DOCS_ONLY_SKIP" ;;
+  *) METRICS_STATUS="FAIL" ;;
+esac
 
 # ─── data.json (静态) ──────────────────────────────────────────────────────
 
@@ -166,6 +173,7 @@ jq -n \
   --argjson bugfix "$COUNT_BUGFIX" \
   --argjson docs "$COUNT_DOCS" \
   --argjson archived "$COUNT_ARCHIVED" \
+  --slurpfile metrics "$METRICS_FILE" \
   --arg metrics_status "$METRICS_STATUS" \
   --arg archived_before "$ARCHIVED_BEFORE" \
   --arg generated_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
@@ -173,6 +181,7 @@ jq -n \
     generated_at: $generated_at,
     metrics_status: $metrics_status,
     archived_before: ($archived_before | tonumber),
+    metrics: ($metrics[0].metrics // []),
     counts: {
       total: $total,
       done: $done,
@@ -267,7 +276,7 @@ cat > "$INDEX_HTML" <<HTMLEOF
 <h1>KALLAX Dashboard — EPIC-281 Phase 1 (static MVP)</h1>
 <div class="meta">
   Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ) | Archived before: EPIC-${ARCHIVED_BEFORE} |
-  Metrics: <strong>${METRICS_STATUS}</strong> (sprint-metrics.sh EPIC-277-F)
+  Metrics: <strong>${METRICS_STATUS}</strong> (sprint-metrics.sh EPIC-281)
 </div>
 
 <h2>Counts</h2>
