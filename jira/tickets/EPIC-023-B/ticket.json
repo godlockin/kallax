@@ -23,5 +23,20 @@
   ],
   "estimated_hours": 4,
   "notes": "借 EKET Preamble 二阶段询问 (3 决策点 8 组合), KALLAX 改 3 阶段 + 评审强度维度",
-  "status": "done"
+  "status": "done",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:06Z"
+    }
+  }
 }

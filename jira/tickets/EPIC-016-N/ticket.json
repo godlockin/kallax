@@ -37,6 +37,19 @@
     "issues": {
       "performer_misroute": "d884188 committed to miao with 109 line changes, reverted via a526cc9 + cherry-picked 1f6f52f",
       "A_B_review": "P0 ASCII card alignment (INBOX(you) broke column) - fixed with INBOX* marker"
+    },
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "REVERTED",
+    "backfill": {
+      "inferred": true,
+      "source": "git_revert:dc67321f",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:54Z"
     }
   }
 }

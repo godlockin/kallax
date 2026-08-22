@@ -27,5 +27,20 @@
   ],
   "estimated_hours": 6,
   "notes": "黑洞重演的最强防御. watchdog 监控 + fail-closed safety check 双保险",
-  "status": "done"
+  "status": "done",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:12Z"
+    }
+  }
 }

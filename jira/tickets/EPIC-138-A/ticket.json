@@ -96,5 +96,20 @@
       "master_decision": "开单独 PR 做端到端验证; 主公明确要 '针对性单测/pr'",
       "followup": "TODO: 首个真实 PR 时验证 PR template 弹出 + pr-body-check.yml 拦截 + dco-check.yml 拦截"
     }
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:21Z"
+    }
+  }
 }

@@ -23,14 +23,20 @@
     "CI TypeScript Type Check job PASS",
     "本地 `cd node && npm run <script>` 可跑"
   ],
-  "labels": ["cleanup", "canary-finding", "ci-config"],
+  "labels": [
+    "cleanup",
+    "canary-finding",
+    "ci-config"
+  ],
   "derived_from": "PR #150 canary",
   "verification": {
     "option_chosen": "A (change workflows to match package.json)",
     "grep_before": {
       "pattern": "npm run type-check",
       "occurrences": 1,
-      "matches": [".github/workflows/ci.yml:51"]
+      "matches": [
+        ".github/workflows/ci.yml:51"
+      ]
     },
     "grep_after": {
       "pattern": "npm run type-check",
@@ -39,7 +45,9 @@
     "grep_after_fixed": {
       "pattern": "npm run typecheck",
       "occurrences": 1,
-      "matches": [".github/workflows/ci.yml:51"]
+      "matches": [
+        ".github/workflows/ci.yml:51"
+      ]
     },
     "dual_engine_note": "dual-engine.yml line 19 has step NAME 'Node typecheck' but the run: command is 'cd node && npx tsc --noEmit' (direct tsc invocation, does NOT call npm run type-check). No mismatch to fix in dual-engine.yml. Only ci.yml required a change.",
     "yaml_validation": {
@@ -52,5 +60,20 @@
       "runner": "bash ~/.claude/exec-task.sh 'epic144-typecheck' -> OK success"
     },
     "package_json_untouched": true
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:26Z"
+    }
   }
 }

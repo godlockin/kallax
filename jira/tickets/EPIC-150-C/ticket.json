@@ -48,5 +48,20 @@
     "vitest_failed": 0,
     "vitest_command": "KALLAX_HOOK_API_KEY=test-kallax-hook-api-key-12345678 npx vitest run",
     "notes": "All 27 explicit-function-return-type violations resolved by adding return types (23× Promise<void> for express route async IIFEs, 1× Promise<BootstrapContext> on bootstrap() outer, 1× Promise<BootstrapContext> on inner async IIFE). BootstrapContext type alias added in index.ts with imported types SQLiteManager/WorktreeManager/OutputVerifier/IsolationChecker/InstanceRegistry/TaskAssigner/GitService (no ReturnType<> conditional gymnastics). No any/unknown used. Other pre-existing lint errors (require-await, no-unnecessary-condition, restrict-template-expressions, etc.) are out of scope for EPIC-150-C."
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:31Z"
+    }
   }
 }

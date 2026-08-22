@@ -25,5 +25,20 @@
   "estimated_days": 0.0,
   "blocked_by": null,
   "borrowed_from": "UX §5.2 system:doctor 结构化输出 + PROVENANCE doctor 模式",
-  "must_keep": "trust_score 字段 跟 EPIC-030-A TrustScore 软依赖 + PROVENANCE schema 1:1"
+  "must_keep": "trust_score 字段 跟 EPIC-030-A TrustScore 软依赖 + PROVENANCE schema 1:1",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:26Z"
+    }
+  }
 }

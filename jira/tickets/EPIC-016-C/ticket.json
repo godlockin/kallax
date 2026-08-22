@@ -14,12 +14,29 @@
     ],
     "excludes": []
   },
-  "dependencies": ["EPIC-016-B"],
+  "dependencies": [
+    "EPIC-016-B"
+  ],
   "acceptance_criteria": [
     "kallax-init.md 中删除任何「ls -la 项目根」「find . -type d」类指令",
     "如果必须查 .kallax/ 状态,改为单条 `test -d .kallax && echo exists || echo missing`",
     "my_projects(9GB+ 30+ 子项目)下,init 流程不再触发超过 1 个目录列取命令",
     "benchmark 验证:bash_calls 字段从 ~6 降到 ≤2"
   ],
-  "estimated_hours": 0.3
+  "estimated_hours": 0.3,
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:47Z"
+    }
+  }
 }

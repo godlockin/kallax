@@ -56,6 +56,19 @@
       "tokens_reduction_pct": 59,
       "wall_time_target": "≥70% met",
       "tokens_target": "≥70% partial (59%)"
+    },
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:58Z"
     }
   }
 }

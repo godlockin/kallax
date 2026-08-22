@@ -7,20 +7,20 @@
 #   check-disclaimer.sh scan [path]            # 默认扫 README.md + .github/
 #   check-disclaimer.sh --mode=failure-disc    # 5-Level Verify L2/L3 failure disclaimer 模式
 #
-# 借鉴 (跟 confluence/decisions/prime-agent-research-2026-08-08.md 1:1):
+# 借鉴来源: confluence/decisions/prime-agent-research-2026-08-08.md
 # - prime-agent "passed gate checks only what that gate verifies; reaching a limit does not imply task success"
 # - 反向借鉴: 扫别人的 disclaimer, 不写 disclaimer
-# - 跟 v3.8.0 "25/25 假 PASS" 教训 1:1 (跟 EPIC-069-D check-claim-evidence 联合)
+# - 同源于 v3.8.0 假 PASS 教训 (配合 EPIC-069-D check-claim-evidence)
 #
-# Exit codes (跟 5 immutable scripts 1:1):
+# Exit codes (沿用 immutable scripts 的退出码契约):
 #   0 = OK / disclaimer + raw_output 齐
 #   1 = FAIL (fail-closed, 命中无 raw_output 引用, 必须主公亲自 override)
 set -euo pipefail
 
-# EPIC-277-E: REPO_ROOT 用 BASH_SOURCE 解析 (worktree/cwd 无关, 跟 check-ticket-schema.sh 1:1).
-REPO_ROOT="$(git -C "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" rev-parse --show-toplevel 2>/dev/null)"
+# EPIC-277-E: REPO_ROOT 用 BASH_SOURCE 解析 (worktree/cwd 无关, 同 check-ticket-schema.sh 做法).
+REPO_ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git -C "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" rev-parse --show-toplevel 2>/dev/null)"
 if [ -z "$REPO_ROOT" ]; then
-  REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+  REPO_ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git rev-parse --show-toplevel 2>/dev/null || pwd)"
 fi
 DISCLAIMER_KEYWORDS='(trusted|sandbox|secure|safe|guaranteed|always-works)'
 RAW_OUTPUT_PATTERN='raw[_ ]?output|raw_output|## 自动验证'
@@ -100,7 +100,7 @@ failure_disclaimer_check() {
   if echo "$staged_msgs" | grep -qE '(exit=[1-9]|FAILED|fail-closed)' && \
      ! echo "$staged_msgs" | grep -qE '!= pass|not pass|limit.*success'; then
     echo "FAIL: 5-Level Verify L2/L3 exit!=0 但无 'limit != success' disclaimer"
-    echo "Fix: 在 commit message / PR 描述追加: 'exit=N != pass (跟 prime-agent limit != success 1:1)'"
+    echo "Fix: 在 commit message / PR 描述追加: 'exit=N != pass (参照 prime-agent: limit != success)'"
     exit 1
   fi
   echo "OK: failure disclaimer present"

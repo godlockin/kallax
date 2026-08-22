@@ -28,5 +28,20 @@
     "Rule 9 9a/9b/9c/9d/9e PASS",
     "Rule 12 质量 ensure PASS"
   ],
-  "estimated_hours": 6
+  "estimated_hours": 6,
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:36Z"
+    }
+  }
 }

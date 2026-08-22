@@ -24,7 +24,12 @@
     "如果用 [patch.crates-io], 附上游 issue/PR 链接",
     "更新 docs/reference/supply-chain-cargo.md CVE 响应记录段 (real-world case)"
   ],
-  "labels": ["security", "supply-chain", "cve-response", "canary-finding"],
+  "labels": [
+    "security",
+    "supply-chain",
+    "cve-response",
+    "canary-finding"
+  ],
   "derived_from": "PR #148 canary (EPIC-136-C first-day catch)",
   "found_by_run": "https://github.com/godlockin/kallax/actions/runs/30199368393",
   "verification": {
@@ -86,5 +91,20 @@
       "jira/tickets/EPIC-140/ticket.json"
     ],
     "crates_count": "307 → 294 (13 crates removed by reqwest 0.11 → 0.12 stack consolidation)"
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:23Z"
+    }
   }
 }

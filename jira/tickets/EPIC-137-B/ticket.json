@@ -45,5 +45,20 @@
     },
     "portability_notes": "POSIX sh shebang. sed used only for stripping comment lines with '/^#/d' — portable across BSD (macOS) and GNU. No sed -i. Trailer append via git interpret-trailers (git builtin, portable). Ident resolved via git config user.name/email (COMMITTER, not AUTHOR).",
     "prerequisites_confirmed": "DCO (1400 bytes), .github/dco.yml (1200 bytes), NOTICE (223 bytes) all exist from EPIC-137-A"
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:20Z"
+    }
   }
 }

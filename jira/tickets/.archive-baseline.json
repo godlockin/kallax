@@ -30,6 +30,7 @@
     "title",
     "performer",
     "file_scope.includes",
+    "review",
     "verification.reproduction_command",
     "verification.reproduction_exit_code",
     "verification.reproduction_raw_output"
@@ -45,12 +46,35 @@
       "exempt": ["verification.reproduction_command", "verification.reproduction_exit_code", "verification.reproduction_raw_output"],
       "condition": "type != bugfix",
       "linkage": "Rule 34 仅约束 bugfix 1:1"
+    },
+    "review_open_ticket": {
+      "exempt": ["review"],
+      "condition": "status ∈ {backlog, todo, in_progress, in-progress, blocked}",
+      "why": "review 字段是 review 流程的产物, 卡还没走完 review 时不该存在. 只对已收尾状态 (done/merged/closed/passed/rejected/reverted) 强制.",
+      "linkage": "EPIC-277-F AC4 (Rule 36 指标 #3 ab_hit_rate 数据源)"
+    }
+  },
+
+  "review_field_schema": {
+    "_why": "EPIC-277-F AC4 — Rule 36 指标 #3 (ab_hit_rate) 读这 3 个路径. 缺任一 → compute_ab_hit_rate 记 no_data, 指标恒 NO_DATA.",
+    "required_paths": [
+      "review.group_a.recommendation",
+      "review.group_b.recommendation",
+      "review.final_outcome"
+    ],
+    "recommendation_values": ["APPROVE", "REJECT", "NEEDS_FIX"],
+    "final_outcome_values": ["MERGED", "APPROVED", "REJECTED", "REVERTED", "NEEDS_FIX", "IN_PROGRESS"],
+    "backfill": {
+      "script": "scripts/review-backfill.sh",
+      "backup": "jira/tickets/review-backfill-2026-08-21.jsonl",
+      "note": "历史 ticket 的 review 由 git 历史机械推断, 标 review.backfill.inferred=true. 不是真实 review 记录."
     }
   },
 
   "linkage": [
     "Rule 34 (bugfix 独立复现 3 字段) — EPIC-152",
     "Rule 36 (4 北极星指标 #4 mis_dispatch 数据源) — EPIC-194",
+    "Rule 36 (4 北极星指标 #3 ab_hit_rate 数据源 = review 字段) — EPIC-277-F",
     "EPIC-157 (ticket.json expert_binding 字段)",
     "EPIC-198 + EPIC-204 (docs-only exempt)",
     "EPIC-221 (PR template Rule 34 3 字段门控)"

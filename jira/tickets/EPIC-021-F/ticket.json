@@ -28,5 +28,20 @@
   ],
   "estimated_hours": 1.5,
   "performer": "performer-EPIC-021-F",
-  "notes": "借 EKET 北极星指标思路 (EKET 自己承认缺), KALLAX 复用已有 heartbeat 植入激活记录. 写盘 by default, 队列是升级路径. 降级链保证 99.99% 可用."
+  "notes": "借 EKET 北极星指标思路 (EKET 自己承认缺), KALLAX 复用已有 heartbeat 植入激活记录. 写盘 by default, 队列是升级路径. 降级链保证 99.99% 可用.",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:02Z"
+    }
+  }
 }

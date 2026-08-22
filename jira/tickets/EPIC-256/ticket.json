@@ -57,5 +57,20 @@
   "rule_references": [
     "EPIC-131/132 (scan-dead-code.sh 框架, 本卡是 Stage 4 落地)",
     "EPIC-228 (ticket 字段 schema)"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "git_ancestor:7afa8edc",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:50Z"
+    }
+  }
 }

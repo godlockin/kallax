@@ -59,5 +59,20 @@
     "EPIC-249 (Stage 4 原设计: 只报告不 fail)",
     "EPIC-256 (清 9 死函数, 本卡扩面后再发现 1 个)",
     "EPIC-131/132 (scan-dead-code.sh 框架)"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "git_ancestor:81095e15",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:51Z"
+    }
+  }
 }

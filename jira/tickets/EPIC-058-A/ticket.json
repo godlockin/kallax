@@ -22,5 +22,20 @@
     "0 conflict landed (8af9082 + 929d015)"
   ],
   "estimated_hours": 1,
-  "kpi": "1 doc + 1 test (11/11 PASS) + 0 conflict landed (8af9082 + 929d015)"
+  "kpi": "1 doc + 1 test (11/11 PASS) + 0 conflict landed (8af9082 + 929d015)",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:59Z"
+    }
+  }
 }

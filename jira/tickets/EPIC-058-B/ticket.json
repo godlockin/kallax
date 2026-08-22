@@ -25,5 +25,20 @@
     "1 复盘 doc landed (55744fc)"
   ],
   "estimated_hours": 2,
-  "kpi": "0 stale worktree + 0 stale branch (跟 v2.4.0 Y 派单 闭环 一致) + 1 复盘 doc landed (55744fc)"
+  "kpi": "0 stale worktree + 0 stale branch (跟 v2.4.0 Y 派单 闭环 一致) + 1 复盘 doc landed (55744fc)",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:59Z"
+    }
+  }
 }

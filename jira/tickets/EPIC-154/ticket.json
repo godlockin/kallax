@@ -22,7 +22,12 @@
     "0 新基础设施 (跟 Rule 5 DRY 联合, 0 增 immutable script)",
     "0 行为变化 (除修复外的 install 路径必须保持兼容)"
   ],
-  "labels": ["real-bug", "install-sh", "epic-134-a-followup", "env-blocker-doc"],
+  "labels": [
+    "real-bug",
+    "install-sh",
+    "epic-134-a-followup",
+    "env-blocker-doc"
+  ],
   "derived_from": "本地 main 用户实测 7-day staleness 链 (跟 EPIC-133/134/135 canary 联合)",
   "verification": {
     "date": "2026-07-28",
@@ -93,5 +98,20 @@
     "files_modified_by_this_ticket": "scripts/install.sh (1 file, +10/-1 lines)",
     "error_count_before": "2 (md_count unbound abort + subdir 静默 skip)",
     "error_count_after": "0"
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "git_ancestor:b79f5c31",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:35Z"
+    }
   }
 }

@@ -33,5 +33,20 @@
   "l1_tactic_required": "拆 commit 为单 prompt",
   "last_modified_by": "master_77704 (Rule 11 v2.1 强验证 6 维度, 跟 BE-10 review.sh 真 bug 同模式, Master 立即修)",
   "last_modified_at": "2026-06-13T03:31:47Z",
-  "last_modified_reason": "Master Rule 11 v2.1 强验证: 2 commit (d816d18 + babbaad) 真存在 + 3 文件 (11839 bytes) + 4/4 case. Case 1+3 FAIL (review.sh 拒 FAIL bug 跟 BE-7 同模式) Master 修 check-kpi-precision.sh patterns (bash 5.x 数组 [[:space:]] 解析错 → \\s 替代). 真工作 + 真 bug (跟 BE-7 修复模式一致). 主 checkout 缺 3 文件 (跟 BE-6 越界反向, 跟 BE-11 同根) Master 修复."
+  "last_modified_reason": "Master Rule 11 v2.1 强验证: 2 commit (d816d18 + babbaad) 真存在 + 3 文件 (11839 bytes) + 4/4 case. Case 1+3 FAIL (review.sh 拒 FAIL bug 跟 BE-7 同模式) Master 修 check-kpi-precision.sh patterns (bash 5.x 数组 [[:space:]] 解析错 → \\s 替代). 真工作 + 真 bug (跟 BE-7 修复模式一致). 主 checkout 缺 3 文件 (跟 BE-6 越界反向, 跟 BE-11 同根) Master 修复.",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:40Z"
+    }
+  }
 }

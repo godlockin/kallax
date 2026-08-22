@@ -1,0 +1,74 @@
+{
+  "id": "EPIC-277-F",
+  "epic": "EPIC-277",
+  "phase": "PHASE-027",
+  "title": "北极星数据源 — heartbeat-daemon 真启动 + 历史 review 回填",
+  "status": "in_progress",
+  "priority": "P0",
+  "type": "feature",
+  "created_at": "2026-08-21",
+  "created_by": "master",
+  "performer": "master",
+  "worktree_role": "performer",
+  "performer_sub_role": "coder",
+  "labels": ["feature", "metrics", "rule-36", "north-star", "EPIC-276"],
+  "expert_binding": {
+    "suggested_expert": "custom:data-analyst",
+    "actual_expert": "custom:data-analyst"
+  },
+  "file_scope": {
+    "includes": [
+      "scripts/heartbeat-daemon.js",
+      "scripts/heartbeat-daemon.sh",
+      "scripts/lib/invocation-core.sh",
+      "scripts/review-backfill.sh",
+      "scripts/metrics/sprint-metrics.sh",
+      "scripts/metrics/lib/metrics.sh",
+      "scripts/hooks/check-ticket-schema.sh",
+      "scripts/hooks/check-jargon.sh",
+      "scripts/hooks/check-disclaimer.sh",
+      "scripts/hooks/snapshot-claude-md.sh",
+      "scripts/hooks/install.sh",
+      "jira/tickets/",
+      "jira/tickets/.archive-baseline.json",
+      "jira/tickets/review-backfill-2026-08-21.jsonl",
+      "tests/integration/heartbeat-daemon.test.sh",
+      "tests/integration/sprint-metrics-real-data.test.sh",
+      "jira/tickets/EPIC-277-F/"
+    ],
+    "_why_jira_tickets_dir": "AC3 的 review 回填按设计要改所有历史 ticket.json 的 review 字段 (实跑 204 个). 逐个列出没意义, 用目录前缀声明. 回填只动 .review 子树, 原值备份在 review-backfill-2026-08-21.jsonl 可回滚.",
+    "_why_5_hook_scripts": "EPIC-277-E 给这 5 个脚本引入同一个 REPO_ROOT 解析 bug: git hook 环境设了 GIT_DIR 时 `git -C <dir> rev-parse --show-toplevel` 返回 -C 的目录而非 repo root, 导致 fail-closed 把每次 commit 都拦死. 本卡的 commit 实测被拦, 必须同批修, 否则后续任何卡都无法 commit."
+  },
+  "context": {
+    "why": "EPIC-277 卡 C 仲裁 (confluence/decisions/EPIC-277-arbitration-2026-08-21.md §6 P0 #3). Rule 36 的 4 个北极星指标当前全 NO_DATA. EPIC-277 ticket.json verification.not_verified §4 line 55 自承 expert_activation_rate 的 NO_DATA 还需 (a) 修 invocation-core.sh emit (卡 C AC4 已修) (b) 让 heartbeat-daemon 真在生产启动 (当时列为 out of scope). ab_hit_rate 的 NO_DATA 还需让 ticket 的 review.group_a/group_b/final_outcome 结构化, 且 archive-baseline.json required_fields 不含 review, 210+ 历史 ticket 无从回溯. 卡 F 把这两条 out-of-scope 落地, 让 Sprint 收尾能跑出真数据而不是触发 Rule 36 NO_DATA ASK.",
+    "scope": "10+ 文件 (daemon + metrics + backfill), 2 个新 integration test, 1 处 baseline schema 变更."
+  },
+  "acceptance": [
+    "AC1: scripts/heartbeat-daemon.{js,sh} 真启动 + 实例持久化到 .kallax/instances/",
+    "AC2: invocation-core.sh emit 真写入 — daemon tick 时 SQLite invocations 表行数增长",
+    "AC3: scripts/review-backfill.sh 回填历史 ticket 的 review.group_a/group_b/final_outcome, 写 jsonl 备份",
+    "AC4: jira/tickets/.archive-baseline.json required_fields 加 review 字段, check-ticket-schema.sh 强制验证",
+    "AC5: scripts/metrics/sprint-metrics.sh 在有数据的 EPIC 上跑出真数据 (非 NO_DATA)",
+    "AC6: tests/integration/heartbeat-daemon.test.sh 4 case (启动/暂停/恢复/崩溃恢复)",
+    "AC7: tests/integration/sprint-metrics-real-data.test.sh 4 case 验证 exit code 0/1/2/3",
+    "AC8: 4-branch flow 走到 testing 阶段 (testing→main→miao 留给 master/主公, EPIC-275 §2/§3)"
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "IN_PROGRESS"
+  },
+  "verification": {
+    "reproduction_command": "bash -c 'bash tests/integration/heartbeat-daemon.test.sh && bash tests/integration/sprint-metrics-real-data.test.sh'",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "两个 integration test 各 4/4 PASS. heartbeat-daemon.test.sh 覆盖启动/暂停/恢复/崩溃恢复; sprint-metrics-real-data.test.sh 覆盖 exit 0/1/2/3 四种出口."
+  },
+  "related": {
+    "epics": ["EPIC-276", "EPIC-272", "EPIC-274", "EPIC-157", "EPIC-023-C"],
+    "notes": "P0 (Rule 36 NO_DATA ASK 上溯). 收尾 = EPIC-277 sprint 能跑真 metrics. 北极星源头 EPIC-023-C + 数据源 EPIC-157 + 卡 F 落地."
+  }
+}
