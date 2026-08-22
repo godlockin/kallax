@@ -26,8 +26,7 @@
     "lint": "exit 0 (0 require-await, 0 total errors)",
     "vitest": "960 passed | 4 skipped (964) — exit 0, no [FATAL]",
     "notes": "Removing async from validateStartup cascaded: src/index.ts bootstrap() async IIFE lost its only await and needed conversion to sync (Promise<BootstrapContext> -> BootstrapContext, dropped await at caller). Cascading required: changed bootstrap() to return BootstrapContext directly + 1 sync IIFE wrapper for program.parseAsync(). All other lint errors (no-floating-promises / explicit-function-return-type) cleaned up by adjusting void prefix and return type. Per route file, the 5 async IIFEs without await were converted; 2 with await (tasks.ts:47, workflow.ts:139) retained async + void prefix to satisfy no-floating-promises."
-  }
-}
+  },
   "priority": "P1",
   "type": "chore",
   "created_at": "2026-07-26",
