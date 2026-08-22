@@ -31,7 +31,7 @@ export JIRA_TICKETS_DIR_DEFAULT="jira/tickets"
 
 # 4 北极星指标 阈值 (目标值)
 export EXPERT_ACTIVATION_TARGET_DISTINCT=5      # ≥5 distinct experts / EPIC
-export CROSS_EPIC_REUSE_TARGET_PCT=60          # ≥60% 跨 EPIC 复用率
+export CROSS_EPIC_REUSE_TARGET_PCT=40          # ≥40% 跨 EPIC 复用率 (EPIC-277-H 主公拍板 60→40, 基础设施型 EPIC 复用率天然低)
 export CROSS_EPIC_DOCS_REUSE_TARGET_PCT=40     # ≥40% 跨 EPIC docs 复用率 (EPIC-253, docs 天然比 code 分散)
 export AB_HIT_RATE_TARGET_MISMATCH_PCT=15      # <15% 错配 (推荐 vs 实际)
 export MIS_DISPATCH_TARGET_PCT=10              # <10% 错派率
@@ -574,6 +574,7 @@ compute_mis_dispatch_rate() {
   local mis=0
   local reason_unassigned=0
   local reason_scope_conflict=0
+  local multi_spec_intentional_skip_count=0
 
   # EPIC-223: 归档基线检查 — 历史 EPIC 跳过, 不回溯
   if is_archived_epic "$epic_num"; then
@@ -608,6 +609,16 @@ compute_mis_dispatch_rate() {
       scope_conflict=1
     fi
 
+    # EPIC-277-H 主公拍板: ticket.json 标 `multi_spec_intentional: true` 豁免 scope_conflict
+    # (基础设施型 EPIC 跨多 specialization 是设计, 非错派)
+    local multi_spec_intentional
+    multi_spec_intentional="$(jq -r '.multi_spec_intentional // false' "$tj" 2>/dev/null || echo 'false')"
+    if [ "$multi_spec_intentional" = "true" ]; then
+      scope_conflict=0
+      multi_spec_intentional_skip_count=$((multi_spec_intentional_skip_count + 1))
+      log_info "mis_dispatch" "epic=${epic_id} reason=multi_spec_intentional_skip"
+    fi
+
     if [ "$unassigned" -eq 1 ] || [ "$scope_conflict" -eq 1 ]; then
       mis=$((mis + 1))
       [ "$unassigned" -eq 1 ] && reason_unassigned=$((reason_unassigned + 1))
@@ -631,10 +642,12 @@ compute_mis_dispatch_rate() {
   fi
 
   local breakdown_json
-  breakdown_json="$(jq -n \
+  breakdown_json="$(# breakdown 字段 (EPIC-277-H 加 multi_spec_intentional_skip)
+    jq -n \
     --argjson u "$reason_unassigned" \
     --argjson c "$reason_scope_conflict" \
-    '{unassigned:$u, scope_conflict:$c}')"
+    --argjson msi "$multi_spec_intentional_skip_count" \
+    '{unassigned:$u, scope_conflict:$c, multi_spec_intentional_skip:$msi}')"
 
   jq -n \
     --arg epic "$epic_id" \
