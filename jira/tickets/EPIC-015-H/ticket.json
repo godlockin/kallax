@@ -21,5 +21,20 @@
     "加载专家 profile → 初始化 Performer 角色+专长",
     "输出初始化报告: ticket + 匹配的专家 + 推荐 skill",
     "初始化完成后再执行 performer-complete.sh 交付流程"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:44Z"
+    }
+  }
 }

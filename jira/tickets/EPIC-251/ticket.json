@@ -11,12 +11,21 @@
   "created_by": "master",
   "performer": "master",
   "completed_at": "2026-08-12",
-  "pr_chain": ["#399", "#400", "#401"],
+  "pr_chain": [
+    "#399",
+    "#400",
+    "#401"
+  ],
   "worktree_role": "performer",
   "performer_sub_role": "coder",
   "handoff_depth": "L1",
   "estimated_hours": 2,
-  "labels": ["bugfix", "sentinel-debt", "epic-157-followup", "phase-023"],
+  "labels": [
+    "bugfix",
+    "sentinel-debt",
+    "epic-157-followup",
+    "phase-023"
+  ],
   "description": "EPIC-251 — 修 EPIC-157 引入的 scan-dead-code Stage 3 sentinel debt (主公 2026-08-12 拍板 Sprint 规划 #1).\n\n**Context**: EPIC-157 (PR #372-374, 2026-08-11) 新增 node/src/jira/ticket-binding.ts (201 行, 4 exported 函数) 但缺配套 test, 触发 scan-dead-code Stage 3 sentinel FAIL ('1 模块未被 tests 引用'). retrospective-batch-8 L3 记录, EPIC-158 PR #390 用 KALLAX_HOOK_BYPASS=1 备案跳过.\n\n**Rule 34 独立复现** (强制):\n- reproduction_command: bash scripts/scan-dead-code.sh (先 npm install --prefix node)\n- reproduction_exit_code: 1\n- reproduction_raw_output: 'Stage 3: Sentinel coverage ... 1 模块未被 tests 引用 (sentinel fail, EPIC-131-B 治 不被调用就死 的真问题)\\n\\n  jira/ticket-binding\\n\\nEPIC-131-B dead-code sentinel: 1 阶段 FAIL (3/3 阶段实跑)'\n\n**核心改动**: 新建 node/tests/jira/ticket-binding.test.ts 覆盖 4 exported 函数 (findJiraTicketPath / readJiraTicket / writeBinding / validateBindingForComplete).\n\n**scope**: 只加 test 文件, 0 改 source code (ticket-binding.ts 不动).",
   "acceptance": [
     "AC1: node/tests/jira/ticket-binding.test.ts 新建, ≥8 case 覆盖 4 exported 函数",
@@ -61,5 +70,20 @@
     "EPIC-158 (bypass 备案, 本 ticket 治根)",
     "retrospective-batch-8 L3 (sentinel debt 记录)",
     "EPIC-054-A (worktree 隔离 — 不破)"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:47Z"
+    }
+  }
 }

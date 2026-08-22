@@ -26,5 +26,20 @@
   ],
   "estimated_hours": 6,
   "notes": "借 EKET Zod 思路 (Layer 2), KALLAX 增 5 运行时字段. 对应 EKET 6 反 LLM 绕过机制 (TS 强类型)",
-  "status": "done"
+  "status": "done",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:06Z"
+    }
+  }
 }

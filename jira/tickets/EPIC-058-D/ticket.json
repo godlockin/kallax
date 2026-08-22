@@ -22,5 +22,20 @@
     "HEAD SHA 不变 landed (c77fba9 + bf3f277 + 0b69733)"
   ],
   "estimated_hours": 6,
-  "kpi": "0 实际 filter-repo 改写 (跟'不埋坑' 5 原则 联合) + 1 doc + 1 script + 1 test (5/5 PASS) + HEAD SHA 不变 landed (c77fba9 + bf3f277 + 0b69733), 跟主公 2026-06-17 D 跳过 explicit 覆盖 联合"
+  "kpi": "0 实际 filter-repo 改写 (跟'不埋坑' 5 原则 联合) + 1 doc + 1 script + 1 test (5/5 PASS) + HEAD SHA 不变 landed (c77fba9 + bf3f277 + 0b69733), 跟主公 2026-06-17 D 跳过 explicit 覆盖 联合",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:01Z"
+    }
+  }
 }

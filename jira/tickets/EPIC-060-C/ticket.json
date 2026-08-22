@@ -38,5 +38,20 @@
   "status_set_by": "master_main (主公 explicit 派单 '同意建议, 需要都建卡并行处理', 跟 v2.7.0 经验教训 整理 release 联合, 跟'独立' 战略 联合 留待主公后续 拍板)",
   "status_updated_at": "2026-06-19T22:00:00Z",
   "status_updated_by": "master_main (主公 2026-06-19 explicit 派单, 跟 ACTIVE 状态 一致, 跟'诚实修正' 战略 联合 0 隐藏 deferred 状态)",
-  "completion_time": "2026-06-19T00:00:00Z"
+  "completion_time": "2026-06-19T00:00:00Z",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:09Z"
+    }
+  }
 }

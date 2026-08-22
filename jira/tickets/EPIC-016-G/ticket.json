@@ -32,6 +32,19 @@
     "reviewer": "master_main",
     "reviewed_at": "2026-06-07T00:02:00Z",
     "decision": "APPROVE",
-    "merged_to": "miao"
+    "merged_to": "miao",
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:50Z"
+    }
   }
 }

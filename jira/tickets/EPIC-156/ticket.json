@@ -91,5 +91,20 @@
     "files_modified_by_this_ticket": "(0 — non-destructive Option C)",
     "error_count_before": "1 (EPIC-154 ID collision in commit message layer)",
     "error_count_after": "0 (ID collision 在 retrospective ticket 澄清, future audit 0 混淆)"
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:36Z"
+    }
   }
 }

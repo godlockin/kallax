@@ -90,5 +90,20 @@
   "created_by": "master (主公 2026-08-05 Phase 5 G 闭环 EPIC-023-C)",
   "_archive_reason": "EPIC-244 独立复现验证: 证据充分 (见 confluence/decisions/EPIC-244-ticket-archive-2026-08-10.md)",
   "_archive_method": "grep + wc + 真跑测试 (Rule 34 独立复现)",
-  "_archived_at": "2026-08-10T03:40:00Z"
+  "_archived_at": "2026-08-10T03:40:00Z",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:39Z"
+    }
+  }
 }

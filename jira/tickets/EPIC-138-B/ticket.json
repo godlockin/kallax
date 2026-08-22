@@ -64,5 +64,20 @@
     ],
     "replaced_prior_workflow": "prior version only checked (test|PASS|coverage) keyword + (TASK|TICKET)-N + body_len>=50; subsumed by new 7-class schema (via `## 关联 ticket` content + `## 自动验证` code block + risk boxes). Full replace, no logic preserved.",
     "actions_checkout_pin": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 (kept from prior version, matches EPIC-136-A pinning convention)"
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:22Z"
+    }
   }
 }

@@ -12,10 +12,10 @@
 #   bash scripts/hooks/install.sh --verify  # 只检查不改 (exit 1 = 有问题)
 set -euo pipefail
 
-REPO_ROOT="$(git -C "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" rev-parse --show-toplevel 2>/dev/null)"
+REPO_ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git -C "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" rev-parse --show-toplevel 2>/dev/null)"
 # Fallback: 若 BASH_SOURCE 解析失败 (e.g. 通过 stdin pipe), 用当前 cwd
 if [ -z "$REPO_ROOT" ]; then
-  REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+  REPO_ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git rev-parse --show-toplevel 2>/dev/null || pwd)"
 fi
 HOOKS_SRC="${REPO_ROOT}/scripts/hooks"
 GIT_DIR="$(git -C "$REPO_ROOT" rev-parse --git-common-dir)"
@@ -84,7 +84,7 @@ for hook in pre-commit pre-push; do
       echo "  INSTALLED: $hook"
     fi
   elif ! cmp -s "$src" "$dst"; then
-    echo "  STALE: $hook 已安装但跟源文件不一致"
+    echo "  STALE: $hook 已安装但内容跟源文件不同"
     problems=1
     if [ "$VERIFY_ONLY" -eq 0 ]; then
       cp "$src" "$dst"
@@ -111,7 +111,7 @@ if [ -f "${REPO_ROOT}/commitlint.config.js" ]; then
       echo "  INSTALLED: commit-msg hook (DCO + Conventional Commits)"
     fi
   elif [ -f "${HOOKS_SRC}/commit-msg" ] && ! cmp -s "${HOOKS_SRC}/commit-msg" "$COMMIT_MSG_HOOK"; then
-    echo "  STALE: commit-msg 跟源文件不一致"
+    echo "  STALE: commit-msg 内容跟源文件不同"
     problems=1
     if [ "$VERIFY_ONLY" -eq 0 ]; then
       cp "${HOOKS_SRC}/commit-msg" "$COMMIT_MSG_HOOK"
@@ -132,13 +132,13 @@ echo ""
 # 修法: install --verify 9 脚本 1-by-1 验 (存在 + 可执行).
 # 退出契约: 0=PASS, 1=FAIL (任一 missing/not-exec → problems=1).
 #
-# 9 immutable 清单 (跟 .claude/rules/immutable-scripts.md §2 表格 1:1):
+# 9 immutable 清单 (来源: .claude/rules/immutable-scripts.md §2 表格):
 #   1-4 verify/check-*.sh (原 4-law, EPIC-110) → 仍住 scripts/verify/
 #   5   scripts/hooks/check-claim-evidence.sh  (EPIC-069-D)
 #   6-9 scripts/hooks/check-{disclaimer,snapshot-claude-md,ticket-schema,jargon}.sh
 #       (EPIC-220/219/223/225 → EPIC-277-E 接入)
 echo "--- 9 immutable scripts 检查 (EPIC-223 + EPIC-224 + EPIC-277-E) ---"
-echo "    全部脚本需存在 + 可执行 (跟 CLAUDE.md §5 + .claude/rules/immutable-scripts.md §2 1:1)"
+echo "    全部脚本需存在 + 可执行 (清单见 CLAUDE.md §5 + .claude/rules/immutable-scripts.md §2)"
 IMMUTABLE_PASSED=0
 IMMUTABLE_FAILED=0
 check_immutable_script() {

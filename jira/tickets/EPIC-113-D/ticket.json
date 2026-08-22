@@ -16,5 +16,20 @@
     "12 表全部有 CRUD 集成测试",
     "并发 stress test: 100 tx × 8 thread 0 error",
     "cargo test --workspace --release 全绿"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:16Z"
+    }
+  }
 }

@@ -22,5 +22,20 @@
   ],
   "estimated_hours": 0.5,
   "notes": "EPIC-021 LESSONS §8.3 UP-4, F ticket 沉淀, 防止 5 年后 F 修复细节丢失",
-  "status": "done"
+  "status": "done",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:11Z"
+    }
+  }
 }

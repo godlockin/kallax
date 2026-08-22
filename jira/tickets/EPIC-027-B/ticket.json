@@ -27,5 +27,20 @@
   ],
   "estimated_hours": 3,
   "notes": "Phase 0.3 + 0.4 合并实施, EPIC-022 前实例环境干净",
-  "status": "done"
+  "status": "done",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:14Z"
+    }
+  }
 }

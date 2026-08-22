@@ -55,5 +55,20 @@
       "if_EPIC_146_scope_close_and_transfer": "PARTIAL — related but not identical; recommending new ticket",
       "if_real_type_error_fix_and_report": "N/A — not a type error"
     }
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:27Z"
+    }
   }
 }

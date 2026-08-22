@@ -23,5 +23,20 @@
     "写入 review 请求到 .kallax/queue/inbox/conductor_main/",
     "review 请求包含: ticket_id, branch, 变更文件列表, 自测结果",
     "输出交付摘要供 Performer 确认"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:44Z"
+    }
+  }
 }

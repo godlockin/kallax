@@ -29,5 +29,20 @@
   ],
   "estimated_hours": 1,
   "notes": "Phase 0.1 tracking, 立刻派. EPIC-022 v1 实施在 EPIC-026 P0 fix 完成后启动",
-  "status": "done"
+  "status": "done",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:14Z"
+    }
+  }
 }

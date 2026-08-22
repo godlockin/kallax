@@ -23,5 +23,20 @@
     "输出调度计划: 并行组 + 串行链",
     "dry-run 模式预览调度计划",
     "只有 1 张卡或无依赖冲突时允许串行"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:45Z"
+    }
+  }
 }

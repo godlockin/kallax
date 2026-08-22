@@ -28,5 +28,20 @@
   ],
   "estimated_hours": 0.5,
   "performer": "performer-EPIC-021-B",
-  "notes": "借 EKET INDEX 表格形式 + Frontend/UX/Product 共识: 症状列替代解决方案语言. 3 秒决策目标. emoji 渲染需考虑 macOS terminal 兼容性 (iTerm2/Terminal.app 验证)."
+  "notes": "借 EKET INDEX 表格形式 + Frontend/UX/Product 共识: 症状列替代解决方案语言. 3 秒决策目标. emoji 渲染需考虑 macOS terminal 兼容性 (iTerm2/Terminal.app 验证).",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:59Z"
+    }
+  }
 }

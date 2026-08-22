@@ -29,5 +29,20 @@
   "estimated_days": 1.5,
   "blocked_by": null,
   "borrowed_from": "Security §5.2 AuditMiddleware SQLite 审计 (新 DB 独立, 不污染现有 .kallax/data/)",
-  "must_keep": "主公 2026-06-11 拍: 新 SQLite .kallax/data/audit.db 独立, 不污染现有"
+  "must_keep": "主公 2026-06-11 拍: 新 SQLite .kallax/data/audit.db 独立, 不污染现有",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:27Z"
+    }
+  }
 }

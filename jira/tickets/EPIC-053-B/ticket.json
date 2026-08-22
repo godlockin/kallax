@@ -34,5 +34,20 @@
   "claimed_at": "2026-06-16T01:00:00Z",
   "claimed_by": "performer-EPIC-053",
   "done_at": "2026-06-16T23:59:00Z",
-  "done_by": "performer-EPIC-053"
+  "done_by": "performer-EPIC-053",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "REVERTED",
+    "backfill": {
+      "inferred": true,
+      "source": "git_revert:30bf1ef3",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:46Z"
+    }
+  }
 }

@@ -34,6 +34,19 @@
     "reviewed_at": "2026-06-07T15:35:00Z",
     "decision": "APPROVE",
     "merge_commit": "b3c4a1e",
-    "note": "performer blocked by permissions, master实施 directly"
+    "note": "performer blocked by permissions, master实施 directly",
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:56Z"
+    }
   }
 }

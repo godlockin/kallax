@@ -35,5 +35,20 @@
     "boundary case: 4 工具都检测失败 → 警告 + exit 1 + suggestion 'install claude'"
   ],
   "estimated_hours": 3,
-  "status_set_by": "master_main (主公 B explicit)"
+  "status_set_by": "master_main (主公 B explicit)",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:58Z"
+    }
+  }
 }

@@ -45,7 +45,9 @@
         "node/src/core/master-election.ts",
         "node/src/core/master-verify/dimensions.ts"
       ],
-      "ci": [".github/workflows/ci.yml"]
+      "ci": [
+        ".github/workflows/ci.yml"
+      ]
     },
     "per_rule_diff_rationale": {
       "no-namespace (auth.ts)": "Express Request augmentation requires `declare global { namespace Express }`; `eslint-disable @typescript-eslint/no-namespace` with documented justification (only documented way to augment @types/express Request from a module).",
@@ -76,6 +78,25 @@
     "cd node && vitest run 无 regression",
     "每处 diff 附 rationale"
   ],
-  "labels": ["style", "lint-strict", "canary-finding"],
-  "derived_from": "EPIC-150 Option A STRICT"
+  "labels": [
+    "style",
+    "lint-strict",
+    "canary-finding"
+  ],
+  "derived_from": "EPIC-150 Option A STRICT",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:32Z"
+    }
+  }
 }

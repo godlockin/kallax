@@ -21,7 +21,11 @@
     "cd rust && cargo test --workspace --release 全绿 (无 regression)",
     "改动仅 whitespace/import order, 无语义修改 (git diff 抽查 5 处证实)"
   ],
-  "labels": ["cleanup", "canary-finding", "rust-fmt"],
+  "labels": [
+    "cleanup",
+    "canary-finding",
+    "rust-fmt"
+  ],
   "derived_from": "PR #150 canary — main 分支 4-branch governance 第 2 段",
   "verification": {
     "completed_at": "2026-07-26",
@@ -86,6 +90,21 @@
       "cargo_fmt_check_exit_0": true,
       "cargo_test_workspace_release_green": true,
       "whitespace_only_confirmed": true
+    }
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:35:25Z"
     }
   }
 }

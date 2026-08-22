@@ -24,5 +24,20 @@
     "HIGH 风险必须全部修复或显式标注 accepted",
     "对比 observation #5115/5116 的 60-80% 目标达成度"
   ],
-  "estimated_hours": 1
+  "estimated_hours": 1,
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:51Z"
+    }
+  }
 }

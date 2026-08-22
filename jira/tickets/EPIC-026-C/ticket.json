@@ -27,5 +27,20 @@
   ],
   "estimated_hours": 4,
   "notes": "rollback SOP 是 v1 全范围 18d 实施的安全网, 必做",
-  "status": "done"
+  "status": "done",
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "REVERTED",
+    "backfill": {
+      "inferred": true,
+      "source": "git_revert:f83fb9c4",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:34:13Z"
+    }
+  }
 }

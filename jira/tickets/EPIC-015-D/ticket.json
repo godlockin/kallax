@@ -23,5 +23,20 @@
     "TypeScript 类型从 schema 自动推导",
     "CLI 命令 `kallax validate --all` 验证所有 jira/ JSON 文件",
     "schema 版本号管理，向后兼容"
-  ]
+  ],
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED",
+    "backfill": {
+      "inferred": true,
+      "source": "ticket_status:done",
+      "heuristic": "1-PR-1-final-outcome (EPIC-277-F AC3)",
+      "backfilled_at": "2026-08-21T16:33:42Z"
+    }
+  }
 }
