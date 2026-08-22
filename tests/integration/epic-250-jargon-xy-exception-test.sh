@@ -11,7 +11,7 @@ set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-CHECKER="$REPO_ROOT/scripts/verify/check-jargon.sh"
+CHECKER="$REPO_ROOT/scripts/hooks/check-jargon.sh"
 
 PASS=0
 FAIL=0
