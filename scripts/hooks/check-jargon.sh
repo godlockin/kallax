@@ -48,11 +48,16 @@ HITS_FILE="${TMPDIR_TEST}/hits.txt"
 jq -r '.blacklist | to_entries[] | .value.patterns[] | .regex' "$BLACKLIST" > "$PATTERNS_FILE"
 
 # 元字段豁免
+# EPIC-286 补 "jargon" 通配: jargon gate 自己的测试文件必然含违规词样本
+# (测 gate 能否拦住违规词, fixture 就得包含违规词). 原只豁免含 "check-jargon"
+# 字样的路径, 漏了 tests/integration/epic-225-jargon-*.sh / epic-250-jargon-*.sh
+# → commit 自己的测试时被自己拦 (实测本次触发).
 META_EXEMPT_PATTERNS=(
   ".jargon-blacklist.json"
   ".jargon-baseline.json"
   "EPIC-225"
   "check-jargon"
+  "jargon"
 )
 
 is_meta_file() {
@@ -87,6 +92,39 @@ is_historical_file() {
 # 把所有 regex 用 | 串成 egrep pattern
 COMBINED_PATTERN="$(tr '\n' '|' < "$PATTERNS_FILE" | sed 's/|$//')"
 
+# EPIC-286 移植 (从 scripts/verify/check-jargon.sh, 主公 2026-08-22 拍板统一为单脚本):
+# 兑现 blacklist "replace" 字段承诺的例外条件.
+#
+# 起因: blacklist 里 "X/Y PASS 无命令引用" 的 replace 写着
+#   "附 '`bash <cmd>`' 或 'exit=0'"
+# 意思是"附了命令引用就可以写 X/Y PASS". 但 canonical 脚本没实现这个判断,
+# 命中就 fail. 结果决策文档贴 raw test output (主配置 §2 要求) 跟 jargon gate
+# 撞车 — 贴了过不了 gate, 不贴违反 §2. 实测本 Sprint 60% 的 HOOK_BYPASS
+# 用量来自这个死锁 + 历史文件豁免缺失.
+#
+# 本函数实现: X/Y PASS 命中时, 看它附近 ±10 行有没有命令引用证据.
+#   有 → 豁免 (这是 raw output 引用, 不是装饰性宣称)
+#   无 → 仍 fail (裸数字没证据, 正是 v3.8.0 "25/25 假 PASS" 的问题)
+#
+# 窗口取 ±10 行: ±5 太窄, 表格场景 (命令写在表头上方 + 表格本身 5-6 行)
+# 很容易超出; ±10 能覆盖常见的 "命令 + 空行 + 表格" 排版, 又不至于把
+# 隔了一整段的无关命令算进来.
+#
+# 只对 "X/Y PASS" 这一条生效. 其他词 (装饰性连接词 / 收尾隐喻 等) 无例外.
+XY_PASS_PATTERN='[0-9]+/[0-9]+\s+(PASS|passed)'
+XY_EVIDENCE_WINDOW=10
+
+has_command_evidence() {
+  local file="$1"
+  local lineno="$2"
+  local from=$(( lineno > XY_EVIDENCE_WINDOW ? lineno - XY_EVIDENCE_WINDOW : 1 ))
+  local to=$(( lineno + XY_EVIDENCE_WINDOW ))
+  # 证据形式 (跟 blacklist replace 字段同口径):
+  #   `bash xxx` / `npx xxx` / $ cmd / exit=N / RC=N / rc=N
+  sed -n "${from},${to}p" "$file" 2>/dev/null \
+    | grep -qE '(`(bash|npx|cargo|npm|git|python3) |^\s*\$ |exit=[0-9]|RC=[0-9]|rc=[0-9])'
+}
+
 scan_file() {
   local f="${1:-}"
   [ -z "$f" ] && return 0
@@ -95,8 +133,14 @@ scan_file() {
   local rel="${f#$REPO_ROOT/}"
   is_meta_file "$rel" && return 0
 
-  # 全仓模式跳过 baseline 豁免; staged 模式也严格 (新内容 0 黑话)
-  # 注: baseline 豁免是给审计/报告用的, 不是给 hook 的 (hook 强制 0 黑话)
+  # EPIC-286 移植: 历史文件豁免 (兑现 .jargon-blacklist.json `_scope`
+  # "历史内容不追溯" + 主公 2026-08-11 拍板). baseline = EPIC-224 合并 commit.
+  # first_commit <= baseline 视为历史备案, 不 fail-closed.
+  # 起因: 改一个 2026-06 的老文档时, 它自带的历史 jargon 全部报错 → 被迫 bypass.
+  # 文档说"不追溯" 但 hook 未实现豁免, 是本 Sprint bypass 常态化的另一半原因.
+  if is_historical_file "$f"; then
+    return 0
+  fi
 
   while IFS= read -r hit_line; do
     [ -z "$hit_line" ] && continue
@@ -112,6 +156,12 @@ scan_file() {
       fi
     done < "$PATTERNS_FILE"
     set -e
+
+    # EPIC-286 移植: X/Y PASS 附命令证据则豁免
+    if [ "$first_pat" = "$XY_PASS_PATTERN" ] && has_command_evidence "$f" "$lineno"; then
+      continue
+    fi
+
     printf "  %s:%s — %s\n  > %s\n" "$rel" "$lineno" "$first_pat" "$content" >> "$HITS_FILE"
   done < <(grep -nE "$COMBINED_PATTERN" "$f" 2>/dev/null || true)
 }

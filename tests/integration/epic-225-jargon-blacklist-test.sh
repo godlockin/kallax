@@ -7,7 +7,7 @@
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT" || exit 1
 
-SCRIPT="scripts/verify/check-jargon.sh"
+SCRIPT="scripts/hooks/check-jargon.sh"
 BLACKLIST="jira/tickets/.jargon-blacklist.json"
 BASELINE="jira/tickets/.jargon-baseline.json"
 PASS=0
@@ -73,7 +73,7 @@ assert_exit "baseline.json 自身豁免 → exit 0" 0 bash "$SCRIPT" "$BASELINE"
 echo ""
 echo "--- Group 5: 全仓模式 (报告 4056 备案) ---"
 # --all 模式报全部, exit 1 (基线机制下不算合规, 但只供审计)
-out="$(bash scripts/verify/check-jargon.sh --all 2>&1 || true)"
+out="$(bash scripts/hooks/check-jargon.sh --all 2>&1 || true)"
 # 不强制退出码, 验证输出含 baseline 说明
 if echo "$out" | grep -q 'baseline ='; then
   ok "--all 模式输出 baseline 说明"
