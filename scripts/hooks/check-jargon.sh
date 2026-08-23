@@ -85,9 +85,9 @@ is_meta_file() {
     if [[ "$rel" == $pat ]]; then
       return 0
     fi
-    # 后缀匹配: 去掉前导 */ 后的 path 跟 rel 比
+    # 同时匹配去掉前导 */ 后的 repo-relative glob。
     local stripped="${pat#\*/}"
-    if [ "$stripped" != "$pat" ] && [[ "$rel" == *"/$stripped" || "$rel" == "$stripped" ]]; then
+    if [ "$stripped" != "$pat" ] && [[ "$rel" == $stripped ]]; then
       return 0
     fi
   done
