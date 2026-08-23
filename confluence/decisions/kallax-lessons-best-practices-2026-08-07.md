@@ -2,7 +2,7 @@
 
 > **目的**: 记录 8 个月迭代中**深远影响**项目走向的教训, 转化为可复用的最佳实践。
 > **写入**: 2026-08-07, 跟 EPIC-194 Rule 36 + EPIC-188 retrospective 联合。
-> **更新**: 2026-08-22 并入 EPIC-277 沉淀 (4 条新增, 见 §9.1 统一治根原则)。
+> **更新**: 2026-08-22 并入 EPIC-277 沉淀（4 条新增，见 §9.1 根因修复原则）。
 > **数据源**: .claude-mem 2925 observations + 26k tokens 历史 + 36 Rule + 5 immutable scripts。
 > **筛选标准**: 治根 ≥ 2 release 复发 + 跨团队复用价值 + 北极星 metric 影响 ≥ 1 项。
 
@@ -81,7 +81,7 @@
 **教训**: 2 次同型复发。EPIC-224: `core.hooksPath` 指向已删临时目录 → 所有 hook 静默失效。EPIC-277: 6 个 hook 脚本用 `git -C <script_dir> rev-parse --show-toplevel`, 在 hook 环境 (`GIT_DIR` 已设) 返回 `-C` 目录而非 repo root → BLACKLIST/BASELINE 路径错位 → fail-closed 拦死每次 commit。**共同根因: dry-run 通过 ≠ hook 环境通过**。
 
 **最佳实践**:
-- ✅ hook 写完必跑 4 步实测 (不是 dry-run): (1) `git config core.hooksPath` 设真路径 (2) 实跑 `git commit` 触发 (3) 验 exit code 跟设计一致 (4) 验 hook 解析的 path 跟设计一致
+- ✅ hook 写完必跑 4 步实测（不是 dry-run）：(1) `git config core.hooksPath` 设真路径 (2) 实跑 `git commit` 触发 (3) 验 exit code 与设计相符 (4) 验 hook 解析的 path 与设计相符
 - ✅ repo root 解析统一 helper (env-agnostic):
   ```bash
   REPO_ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git -C "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" rev-parse --show-toplevel 2>/dev/null || \
@@ -274,7 +274,7 @@
 **最佳实践**:
 - ✅ 建卡前 master 必跑实测把数字写进 AC: `find jira/tickets -name ticket.json | wc -l` / `git log --oneline | wc -l` / `git diff --stat` / metric 现值
 - ✅ AC 数字带 footer: `(实际 X/Y 以 commit 时实测为准)`
-- ✅ subagent 收卡后必独立复现 AC 数字 (跟 Rule 34 1:1), gap > 10% → ticket `blocked` + 上报
+- ✅ subagent 收卡后必独立复现 AC 数字（参考 Rule 34），gap > 10% → ticket `blocked` + 上报
 - ✅ **subagent 诚实修正是正确行为**: EPIC-277-F subagent 实测 212 ≠ 270, 在 PR「未执行验证」透明披露 — 这是范本, 不是失职
 - ✅ 区分"能靠 1 commit 达成"vs"需长期运行积累"的 AC, 后者写清依赖
 
@@ -324,7 +324,7 @@
 - ✅ 任何 metric 判定"异常模式"时, 留 per-ticket 声明字段作逃生门: `ticket.json.multi_spec_intentional: true` → 跳过 `scope_conflict`
 - ✅ breakdown 必暴露豁免计数 (`multi_spec_intentional_skip: N`), 让豁免可审计, 不是黑箱
 - ✅ 阈值按 EPIC 类型分型: 基础设施型 vs docs-only 型不同阈值 (60% → 40% + docs 副指标 40%)
-- ✅ 改阈值必 **3 处同步** (`metrics.sh` + `CLAUDE.md` + `.claude/rules/`), 跟 EPIC-223 改数字强制流程 1:1
+- ✅ 改阈值必 **3 处同步**（`metrics.sh`、`CLAUDE.md`、`.claude/rules/`），参考 EPIC-223 的改数字流程
 - ✅ 阈值/算法调整必附**量化前后对比** (EPIC-277: mis_dispatch 75% → 0%, 4 ticket 豁免), 不是拍脑袋放宽
 - ✅ 警惕滥用: 豁免字段是"声明有意", 不是"数字不好看就加"; review 时必查 file_scope 是否真跨领域
 
@@ -364,7 +364,7 @@
 | 15 | ticket.json 肉眼看着对 | `jq .` parse fail → 字段读不出 | 验证工具缺失 (人眼 ≠ 程序) |
 | 16 | metric FAIL = 有问题 | metric FAIL = 算法假设不匹配场景 | 验证语义错位 |
 
-**统一治根原则** (跨项目可复用):
+**根因修复原则**（跨项目可复用）：
 > **任何"通过"结论, 必须由**最终消费方**的方式验证** —
 > CI 要跑的项目, 派工前列成清单硬编码;
 > hook 环境要跑的脚本, 在 hook 环境跑;
