@@ -64,7 +64,7 @@ META_EXEMPT_PATH_PATTERNS=(
 # scripts/hooks/check-jargon.sh 自己
 META_EXEMPT_PATH_PATTERNS+=(  "*/scripts/hooks/check-jargon.sh"  )
 # META 文档 (本脚本的"基线说明"文件, 必然解释黑名单跟豁免, 必然包含示例词)
-META_EXEMPT_PATH_PATTERNS+=(  "*/confluence/decisions/EPIC-225*"  "*/jira/tickets/.jargon-*")
+META_EXEMPT_PATH_PATTERNS+=(  "*/confluence/decisions/EPIC-225*"  "*/jira/tickets/.jargon-*"  "*/CLAUDE.md"  "*/.claude/rules/immutable-scripts.md")
 
 is_meta_file() {
   local rel="${1:-}"
