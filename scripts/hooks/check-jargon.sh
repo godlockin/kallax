@@ -35,8 +35,12 @@ fi
 
 # 读取 baseline commit (可能缺失 — 历史模式 graceful)
 BASELINE_COMMIT=""
+BASELINE_TIMESTAMP=""
 if [ -f "$BASELINE_JSON" ]; then
   BASELINE_COMMIT="$(jq -r '.baseline_commit // ""' "$BASELINE_JSON" 2>/dev/null || echo "")"
+fi
+if [ -n "$BASELINE_COMMIT" ]; then
+  BASELINE_TIMESTAMP="$(git -C "$REPO_ROOT" show -s --format=%ct "$BASELINE_COMMIT" 2>/dev/null || echo "")"
 fi
 
 # 提取所有 regex 模式到临时文件 (兼容 bash 3.2)
@@ -109,11 +113,12 @@ is_historical_file() {
   first_commit="$(git -C "$REPO_ROOT" log --format="%H" --reverse --follow -- "$rel" 2>/dev/null | head -1 || echo "")"
   [ -z "$first_commit" ] && return 1
 
-  # 若 first_commit 早于 baseline, 整文件在 baseline 之前存在
-  if git -C "$REPO_ROOT" merge-base --is-ancestor "$first_commit" "$BASELINE_COMMIT" 2>/dev/null; then
-    return 0  # 历史文件
-  fi
-  return 1  # 新增文件 (不豁免)
+  # 跨主干时 baseline 可能不是当前分支祖先；以首次引入时间判断文件是否
+  # 属于 baseline 前历史文件，逐行判定仍由 historical_line_exempt 完成。
+  [ -z "$BASELINE_TIMESTAMP" ] && return 1
+  local first_timestamp
+  first_timestamp="$(git -C "$REPO_ROOT" show -s --format=%ct "$first_commit" 2>/dev/null || echo "")"
+  [ -n "$first_timestamp" ] && [ "$first_timestamp" -le "$BASELINE_TIMESTAMP" ]
 }
 
 # B5 修: 历史文件**逐行**判定. 整文件豁免只用于 baseline 之前
@@ -126,10 +131,15 @@ historical_line_exempt() {
   local rel="${f#$REPO_ROOT/}"
   # git blame 拿该行最后修改 commit (--porcelain 给机器可读)
   local lc
-  lc="$(git -C "$REPO_ROOT" blame --porcelain -L "${lineno},${lineno}" -- "$rel" 2>/dev/null | head -1 || echo "")"
+  lc="$(git -C "$REPO_ROOT" blame --porcelain -L "${lineno},${lineno}" -- "$rel" 2>/dev/null | head -1 | cut -d ' ' -f1 || echo "")"
   [ -z "$lc" ] && return 1
-  # 该 commit 早于 baseline → 豁免
-  git -C "$REPO_ROOT" merge-base --is-ancestor "$lc" "$BASELINE_COMMIT" 2>/dev/null
+  # 基线 commit 在当前分支不是祖先时（例如跨主干 merge 后），不能把
+  # merge-base 拓扑当作历史语义。按 baseline 的提交时间比较该行最后修改时间；
+  # 仍只豁免基线前存在的行，基线后的修改维持 fail-closed。
+  [ -z "$BASELINE_TIMESTAMP" ] && return 1
+  local line_timestamp
+  line_timestamp="$(git -C "$REPO_ROOT" show -s --format=%ct "$lc" 2>/dev/null || echo "")"
+  [ -n "$line_timestamp" ] && [ "$line_timestamp" -le "$BASELINE_TIMESTAMP" ]
 }
 
 # 把所有 regex 用 | 串成 egrep pattern
@@ -207,7 +217,7 @@ scan_file() {
     fi
 
     # B5 修: 历史文件**逐行**豁免 — 该行 last_change_commit 早于 baseline
-    if [ "$is_historical" -eq 1 ] && historical_line_exempt "$f" "$lineno"; then
+    if historical_line_exempt "$f" "$lineno"; then
       continue
     fi
 
