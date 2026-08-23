@@ -145,6 +145,62 @@ else
   FAIL=1
 fi
 
+# Case 10 (B 修 B3): META_EXEMPT 不用 'jargon' substring 通配
+# 修复: 精确 basename / 显式 path glob, 不能 substring match 'jargon'
+echo "Case 10: META_EXEMPT 不用 'jargon' 通配 (B 修 B3)"
+TOTAL=$((TOTAL + 1))
+# 排除注释行后, 检查是否含 *jargon* 通配 (作为数组元素)
+in_meta_exempt_jargon=0
+# 提取 META_EXEMPT_BASENAMES= 块到下一个 )
+basenames_block="$(awk '/^META_EXEMPT_BASENAMES=\($/,/^\)$/' "$SCRIPT")"
+if echo "$basenames_block" | grep -q '"jargon"'; then
+  in_meta_exempt_jargon=1
+fi
+# 提取 META_EXEMPT_PATH_PATTERNS 块
+paths_block="$(awk '/^META_EXEMPT_PATH_PATTERNS=\($/,/^\)$/' "$SCRIPT")"
+if echo "$paths_block" | grep -E '"\*jargon\*"|"jargon"'; then
+  in_meta_exempt_jargon=1
+fi
+if [ "$in_meta_exempt_jargon" -eq 0 ]; then
+  echo "  PASS: META_EXEMPT 数组不含 'jargon' 通配"
+  PASS_COUNT=$((PASS_COUNT + 1))
+else
+  echo "  FAIL: META_EXEMPT 仍含 'jargon' substring 通配" >&2
+  FAIL=1
+fi
+
+# Case 11 (B 修 B3 实跑): 文件名含 'jargon' 但不是 fixture, 不应豁免
+echo "Case 11: 文件名含 jargon 但不是 fixture 不豁免 (B 修 B3 实跑)"
+cat > "${TMPD}/jargon-risk-report.md" << 'EOF'
+# 报告
+
+生产级工具.
+EOF
+TOTAL=$((TOTAL + 1))
+set +e
+bash "$SCRIPT" "${TMPD}/jargon-risk-report.md" >/dev/null 2>&1
+case11_exit=$?
+set -e
+if [ "$case11_exit" -eq 1 ]; then
+  echo "  PASS: 文件名含 jargon 不豁免, 命中 fail (exit=1)"
+  PASS_COUNT=$((PASS_COUNT + 1))
+else
+  echo "  FAIL: 文件名含 jargon 被豁免 (exit=$case11_exit, 期望 1)" >&2
+  FAIL=1
+fi
+
+# Case 12 (B 修 B5): 逐行历史豁免判定已接线
+# 修复: 改老文件时新增违规词应被拦 (原 fail-open 漏报)
+echo "Case 12: 逐行历史豁免判定已接线 (B 修 B5)"
+TOTAL=$((TOTAL + 1))
+if grep -q 'historical_line_exempt' "$SCRIPT"; then
+  echo "  PASS: historical_line_exempt 函数已存在, 逐行判定"
+  PASS_COUNT=$((PASS_COUNT + 1))
+else
+  echo "  FAIL: historical_line_exempt 未接线, 仍是整文件 fail-open" >&2
+  FAIL=1
+fi
+
 echo ""
 echo "结果: $PASS_COUNT/$TOTAL PASS"
 

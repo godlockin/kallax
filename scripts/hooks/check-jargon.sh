@@ -48,45 +48,88 @@ HITS_FILE="${TMPDIR_TEST}/hits.txt"
 jq -r '.blacklist | to_entries[] | .value.patterns[] | .regex' "$BLACKLIST" > "$PATTERNS_FILE"
 
 # 元字段豁免
-# EPIC-286 补 "jargon" 通配: jargon gate 自己的测试文件必然含违规词样本
-# (测 gate 能否拦住违规词, fixture 就得包含违规词). 原只豁免含 "check-jargon"
-# 字样的路径, 漏了 tests/integration/epic-225-jargon-*.sh / epic-250-jargon-*.sh
-# → commit 自己的测试时被自己拦 (实测本次触发).
-META_EXEMPT_PATTERNS=(
+# EPIC-286 修 B3 反馈: 不用 substring 通配, 改精确 basename / 显式列表
+# (原 'jargon' 通配会误豁免任何含 'jargon' 字样的未来文件, 如 'jargon-risk-report.md' 整文件跳过,
+#  B 仲裁: 真正该豁免的是 jargon gate 自己的 fixture, 不是路径里的 jargon 字样).
+META_EXEMPT_BASENAMES=(
   ".jargon-blacklist.json"
   ".jargon-baseline.json"
-  "EPIC-225"
-  "check-jargon"
-  "jargon"
 )
+META_EXEMPT_PATH_PATTERNS=(
+  "*/tests/integration/check-jargon-exemption.test.sh"
+  "*/tests/integration/check-jargon-*"
+  "*/tests/integration/epic-225-jargon-*"
+  "*/tests/integration/epic-250-jargon-*"
+)
+# scripts/hooks/check-jargon.sh 自己
+META_EXEMPT_PATH_PATTERNS+=(  "*/scripts/hooks/check-jargon.sh"  )
+# META 文档 (本脚本的"基线说明"文件, 必然解释黑名单跟豁免, 必然包含示例词)
+META_EXEMPT_PATH_PATTERNS+=(  "*/confluence/decisions/EPIC-225*"  "*/jira/tickets/.jargon-*")
 
 is_meta_file() {
   local rel="${1:-}"
-  for pat in "${META_EXEMPT_PATTERNS[@]}"; do
-    [[ "$rel" == *"$pat"* ]] && return 0
+  [ -z "$rel" ] && return 1
+  # 1. basename 精确匹配 (跟文件路径无关, 只看文件名)
+  local base
+  base="$(basename "$rel")"
+  for name in "${META_EXEMPT_BASENAMES[@]}"; do
+    [ "$base" = "$name" ] && return 0
+  done
+  # 2. path glob 精确匹配 (跟 hook pattern 一致)
+  for pat in "${META_EXEMPT_PATH_PATTERNS[@]}"; do
+    # 兼容带前导 * (如 "*/tests/...") 跟不带 (如 "tests/...")
+    if [[ "$rel" == $pat ]]; then
+      return 0
+    fi
+    # 后缀匹配: 去掉前导 */ 后的 path 跟 rel 比
+    local stripped="${pat#\*/}"
+    if [ "$stripped" != "$pat" ] && [[ "$rel" == *"/$stripped" || "$rel" == "$stripped" ]]; then
+      return 0
+    fi
   done
   return 1
 }
 
-# 文件是否属于历史 commit? (用 git blame 看最早 commit)
+# 历史文件豁免: 改用 baseline diff 语义 (B 修 B5)
+# 原: 整文件按 first_commit 豁免, 改老文件时新增违规词也全过 (fail-open)
+# 修: 用 git diff baseline..HEAD 拿到 baseline 之上的 diff 行号, 仅豁免
+# baseline 之前就存在的行 (hunk 标识的 old line 段), 新增行继续扫.
+# 实际实现: 对历史文件, 用 git blame 查每行 last_change_commit,
+# 若 last_change_commit 是 baseline 之前的 commit, 豁免该行.
+# 新增行 last_change_commit == HEAD, 不豁免.
 is_historical_file() {
   local f="${1:-}"
   [ -z "$f" ] && return 1
   [ -z "$BASELINE_COMMIT" ] && return 1
 
-  # 相对路径
   local rel="${f#$REPO_ROOT/}"
 
-  # 文件首次引入的 commit (用 log -1 --reverse)
+  # 文件首次引入的 commit
   local first_commit
   first_commit="$(git -C "$REPO_ROOT" log --format="%H" --reverse --follow -- "$rel" 2>/dev/null | head -1 || echo "")"
   [ -z "$first_commit" ] && return 1
 
-  # 若 first_commit 在 baseline 之前/等于, 算历史文件
+  # 若 first_commit 早于 baseline, 整文件在 baseline 之前存在
   if git -C "$REPO_ROOT" merge-base --is-ancestor "$first_commit" "$BASELINE_COMMIT" 2>/dev/null; then
-    return 0  # 历史
+    return 0  # 历史文件
   fi
-  return 1  # 新增
+  return 1  # 新增文件 (不豁免)
+}
+
+# B5 修: 历史文件**逐行**判定. 整文件豁免只用于 baseline 之前
+# 未被任何后续 commit 修改的行. 修改过的行 → 走正常扫描.
+# 实际: scan_file 在文件标记为历史时, 用 git blame 取每行 last_change_commit,
+# 只豁免 last_change_commit < baseline 的行.
+historical_line_exempt() {
+  local f="$1" lineno="$2"
+  [ -z "$BASELINE_COMMIT" ] && return 1
+  local rel="${f#$REPO_ROOT/}"
+  # git blame 拿该行最后修改 commit (--porcelain 给机器可读)
+  local lc
+  lc="$(git -C "$REPO_ROOT" blame --porcelain -L "${lineno},${lineno}" -- "$rel" 2>/dev/null | head -1 || echo "")"
+  [ -z "$lc" ] && return 1
+  # 该 commit 早于 baseline → 豁免
+  git -C "$REPO_ROOT" merge-base --is-ancestor "$lc" "$BASELINE_COMMIT" 2>/dev/null
 }
 
 # 把所有 regex 用 | 串成 egrep pattern
@@ -133,13 +176,14 @@ scan_file() {
   local rel="${f#$REPO_ROOT/}"
   is_meta_file "$rel" && return 0
 
-  # EPIC-286 移植: 历史文件豁免 (兑现 .jargon-blacklist.json `_scope`
+  # EPIC-286 移植: 历史文件**逐行**豁免 (兑现 .jargon-blacklist.json `_scope`
   # "历史内容不追溯" + 主公 2026-08-11 拍板). baseline = EPIC-224 合并 commit.
-  # first_commit <= baseline 视为历史备案, 不 fail-closed.
-  # 起因: 改一个 2026-06 的老文档时, 它自带的历史 jargon 全部报错 → 被迫 bypass.
-  # 文档说"不追溯" 但 hook 未实现豁免, 是本 Sprint bypass 常态化的另一半原因.
+  # B 修 B5: 原"整文件按 first_commit 豁免"是 fail-open — 改老文件时新增
+  # 违规词也全过. 修: 标记为历史的文件, 仍逐行判定, 只豁免 baseline
+  # 之前就存在的行 (用 git blame 查每行 last_change_commit).
+  local is_historical=0
   if is_historical_file "$f"; then
-    return 0
+    is_historical=1
   fi
 
   while IFS= read -r hit_line; do
@@ -159,6 +203,11 @@ scan_file() {
 
     # EPIC-286 移植: X/Y PASS 附命令证据则豁免
     if [ "$first_pat" = "$XY_PASS_PATTERN" ] && has_command_evidence "$f" "$lineno"; then
+      continue
+    fi
+
+    # B5 修: 历史文件**逐行**豁免 — 该行 last_change_commit 早于 baseline
+    if [ "$is_historical" -eq 1 ] && historical_line_exempt "$f" "$lineno"; then
       continue
     fi
 

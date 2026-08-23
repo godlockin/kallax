@@ -57,7 +57,8 @@ CLAUDE.md §5 历史上出现过 **4 个互不一致的数字**:
 **EPIC-286 单脚本统一 (主公 2026-08-22 拍板)**: 曾有 `scripts/verify/check-jargon.sh` (213 行) 跟 `scripts/hooks/check-jargon.sh` (179 行) 两份同名脚本行为分叉 — verify 版实现了 2 个豁免但不被任何 hook 调用, hooks 版被 pre-commit 调用但缺豁免 (`is_historical_file()` 是 dead code)。后果: blacklist `replace` 字段承诺"附命令引用即可写 X/Y PASS"、`_scope` 字段 + 主公 2026-08-11 拍板承诺"历史内容不追溯", 两个承诺都没兑现 → 贴 raw test output 撞 gate, 改老文档撞 gate → HOOK_BYPASS 用量常态化。
 - 处理: 删 verify 版, 把 2 个豁免移植进 canonical (hooks 版)
 - 豁免 1 (X/Y PASS): 命中 `[0-9]+/[0-9]+ (PASS|passed)` 时查 ±10 行窗口内是否有命令证据 (`` `bash|npx|cargo|npm|git|python3 ``/`$ cmd`/`exit=N`/`RC=N`), 有则豁免。裸数字仍 fail (v3.8.0 假 PASS 防线保留)
-- 豁免 2 (历史文件): `first_commit` 早于或等于 baseline (EPIC-224 合并 commit) 则跳过扫描
+- 豁免 2 (历史文件, 逐行): 标记为历史文件 (first_commit ≤ baseline = EPIC-224 合并 commit) 后, **逐行**用 `git blame` 查 last_change_commit, 仅豁免 baseline 之前就存在的行。**修复 B 修 B5 反馈** (原"整文件按 first_commit 豁免"是 fail-open — 改老文件时新增违规词也全过)
+- 元字段豁免 (META_EXEMPT): 不用 substring 通配 (B 修 B3 反馈 — 'jargon' 通配会误豁免任何含 'jargon' 字样的未来文件), 改精确 basename (`.jargon-blacklist.json` / `.jargon-baseline.json`) + 显式 path glob (`tests/integration/check-jargon-*` / `epic-225-jargon-*` / `epic-250-jargon-*` / `scripts/hooks/check-jargon.sh` / `confluence/decisions/EPIC-225*` / `jira/tickets/.jargon-*`)
 - 例外范围: 仅 X/Y PASS 有窗口豁免, 装饰词 (`生产级`/`100%`/`彻底` 等) 无例外
 - 验证: `bash tests/integration/check-jargon-exemption.test.sh` 9/9 PASS (含裸数字仍 fail / 窗口外不豁免 / 装饰词无例外 3 个反向 case)
 
