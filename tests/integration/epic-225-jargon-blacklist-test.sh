@@ -87,7 +87,7 @@ assert_grep "pre-commit 含 EPIC-225 gate (单词 + 同文件)" 'EPIC-225' scrip
 assert_grep "pre-commit 含 jargon 黑名单 scan" 'JARGON_CHECK.*check-jargon' scripts/hooks/pre-commit
 assert_grep "CLAUDE.md §5 含 EPIC-225" 'EPIC-225' CLAUDE.md
 assert_grep "immutable-scripts.md 含 check-jargon.sh" 'check-jargon\.sh' .claude/rules/immutable-scripts.md
-assert_grep "SKILL.md 数字 9" 'immutable scripts \(9' .claude/skills/kallax/SKILL.md
+assert_grep "SKILL.md 数字 10" 'immutable scripts \(10' .claude/skills/kallax/SKILL.md
 
 echo ""
 echo "--- Group 7: CLAUDE.md 行数 ---"
