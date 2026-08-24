@@ -1,0 +1,61 @@
+{
+  "id": "EPIC-288",
+  "type": "epic",
+  "title": "经验教训整合到单一真相源 (55 → ≤30)",
+  "status": "backlog",
+  "priority": "P1",
+  "epic_id": null,
+  "created_by": "master",
+  "created_at": "2026-08-24T00:00:00Z",
+  "last_modified_by": "master",
+  "description": "EPIC-285 审计汇总 (见 epic-285-audit-summary-2026-08-24) 的下游 EPIC。现状: 55 份经验文档分散 4 处, 44/55 (80%) 不满足 13 判据。目标: 按 EPIC-285 结论重写 04/05 为单一真相源, 归档噪音文档。",
+  "file_scope": {
+    "includes": [
+      "confluence/manifesto/04-lessons.md",
+      "confluence/manifesto/05-best-practices.md",
+      "confluence/decisions/kallax-lessons-best-practices-2026-08-07.md",
+      "confluence/_archived/retrospectives/"
+    ],
+    "excludes": [
+      "node/",
+      "rust/",
+      "scripts/",
+      "confluence/memory/lessons/"
+    ]
+  },
+  "expert_binding": ["auditor", "process-engineering", "compliance", "documentation"],
+  "rule_references": [
+    "Rule 5 (DRY 单一真相源)",
+    "Rule 6 (经验沉淀)",
+    "Rule 8 (数量上限)",
+    "EPIC-285 (13 判据)",
+    "EPIC-285-B (decisions 审计分片)",
+    "EPIC-285-C (memory/lessons + 主文件审计分片)"
+  ],
+  "verification": {
+    "reproduction_command": "wc -l confluence/manifesto/04-lessons.md confluence/manifesto/05-best-practices.md",
+    "reproduction_exit_code": "0",
+    "reproduction_raw_output": "04-lessons.md 行数 <= 300, 05-best-practices.md 行数 <= 300。验收: 04 含 <= 15 条错题 (A1-A15 from epic-285-audit-summary-2026-08-24 section 5.1), 05 含 <= 15 条正例 (含现有阈值型 + P1-P5)."
+  },
+  "handoff_depth": 0,
+  "performer": "unassigned",
+  "review": {
+    "tier": null,
+    "group_a": null,
+    "group_b": null,
+    "final_outcome": null,
+    "review_summary": null
+  },
+  "_archive_reason": null,
+  "_archive_method": null,
+  "acceptance_criteria": [
+    "AC1: 文档结构 - 04-lessons.md 管错题集 (<= 15 条, <= 300 行), 05-best-practices.md 管正例集 (<= 15 条, <= 300 行), 边界明确无交叉",
+    "AC2: 15/15 上限 - 04 错题数 = 15 (A1-A15 from epic-285-audit-summary-2026-08-24 section 5.1), 05 正例数含现有阈值型 + P1-P5 共 10 条 (<= 15)",
+    "AC3: 引用走 wiki 链接不复制 - 3 主文件去重后同一教训不在多处重述 (Rule 5 DRY); 跨文件引用用 [[wiki 链接]], 正文不复制",
+    "AC4: 归档保留 git 链 - 44 份不满足判据的文档移 confluence/_archived/retrospectives/, 0 硬删; git log 历史完整",
+    "AC5: gate backlog - 判据 10 识别的可自动化教训 (退出码输出混淆/基准在干净树跑/外部依赖测试跳过/自校清单/索引目录差集) 单独产出 backlog 清单, 每条附建议实现路径",
+    "AC6: cross-project 语言剥离 - 给其他 KALLAX 项目开发者的教训必须剥离 KALLAX 专有名词 (EPIC 编号 / Rule 编号 / 分支名), 判据 1 可迁移性检验通过"
+  ],
+  "labels": ["lessons", "knowledge-consolidation", "docs-only", "sprint-2026-08-24"],
+  "notes": "不动 EPIC-280 / EPIC-287 相关文件。EPIC-285 审计: decisions/ 24 份中 18/24 该归档删除; memory/lessons/ 28 份中 26/28 该归档删除; 3 主文件全部需重写。单一真相源目标: 04 + 05 共 <= 30 条教训。禁止改动 04-lessons.md / 05-best-practices.md 实际内容 (EPIC-288 主线才动)。本文档仅建立 ticket 骨架。"
+}
