@@ -44,7 +44,7 @@ while IFS= read -r -d '' file; do
 done < <(find "${HOOKS_DIR}" -name "*.sh" -print0)
 
 echo ""
-echo "[2/2] 动态验证: 在 GIT_DIR 已设环境下, install.sh --verify 9/9 PASS"
+echo "[2/2] 动态验证: 在 GIT_DIR 已设环境下, install.sh --verify 通过"
 
 # ── 2. 动态验证: 模拟 git hook 环境 ──
 TEST_REPO="$(mktemp -d)"
@@ -57,7 +57,7 @@ EXIT=$?
 unset GIT_DIR GIT_WORK_TREE
 
 if [[ ${EXIT} -eq 0 ]]; then
-  echo "  ✓ install.sh --verify 9/9 PASS (GIT_DIR 已 unset)"
+  echo "  ✓ install.sh --verify 通过 (GIT_DIR 已 unset)"
   PASS_COUNT=$((PASS_COUNT + 1))
 else
   echo "  ✗ install.sh --verify exit=${EXIT}"
