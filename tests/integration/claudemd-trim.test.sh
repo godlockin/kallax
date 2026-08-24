@@ -74,7 +74,7 @@ assert_grep "Rule 34" "## 3\. Rule 34" "$CLAUDE_MD"
 assert_grep "4-branch flow" "## 4\. Branch Flow Governance" "$CLAUDE_MD"
 assert_grep "CLI 执行规范" "## 1\. CLI 执行规范" "$CLAUDE_MD"
 assert_grep "state.json reference" "state-json" "$CLAUDE_MD"
-assert_grep "9 immutable scripts" "9 不可更改 法律" "$CLAUDE_MD"
+assert_grep "10 immutable scripts" "10 不可更改 法律" "$CLAUDE_MD"
 
 # Case 3: .claude/rules/*.md 4 文件存在
 echo ""

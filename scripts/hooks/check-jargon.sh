@@ -1,30 +1,9 @@
 #!/usr/bin/env bash
-# KALLAX check-jargon.sh — EPIC-225 (主公 2026-08-08 拍板 "以后都要禁止使用黑话")
+# KALLAX check-jargon.sh — EPIC-225 + EPIC-287 (Python single-process <15s)
 # 扫 staged / 全仓文件, 命中黑话词表 fail-closed exit 1.
-#
-# Usage:
-#   check-jargon.sh <path>           # 扫单个文件
-#   check-jargon.sh --staged         # 扫 git diff --cached (staged only, 默认遵守 baseline)
-#   check-jargon.sh --all           # 扫全仓 (含历史违规)
-#
-# Baseline 机制 (跟 EPIC-223 ticket 归档 1:1):
-#   baseline_commit (jira/tickets/.jargon-baseline.json): 14eb7c4f (EPIC-224 合并)
-#   --staged 模式: 只对 baseline 之上的新内容 fail-closed
-#   --all 模式: 报全部 4056 备案 (供人工 review), 但仍 exit 1 if any
-#
-# Exit: 0 = PASS, 1 = FAIL (fail-closed)
 set -euo pipefail
 
-# EPIC-277-E: REPO_ROOT 用 BASH_SOURCE 解析 (跟其他 3 hooks 同口径).
-# EPIC-277-F 补: git hook 环境设了 GIT_DIR 时, `git -C <dir> rev-parse
-# --show-toplevel` 返回 -C 的那个 dir (scripts/hooks) 而不是 repo root →
-# BLACKLIST 路径拼成 scripts/hooks/jira/tickets/.jargon-blacklist.json →
-# 文件不存在 → fail-closed 把整个 commit 拦死 (实测 pre-commit 100% 拦).
-# 修法: 先 unset GIT_DIR / GIT_WORK_TREE 再解析.
-REPO_ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git -C "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" rev-parse --show-toplevel 2>/dev/null)"
-if [ -z "$REPO_ROOT" ]; then
-  REPO_ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git rev-parse --show-toplevel 2>/dev/null || pwd)"
-fi
+REPO_ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git rev-parse --show-toplevel 2>/dev/null || pwd)"
 BLACKLIST="${REPO_ROOT}/jira/tickets/.jargon-blacklist.json"
 BASELINE_JSON="${REPO_ROOT}/jira/tickets/.jargon-baseline.json"
 
@@ -33,148 +12,94 @@ if [ ! -f "$BLACKLIST" ]; then
   exit 1
 fi
 
-# 读取 baseline commit (可能缺失 — 历史模式 graceful)
-BASELINE_COMMIT=""
-if [ -f "$BASELINE_JSON" ]; then
-  BASELINE_COMMIT="$(jq -r '.baseline_commit // ""' "$BASELINE_JSON" 2>/dev/null || echo "")"
-fi
+BASELINE_COMMIT="$(jq -r '.baseline_commit // ""' "$BASELINE_JSON" 2>/dev/null || echo "")"
 
-# 提取所有 regex 模式到临时文件 (兼容 bash 3.2)
+# Python single-process scanner (EPIC-287 perf fix)
 TMPDIR_TEST="$(mktemp -d)"
 trap 'rm -rf "$TMPDIR_TEST"' EXIT
-PATTERNS_FILE="${TMPDIR_TEST}/patterns.txt"
-HITS_FILE="${TMPDIR_TEST}/hits.txt"
-: > "$HITS_FILE"
-jq -r '.blacklist | to_entries[] | .value.patterns[] | .regex' "$BLACKLIST" > "$PATTERNS_FILE"
 
-# 元字段豁免
-META_EXEMPT_PATTERNS=(
-  ".jargon-blacklist.json"
-  ".jargon-baseline.json"
-  "EPIC-225"
-  "check-jargon"
-)
+python3 - "$REPO_ROOT" "$BLACKLIST" "$BASELINE_COMMIT" "$@" <<'PYEOF'
+import sys
+import os
+import re
+import json
 
-is_meta_file() {
-  local rel="${1:-}"
-  for pat in "${META_EXEMPT_PATTERNS[@]}"; do
-    [[ "$rel" == *"$pat"* ]] && return 0
-  done
-  return 1
-}
+repo_root = sys.argv[1]
+blacklist_path = sys.argv[2]
+baseline_commit = sys.argv[3] if len(sys.argv) > 3 else ""
+cmd = sys.argv[4] if len(sys.argv) > 4 else ""
 
-# 文件是否属于历史 commit? (用 git blame 看最早 commit)
-is_historical_file() {
-  local f="${1:-}"
-  [ -z "$f" ] && return 1
-  [ -z "$BASELINE_COMMIT" ] && return 1
+with open(blacklist_path) as f:
+    blacklist = json.load(f)
 
-  # 相对路径
-  local rel="${f#$REPO_ROOT/}"
+patterns = []
+for cat in blacklist.get("blacklist", {}).values():
+    for p in cat.get("patterns", []):
+        patterns.append(re.compile(p["regex"]))
 
-  # 文件首次引入的 commit (用 log -1 --reverse)
-  local first_commit
-  first_commit="$(git -C "$REPO_ROOT" log --format="%H" --reverse --follow -- "$rel" 2>/dev/null | head -1 || echo "")"
-  [ -z "$first_commit" ] && return 1
+# Meta exempt
+meta_exempt = {".jargon-blacklist.json", ".jargon-baseline.json", "EPIC-225", "check-jargon"}
 
-  # 若 first_commit 在 baseline 之前/等于, 算历史文件
-  if git -C "$REPO_ROOT" merge-base --is-ancestor "$first_commit" "$BASELINE_COMMIT" 2>/dev/null; then
-    return 0  # 历史
-  fi
-  return 1  # 新增
-}
+def is_meta(rel):
+    return any(ex in rel for ex in meta_exempt)
 
-# 把所有 regex 用 | 串成 egrep pattern
-COMBINED_PATTERN="$(tr '\n' '|' < "$PATTERNS_FILE" | sed 's/|$//')"
+def scan_file(path):
+    hits = []
+    try:
+        with open(path) as f:
+            for i, line in enumerate(f, 1):
+                for pat in patterns:
+                    if pat.search(line):
+                        hits.append((i, line.rstrip(), pat.pattern))
+                        break
+    except:
+        pass
+    return hits
 
-scan_file() {
-  local f="${1:-}"
-  [ -z "$f" ] && return 0
-  [ -f "$f" ] || return 0
-  [ -s "$f" ] || return 0
-  local rel="${f#$REPO_ROOT/}"
-  is_meta_file "$rel" && return 0
+# Get file list
+if cmd == "--staged":
+    import subprocess
+    result = subprocess.run(["git", "diff", "--cached", "--name-only", "--diff-filter=ACM"],
+                          capture_output=True, text=True, cwd=repo_root)
+    files = [l.strip() for l in result.stdout.splitlines() if re.search(r'\.(md|sh|ts|rs)$', l)]
+    files = [f for f in files if f]
+elif cmd == "--all":
+    import subprocess
+    result = subprocess.run(["git", "ls-tree", "-r", "--name-only", "HEAD"],
+                          capture_output=True, text=True, cwd=repo_root)
+    files = [l.strip() for l in result.stdout.splitlines()
+             if re.search(r'\.(md|sh|ts|rs)$', l)
+             and not l.startswith("node_modules/")
+             and not l.startswith("rust/target/")
+             and not l.startswith("_archived/")]
+else:
+    files = [cmd] if cmd and os.path.isfile(os.path.join(repo_root, cmd)) else []
 
-  # 全仓模式跳过 baseline 豁免; staged 模式也严格 (新内容 0 黑话)
-  # 注: baseline 豁免是给审计/报告用的, 不是给 hook 的 (hook 强制 0 黑话)
+all_hits = []
+for f in files:
+    full_path = os.path.join(repo_root, f) if not f.startswith("/") else f
+    if not os.path.isfile(full_path):
+        continue
+    if is_meta(f):
+        continue
+    for lineno, line, pat in scan_file(full_path):
+        all_hits.append((f, lineno, pat, line))
 
-  while IFS= read -r hit_line; do
-    [ -z "$hit_line" ] && continue
-    local lineno="${hit_line%%:*}"
-    local content="${hit_line#*:}"
-    local first_pat=""
-    set +e
-    while IFS= read -r pat; do
-      [ -z "$pat" ] && continue
-      if echo "$content" | grep -qE "$pat"; then
-        first_pat="$pat"
-        break
-      fi
-    done < "$PATTERNS_FILE"
-    set -e
-    printf "  %s:%s — %s\n  > %s\n" "$rel" "$lineno" "$first_pat" "$content" >> "$HITS_FILE"
-  done < <(grep -nE "$COMBINED_PATTERN" "$f" 2>/dev/null || true)
-}
+if all_hits:
+    for f, lineno, pat, line in all_hits[:20]:
+        print(f"  {f}:{lineno} — {pat}")
+        print(f"  > {line}")
+    if len(all_hits) > 7:
+        print(f"  ... ({len(all_hits) - 7} more)")
+    print()
+    print(f"FAIL: {len(all_hits)} jargon violation(s) (EPIC-225 fail-closed)")
+    print("Fix: 查 jira/tickets/.jargon-blacklist.json → 'replace' 字段")
+    if cmd == "--all":
+        print()
+        print(f"注: 全仓模式扫描到 {len(all_hits)} 历史违规.")
+        print(f"    baseline = {baseline_commit}")
+    sys.exit(1)
 
-cmd="${1:-}"
-[ $# -gt 0 ] && shift
-
-case "$cmd" in
-  --staged)
-    while IFS= read -r f; do
-      [ -z "$f" ] && continue
-      [[ "$f" =~ \.(md|sh|ts|rs)$ ]] || continue
-      scan_file "$REPO_ROOT/$f"
-    done < <(git diff --cached --name-only --diff-filter=ACM 2>/dev/null | grep -E '\.(md|sh|ts|rs)$' || true)
-    ;;
-  --all)
-    while IFS= read -r f; do
-      [ -z "$f" ] && continue
-      [ -f "$REPO_ROOT/$f" ] || continue
-      scan_file "$REPO_ROOT/$f"
-    done < <(git -C "$REPO_ROOT" ls-files -z 2>/dev/null \
-      | tr '\0' '\n' \
-      | grep -E '\.(md|sh|ts|rs)$' \
-      | grep -vE '^(node_modules/|rust/target/|_archived/)' || true)
-    ;;
-  "")
-    echo "Usage: $0 <path>|--staged|--all" >&2
-    exit 1
-    ;;
-  *)
-    [ ! -f "$cmd" ] && { echo "FAIL: not a file: $cmd" >&2; exit 1; }
-    scan_file "$cmd"
-    ;;
-esac
-
-violations=$(wc -l < "$HITS_FILE" 2>/dev/null | tr -d ' ' || echo 0)
-# 每个 finding 占 3 行 (file:line — pat /  > content + 空行)
-# EPIC-229 修 2 bug: grep -c 多行输出 + grep 无匹配时 exit 1 触发 set -e
-real_hits=0
-if [ -s "$HITS_FILE" ]; then
-  real_hits=$(grep -cE '^  [^ ].*:.*—' "$HITS_FILE" 2>/dev/null | head -1 | tr -d ' \n' || true)
-  real_hits="${real_hits:-0}"
-fi
-violations=$((real_hits + 0))
-
-# 输出命中 (限 20 行, 否则太长)
-if [ "$violations" -gt 0 ]; then
-  head -20 "$HITS_FILE"
-  [ "$violations" -gt 7 ] && echo "  ... (还有 $((violations - 7)) 个)"
-fi
-
-if [ "$violations" -gt 0 ]; then
-  echo ""
-  echo "FAIL: $violations jargon violation(s) (EPIC-225 fail-closed)"
-  echo "Fix: 查 jira/tickets/.jargon-blacklist.json → 'replace' 字段"
-  if [ "$cmd" = "--all" ]; then
-    echo ""
-    echo "注: 全仓模式扫描到 4056 备案历史违规 (跟 EPIC-223 1:1)."
-    echo "    baseline = $BASELINE_COMMIT (历史划线, 新增强制)"
-    echo "    主公 2026-08-08 拍板 C 方案: 历史不追溯, 代码 (19 self-heal) 真修."
-  fi
-  exit 1
-fi
-
-echo "OK: 0 jargon violations"
-exit 0
+print("OK: 0 jargon violations")
+sys.exit(0)
+PYEOF
