@@ -279,6 +279,23 @@
 
 ---
 
+## 9.1. Batch 9 错题 (2026-08-25, EPIC-280/285/286/287 闭环 + #508/509/516/517 处理)
+
+> **完整细节**: [retro-batch-9-EPIC-2026-08-25.md](retro-batch-9-EPIC-2026-08-25.md)
+> **跟 EPIC-277 错题集合并**: 11 错题总览 (#1-#11, 见 retro-batch-9 §8)
+
+| # | 错题 | 治根 | 跨项目 |
+|---|------|------|--------|
+| #7 | PR Size Check > 500 单 EPIC 常态 | `Approved-Large-PR-By:` marker bypass (EPIC-275 2026-07-12 拍板, 实战启用 #517) | 普适 |
+| #8 | jargon O(N×M) bash 不可并行 | Python 单进程 + `re.compile()` + scope cache | 普适 |
+| #9 | xargs wait bug 物理死结 | 禁 `xargs -P` + 走 Python/GNU parallel | 普适 |
+| #10 | gh CLI GraphQL scope 边界 | user-owned repo 走 REST endpoint (`gh api -X PATCH`) | 普适 |
+| #11 | 跨 worktree 接力 | subagent 派工 prompt 必含 "在自己 worktree 内完成" | 普适 |
+
+**0 增 Rule, 0 增 immutable script, 0 改 source code** (跟 EPIC-277 1:1) — Batch 9 是**流程层错题集**, 11 错题合并后是 KALLAX 完整错题集。
+
+---
+
 ## 10. 0 增量沉淀: 主动放弃的"陷阱"
 
 | 陷阱 | 主动放弃原因 | 替代方案 |
