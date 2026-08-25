@@ -49,14 +49,6 @@ async function main() {
   db.close();
   console.log(`| ${sqlResult.name} | ${sqlResult.iterations} | ${sqlResult.totalMs}ms | ${sqlResult.avgMs}ms | ${sqlResult.opsPerSec}/s |`);
 
-  // 4. Expert Matcher
-  const { createExpertMatcher } = await import('../src/core/expert-matcher.js');
-  const matcher = createExpertMatcher();
-  for (let i = 0; i < 10; i++) matcher.addAgentProfile({ performerId: `p${i}`, capabilities: ['ts','node','react'], completedTasks: 50, successRate: 0.9, avgCompletionTimeMs: 5000, preferredLanguages: ['ts'], specializedDomains: ['web'], recentTaskIds: [] });
-  const emResult = run(() => matcher.findBestMatch(['typescript', 'react'], 'frontend'), 500);
-  emResult.name = 'Expert Match (10 agents)';
-  console.log(`| ${emResult.name} | ${emResult.iterations} | ${emResult.totalMs}ms | ${emResult.avgMs}ms | ${emResult.opsPerSec}/s |`);
-
   console.log('\n---');
   console.log(`Node: ${process.version}  Platform: ${process.platform}  Arch: ${process.arch}`);
 }
