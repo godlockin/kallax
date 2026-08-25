@@ -19,14 +19,26 @@
     ]
   },
   "review": {
-    "tier": "T2",
-    "summary": "Adds DI fake-emitter instrumentation tests and one-level direct-barrel coverage recognition without source deletion or exemption broadening."
+    "tier": "T3",
+    "summary": "Adds DI fake-emitter instrumentation tests and one-level direct-barrel coverage recognition without source deletion or exemption broadening. T3 reflects four-file scope including dead-code sentinel and integration coverage."
   },
   "verification": {
-    "reproduction_command": "KALLAX_HOOK_API_KEY=test-key npm --workspace node exec vitest -- run tests/core/event-log/instrument.test.ts",
+    "reproduction_command": "cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run tests/core/event-log/instrument.test.ts",
     "reproduction_exit_code": 0,
     "reproduction_raw_output": "Test Files  1 passed (1) | Tests  2 passed (2)",
-    "remote_sha": "89c24f67"
+    "remote_sha": "4cd27614b9b4860eaace2fa5460c18db2e0243a3",
+    "instrument_command": "cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run tests/core/event-log/instrument.test.ts",
+    "instrument_exit_code": 0,
+    "instrument_raw_output": "Test Files  1 passed (1) | Tests  2 passed (2)",
+    "instrument_log": "/tmp/claude-tasks/epic296-instrument-correct-baseline-20260825-213529.log",
+    "dead_code_command": "bash scripts/scan-dead-code.sh",
+    "dead_code_exit_code": 0,
+    "dead_code_raw_output": "tsc strict: 0 errors | scanned 157 modules, all covered | scanned 200 shell functions, all referenced | 3 of 3 stages successful",
+    "dead_code_log": "/tmp/claude-tasks/epic296-dead-code-correct-baseline-20260825-213557.log",
+    "integration_command": "bash tests/integration/epic-296-event-log-sentinel-test.sh",
+    "integration_exit_code": 0,
+    "integration_raw_output": "baseline scan passed without event-log false positives | unmeasured fixture correctly reported by scanner",
+    "integration_log": "/tmp/claude-tasks/epic296-integration-correct-baseline-20260825-213721.log"
   },
   "rule_alignment": {
     "rule_34_reproduction": "instrument success and failure independently exercised",
