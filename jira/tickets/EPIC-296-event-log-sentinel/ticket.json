@@ -20,14 +20,14 @@
   },
   "review": {
     "tier": "T2",
-    "summary": "Adds DI fake-emitter instrumentation tests and one-level direct-barrel coverage recognition without source deletion or exemption broadening. T2 reflects four-file scope and 215 changed lines, with independent review evidence described as extra validation rather than a basis for T3."
+    "summary": "Adds DI fake-emitter instrumentation tests and one-level direct-barrel coverage recognition without source deletion or exemption broadening. T2 reflects four-file scope and 217 additions / 14 deletions, with independent review evidence described as extra validation rather than a basis for T3."
   },
   "verification": {
     "reproduction_command": "cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run tests/core/event-log/instrument.test.ts",
     "reproduction_exit_code": 0,
     "reproduction_raw_output": "Test Files  1 passed (1) | Tests  2 passed (2)",
     "verified_implementation_sha": "4cd27614b9b4860eaace2fa5460c18db2e0243a3",
-    "metadata_head_sha": "f41d8e83040938d95264bbfe192379811afee644",
+    "metadata_head_sha": "9ab618b2c6859a8a2dfd3846b24d71899863612d",
     "verification_sha_semantics": "verified_implementation_sha is the implementation commit checked by the recorded verification runs; metadata_head_sha is the later ticket-metadata commit and is not presented as the implementation under test.",
     "instrument_command": "cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run tests/core/event-log/instrument.test.ts",
     "instrument_exit_code": 0,
@@ -45,11 +45,11 @@
   "rule_alignment": {
     "rule_34_reproduction": "instrument success and failure independently exercised",
     "rule_35_sprint_box": "single commit, scoped to four allowed paths",
-    "rule_270_review_tier": "T2 (four files and 215 changed lines, scanner is not immutable/Rule/CI)"
+    "rule_270_review_tier": "T2 (four files and 217 additions / 14 deletions, scanner is not immutable/Rule/CI)"
   },
   "deliverables": {
     "commit": "test(EPIC-296): cover event instrumentation and recognize barrel tests",
-    "branch": "feature/v3.36.0-EPIC-296-event-log-sentinel"
+    "branch": "feature/v3.36.0-EPIC-296-event-log-sentinel-v4"
   },
   "binding": {
     "epic_id": "EPIC-296",
