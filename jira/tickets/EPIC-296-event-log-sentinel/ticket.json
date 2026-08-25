@@ -1,0 +1,45 @@
+{
+  "id": "EPIC-296",
+  "type": "test",
+  "status": "in_progress",
+  "title": "Event-log instrumentation coverage and barrel-aware dead-code sentinel",
+  "performer": "team-y",
+  "priority": "P1",
+  "created_at": "2026-08-25",
+  "updated_at": "2026-08-25",
+  "file_scope": {
+    "includes": [
+      "node/tests/core/event-log/instrument.test.ts",
+      "scripts/scan-dead-code.sh",
+      "tests/integration/epic-296-event-log-sentinel-test.sh",
+      "jira/tickets/EPIC-296-event-log-sentinel/ticket.json"
+    ],
+    "excludes": [
+      "node/src/core/event-log/"
+    ]
+  },
+  "review": {
+    "tier": "T2",
+    "summary": "Adds DI fake-emitter instrumentation tests and one-level direct-barrel coverage recognition without source deletion or exemption broadening."
+  },
+  "verification": {
+    "reproduction_command": "KALLAX_HOOK_API_KEY=test-key npm --workspace node exec vitest -- run tests/core/event-log/instrument.test.ts",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "Test Files  1 passed (1) | Tests  2 passed (2)",
+    "remote_sha": "0"
+  },
+  "rule_alignment": {
+    "rule_34_reproduction": "instrument success and failure independently exercised",
+    "rule_35_sprint_box": "single commit, scoped to four allowed paths",
+    "rule_270_review_tier": "T2 (scanner behavior and new tests)"
+  },
+  "deliverables": {
+    "commit": "test(EPIC-296): cover event instrumentation and recognize barrel tests",
+    "branch": "feature/v3.36.0-EPIC-296-event-log-sentinel"
+  },
+  "binding": {
+    "epic_id": "EPIC-296",
+    "branch_base": "testing",
+    "merge_strategy": "merge-commit"
+  }
+}
