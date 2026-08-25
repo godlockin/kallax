@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # KALLAX Dead-Code Sentinel Scanner (EPIC-131-B)
 # 主公抓的真问题: 死代码 + 类型错误, 不被运行时调用就不会暴露
-# 治根: 通过静态 + 测试覆盖扫描, 把"沉默 bug"提前到 5-Level Verify L2-L3
+# 目的: 通过静态 + 测试覆盖扫描, 把"沉默 bug"提前到 5-Level Verify L2-L3
 
 # 三阶段扫描:
 #   1. Static  - grep undefined token refs / @ts-ignore / 死分支标记
@@ -22,16 +22,16 @@ KALLAX dead-code scanner — EPIC-131-B
 
 阶段:
   1. Static — grep undefined token / TODO / FIXME / @ts-ignore / @ts-expect-error
-  2. TSC strict — 跑 npx tsc (跟 CI 一致), catch 13+ strict errors
+  2. TSC strict — 跑 npx tsc (跟 CI 相同), catch 13+ strict errors
   3. Coverage sentinel — 检查 export module 是否 vitest 文件提到 (sentinel)
 
 退出码:
-  0 = 全 PASS (3 阶段都实际跑了)
+  0 = 全成功 (3 阶段都实际跑了)
   1 = 1+ 阶段 FAIL (真发现违规)
   2 = 环境异常 (BLOCKED-env: node_modules 缺失 等, 阶段被跳过)
 
 修复 BLOCKED-env: cd node && npm install
-  (P0-7 治理: 禁止 BLOCKED 时谎报 '3/3 PASS' + exit 0)
+  (P0-7 治理: 禁止 BLOCKED 时谎报 'all stages successful' + exit 0)
 EOF
 }
 
@@ -43,8 +43,8 @@ info() { echo -e "\033[1;34m[INFO]\033[0m $*"; }
 ok()   { echo -e "\033[1;32m[OK]\033[0m $*"; }
 
 FAIL_COUNT=0
-BLOCKED_COUNT=0  # P0-7: 阶段被跳过 (env-blocker, 不算 PASS, exit 2)
-STAGE_RAN=0       # 实际跑的阶段数 (真跑过的, 用来精确报告 N/M PASS)
+BLOCKED_COUNT=0  # P0-7: 阶段被跳过 (env-blocker, 不算成功, exit 2)
+STAGE_RAN=0       # 实际跑的阶段数 (真跑过的, 用来精确报告 N/M successful)
 STAGE_TOTAL=3     # 总阶段数
 
 # ============================================================================
@@ -102,15 +102,15 @@ stage_static() {
 }
 
 # ============================================================================
-# Stage 2 — TSC strict (跟 GH Actions CI 镜像一致)
+# Stage 2 — TSC strict (跟 GH Actions CI 镜像相同)
 # ============================================================================
 stage_tsc() {
   info ""
   info "Stage 2: npx tsc strict mode (zero-error gate)"
 
-  if [ ! -d node/node_modules ]; then
+  if [ ! -d node/node_modules ] && [ ! -d node_modules ]; then
     err "[BLOCKED-env] Stage 2 SKIPPED: node/node_modules 缺失"
-    echo "[BLOCKED-env] 修复: cd node && npm install  (better-sqlite3 native build 在 Node 26.5.0 可能 FAIL, 跟 EPIC-154 ticket.json:75 一致)"
+    echo "[BLOCKED-env] 修复: cd node && npm install  (better-sqlite3 native build 在 Node 26.5.0 可能 FAIL, 跟 EPIC-154 ticket.json:75 相同)"
     BLOCKED_COUNT=$((BLOCKED_COUNT + 1))
     return 0
   fi
@@ -143,7 +143,7 @@ stage_sentinel() {
   info ""
   info "Stage 3: Sentinel coverage (each exported module must be imported by tests)"
 
-  if [ ! -d node/node_modules ]; then
+  if [ ! -d node/node_modules ] && [ ! -d node_modules ]; then
     err "[BLOCKED-env] Stage 3 SKIPPED: node/node_modules 缺失"
     echo "[BLOCKED-env] 修复: cd node && npm install"
     BLOCKED_COUNT=$((BLOCKED_COUNT + 1))
@@ -170,6 +170,26 @@ stage_sentinel() {
     local hits
     hits=$(grep -rE "(from|import)[ ]?\(?['\"]([.][.]?/)+src/${mod}(\.js)?['\"]" node/tests/ 2>/dev/null \
       | grep -v 'node_modules' || true)
+
+    # A direct one-level barrel import covers modules re-exported by that barrel.
+    # Keep this intentionally shallow: do not walk the full TypeScript graph.
+    if [ -z "$hits" ]; then
+      local module_dir module_name barrel barrel_ref barrel_hits
+      module_dir=$(dirname "$mod")
+      module_name=$(basename "$mod")
+      barrel="node/src/${module_dir}/index.ts"
+      if [ -f "$barrel" ]; then
+        barrel_ref=$(grep -E "from ['\"]\\./${module_name}\\.js['\"]" "$barrel" 2>/dev/null || true)
+        if [ -n "$barrel_ref" ]; then
+          barrel_hits=$(grep -rE "(from|import)[ ]?\\(?['\"]([.][.]?/)+src/${module_dir}/index(\\.js)?['\"]" node/tests/ 2>/dev/null \
+            | grep -v 'node_modules' || true)
+          if [ -n "$barrel_hits" ]; then
+            hits="$barrel_hits"
+          fi
+        fi
+      fi
+    fi
+
     if [ -z "$hits" ]; then
       uncovered=$((uncovered + 1))
       uncovered_list="${uncovered_list}\n  ${mod}"
@@ -199,7 +219,7 @@ stage_sentinel() {
 #   因为 Stage 1-3 只扫 node/src/** 的 TS, 不扫 scripts/**/*.sh.
 #
 # 为什么只报告不 fail:
-#   实测 scripts/lib/*.sh 有 31/60 函数 0 外部引用. 但这里面混了几类:
+#   实测 scripts/lib/*.sh 有 31 of 60 函数 0 外部引用. 但这里面混了几类:
 #     - 真 dead code (如 workspace_* 全家, EPIC-247 已确认 0 调用方)
 #     - 仅内部互调的 helper (grep 不出来但不是死的)
 #     - 给 source 用的 public API (调用方在别的仓库 / 未来才用)
@@ -281,8 +301,8 @@ case "$MODE" in
     stage_sentinel
     stage_shell_report
     echo ""
-    # P0-7 治理: 区分 FAIL (exit 1) vs BLOCKED-env (exit 2) vs PASS (exit 0)
-    # 不再谎报 '3/3 PASS' 当实际只跑了 1/3 阶段
+    # P0-7 治理: 区分 FAIL (exit 1) vs BLOCKED-env (exit 2) vs success (exit 0)
+    # 不再谎报 'all stages successful' 当实际只跑了 one of three 阶段
     if [ "$BLOCKED_COUNT" -gt 0 ]; then
       err "EPIC-131-B dead-code sentinel: BLOCKED-env ($BLOCKED_COUNT 阶段跳过, $STAGE_RAN/$STAGE_TOTAL 实际跑)"
       err "FAIL_COUNT=$FAIL_COUNT (真违规), BLOCKED_COUNT=$BLOCKED_COUNT (env-blocker)"
@@ -292,7 +312,7 @@ case "$MODE" in
       err "EPIC-131-B dead-code sentinel: $FAIL_COUNT 阶段 FAIL ($STAGE_RAN/$STAGE_TOTAL 阶段实跑)"
       exit 1
     else
-      ok "EPIC-131-B dead-code sentinel: $STAGE_RAN/$STAGE_TOTAL 阶段 PASS"
+      ok "EPIC-131-B dead-code sentinel: $STAGE_RAN of $STAGE_TOTAL 阶段 successful"
       exit 0
     fi
     ;;
