@@ -1,0 +1,22 @@
+{
+  "id": "EPIC-290-deepseek-harness",
+  "status": "backlog",
+  "title": "EPIC-290 evidence collector delivery correction",
+  "performer": "L-team",
+  "file_scope": {
+    "includes": [
+      "scripts/evidence/evidence-collector.sh",
+      "jira/tickets/.evidence/"
+    ]
+  },
+  "review": {
+    "group_a": {"recommendation": "IN_PROGRESS"},
+    "group_b": {"recommendation": "IN_PROGRESS"},
+    "final_outcome": "IN_PROGRESS"
+  },
+  "verification": {
+    "reproduction_command": "bash scripts/evidence/evidence-collector.sh EPIC-287",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "Pending independent verification"
+  }
+}
