@@ -11,7 +11,7 @@
   "performer": "TBD",
   "file_scope": {
     "includes": [
-      "node/src/commands/agent-farm.ts",
+      "node/src/core/agent-farm.ts",
       "node/src/core/expert-matcher.ts"
     ],
     "excludes": []
