@@ -65,6 +65,6 @@
   "review": {
     "group_a": { "recommendation": "APPROVE" },
     "group_b": { "recommendation": "APPROVE" },
-    "final_outcome": "MERGED"
+    "final_outcome": "IN_REVIEW"
   }
 }
