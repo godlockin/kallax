@@ -130,8 +130,7 @@ describe('EPIC-277-D AC3 — claim options injection', () => {
     const pathSpy = vi.fn(async () => ({ path: profileFilePath }));
     const resolver = { path: pathSpy } as never;
 
-    const originalCwd = process.cwd();
-    process.chdir(repoRoot);
+    const cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(repoRoot);
     try {
       const { executeClaimCommand } = await import('../../src/commands/claim.js');
       const result = await executeClaimCommand(
@@ -157,7 +156,7 @@ describe('EPIC-277-D AC3 — claim options injection', () => {
         expect(result.value.exitCode).toBe(0);
       }
     } finally {
-      process.chdir(originalCwd);
+      cwdSpy.mockRestore();
     }
     db.close();
   });
@@ -170,8 +169,7 @@ describe('EPIC-277-D AC3 — claim options injection', () => {
     const pathSpy = vi.fn(async () => null);
     const resolver = { path: pathSpy } as never;
 
-    const originalCwd = process.cwd();
-    process.chdir(repoRoot);
+    const cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(repoRoot);
     try {
       const { executeClaimCommand } = await import('../../src/commands/claim.js');
       const result = await executeClaimCommand(
@@ -196,7 +194,7 @@ describe('EPIC-277-D AC3 — claim options injection', () => {
         expect(result.value.exitCode).toBe(3);
       }
     } finally {
-      process.chdir(originalCwd);
+      cwdSpy.mockRestore();
     }
     db.close();
   });
@@ -208,8 +206,7 @@ describe('EPIC-277-D AC3 — claim options injection', () => {
 
     // Point CWD at the test project so readJiraTicket finds the ticket.json —
     // expected to write the binding successfully → bindingStatus='written'.
-    const originalCwd = process.cwd();
-    process.chdir(repoRoot);
+    const cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(repoRoot);
     try {
       const profileFilePath = path.join(repoRoot, '.claude', 'agents', 'backend-architect.md');
       const pathSpy = vi.fn(async () => ({ path: profileFilePath }));
@@ -239,7 +236,7 @@ describe('EPIC-277-D AC3 — claim options injection', () => {
         expect(result.value.exitCode).toBe(0);
       }
     } finally {
-      process.chdir(originalCwd);
+      cwdSpy.mockRestore();
     }
     db.close();
   });
@@ -263,8 +260,7 @@ describe('EPIC-277-D AC3 — claim options injection', () => {
     await fs.mkdir(brokenTicketDir, { recursive: true });
     await fs.mkdir(path.join(brokenTicketDir, 'ticket.json'), { recursive: true });
 
-    const originalCwd = process.cwd();
-    process.chdir(brokenRoot);
+    const cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(brokenRoot);
     try {
       const result = await executeClaimCommand(
         db,
@@ -284,7 +280,7 @@ describe('EPIC-277-D AC3 — claim options injection', () => {
         expect(result.value.exitCode).toBe(2);
       }
     } finally {
-      process.chdir(originalCwd);
+      cwdSpy.mockRestore();
     }
     db.close();
   });
