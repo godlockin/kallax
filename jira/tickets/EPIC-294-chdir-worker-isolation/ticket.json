@@ -1,0 +1,33 @@
+{
+  "id": "EPIC-294-chdir-worker-isolation",
+  "status": "done",
+  "title": "Isolate claim options cwd mocking from Vitest workers",
+  "performer": "S-team",
+  "file_scope": {
+    "includes": [
+      "node/tests/commands/claim-options-injection.test.ts"
+    ],
+    "excludes": [
+      "node/vitest.config.ts",
+      "node/src"
+    ]
+  },
+  "review": {
+    "group_a": {
+      "recommendation": "APPROVE"
+    },
+    "group_b": {
+      "recommendation": "APPROVE"
+    },
+    "final_outcome": "MERGED"
+  },
+  "verification": {
+    "reproduction_command": "cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run tests/commands/claim-options-injection.test.ts",
+    "reproduction_exit_code": 1,
+    "reproduction_raw_output": "Vitest v1.6.1 worker incompatibility: 4 tests failed because process.chdir is unsupported in workers.",
+    "targeted_exit_code": 0,
+    "targeted_raw_output": "Test Files 1 passed (1); Tests 4 passed (4).",
+    "full_suite_exit_code": 1,
+    "full_suite_raw_output": "Full suite exit code 1; suite did not complete green."
+  }
+}
