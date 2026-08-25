@@ -26,7 +26,7 @@
     "reproduction_command": "KALLAX_HOOK_API_KEY=test-key npm --workspace node exec vitest -- run tests/core/event-log/instrument.test.ts",
     "reproduction_exit_code": 0,
     "reproduction_raw_output": "Test Files  1 passed (1) | Tests  2 passed (2)",
-    "remote_sha": "0"
+    "remote_sha": "89c24f67"
   },
   "rule_alignment": {
     "rule_34_reproduction": "instrument success and failure independently exercised",
