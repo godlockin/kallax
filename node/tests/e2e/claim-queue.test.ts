@@ -262,7 +262,6 @@ describe('ClaimQueue API Integration (E2E)', () => {
   let server: ApiServer;
   let baseUrl: string;
   let claimQueue: ClaimQueue;
-  const PORT = 19879;
   const API_KEY = 'kallax-test-key-0123456789abcdef0123';
 
   async function startServer(): Promise<ApiServer> {
@@ -287,7 +286,7 @@ describe('ClaimQueue API Integration (E2E)', () => {
     } as unknown as WorktreeManager;
 
     const srv = createApiServer(
-      { port: PORT, host: '127.0.0.1', apiKey: API_KEY },
+      { port: 0, host: '127.0.0.1', apiKey: API_KEY },
       {
         db,
         taskAssigner: assigner,
@@ -301,6 +300,11 @@ describe('ClaimQueue API Integration (E2E)', () => {
     );
 
     await srv.start();
+    const address = srv.getServer()?.address();
+    if (address === null || address === undefined || typeof address === 'string') {
+      throw new Error('API server did not expose bound address');
+    }
+    baseUrl = `http://127.0.0.1:${address.port}`;
     return srv;
   }
 
@@ -310,7 +314,6 @@ describe('ClaimQueue API Integration (E2E)', () => {
     if (result.isErr()) throw new Error(`DB init failed: ${result.error.message}`);
     db = result.value;
     claimQueue = createClaimQueue();
-    baseUrl = `http://127.0.0.1:${PORT}`;
   });
 
   afterEach(async () => {
