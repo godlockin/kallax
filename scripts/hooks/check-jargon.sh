@@ -102,20 +102,25 @@ try:
             commits = cache.get("commits")
             cache_head = cache.get("generated_head")
             cache_baseline = cache.get("baseline_commit")
-            if not isinstance(commits, dict) or not commits or cache_head != head or cache_baseline != baseline_commit:
+            if not isinstance(commits, dict) or cache_head != head or cache_baseline != baseline_commit:
                 raise ValueError("stale or malformed metadata")
-            if any(not isinstance(names, list) or not names for names in commits.values()):
-                raise ValueError("cache commit values are empty or not lists")
-            cached_files = {file_name for names in commits.values() for file_name in names}
-            if any(
-                not isinstance(file_name, str)
-                or not file_name
-                or os.path.isabs(file_name)
-                or "\x00" in file_name
-                or ".." in Path(file_name).parts
-                for file_name in cached_files
-            ):
-                raise ValueError("cache contains invalid relative paths")
+            expected_commits = set(run_git(["rev-list", f"{baseline_commit}..{head}"]).stdout.splitlines())
+            if set(commits) != expected_commits:
+                raise ValueError("cache commit keys do not match baseline..HEAD")
+            cached_files = set()
+            for commit, names in commits.items():
+                if not isinstance(names, list):
+                    raise ValueError("cache commit values are not lists")
+                if any(not isinstance(file_name, str) or not file_name or os.path.isabs(file_name)
+                       or "\x00" in file_name or ".." in Path(file_name).parts for file_name in names):
+                    raise ValueError("cache contains invalid relative paths")
+                if len(names) != len(set(names)):
+                    raise ValueError("cache commit file set contains duplicates")
+                authoritative = run_git(["diff-tree", "--root", "--no-commit-id", "--name-only",
+                                         "-r", "--no-renames", commit]).stdout.splitlines()
+                if set(names) != {name for name in authoritative if name}:
+                    raise ValueError(f"cache file set mismatch for {commit}")
+                cached_files.update(names)
             files = [item for item in files if item in cached_files]
             if not files:
                 raise ValueError("cache selects zero tracked scanner files")
@@ -190,6 +195,7 @@ try:
         return changed is not None and line_number not in changed
 
     hits = []
+    historical_hits = []
     for rel in files:
         display_rel = os.path.relpath(rel, repo_root) if os.path.isabs(rel) else rel
         if is_meta(display_rel):
@@ -209,17 +215,20 @@ try:
                 if xy_pass.search(line) and evidence(lines, line_number):
                     continue
                 if historical_line(display_rel, line_number):
+                    historical_hits.append((display_rel, line_number, pattern_text, line.rstrip("\n")))
                     continue
                 hits.append((display_rel, line_number, pattern_text, line.rstrip("\n")))
                 break
 
+    if mode == "--all" and historical_hits:
+        print(f"historical baseline hits: {len(historical_hits)} (excluded from exit status)")
     for rel, line_number, pattern_text, line in hits[:20]:
         print(f"  {rel}:{line_number} — {pattern_text}")
         print(f"  > {line}")
     if hits:
         if len(hits) > 20:
             print(f"  ... ({len(hits) - 20} more)")
-        print(f"\nFAIL: {len(hits)} jargon violation(s) (EPIC-225 fail-closed)")
+        print(f"\nFAIL: active_failures={len(hits)} jargon violation(s) (EPIC-225 fail-closed)")
         print("Fix: 查 jira/tickets/.jargon-blacklist.json → 'replace' 字段")
         if mode == "--all":
             print(f"baseline = {baseline_commit}")

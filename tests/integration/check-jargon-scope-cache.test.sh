@@ -102,6 +102,31 @@ if grep -q 'scope cache: loaded' "$TMPDIR_TEST/valid.log"; then
 else
   ko 'valid cache did not report loaded'
 fi
+if [ "$(jq -r '.generated_head' "$SCOPE_JSON")" = "$(git rev-parse HEAD)" ] &&
+   [ "$(jq -r '.baseline_commit' "$SCOPE_JSON")" = "$(jq -r '.baseline_commit' jira/tickets/.jargon-baseline.json)" ] &&
+   [ "$(jq '.commits | length' "$SCOPE_JSON")" -eq "$(git rev-list "$(jq -r '.baseline_commit' jira/tickets/.jargon-baseline.json)..HEAD" | wc -l | tr -d ' ')" ]; then
+  ok 'cache head/baseline/commit count match revision range'
+else
+  ko 'cache metadata or commit count mismatch'
+fi
+
+for tamper in missing-key fake-key file-mismatch; do
+  cp "$SCOPE_BACKUP" "$SCOPE_JSON"
+  case "$tamper" in
+    missing-key) jq 'del(.commits[(.commits | keys | .[0])])' "$SCOPE_JSON" > "$TMPDIR_TEST/tampered.json" ;;
+    fake-key) jq '.commits["0000000000000000000000000000000000000000"] = []' "$SCOPE_JSON" > "$TMPDIR_TEST/tampered.json" ;;
+    file-mismatch) jq '(.commits | keys | .[0]) as $k | .commits[$k] = ["fake-file.md"]' "$SCOPE_JSON" > "$TMPDIR_TEST/tampered.json" ;;
+  esac
+  mv "$TMPDIR_TEST/tampered.json" "$SCOPE_JSON"
+  run_scan "$TMPDIR_TEST/$tamper.log"
+  if grep -q 'scope cache: fallback git ls-files' "$TMPDIR_TEST/$tamper.log"; then
+    ok "$tamper cache validation fallback"
+  else
+    ko "$tamper cache validation did not fallback"
+  fi
+done
+mv "$SCOPE_BACKUP" "$SCOPE_JSON"
+cp "$SCOPE_JSON" "$SCOPE_BACKUP"
 
 echo ''
 echo '--- Group 2: missing cache fallback ---'

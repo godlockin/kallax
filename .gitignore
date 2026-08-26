@@ -101,10 +101,8 @@ credentials.json
 secrets.yml
 secrets.yaml
 
-# ============================================================
-# 临时文件
-# ============================================================
-tmp/
+# Local scope optimization cache (rebuilt by hook; never commit)
+jira/tickets/.scope-commits.json
 temp/
 *.tmp
 *.temp
