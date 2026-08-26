@@ -42,7 +42,8 @@ fi
 if [ -f "$OUTPUT_JSON" ]; then
   CACHED_HEAD="$(jq -r '.generated_head // ""' "$OUTPUT_JSON" 2>/dev/null || echo "")"
   CACHED_BASELINE="$(jq -r '.baseline_commit // ""' "$OUTPUT_JSON" 2>/dev/null || echo "")"
-  if [ "$CACHED_HEAD" = "$CURRENT_HEAD" ] && [ "$CACHED_BASELINE" = "$BASELINE_COMMIT" ]; then
+  if [ "$CACHED_HEAD" = "$CURRENT_HEAD" ] && [ "$CACHED_BASELINE" = "$BASELINE_COMMIT" ] \
+    && jq -e '.commits | type == "object" and length > 0 and all(.[]; type == "array" and length > 0)' "$OUTPUT_JSON" >/dev/null 2>&1; then
     echo "OK: scope cache up-to-date (HEAD=$CURRENT_HEAD)"
     exit 0
   fi
@@ -51,50 +52,41 @@ fi
 # 生成新缓存: commit → [files]
 TMPDIR="$(mktemp -d)"
 trap 'rm -rf "$TMPDIR"' EXIT
-COMMIT_FILES="${TMPDIR}/commit_files.tsv"
+COMMIT_FILES="${TMPDIR}/commit_files.log"
 
-# 获取 baseline 之后的所有 commit 及变更文件
-# git log 输出: hash\nfilename\nfilename\n\nhash\nfilename\n...
-git -C "$REPO_ROOT" log --pretty='%H' --since="$BASELINE_COMMIT"..HEAD --no-renames --name-only 2>/dev/null \
-  | awk '
-    BEGIN { commit = "" }
-    /^[0-9a-f]{40}$/ { commit = $1; next }
-    NF && commit != "" && !seen[commit "\t" $0]++ { print commit "\t" $0 }
-  ' > "$COMMIT_FILES"
+# 获取 baseline 之后的所有 commit 及变更文件。revision range 必须作为
+# git log positional revision；--since 只接受日期。
+env -u GIT_DIR -u GIT_WORK_TREE git -C "$REPO_ROOT" log --pretty='%H' --no-renames --name-only "$BASELINE_COMMIT..HEAD" > "$COMMIT_FILES"
 
-# 用 jq 构建 JSON (逐行读 tsv)
-# 输出格式: { "commits": { "<hash>": ["file1", "file2", ...] }, "generated_at": "...", "generated_head": "...", "baseline_commit": "..." }
-{
-  echo '{'
-  echo '  "commits": {'
-  first_commit=1
-  prev_commit=""
-  first_entry=1
-  while IFS=$'\t' read -r commit file; do
-    [ -z "$commit" ] && continue
-    [ -z "$file" ] && continue
-    if [ "$first_commit" -eq 1 ]; then
-      [ "$first_entry" -eq 0 ] && echo ','
-      printf '    "%s": ["%s"' "$commit" "$file"
-      first_commit=0
-      first_entry=0
-    elif [ "$prev_commit" = "$commit" ]; then
-      printf ',"%s"' "$file"
-    else
-      printf ']'
-      echo ','
-      printf '    "%s": ["%s"' "$commit" "$file"
-    fi
-    prev_commit="$commit"
-  done < "$COMMIT_FILES"
-  [ "$first_commit" -eq 0 ] && printf ']'
-  echo ''
-  echo '  },'
-  echo "  \"generated_at\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\","
-  echo "  \"generated_head\": \"$CURRENT_HEAD\","
-  echo "  \"baseline_commit\": \"$BASELINE_COMMIT\""
-  echo '}'
-} > "${OUTPUT_JSON}"
+# 用 Python 构建 JSON，确保路径中的引号、反斜杠等合法字符正确 escaping。
+python3 - "$COMMIT_FILES" "$OUTPUT_JSON" "$CURRENT_HEAD" "$BASELINE_COMMIT" <<'PYEOF'
+import json
+import sys
+from datetime import datetime, timezone
+
+log_path, output_path, current_head, baseline_commit = sys.argv[1:]
+commits = {}
+current = None
+with open(log_path, encoding="utf-8") as handle:
+    for raw_line in handle:
+        line = raw_line.rstrip("\n")
+        if len(line) == 40 and all(char in "0123456789abcdef" for char in line):
+            current = line
+        elif line and current is not None:
+            files = commits.setdefault(current, [])
+            if line not in files:
+                files.append(line)
+
+payload = {
+    "commits": commits,
+    "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    "generated_head": current_head,
+    "baseline_commit": baseline_commit,
+}
+with open(output_path, "w", encoding="utf-8") as handle:
+    json.dump(payload, handle, ensure_ascii=False, indent=2)
+    handle.write("\n")
+PYEOF
 
 echo "OK: scope cache built (HEAD=$CURRENT_HEAD, commits=$(jq '(.commits | length)' "$OUTPUT_JSON"))"
 exit 0

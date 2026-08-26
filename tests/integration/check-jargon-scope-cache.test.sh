@@ -72,7 +72,7 @@ if grep -q 'python3 -' "$SCRIPT"; then
 else
   ko 'Python single-process scanner missing'
 fi
-if bash scripts/hooks/build-scope-commits.sh >"$TMPDIR_TEST/build.log" 2>&1; then
+if env GIT_DIR=/invalid-hook-dir GIT_WORK_TREE=/invalid-hook-tree bash scripts/hooks/build-scope-commits.sh >"$TMPDIR_TEST/build.log" 2>&1; then
   ok 'build-scope-commits.sh exit 0'
 else
   rc=$?
@@ -83,6 +83,11 @@ if [ -f "$SCOPE_JSON" ]; then
   ok 'real scope cache exists'
 else
   ko 'real scope cache missing'
+fi
+if [ "$(jq '.commits | length' "$SCOPE_JSON")" -gt 0 ]; then
+  ok 'scope cache contains commits from revision range'
+else
+  ko 'scope cache unexpectedly empty (revision range not applied)'
 fi
 START=$(date +%s)
 run_scan "$TMPDIR_TEST/valid.log"

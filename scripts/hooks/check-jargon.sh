@@ -33,8 +33,12 @@ class ScanError(Exception):
     pass
 
 def run_git(args, *, check=True):
+    clean_env = os.environ.copy()
+    clean_env.pop("GIT_DIR", None)
+    clean_env.pop("GIT_WORK_TREE", None)
     result = subprocess.run(["git", "-C", repo_root, *args], text=True,
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            env=clean_env)
     if check and result.returncode != 0:
         raise ScanError(f"git {' '.join(args)} failed (exit={result.returncode}): {result.stderr.strip()}")
     return result
@@ -87,7 +91,7 @@ try:
 
     scope_status = "not applicable"
     if mode == "--staged":
-        result = run_git(["diff", "--cached", "--name-only", "--diff-filter=ACM"])
+        result = run_git(["diff", "--cached", "--name-only", "--diff-filter=ACMR"])
         files = [item for item in result.stdout.splitlines() if extensions.search(item) and not excluded.search(item)]
     elif mode == "--all":
         files = tracked_files()
