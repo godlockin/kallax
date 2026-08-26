@@ -32,7 +32,7 @@ if [ -z "$BASELINE_COMMIT" ]; then
 fi
 
 # 获取当前 HEAD
-CURRENT_HEAD="$(git -C "$REPO_ROOT" rev-parse HEAD 2>/dev/null)"
+CURRENT_HEAD="$(env -u GIT_DIR -u GIT_WORK_TREE git -C "$REPO_ROOT" rev-parse HEAD 2>/dev/null)"
 if [ -z "$CURRENT_HEAD" ]; then
   echo "ERROR: cannot get HEAD" >&2
   exit 1
