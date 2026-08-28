@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
+# raw_output: /tmp/claude-tasks/test-hookhealth-20260826-171954.log (exit=0, 28/28 PASS)
 # EPIC-277-E + EPIC-280 + EPIC-287 test — hook 体系健康 (10 immutable 全部接入 + install --verify PASS)
 # TDD: 6 TC (per hook 1 + install --verify + CLAUDE.md §5 数字对账)
 # Usage: bash tests/integration/hook-system-health.test.sh
 # Exit: 0 = all PASS, 1 = any FAIL
 
-# EPIC-277-E: REPO_ROOT 用 BASH_SOURCE 解析 (跟 hooks/* 脚本 1:1).
+# EPIC-277-E: REPO_ROOT 用 BASH_SOURCE 解析 (采用相同的 repo root 解析规则).
 # 原因: 测试可能在 main repo 或 worktree 跑, BASH_SOURCE 保证找到测试脚本自身
-# 所在的 repo (跟 check-ticket-schema 等 1:1 路径策略).
+# 所在的 repo (采用 check-ticket-schema 等脚本使用的路径策略).
 REPO_ROOT="$(git -C "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" rev-parse --show-toplevel 2>/dev/null)"
 if [ -z "$REPO_ROOT" ]; then
   REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
@@ -106,29 +107,44 @@ else
 fi
 echo ""
 
-# TC6: CLAUDE.md §5 数字对账 (AC7) — EPIC-287 精简版用 lazy-load 引用
-echo "--- TC6: CLAUDE.md §5 数字 (10 immutable + 2 辅助) ---"
-# 精简版 CLAUDE.md §5 指向 immutable-scripts.md，不在正文列路径
-COUNT_10=$(grep -cE '^## 5\. 10 不可更改' CLAUDE.md)
-if [ "$COUNT_10" -ge 1 ]; then
+# TC6: CLAUDE.md lazy-load + immutable rule canonical paths
+ echo "--- TC6: CLAUDE.md lazy-load + 10 canonical paths ---"
+# Main CLAUDE stays concise: assert section title and rule reference only.
+if grep -qE '^## 5\. 10 不可更改' CLAUDE.md; then
   ok "CLAUDE.md §5 '10 immutable' 存在"
 else
-  ko "CLAUDE.md §5 缺 '10 immutable' (期望 10)"
+  ko "CLAUDE.md §5 标题缺失"
 fi
-COUNT_AUX=$(grep -cE 'check-smoke-retention\.sh|smoke-size-report\.sh' CLAUDE.md)
-if [ "$COUNT_AUX" -ge 2 ]; then
-  ok "CLAUDE.md §5 2 辅助脚本引用齐"
-elif [ "$COUNT_AUX" -ge 1 ]; then
-  ok "CLAUDE.md §5 辅助脚本引用 (部分 lazy-load)"
+if grep -qF '.claude/rules/immutable-scripts.md' CLAUDE.md; then
+  ok "CLAUDE.md 引用 immutable-scripts lazy-load rule"
 else
-  ko "CLAUDE.md §5 辅助脚本引用缺失"
+  ko "CLAUDE.md 缺 immutable-scripts lazy-load 引用"
 fi
+
+# Canonical paths come from immutable-scripts rule, not duplicated CLAUDE paths.
+CANONICAL_PATHS="$(awk -F'|' '/^### 10 immutable/{in_table=1; next} /^### 2 /{in_table=0} in_table && /^\| [0-9]+ \|/ { gsub(/`/, "", $4); gsub(/^ +| +$/, "", $4); print $4 }' .claude/rules/immutable-scripts.md)"
+CANONICAL_COUNT="$(printf '%s\n' "$CANONICAL_PATHS" | sed '/^$/d' | wc -l | tr -d ' ')"
+if [ "$CANONICAL_COUNT" -eq 10 ]; then
+  ok "immutable-scripts rule canonical paths = 10"
+else
+  ko "immutable-scripts rule canonical paths = $CANONICAL_COUNT (期望 10)"
+fi
+while IFS= read -r canonical; do
+  [ -z "$canonical" ] && continue
+  if [ -x "$canonical" ]; then
+    ok "$canonical canonical path executable"
+  else
+    ko "$canonical canonical path missing/not executable"
+  fi
+done <<EOF
+$CANONICAL_PATHS
+EOF
 echo ""
 
 # 总结
 echo "--- 总结 ---"
 TOTAL=$((PASS + FAIL))
-echo "  ${PASS}/${TOTAL} PASS"
+echo "  PASS count: ${PASS}, total checks: ${TOTAL}"
 if [ "$FAIL" -eq 0 ]; then
   exit 0
 fi

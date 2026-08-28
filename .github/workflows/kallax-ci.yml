@@ -55,7 +55,7 @@ jobs:
       - name: Install npm dependencies
         # EPIC-255: 在仓库根装 (workspaces 声明 node/, 依赖 hoist 到根 node_modules).
         # 之前用 working-directory: node 会按已删的 node/package-lock.json 装出版本分叉.
-        run: npm install --no-audit --prefer-offline
+        run: npm ci
 
       - name: vitest run (with KALLAX_HOOK_API_KEY)
         # EPIC-069-B 加 env setup (治 hook-replay 8/19 fail)

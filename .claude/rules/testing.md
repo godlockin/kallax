@@ -1,12 +1,22 @@
 ---
 paths:
+  - CLAUDE.md
   - node/**/*.test.ts
   - node/tests/**
   - rust/**/tests/**
   - "**/*.test.ts"
 ---
 
-# Test 反模式 (EPIC-114) + Live Test SkipIf (EPIC-114/158) + lockfile 单一来源 (EPIC-255)
+---
+paths:
+  - CLAUDE.md
+  - node/**/*.test.ts
+  - node/tests/**
+  - rust/**/tests/**
+  - "**/*.test.ts"
+---
+
+# Test 反模式 + canonical test commands/environment (EPIC-114/158/255/287)
 
 > **Path-scoped rule**: 只在 test 文件被操作时加载.
 
@@ -72,7 +82,21 @@ const skipIfNoSqlite = process.env.KALLAX_TEST_SQLITE_AVAILABLE === '1' ? it : i
 // 见 node/tests/expert-invocations-queue.test.ts:120 周边 5 处
 ```
 
-## Reference
+## New EPIC sentinel gate
+
+Every new EPIC must run both gates with fresh output:
+
+```bash
+bash scripts/scan-dead-code.sh
+cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run \
+  tests/dead-code-sentinel-coverage.test.ts \
+  tests/dead-code-sentinel-coverage-d.test.ts \
+  tests/dead-code-sentinel-coverage-e.test.ts \
+  tests/dead-code-master-verify.test.ts
+```
+
+Do not replace workspace sentinel run with a cached result or a subset of files. Record raw exit status/output as verification evidence.
+
 
 - EPIC-114 ticket.json: `jira/tickets/EPIC-114/`
 - EPIC-158 ticket.json: `jira/tickets/EPIC-158/`

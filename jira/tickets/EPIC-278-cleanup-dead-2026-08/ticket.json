@@ -2,7 +2,7 @@
   "id": "EPIC-278-cleanup-dead-2026-08",
   "type": "epic",
   "title": "清扫 dead code: agent-farm.ts (423 行) + expert-matcher.ts (108 行)",
-  "status": "backlog",
+  "status": "in_progress",
   "priority": "P2",
   "epic_id": null,
   "created_by": "master",
@@ -11,7 +11,7 @@
   "performer": "TBD",
   "file_scope": {
     "includes": [
-      "node/src/commands/agent-farm.ts",
+      "node/src/core/agent-farm.ts",
       "node/src/core/expert-matcher.ts"
     ],
     "excludes": []
@@ -21,8 +21,26 @@
   "description": "EPIC-277 handover §5 第 48 行 mark 的死代码. agent-farm.ts 423 行 + expert-matcher.ts 108 行未挂任何 EPIC, scan-dead-code.sh 扫出但不拦合并, 债累积触发 EPIC-209 trim 同型问题. 独立 EPIC 挂当前 Sprint 闭环. 0 依赖其他 EPIC.",
   "verification": {
     "reproduction_command": "cd /Users/chenchen/working/sourcecode/tools/dev-tools/kallax && bash scripts/scan-dead-code.sh",
-    "reproduction_exit_code": "TBD",
-    "reproduction_raw_output": "TBD — 待执行扫脚本后填"
+    "reproduction_exit_code": 2,
+    "reproduction_raw_output": "Stage 1 OK (0 violations); Stage 2 BLOCKED-env: node/node_modules missing; Stage 3 BLOCKED-env: node/node_modules missing; Stage 4 OK (198 shell functions referenced); final BLOCKED-env, FAIL_COUNT=0, BLOCKED_COUNT=2."
+  },
+  "decision": "DELETE: audit found AgentFarm and ExpertMatcher had no production callers; production task assignment remains TaskAssigner → ExpertResolverBridge → claim queue.",
+  "mutation_scope": {
+    "deleted": [
+      "node/src/core/agent-farm.ts",
+      "node/src/core/expert-matcher.ts",
+      "node/tests/e2e/agent-farm.test.ts",
+      "node/tests/e2e/expert-match.test.ts",
+      "node/tests/expert-matcher.test.ts"
+    ],
+    "edited": [
+      "node/src/core/index.ts: removed agent-farm re-export",
+      "node/benchmarks/benchmark-suite.ts: removed Expert Matcher benchmark block"
+    ],
+    "forbidden_areas_untouched": [
+      "TaskAssigner → ExpertResolverBridge → claim queue",
+      "scripts/hooks/*"
+    ]
   },
   "handoff_depth": 1,
   "_archive_reason": null,

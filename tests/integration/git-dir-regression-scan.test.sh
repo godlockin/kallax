@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
+# raw_output: /tmp/claude-tasks/test-gitdir-20260826-171946.log (exit=1, PASS=10, FAIL=1, build-scope-commits.sh:35)
 # EPIC-277-G AC3 — 防 GIT_DIR 回归扫描 + 解析验证
 #
 # 验证: 所有 scripts/hooks/ + scripts/hooks/install.sh 中 `git -C` + rev-parse 调用,
-#       全部带 env -u GIT_DIR -u GIT_WORK_TREE (跟 #467 卡 F 暴露的 bug 1:1).
+#       全部带 env -u GIT_DIR -u GIT_WORK_TREE (与 #467 卡 F 暴露的 bug 保持同一检查条件).
 #
 # 退出码: 0 = 全 PASS, 1 = 至少 1 缺 env -u
 
@@ -69,7 +70,7 @@ rm -rf "${TEST_REPO}"
 
 echo ""
 echo "── 总结 ──"
-echo "PASS: ${PASS_COUNT}"
+echo "PASS count: ${PASS_COUNT}"
 echo "FAIL: ${FAIL_COUNT}"
 
 if [[ ${FAIL_COUNT} -gt 0 ]]; then

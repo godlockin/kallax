@@ -1,0 +1,74 @@
+{
+  "id": "EPIC-285",
+  "type": "epic",
+  "title": "经验教训整体 review — 凝练可迁移错题集, 让框架在迭代中成长",
+  "status": "backlog",
+  "priority": "P1",
+  "epic_id": null,
+  "created_by": "master",
+  "created_at": "2026-08-22T14:00:00Z",
+  "last_modified_by": "master",
+  "description": "主公 2026-08-22 拍板 — 战略目标: 在不断执行任务、构建和迭代的过程中, 让 KALLAX 框架不断成长。经验教训是框架成长的燃料, 不是归档的历史。\n\n准入判据 (主公 4 条): 整理的经验教训必须能降低问题发生概率、提升项目质量、对 KALLAX 及基于 KALLAX 框架开发的其他项目产生长远影响 — 是凝练总结出的错题集, 不是逐卡复盘。\n\n质量判据 (master 补 9 条, 基于本 Sprint 真实失败模式): 根因层 / 证据链 / 可反驳性 / 数量上限 / 失效边界 / 自动化优先 / 冲突优先级 / 读者分层 / 认知成本。共 13 条判据。\n\n现状: 55 份经验文档分散 4 处 (confluence/decisions/ 24 份 retrospective + confluence/memory/lessons/ 28 份 + confluence/manifesto/04-lessons.md 100 行 + 05-best-practices.md 188 行 + decisions/kallax-lessons-best-practices-2026-08-07.md 391 行)。多数是单 EPIC 逐卡复盘, 缺跨项目可迁移的抽象层。\n\n本 EPIC 目标: 全量审计 55 份, 按 13 条判据分类, 凝练成单一真相源, 归档逐卡噪音。产出物是减法。",
+  "file_scope": {
+    "includes": [
+      "confluence/decisions/kallax-lessons-best-practices-2026-08-07.md",
+      "confluence/manifesto/04-lessons.md",
+      "confluence/manifesto/05-best-practices.md",
+      "confluence/memory/lessons/",
+      "confluence/decisions/"
+    ],
+    "excludes": [
+      "confluence/_archived/",
+      "node/",
+      "rust/",
+      "scripts/"
+    ]
+  },
+  "expert_binding": ["auditor", "process-engineering", "compliance", "documentation"],
+  "rule_references": [
+    "Rule 5 (DRY 单一真相源)",
+    "Rule 6 (经验沉淀)",
+    "Rule 9 (KPI X/Y 格式)",
+    "Rule 35 (docs-only 例外)",
+    "EPIC-159 (CLAUDE.md 治理 ≤200 行)",
+    "EPIC-209 (path-scoped lazy load)"
+  ],
+  "verification": {
+    "reproduction_command": "find confluence -iname '*lesson*' -o -iname '*retrospective*' | wc -l",
+    "reproduction_exit_code": "0",
+    "reproduction_raw_output": "55 (24 retrospective in decisions/ + 28 in memory/lessons/ + 3 主文件). 实测 2026-08-22: ls confluence/decisions/ | grep -icE 'retrospective|lesson' = 24; ls confluence/memory/lessons/ | wc -l = 28; wc -l 三主文件 = 679 total"
+  },
+  "handoff_depth": 0,
+  "performer": "unassigned",
+  "review": {
+    "tier": null,
+    "group_a": null,
+    "group_b": null,
+    "final_outcome": null,
+    "review_summary": null
+  },
+  "_archive_reason": null,
+  "_archive_method": null,
+  "acceptance_criteria": [
+    "AC1: 13 条判据成文 — 落 confluence/decisions/epic-285-lessons-criteria-<date>.md。准入判据 4 条 (主公): (a) 可迁移到非 KALLAX 项目 (b) 降低同类问题复发概率 (c) 质量提升有可测指标 (d) 长远影响非一次性。质量判据 9 条 (master, 见 AC1a-AC1i)",
+    "AC1a: 判据 5 — 根因层。每条必须停在可行动的根因层, 不是症状也不是哲学。反例: #479 停在症状'CI 可能误判 X/Y' 而非根因'.json 不在 STAGED glob', 结果写出 25 行 dead code",
+    "AC1b: 判据 6 — 证据链。每条必绑真实 commit hash / PR 号 / CI log URL / file:line。禁'预防性教训'(防假想未来风险), 这是 YAGNI 的知识版。反例: #479 exemption 防的是假想的未来 regex 演进, 0 真实触发记录",
+    "AC1c: 判据 7 — 可反驳性。每条必须能被证伪, 说得出'什么证据能推翻它'。'要写好代码'不可反驳 = 废话",
+    "AC1d: 判据 8 — 数量上限硬约束。04-lessons.md ≤ 15 条错题, 05-best-practices.md ≤ 15 条正例。超了必须合并或砍, 这是逼迫做减法的机制不是建议",
+    "AC1e: 判据 9 — 失效边界。每条写'什么情况下不适用', 防教条化。例: 'fail-fast 优先' 在批处理场景要让位于'收集全部错误再报'",
+    "AC1f: 判据 10 — 自动化优先。每条先问'能否变成 hook/CI/脚本'。能自动化的不进错题集, 去做成 gate (参照 check-jargon.sh / check-doc-budgets.sh)。错题集只留无法自动检查的判断类教训",
+    "AC1g: 判据 11 — 冲突优先级。教训间矛盾必须显式标注谁优先 + 拍板来源。例: 'auto-merge 0 容忍'(EPIC-207) vs '小 effort auto-approve'(Rule 37) 是真冲突, 主公拍板 override",
+    "AC1h: 判据 12 — 读者分层。明确每条的目标读者 (新接手 agent / 人类 / 其他项目开发者), 决定语言粒度。给'其他 KALLAX 项目'的教训必须剥离 KALLAX 专有名词 (EPIC 编号 / Rule 编号 / 分支名)",
+    "AC1i: 判据 13 — 认知成本。每条标注'理解它需要多少上下文'。若需读 3 份 EPIC 才能理解, 该进 reference 层不是错题集",
+    "AC2: 55 份文档全量过 13 判据 — 输出分类矩阵 (保留 / 合并 / 归档 / 删除), 每份带 13 判据逐条打分 + 理由 (file:line 引用)",
+    "AC3: 凝练产出单一真相源 — 04-lessons.md 记错题 (≤15 条), 05-best-practices.md 记正例 (≤15 条), 各文件 ≤ 300 行。分工边界明确",
+    "AC4: 逐卡复盘噪音归档 — 不满足判据的移 confluence/_archived/retrospectives/, 保留 git 历史链, 0 硬删",
+    "AC5: 可自动化清单 — 审计中发现'该做成 gate 而非记在文档'的教训, 单独产出 backlog 清单 (判据 10 落地), 每条附建议实现路径 (hook / CI job / 脚本)",
+    "AC6: 0 重复 — 同一教训不在多处重述 (Rule 5 DRY), 跨文件引用走 [[链接]] 而非复制",
+    "AC7: 数字带证据 — 任何 X/Y 统计必带 raw_output 引用 (check-claim-evidence.sh 通过)",
+    "AC8: 框架成长闭环 — 产出物必须回答'下一个 Sprint 如何用这些教训'。若一条教训无法指向具体的下次行动改变, 判为无效",
+    "AC9: 5-Level Verify L1-L5 全绿 + 4-PR 全程 (Rule 4), main→miao 主公亲自合"
+  ],
+  "labels": ["lessons", "audit", "knowledge-consolidation", "cross-project", "framework-growth", "docs-only", "sprint-2026-08-22"],
+  "notes": "战略定位 (主公 2026-08-22): 目标是让框架在不断执行任务、构建、迭代的过程中成长。经验教训是燃料不是档案。\n\n反模式警告 (本 EPIC 自身必须避免):\n1. 不要产出第 56 份逐卡复盘文档。产出物是减法 (55 → ≤30 条), 不是加法\n2. 不要把能自动化的规则写进文档 (判据 10) — 靠人记的规则必然衰减\n3. 不要产出不可反驳的正确废话 (判据 7)\n4. 若审计结论是'大部分该归档', 那就是正确结论\n\n判据来源: 4 条准入 (主公 2026-08-22 拍板) + 9 条质量 (master 基于本 Sprint #474/#479/#481/#484 真实失败模式提炼)"
+}
