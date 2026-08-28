@@ -80,6 +80,22 @@ feature/v3.X.Y-EPIC-ZZZ → testing → main → miao
 **smoke retention**: bash scripts/check-smoke-retention.sh
 **禁 squash/rebase**: allow_squash_merge=false (EPIC-273)
 
+### 4.5 Worktree 卫生 (EPIC-301, 主公 2026-08-28 拍板)
+
+**起因**: 79 worktree + 165 branch 爆炸 (6 个月累积债, 见 `confluence/decisions/worktree-debt-retrospective-2026-08-28.md`).
+
+**3 防御 gate** (不是 immutable #11, advisory + threshold):
+
+| Hook | 触发 | 动作 |
+|------|------|------|
+| `scripts/hooks/check-worktree-hygiene.sh` | post-checkout 切 miao/main/testing | 显示当前 worktree 数 + 清理建议 |
+| `scripts/hooks/check-worktree-count.sh` | pre-commit | worktree > 50 → exit 1 阻断 |
+| `scripts/verify/check-worktree-hygiene.sh` | L4 verify | 5-Level 验证 hook 接入 |
+
+**清理脚本**: `/tmp/cleanup-worktree-batch{1,2,3,4}.sh` (本地 worktree + branch, 远程不动 — [[feedback-worktree-cleanup-local-only]])
+
+**例外**: `KALLAX_HOOK_BYPASS=1` 豁免 (跟现有豁免 1:1)
+
 详细规则: .claude/rules/review-tier.md / branch-flow.md
 
 ## 5. 10 不可更改 法律 (immutable scripts) + 2 smoke 辅助

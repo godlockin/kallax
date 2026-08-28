@@ -450,6 +450,26 @@ if [[ "$HOOK_BYPASS" -eq 0 ]]; then
   fi
 fi
 
+# ── EPIC-301: worktree 数阈值告警 (防 79 worktree 爆炸复发) ───────────
+# 阈值 50, 超过阻断 commit + 给清理脚本路径.
+# 跟 EPIC-225 check-jargon 同型 (advisory + exit 1 阻断).
+# 不是 immutable (10 immutable 不变, EPIC-301 是 #11 advisory hook).
+if [[ "$HOOK_BYPASS" -eq 0 ]]; then
+  WORKTREE_COUNT_CHECK="${KALLAX_ROOT}/scripts/hooks/check-worktree-count.sh"
+  if [[ -x "$WORKTREE_COUNT_CHECK" ]]; then
+    if ! bash "$WORKTREE_COUNT_CHECK" >/dev/null 2>&1; then
+      echo "╔══════════════════════════════════════════════════════════════╗"
+      echo "║  BLOCKED: worktree 数超阈值 (EPIC-301)                  ║"
+      echo "║  Run: git worktree prune + cleanup-worktree-batch*.sh ║"
+      echo "║  Verify: bash scripts/verify/check-worktree-hygiene.sh  ║"
+      echo "║  Bypass (主公 approval): KALLAX_HOOK_BYPASS=1 git commit ... ║"
+      echo "╚══════════════════════════════════════════════════════════════╝"
+      bash "$WORKTREE_COUNT_CHECK" 2>&1 | head -30 || true
+      exit 1
+    fi
+  fi
+fi
+
 # ── Only enforce miao-specific rules on miao branch ───────────────────
 if [ "$BRANCH" != "miao" ]; then
   exit 0

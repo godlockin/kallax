@@ -65,7 +65,7 @@ echo ""
 
 # ── Check 2: hook 文件是否已安装且为最新 ────────────────────────────────
 echo "--- hook 安装检查 ---"
-for hook in pre-commit pre-push; do
+for hook in pre-commit pre-push post-checkout; do
   src="${HOOKS_SRC}/${hook}"
   dst="${HOOKS_DIR}/${hook}"
 
@@ -213,7 +213,10 @@ echo "    - EPIC-225 jargon black list (staged .md/.sh/.ts/.rs)"
 echo "    - EPIC-287-C jargon --all scope cache (辅助脚本)"
 echo "    - EPIC-279 doc word budgets (staged .md, fail-closed)"
 echo "    - EPIC-280 agent-note format (staged .md, DSH Path A admission)"
+echo "    - EPIC-301 worktree count (调 scripts/hooks/check-worktree-count.sh, >50 阻断)"
 echo "    - miao 分支保护"
+echo "  post-checkout:"
+echo "    - EPIC-301 worktree 卫生提示 (调 scripts/hooks/check-worktree-hygiene.sh, 切 miao/main/testing 时)"
 echo "  commit-msg:"
 echo "    - DCO Signed-off-by 强制 (EPIC-221 config 激活)"
 echo "    - Conventional Commits type 检查"
