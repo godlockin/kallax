@@ -1,6 +1,6 @@
 # Batch 9 Retrospective — EPIC-280 / 285 / 286 / 287 (2026-08-25)
 
-> **目的**: Sprint N+1 EPIC-280/285/286/287 闭环 + PR #508/509/516/517 处理实战暴露的 5 错题, 抽象为 KALLAX 框架层 + 主公开发流程层级的通用经验教训。
+> **目的**: Sprint N+1 EPIC-280/285/286/287 完成 + PR #508/509/516/517 处理实战暴露的 5 错题, 抽象为 KALLAX 框架层 + 主公开发流程层级的通用经验教训。
 >
 > **关联**: EPIC-277 错题集 (2026-08-22) 6 错题延伸 → Batch 9 新增 5 错题 → 11 错题合并版。
 >
@@ -9,7 +9,7 @@
 ## 0. 一句话总览
 
 本轮 (2026-08-22~25) Sprint 实战暴露 5 个跨项目可复用错题:
-1. **PR Size Check > 500 行 net** — 单 EPIC 闭环 + 测试断言统一天然突破, 走 `Approved-Large-PR-By:` marker bypass
+1. **PR Size Check > 500 行 net** — 单 EPIC 完成 + 测试断言统一天然突破, 走 `Approved-Large-PR-By:` marker bypass
 2. **jargon --all 性能**: bash loop + 嵌套 grep 不可并行, 必须 Python 单进程 + 一次 `re.compile()`
 3. **xargs wait bug**: `xargs -P N` 输出在 `wait` 返回前不可靠, 平行扫描永远假 PASS
 4. **GraphQL scope 边界**: `gh pr merge` REST endpoint 不需 `read:org`, user-owned repo 可绕开
@@ -17,32 +17,32 @@
 
 ---
 
-## 1. 错题 #7: PR Size Check > 500 是单 EPIC 闭环常态 (ranked #1, 治根 已落)
+## 1. 错题 #7: PR Size Check > 500 是单 EPIC 完成常态 (ranked #1, 修复 已落)
 
 ### 症状
-EPIC-287 PR #516 闭环含 1 commit + 7 file (CLAUDE.md 改 213→108 行 + scripts/hooks 重写 + 4 个 integration test + 1 个新 test) → net = 595 行, 触发 PR Size Check fail-tier。check-claim-evidence / hook-health / vitest 等所有**真实功能测试**全 SUCCESS, 仅 size gate fail。
+EPIC-287 PR #516 完成含 1 commit + 7 file (CLAUDE.md 改 213→108 行 + scripts/hooks 重写 + 4 个 integration test + 1 个新 test) → net = 595 行, 触发 PR Size Check fail-tier。check-claim-evidence / hook-health / vitest 等所有**真实功能测试**全 SUCCESS, 仅 size gate fail。
 
 ### 根因 (跨项目普适)
-- Rule of 500 (EPIC-059-B) 是**单 commit 单 file** 约束, 不适用于**单 EPIC 闭环** (含 test 断言统一 + new test)
-- 大多数 EPIC 闭环无法拆分: test 改断言跟 fix 是同一原子动作
+- Rule of 500 (EPIC-059-B) 是**单 commit 单 file** 约束, 不适用于**单 EPIC 完成** (含 test 断言统一 + new test)
+- 大多数 EPIC 完成无法拆分: test 改断言跟 fix 是同一原子动作
 - PR Size Check 默认 fail-tier 缺豁免路径 (跟 BE-23 "hook 激活 ≠ 生效" 同型)
 
-### 治根 (跨项目可复用)
-**PR body 必含 `Approved-Large-PR-By: <master>` marker** (跟 EPIC-069-D marker 1:1):
+### 修复 (跨项目可复用)
+**PR body 必含 `Approved-Large-PR-By: <master>` marker** (跟 EPIC-069-D marker 对应):
 - marker 在 body 行首 (regex `^Approved-Large-PR-By:`)
 - PR Size Check 脚本见 marker → bypass 改 warn
 - EPIC-275 拍板 2026-07-12 已支持, 实战首次启用 (PR #517)
 
-**更治根治根**: 单 EPIC 闭环分 PR 拆 (a) fix PR (b) test PR — 但大多数 EPIC 拆 PR 会引入 staging commit 噪音, 得不偿失, marker 路径更实用。
+**进一步修复**: 单 EPIC 完成分 PR 拆 (a) fix PR (b) test PR — 但大多数 EPIC 拆 PR 会引入 staging commit 噪音, 得不偿失, marker 路径更实用。
 
 ### 验证指标
 - PR body 含 marker → PR Size Check bypass → 主公不被打扰
-- 单 EPIC 闭环 commit >500 频率 ≤ 30% (非全 bypass)
+- 单 EPIC 完成 commit >500 频率 ≤ 30% (非全 bypass)
 - marker 实测可用 (本轮 PR #517 验证)
 
 ---
 
-## 2. 错题 #8: jargon --all O(N×M) 不可 bash 并行 (ranked #2, 治根 已落)
+## 2. 错题 #8: jargon --all O(N×M) 不可 bash 并行 (ranked #2, 修复 已落)
 
 ### 症状
 check-jargon.sh --all 模式在 1511 文件 × 13 pattern 时:
@@ -56,7 +56,7 @@ check-jargon.sh --all 模式在 1511 文件 × 13 pattern 时:
 - C 任何 IO-heavy bash 脚本触及 ≥1000 文件 + ≥10 pattern 都会撞同一墙
 - 跟 BE-25 "独立 subagent 推理路径共享" 同型 — bash 进程模型本身就是 single-threaded sharing
 
-### 治根 (跨项目可复用)
+### 修复 (跨项目可复用)
 **IO-heavy 脚本默认走 Python 单进程 + 一次 `re.compile()`**:
 ```python
 pats = re.findall(r'"pattern":\s*"([^"]+)"', open(blacklist).read())
@@ -81,7 +81,7 @@ sys.exit(1 if hits else 0)
 
 ---
 
-## 3. 错题 #9: xargs wait bug 是 bash parallel 的物理死结 (ranked #3, 治根 已落)
+## 3. 错题 #9: xargs wait bug 是 bash parallel 的物理死结 (ranked #3, 修复 已落)
 
 ### 症状
 A 队 5+ 路径全失败:
@@ -95,8 +95,8 @@ A 队 5+ 路径全失败:
 - 任何"我希望 N 个 worker 并行, 收集所有输出" 的 bash 任务都会撞
 - 跟 EPIC-270 "subagent 共享推理路径" 同型 — bash 进程模型跟并行 IO 模型不兼容
 
-### 治根 (跨项目可复用)
-**禁止 bash parallel IO 模式**, 3 条治根:
+### 修复 (跨项目可复用)
+**禁止 bash parallel IO 模式**, 3 条修复:
 1. **Python 单进程** (错题 #8 同源, 用 multiprocessing.Pool + Queue)
 2. **GNU parallel** (跟 xargs 不同, `--keep-order` + `--tag` 真 wait worker)
 3. **接受串行 + 算法优化** (regex 一次编译, IO 异步 — Node/Python 一等公民)
@@ -106,11 +106,11 @@ A 队 5+ 路径全失败:
 ### 验证指标
 - bash parallel IO pattern 在本仓出现 0 次
 - 所有 IO-heavy 脚本走 Python / Node / GNU parallel
-- 新 hook 脚本 wall-clock <5s (跟 EPIC-286 B5 教训联合)
+- 新 hook 脚本 wall-clock <5s (与 EPIC-286 B5 教训相关)
 
 ---
 
-## 4. 错题 #10: gh pr merge REST endpoint 不需 GraphQL scope (ranked #4, 治根 已落)
+## 4. 错题 #10: gh pr merge REST endpoint 不需 GraphQL scope (ranked #4, 修复 已落)
 
 ### 症状
 主公问"要 read:org + read:discussion scope 做什么", 触发对 GraphQL vs REST 边界的复盘。
@@ -123,9 +123,9 @@ A 队 5+ 路径全失败:
 ### 根因 (跨项目普适)
 - `gh` CLI 内部 GraphQL / REST 混用, GraphQL 字段默要 `login`/`name` 验证身份
 - User-owned repo 不属任何 org, 但 GraphQL 仍查 `login` 字段 (要 read:org)
-- 跟 BE-26 "诚实修正战略" 同型 — 工具行为跟文档不预期, master 必实测
+- 跟 BE-26 "诚实修正方案" 同型 — 工具行为跟文档不预期, master 必实测
 
-### 治根 (跨项目可复用)
+### 修复 (跨项目可复用)
 **User-owned repo, 用 REST endpoint 走 PR 操作**:
 - 改 PR body → `gh api -X PATCH repos/<owner>/<repo>/pulls/<num> -f body=...`
 - 合 PR → `gh pr merge <num> --merge --body ...`
@@ -145,7 +145,7 @@ A 队 5+ 路径全失败:
 
 ---
 
-## 5. 错题 #11: 跨 worktree 接力 — 主 agent 不能跨边界 (ranked #5, 治根 已落)
+## 5. 错题 #11: 跨 worktree 接力 — 主 agent 不能跨边界 (ranked #5, 修复 已落)
 
 ### 症状
 本轮 5 队接力修 EPIC-287:
@@ -159,9 +159,9 @@ D 队 (尝试跨 worktree 操作) 撞沙箱: `git -C` 拒跨 worktree, 0 工作�
 ### 根因 (跨项目普适)
 - 主 agent `git -C <other-worktree>` 撞沙箱 (worktree 独立性是设计, 不是 bug)
 - 跨 worktree 接力 subagent 必明确 "在自己 worktree 内完成全部任务"
-- 跟 EPIC-219 worktree 隔离规则 1:1
+- 跟 EPIC-219 worktree 隔离规则 对应
 
-### 治根 (跨项目可复用)
+### 修复 (跨项目可复用)
 **接力 subagent 派工 prompt 必含 3 字段**:
 1. 工作目录: `cd <your-worktree-path>`
 2. 任务范围: "在自己 worktree 内完成 X + Y + Z, 不依赖主仓库或其他 worktree"
@@ -172,16 +172,16 @@ D 队 (尝试跨 worktree 操作) 撞沙箱: `git -C` 拒跨 worktree, 0 工作�
 ### 验证指标
 - 接力 subagent 0 次撞沙箱 (`cannot operate across worktree` 退出)
 - 接力 subagent 全部产出 commit + push
-- worktree 接力成功率 100%
+- worktree 接力 5 次均成功
 
 ---
 
-## 6. 错题 → 治根 → 验证指标 三联表 (Batch 9)
+## 6. 错题 → 修复 → 验证指标 三联表 (Batch 9)
 
-| 错题 | 根因 (普适) | 治根 (跨项目可复用) | 验证指标 |
+| 错题 | 根因 (普适) | 修复 (跨项目可复用) | 验证指标 |
 |------|------------|---------------------|----------|
-| #7 PR Size > 500 单 EPIC 常态 | Rule of 500 不适用单 EPIC 闭环 | `Approved-Large-PR-By:` marker bypass | PR body marker 覆盖率 ≥ 90% (单 EPIC 闭环) |
-| #8 jargon O(N×M) 不可 bash 并行 | bash 进程模型 single-threaded | Python 单进程 + `re.compile()` | wall-clock <15s + 检测正确率 100% |
+| #7 PR Size > 500 单 EPIC 常态 | Rule of 500 不适用单 EPIC 完成 | `Approved-Large-PR-By:` marker bypass | PR body marker 覆盖率 ≥ 90% (单 EPIC 完成) |
+| #8 jargon O(N×M) 不可 bash 并行 | bash 进程模型 single-threaded | Python 单进程 + `re.compile()` | wall-clock <15s + 全部样本检测正确 |
 | #9 xargs wait bug 物理死结 | bash + xargs + wait 三件套不兼容 | 禁 `xargs -P` + 走 Python/GNU parallel | bash parallel IO pattern 出现 0 次 |
 | #10 GraphQL scope 边界 | gh CLI GraphQL field 默认拦 | user-owned repo 走 REST endpoint | 0 次误加 token scope |
 | #11 跨 worktree 接力 | worktree 独立性设计 | subagent 派工 prompt 必含 "在自己 worktree 内完成" | 接力 subagent 沙箱撞 0 |
@@ -190,10 +190,10 @@ D 队 (尝试跨 worktree 操作) 撞沙箱: `git -C` 拒跨 worktree, 0 工作�
 
 ## 7. 错题在 sprint-metrics 上的可观察代理 (跨项目通用)
 
-| 错题 | 代理 | 治根目标 |
+| 错题 | 代理 | 修复目标 |
 |------|-----|----------|
 | #7 | PR body marker / PR Size Check bypass rate | marker 覆盖率 ≥ 90% |
-| #8 | check-jargon.sh --all wall-clock | <15s, 100% 检测正确 |
+| #8 | check-jargon.sh --all wall-clock | <15s，全部样本检测正确 |
 | #9 | bash parallel IO pattern grep 数 | 出现 0 |
 | #10 | gh CLI GraphQL 拦次数 | 0 |
 | #11 | 接力 subagent 沙箱撞次数 | 0 |
@@ -202,7 +202,7 @@ D 队 (尝试跨 worktree 操作) 撞沙箱: `git -C` 拒跨 worktree, 0 工作�
 
 ## 8. 跟 EPIC-277 错题集的合并 (11 错题总览)
 
-| Batch | # | 错题 | 治根状态 |
+| Batch | # | 错题 | 修复状态 |
 |------|---|------|----------|
 | EPIC-277 | #1 | 派工 prompt 缺必跑项 | ✓ |
 | EPIC-277 | #2 | 并行改 immutable 缺 cross-check | ✓ |
@@ -216,26 +216,26 @@ D 队 (尝试跨 worktree 操作) 撞沙箱: `git -C` 拒跨 worktree, 0 工作�
 | Batch 9 | #10 | gh CLI GraphQL scope 边界 | ✓ |
 | Batch 9 | #11 | 跨 worktree 接力 | ✓ |
 
-**11 错题全治根**, 0 增 Rule / 0 增 immutable script / 0 改 source code (跟 EPIC-277 1:1 流程层错题集)。
+**11 错题全修复**, 0 增 Rule / 0 增 immutable script / 0 改 source code (与 EPIC-277 对照的流程层错题集)。
 
 ---
 
-## 9. 跟 EPIC-161 Retrospective Routine 6 阶段 1:1
+## 9. 与 EPIC-161 Retrospective Routine 6 阶段对应
 
 | 阶段 | 跟 Batch 9 映射 |
 |------|----------------|
 | 1. **retrospect** (复盘) | 本档主修: 抽象 5 错题成"错题集"形式 |
 | 2. **consolidate** (整理) | EPIC-287 + #508/#509/#517 处理实战合成 1 顶层 doc |
-| 3. **review-docs** (review 文档) | 5 错题跟 13 判据 (EPIC-285) 1:1 验证 |
+| 3. **review-docs** (review 文档) | 5 错题跟 13 判据 (EPIC-285) 对应 验证 |
 | 4. **upgrade** (升级) | 5 错题 跟 EPIC-286 + EPIC-287 + EPIC-275 + EPIC-270 raw_ref (ticket 链接) |
 | 5. **archive** (归档) | 0 (本档不是 deprecated) |
 | 6. **delete** (删除) | 0 (本档不是 dead) |
 
-**触发条件**: EPIC-280 + 285 + 286 + 287 4 EPIC 闭环 + 跨 ≥2 release 累积 EPIC-194 sprint-metrics 5 PASS 阈值. 当前 Sprint N+1, 满足 retrospective-routine 阶段 1 触发.
+**触发条件**: EPIC-280 + 285 + 286 + 287 4 EPIC 完成 + 跨 ≥2 release 累积 EPIC-194 sprint-metrics 5 PASS 阈值. 当前 Sprint N+1, 满足 retrospective-routine 阶段 1 触发.
 
 ---
 
-## 10. 跨 sprint 联动 (跟 EPIC-277 + 主公反馈联合)
+## 10. 跨 sprint 联动（EPIC-277 与主公反馈）
 
 | 主题 | 关联 |
 |------|------|
@@ -258,6 +258,6 @@ D 队 (尝试跨 worktree 操作) 撞沙箱: `git -C` 拒跨 worktree, 0 工作�
 
 ---
 
-**5 错题可观察, 可治根, 可复用** — 跟 EPIC-277 错题集 raw_ref (ticket.json SHA) 配套. 0 改 source code, 0 改 Rule, 0 改 immutable — 流程层错题集。
+**5 错题可观察, 可修复, 可复用** — 跟 EPIC-277 错题集 raw_ref (ticket.json SHA) 配套. 0 改 source code, 0 改 Rule, 0 改 immutable — 流程层错题集。
 
 Signed-off-by: master <master@kallax.local>

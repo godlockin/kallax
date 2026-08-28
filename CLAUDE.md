@@ -15,6 +15,8 @@
 
 **Fail-Fast 强制**: 禁止 cmd || true 吞错误，必须 if ! cmd; then exit 1; fi
 
+**CLI 细节**: nohup 逃逸路径、wrapper fail-fast/trap ERR 见 `.claude/rules/cli-execution.md`.
+
 ## 2. 5-Level Verify 新规 (EPIC-069-D)
 
 | Level | 之前 | 之后 (v3.8.1+) |
@@ -27,7 +29,7 @@
 
 **禁止**: X/Y 格式无 raw_output / 5-Level Verify 但 L2 是 cargo build / 全过/全绿等裸数字宣称
 
-**新 EPIC 必跑**: bash scripts/scan-dead-code.sh + cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run tests/dead-code-sentinel-*.test.ts
+**新 EPIC 必跑 sentinel**: 详见 `.claude/rules/testing.md`（canonical 命令与 sentinel 文件清单）。
 
 **硬化**: 详见 .claude/rules/strict-tsconfig.md
 
@@ -54,6 +56,8 @@
 
 **0 静默跳过**: Sprint 结束时必跑 scripts/metrics/sprint-metrics.sh --epic EPIC-XXX; docs-only 用 --docs-only (exit 3 SKIP)
 
+**Rule 34/35/36 详细字段、复用关系、NO_DATA/ARCHIVED_SKIP 判定**: 见 `.claude/rules/governance.md`.
+
 ## 4. Branch Flow Governance (EPIC-074)
 
 feature/v3.X.Y-EPIC-ZZZ → testing → main → miao
@@ -75,6 +79,22 @@ feature/v3.X.Y-EPIC-ZZZ → testing → main → miao
 **conflict check**: git merge-tree --write-tree (老式两参数是 trivial-merge, 冲突恒为 0)
 **smoke retention**: bash scripts/check-smoke-retention.sh
 **禁 squash/rebase**: allow_squash_merge=false (EPIC-273)
+
+### 4.5 Worktree 卫生 (EPIC-301, 主公 2026-08-28 拍板)
+
+**起因**: 79 worktree + 165 branch 爆炸 (6 个月累积债, 见 `confluence/decisions/worktree-debt-retrospective-2026-08-28.md`).
+
+**3 防御 gate** (不是 immutable #11, advisory + threshold):
+
+| Hook | 触发 | 动作 |
+|------|------|------|
+| `scripts/hooks/check-worktree-hygiene.sh` | post-checkout 切 miao/main/testing | 显示当前 worktree 数 + 清理建议 |
+| `scripts/hooks/check-worktree-count.sh` | pre-commit | worktree > 50 → exit 1 阻断 |
+| `scripts/verify/check-worktree-hygiene.sh` | L4 verify | 5-Level 验证 hook 接入 |
+
+**清理脚本**: `/tmp/cleanup-worktree-batch{1,2,3,4}.sh` (本地 worktree + branch, 远程不动 — [[feedback-worktree-cleanup-local-only]])
+
+**例外**: `KALLAX_HOOK_BYPASS=1` 豁免 (跟现有豁免 1:1)
 
 详细规则: .claude/rules/review-tier.md / branch-flow.md
 
@@ -103,6 +123,6 @@ feature/v3.X.Y-EPIC-ZZZ → testing → main → miao
 ## 7. 引用
 
 - **Anthropic Memory**: https://code.claude.com/docs/en/memory
-- **Path-scoped rules**: .claude/rules/{state-json,testing,branch-flow,strict-tsconfig,recent-epics,immutable-scripts,retrospective,review-tier}.md
+- **Path-scoped rules**: `.claude/rules/{state-json,testing,branch-flow,strict-tsconfig,recent-epics,immutable-scripts,retrospective,review-tier,cli-execution,governance}.md`
 - **Reference docs** (24): branch-flow-history.md / cli-reference.md / 等
 - **Manifesto** (5): 01-top-design.md / 等

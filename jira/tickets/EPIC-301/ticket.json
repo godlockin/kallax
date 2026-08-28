@@ -1,0 +1,68 @@
+{
+  "id": "EPIC-301",
+  "title": "Worktree 卫生防御 gate (防 79 worktree 爆炸复发)",
+  "type": "feature",
+  "status": "in_progress",
+  "priority": "P1",
+  "created_at": "2026-08-28",
+  "created_by": "master",
+  "trigger": "主公 2026-08-28 拍板'扩大检查范围'引爆 4 批清理 (-161 branch + -67 worktree). 复盘诊断当前 0 防御, 不补 gate 等同 0 改进.",
+  "why": "本次 79 worktree + 165 branch 爆炸, 根因 6: Performer 派单未带清理 / squash merge 失 git ancestry / worktree-agent-* 自动 branch 不删 / /private/tmp 散落 / hook 体系曾整体失效 19 天 (EPIC-224) / testing 分支被 --delete-batch 删除的恐惧 (EPIC-229). 14 个 hook + 60+ verify 脚本里 0 个是 'worktree 数 > N 警告' 或 '孤儿 branch 检测'.",
+  "scope": {
+    "in_scope": [
+      "scripts/hooks/check-worktree-hygiene.sh 新建 (post-checkout hook, 切到 main 分支时 git worktree prune 提示)",
+      "scripts/hooks/check-worktree-count.sh 新建 (pre-commit hook, worktree 数 > 50 时警告)",
+      "scripts/verify/check-worktree-hygiene.sh 新建 (L4 verify, 跟现有 verify-script 1:1 pattern)",
+      "tests/integration/check-worktree-hygiene.test.sh 新建",
+      "scripts/hooks/install.sh 加 2 个 hook 安装项",
+      ".claude/rules/recent-epics.md 更新 (EPIC-210~229 → EPIC-210~301)",
+      "CLAUDE.md §4 加 §4.5 Worktree 卫生 (跟现有 §4 联合, 0 冲突)"
+    ],
+    "out_of_scope": [
+      "修 6 个 stale .claude/worktrees/ 物理目录 (走独立 EPIC-301-followup)",
+      "修 5 个 /private/tmp/kallax-* 临时目录 (走独立 EPIC-301-followup)",
+      "retrospective-routine.sh 加 worktree 检查 (走 EPIC-302)"
+    ]
+  },
+  "deliverables": [
+    "scripts/hooks/check-worktree-hygiene.sh (post-checkout)",
+    "scripts/hooks/check-worktree-count.sh (pre-commit, advisory only)",
+    "scripts/verify/check-worktree-hygiene.sh",
+    "tests/integration/check-worktree-hygiene.test.sh (10/10 PASS)",
+    "scripts/hooks/install.sh 更新",
+    ".claude/rules/recent-epics.md EPIC-301 行",
+    "CLAUDE.md §4.5 新段",
+    "confluence/decisions/EPIC-301-design-2026-08-28.md (设计文档)"
+  ],
+  "acceptance_criteria": [
+    "AC1: post-checkout 切到 miao/main/testing 时提示 'git worktree prune'",
+    "AC2: pre-commit 当 worktree > 50 时 exit 1 报错 + 给清理脚本路径",
+    "AC3: scripts/verify/check-worktree-hygiene.sh 5-level verify 全 PASS (跟 EPIC-224/225 同型)",
+    "AC4: tests/integration 10/10 PASS, 含正负向 (worktree=10 PASS, worktree=60 FAIL)",
+    "AC5: bash scripts/hooks/install.sh --verify 0 报错, hook 健康",
+    "AC6: CLAUDE.md 仍 ≤ 200 行 (新 §4.5 ≤ 15 行, 必要时再 trim)",
+    "AC7: 0 触 immutable script (10 不变), 0 改 Rule 数字 (37 不变)"
+  ],
+  "risk": {
+    "high": "hook 装错路径会再触发 EPIC-224 hook 体系失效复发 (post-checkout 必走 EPIC-224 验证)",
+    "medium": "worktree 计数假阳性 (CI 环境跑时 worktree 列表不全), 需 KALLAX_HOOK_BYPASS=1 豁免",
+    "low": "post-checkout 频繁触发提示影响 UX, 用 advisory 模式不阻塞"
+  },
+  "4pr_plan": {
+    "PR1": "feature → testing (本仓 + 单元)",
+    "PR2": "testing → main (FF push + master review)",
+    "PR3": "main → miao (主公亲自, EPIC-242 §3, 含 hook 接入 + CLAUDE.md §4.5)"
+  },
+  "commit_strategy": "≤ 10 commits / EPIC (Rule 35). commit 1: 设计文档 + ticket. commit 2-3: 2 个 hook. commit 4-5: verify 脚本 + 测试. commit 6: install.sh 更新. commit 7: CLAUDE.md §4.5. commit 8-9: docs 更新.",
+  "linked": [
+    "confluence/decisions/worktree-debt-retrospective-2026-08-28.md",
+    "confluence/decisions/worktree-cleanup-2026-08-28.md",
+    "feedback-worktree-isolation",
+    "feedback-worktree-cleanup-local-only",
+    "EPIC-224 (hook 体系失效修复, 上游债源)",
+    "EPIC-227 (worktree KALLAX_ROOT 修, 同一谱)",
+    "EPIC-229 (testing 分支恢复, 治理债恐惧源)",
+    "EPIC-161 (retrospective routine, 跟后续 EPIC-302 联合)"
+  ],
+  "reviewer": "主公 (拍板起 EPIC + PR-3 主公亲自) / master (执行) / EPIC-224 经验复用 / EPIC-227 KALLAX_ROOT 修复模式"
+}

@@ -1,0 +1,70 @@
+{
+  "ticket_id": "EPIC-293-port-isolation",
+  "id": "EPIC-293-port-isolation",
+  "epic": "EPIC-293",
+  "phase": "PHASE-036",
+  "title": "Isolate claim queue E2E server port",
+  "status": "done",
+  "priority": "P1",
+  "type": "bugfix",
+  "created_at": "2026-08-25",
+  "worktree_role": "performer",
+  "performer": "master",
+  "performer_sub_role": "coder",
+  "handoff_depth": "L2",
+  "description": "Claim queue E2E test used fixed port 19879, causing API timeout and port collisions. Bind test API server to port 0 and derive baseUrl from the started server handle.",
+  "file_scope": {
+    "includes": [
+      "node/tests/e2e/claim-queue.test.ts",
+      "jira/tickets/EPIC-293-port-isolation/ticket.json"
+    ]
+  },
+  "acceptance": [
+    "AC1: Claim queue E2E API server binds to port 0.",
+    "AC2: baseUrl uses actual bound port from server.getServer().address() after start.",
+    "AC3: No 19879 assumption remains in claim-queue.test.ts.",
+    "AC4: Target claim queue E2E passes with VITEST_INCLUDE_E2E=1.",
+    "AC5: TypeScript check passes.",
+    "AC6: Hook installation verification passes.",
+    "AC7: Commit uses requested Conventional Commit subject and DCO sign-off.",
+    "AC8: Commit is pushed to origin feature/v3.36.0-EPIC-293-port-isolation."
+  ],
+  "labels": ["bugfix", "e2e", "port-isolation", "epic-293"],
+  "rule_references": [
+    "Rule 34 — independent reproduction",
+    "Rule 5 — source scope restriction",
+    "EPIC-069-D — raw verification evidence"
+  ],
+  "verification": {
+    "diagnosis_phase": "DONE",
+    "reproduction_command": "cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run tests/e2e/claim-queue.test.ts",
+    "reproduction_exit_code": 1,
+    "reproduction_raw_output": "RUN v4.1.10 .../node\\nNo test files found, exiting with code 1\\nfilter: tests/e2e/claim-queue.test.ts\\nexclude: node_modules, dist, tests/e2e/**",
+    "target_command_with_required_e2e_opt_in": "cd node && VITEST_INCLUDE_E2E=1 KALLAX_HOOK_API_KEY=test-key npx vitest run tests/e2e/claim-queue.test.ts",
+    "target_exit_code": 0,
+    "target_raw_output": "RUN v4.1.10 .../node\\nTest Files 1 passed (1)\\nTests 20 passed (20)\\nDuration 394ms",
+    "full_suite_command": "cd node && KALLAX_HOOK_API_KEY=test-key npx vitest run",
+    "full_suite_exit_code": 1,
+    "full_suite_raw_output": "Test Files 3 failed | 55 passed | 2 skipped (60)\\nTests 544 passed | 9 skipped (553)\\nFailures: tests/l1-match.test.ts, tests/persona-schema.test.ts, tests/trust-score.test.ts",
+    "full_suite_e2e_opt_in_exit_code": 1,
+    "full_suite_e2e_opt_in_raw_output": "Test Files 7 failed | 72 passed | 2 skipped (81)\\nTests 15 failed | 712 passed | 13 skipped (740)\\nAdditional E2E failures include property-claim, agent-farm, api-integration, trace-resume; claim-queue test passed.",
+    "tsc_command": "cd node && npx tsc --noEmit",
+    "tsc_exit_code": 0,
+    "tsc_raw_output": "No output; exit code 0",
+    "hooks_command": "bash scripts/hooks/install.sh --verify",
+    "hooks_exit_code": 0,
+    "hooks_raw_output": "PASS: 10/10 immutable scripts 全部存在 + 可执行"
+  },
+  "deliverables": [
+    "node/tests/e2e/claim-queue.test.ts",
+    "jira/tickets/EPIC-293-port-isolation/ticket.json"
+  ],
+  "estimated_hours": 1,
+  "created_by": "master",
+  "completed_at": "2026-08-25",
+  "review": {
+    "group_a": { "recommendation": "APPROVE" },
+    "group_b": { "recommendation": "APPROVE" },
+    "final_outcome": "IN_REVIEW"
+  }
+}

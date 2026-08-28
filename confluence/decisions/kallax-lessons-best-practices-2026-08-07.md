@@ -2,6 +2,7 @@
 
 > **目的**: 记录 8 个月迭代中**深远影响**项目走向的教训, 转化为可复用的最佳实践。
 > **写入**: 2026-08-07, 跟 EPIC-194 Rule 36 + EPIC-188 retrospective 联合。
+> **更新**: 2026-08-22 并入 EPIC-277 沉淀（4 条新增，见 §9.1 根因修复原则）。
 > **数据源**: .claude-mem 2925 observations + 26k tokens 历史 + 36 Rule + 5 immutable scripts。
 > **筛选标准**: 治根 ≥ 2 release 复发 + 跨团队复用价值 + 北极星 metric 影响 ≥ 1 项。
 
@@ -27,13 +28,15 @@
 **教训**: README 宣称 "25/25 PASS / 生产级", reviewer 实测 `cargo test` 11 errors + Node 8/19 fail。
 
 **最佳实践**:
+- ✅ L2 必跑 5 项 (缺一即假 PASS, EPIC-277 补): `lint` / `build` / test runner / `scan-dead-code.sh` / `install.sh --verify`
 - ✅ L2 必跑 `cargo test --workspace --release`, 禁 `cargo build` 当 PASS (EPIC-102 升级)
 - ✅ L3 至少 1 expert 提供 raw `cargo test --workspace` 输出
 - ✅ L4 verify 脚本**真跑** (cache 失效, 不复用上次)
 - ✅ L5 check-claim-evidence.sh 扫 README/CHANGELOG 数字 (PRE-COMMIT hook)
 - ✅ 5 个 immutable scripts: check-decorative-claim / check-narrative / check-fail-closed / check-self-heal / check-claim-evidence
+- ✅ **subagent 报 PASS ≠ 验证通过** (EPIC-277 补): subagent 既是 report author 又是 verifier, 共享推理路径 → master 必查 raw output, 不接受 self-report
 
-**深远影响**: v3.8.1+ 假 PASS 0 复发, 北极星 #3 ab_hit_rate < 15%。
+**深远影响**: v3.8.1+ 假 PASS 0 复发, 北极星 #3 ab_hit_rate < 15%。EPIC-277 实测: subagent 跳 lint → 8 ESLint errors 进 CI, 补 5 必跑后 0 复发。
 
 ### 1.3 6 阶段 retrospective — 治 "复盘流于形式" (EPIC-161)
 
@@ -72,6 +75,23 @@
 - ✅ exit codes 契约: 0=PASS, 1=FAIL, 2=BLOCKED-env
 
 **深远影响**: v3.9+ 0 silent error, debug 时间 -80%。
+
+### 2.2b hook 脚本必在真 hook 环境实测 — 治 "hook 存在 ≠ hook 生效" (EPIC-224 + EPIC-277)
+
+**教训**: 2 次同型复发。EPIC-224: `core.hooksPath` 指向已删临时目录 → 所有 hook 静默失效。EPIC-277: 6 个 hook 脚本用 `git -C <script_dir> rev-parse --show-toplevel`, 在 hook 环境 (`GIT_DIR` 已设) 返回 `-C` 目录而非 repo root → BLACKLIST/BASELINE 路径错位 → fail-closed 拦死每次 commit。**共同根因: dry-run 通过 ≠ hook 环境通过**。
+
+**最佳实践**:
+- ✅ hook 写完必跑 4 步实测（不是 dry-run）：(1) `git config core.hooksPath` 设真路径 (2) 实跑 `git commit` 触发 (3) 验 exit code 与设计相符 (4) 验 hook 解析的 path 与设计相符
+- ✅ repo root 解析统一 helper (env-agnostic):
+  ```bash
+  REPO_ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git -C "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" rev-parse --show-toplevel 2>/dev/null || \
+    env -u GIT_DIR -u GIT_WORK_TREE git rev-parse --show-toplevel 2>/dev/null || pwd)"
+  ```
+- ✅ `install.sh --verify` 必逐个验 immutable 脚本存在 + 可执行 (EPIC-224 Check 4)
+- ✅ 防复发 test: `tests/integration/hook-environment-scan.test.sh` 模拟 `GIT_DIR` 已设, 静态扫所有 hook 脚本用法
+- ✅ CI `hook-health` job 每 PR 跑
+
+**深远影响**: hook 静默失效从 2 次/8 月 → 0, 治理 gate 真生效。
 
 ### 2.3 shellcheck lint — 治 SC2034 / SC2086 警告 (EPIC-191)
 
@@ -134,6 +154,19 @@
 
 **深远影响**: deliver PASS 60% → 100%。
 
+### 4.1b 并行派工前必做 file_scope cross-check — 治 "Rule 35 只约束单卡" (EPIC-277)
+
+**教训**: Rule 35 "≥4 模块 / ≥5 文件 → 拆 EPIC" 是**单卡**阈值, 不约束多卡并行。EPIC-277 卡 D + 卡 E 各自独立 worktree 并行, 都改 `CLAUDE.md` + `.claude/rules/immutable-scripts.md` + `install.sh` + `pre-commit` 4 文件 → rebase 时 4 文件全 conflict, 手工 resolve 30 分钟。
+
+**最佳实践**:
+- ✅ 并行派工前 master 必做 3 步 cross-check: (1) 列 in-flight 卡 worktree (2) 列各卡 `file_scope.includes` (3) 求交集
+- ✅ 交集含 ≥2 immutable 文件 → **改串行** (后者等前者合 testing)
+- ✅ 硬约束: **单 Sprint ≤2 卡碰 immutable** (Rule 35 §2 补充)
+- ✅ 并行判据: 卡间 `file_scope` 重叠 < 50% 才并行
+- ✅ 量化代理: `mis_dispatch_rate.scope_conflict` ↑ = 并行冲突风险 ↑
+
+**深远影响**: rebase conflict 从 4 文件/Sprint → 0, 派工 wall-clock 反而更短 (串行 < 并行+resolve)。
+
 ### 4.2 9 专家 1:1 loopx — 治"单 expert 盲区" (EPIC-170)
 
 **教训**: 单 expert 看 EPIC 易漏跨领域 impact。
@@ -167,6 +200,18 @@
 - ✅ 维护反模式清单, PRE-COMMIT hook 拦截
 - ✅ 知识库索引 (`~/.claude/knowledge/`) 按场景速查
 - ✅ 2925 observations 提炼 74 经验文件
+
+### 5.3 改结构化文件后必立即验证 — 治 "单字符 typo 静默失效" (EPIC-277)
+
+**教训**: 2 次坏 JSON 实战。EPIC-150-D `ticket.json` 行 29 多余 `}` 提前闭合 (历史遗留, 半年无人发现)。EPIC-277-G `ticket.json` 写成 `"reproduction_command":": "..."` 双冒号 (建卡时手误)。两者都让 `jq .` parse fail → **metric 算法读不出字段, 静默失真** (sprint-metrics `mis_dispatch_rate` 报 50% 而非 0%, 差 3 个 ticket 的豁免字段)。
+
+**最佳实践**:
+- ✅ 改 `.json` / `.yaml` / `.toml` 后**立即** 3 步验证: (1) `jq . <file>` exit 0 (2) `jq -r '.<改的字段>'` 验类型 (boolean 验 `true`/`false` 字面) (3) schema 校验脚本 (`check-ticket-schema.sh`)
+- ✅ 禁 heredoc / 字符串拼接写 JSON, 用 `jq -n --arg ... '{...}'` 强类型 build
+- ✅ commit-msg hook: staged 含结构化文件 → 强制 `jq .` 通过
+- ✅ 全仓完整性扫描: `scripts/verify/check-tickets-integrity.sh` 定期跑 (catch 历史遗留)
+
+**深远影响**: 静默失真 metric 从 2 次 → 0, 数据可信度恢复。**通用原则: 任何"程序读的文件"改完必用程序验证, 不靠肉眼**。
 
 ---
 
@@ -222,6 +267,19 @@
 
 **深远影响**: 主公信任度维持, 主公指示反馈频率 +50%。
 
+### 7.2b ticket AC 数字必建卡前实测 — 治 "拍板时估数字" (EPIC-277)
+
+**教训**: EPIC-277-F ticket AC3 写 "270+ 历史 ticket review 回填", subagent 实测仓里只 **212 个**。AC5 写 "EPIC-230 4/4 PASS", 实测**仓里没 EPIC-230**, 且 `expert_activation_rate ≥5` 需 daemon 长期生产积累 (一次 commit 造不出, 硬造 = 伪造数据源)。根因: AC 数字是拍板时估算, 没跑 `find | wc -l` 确认。
+
+**最佳实践**:
+- ✅ 建卡前 master 必跑实测把数字写进 AC: `find jira/tickets -name ticket.json | wc -l` / `git log --oneline | wc -l` / `git diff --stat` / metric 现值
+- ✅ AC 数字带 footer: `(实际 X/Y 以 commit 时实测为准)`
+- ✅ subagent 收卡后必独立复现 AC 数字（参考 Rule 34），gap > 10% → ticket `blocked` + 上报
+- ✅ **subagent 诚实修正是正确行为**: EPIC-277-F subagent 实测 212 ≠ 270, 在 PR「未执行验证」透明披露 — 这是范本, 不是失职
+- ✅ 区分"能靠 1 commit 达成"vs"需长期运行积累"的 AC, 后者写清依赖
+
+**深远影响**: AC 数字失真从 2 项/卡 → 0, subagent 不再为凑数字硬造数据。
+
 ### 7.3 翻篇&精进 + 反哺框架 — 治"债累积"
 
 **教训**: release→release tech debt 累积, 终崩。
@@ -252,15 +310,29 @@
 **最佳实践**:
 - ✅ 4 metric 全 PASS 才算闭环:
   - expert_activation ≥ 5
-  - cross_epic_reuse ≥ 60%
+  - cross_epic_reuse ≥ 40% (EPIC-277 主公拍板 60→40, 基础设施型 EPIC 复用率天然低)
   - ab_hit < 15%
-  - mis_dispatch < 10%
+  - mis_dispatch < 10% (可用 `multi_spec_intentional: true` 豁免, 见 8.3)
 - ✅ 0 数据 (NO_DATA exit=2) 触发 ASK, 不接受 silent PASS
 - ✅ 必跑 `bash scripts/metrics/sprint-metrics.sh --epic EPIC-XXX`
 
+### 8.3 metric 算法必留"有意 vs 无意"逃生门 — 治 "算法简化假设伤真实场景" (EPIC-277)
+
+**教训**: `mis_dispatch_rate` 把 "file_scope 跨 ≥2 specialization" 一律判为 `scope_conflict` (错派)。EPIC-277 卡 D/E/F/G 4 张卡全 FAIL (75%), 但实测这 4 卡**真的**跨 backend+test+docs — 基础设施型 EPIC 天生跨多领域, 算法无法区分"有意跨" (大重构) vs "无意跨" (派单错)。阈值 60% 的 `cross_epic_reuse` 同理: 只有 docs-only EPIC 能达标, 新建文件多的基础设施 EPIC 结构性不达标。
+
+**最佳实践**:
+- ✅ 任何 metric 判定"异常模式"时, 留 per-ticket 声明字段作逃生门: `ticket.json.multi_spec_intentional: true` → 跳过 `scope_conflict`
+- ✅ breakdown 必暴露豁免计数 (`multi_spec_intentional_skip: N`), 让豁免可审计, 不是黑箱
+- ✅ 阈值按 EPIC 类型分型: 基础设施型 vs docs-only 型不同阈值 (60% → 40% + docs 副指标 40%)
+- ✅ 改阈值必 **3 处同步**（`metrics.sh`、`CLAUDE.md`、`.claude/rules/`），参考 EPIC-223 的改数字流程
+- ✅ 阈值/算法调整必附**量化前后对比** (EPIC-277: mis_dispatch 75% → 0%, 4 ticket 豁免), 不是拍脑袋放宽
+- ✅ 警惕滥用: 豁免字段是"声明有意", 不是"数字不好看就加"; review 时必查 file_scope 是否真跨领域
+
+**深远影响**: metric 从"结构性 FAIL 被忽略"→"真实反映派单质量"。EPIC-277 实测 2 PASS/4 FAIL → 3 PASS/3 FAIL, 且 FAIL 项都是真问题 (数据积累不足), 非算法误判。
+
 ---
 
-## 9. 跨 8 月累计沉淀: 12 条最有价值
+## 9. 跨 8 月累计沉淀: 16 条最有价值
 
 | # | 教训 / 实践 | 治 | 跨 release 验证 |
 |---|-------------|-----|----------------|
@@ -276,6 +348,30 @@
 | 10 | Sprint 时间盒 (Rule 35) + 4 metric (Rule 36) | Sprint 节奏失控 | ≥2 release |
 | 11 | 借方法论 不借代码 | 复制粘贴陷阱 | ≥8 release |
 | 12 | 反讽 + 诚实修正 战略 | 假 PASS 文化 | ≥5 release |
+| **13** | **L2 必跑 5 项 + subagent self-report 不可信** | subagent 跳验证 → CI 才暴露 | v3.35 (EPIC-277) |
+| **14** | **hook 必在真 hook 环境实测 (非 dry-run)** | hook 存在 ≠ hook 生效 | ≥2 复发 (EPIC-224/277) |
+| **15** | **改结构化文件后立即 `jq .` 验证** | 单字符 typo → metric 静默失真 | ≥2 复发 (EPIC-150-D/277-G) |
+| **16** | **metric 留"有意 vs 无意"逃生门 + 阈值分型** | 算法简化假设伤真实场景 | v3.35 (EPIC-277) |
+
+### 9.1 4 条新增 (EPIC-277 沉淀) 的共同模式
+
+13-16 条看似 4 个独立问题, 实为**同一根因的 4 个面**: **"声明的验证" ≠ "实际的验证"**。
+
+| 条 | 声明层 | 实际层 | gap |
+|----|--------|--------|-----|
+| 13 | subagent 报 "5-Level Verify 全绿" | 只跑了 build + test, 跳 lint | 验证项清单缺失 |
+| 14 | hook 脚本存在 + dry-run 通过 | 真 hook 环境 `GIT_DIR` 已设 → 路径错位 | 验证环境不等价 |
+| 15 | ticket.json 肉眼看着对 | `jq .` parse fail → 字段读不出 | 验证工具缺失 (人眼 ≠ 程序) |
+| 16 | metric FAIL = 有问题 | metric FAIL = 算法假设不匹配场景 | 验证语义错位 |
+
+**根因修复原则**（跨项目可复用）：
+> **任何"通过"结论, 必须由**最终消费方**的方式验证** —
+> CI 要跑的项目, 派工前列成清单硬编码;
+> hook 环境要跑的脚本, 在 hook 环境跑;
+> 程序要读的文件, 用程序验;
+> 算法要判的场景, 让场景能声明自己的意图。
+
+这条原则可直接套用到用 KALLAX 模式开发的其他项目 (DSH / future frameworks), 不依赖 KALLAX 具体实现。
 
 ---
 

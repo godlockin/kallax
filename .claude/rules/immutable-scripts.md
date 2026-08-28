@@ -54,6 +54,14 @@ CLAUDE.md §5 历史上出现过 **4 个互不一致的数字**:
 
 **EPIC-280 admission (主公 2026-08-21 拍板 DSH Path A)**: 从 9 → 10. 验 staged .md 满足 Agent Note schema (path 闭集 / header 三行 / Status 闭集 / class 6 闭集 / ## Problem 段). 脚本最初放 `scripts/verify/` (沿用 check-jargon 命名), canonical path 走 EPIC-277-E 迁移到 `scripts/hooks/` (待 EPIC-280-PR 落地后做迁移, 跟 EPIC-225 同型).
 
+**EPIC-286 单脚本统一 (主公 2026-08-22 拍板)**: 曾有 `scripts/verify/check-jargon.sh` (213 行) 跟 `scripts/hooks/check-jargon.sh` (179 行) 两份同名脚本行为分叉 — verify 版实现了 2 个豁免但不被任何 hook 调用, hooks 版被 pre-commit 调用但缺豁免 (`is_historical_file()` 是 dead code)。后果: blacklist `replace` 字段承诺"附命令引用即可写 X/Y PASS"、`_scope` 字段 + 主公 2026-08-11 拍板承诺"历史内容不追溯", 两个承诺都没兑现 → 贴 raw test output 撞 gate, 改老文档撞 gate → HOOK_BYPASS 用量常态化。
+- 处理: 删 verify 版, 把 2 个豁免移植进 canonical (hooks 版)
+- 豁免 1 (X/Y PASS): 命中 `[0-9]+/[0-9]+ (PASS|passed)` 时查 ±10 行窗口内是否有命令证据 (`` `bash|npx|cargo|npm|git|python3 ``/`$ cmd`/`exit=N`/`RC=N`), 有则豁免。裸数字仍 fail (v3.8.0 假 PASS 防线保留)
+- 豁免 2 (历史文件, 逐行): 标记为历史文件（以 `jira/tickets/.jargon-baseline.json` 的 EPIC-225 `baseline_commit` 为界）后, **逐行**用 `git blame` 查 last_change_commit, 仅豁免 baseline 之前就存在的行。**修复 B 修 B5 反馈** (原"整文件按 first_commit 豁免"是 fail-open — 改老文件时新增违规词也全过)
+- 元字段豁免 (META_EXEMPT): 不用 substring 通配 (B 修 B3 反馈 — 'jargon' 通配会误豁免任何含 'jargon' 字样的未来文件), 改精确 basename (`.jargon-blacklist.json` / `.jargon-baseline.json`) + 显式 path glob (`tests/integration/check-jargon-*` / `epic-225-jargon-*` / `epic-250-jargon-*` / `scripts/hooks/check-jargon.sh` / `confluence/decisions/EPIC-225*` / `jira/tickets/.jargon-*`)
+- 例外范围: 仅 X/Y PASS 有窗口豁免, 装饰词 (`生产级`/`100%`/`彻底` 等) 无例外
+- 验证: `bash tests/integration/check-jargon-exemption.test.sh` 应通过（含裸数字仍 fail / 窗口外不豁免 / 装饰词无例外反向 case）
+
 **退出码契约**: 0=PASS, 1=FAIL. 禁止 print FAIL + exit 0 (fail-open).
 **例外**: `check-ticket-schema.sh` 有 exit 3 = ARCHIVED_SKIP (跟 EPIC-204 `DOCS_ONLY_SKIP` 同型, 表示"不适用"而非 PASS/FAIL). pre-commit 只拦 exit 1.
 **#7 是 advisory**: `snapshot-claude-md.sh` 在 pre-commit 只提醒不阻塞 (改治理文件时提示打 snapshot), 不阻断 commit.
@@ -61,7 +69,7 @@ CLAUDE.md §5 历史上出现过 **4 个互不一致的数字**:
 **EPIC-277-E 路径迁移**: 4 个原 verify/ 脚本 (check-decorative-claim / check-narrative / check-fail-closed / check-self-heal) 已 copy 到 scripts/hooks/ 作 canonical location.
 - pre-commit 4-law loop 优先读 scripts/hooks/, fall back 到 scripts/verify/ (向后兼容).
 - scripts/verify/ 副本保留 (audit 链完整 + backward-compat).
-- install --verify 9/9 PASS (跟 CLAUDE.md §5 数字对齐).
+- install --verify 10/10 PASS (跟 CLAUDE.md §5 数字对齐).
 
 ### 2 辅助 (非 immutable, 可迭代)
 
@@ -77,7 +85,18 @@ CLAUDE.md §5 历史上出现过 **4 个互不一致的数字**:
 | `scan-dead-code.sh` | 退出码三态 (0/1/2=BLOCKED-env), 跟 immutable 二态契约不同 (P0-7 治理) |
 | `check-doc-budgets.sh` | EPIC-279 (DSH Path C 借鉴), 跟 `check-smoke-retention.sh` 同级辅助, 改动只需 PR review 不需主公亲自 |
 
-### commit-msg gate (EPIC-221 config → EPIC-224 激活)
+### EPIC-286 check-jargon semantic contract
+
+Canonical `scripts/hooks/check-jargon.sh` owns both exemptions; `scripts/verify/check-jargon.sh` must not become a second behavior source:
+
+- X/Y `PASS` is exempt only when a command/raw-exit reference appears within ±10 lines (`bash`, `npx`, `cargo`, `npm`, `git`, `python3`, `$ command`, `exit=N`, or `RC=N`). Bare numeric PASS remains blocked.
+- Baseline exemption is line-level: use `git blame` against baseline commit. Existing pre-baseline lines may be exempt; newly added violating lines in an old file are not.
+- Metadata exemptions use exact basenames and explicit paths only. Never exempt arbitrary files because their name contains `jargon`.
+- Decorative claims remain blocked even when nearby command evidence exists.
+
+Validation: `bash tests/integration/check-jargon-exemption.test.sh` covers positive and negative cases, including out-of-window evidence and modified historical files.
+
+
 
 | 检查 | 来源 |
 |------|------|

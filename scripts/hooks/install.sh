@@ -65,7 +65,7 @@ echo ""
 
 # ── Check 2: hook 文件是否已安装且为最新 ────────────────────────────────
 echo "--- hook 安装检查 ---"
-for hook in pre-commit pre-push; do
+for hook in pre-commit pre-push post-checkout; do
   src="${HOOKS_SRC}/${hook}"
   dst="${HOOKS_DIR}/${hook}"
 
@@ -177,6 +177,21 @@ else
 fi
 echo ""
 
+# ── Check 5: build-scope-commits.sh 辅助脚本 (EPIC-287-C) ─────────────
+# 非 immutable, 可迭代. install --verify 不计入计数 (保持 10/10).
+echo "--- build-scope-commits.sh 辅助脚本检查 (EPIC-287-C) ---"
+SCOPE_BUILDER="${REPO_ROOT}/scripts/hooks/build-scope-commits.sh"
+if [ ! -f "$SCOPE_BUILDER" ]; then
+  echo "  MISSING: build-scope-commits.sh"
+  problems=1
+elif [ ! -x "$SCOPE_BUILDER" ]; then
+  echo "  NOT_EXEC: build-scope-commits.sh (chmod +x)"
+  problems=1
+else
+  echo "  OK: build-scope-commits.sh (非 immutable 辅助)"
+fi
+echo ""
+
 # ── Summary ────────────────────────────────────────────────────────────
 if [ "$VERIFY_ONLY" -eq 1 ]; then
   if [ "$problems" -eq 0 ]; then
@@ -195,9 +210,13 @@ echo "    - EPIC-220 disclaimer audit (staged .md)"
 echo "    - EPIC-219 snapshot 提醒 (CLAUDE.md / .claude/rules, advisory)"
 echo "    - EPIC-223 ticket schema (staged ticket.json, >archived_before 强制)"
 echo "    - EPIC-225 jargon black list (staged .md/.sh/.ts/.rs)"
+echo "    - EPIC-287-C jargon --all scope cache (辅助脚本)"
 echo "    - EPIC-279 doc word budgets (staged .md, fail-closed)"
 echo "    - EPIC-280 agent-note format (staged .md, DSH Path A admission)"
+echo "    - EPIC-301 worktree count (调 scripts/hooks/check-worktree-count.sh, >50 阻断)"
 echo "    - miao 分支保护"
+echo "  post-checkout:"
+echo "    - EPIC-301 worktree 卫生提示 (调 scripts/hooks/check-worktree-hygiene.sh, 切 miao/main/testing 时)"
 echo "  commit-msg:"
 echo "    - DCO Signed-off-by 强制 (EPIC-221 config 激活)"
 echo "    - Conventional Commits type 检查"

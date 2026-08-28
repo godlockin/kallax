@@ -102,15 +102,15 @@ for f in state-json.md testing.md branch-flow.md strict-tsconfig.md; do
   fi
 done
 
-# Case 5: CLAUDE.md 引用 4 个 rules
+# Case 5: CLAUDE.md 引用 4 个 rules（支持 brace lazy-load stems）
 echo ""
-echo "Case 5: CLAUDE.md references 4 rules files"
-for f in state-json.md testing.md branch-flow.md strict-tsconfig.md; do
-  if grep -q "$f" "$CLAUDE_MD"; then
-    echo "  PASS: CLAUDE.md references $f"
+echo "Case 5: CLAUDE.md references 4 rules stems"
+for stem in state-json testing branch-flow strict-tsconfig; do
+  if grep -Eq "${stem}(\\.md)?([,}.]|$)" "$CLAUDE_MD"; then
+    echo "  PASS: CLAUDE.md references $stem"
     PASS=$((PASS + 1))
   else
-    echo "  FAIL: CLAUDE.md missing reference to $f"
+    echo "  FAIL: CLAUDE.md missing reference to $stem"
     FAIL=$((FAIL + 1))
   fi
 done
@@ -134,11 +134,12 @@ else
   FAIL=$((FAIL + 1))
 fi
 
-# Case 7: 4 不可更改法律 paths 描述正确
-echo ""
-echo "Case 7: 4 immutable scripts paths (per AC2)"
-assert_grep "check-decorative-claim in scripts/verify" "check-decorative-claim\.sh.*scripts/verify" "$CLAUDE_MD"
-assert_grep "check-claim-evidence in scripts/hooks" "check-claim-evidence\.sh.*scripts/hooks" "$CLAUDE_MD"
+# Case 7: canonical immutable paths come from immutable-scripts rule
+ echo ""
+echo "Case 7: canonical immutable paths from rule"
+IMMUTABLE_RULE="${RULES_DIR}/immutable-scripts.md"
+assert_grep "check-decorative-claim canonical hook path" "check-decorative-claim\\.sh.*scripts/hooks/check-decorative-claim\\.sh" "$IMMUTABLE_RULE"
+assert_grep "check-claim-evidence canonical hook path" "check-claim-evidence\\.sh.*scripts/hooks/check-claim-evidence\\.sh" "$IMMUTABLE_RULE"
 
 echo ""
 echo "================================================"

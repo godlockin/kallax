@@ -1,0 +1,42 @@
+{
+  "id": "EPIC-295",
+  "type": "bugfix",
+  "status": "in_progress",
+  "title": "Use root npm lockfile for reproducible KALLAX CI dependencies",
+  "performer": "team-w",
+  "priority": "P1",
+  "created_at": "2026-08-25",
+  "updated_at": "2026-08-25",
+  "file_scope": {
+    "includes": [
+      ".github/workflows/kallax-ci.yml",
+      "jira/tickets/EPIC-295-npm-lock-reproducibility/ticket.json"
+    ],
+    "excludes": [
+      "node/package.json",
+      "package-lock.json",
+      "node/package-lock.json",
+      "node/**/vitest*",
+      "scripts/hooks/**"
+    ]
+  },
+  "verification": {
+    "reproduction_command": "npm ci && node -p 'require(\"./node_modules/vitest/package.json\").version' && KALLAX_HOOK_API_KEY=test-key npm --workspace node exec vitest -- run && npm --workspace node exec tsc -- --noEmit",
+    "reproduction_exit_code": 0,
+    "reproduction_raw_output": "npm ci: added 377 packages, audited 379 packages, found 0 vulnerabilities; installed Vitest: 4.1.10; Vitest: RUN v4.1.10, Test Files 58 passed | 2 skipped (60); tsc --noEmit: no output, exit 0"
+  },
+  "rule_alignment": {
+    "rule_34_reproduction": "root npm ci + Vitest 4.1.10 + full Vitest and tsc outputs captured",
+    "rule_35_sprint_box": "single workflow fix + ticket, ≤2 commits",
+    "rule_270_review_tier": "T3 (CI workflow change)"
+  },
+  "deliverables": {
+    "pr_1": "fix(EPIC-295): use root npm lockfile in KALLAX CI"
+  },
+  "binding": {
+    "epic_id": "EPIC-295",
+    "branch_base": "testing",
+    "merge_strategy": "merge-commit"
+  },
+  "notes": "Root package-lock.json pins Vitest 4.1.10. npm ci at repository root makes CI consume that canonical lockfile instead of allowing npm install dependency drift. No node/package-lock.json added."
+}

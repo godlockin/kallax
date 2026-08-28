@@ -34,7 +34,7 @@ triggerKeywords: [kallax, expert panel, architecture review, 召唤专家, 专�
 5. 主分支 push (testing/main/miao)
 6. 公开化路径 (README.md / CHANGELOG.md)
 7. Rule 改 (CLAUDE.md / SKILL.md)
-8. immutable scripts (9 total: 8 verify + 1 hook, 跟 CLAUDE.md §5 1:1)
+8. immutable scripts (10 total: 9 verify + 1 hook, 跟 CLAUDE.md §5 1:1)
 9. 网络发布 (gh pr create / npm publish / docker push)
 ```
 
