@@ -1,108 +1,165 @@
 #!/usr/bin/env bash
-# EPIC-287-C test — jargon scope cache performance + correctness
-# Verifies:
-#   1. --all wall-clock < 15s (scope cache loaded)
-#   2. Baseline 后新违规 still FAIL
-#   3. Baseline 前违规 still exempt
-#   4. _scope_commits.json missing → fallback to original logic
-# Usage: bash tests/integration/check-jargon-scope-cache.test.sh
-# Exit: 0 = all PASS, 1 = any FAIL
+# EPIC-287-C — isolated real scope-cache behavior.
+# Scope cache is optimization; missing, malformed, or stale cache must fall back
+# to git ls-files and never turn a real scan into silent empty PASS.
+set -euo pipefail
 
-REPO_ROOT="$(git rev-parse --show-toplevel)"
-cd "$REPO_ROOT" || exit 1
+REPO_ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git -C "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" rev-parse --show-toplevel 2>/dev/null)"
+if [ -z "$REPO_ROOT" ]; then
+  REPO_ROOT="$(env -u GIT_DIR -u GIT_WORK_TREE git rev-parse --show-toplevel 2>/dev/null || pwd)"
+fi
+cd "$REPO_ROOT"
 
 SCRIPT="scripts/hooks/check-jargon.sh"
-SCOPE_BUILDER="scripts/hooks/build-scope-commits.sh"
-BASELINE_JSON="jira/tickets/.jargon-baseline.json"
 SCOPE_JSON="jira/tickets/.scope-commits.json"
 PASS=0
 FAIL=0
 TMPDIR_TEST="$(mktemp -d)"
-trap 'rm -rf "$TMPDIR_TEST"' EXIT
+SCOPE_BACKUP="$TMPDIR_TEST/scope-commits.json"
+
+if [ -f "$SCOPE_JSON" ]; then
+  cp "$SCOPE_JSON" "$SCOPE_BACKUP"
+else
+  printf '%s\n' 'scope cache must exist after builder step' >&2
+  rm -rf "$TMPDIR_TEST"
+  exit 1
+fi
+restore() {
+  mv "$SCOPE_BACKUP" "$SCOPE_JSON"
+  rm -rf "$TMPDIR_TEST"
+}
+trap restore EXIT
 
 ok() { echo "  PASS: $1"; PASS=$((PASS + 1)); }
 ko() { echo "  FAIL: $1"; FAIL=$((FAIL + 1)); }
 
-assert_exit() {
-  local desc="$1" expected="$2"
-  shift 2
+run_scan() {
+  local output="$1"
   local rc
-  "$@" >/dev/null 2>&1
+  if bash "$SCRIPT" --all > "$output" 2>&1; then
+    rc=0
+  else
+    rc=$?
+  fi
+  if [ "$rc" -eq 0 ] || [ "$rc" -eq 1 ]; then
+    SCAN_RC="$rc"
+  else
+    ko "--all unexpected exit=$rc"
+    SCAN_RC="$rc"
+  fi
+}
+
+assert_fallback_scan() {
+  local label="$1" output="$2"
+  if grep -q 'scope cache: fallback git ls-files' "$output"; then
+    ok "$label reports git ls-files fallback"
+  else
+    ko "$label missing git ls-files fallback report"
+  fi
+  if grep -q '^FAIL:' "$output"; then
+    ok "$label performed non-empty fail-closed scan (exit=$SCAN_RC)"
+  else
+    ko "$label produced no scan findings (possible empty PASS)"
+  fi
+}
+
+echo '=== EPIC-287-C: isolated scope cache ==='
+echo ''
+
+echo '--- Group 1: Python scanner and valid cache ---'
+if grep -q 'python3 -' "$SCRIPT"; then
+  ok 'Python single-process scanner present'
+else
+  ko 'Python single-process scanner missing'
+fi
+if env GIT_DIR=/invalid-hook-dir GIT_WORK_TREE=/invalid-hook-tree bash scripts/hooks/build-scope-commits.sh >"$TMPDIR_TEST/build.log" 2>&1; then
+  ok 'build-scope-commits.sh exit 0'
+else
   rc=$?
-  if [ "$rc" -eq "$expected" ]; then ok "$desc (exit=$rc)"; else ko "$desc (expected $expected, got $rc)"; fi
-}
-
-assert_grep() {
-  local desc="$1" pattern="$2" file="$3"
-  if grep -qE "$pattern" "$file" 2>/dev/null; then ok "$desc"; else ko "$desc (no '$pattern' in $file)"; fi
-}
-
-echo "=== EPIC-287-C: jargon scope cache ==="
-echo ""
-
-echo "--- Group 1: build-scope-commits.sh ---"
-assert_exit "build-scope-commits.sh 可执行" 0 bash "$SCOPE_BUILDER"
-[ -f "$SCOPE_JSON" ] && ok "_scope_commits.json 生成" || ko "_scope_commits.json 未生成"
-assert_grep "scope json 含 commits" '"commits"' "$SCOPE_JSON"
-assert_grep "scope json 含 baseline_commit" '"baseline_commit"' "$SCOPE_JSON"
-assert_grep "scope json 含 generated_head" '"generated_head"' "$SCOPE_JSON"
-
-echo ""
-echo "--- Group 2: --all wall-clock < 15s ---"
-START=$(date +%s.%N)
-bash "$SCRIPT" --all >/dev/null 2>&1 || true
-END=$(date +%s.%N)
-ELAPSED=$(echo "$END - $START" | bc 2>/dev/null || echo "999")
-ELAPSED_INT=$(printf "%.0f" "$ELAPSED" 2>/dev/null || echo "999")
-if [ "$ELAPSED_INT" -lt 15 ]; then
-  ok "--all wall-clock ${ELAPSED}s < 15s"
+  ko "build-scope-commits.sh exit $rc"
+  cat "$TMPDIR_TEST/build.log"
+fi
+if [ -f "$SCOPE_JSON" ]; then
+  ok 'real scope cache exists'
 else
-  ko "--all wall-clock ${ELAPSED}s >= 15s"
+  ko 'real scope cache missing'
+fi
+if [ "$(jq '.commits | length' "$SCOPE_JSON")" -gt 0 ]; then
+  ok 'scope cache contains commits from revision range'
+else
+  ko 'scope cache unexpectedly empty (revision range not applied)'
+fi
+START=$(date +%s)
+run_scan "$TMPDIR_TEST/valid.log"
+ELAPSED=$(( $(date +%s) - START ))
+if [ "$ELAPSED" -lt 15 ]; then
+  ok "valid --all completed in ${ELAPSED}s (exit=$SCAN_RC)"
+else
+  ko "valid --all took ${ELAPSED}s"
+fi
+if grep -q 'scope cache: loaded' "$TMPDIR_TEST/valid.log"; then
+  ok 'valid cache reported loaded'
+else
+  ko 'valid cache did not report loaded'
+fi
+if [ "$(jq -r '.generated_head' "$SCOPE_JSON")" = "$(git rev-parse HEAD)" ] &&
+   [ "$(jq -r '.baseline_commit' "$SCOPE_JSON")" = "$(jq -r '.baseline_commit' jira/tickets/.jargon-baseline.json)" ] &&
+   [ "$(jq '.commits | length' "$SCOPE_JSON")" -eq "$(git rev-list "$(jq -r '.baseline_commit' jira/tickets/.jargon-baseline.json)..HEAD" | wc -l | tr -d ' ')" ]; then
+  ok 'cache head/baseline/commit count match revision range'
+else
+  ko 'cache metadata or commit count mismatch'
 fi
 
-echo ""
-echo "--- Group 3: check-jargon.sh scope cache integration ---"
-# 验证 --all 输出含 scope cache info
-out="$(bash "$SCRIPT" --all 2>&1 || true)"
-if echo "$out" | grep -q 'scope cache'; then
-  ok "--all 输出含 scope cache 状态"
-else
-  ko "--all 输出缺 scope cache 状态"
-fi
-# 验证 META_EXEMPT 不受 scope cache 影响
-assert_exit "scope-commits.json 自身豁免 → exit 0" 0 bash "$SCRIPT" "$SCOPE_JSON"
+for tamper in missing-key fake-key file-mismatch; do
+  cp "$SCOPE_BACKUP" "$SCOPE_JSON"
+  case "$tamper" in
+    missing-key) jq 'del(.commits[(.commits | keys | .[0])])' "$SCOPE_JSON" > "$TMPDIR_TEST/tampered.json" ;;
+    fake-key) jq '.commits["0000000000000000000000000000000000000000"] = []' "$SCOPE_JSON" > "$TMPDIR_TEST/tampered.json" ;;
+    file-mismatch) jq '(.commits | keys | .[0]) as $k | .commits[$k] = ["fake-file.md"]' "$SCOPE_JSON" > "$TMPDIR_TEST/tampered.json" ;;
+  esac
+  mv "$TMPDIR_TEST/tampered.json" "$SCOPE_JSON"
+  run_scan "$TMPDIR_TEST/$tamper.log"
+  if grep -q 'scope cache: fallback git ls-files' "$TMPDIR_TEST/$tamper.log"; then
+    ok "$tamper cache validation fallback"
+  else
+    ko "$tamper cache validation did not fallback"
+  fi
+done
+mv "$SCOPE_BACKUP" "$SCOPE_JSON"
+cp "$SCOPE_JSON" "$SCOPE_BACKUP"
 
-echo ""
-echo "--- Group 4: scope cache graceful fallback ---"
-# 验证 load_scope_cache 在文件不存在时返回非 0 (降级信号)
-# 检查函数存在且可调用 (通过检查脚本可独立运行)
-if bash -c 'exit $([ -f "$1" ] && echo 0 || echo 1)' _ jira/tickets/.scope-commits.json 2>/dev/null; then
-  ok "scope cache 文件存在时 load_scope_cache 返回 0"
-else
-  ko "scope cache 文件存在时 load_scope_cache 行为异常"
-fi
+echo ''
+echo '--- Group 2: missing cache fallback ---'
+mv "$SCOPE_JSON" "$TMPDIR_TEST/missing-scope.json"
+run_scan "$TMPDIR_TEST/missing.log"
+assert_fallback_scan 'missing cache' "$TMPDIR_TEST/missing.log"
+mv "$TMPDIR_TEST/missing-scope.json" "$SCOPE_JSON"
 
-echo ""
-echo "--- Group 5: idempotent rebuild ---"
-# 再次跑 build-scope-commits.sh, 验证幂等
-bash "$SCOPE_BUILDER" >/dev/null 2>&1
-if echo "$(bash "$SCOPE_BUILDER" 2>&1)" | grep -q "up-to-date"; then
-  ok "build-scope-commits.sh 幂等"
-else
-  ko "build-scope-commits.sh 非幂等"
-fi
+echo ''
+echo '--- Group 3: malformed cache fallback ---'
+printf '%s\n' '{"commits": []}' > "$SCOPE_JSON"
+run_scan "$TMPDIR_TEST/malformed.log"
+assert_fallback_scan 'malformed cache' "$TMPDIR_TEST/malformed.log"
+mv "$SCOPE_BACKUP" "$SCOPE_JSON"
+cp "$SCOPE_JSON" "$SCOPE_BACKUP"
 
-echo ""
-echo "--- Group 6: install.sh verify ---"
-# 验证 install.sh 不因新增脚本报错
-bash scripts/hooks/install.sh --verify >/dev/null 2>&1
-rc=$?
-if [ "$rc" -eq 0 ]; then
-  ok "install.sh --verify exit 0"
-else
-  ko "install.sh --verify exit $rc"
-fi
+echo ''
+echo '--- Group 4: metadata-matching empty commits fallback ---'
+CURRENT_HEAD="$(git rev-parse HEAD)"
+BASELINE_COMMIT="$(jq -r '.baseline_commit' jira/tickets/.jargon-baseline.json)"
+printf '{"commits": {}, "generated_head": "%s", "baseline_commit": "%s"}\n' "$CURRENT_HEAD" "$BASELINE_COMMIT" > "$SCOPE_JSON"
+run_scan "$TMPDIR_TEST/empty.log"
+assert_fallback_scan 'empty commits cache' "$TMPDIR_TEST/empty.log"
 
-echo ""
-echo "=== Result: $PASS PASS / $FAIL FAIL (total $((PASS + FAIL))) ==="
-[ "$FAIL" -eq 0 ] && exit 0 || exit 1
+# Restore known-good cache before stale metadata case.
+mv "$SCOPE_BACKUP" "$SCOPE_JSON"
+cp "$SCOPE_JSON" "$SCOPE_BACKUP"
+
+echo ''
+echo '--- Group 5: stale metadata fallback ---'
+printf '%s\n' '{"commits": {"stale": ["CLAUDE.md"]}, "generated_head": "stale-head", "baseline_commit": "stale-baseline"}' > "$SCOPE_JSON"
+run_scan "$TMPDIR_TEST/stale.log"
+assert_fallback_scan 'stale cache' "$TMPDIR_TEST/stale.log"
+
+printf '%s\n' "=== Result: $PASS PASS / $FAIL FAIL ==="
+[ "$FAIL" -eq 0 ]

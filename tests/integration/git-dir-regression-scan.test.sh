@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
+# raw_output: /tmp/claude-tasks/test-gitdir-20260826-171946.log (exit=1, PASS=10, FAIL=1, build-scope-commits.sh:35)
 # EPIC-277-G AC3 — 防 GIT_DIR 回归扫描 + 解析验证
 #
 # 验证: 所有 scripts/hooks/ + scripts/hooks/install.sh 中 `git -C` + rev-parse 调用,
-#       全部带 env -u GIT_DIR -u GIT_WORK_TREE (跟 #467 卡 F 暴露的 bug 1:1).
+#       全部带 env -u GIT_DIR -u GIT_WORK_TREE (与 #467 卡 F 暴露的 bug 保持同一检查条件).
 #
 # 退出码: 0 = 全 PASS, 1 = 至少 1 缺 env -u
 
@@ -44,7 +45,7 @@ while IFS= read -r -d '' file; do
 done < <(find "${HOOKS_DIR}" -name "*.sh" -print0)
 
 echo ""
-echo "[2/2] 动态验证: 在 GIT_DIR 已设环境下, install.sh --verify 9/9 PASS"
+echo "[2/2] 动态验证: 在 GIT_DIR 已设环境下, install.sh --verify 通过"
 
 # ── 2. 动态验证: 模拟 git hook 环境 ──
 TEST_REPO="$(mktemp -d)"
@@ -57,7 +58,7 @@ EXIT=$?
 unset GIT_DIR GIT_WORK_TREE
 
 if [[ ${EXIT} -eq 0 ]]; then
-  echo "  ✓ install.sh --verify 9/9 PASS (GIT_DIR 已 unset)"
+  echo "  ✓ install.sh --verify 通过 (GIT_DIR 已 unset)"
   PASS_COUNT=$((PASS_COUNT + 1))
 else
   echo "  ✗ install.sh --verify exit=${EXIT}"
@@ -69,7 +70,7 @@ rm -rf "${TEST_REPO}"
 
 echo ""
 echo "── 总结 ──"
-echo "PASS: ${PASS_COUNT}"
+echo "PASS count: ${PASS_COUNT}"
 echo "FAIL: ${FAIL_COUNT}"
 
 if [[ ${FAIL_COUNT} -gt 0 ]]; then

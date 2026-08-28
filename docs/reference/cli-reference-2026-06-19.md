@@ -160,10 +160,6 @@ kallax workflow start feature-development TICKET-ABC
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-<<<<<<< HEAD
 | `KALLAX_API_KEY` | `<env-required, no default, fail-closed>` | API key for server auth (standalone.ts:21 fail-closed, no default, S-001 + S-004 从根源修复) |
-=======
-| `KALLAX_API_KEY` | `<required, no default, fail-closed>` | API key for server auth (standalone.ts:21 fail-closed, no default) |
->>>>>>> origin/feature/v31-hotfix-p1
 | `KALLAX_LOG_LEVEL` | `info` | Log level (trace/debug/info/warn/error/fatal) |
 | `KALLAX_DATA_DIR` | `.kallax` | Data directory path |

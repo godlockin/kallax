@@ -6,7 +6,7 @@
 #   AC #1: scripts/performer-complete.sh exists +x
 #   AC #2: Implements Performer 5 levels (跟 AGENTS.md 联合)
 #   AC #3: Writes .kallax/queue/outbox/performer-{id}/pass-report-{ticket}.json
-#   AC #4: 9/9 PASS (跟 EPIC-015-G 全 AC 联合)
+#   AC #4: 10/10 PASS (跟 EPIC-015-G 全 AC 联合)
 #   AC #5: 跟 EPIC-059-D Fact-Forcing 1:1 验证 (raw test output 留存)
 #
 # 跟 BE-23 + BE-25 + BE-26 fixes in place (1 ticket 1 subagent 串行, 0 静默 output)
